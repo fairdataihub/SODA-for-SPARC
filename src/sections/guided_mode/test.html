@@ -1,1 +1,36 @@
+<div
+  id="guided-protocol-folder-tab"
+  class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+>
+  <div class="guided--section w-100">
+    <h1 class="guided--text-sub-step">Protocol data</h1>
+    <p class="guided--help-text w-100">
+      Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+      Lorem Ipsum has been the industry's standard dummy text ever since the
+      1500s, when an unknown printer took a galley of type and scrambled it to
+      make a type specimen book.
+    </p>
+  </div>
+  <div class="guided--section">
+    <label class="guided--form-label centered"
+      >Does your dataset have protocol data?
+    </label>
 
+    <div class="guided--radio-button-container">
+      <button
+        class="ui positive basic button guided--radio-button"
+        id="guided-button-has-protocol-data"
+        data-next-question="guided-user-has-protocol-data"
+      >
+        Yes
+      </button>
+      <button
+        class="ui negative basic button guided--radio-button"
+        id="guided-button-no-protocol-data"
+      >
+        No
+      </button>
+    </div>
+  </div>
+  <div class="guided--panel hidden" id="guided-user-has-protocol-data"></div>
+</div>

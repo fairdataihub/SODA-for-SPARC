@@ -233,23 +233,15 @@
               ></div>
               <div
                 class="guided--capsule"
-                id="guided-samples-folder-capsule"
-              ></div>
-              <div
-                class="guided--capsule"
-                id="guided-source-folder-capsule"
-              ></div>
-              <div
-                class="guided--capsule"
-                id="guided-derivative-folder-capsule"
-              ></div>
-              <div
-                class="guided--capsule"
                 id="guided-code-folder-capsule"
               ></div>
               <div
                 class="guided--capsule"
                 id="guided-docs-folder-capsule"
+              ></div>
+              <div
+                class="guided--capsule"
+                id="guided-protocol-folder-capsule"
               ></div>
               <button
                 class="ui yellow basic button"
@@ -1040,53 +1032,23 @@
             ></div>
           </div>
           <div
-            id="guided-derivative-folder-tab"
-            class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
-          >
-            <div class="guided--section">
-              <label class="guided--form-label centered"
-                >Does your dataset contain derivative data?
-              </label>
-              <p class="guided--help-text w-100 text-center">
-                <b>Required</b> if derivative data exists. Derived data should
-                be organized into subject and sample folders, using the subject
-                and sample IDs as the folder names, as with the primary data.
-              </p>
-              <div class="guided--radio-button-container">
-                <button
-                  class="ui positive basic button guided--radio-button"
-                  id="guided-button-has-derivative-data"
-                  data-next-question="guided-user-has-derivative-data"
-                >
-                  Yes
-                </button>
-                <button
-                  class="ui negative basic button guided--radio-button"
-                  id="guided-button-no-derivative-data"
-                >
-                  No
-                </button>
-              </div>
-            </div>
-            <div
-              class="guided--panel hidden"
-              id="guided-user-has-derivative-data"
-            ></div>
-          </div>
-          <div
             id="guided-code-folder-tab"
             class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
           >
+            <div class="guided--section w-100">
+              <h1 class="guided--text-sub-step">Code data</h1>
+              <p class="guided--help-text w-100">
+                Lorem Ipsum is simply dummy text of the printing and typesetting
+                industry. Lorem Ipsum has been the industry's standard dummy
+                text ever since the 1500s, when an unknown printer took a galley
+                of type and scrambled it to make a type specimen book.
+              </p>
+            </div>
             <div class="guided--section">
               <label class="guided--form-label centered"
-                >Does your dataset contain code data?
+                >Does your dataset have code data?
               </label>
-              <p class="guided--help-text w-100 text-center">
-                <b>Required</b> if code is used in the generation of the data;
-                the folder contains all the source codes used in the study such
-                as text and source code (e.g., MATLAB, etc.). Any supporting
-                code.
-              </p>
+
               <div class="guided--radio-button-container">
                 <button
                   class="ui positive basic button guided--radio-button"
@@ -1112,17 +1074,20 @@
             id="guided-docs-folder-tab"
             class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
           >
+            <div class="guided--section w-100">
+              <h1 class="guided--text-sub-step">Docs data</h1>
+              <p class="guided--help-text w-100">
+                Lorem Ipsum is simply dummy text of the printing and typesetting
+                industry. Lorem Ipsum has been the industry's standard dummy
+                text ever since the 1500s, when an unknown printer took a galley
+                of type and scrambled it to make a type specimen book.
+              </p>
+            </div>
             <div class="guided--section">
               <label class="guided--form-label centered"
-                >Does your dataset contain docs data?
+                >Does your dataset have docs data?
               </label>
-              <p class="guided--help-text w-100 text-center">
-                <b>Optional</b> folder that contains all the supporting
-                documents for the dataset, including but not limited to, a
-                representative image for the dataset. Unlike the readme file,
-                which is necessarily a text document, docs can contain documents
-                in multiple formats, including images.
-              </p>
+
               <div class="guided--radio-button-container">
                 <button
                   class="ui positive basic button guided--radio-button"
@@ -1145,11 +1110,50 @@
             ></div>
           </div>
           <div
+            id="guided-protocol-folder-tab"
+            class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+          >
+            <div class="guided--section w-100">
+              <h1 class="guided--text-sub-step">Protocol data</h1>
+              <p class="guided--help-text w-100">
+                Lorem Ipsum is simply dummy text of the printing and typesetting
+                industry. Lorem Ipsum has been the industry's standard dummy
+                text ever since the 1500s, when an unknown printer took a galley
+                of type and scrambled it to make a type specimen book.
+              </p>
+            </div>
+            <div class="guided--section">
+              <label class="guided--form-label centered"
+                >Does your dataset have protocol data?
+              </label>
+
+              <div class="guided--radio-button-container">
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  id="guided-button-has-protocol-data"
+                  data-next-question="guided-user-has-protocol-data"
+                >
+                  Yes
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  id="guided-button-no-protocol-data"
+                >
+                  No
+                </button>
+              </div>
+            </div>
+            <div
+              class="guided--panel hidden"
+              id="guided-user-has-protocol-data"
+            ></div>
+          </div>
+          <div
             id="guided-structure-folder-tab"
             class="guided--panel hidden"
             data-skip-page="true"
           >
-            <div class="guided--section" id="structure-subjects-folder">
+            <div class="guided--section" id="guided-file-explorer-elements">
               <h1
                 class="guided--text-sub-step"
                 id="structure-folder-header"
@@ -1163,7 +1167,7 @@
 
               <div class="guided--folder-organization-buttons-container">
                 <div
-                  class="guided--folder-organization-buttons-container-sub"
+                  class="guided--folder-organization-buttons-container-sub hidden"
                   style="flex-grow: 1"
                 >
                   <button
@@ -1189,9 +1193,7 @@
                     readonly
                   />
                 </div>
-                <div
-                  class="guided--folder-organization-buttons-container-sub hidden"
-                >
+                <div class="guided--folder-organization-buttons-container-sub">
                   <button
                     class="ui primary basic button small"
                     id="guided-new-folder"

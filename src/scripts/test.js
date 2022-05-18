@@ -1,7 +1,7 @@
 if (targetPageID === "guided-derivative-subjects-organization-tab") {
   renderSubjectsHighLevelFolderAsideItems("derivative");
   guidedUpdateFolderStructure("derivative", "subjects");
-  $("#structure-subjects-folder").appendTo(
+  $("#guided-file-explorer-elements").appendTo(
     $("#guided-derivative-subjects-file-explorer-container")
   );
   updateFolderStructureUI(highLevelFolderPageData.derivative); //temp

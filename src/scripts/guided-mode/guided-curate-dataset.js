@@ -483,7 +483,7 @@ const traverseToTab = (targetPageID) => {
     if (targetPageID === "guided-primary-samples-organization-tab") {
       renderSamplesHighLevelFolderAsideItems("primary");
       guidedUpdateFolderStructure("primary", "samples");
-      $("#structure-subjects-folder").appendTo(
+      $("#guided-file-explorer-elements").appendTo(
         $("#guided-primary-samples-file-explorer-container")
       );
       updateFolderStructureUI(highLevelFolderPageData.primary); //temp
@@ -497,7 +497,7 @@ const traverseToTab = (targetPageID) => {
     if (targetPageID === "guided-primary-subjects-organization-tab") {
       renderSubjectsHighLevelFolderAsideItems("primary");
       guidedUpdateFolderStructure("primary", "subjects");
-      $("#structure-subjects-folder").appendTo(
+      $("#guided-file-explorer-elements").appendTo(
         $("#guided-primary-subjects-file-explorer-container")
       );
       updateFolderStructureUI(highLevelFolderPageData.primary); //temp
@@ -511,7 +511,7 @@ const traverseToTab = (targetPageID) => {
     if (targetPageID === "guided-source-samples-organization-tab") {
       renderSamplesHighLevelFolderAsideItems("source");
       guidedUpdateFolderStructure("source", "samples");
-      $("#structure-subjects-folder").appendTo(
+      $("#guided-file-explorer-elements").appendTo(
         $("#guided-source-samples-file-explorer-container")
       );
       updateFolderStructureUI(highLevelFolderPageData.source);
@@ -525,7 +525,7 @@ const traverseToTab = (targetPageID) => {
     if (targetPageID === "guided-source-subjects-organization-tab") {
       renderSubjectsHighLevelFolderAsideItems("source");
       guidedUpdateFolderStructure("source", "subjects");
-      $("#structure-subjects-folder").appendTo(
+      $("#guided-file-explorer-elements").appendTo(
         $("#guided-source-subjects-file-explorer-container")
       );
       updateFolderStructureUI(highLevelFolderPageData.source);
@@ -533,7 +533,7 @@ const traverseToTab = (targetPageID) => {
     if (targetPageID === "guided-derivative-samples-organization-tab") {
       renderSamplesHighLevelFolderAsideItems("derivative");
       guidedUpdateFolderStructure("derivative", "samples");
-      $("#structure-subjects-folder").appendTo(
+      $("#guided-file-explorer-elements").appendTo(
         $("#guided-derivative-samples-file-explorer-container")
       );
       updateFolderStructureUI(highLevelFolderPageData.derivative);
@@ -541,7 +541,7 @@ const traverseToTab = (targetPageID) => {
     if (targetPageID === "guided-derivative-subjects-organization-tab") {
       renderSubjectsHighLevelFolderAsideItems("derivative");
       guidedUpdateFolderStructure("derivative", "subjects");
-      $("#structure-subjects-folder").appendTo(
+      $("#guided-file-explorer-elements").appendTo(
         $("#guided-derivative-subjects-file-explorer-container")
       );
       updateFolderStructureUI(highLevelFolderPageData.derivative);
@@ -3659,7 +3659,9 @@ $("#guided-button-has-source-data").on("click", () => {
       type: "",
       action: [],
     };
-  $("#structure-subjects-folder").appendTo($("#guided-user-has-source-data"));
+  $("#guided-file-explorer-elements").appendTo(
+    $("#guided-user-has-source-data")
+  );
   updateFolderStructureUI(highLevelFolderPageData.source);
 });
 
@@ -3710,7 +3712,7 @@ $("#guided-button-has-derivative-data").on("click", () => {
       type: "",
       action: [],
     };
-  $("#structure-subjects-folder").appendTo(
+  $("#guided-file-explorer-elements").appendTo(
     $("#guided-user-has-derivative-data")
   );
   updateFolderStructureUI(highLevelFolderPageData.derivative);
@@ -3763,7 +3765,7 @@ $("#guided-button-has-code-data").on("click", () => {
       type: "",
       action: [],
     };
-  $("#structure-subjects-folder").appendTo($("#guided-user-has-code-data"));
+  $("#guided-file-explorer-elements").appendTo($("#guided-user-has-code-data"));
   updateFolderStructureUI(highLevelFolderPageData.code);
 });
 $("#guided-button-no-code-data").on("click", () => {
@@ -3813,7 +3815,7 @@ $("#guided-button-has-docs-data").on("click", () => {
       type: "",
       action: [],
     };
-  $("#structure-subjects-folder").appendTo($("#guided-user-has-docs-data"));
+  $("#guided-file-explorer-elements").appendTo($("#guided-user-has-docs-data"));
   updateFolderStructureUI(highLevelFolderPageData.docs);
 });
 $("#guided-button-no-docs-data").on("click", () => {
@@ -7067,8 +7069,13 @@ $(document).ready(() => {
       }
       if (pageBeingLeftID === "guided-derivative-folder-tab") {
         if (
-          !$("#guided-button-has-derivative-data").hasClass("selected") &&
-          !$("#guided-button-no-derivative-data").hasClass("selected")
+          //check if divs with the buttons with IDs guided-button-has-derivative-data and guided-button-no-derivative-data have the class selected
+          !document
+            .getElementById("guided-button-has-derivative-data")
+            .classList.contains("selected") &&
+          !document
+            .getElementById("guided-button-no-derivative-data")
+            .classList.contains("selected")
         ) {
           errorArray.push({
             type: "notyf",
@@ -7079,8 +7086,12 @@ $(document).ready(() => {
       }
       if (pageBeingLeftID === "guided-code-folder-tab") {
         if (
-          !$("#guided-button-has-code-data").hasClass("selected") &&
-          !$("#guided-button-no-code-data").hasClass("selected")
+          !document
+            .getElementById("guided-button-has-code-data")
+            .classList.contains("selected") &&
+          !document
+            .getElementById("guided-button-no-code-data")
+            .classList.contains("selected")
         ) {
           errorArray.push({
             type: "notyf",
@@ -7091,8 +7102,12 @@ $(document).ready(() => {
       }
       if (pageBeingLeftID === "guided-docs-folder-tab") {
         if (
-          !$("#guided-button-has-docs-data").hasClass("selected") &&
-          !$("#guided-button-no-docs-data").hasClass("selected")
+          !document
+            .getElementById("guided-button-has-docs-data")
+            .classList.contains("selected") &&
+          !document
+            .getElementById("guided-button-no-docs-data")
+            .classList.contains("selected")
         ) {
           errorArray.push({
             type: "notyf",
