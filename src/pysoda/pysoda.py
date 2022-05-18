@@ -43,7 +43,6 @@ from pennsieve.api.agent import (
     agent_cmd,
     validate_agent_installation,
     agent_env,
-    agent_cmd,
 )
 import semver
 from pennsieve.api.agent import AgentError, check_port, socket_address
@@ -463,39 +462,6 @@ def bf_get_accounts():
                 return account
     return ""
 
-    # first_consortium_found = False
-    # consortium_keyname = "agent"
-
-    # config = ConfigParser()
-    # config.read(configpath)
-    # config_sections = config.sections()
-
-    # for section in config_sections:
-    #     print(section)
-    #     if (section != 'agent' and section != 'global'):
-    #         try:
-    #             bf = Pennsieve(section)
-    #             acc_details = bf.context.name
-
-    #             if acc_details.find('SPARC Consortium') != -1:
-    #                 first_consortium_found = True
-    #                 consortium_keyname = section
-
-    #                 if not config.has_section("global"):
-    #                     config.add_section("global")
-
-    #                 default_acc = config["global"]
-    #                 default_acc["default_profile"] = consortium_keyname
-
-    #                 with open(configpath, 'w+') as configfile:
-    #                     config.write(configfile)
-    #         except Exception as e:
-    #             pass
-    #     if first_consortium_found == True:
-    #         break
-
-    # bf_keep_only_account(consortium_keyname)
-
 
 def bf_account_list():
     """
@@ -806,10 +772,14 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
 
 
 def clear_queue():
-
-    command = [agent_cmd(), "upload-status", "--cancel-all"]
+    command = [
+        agent_cmd(),
+        "upload-status",
+        "--cancel-all",
+    ]
 
     proc = subprocess.run(command, check=True)  # env=agent_env(?settings?)
+
     return proc
 
 
@@ -969,7 +939,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         submitdatastatus = "Done"
         error = (
             error
-            + "<br>Please remove invalid files/folders from your dataset before uploading. If you have hidden files present please remove them before upload. You can find more details <a href='https://github.com/bvhpatel/SODA/wiki/Issues-regarding-hidden-files-or-folders' target='_blank'>here </a> on how to fix this issue."
+            + "<br>Please remove invalid files/folders from your dataset before uploading. If you have hidden files present please remove them before upload. You can find more details <a href='https://docs.sodaforsparc.io/docs/common-errors/issues-regarding-hidden-files-or-folders' target='_blank'>here </a> on how to fix this issue."
         )
         did_fail = True
         did_upload = False
@@ -1111,8 +1081,13 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                             file_path = join(dirpath, file)
                             files_with_destination.append(file_path)
 
-                        # clear the pennsieve queue for successive batches
-                        clear_queue()
+                        # get the current OS
+                        current_os = platform.system()
+
+                        # Mac builds not able to spawn subprocess from Python at the moment
+                        if not current_os == "Darwin":
+                            # clear the pennsieve queue
+                            clear_queue()
 
                         # upload the current bucket
                         current_folder.upload(*files_with_destination)
@@ -1142,7 +1117,13 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                             file_path = join(dirpath, file)
                             files_with_destination.append(file_path)
 
-                        clear_queue()
+                        # get the current OS
+                        current_os = platform.system()
+
+                        # Mac builds not able to spawn subprocess from Python at the moment
+                        if not current_os == "Darwin":
+                            # clear the pennsieve queue
+                            clear_queue()
 
                         # upload the files
                         current_folder.upload(*files_with_destination)
