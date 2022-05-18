@@ -7684,7 +7684,6 @@ $(document).ready(() => {
           $(".swal2-confirm").attr("id", "add-new-folder-button");
           $("#add-new-folder-input").keyup(function () {
             var val = $("#add-new-folder-input").val();
-            console.log(val);
             for (var char of nonAllowedCharacters) {
               if (val.includes(char)) {
                 Swal.showValidationMessage(
@@ -7731,13 +7730,13 @@ $(document).ready(() => {
                 determineDatasetLocation()
               );
             } else {
-              var appendString = "";
-              appendString =
-                appendString +
-                '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">' +
-                newFolderName +
-                "</div></div>";
-              $(appendString).appendTo("#items");
+              // var appendString = "";
+              // appendString =
+              //   appendString +
+              //   '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">' +
+              //   newFolderName +
+              //   "</div></div>";
+              // $(appendString).appendTo("#items");
 
               /// update datasetStructureJSONObj
               var currentPath = organizeDSglobalPath.value;
@@ -7756,7 +7755,7 @@ $(document).ready(() => {
                 action: ["new"],
               };
 
-              listItems(myPath, "#items");
+              listItems(myPath, "#items", 500, (reset = true));
               getInFolder(
                 ".single-item",
                 "#items",
