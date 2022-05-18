@@ -1,16 +1,18 @@
 from __future__ import print_function
 # import config
 import json
-import logging
-import logging.handlers
-from os import getenv 
-
 from flask import Flask, request
 # from flask_cors import CORS
-from apis import api 
+from utils import (configureLogger, configureRouteHandlers, configureAPI)
 
 
 app = Flask(__name__)
+
+configureLogger(app)
+
+api = configureAPI(app)
+
+configureRouteHandlers(api)
 
 api.init_app(app)
 
