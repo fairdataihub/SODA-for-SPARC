@@ -2265,7 +2265,8 @@ const validateInput = (inputElementToValidate) => {
   console.log(inputID);
   if (
     inputID === "guided-dataset-name-input" ||
-    inputID === "bf-new-dataset-name" || inputID === "bf-rename-dataset-name"
+    inputID === "bf-new-dataset-name" ||
+    inputID === "bf-rename-dataset-name"
   ) {
     let name = inputElementToValidate.val().trim();
     if (name !== "") {
