@@ -1149,6 +1149,26 @@
             ></div>
           </div>
           <div
+            id="guided-folder-structure-preview-tab"
+            class="guided--panel hidden"
+          >
+            <div class="guided--section">
+              <h1 class="guided--text-sub-step">Folder structuire review</h1>
+              <p class="guided--help-text w-100 text-left">
+                Review the dataset structure that was created throught the data
+                file specification process. Please note that all empty folders
+                will be deleted before downloading the dataset or uploading it
+                to Pennsieve.
+              </p>
+            </div>
+            <div class="guided--section">
+              <div
+                id="guided-folder-structure-review"
+                style="display: block; margin-left: 0px; margin-right: 0px"
+              ></div>
+            </div>
+          </div>
+          <div
             id="guided-structure-folder-tab"
             class="guided--panel hidden"
             data-skip-page="true"
@@ -1187,6 +1207,7 @@
                       font-weight: 600;
                       cursor: default;
                       color: #898989;
+                      display: none;
                     "
                     id="guided-input-global-path"
                     value="My_dataset_folder/"

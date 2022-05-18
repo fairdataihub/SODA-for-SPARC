@@ -358,6 +358,127 @@ const guidedPrepareHomeScreen = async () => {
   });
 };
 
+function guidedShowTreePreview(new_dataset_name, targetElement) {
+  var guidedJsTreePreviewData = create_child_node(
+    datasetStructureJSONObj,
+    new_dataset_name,
+    "folder",
+    "",
+    true,
+    false,
+    false,
+    "",
+    "preview"
+  );
+  $(targetElement).jstree(true).settings.core.data = guidedJsTreePreviewData;
+  $(targetElement).jstree(true).refresh();
+  //Open Jstree element with passed in folder node name
+  const openFolder = (folderName) => {
+    var tree = $("#jstree").jstree(true);
+    var node = tree.get_node(folderName);
+    tree.open_node(node);
+  };
+}
+
+const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
+  //add high level folder if it does not exist
+  if (!datasetStructureJSONObj["folders"][highLevelFolder]) {
+    datasetStructureJSONObj["folders"][highLevelFolder] = {
+      folders: {},
+      files: {},
+      type: "",
+      action: [],
+    };
+  }
+  //Add pools to the datsetStructuresJSONObj if they don't exist
+  const pools = sodaJSONObj.getPools();
+  for (const pool of pools) {
+    if (!datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool]) {
+      datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool] = {
+        folders: {},
+        files: {},
+        type: "",
+        action: [],
+      };
+    }
+  }
+
+  //Add subjects to datsetStructuresJSONObj if they don't exist
+  const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+  for (subject of subjectsInPools) {
+    if (
+      !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+        subject.poolName
+      ]["folders"][subject.subjectName]
+    ) {
+      datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+        subject.poolName
+      ]["folders"][subject.subjectName] = {
+        folders: {},
+        files: {},
+        type: "",
+        action: [],
+      };
+    }
+  }
+  for (subject of subjectsOutsidePools) {
+    if (
+      !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+        subject.subjectName
+      ]
+    ) {
+      datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+        subject.subjectName
+      ] = {
+        folders: {},
+        files: {},
+        type: "",
+        action: [],
+      };
+    }
+  }
+
+  //Add samples to datsetStructuresJSONObj if they don't exist
+  const [samplesInPools, samplesOutsidePools] =
+    sodaJSONObj.getAllSamplesFromSubjects();
+  for (sample of samplesInPools) {
+    if (
+      !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+        sample.poolName
+      ]["folders"][sample.subjectName]["folders"][sample.sampleName]
+    ) {
+      datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+        sample.poolName
+      ]["folders"][sample.subjectName]["folders"][sample.sampleName] = {
+        folders: {},
+        files: {},
+        type: "",
+        action: [],
+      };
+    }
+  }
+  for (sample of samplesOutsidePools) {
+    if (
+      !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+        sample.subjectName
+      ]["folders"][sample.sampleName]
+    ) {
+      datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+        sample.subjectName
+      ]["folders"][sample.sampleName] = {
+        folders: {},
+        files: {},
+        type: "",
+        action: [],
+      };
+    }
+  }
+
+  //update folder structure
+  if (subjectsOrSamples === "samples") {
+  }
+};
+
 const traverseToTab = (targetPageID) => {
   try {
     //refresh selectPickers if page has them
@@ -374,111 +495,87 @@ const traverseToTab = (targetPageID) => {
         $("#number-of-subjects-prompt").css("display", "flex");
       }
     }
-    const guidedUpdateFolderStructure = (
-      highLevelFolder,
-      subjectsOrSamples
-    ) => {
-      //add high level folder if it does not exist
-      if (!datasetStructureJSONObj["folders"][highLevelFolder]) {
-        datasetStructureJSONObj["folders"][highLevelFolder] = {
-          folders: {},
-          files: {},
-          type: "",
-          action: [],
-        };
-      }
-      //Add pools to the datsetStructuresJSONObj if they don't exist
-      const pools = sodaJSONObj.getPools();
-      for (const pool of pools) {
-        if (
-          !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool]
-        ) {
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool] =
-            {
-              folders: {},
-              files: {},
-              type: "",
-              action: [],
-            };
-        }
-      }
 
-      //Add subjects to datsetStructuresJSONObj if they don't exist
-      const [subjectsInPools, subjectsOutsidePools] =
-        sodaJSONObj.getAllSubjects();
-      for (subject of subjectsInPools) {
-        if (
-          !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-            subject.poolName
-          ]["folders"][subject.subjectName]
-        ) {
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-            subject.poolName
-          ]["folders"][subject.subjectName] = {
-            folders: {},
-            files: {},
-            type: "",
-            action: [],
-          };
-        }
-      }
-      for (subject of subjectsOutsidePools) {
-        if (
-          !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-            subject.subjectName
-          ]
-        ) {
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-            subject.subjectName
-          ] = {
-            folders: {},
-            files: {},
-            type: "",
-            action: [],
-          };
-        }
-      }
-
-      //Add samples to datsetStructuresJSONObj if they don't exist
-      const [samplesInPools, samplesOutsidePools] =
-        sodaJSONObj.getAllSamplesFromSubjects();
-      for (sample of samplesInPools) {
-        if (
-          !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-            sample.poolName
-          ]["folders"][sample.subjectName]["folders"][sample.sampleName]
-        ) {
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-            sample.poolName
-          ]["folders"][sample.subjectName]["folders"][sample.sampleName] = {
-            folders: {},
-            files: {},
-            type: "",
-            action: [],
-          };
-        }
-      }
-      for (sample of samplesOutsidePools) {
-        if (
-          !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-            sample.subjectName
-          ]["folders"][sample.sampleName]
-        ) {
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-            sample.subjectName
-          ]["folders"][sample.sampleName] = {
-            folders: {},
-            files: {},
-            type: "",
-            action: [],
-          };
-        }
-      }
-
-      //update folder structure
-      if (subjectsOrSamples === "samples") {
-      }
-    };
+    if (targetPageID === "guided-folder-structure-preview-tab") {
+      var folderStructurePreview = document.getElementById(
+        "guided-folder-structure-review"
+      );
+      $(folderStructurePreview).jstree({
+        core: {
+          check_callback: true,
+          data: {},
+        },
+        plugins: ["types"],
+        types: {
+          folder: {
+            icon: "fas fa-folder fa-fw",
+          },
+          "folder open": {
+            icon: "fas fa-folder-open fa-fw",
+          },
+          "folder closed": {
+            icon: "fas fa-folder fa-fw",
+          },
+          "file xlsx": {
+            icon: "./assets/img/excel-file.png",
+          },
+          "file xls": {
+            icon: "./assets/img/excel-file.png",
+          },
+          "file png": {
+            icon: "./assets/img/png-file.png",
+          },
+          "file PNG": {
+            icon: "./assets/img/png-file.png",
+          },
+          "file pdf": {
+            icon: "./assets/img/pdf-file.png",
+          },
+          "file txt": {
+            icon: "./assets/img/txt-file.png",
+          },
+          "file csv": {
+            icon: "./assets/img/csv-file.png",
+          },
+          "file CSV": {
+            icon: "./assets/img/csv-file.png",
+          },
+          "file DOC": {
+            icon: "./assets/img/doc-file.png",
+          },
+          "file DOCX": {
+            icon: "./assets/img/doc-file.png",
+          },
+          "file docx": {
+            icon: "./assets/img/doc-file.png",
+          },
+          "file doc": {
+            icon: "./assets/img/doc-file.png",
+          },
+          "file jpeg": {
+            icon: "./assets/img/jpeg-file.png",
+          },
+          "file JPEG": {
+            icon: "./assets/img/jpeg-file.png",
+          },
+          "file other": {
+            icon: "./assets/img/other-file.png",
+          },
+        },
+      });
+      $(folderStructurePreview).on("open_node.jstree", function (event, data) {
+        data.instance.set_type(data.node, "folder open");
+      });
+      $(folderStructurePreview).on("close_node.jstree", function (event, data) {
+        console.log(event);
+        console.log(data);
+        data.instance.set_type(data.node, "folder closed");
+      });
+      guidedShowTreePreview(
+        sodaJSONObj["digital-metadata"]["name"],
+        folderStructurePreview
+      );
+    }
 
     if (targetPageID === "guided-primary-samples-organization-tab") {
       renderSamplesHighLevelFolderAsideItems("primary");
@@ -1572,7 +1669,6 @@ const updateFolderStructureUI = (pageDataObj) => {
 
   /// empty the div
   $("#items").empty();
-  $("#items").html(appendString);
 
   // reconstruct div with new elements
   listItems(myPath, "#items");
@@ -1582,6 +1678,7 @@ const updateFolderStructureUI = (pageDataObj) => {
     organizeDSglobalPath,
     datasetStructureJSONObj
   );
+  console.log("loading done");
 };
 //Description metadata functions
 const generateadditionalLinkRowElement = (link, linkType, linkRelation) => {
@@ -4476,30 +4573,6 @@ $(document).ready(() => {
     data.instance.set_type(data.node, "folder closed");
   });
 
-  function guidedShowTreePreview(new_dataset_name, targetElement) {
-    datasetStructureJSONObj["files"] = sodaJSONObj["metadata-files"];
-
-    var guidedJsTreePreviewData = create_child_node(
-      datasetStructureJSONObj,
-      new_dataset_name,
-      "folder",
-      "",
-      true,
-      false,
-      false,
-      "",
-      "preview"
-    );
-    console.log(guidedJsTreePreviewData);
-    $(targetElement).jstree(true).settings.core.data = guidedJsTreePreviewData;
-    $(targetElement).jstree(true).refresh();
-    //Open Jstree element with passed in folder node name
-    const openFolder = (folderName) => {
-      var tree = $("#jstree").jstree(true);
-      var node = tree.get_node(folderName);
-      tree.open_node(node);
-    };
-  }
   /////////////////////////////////////////////////////////
   /////////  PENNSIEVE METADATA BUTTON HANDLERS   /////////
   /////////////////////////////////////////////////////////
@@ -4802,7 +4875,7 @@ $(document).ready(() => {
     Swal.fire({
       title: "Dataset folder structure preview",
       width: 800,
-      html: `<div id="guided-folder-structure-preview" style="display: flex; justify-content: flex-start;"></div>`,
+      html: `<div id="guided-folder-structure-preview" style="display: block; width: 100%;"></div>`,
     });
     var folderStructurePreview = document.getElementById(
       "guided-folder-structure-preview"
@@ -4872,11 +4945,9 @@ $(document).ready(() => {
       },
     });
     $(folderStructurePreview).on("open_node.jstree", function (event, data) {
-      console.log("open folder");
       data.instance.set_type(data.node, "folder open");
     });
     $(folderStructurePreview).on("close_node.jstree", function (event, data) {
-      console.log("close folder");
       console.log(event);
       console.log(data);
       data.instance.set_type(data.node, "folder closed");
@@ -7161,7 +7232,7 @@ $(document).ready(() => {
             type: "notyf",
             message: "Please indicate if your dataset contains code data",
           });
-          throw errorArray;
+          //throw errorArray;
         }
       }
       if (pageBeingLeftID === "guided-docs-folder-tab") {
@@ -7177,7 +7248,7 @@ $(document).ready(() => {
             type: "notyf",
             message: "Please indicate if your dataset contains docs data",
           });
-          throw errorArray;
+          //throw errorArray;
         }
       }
       if (pageBeingLeftID === "guided-folder-importation-tab") {
