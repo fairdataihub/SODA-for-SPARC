@@ -3361,7 +3361,6 @@ const generateSampleRowElement = (sampleIndex) => {
           name="guided-sample-id"
           placeholder="Enter sample ID and press enter"
           onkeyup="createSampleFolder(event, $(this))"
-          data-input-set="guided-samples-folder-tab"
           data-alert-message="Sample IDs may not contain spaces or special characters"
           data-alert-type="danger"
         />
@@ -6958,7 +6957,6 @@ $(document).ready(() => {
       }
       if (pageBeingLeftID === "guided-subjects-folder-tab") {
         const skipSubSamFolderAndMetadataPages = () => {
-          $("#guided-samples-folder-tab").attr("data-skip-page", "true");
           $("#guided-create-subjects-metadata-tab").attr(
             "data-skip-page",
             "true"
@@ -6969,7 +6967,6 @@ $(document).ready(() => {
           );
         };
         const unSkipSubSamFolderAndMetadataPages = () => {
-          $("#guided-samples-folder-tab").attr("data-skip-page", "false");
           $("#guided-create-subjects-metadata-tab").attr(
             "data-skip-page",
             "false"
