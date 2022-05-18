@@ -5472,7 +5472,7 @@ function dropHelper(
       "#items",
       organizeDSglobalPath,
       datasetStructureJSONObj
-    );
+    );    
     if (Object.keys(importedFolders).length > 1) {
       importToast.open({
         type: "success",
@@ -5487,6 +5487,7 @@ function dropHelper(
     hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
     hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   }
+  beginScrollListen();
   $("body").removeClass("waiting");
 }
 
@@ -6279,7 +6280,7 @@ async function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
       var myPath = getRecursivePath(filtered, globalObj);
       if (myPath.length === 2) {
         filtered = myPath[1];
-        document.getElementById("input-global-path").value =
+        currentLocation.value =
           "My_dataset_folder/" + filtered.join("/") + "/";
       }
       $("#items").empty();
@@ -6287,6 +6288,12 @@ async function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
       let items = loadFileFolder(myPath);
       //we have some items to display
       listItems(myPath, "#items", 500, (reset = true));
+      getInFolder(
+        ".single-item",
+        "#items",
+        organizeDSglobalPath,
+        datasetStructureJSONObj
+      );
       organizeLandingUIEffect();
       // reconstruct folders and files (child elements after emptying the Div)
       // getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
