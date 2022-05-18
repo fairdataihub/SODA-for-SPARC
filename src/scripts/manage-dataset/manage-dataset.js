@@ -76,7 +76,6 @@ $("#bf-new-dataset-name").on("keyup", () => {
   var input_field = document.getElementById("bf-new-dataset-name");
   if (newName !== "") {
     if (validateInput($(this)) === true) {
-      console.log("should be wrong");
       $("#button-create-bf-new-dataset").hide();
     } else {
       $("#button-create-bf-new-dataset").show();
@@ -90,7 +89,7 @@ $("#bf-rename-dataset-name").on("keyup", () => {
   let newName = $("#bf-rename-dataset-name").val().trim();
 
   if (newName !== "") {
-    if (validateInput(newName) != true) {
+    if (validateInput($(this)) != true) {
       //change input color to red
 
       $("#button-rename-dataset").hide();

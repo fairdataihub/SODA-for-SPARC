@@ -2260,11 +2260,12 @@ const removeAlertMessageIfExists = (elementToCheck) => {
 };
 const validateInput = (inputElementToValidate) => {
   let inputIsValid = false;
-
+  console.log(inputElementToValidate);
   const inputID = inputElementToValidate.attr("id");
+  console.log(inputID);
   if (
     inputID === "guided-dataset-name-input" ||
-    inputID === "bf-new-dataset-name"
+    inputID === "bf-new-dataset-name" || inputID === "bf-rename-dataset-name"
   ) {
     let name = inputElementToValidate.val().trim();
     if (name !== "") {

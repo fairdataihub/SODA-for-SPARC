@@ -534,17 +534,31 @@
                 style="
                   display: flex;
                   justify-content: center;
-                  width: 100%;
+                  width: 70%;
+                  align-self: center;
                   margin-bottom: 20px;
                 "
               >
                 <input
                   type="text"
                   class="form-control"
-                  style="background: #fff !important; width: 450px"
+                  style="background: #fff !important; width: 100%; margin-bottom: .5rem;"
                   id="bf-rename-dataset-name"
                   placeholder="Type here"
+                  data-alert-message='A Pennsieve dataset name cannot contain any of the following characters: " / : * ? < > \'
+                  data-alert-type="danger"
+                  onkeyup="validateInput($(this))"
                 />
+                <div style="
+                    border-radius: 0.5rem;
+                    margin-top: 7px;
+                  ">
+                  <p style="color: dimgray">
+                    Please ensure when renaming your dataset title it
+                    is different than your other dataset titles and is
+                    relatively informative.
+                  </p>
+                </div>
               </div>
               <div
                 style="
@@ -677,6 +691,19 @@
               <label style="font-size: 17px; color: var(--color-bg-plum)"
                 >Which Pennsieve dataset would you like to work on?
               </label>
+              <div
+              style="
+                border-radius: 0.5rem;
+                margin-top: 7px;
+                width: 550px;
+                margin-bottom: 7px;
+                align-self: center;
+              "
+            >
+              <p style="color: dimgray">
+                SPARC curation rules require to set the PI of the SPARC award as 'owner' of the dataset before it is shared with the Curation Team for review. This ensures that the PI is the only person who can publish the dataset.
+              </p>
+            </div>
               <div class="field" style="margin: auto; width: 550px">
                 <div
                   style="
@@ -885,23 +912,26 @@
                   font-size: 17px;
                   color: var(--color-bg-plum);
                   text-align: center;
-                  margin-bottom: 20px;
+                  margin-bottom: .5rem;
                 "
                 >Change dataset ownership:
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="SPARC curation rules require to set the PI of the SPARC award as 'owner' of the dataset before it is shared with the Curation Team for review. This is to ensures that the PI is the only person who can publish the dataset."
-                  rel="popover"
-                  data-html="true"
-                  data-placement="right"
-                  data-trigger="hover"
-                ></i>
               </label>
+              <div
+              style="
+                border-radius: 0.5rem;
+                margin-top: 5px;
+                width: 30rem;
+              "
+            >
+              <p style="color: dimgray">
+                The PI of your SPARC award must have a Pennsieve account and have access to the SPARC Consortium organization on Pennsieve (see the Prerequisite section <a href='https://docs.sodaforsparc.io/docs/next/manage-dataset/connect-your-pennsieve-account-with-soda' target='_blank'>here</a> for details).
+              </p>
+            </div>
               <div
                 class="field"
                 style="
                   display: flex;
-                  width: 500px;
+                  width: 100%;
                   justify-content: center;
                   align-items: center;
                   flex-direction: column;
@@ -925,6 +955,7 @@
                       height: 38px;
                       border-radius: 5px;
                       border: 1px solid black;
+                      width: 100%;
                     "
                     id="bf_list_users_pi"
                   >
@@ -939,7 +970,7 @@
                   <button
                     id="button-add-permission-pi"
                     class="btn_animated"
-                    style="width: 140px; border: none !important"
+                    style="width: 140px; border: none !important; margin-top: 1rem;"
                   >
                     Make PI owner
                   </button>
@@ -1260,19 +1291,21 @@
           id="add_edit_permissions_choice_div"
           style="height: auto"
         >
-          <div class="ui form" style="width: 100%">
+          <div class="ui form" style="width: 82% !important; align-self: center;">
             <div class="grouped fields">
               <label style="font-size: 17px; color: var(--color-bg-plum)"
                 >Do you want to provide permissions to another user or teams?
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="Giving permissions to other members and/or team is only necessary if you need them to contribute to the dataset."
-                  rel="popover"
-                  data-html="true"
-                  data-placement="right"
-                  data-trigger="hover"
-                ></i>
               </label>
+              <div
+              style="
+                border-radius: 0.5rem;
+                margin-top: 5px;
+              "
+            >
+              <p style="color: dimgray">
+                Giving permissions to other members and/or team is only necessary if you need them to contribute to the dataset.
+              </p>
+            </div>
               <div
                 style="
                   display: flex;
@@ -1376,18 +1409,20 @@
                   text-align: center;
                 "
                 >Please select the user for whom you want to modify permissions:
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="See our associated <a href='https://docs.sodaforsparc.io/docs/manage-dataset/add-edit-permissions' target='_blank'> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide."
-                  rel="popover"
-                  data-html="true"
-                  data-placement="right"
-                  data-trigger="hover"
-                ></i>
               </label>
               <div
+              style="
+                border-radius: 0.5rem;
+                margin-top: 5px;
+              "
+            >
+              <p style="color: dimgray">
+                See our associated <a href='https://docs.sodaforsparc.io/docs/manage-dataset/add-edit-permissions' target='_blank'> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide.
+              </p>
+            </div>
+              <div
                 class="field"
-                style="display: flex; width: 500px; flex-direction: column"
+                style="display: flex; width: 500px; flex-direction: column; align-self: center;"
               >
                 <div
                   style="
@@ -1483,18 +1518,20 @@
                   text-align: center;
                 "
                 >Please select the team for whom you want to modify permissions:
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="See our associated <a href='https://docs.sodaforsparc.io/docs/manage-dataset/add-edit-permissions' target='_blank'> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide."
-                  rel="popover"
-                  data-html="true"
-                  data-placement="right"
-                  data-trigger="hover"
-                ></i>
               </label>
               <div
+              style="
+                border-radius: 0.5rem;
+                margin-top: 5px;
+              "
+            >
+              <p style="color: dimgray">
+                See our associated <a href='https://docs.sodaforsparc.io/docs/manage-dataset/add-edit-permissions' target='_blank'> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide.
+              </p>
+            </div>
+              <div
                 class="field"
-                style="display: flex; width: 550px; flex-direction: column"
+                style="display: flex; width: 550px; flex-direction: column; align-self: center;"
               >
                 <div
                   style="
@@ -1659,9 +1696,21 @@
         >
           <div class="ui form" style="width: 100%; margin-bottom: 35px">
             <div class="grouped fields">
-              <label style="font-size: 17px; color: var(--color-bg-plum)"
+              <label style="font-size: 17px; color: var(--color-bg-plum); margin-bottom: 0;"
                 >Which Pennsieve dataset would you like to work on?
               </label>
+              <div
+              style="
+                border-radius: 0.5rem;
+                margin-top: 7px;
+                width: 500px;
+                align-self: center;
+              "
+            >
+              <p style="color: dimgray">
+                Add two or three sentences (limit of 256 characters) that describe the content of your dataset such that it is possible to differentiate it from other datasets. Any existing subtitle will be displayed. This field will become the short description visible immediately under the title of your dataset once it is published.
+              </p>
+            </div>
               <div class="field" style="margin: auto; width: 500px">
                 <div
                   style="
@@ -1834,18 +1883,7 @@
                     text-align: center;
                   "
                   >Enter subtitle below:
-                  <i
-                    class="fas fa-info-circle popover-tooltip"
-                    data-content="Add two or three sentences (limit of 256 characters) that describe the content of your dataset such that it is possible to differentiate it from other datasets. This field will become the short description visible immediately under the title of your dataset once it is published."
-                    rel="popover"
-                    data-html="true"
-                    data-placement="right"
-                    data-trigger="hover"
-                  ></i>
                   <br />
-                  <span style="color: #696969; font-size: 13px"
-                    >Any existing subtitle will be displayed
-                  </span>
                 </label>
                 <div
                   class="field"
@@ -1997,6 +2035,16 @@
               <label style="font-size: 17px; color: var(--color-bg-plum)"
                 >Which Pennsieve dataset would you like to work on?
               </label>
+              <div style="
+              border-radius: 0.5rem;
+              margin-top: 7px;
+              width: 500px;
+              align-self: center;
+            ">
+            <p style="color: dimgray">
+              Add, edit, or remove metadata tags that describe key elements of your research. This will make your datasets more easily searchable once published. Click the x to delete a tag. Double click an existing tag to edit its contents.
+            </p>
+          </div>
               <div class="field" style="margin: auto; width: 500px">
                 <div
                   style="
@@ -2170,14 +2218,6 @@
                   text-align: center;
                 "
                 >Enter tags below:
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="Add, edit, or remive metadata tags that describe key elements of your research. This will make your datasets more easily searchable once published. Click the x to delete a tag. Double click an existing tag to edit its contents."
-                  rel="popover"
-                  data-html="true"
-                  data-placement="right"
-                  data-trigger="hover"
-                ></i>
                 <br />
                 <span style="color: #696969; font-size: 13px"
                   >Any existing tags will be displayed
@@ -2318,6 +2358,17 @@
               <label style="font-size: 17px; color: var(--color-bg-plum)"
                 >Which Pennsieve dataset would you like to work on?</label
               >
+              <div style="
+                  border-radius: 0.5rem;
+                  margin-top: 7px;
+                  width: 500px;
+                  align-self: center;
+                  /* margin-bottom: 1rem; */
+                ">
+                <p style="color: dimgray">
+                  Provide a detailed description of your dataset. This description will be highly visible on the SPARC data portal once your dataset is published. Refrain from markdown.
+                </p>
+              </div>
               <div class="field" style="margin: auto; width: 500px">
                 <div
                   style="
@@ -2488,21 +2539,10 @@
                 style="
                   font-size: 17px;
                   color: var(--color-bg-plum);
-                  margin-bottom: 20px;
                   text-align: center;
+                  margin-bottom: 1.5rem;
                 "
                 >Enter your description in the sections below
-
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="Provide a detailed description of your dataset. This description will be highly visible on the SPARC data portal once your dataset is published."
-                  rel="popover"
-                  data-html="true"
-                  data-placement="right"
-                  data-trigger="hover"
-                  data-original-title=""
-                  title=""
-                ></i>
               </label>
 
               <div
@@ -2519,15 +2559,14 @@
                   <span style="font-style: italic; opacity: 0.8"
                     >(Mandatory)</span
                   >
-                  <i
-                    class="fas fa-info-circle popover-tooltip"
-                    data-content="Enter a paragraph that explains the purpose of your study below. Refrain from using markdown."
-                    rel="popover"
-                    data-placement="right"
-                    data-html="true"
-                    data-trigger="hover"
-                    style="margin-left: 5px; color: black"
-                  ></i>
+                  <div style="
+                  border-radius: 0.5rem;
+                  margin-top: 7px;
+                ">
+                <p style="color: dimgray">
+                  Explains the purpose of your study below.
+                </p>
+              </div>
                 </div>
                 <div class="content">
                   <div
@@ -2618,15 +2657,14 @@
                   <span style="font-style: italic; opacity: 0.8"
                     >(Mandatory)</span
                   >
-                  <i
-                    class="fas fa-info-circle popover-tooltip"
-                    data-content="Enter a paragraph that explains the method you used for data collection below. Refrain from using markdown."
-                    rel="popover"
-                    data-placement="right"
-                    data-html="true"
-                    data-trigger="hover"
-                    style="margin-left: 5px; color: black"
-                  ></i>
+                  <div style="
+                  border-radius: 0.5rem;
+                  margin-top: 7px;
+                ">
+                <p style="color: dimgray">
+                  Explains the method you used for data collection below.
+                </p>
+              </div>
                 </div>
                 <div class="content">
                   <div
@@ -2674,15 +2712,14 @@
                   <span style="font-style: italic; opacity: 0.8"
                     >(Mandatory)</span
                   >
-                  <i
-                    class="fas fa-info-circle popover-tooltip"
-                    data-content="Enter a paragraph that explains the primary conclusion of your study below. Refrain from using markdown."
-                    rel="popover"
-                    data-placement="right"
-                    data-html="true"
-                    data-trigger="hover"
-                    style="margin-left: 5px; color: black"
-                  ></i>
+                  <div style="
+                  border-radius: 0.5rem;
+                  margin-top: 7px;
+                ">
+                <p style="color: dimgray">
+                  Explains the primary conclusion of your study below.
+                </p>
+              </div>
                 </div>
                 <div class="content">
                   <div
@@ -2859,6 +2896,18 @@
               <label style="font-size: 17px; color: var(--color-bg-plum)"
                 >Which Pennsieve dataset would you like to work on?
               </label>
+              <div style="
+              border-radius: 0.5rem;
+              margin-top: 7px;
+              width: 500px;
+              align-self: center;
+            ">
+            <p style="color: dimgray">
+              This image will be associated with the dataset and used as a thumbnail once the dataset is published.
+          <br/>
+          This interface will help you make sure the uploaded image is square as per SPARC dataset requirements. Final image dimensions must be at least 512x512 px and over 1024x1024 px is highly recommended. The final image size must not exceed 5MB as per Pennsieve's restriction. Banner image must not display animals or graphic/bloody tissues
+            </p>
+          </div>
               <div class="field" style="margin: auto; width: 500px">
                 <div
                   style="
@@ -3036,16 +3085,6 @@
                   text-align: center;
                 "
                 >Current banner image of selected dataset:
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="This image will be associated with the dataset and used as a thumbnail once the dataset is published.
-              <br/>
-              This interface will help you make sure the uploaded image is square as per SPARC dataset requirements. Final image dimensions must be at least 512x512 px and over 1024x1024 px is highly recommended. The final image size must not exceed 5MB as per Pennsieve's restriction. Banner image must not display animals or graphic/bloody tissues"
-                  rel="popover"
-                  data-html="true"
-                  data-placement="right"
-                  data-trigger="hover"
-                ></i>
               </label>
               <div
                 class="field"
