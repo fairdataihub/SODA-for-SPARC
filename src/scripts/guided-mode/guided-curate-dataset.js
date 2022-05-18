@@ -528,13 +528,7 @@ const traverseToTab = (targetPageID) => {
       $("#structure-subjects-folder").appendTo(
         $("#guided-source-subjects-file-explorer-container")
       );
-      updateFolderStructureUI(highLevelFolderPageData.source); //temp
-      document
-        .getElementById("structure-folder-header")
-        .classList.add("hidden");
-      document
-        .getElementById("structure-folder-contents")
-        .classList.add("hidden");
+      updateFolderStructureUI(highLevelFolderPageData.source);
     }
     if (targetPageID === "guided-derivative-samples-organization-tab") {
       renderSamplesHighLevelFolderAsideItems("derivative");
@@ -543,12 +537,6 @@ const traverseToTab = (targetPageID) => {
         $("#guided-derivative-samples-file-explorer-container")
       );
       updateFolderStructureUI(highLevelFolderPageData.derivative);
-      document
-        .getElementById("structure-folder-header")
-        .classList.add("hidden");
-      document
-        .getElementById("structure-folder-contents")
-        .classList.add("hidden");
     }
     if (targetPageID === "guided-derivative-subjects-organization-tab") {
       renderSubjectsHighLevelFolderAsideItems("derivative");
@@ -556,13 +544,7 @@ const traverseToTab = (targetPageID) => {
       $("#structure-subjects-folder").appendTo(
         $("#guided-derivative-subjects-file-explorer-container")
       );
-      updateFolderStructureUI(highLevelFolderPageData.derivative); //temp
-      document
-        .getElementById("structure-folder-header")
-        .classList.add("hidden");
-      document
-        .getElementById("structure-folder-contents")
-        .classList.add("hidden");
+      updateFolderStructureUI(highLevelFolderPageData.derivative);
     }
 
     if (targetPageID === "guided-samples-folder-tab") {
@@ -1536,16 +1518,7 @@ const generateHighLevelFolderSubFolderPageData = (
   highLevelFolderName,
   pathSuffix
 ) => {
-  let contentsText = null;
-  if (highLevelFolderName === "primary") {
-    contentsText = `Your ${sampleOrSubject}'s primary folder should contain all folders
-      and files pertaining to its experimental data  (e.g., time-series data, tabular data,
-      clinical imaging data, genomic, metabolomic, or microscopy data).
-      `;
-  }
   const customPageData = {
-    sampleSubjectHeaderText: `Add ${highLevelFolderName} data to your ${sampleOrSubject} folder in the interface below.`,
-    sampleSubjectContentsText: contentsText,
     pathSuffix: `${highLevelFolderName}/${pathSuffix}`,
     backPageId: `guided-${sampleOrSubject}-folder-tab`,
   };
@@ -4077,7 +4050,7 @@ const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
 
       const samplePageData = generateHighLevelFolderSubFolderPageData(
         "subject",
-        "primary",
+        highLevelFolderName,
         pathSuffix
       );
       updateFolderStructureUI(samplePageData);
