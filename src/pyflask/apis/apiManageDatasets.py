@@ -33,6 +33,7 @@ from manageDatasets import (
     bf_submit_dataset_upload_details
 )
 
+# TODO: Cover all possible status codes for each route
 
 api = Namespace('manage_datasets', description='Routes for handling manage datsets functionality')
 
@@ -44,7 +45,7 @@ api = Namespace('manage_datasets', description='Routes for handling manage datse
 
 
 
-## the model for the pennsieve api key secret endpoint defines what is returned from the endpoint
+# the model for the pennsieve api key secret endpoint defines what is returned from the endpoint
 pennsieveAPIKeyAndSecret = api.model('PennsieveAPIKeyAndSecret', {
     "success": fields.String(required=True, description="Success or failure"), 
     "keys": fields.String(required=True, description="API key from the Pennsieve platform"),
@@ -60,7 +61,7 @@ parser.add_argument('password', type=str, required=True, help='Password of the u
 parser.add_argument('api_key', type=str, required=True, help='API key from the Pennsieve platform')
 
 
-# TODO: Make error responses dynamic; cover all possible status codes
+
 @api.route('/pennsieve_api_key_secret')
 class PennsieveAPIKeyAndSecret(Resource):
   # the response object
