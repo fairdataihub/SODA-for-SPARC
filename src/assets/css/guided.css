@@ -569,7 +569,7 @@ h1.guided--text-sub-step {
   margin-bottom: 8px !important;
   margin-top: 5px !important;
 }
-.guided--container-folder-explorer-subject-samples {
+.guided--container-subject-samples {
   display: flex;
   flex-direction: row;
   justify-content: space-between;

@@ -723,6 +723,8 @@ const traverseToTab = (targetPageID) => {
     if (targetPageID === "guided-create-subjects-metadata-tab") {
       //Create new subjectsArray variable and assign it to all properties in datasetStructureJSONObj.folders.primary.folders if defined
       try {
+        renderSubjectSampleMetadataAsideItems("subjects");
+
         const [subjectsInPools, subjectsOutsidePools] =
           sodaJSONObj.getAllSubjects();
         //Combine sample data from subjects in and out of pools
@@ -4222,6 +4224,67 @@ const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
   });
 };
 
+const renderSubjectSampleMetadataAsideItems = (stringSubjectsOrSamples) => {
+  const asideElement = document.getElementById(
+    `guided-${stringSubjectsOrSamples}-metadata-aside`
+  );
+  asideElement.innerHTML = "";
+
+  const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+  //Combine sample data from subjects in and out of pools
+  let subjects = [...subjectsInPools, ...subjectsOutsidePools];
+
+  //sort subjects object by subjectName property alphabetically
+  subjects = subjects.sort((a, b) => {
+    const subjectNameA = a.subjectName.toLowerCase();
+    const subjectNameB = b.subjectName.toLowerCase();
+    if (subjectNameA < subjectNameB) return -1;
+    if (subjectNameA > subjectNameB) return 1;
+    return 0;
+  });
+
+  console.log(subjects);
+
+  //Create the HTML for the subjects
+  const subjectItems = subjects
+    .map((subject) => {
+      return `
+          <a 
+            class="${stringSubjectsOrSamples}-metadata-aside-item selection-aside-item"
+          >${subject.subjectName}</a>
+        `;
+    })
+    .join("\n");
+  console.log(subjectItems);
+
+  //Add the subjects to the DOM
+  asideElement.innerHTML = subjectItems;
+
+  //add click event to each sample item
+  const selectionAsideItems = document.querySelectorAll(
+    `a.${stringSubjectsOrSamples}-metadata-aside-item`
+  );
+  selectionAsideItems.forEach((item) => {
+    item.addEventListener("click", (e) => {
+      //add selected class to clicked element
+      e.target.classList.add("is-selected");
+      //remove selected class from all other elements
+      selectionAsideItems.forEach((item) => {
+        if (item != e.target) {
+          item.classList.remove("is-selected");
+        }
+      });
+    });
+    //add hover event that changes the background color
+    item.addEventListener("mouseover", (e) => {
+      e.target.style.backgroundColor = "whitesmoke";
+    });
+    item.addEventListener("mouseout", (e) => {
+      e.target.style.backgroundColor = "";
+    });
+  });
+};
+
 $(document).ready(() => {
   $("#guided-button-start-new-curate").on("click", () => {
     document
@@ -4286,7 +4349,7 @@ $(document).ready(() => {
     //show the next button after 3 seconds
     setTimeout(() => {
       $("#guided-next-button").show();
-      traverseToTab("guided-primary-samples-organization-tab");
+      traverseToTab("guided-create-subjects-metadata-tab");
     }, 3000);
   });
   $("#guided-button-cancel-create-new-dataset").on("click", () => {
