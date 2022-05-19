@@ -723,13 +723,12 @@ const traverseToTab = (targetPageID) => {
     if (targetPageID === "guided-create-subjects-metadata-tab") {
       //Create new subjectsArray variable and assign it to all properties in datasetStructureJSONObj.folders.primary.folders if defined
       try {
-        sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
-          "SUB-1"
-        ] = [];
-        sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
-          "SUB-2"
-        ] = [];
-        let subjectsArray = guidedGetSubjects();
+        const [subjectsInPools, subjectsOutsidePools] =
+          sodaJSONObj.getAllSubjects();
+        //Combine sample data from subjects in and out of pools
+        let subjects = [...subjectsInPools, ...subjectsOutsidePools];
+        const subjectsArray = subjects.map((subject) => subject.subjectName);
+
         for (let subject of subjectsArray) {
           //check to see if subject already has data in the sodaJSONObj
           if (
@@ -739,6 +738,7 @@ const traverseToTab = (targetPageID) => {
             sodaJSONObj["dataset-metadata"]["subject-metadata"][subject] = {};
           }
         }
+
         renderSubjectsMetadataTable(subjectsArray);
       } catch {
         traverseToTab("guided-create-samples-metadata-tab");
