@@ -2186,7 +2186,223 @@
                     experiment. If unknown, leave it empty. <br />
                     <b>Example:</b> 4 weeks
                   </p>
+
+                  <label class="guided--form-label mt-xl">Member of:</label>
+                  <div class="demo-controls-body w-100">
+                    <div class="ui input modified">
+                      <input
+                        type="text"
+                        id="guided-bootbox-subject-member-of"
+                        name="member of"
+                        class="subjects-form-entry"
+                        placeholder="Type here"
+                      />
+                    </div>
+                  </div>
+                  <p class="guided--text-input-instructions mb-0">
+                    Provide a population that the specimen of your subject
+                    belongs to. If unknown, leave it empty. <br />
+                    <b>Example:</b> pop-1
+                  </p>
+
+                  <label class="guided--form-label mt-xl"
+                    >Also in dataset:</label
+                  >
+                  <div class="demo-controls-body w-100">
+                    <div class="ui input modified">
+                      <input
+                        type="text"
+                        id="guided-bootbox-subject-also-in-dataset"
+                        name="also in dataset"
+                        class="subjects-form-entry"
+                        placeholder="Type here"
+                      />
+                    </div>
+                  </div>
+                  <p class="guided--text-input-instructions mb-0">
+                    Include the Pennsieve id(s) for other datasets that have
+                    data about the same specimen.
+                  </p>
+
+                  <label class="guided--form-label mt-xl">Age category:</label>
+                  <div class="demo-controls-body w-100">
+                    <div class="ui input modified">
+                      <select
+                        id="guided-bootbox-subject-age-category"
+                        name="Age category"
+                        class="ui selection dropdown subjects-form-entry"
+                        placeholder="Select here..."
+                      >
+                        <option value="Select">Select a stage</option>
+                        <option value="2 cell stage">2 cell stage</option>
+                        <option value="4 cell stage">4 cell stage</option>
+                        <option value="8 cell stage">8 cell stage</option>
+                        <option value="blastula stage">blastula stage</option>
+                        <option value="cleavage stage">cleavage stage</option>
+                        <option value="copepodite stage">
+                          copepodite stage
+                        </option>
+                        <option value="crustacean post-larval stage">
+                          crustacean post-larval stage
+                        </option>
+                        <option value="cysticercus stage">
+                          cysticercus stage
+                        </option>
+                        <option value="death stage">death stage</option>
+                        <option value="embryo stage">embryo stage</option>
+                        <option value="fully formed stage">
+                          fully formed stage
+                        </option>
+                        <option value="gastrula stage">gastrula stage</option>
+                        <option value="glaucothoe stage">
+                          glaucothoe stage
+                        </option>
+                        <option value="infant stage">infant stage</option>
+                        <option value="juvenile stage">juvenile stage</option>
+                        <option value="larval stage">larval stage</option>
+                        <option value="late adult stage">
+                          late adult stage
+                        </option>
+                        <option value="late embryonic stage">
+                          late embryonic stage
+                        </option>
+                        <option value="nauplius stage">nauplius stage</option>
+                        <option value="neonate stage">neonate stage</option>
+                        <option value="neurula stage">neurula stage</option>
+                        <option value="nursing stage">nursing stage</option>
+                        <option value="organogenesis stage">
+                          organogenesis stage
+                        </option>
+                        <option value="perinatal stage">perinatal stage</option>
+                        <option value="pharyngula stage">
+                          pharyngula stage
+                        </option>
+                        <option value="post-embryonic stage">
+                          post-embryonic stage
+                        </option>
+                        <option value="post-juvenile adult stage">
+                          post-juvenile adult stage
+                        </option>
+                        <option value="prime adult stage">
+                          prime adult stage
+                        </option>
+                        <option value="pupal stage">pupal stage</option>
+                        <option value="sexually immature stage">
+                          sexually immature stage
+                        </option>
+                        <option value="trochophore stage">
+                          trochophore stage
+                        </option>
+                        <option value="veliger stage">veliger stage</option>
+                        <option value="zoea stage">zoea stage</option>
+                        <option value="zygote stage">zygote stage</option>
+                      </select>
+                    </div>
+                  </div>
+                  <p class="guided--text-input-instructions mb-0">
+                    Description of age category. Must be derived from the
+                    <a
+                      target="_blank"
+                      href="http://www.ontobee.org/ontology/catalog/UBERON?iri=http://purl.obolibrary.org/obo/UBERON_0000105"
+                      >UBERON life cycle stage</a
+                    >.
+                    <br />
+                    <b>Example:</b> Prime adult stage
+                  </p>
+
+                  <label class="guided--form-label mt-xl">Age range:</label>
+                  <div class="demo-controls-body w-100">
+                    <div class="ui input modified" style="margin-right: 5px">
+                      <input
+                        type="text"
+                        id="guided-bootbox-subject-age-range-min"
+                        name="Age range (min)"
+                        class="subjects-form-entry"
+                        placeholder="Minimum age"
+                      />
+                    </div>
+                    <div class="ui input modified">
+                      <input
+                        type="text"
+                        id="guided-bootbox-subject-age-range-max"
+                        name="Age range (max)"
+                        class="subjects-form-entry"
+                        placeholder="Maximum age"
+                      />
+                    </div>
+                  </div>
+                  <p class="guided--text-input-instructions mb-0">
+                    The minimal age (youngest) and maximal age (oldest) of the
+                    subject during the study.<br />
+                    The format for this field: numerical value + space + unit
+                    (spelled out).
+                    <br />
+                    <b>Example:</b> 10 days (min) 20 days (max)
+                  </p>
+
+                  <label class="guided--form-label mt-xl">Date of birth:</label>
+                  <div class="demo-controls-body w-100">
+                    <div class="ui input modified" style="margin-right: 5px">
+                      <input
+                        class="subjects-form-entry"
+                        id="guided-bootbox-subject-dob"
+                        type="date"
+                        name="date of birth"
+                      />
+                    </div>
+                  </div>
+                  <p class="guided--text-input-instructions mb-0">
+                    The date of birth of the subject.
+                  </p>
                 </div>
+                <div class="guided--section neumorphic mt-xl">
+                  <h2 class="guided--text-sub-step mt-0">
+                    Protocol information
+                  </h2>
+
+                  <label class="guided--form-label mt-xl"
+                    >Protocol title on protocols.io:</label
+                  >
+                  <div class="demo-controls-body w-100">
+                    <div class="ui input modified">
+                      <input
+                        type="text"
+                        id="guided-bootbox-subject-protocol-title"
+                        name="Protocol title"
+                        class="subjects-form-entry"
+                        placeholder="Type here..."
+                      />
+                    </div>
+                  </div>
+                  <p class="guided--text-input-instructions mb-0">
+                    Title of the protocol on protocols.io associated with this
+                    study. <br />
+                    <b>Example:</b> Spinal cord extraction
+                  </p>
+
+                  <label class="guided--form-label mt-xl"
+                    >Protocol URL on protocols.io</label
+                  >
+                  <div class="demo-controls-body w-100">
+                    <div class="ui input modified">
+                      <input
+                        type="text"
+                        id="guided-bootbox-subject-protocol-location"
+                        name="protocol url or doi"
+                        class="subjects-form-entry"
+                        placeholder="Type here..."
+                        style="font-size: 1rem"
+                      />
+                    </div>
+                  </div>
+                  <p class="guided--text-input-instructions mb-0">
+                    The protocol.io URL for the protocol associated with this
+                    study. <br />
+                    <b>Example:</b>
+                    https://www.protocols.io/view/corchea-paper-based-microfluidic-device-vtwe6pe
+                  </p>
+                </div>
+
                 <label class="guided--form-label centered"
                   >Subject ID: <span id="guided-metadata-subject-id"></span>
                 </label>
