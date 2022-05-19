@@ -1668,7 +1668,6 @@ const updateFolderStructureUI = (pageDataObj) => {
   var appendString = loadFileFolder(myPath);
 
   /// empty the div
-  $("#items").empty();
 
   // reconstruct div with new elements
   listItems(myPath, "#items");

@@ -5472,7 +5472,7 @@ function dropHelper(
       "#items",
       organizeDSglobalPath,
       datasetStructureJSONObj
-    );    
+    );
     if (Object.keys(importedFolders).length > 1) {
       importToast.open({
         type: "success",
@@ -6250,7 +6250,6 @@ async function listItems(jsonObj, uiItem, amount_req, reset) {
         </p>
       </div>`
     );
-    document.querySelector("#dragDropInscturctions").innerHTML = "";
     //load the lottie animation
     let dragDropAnimation = lottie.loadAnimation({
       container: document.querySelector("#dragDropInscturctions"),
@@ -6280,8 +6279,7 @@ async function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
       var myPath = getRecursivePath(filtered, globalObj);
       if (myPath.length === 2) {
         filtered = myPath[1];
-        currentLocation.value =
-          "My_dataset_folder/" + filtered.join("/") + "/";
+        currentLocation.value = "My_dataset_folder/" + filtered.join("/") + "/";
       }
       $("#items").empty();
       already_created_elem = [];
