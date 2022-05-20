@@ -710,6 +710,7 @@ function addSubjectMetadataEntriesIntoJSON(curationMode) {
   for (var field of $(`#${curationModeSelectorPrefix}form-add-a-subject`)
     .children()
     .find(".subjects-form-entry")) {
+    console.log(field.value);
     if (
       field.value === "" ||
       field.value === undefined ||

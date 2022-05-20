@@ -1548,6 +1548,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["starting-point"] = {};
   sodaJSONObj["dataset-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["shared-metadata"] = {};
+  sodaJSONObj["dataset-metadata"]["protocol-data"] = [];
   sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"] = {};
   sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"] =
     {};
@@ -6460,17 +6461,18 @@ $(document).ready(() => {
     ).style.display = "flex";
     unPulseNextButton();
   });
+
   $("#guided-button-save-protocol-fields").on("click", () => {
     let allInputsValid = true;
+    let protocolData = [];
+
     //get all contributor fields
     const protocolFields = document.querySelectorAll(
       ".guided-protocol-field-container"
     );
     //check if contributorFields is empty
     if (protocolFields.length === 0) {
-      notyf.error("Please add at least one contributor");
-      //Add a contributor field to help the user out a lil
-      //addContributorField();
+      notyf.error("Please add at least one protocol");
       return;
     }
 
@@ -6498,19 +6500,23 @@ $(document).ready(() => {
           );
         }
       });
-
-      const contributorInputObj = {
-        protocolUrl: protocolUrl.value,
-        protocolDescription: protocolDescription.value,
+      //
+      const protocolInputObj = {
+        protocolUrl: protocolUrl,
+        protocolDescription: protocolDescription,
       };
+      protocolData.push(protocolInputObj);
     });
     ///////////////////////////////////////////////////////////////////////////////
 
     if (!allInputsValid) {
       notyf.error("Please fill out all protocol fields");
-      document.getElementById("guided-div-other-links").classList.add("hidden");
-
       return;
+    }
+
+    //Add the protocol data to the jsonObj
+    for (const protocol of protocolData) {
+      sodaJSONObj["dataset-metadata"]["protocol-data"].push(protocol);
     }
 
     //set opacity and remove pointer events for table and show edit button
@@ -6524,8 +6530,6 @@ $(document).ready(() => {
     document.getElementById(
       "guided-button-edit-protocol-fields"
     ).style.display = "flex";
-
-    unHideAndSmoothScrollToElement("guided-div-other-links");
   });
   $("#guided-button-edit-protocol-fields").on("click", () => {
     enableElementById("protocols-container");
@@ -6538,8 +6542,6 @@ $(document).ready(() => {
       "guided-button-save-protocol-fields"
     ).style.display = "flex";
     unPulseNextButton();
-    //hide the other links div until the user saves updated protocols
-    document.getElementById("guided-div-other-links").classList.add("hidden");
   });
   $("#guided-button-save-other-link-fields").on("click", () => {
     let allInputsValid = true;
