@@ -723,7 +723,7 @@ const traverseToTab = (targetPageID) => {
     if (targetPageID === "guided-create-subjects-metadata-tab") {
       //Create new subjectsArray variable and assign it to all properties in datasetStructureJSONObj.folders.primary.folders if defined
       try {
-        renderSubjectSampleMetadataAsideItems("subjects");
+        renderSubjectsMetadataAsideItems();
 
         const [subjectsInPools, subjectsOutsidePools] =
           sodaJSONObj.getAllSubjects();
@@ -2252,8 +2252,6 @@ const returnToTableFromFolderStructure = (clickedBackButton) => {
 const returnToSubjectMetadataTableFromSubjectMetadataForm = () => {
   //Clear metadata form inputs
   clearAllSubjectFormFields(guidedSubjectsFormDiv);
-  traverseToTab("guided-create-subjects-metadata-tab");
-  $("#guided-footer-div").css("display", "flex");
 };
 const returnToSampleMetadataTableFromSampleMetadataForm = () => {
   //Clear metadata form inputs
@@ -2323,26 +2321,19 @@ const guidedLoadSampleMetadataIfExists = (
       samplesTableData[i][1] === sampleMetadataId
     ) {
       //if the id matches, load the metadata into the form
+      alert("sample match found found");
       console.log("populating forms");
       populateFormsSamples(subjectMetadataId, sampleMetadataId, "", "guided");
       return;
     }
   }
 };
-const openModifySubjectMetadataPage = (clickedSubjectAddMetadataButton) => {
-  let subjectMetadataID = clickedSubjectAddMetadataButton
-    .closest("tr")
-    .find(".subject-metadata-id")
-    .text();
+const openModifySubjectMetadataPage = (subjectMetadataID) => {
   guidedLoadSubjectMetadataIfExists(subjectMetadataID);
   $("#guided-metadata-subject-id").text(subjectMetadataID);
   $("#guided-generate-subjects-file").text(
     `Save ${subjectMetadataID} metadata`
   );
-  traverseToTab("guided-subject-metadata-tab");
-  //Manually override active capsule to make it seem like they're still on the subjects tab
-  setActiveCapsule("guided-create-subjects-metadata-tab");
-  $("#guided-footer-div").hide();
 };
 const openModifySampleMetadataPage = (clickedSampleAddMetadataButton) => {
   let sampleMetadataID = clickedSampleAddMetadataButton
@@ -4225,9 +4216,9 @@ const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
   });
 };
 
-const renderSubjectSampleMetadataAsideItems = (stringSubjectsOrSamples) => {
+const renderSubjectsMetadataAsideItems = () => {
   const asideElement = document.getElementById(
-    `guided-${stringSubjectsOrSamples}-metadata-aside`
+    `guided-subjects-metadata-aside`
   );
   asideElement.innerHTML = "";
 
@@ -4251,22 +4242,34 @@ const renderSubjectSampleMetadataAsideItems = (stringSubjectsOrSamples) => {
     .map((subject) => {
       return `
           <a 
-            class="${stringSubjectsOrSamples}-metadata-aside-item selection-aside-item"
-          >${subject.subjectName}</a>
+            class="subjects-metadata-aside-item selection-aside-item"
+          ><span class="subject-metadata-id">${subject.subjectName}</span></a>
         `;
     })
     .join("\n");
-  console.log(subjectItems);
 
   //Add the subjects to the DOM
   asideElement.innerHTML = subjectItems;
 
   //add click event to each sample item
   const selectionAsideItems = document.querySelectorAll(
-    `a.${stringSubjectsOrSamples}-metadata-aside-item`
+    `a.subjects-metadata-aside-item`
   );
   selectionAsideItems.forEach((item) => {
     item.addEventListener("click", (e) => {
+      previousSubject = document.getElementById(
+        "guided-metadata-subject-id"
+      ).innerHTML;
+      //check to see if previousSubject is empty
+      if (previousSubject) {
+        addSubject("guided");
+      }
+      console.log(e.target);
+      clearAllSubjectFormFields(guidedSubjectsFormDiv);
+
+      //call openModifySubjectMetadataPage function on licked item
+      openModifySubjectMetadataPage(e.target.innerText);
+
       //add selected class to clicked element
       e.target.classList.add("is-selected");
       //remove selected class from all other elements
@@ -6748,7 +6751,7 @@ $(document).ready(() => {
   }
   $("#guided-generate-subjects-file").on("click", () => {
     addSubject("guided");
-    returnToSubjectMetadataTableFromSubjectMetadataForm();
+    clearAllSubjectFormFields(guidedSubjectsFormDiv);
   });
   $("#guided-generate-samples-file").on("click", () => {
     addSample("guided");

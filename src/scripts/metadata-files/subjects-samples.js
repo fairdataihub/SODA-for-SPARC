@@ -717,6 +717,8 @@ function addSubjectMetadataEntriesIntoJSON(curationMode) {
       field.value === "Select"
     ) {
       field.value = null;
+    } else {
+      console.log(field);
     }
     headersArrSubjects.push(field.name);
     // if it's age, then add age info input (day/week/month/year)
