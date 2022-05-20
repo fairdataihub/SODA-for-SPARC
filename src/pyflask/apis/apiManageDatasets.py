@@ -85,7 +85,7 @@ class PennsieveAPIKeyAndSecret(Resource):
 
 
 
-getNumberOfFilesAndFoldersLocally =  api.model('GetNumberOfFilesAndFoldersLocally', {
+getNumberOfFilesAndFoldersLocally =  api.model('FilesAndFolders', {
     "totalFiles": fields.Integer(required=True, description="Total number of files in the dataset"),
     "totalDir": fields.Integer(required=True, description="Total number of folders in the dataset"),
 })
@@ -96,18 +96,21 @@ parser.add_argument('filepath', type=str, required=True, help='Path to the local
 
 @api.route('/get_number_of_files_and_folders_locally')
 class GetNumberOfFilesAndFoldersLocally(Resource):
-  @api.marshal_with( getNumberOfFilesAndFoldersLocally, False, 201)
-  @api.doc(responses={500: 'There was an internal server error', 200: 'Success'})
+  @api.marshal_with( getNumberOfFilesAndFoldersLocally, False, 200)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'})
   # the request parameters
   @api.expect(parser)
 
   def get(self):
     # get the filepath from the request object
     filepath = request.args.get('filepath')
-
     api.logger.info(f' get_number_of_files_and_folders_locally --  args -- filepath: {filepath}')
-    print(api.logger)
-    return get_number_of_files_and_folders_locally(filepath)
+
+    try:
+      return get_number_of_files_and_folders_locally(filepath)
+    except Exception as e:
+      api.abort(400, e.args[0], status="failed", statusCode=400)
+    
 
 
 
