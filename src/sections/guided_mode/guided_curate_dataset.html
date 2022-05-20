@@ -1951,6 +1951,14 @@
                   class="guided--hlf-selection-aside"
                   id="guided-subjects-metadata-aside"
                 ></aside>
+                <button
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  onclick="openCopySubjectMetadataPopup()"
+                  style="width: 100%; margin-top: 10px; height: 35px !important"
+                >
+                  Copy metadata from other subjects
+                </button>
               </div>
               <div id="guided-form-add-a-subject" class="guided--panel">
                 <label class="guided--form-label centered"
@@ -2578,64 +2586,8 @@
                     To add a custom field, click on the button above.
                   </p>
                 </div>
-                <div class="space-between">
-                  <button
-                    class="ui secondary basic button small"
-                    onclick="returnToSubjectMetadataTableFromSubjectMetadataForm()"
-                  >
-                    <i class="fas fa-arrow-left" style="margin-right: 10px"></i>
-                    Return to subject metadata table
-                  </button>
-                  <button
-                    id="guided-generate-subjects-file"
-                    class="btn_animated"
-                    style="width: 180px; border: none !important"
-                  >
-                    Generate subjects file
-                  </button>
-                </div>
               </div>
             </div>
-            <table
-              class="ui celled striped table"
-              style="margin-bottom: 25px; width: 900px"
-            >
-              <thead>
-                <tr>
-                  <th
-                    class="center aligned"
-                    style="
-                      z-index: 2;
-                      position: sticky !important;
-                      top: -10px !important;
-                    "
-                  >
-                    Index
-                  </th>
-                  <th
-                    style="
-                      z-index: 2;
-                      position: sticky !important;
-                      top: -10px !important;
-                    "
-                  >
-                    Subject ID
-                  </th>
-
-                  <th
-                    class="center aligned"
-                    style="
-                      z-index: 2;
-                      position: sticky !important;
-                      top: -10px !important;
-                    "
-                  >
-                    Modify metadata
-                  </th>
-                </tr>
-              </thead>
-              <tbody id="subjects-metadata-table-container"></tbody>
-            </table>
           </div>
           <div
             id="guided-create-samples-metadata-tab"

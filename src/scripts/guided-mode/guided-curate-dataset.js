@@ -722,30 +722,24 @@ const traverseToTab = (targetPageID) => {
     }
     if (targetPageID === "guided-create-subjects-metadata-tab") {
       //Create new subjectsArray variable and assign it to all properties in datasetStructureJSONObj.folders.primary.folders if defined
-      try {
-        renderSubjectsMetadataAsideItems();
+      renderSubjectsMetadataAsideItems();
 
-        const [subjectsInPools, subjectsOutsidePools] =
-          sodaJSONObj.getAllSubjects();
-        //Combine sample data from subjects in and out of pools
-        let subjects = [...subjectsInPools, ...subjectsOutsidePools];
-        const subjectsArray = subjects.map((subject) => subject.subjectName);
+      const [subjectsInPools, subjectsOutsidePools] =
+        sodaJSONObj.getAllSubjects();
+      //Combine sample data from subjects in and out of pools
+      let subjects = [...subjectsInPools, ...subjectsOutsidePools];
+      const subjectsArray = subjects.map((subject) => subject.subjectName);
 
-        for (let subject of subjectsArray) {
-          //check to see if subject already has data in the sodaJSONObj
-          if (
-            sodaJSONObj["dataset-metadata"]["subject-metadata"][subject] ===
-            undefined
-          ) {
-            sodaJSONObj["dataset-metadata"]["subject-metadata"][subject] = {};
-          }
+      for (let subject of subjectsArray) {
+        //check to see if subject already has data in the sodaJSONObj
+        if (
+          sodaJSONObj["dataset-metadata"]["subject-metadata"][subject] ===
+          undefined
+        ) {
+          sodaJSONObj["dataset-metadata"]["subject-metadata"][subject] = {};
         }
-
-        renderSubjectsMetadataTable(subjectsArray);
-      } catch {
-        traverseToTab("guided-create-samples-metadata-tab");
-        throw "subjectsArray not defined, going to samples metadata tab";
       }
+      //renderSubjectsMetadataTable(subjectsArray);
     }
     if (targetPageID === "guided-create-samples-metadata-tab") {
       renderSampleMetadataTables();
@@ -2296,7 +2290,7 @@ const renderSubjectsMetadataTable = (subjects) => {
   let subjectsMetadataContainer = document.getElementById(
     "subjects-metadata-table-container"
   );
-  subjectsMetadataContainer.innerHTML = subjectMetadataRows;
+  //subjectsMetadataContainer.innerHTML = subjectMetadataRows;
 };
 const guidedLoadSubjectMetadataIfExists = (subjectMetadataId) => {
   //loop through all subjectsTableData elements besides the first one
@@ -2488,24 +2482,24 @@ const openCopySampleMetadataPopup = async (clickedSampleCopyMetadataButton) => {
     });
 };
 
-const openCopySubjectMetadataPopup = async (
-  clickedSubjectCopyMetadataButton
-) => {
-  const copyFromSubjectMetadataID = clickedSubjectCopyMetadataButton
-    .closest("tr")
-    .find(".subject-metadata-id")
-    .text();
-  let subjectsArray = guidedGetSubjects();
-  const initialCopyFromMetadata = `
-    <div class="field text-left">
-      <div class="ui radio checkbox">
-        <input type="radio" name="copy-from" value="${copyFromSubjectMetadataID}" checked="checked">
-        <label>${copyFromSubjectMetadataID}</label>
-      </div>
-    </div>
-  `;
+const openCopySubjectMetadataPopup = async () => {
+  //create an array of values with the innter contents of every link with the class subject-metadata-aside-item
+  const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+  //Combine sample data from subjects in and out of pools
+  let subjectsArray = [...subjectsInPools, ...subjectsOutsidePools];
+
+  //sort subjects object by subjectName property alphabetically
+  subjectsArray = subjectsArray
+    .sort((a, b) => {
+      const subjectNameA = a.subjectName.toLowerCase();
+      const subjectNameB = b.subjectName.toLowerCase();
+      if (subjectNameA < subjectNameB) return -1;
+      if (subjectNameA > subjectNameB) return 1;
+      return 0;
+    })
+    .map((subject) => subject.subjectName);
+
   const copyFromMetadata = subjectsArray
-    .filter((subject) => subject !== copyFromSubjectMetadataID)
     .map((subject) => {
       return `
       <div class="field text-left">
@@ -2534,7 +2528,6 @@ const openCopySubjectMetadataPopup = async (
     <div class="ui form">
       <div class="grouped fields">
         <label class="guided--form-label med text-left">Which subject would you like to copy metadata from?</label>
-        ${initialCopyFromMetadata}
         ${copyFromMetadata}
       </div>
     </div>
@@ -4350,11 +4343,11 @@ $(document).ready(() => {
     sodaJSONObj.addSampleToSubject("sam-14", "sub-5");
     sodaJSONObj.addSampleToSubject("sam-15", "sub-5");
 
-    //show the next button after 3 seconds
+    //show the next button after 5 seconds
     setTimeout(() => {
       $("#guided-next-button").show();
       traverseToTab("guided-create-subjects-metadata-tab");
-    }, 3000);
+    }, 5000);
   });
   $("#guided-button-cancel-create-new-dataset").on("click", () => {
     //remove text from dataset name and subtitle inputs
