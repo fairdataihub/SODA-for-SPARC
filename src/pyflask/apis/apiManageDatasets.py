@@ -34,7 +34,7 @@ from manageDatasets import (
     SODA_SPARC_API_KEY,
     bf_submit_dataset_upload_details
 )
-from namespaces import get_namespace
+from namespaces import get_namespace, NamespaceEnum
 # import the request object
 from flask import request
 
@@ -46,7 +46,8 @@ from flask import request
 ## -----------------------------------------------------------------Begin manage_datasets endpoints ------------------------------------------------------------------------
 ##--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-api = get_namespace()
+# retrieve the manage datasets namespace to add the (previously known as) pysoda.py routes to
+api = get_namespace(NamespaceEnum.MANAGE_DATASETS)
 
 
 # the model for the pennsieve api key secret endpoint defines what is returned from the endpoint

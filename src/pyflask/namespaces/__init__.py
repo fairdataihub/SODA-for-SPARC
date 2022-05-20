@@ -1,1 +1,1 @@
-from .configureNamespaces import configure_namespaces, get_namespace
+from .configureNamespaces import configure_namespaces, get_namespace, NamespaceEnum
