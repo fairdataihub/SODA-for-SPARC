@@ -1653,6 +1653,7 @@ const updateFolderStructureUI = (pageDataObj) => {
   $("#guided-input-global-path").val(
     `My_dataset_folder/${pageDataObj.pathSuffix}`
   );
+  console.log(organizeDSglobalPath);
   var filtered = getGlobalPath(organizeDSglobalPath);
   organizeDSglobalPath.value =
     filtered.slice(0, filtered.length).join("/") + "/";
@@ -1662,12 +1663,14 @@ const updateFolderStructureUI = (pageDataObj) => {
     myPath = myPath["folders"][item];
   }
   // construct UI with files and folders
-  var appendString = loadFileFolder(myPath);
+  //var appendString = loadFileFolder(myPath);
+  //console.log(appendString);
 
   /// empty the div
 
   // reconstruct div with new elements
-  listItems(myPath, "#items");
+
+  listItems(myPath, "#items", 500, (reset = true));
   getInFolder(
     ".single-item",
     "#items",

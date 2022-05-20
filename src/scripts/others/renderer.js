@@ -6192,6 +6192,7 @@ async function listItems(jsonObj, uiItem, amount_req, reset) {
 
     //add items using a different function
     //want the initial files to be imported
+    console.log(reset);
     let itemDisplay = new Promise(async (resolved) => {
       if (reset != undefined) {
         await add_items_to_view(items, amount_req, reset);
