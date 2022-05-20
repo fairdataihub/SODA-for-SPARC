@@ -1517,7 +1517,7 @@ details[open] > summary::before {
 }
 
 .info-container {
-  align-self: center; 
+  align-self: center;
   width: 573px;
   margin-top: 1rem;
 }
@@ -1548,11 +1548,10 @@ details[open] > summary::before {
   border-color: #f8f8f9;
 }
 
-
 .info-summary:before {
   top: 0;
   transform-origin: bottom center;
-  transform: translateX(0.7em) rotate(-30deg) scale(.5);
+  transform: translateX(0.7em) rotate(-30deg) scale(0.5);
   content: "";
   position: absolute;
   left: 0;
@@ -1568,21 +1567,20 @@ details[open] > summary::before {
   transform: translateX(0.7em) rotate(30deg) scale(0.5);
 }
 
-
 .is-open .info-summary:before,
 .is-open .info-summary:after {
   transform: rotate(0deg);
-  transform: scale(.7);
+  transform: scale(0.7);
 }
 
 .details-box {
   display: none;
   position: relative;
-  box-shadow: 0 1px 2px 0 rgba(0,0,0,0.1);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
   padding: 2em;
   margin-top: 1rem;
   margin-bottom: 2rem;
-  border-radius: .4rem;
+  border-radius: 0.4rem;
   background-color: #f8f8f9;
 }
 
