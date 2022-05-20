@@ -2164,8 +2164,7 @@ def get_number_of_files_and_folders_locally(filepath):
     Return:
         Number of files and folders
     """
-    # logger = logging.getLogger('apis.apiManageDatasets')
-    global namespace
+    global namespace_logger
 
     totalDir = 0
     totalFiles = 0
@@ -2177,7 +2176,7 @@ def get_number_of_files_and_folders_locally(filepath):
 
     namespace_logger.info("Number of files: " + str(totalFiles))
     namespace_logger.info("Number of folders: " + str(totalDir))
-    return (totalFiles, totalDir)
+    return {"totalFiles": totalFiles, "totalDir": totalDir}
 
 
 def get_pennsieve_api_key_secret(email, password, keyname):
