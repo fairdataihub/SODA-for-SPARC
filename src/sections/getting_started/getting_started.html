@@ -3,7 +3,12 @@
   <section
     id="getting_started-section"
     class="section js-section u-category-windows is-shown"
-    style="padding-left: 0 !important"
+    style="
+      padding-left: 0 !important;
+      display: grid;
+      grid-template-rows: 20%;
+      align-items: center;
+    "
   >
     <div
       style="
@@ -58,7 +63,8 @@
         gap: 1.5rem;
         display: grid;
         width: 100%;
-        margin-bottom: 3rem;
+        /* margin-bottom: 3rem; */
+        /* grid-template-rows: 105%; */
       "
     >
       <div
@@ -5396,9 +5402,11 @@
     <div
       class="grid h-auto w-full grid-cols-3 gap-6"
       style="
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        display: grid;
+        /* grid-template-columns: repeat(2, minmax(0, 1fr)); */
+        /* display: grid; */
         /* width: 70%; */
+        display: flex;
+        justify-content: center;
         /* margin-top: 12rem; */
         /* margin-bottom: 0; */
         /* height: 0% !important; */
@@ -5410,6 +5418,7 @@
         style="
           color: var(--color-accent);
           display: flex;
+          margin-right: 7%;
           place-self: center;
           background: white;
           font-weight: bold;
