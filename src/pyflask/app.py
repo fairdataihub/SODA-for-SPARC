@@ -20,8 +20,6 @@ configureLogger(app)
 
 api = configureAPI()
 
-
-
 configureRouteHandlers(api)
 
 api.init_app(app)

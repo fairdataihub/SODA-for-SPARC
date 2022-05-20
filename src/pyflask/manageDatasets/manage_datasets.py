@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 ### Import required python modules
-
 from gevent import monkey
 
 monkey.patch_all()
@@ -67,9 +66,10 @@ import itertools
 
 from datetime import datetime, timezone
 
-from namespaces import get_namespace
+from namespaces import NamespaceEnum, get_namespace_logger
 
 ### Global variables
+namespace_logger = get_namespace_logger(NamespaceEnum.MANAGE_DATASETS)
 curateprogress = " "
 curatestatus = " "
 curateprintstatus = " "
@@ -2165,7 +2165,7 @@ def get_number_of_files_and_folders_locally(filepath):
         Number of files and folders
     """
     # logger = logging.getLogger('apis.apiManageDatasets')
-    namespace = get_namespace()
+    global namespace
 
     totalDir = 0
     totalFiles = 0
@@ -2175,8 +2175,8 @@ def get_number_of_files_and_folders_locally(filepath):
         for Files in files:
             totalFiles += 1
 
-    namespace.logger.info("Number of files: " + str(totalFiles))
-    namespace.logger.info("Number of folders: " + str(totalDir))
+    namespace_logger.info("Number of files: " + str(totalFiles))
+    namespace_logger.info("Number of folders: " + str(totalDir))
     return (totalFiles, totalDir)
 
 
