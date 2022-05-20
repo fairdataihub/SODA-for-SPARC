@@ -1,7 +1,10 @@
-from flask_restx import Api
-from apis import (version_resource, manage_datasets_resource)
-from os import getenv
+from namespaces import get_namespace
+from apis import manage_datasets_resource
 
 def configureRouteHandlers(api):
-    api.add_namespace(version_resource)
+    """
+    Configure the route handlers for the Flask application.
+    """
+    # api.add_namespace(version_resource)
     api.add_namespace(manage_datasets_resource)
+    print(api.namespaces)

@@ -1,4 +1,6 @@
+import logging
 from flask_restx import Namespace, Resource, fields
+
 from manageDatasets import ( 
     get_pennsieve_api_key_secret, 
     get_number_of_files_and_folders_locally,
@@ -32,17 +34,19 @@ from manageDatasets import (
     SODA_SPARC_API_KEY,
     bf_submit_dataset_upload_details
 )
+from namespaces import get_namespace
+# import the request object
+from flask import request
+
 
 # TODO: Cover all possible status codes for each route
 
-api = Namespace('manage_datasets', description='Routes for handling manage datsets functionality')
 
 ##--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ## -----------------------------------------------------------------Begin manage_datasets endpoints ------------------------------------------------------------------------
 ##--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
-
+api = get_namespace()
 
 
 # the model for the pennsieve api key secret endpoint defines what is returned from the endpoint
@@ -87,7 +91,7 @@ getNumberOfFilesAndFoldersLocally =  api.model('GetNumberOfFilesAndFoldersLocall
 
 parser = api.parser()
 # parameters for the get_number_of_files_and_folders_locally endpoint
-parser.add_argument('filepath', type=int, required=True, help='Path to the local dataset folder')
+parser.add_argument('filepath', type=str, required=True, help='Path to the local dataset folder')
 
 @api.route('/get_number_of_files_and_folders_locally')
 class GetNumberOfFilesAndFoldersLocally(Resource):
@@ -97,7 +101,12 @@ class GetNumberOfFilesAndFoldersLocally(Resource):
   @api.expect(parser)
 
   def get(self):
-    return get_number_of_files_and_folders_locally()
+    # get the filepath from the request object
+    filepath = request.args.get('filepath')
+
+    api.logger.info(f' get_number_of_files_and_folders_locally --  args -- filepath: {filepath}')
+    print(api.logger)
+    return get_number_of_files_and_folders_locally(filepath)
 
 
 

@@ -67,6 +67,8 @@ import itertools
 
 from datetime import datetime, timezone
 
+from namespaces import get_namespace
+
 ### Global variables
 curateprogress = " "
 curatestatus = " "
@@ -2162,6 +2164,9 @@ def get_number_of_files_and_folders_locally(filepath):
     Return:
         Number of files and folders
     """
+    # logger = logging.getLogger('apis.apiManageDatasets')
+    namespace = get_namespace()
+
     totalDir = 0
     totalFiles = 0
     for base, dirs, files in os.walk(filepath):
@@ -2170,6 +2175,8 @@ def get_number_of_files_and_folders_locally(filepath):
         for Files in files:
             totalFiles += 1
 
+    namespace.logger.info("Number of files: " + str(totalFiles))
+    namespace.logger.info("Number of folders: " + str(totalDir))
     return (totalFiles, totalDir)
 
 
