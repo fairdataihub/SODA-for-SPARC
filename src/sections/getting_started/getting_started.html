@@ -3,6 +3,7 @@
   <section
     id="getting_started-section"
     class="section js-section u-category-windows is-shown"
+    style="padding-left: 0 !important"
   >
     <div
       style="
@@ -46,14 +47,18 @@
         Welcome to SODA, your one-stop tool for curating SPARC datasets!<br />
       </p>
     </div>
+
     <div
       class="grid h-auto w-full grid-cols-3 gap-6"
       style="
         color: black;
+        padding-left: 1rem;
+        padding-right: 1rem;
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 1.5rem;
         display: grid;
         width: 100%;
+        margin-bottom: 3rem;
       "
     >
       <div
@@ -63,6 +68,8 @@
           /* text-align-last: center; */
           text-align: center;
           height: 100% !important;
+          border: solid;
+          border-color: #f2f2f2;
         "
       >
         Familiarize yourself with the user interface of SODA
@@ -776,7 +783,12 @@
       <div
         id="overview-column-2"
         class="overview-column"
-        style="text-align: center; height: 100% !important"
+        style="
+          text-align: center;
+          height: 100% !important;
+          border: solid;
+          border-color: #f2f2f2;
+        "
       >
         Follow our documentation for easily organizing and submitting SPARC
         datasets
@@ -1624,6 +1636,8 @@
           /* text-align-last: center; */
           text-align: center;
           height: 100% !important;
+          border: solid;
+          border-color: #f2f2f2;
         "
       >
         Temp
@@ -5383,31 +5397,77 @@
       class="grid h-auto w-full grid-cols-3 gap-6"
       style="
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 0rem;
         display: grid;
-        width: 100%;
-        margin-top: 12rem;
-        margin-bottom: 0;
+        /* width: 70%; */
+        /* margin-top: 12rem; */
+        /* margin-bottom: 0; */
         /* height: 0% !important; */
       "
     >
       <button
+        class="primary-plain-button text-base"
+        onclick="directToDocumentation()"
+        style="
+          color: var(--color-accent);
+          display: flex;
+          place-self: center;
+          background: white;
+          font-weight: bold;
+          line-height: 1rem;
+          font-size: 1rem;
+          width: 18rem !important;
+          height: 3.5rem;
+          /* margin-top: -10rem; */
+          /* margin-right: 24rem; */
+          /* padding-bottom: 6rem; */
+          justify-content: center;
+          align-items: center;
+          border-radius: 0.25rem;
+          /* margin-left: -1rem; */
+          /* margin-bottom: 6rem; */
+          border-width: 2px;
+          border-color: var(--color-accent);
+        "
+      >
+        <i class="el-icon"
+          ><svg
+            class="icon"
+            width="200"
+            height="200"
+            viewBox="0 0 1024 1024"
+            xmlns="http://www.w3.org/2000/svg"
+            style="height: 2rem; width: 4rem"
+          >
+            <path
+              fill="currentColor"
+              d="M192 128v768h640V128H192zm-32-64h704a32 32 0 0132 32v832a32 32 0 01-32 32H160a32 32 0 01-32-32V96a32 32 0 0132-32z"
+            ></path>
+            <path
+              fill="currentColor"
+              d="M672 128h64v768h-64zM96 192h128q32 0 32 32t-32 32H96q-32 0-32-32t32-32zM96 384h128q32 0 32 32t-32 32H96q-32 0-32-32t32-32zM96 576h128q32 0 32 32t-32 32H96q-32 0-32-32t32-32zM96 768h128q32 0 32 32t-32 32H96q-32 0-32-32t32-32z"
+            ></path>
+          </svg>
+        </i>
+        <p style="line-height: inherit">Read the documentation</p></button
+      ><button
         class="secondary-plain-button text-base"
         onclick="sodaVideo()"
         style="
           display: flex;
+          background: white;
           width: 14rem;
-          margin-left: 11rem;
+          justify-self: center;
+          /* margin-left: 11rem; */
           border-radius: 0.25rem;
           justify-content: center;
           align-items: center;
-          margin-top: -10rem;
+          /* margin-top: -10rem; */
           height: 3.5rem;
-          margin-right: 4rem;
-          margin-bottom: 6rem;
+          /* margin-right: 4rem; */
+          /* margin-bottom: 6rem; */
           color: #b80d49;
           border-width: 2px;
-          border-color: currentColor;
+          border-color: #b80d49;
         "
       >
         <p
@@ -5437,50 +5497,6 @@
             ></path>
           </svg>
         </i>
-      </button>
-      <button
-        class="primary-plain-button text-base"
-        onclick="directToDocumentation()"
-        style="
-          color: var(--color-accent);
-          display: flex;
-          font-weight: bold;
-          line-height: 1rem;
-          font-size: 1rem;
-          width: 16rem !important;
-          height: 3.5rem;
-          margin-top: -10rem;
-          margin-right: 24rem;
-          /* padding-bottom: 6rem; */
-          justify-content: center;
-          align-items: center;
-          border-radius: 0.25rem;
-          margin-left: -1rem;
-          margin-bottom: 6rem;
-          border-width: 2px;
-          border-color: currentColor;
-        "
-      >
-        <i class="el-icon"
-          ><svg
-            class="icon"
-            width="200"
-            height="200"
-            viewBox="0 0 1024 1024"
-            xmlns="http://www.w3.org/2000/svg"
-            style="height: 2rem; width: 4rem"
-          >
-            <path
-              fill="currentColor"
-              d="M192 128v768h640V128H192zm-32-64h704a32 32 0 0132 32v832a32 32 0 01-32 32H160a32 32 0 01-32-32V96a32 32 0 0132-32z"
-            ></path>
-            <path
-              fill="currentColor"
-              d="M672 128h64v768h-64zM96 192h128q32 0 32 32t-32 32H96q-32 0-32-32t32-32zM96 384h128q32 0 32 32t-32 32H96q-32 0-32-32t32-32zM96 576h128q32 0 32 32t-32 32H96q-32 0-32-32t32-32zM96 768h128q32 0 32 32t-32 32H96q-32 0-32-32t32-32z"
-            ></path>
-          </svg>
-        </i>
-        <p style="line-height: inherit">Read the documentation</p>
       </button>
     </div>
   </section>
