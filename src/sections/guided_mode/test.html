@@ -1,36 +1,65 @@
-<div
-  id="guided-protocol-folder-tab"
-  class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
->
-  <div class="guided--section w-100">
-    <h1 class="guided--text-sub-step">Protocol data</h1>
-    <p class="guided--help-text w-100">
-      Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-      Lorem Ipsum has been the industry's standard dummy text ever since the
-      1500s, when an unknown printer took a galley of type and scrambled it to
-      make a type specimen book.
-    </p>
-  </div>
+<div id="guided-create-samples-metadata-tab" class="guided--panel hidden">
   <div class="guided--section">
-    <label class="guided--form-label centered"
-      >Does your dataset have protocol data?
-    </label>
-
-    <div class="guided--radio-button-container">
+    <h1 class="guided--text-sub-step">
+      Add primary data to your sample folder in the interface below.
+    </h1>
+  </div>
+  <div class="guided--container-subject-samples w-100 mt-md">
+    <div class="guided--hlf-selection-container ml-2">
+      <label class="guided--form-label centered"
+        >Select a sample below to edit its metadata.
+      </label>
+      <aside
+        class="guided--hlf-selection-aside"
+        id="guided-samples-metadata-aside"
+      ></aside>
       <button
-        class="ui positive basic button guided--radio-button"
-        id="guided-button-has-protocol-data"
-        data-next-question="guided-user-has-protocol-data"
+        type="button"
+        class="btn btn-primary btn-sm"
+        onclick="openCopySampleMetadataPopup()"
+        style="width: 100%; margin-top: 10px; height: 35px !important"
       >
-        Yes
-      </button>
-      <button
-        class="ui negative basic button guided--radio-button"
-        id="guided-button-no-protocol-data"
-      >
-        No
+        Copy metadata from other samples
       </button>
     </div>
+    <div id="guided-form-add-a-subject" class="guided--panel">
+      <label class="guided--form-label centered"
+        >Subject ID: <span id="guided-metadata-subject-id"></span>
+      </label>
+      <div class="guided--section neumorphic mt-xl">
+        <label class="guided--form-label mt-xl">Experimental date:</label>
+        <div class="demo-controls-body w-100">
+          <div class="ui input modified">
+            <input
+              id="guided-bootbox-subject-experimental-date"
+              name="experiment date"
+              type="date"
+              class="samples-form-entry"
+              placeholder="Type here..."
+            />
+          </div>
+        </div>
+        <p class="guided--text-input-instructions mb-0">
+          Provide the date at which the experiment takes place.
+        </p>
+
+        <label class="guided--form-label mt-xl">Laboratory internal id:</label>
+        <div class="demo-controls-body w-100">
+          <div class="ui input modified">
+            <input
+              type="text"
+              id="guided-bootbox-subject-lab-internal-id"
+              name="laboratory internal id"
+              class="samples-form-entry"
+              placeholder="Type here"
+            />
+          </div>
+        </div>
+        <p class="guided--text-input-instructions mb-0">
+          Provide a mapping for groups that have incompatible internal
+          identifier conventions.
+        </p>
+      </div>
+    </div>
   </div>
-  <div class="guided--panel hidden" id="guided-user-has-protocol-data"></div>
 </div>

@@ -241,11 +241,11 @@
               ></div>
               <div
                 class="guided--capsule"
-                id="guided-folder-structure-preview-capsule"
+                id="guided-protocol-folder-capsule"
               ></div>
               <div
                 class="guided--capsule"
-                id="guided-protocol-folder-capsule"
+                id="guided-folder-structure-preview-capsule"
               ></div>
               <button
                 class="ui yellow basic button"
@@ -2597,7 +2597,73 @@
             id="guided-create-samples-metadata-tab"
             class="guided--panel hidden"
           >
-            <div id="sample-metadata-tables-container"></div>
+            <div class="guided--section">
+              <h1 class="guided--text-sub-step">
+                Add primary data to your sample folder in the interface below.
+              </h1>
+            </div>
+            <div class="guided--container-subject-samples w-100 mt-md">
+              <div class="guided--hlf-selection-container ml-2">
+                <label class="guided--form-label centered"
+                  >Select a sample below to edit its metadata.
+                </label>
+                <aside
+                  class="guided--hlf-selection-aside"
+                  id="guided-samples-metadata-aside"
+                ></aside>
+                <button
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  onclick="openCopySampleMetadataPopup()"
+                  style="width: 100%; margin-top: 10px; height: 35px !important"
+                >
+                  Copy metadata from other samples
+                </button>
+              </div>
+              <div id="guided-form-add-a-sample" class="guided--panel">
+                <label class="guided--form-label centered"
+                  >Sample ID: <span id="guided-metadata-sample-id"></span>
+                </label>
+                <div class="guided--section neumorphic mt-xl">
+                  <label class="guided--form-label mt-xl"
+                    >Experimental date:</label
+                  >
+                  <div class="demo-controls-body w-100">
+                    <div class="ui input modified">
+                      <input
+                        id="guided-bootbox-subject-experimental-date"
+                        name="experiment date"
+                        type="date"
+                        class="samples-form-entry"
+                        placeholder="Type here..."
+                      />
+                    </div>
+                  </div>
+                  <p class="guided--text-input-instructions mb-0">
+                    Provide the date at which the experiment takes place.
+                  </p>
+
+                  <label class="guided--form-label mt-xl"
+                    >Laboratory internal id:</label
+                  >
+                  <div class="demo-controls-body w-100">
+                    <div class="ui input modified">
+                      <input
+                        type="text"
+                        id="guided-bootbox-subject-lab-internal-id"
+                        name="laboratory internal id"
+                        class="samples-form-entry"
+                        placeholder="Type here"
+                      />
+                    </div>
+                  </div>
+                  <p class="guided--text-input-instructions mb-0">
+                    Provide a mapping for groups that have incompatible internal
+                    identifier conventions.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
           <div id="guided-add-code-metadata-tab" class="guided--panel hidden">
             <div class="guided--section">

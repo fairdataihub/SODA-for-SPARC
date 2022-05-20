@@ -3702,7 +3702,7 @@ const renderSampleMetadataTables = () => {
   let sampleMetadataTablesContainer = document.getElementById(
     "sample-metadata-tables-container"
   );
-  sampleMetadataTablesContainer.innerHTML = sampleMetadataTables.join("\n");
+  //sampleMetadataTablesContainer.innerHTML = sampleMetadataTables.join("\n");
 };
 
 const createPermissionsTableRowElement = (name, permission) => {
