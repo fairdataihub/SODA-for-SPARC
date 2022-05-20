@@ -31,28 +31,17 @@
         </div>
       </header>
 
-      <div
-        id="create_new_bf_dataset-tab"
-        style="overflow-y: auto; height: calc(100% - 150px); margin-left: -70px"
-      >
-        <div
-          class="individual-question manage-dataset show"
-          id="create_empty_dataset_BF_account_tab"
-          style="height: auto"
-        >
+      <div id="create_new_bf_dataset-tab" style="overflow-y: auto; height: calc(100% - 150px); margin-left: -70px">
+        <div class="individual-question manage-dataset show prev" id="create_empty_dataset_BF_account_tab" style="height: auto">
           <div class="ui form" style="width: 100%">
             <div class="grouped fields">
-              <label
-                style="
+              <label style="
                   font-size: 17px;
                   color: var(--color-bg-plum);
                   text-align: center;
-                "
-                >Is this your Pennsieve account?</label
-              >
-              <div class="field" style="margin: auto; width: 450px">
-                <div
-                  style="
+                ">Is this your Pennsieve account?</label>
+              <div class="field" style="margin: auto;width: 550px;">
+                <div style="
                     display: flex;
                     flex-direction: column;
                     justify-content: space-between;
@@ -61,158 +50,94 @@
                     box-shadow: 0px 0px 10px #d5d5d5;
                     padding: 15px 25px;
                     border-radius: 5px;
-                  "
-                >
-                  <div
-                    style="
+                  ">
+                  <div style="
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                    "
-                  >
+                    ">
                     <div class="card-container manage-dataset">
                       <div style="display: flex">
-                        <h5
-                          class="card-left"
-                          style="
+                        <h5 class="card-left" style="
                             text-align: right;
                             color: #808080;
                             font-size: 15px;
                             padding-right: 5px;
-                          "
-                        >
+                          ">
                           Current account:
                         </h5>
-                        <div
-                          class="change-current-account"
-                          style="margin-left: -7px"
-                          onclick="openDropdownPrompt(this, 'bf')"
-                        >
-                          <h5
-                            class="card-right bf-account-span"
-                            style="
+                        <div class="change-current-account" style="margin-left: 10px" onclick="openDropdownPrompt(this, 'bf')">
+                          <h5 class="card-right bf-account-span" style="
                               color: #000;
                               font-weight: 600;
                               margin-left: 8px;
                               font-size: 15px;
                               width: fit-content;
-                            "
-                            id="create_empty_dataset_BF_account_span"
-                          >
-                            None
-                          </h5>
+                            " id="create_empty_dataset_BF_account_span">SODA-Pennsieve</h5>
 
-                          <svg
-                            class="svg-change-current-account bi bi-pencil-fill"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="18"
-                            height="18"
-                            fill="#000"
-                            viewBox="0 0 16 16"
-                          >
-                            <path
-                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                            />
+                          <svg class="svg-change-current-account bi bi-pencil-fill" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" viewBox="0 0 16 16">
+                            <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"></path>
                           </svg>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div
-                    style="
+                  <div style="
                       display: flex;
                       flex-direction: row;
                       margin-bottom: 15px;
-                    "
-                  >
+                    ">
                     <div class="card-container manage-dataset">
                       <div>
-                        <h5
-                          class="card-left"
-                          style="
+                        <h5 class="card-left" style="
                             text-align: right;
                             color: #808080;
                             font-size: 15px;
                             padding-right: 5px;
-                          "
-                        >
+                          ">
                           Account details:
                         </h5>
-                        <h5
-                          class="card-right bf-account-details-span"
-                          style="
+                        <h5 class="card-right bf-account-details-span" style="
                             color: #000;
                             font-weight: 600;
                             margin-left: 15px;
                             font-size: 15px;
-                          "
-                          id="para_create_empty_dataset_BF_account"
-                        >
-                          None
-                        </h5>
+                          " id="para_create_empty_dataset_BF_account">User email: wheresdorian@gmail.com<br>Organization: SPARC Consortium</h5>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div
-                  id="div-create_empty_dataset-account-btns"
-                  class="div-confirm-button"
-                  style="
+                <div id="div-create_empty_dataset-account-btns" class="div-confirm-button" style="
                     display: flex;
                     flex-direction: row;
                     justify-content: center;
                     margin: 30px auto;
-                  "
-                >
-                  <button
-                    id="create_empty_dataset"
-                    onclick="transitionFreeFormMode(this, 'create_empty_dataset_BF_account_tab', 'create_new_bf_dataset-tab', 'delete', 'individual-question manage-dataset')"
-                    data-next="div-create-new-empty-dataset"
-                    class="btn_animated"
-                    style="width: 120px"
-                  >
+                  ">
+                  <button id="create_empty_dataset" onclick="transitionFreeFormMode(this, 'create_empty_dataset_BF_account_tab', 'create_new_bf_dataset-tab', 'delete', 'individual-question manage-dataset')" data-next="div-create-new-empty-dataset" class="btn_animated checked" style="width: 120px; display: none;"><div class="btn_animated-inside">
                     Confirm
-                  </button>
+                  </div></button>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div
-          class="individual-question manage-dataset"
-          id="div-create-new-empty-dataset"
-          style="height: auto; margin-top: -20px"
-        >
-          <div class="ui form" style="width: 450px">
+        <div class="individual-question manage-dataset show" id="div-create-new-empty-dataset" style="height: auto;margin-top: -20px;width: 550px;display: flex;">
+          <div class="ui form" style="width: 550px !important;">
             <div class="grouped fields">
-              <label
-                style="
+              <label style="
                   font-size: 17px;
                   color: var(--color-bg-plum);
                   width: 100%;
                   text-align: center;
-                "
-                >What is the name of the new dataset?
+                ">What is the name of the new dataset?
               </label>
-              <div
-                class="field"
-                style="display: block; width: 70%; align-self: center"
-              >
-                <input
-                  type="text"
-                  class="form-control"
-                  style="
+              <div class="field" style="display: block;width: 100%;align-self: center;">
+                <input type="text" class="form-control" style="
                     background: #fff !important;
                     width: 100%;
                     margin-bottom: 0.5rem;
-                  "
-                  id="bf-new-dataset-name"
-                  placeholder="Type here"
-                  data-alert-message='A Pennsieve dataset name cannot contain any of the following characters: " / : * ? < > \'
-                  data-alert-type="danger"
-                  onkeyup="validateInput($(this))"
-                />
+                  " id="bf-new-dataset-name" placeholder="Type here" data-alert-message="A Pennsieve dataset name cannot contain any of the following characters: &quot; / : * ? < > \" data-alert-type="danger" onkeyup="validateInput($(this))">
                 <div style="border-radius: 0.5rem; margin-top: 7px">
                   <p style="color: dimgray">
                     This is the field that will be displayed in public as the
@@ -222,37 +147,24 @@
                   </p>
                 </div>
               </div>
-              <p
-                style="
+              <p style="
                   color: red;
                   width: 440px;
                   text-align: center;
                   margin: auto;
-                "
-                id="para-new-name-dataset-message"
-              ></p>
-              <div
-                style="
+                " id="para-new-name-dataset-message"></p>
+              <div style="
                   display: flex;
                   flex-direction: column;
                   justify-content: center;
                   align-items: center;
                   margin: 0 auto;
                   margin-top: 20px;
-                "
-              >
-                <button
-                  id="button-create-bf-new-dataset"
-                  class="btn_animated"
-                  style="width: 140px; display: none; border: none !important"
-                >
+                ">
+                <button id="button-create-bf-new-dataset" class="btn_animated" style="width: 140px; display: none; border: none !important"><div class="btn_animated-inside">
                   Create dataset
-                </button>
-                <div
-                  id="bf-create-new-dataset-spinner"
-                  class="spinner"
-                  style="visibility: hidden"
-                >
+                </div></button>
+                <div id="bf-create-new-dataset-spinner" class="spinner" style="visibility: hidden">
                   <div class="rect1"></div>
                   <div class="rect2"></div>
                   <div class="rect3"></div>
@@ -508,46 +420,29 @@
           </div>
         </div>
 
-        <div
-          class="individual-question manage-dataset"
-          id="div-rename-bf-dataset"
-          style="height: auto"
-        >
-          <div class="ui form" style="width: 450px">
+        <div class="individual-question manage-dataset show" id="div-rename-bf-dataset" style="height: auto">
+          <div class="ui form" style="width: 510px !important;display: flex;align-self: center;">
             <div class="grouped fields">
-              <label
-                style="
+              <label style="
                   font-size: 17px;
                   color: var(--color-bg-plum);
                   width: 100%;
                   text-align: center;
-                "
-                >What is the new name of the dataset?
+                ">What is the new name of the dataset?
               </label>
-              <div
-                class="field"
-                style="
+              <div class="field" style="
                   display: flex;
+                  flex-direction: column;
                   justify-content: center;
-                  width: 70%;
+                  width: 100%;
                   align-self: center;
                   margin-bottom: 20px;
-                "
-              >
-                <input
-                  type="text"
-                  class="form-control"
-                  style="
+                ">
+                <input type="text" class="form-control" style="
                     background: #fff !important;
-                    width: 100%;
+                    /* width: 550px; */
                     margin-bottom: 0.5rem;
-                  "
-                  id="bf-rename-dataset-name"
-                  placeholder="Type here"
-                  data-alert-message='A Pennsieve dataset name cannot contain any of the following characters: " / : * ? < > \'
-                  data-alert-type="danger"
-                  onkeyup="validateInput($(this))"
-                />
+                  " id="bf-rename-dataset-name" placeholder="Type here" data-alert-message="A Pennsieve dataset name cannot contain any of the following characters: &quot; / : * ? < > \" data-alert-type="danger" onkeyup="validateInput($(this))">
                 <div style="border-radius: 0.5rem; margin-top: 7px">
                   <p style="color: dimgray">
                     Please ensure when renaming your dataset title it is
@@ -556,27 +451,17 @@
                   </p>
                 </div>
               </div>
-              <div
-                style="
+              <div style="
                   display: flex;
                   flex-direction: column;
                   justify-content: center;
                   align-items: center;
                   margin: 0 auto;
-                "
-              >
-                <button
-                  id="button-rename-dataset"
-                  class="btn_animated"
-                  style="width: 140px; border: none !important"
-                >
+                ">
+                <button id="button-rename-dataset" class="btn_animated" style="width: 140px; border: none !important"><div>
                   Rename dataset
-                </button>
-                <div
-                  id="bf-rename-dataset-spinner"
-                  class="spinner"
-                  style="visibility: hidden"
-                >
+                </div></button>
+                <div id="bf-rename-dataset-spinner" class="spinner" style="visibility: hidden">
                   <div class="rect1"></div>
                   <div class="rect2"></div>
                   <div class="rect3"></div>
@@ -584,15 +469,12 @@
                   <div class="rect5"></div>
                 </div>
               </div>
-              <p
-                id="para-rename-dataset-status"
-                style="
+              <p id="para-rename-dataset-status" style="
                   text-align: center;
                   font-weight: 400;
                   color: var(--color-light-green);
                   font-size: 15px;
-                "
-              ></p>
+                "></p>
             </div>
           </div>
         </div>
@@ -684,25 +566,34 @@
         >
           <div class="ui form" style="width: 100%">
             <div class="grouped fields">
-              <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Which Pennsieve dataset would you like to work on?
-              </label>
               <div
                 style="
                   border-radius: 0.5rem;
                   margin-top: 7px;
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
                   width: 550px;
-                  margin-bottom: 7px;
+                  margin-bottom: 1rem;
                   align-self: center;
                 "
               >
+                <label
+                  style="
+                    font-size: 17px;
+                    font-weight: 700;
+                    color: var(--color-bg-plum) !important;
+                    margin-bottom: 0;
+                  "
+                  >About</label
+                >
                 <p style="color: dimgray">
-                  SPARC curation rules require to set the PI of the SPARC award
-                  as 'owner' of the dataset before it is shared with the
-                  Curation Team for review. This ensures that the PI is the only
-                  person who can publish the dataset.
+                  As per SPARC rules, the PI on the SPARC award associated with the dataset must be made owner of the dataset. This is because only the owner can submit a dataset for publishing and SPARC requires the PI to do so.
                 </p>
               </div>
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Which Pennsieve dataset would you like to work on?
+              </label>
               <div class="field" style="margin: auto; width: 550px">
                 <div
                   style="
@@ -915,19 +806,6 @@
                 "
                 >Change dataset ownership:
               </label>
-              <div style="border-radius: 0.5rem; margin-top: 5px; width: 30rem">
-                <p style="color: dimgray">
-                  The PI of your SPARC award must have a Pennsieve account and
-                  have access to the SPARC Consortium organization on Pennsieve
-                  (see the Prerequisite section
-                  <a
-                    href="https://docs.sodaforsparc.io/docs/next/manage-dataset/connect-your-pennsieve-account-with-soda"
-                    target="_blank"
-                    >here</a
-                  >
-                  for details).
-                </p>
-              </div>
               <div
                 class="field"
                 style="
@@ -963,6 +841,29 @@
                     <option>Select PI</option>
                   </select>
                 </div>
+                <div class="info-container">
+                  <div
+                    class="demo-wrapper info-container-wrapper"
+
+                  >
+                    <button
+                      class="js-container-target demo-toggle-button info-summary"
+
+                    >
+                    Can't find your PI in the list?
+                    </button>
+
+                    <div class="demo-box details-box" id="no-user-found-button">
+                      The PI owner must have a Pennsieve account and have access
+                      to the Sparc Consortium Organization. Click
+                      <a
+                        target="_blank"
+                        >here</a
+                      >
+                      for details.
+                    </div>
+                  </div>
+                </div>
 
                 <div
                   id="div-button-add-permission-pi"
@@ -980,6 +881,19 @@
                     Make PI owner
                   </button>
                 </div>
+                <!--
+                <div>
+                    <details style="margin-top: 1rem; margin-bottom: .5rem; color: dimgray">
+                      <summary style="outline: none; text-align-last: center;"><i class="fa-solid fa-arrow-down-wide-short"></i>Can't find user</summary>
+                      The PI owner must have a Pennsieve account and have access to the Sparc Consortium Organization.
+                      Click                   <a
+                      href="https://docs.sodaforsparc.io/docs/next/manage-dataset/connect-your-pennsieve-account-with-soda"
+                      target="_blank"
+                      >here</a
+                    > for details.
+                    </details>
+                </div>
+              -->                
 
                 <div
                   id="bf-add-permission-pi-spinner"
@@ -1304,7 +1218,7 @@
               <label style="font-size: 17px; color: var(--color-bg-plum)"
                 >Do you want to provide permissions to another user or teams?
               </label>
-              <div style="border-radius: 0.5rem; margin-top: 5px">
+              <div style="border-radius: 0.5rem; margin-top: 5px; width: 550px; align-self: center;">
                 <p style="color: dimgray">
                   Giving permissions to other members and/or team is only
                   necessary if you need them to contribute to the dataset.
@@ -1414,7 +1328,7 @@
                 "
                 >Please select the user for whom you want to modify permissions:
               </label>
-              <div style="border-radius: 0.5rem; margin-top: 5px">
+              <div style="border-radius: 0.5rem; margin-top: 5px; width: 550px; align-self: center;">
                 <p style="color: dimgray">
                   See our associated
                   <a
@@ -1431,7 +1345,7 @@
                 class="field"
                 style="
                   display: flex;
-                  width: 500px;
+                  width: 550px;
                   flex-direction: column;
                   align-self: center;
                 "
@@ -1531,7 +1445,7 @@
                 "
                 >Please select the team for whom you want to modify permissions:
               </label>
-              <div style="border-radius: 0.5rem; margin-top: 5px">
+              <div style="border-radius: 0.5rem; margin-top: 5px; width: 550px; align-self: center;">
                 <p style="color: dimgray">
                   See our associated
                   <a
@@ -1716,6 +1630,30 @@
         >
           <div class="ui form" style="width: 100%; margin-bottom: 35px">
             <div class="grouped fields">
+            <div style="
+                  border-radius: 0.5rem;
+                  margin-top: 7px;
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                  width: 550px;
+                  margin-bottom: 1rem;
+                  align-self: center;
+                ">
+                <label style="
+                    font-size: 17px;
+                    font-weight: 700;
+                    color: var(--color-bg-plum) !important;
+                    margin-bottom: 0;
+                  ">About</label>
+              <p style="color: dimgray">
+                This subtitle will become the short description visible immediately under the title of your dataset once it is published on the               <a
+                target="_blank"
+                href="https://sparc.science"
+                >SPARC data portal</a
+              >.
+              </p>
+              </div>
               <label
                 style="
                   font-size: 17px;
@@ -1724,24 +1662,8 @@
                 "
                 >Which Pennsieve dataset would you like to work on?
               </label>
-              <div
-                style="
-                  border-radius: 0.5rem;
-                  margin-top: 7px;
-                  width: 500px;
-                  align-self: center;
-                "
-              >
-                <p style="color: dimgray">
-                  Add two or three sentences (limit of 256 characters) that
-                  describe the content of your dataset such that it is possible
-                  to differentiate it from other datasets. Any existing subtitle
-                  will be displayed. This field will become the short
-                  description visible immediately under the title of your
-                  dataset once it is published.
-                </p>
-              </div>
-              <div class="field" style="margin: auto; width: 500px">
+
+              <div class="field" style="margin: auto; width: 550px">
                 <div
                   style="
                     display: flex;
@@ -1772,7 +1694,7 @@
                         <div
                           class="change-current-account"
                           onclick="openDropdownPrompt(this, 'bf')"
-                          style="margin-left: -4px"
+                          style="margin-left: 10px"
                         >
                           <h5
                             class="card-right bf-account-span"
@@ -1808,7 +1730,7 @@
                       <div>
                         <h5
                           class="card-left"
-                          style="text-align: right; padding-right: 5px"
+                          style="text-align: right; padding-right: 21px"
                         >
                           Account details:
                         </h5>
@@ -1834,7 +1756,7 @@
                         <div
                           class="change-current-account"
                           onclick="openDropdownPrompt(this, 'dataset')"
-                          style="margin-left: -5px"
+                          style="margin-left: 10px"
                         >
                           <h5
                             class="card-right bf-dataset-span"
@@ -1903,8 +1825,8 @@
             id="div_add_edit_subtitle"
             style="height: auto"
           >
-            <div class="ui form" style="width: 500px">
-              <div class="grouped fields" style="width: 500px; margin: auto">
+            <div class="ui form" style="width: 550px">
+              <div class="grouped fields" style="width: 550px; margin: auto">
                 <label
                   style="
                     font-size: 17px;
@@ -1924,7 +1846,7 @@
                     flex-direction: column;
                   "
                 >
-                  <div style="width: 100%; position: relative">
+                  <div style="width: 550px; position: relative; display: flex; align-self: center;">
                     <textarea
                       id="bf-dataset-subtitle"
                       class="demo-response"
@@ -2062,25 +1984,37 @@
         >
           <div class="ui form" style="width: 100%">
             <div class="grouped fields">
+              <div
+              style="
+                border-radius: 0.5rem;
+                margin-top: 7px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                width: 550px;
+                margin-bottom: 1rem;
+                align-self: center;
+              "
+            >
+              <label
+                style="
+                  font-size: 17px;
+                  font-weight: 700;
+                  color: var(--color-bg-plum) !important;
+                  margin-bottom: 0;
+                "
+                >About</label
+              >
+              <p style="color: dimgray">
+                Add, edit, or remove metadata tags that describe key elements
+                of your research. This will make your datasets more easily
+                searchable once published.
+              </p>
+            </div>
               <label style="font-size: 17px; color: var(--color-bg-plum)"
                 >Which Pennsieve dataset would you like to work on?
               </label>
-              <div
-                style="
-                  border-radius: 0.5rem;
-                  margin-top: 7px;
-                  width: 500px;
-                  align-self: center;
-                "
-              >
-                <p style="color: dimgray">
-                  Add, edit, or remove metadata tags that describe key elements
-                  of your research. This will make your datasets more easily
-                  searchable once published. Click the x to delete a tag. Double
-                  click an existing tag to edit its contents.
-                </p>
-              </div>
-              <div class="field" style="margin: auto; width: 500px">
+              <div class="field" style="margin: auto; width: 550px">
                 <div
                   style="
                     display: flex;
@@ -2111,7 +2045,7 @@
                         <div
                           class="change-current-account"
                           onclick="openDropdownPrompt(this, 'bf')"
-                          style="margin-left: -4px"
+                          style="margin-left: 10px"
                         >
                           <h5
                             class="card-right bf-account-span"
@@ -2147,7 +2081,7 @@
                       <div>
                         <h5
                           class="card-left"
-                          style="text-align: right; padding-right: 5px"
+                          style="text-align: right; padding-right: 21px"
                         >
                           Account details:
                         </h5>
@@ -2173,7 +2107,7 @@
                         <div
                           class="change-current-account"
                           onclick="openDropdownPrompt(this, 'dataset')"
-                          style="margin-left: -5px"
+                          style="margin-left: 10px"
                         >
                           <h5
                             class="card-right bf-dataset-span"
@@ -2238,74 +2172,52 @@
           </div>
         </div>
 
-        <div
-          class="individual-question manage-dataset"
-          id="div_add_tags"
-          style="height: auto"
-        >
-          <div class="ui form" style="width: 500px">
-            <div class="grouped fields" style="width: 500px; margin: auto">
-              <label
-                style="
-                  font-size: 17px;
-                  color: var(--color-bg-plum);
-                  width: 100%;
-                  text-align: center;
-                "
-                >Enter tags below:
-                <br />
-                <span style="color: #696969; font-size: 13px"
-                  >Any existing tags will be displayed
-                </span>
-              </label>
-              <div
-                class="field"
-                style="
-                  display: flex;
-                  justify-content: center;
-                  width: 100%;
-                  flex-direction: column;
-                "
-              >
-                <div style="width: 100%; position: relative">
-                  <input
-                    id="tagify-dataset-tags"
-                    name="tags"
-                    value=""
-                    autofocus
-                  />
-                </div>
+        <div class="ui form">
+          <div class="grouped fields" style="width: 550px;margin: auto;">
+            <label style="
+                font-size: 17px;
+                color: var(--color-bg-plum);
+                width: 100%;
+                text-align: center;
+              ">Enter tags below:
+              <br>
+              <span style="color: #696969; font-size: 13px">Any existing tags will be displayed
+              </span>
+            </label>
+            <div class="field" style="
+                display: flex;
+                justify-content: center;
+                width: 100%;
+                flex-direction: column;
+              ">
+              <div style="width: 550px;position: relative;">
+                <tags class="tagify" tabindex="-1">
+          <tag title="something" contenteditable="false" spellcheck="false" tabindex="-1" class="tagify__tag" __isvalid="true" value="something"><x title="" class="tagify__tag__removeBtn" role="button" aria-label="remove tag"></x><div><span class="tagify__tag-text">something</span></div></tag><tag title="this is it" contenteditable="false" spellcheck="false" tabindex="-1" class="tagify__tag" __isvalid="true" value="this is it"><x title="" class="tagify__tag__removeBtn" role="button" aria-label="remove tag"></x><div><span class="tagify__tag-text">this is it</span></div></tag><tag title="hello" contenteditable="false" spellcheck="false" tabindex="-1" class="tagify__tag" __isvalid="true" value="hello"><x title="" class="tagify__tag__removeBtn" role="button" aria-label="remove tag"></x><div><span class="tagify__tag-text">hello</span></div></tag><tag title="more" contenteditable="false" spellcheck="false" tabindex="-1" class="tagify__tag" __isvalid="true" value="more"><x title="" class="tagify__tag__removeBtn" role="button" aria-label="remove tag"></x><div><span class="tagify__tag-text">more</span></div></tag><tag title="uhh" contenteditable="false" spellcheck="false" tabindex="-1" class="tagify__tag" __isvalid="true" value="uhh"><x title="" class="tagify__tag__removeBtn" role="button" aria-label="remove tag"></x><div><span class="tagify__tag-text">uhh</span></div></tag><tag title="yes" contenteditable="false" spellcheck="false" tabindex="-1" class="tagify__tag" __isvalid="true" value="yes"><x title="" class="tagify__tag__removeBtn" role="button" aria-label="remove tag"></x><div><span class="tagify__tag-text">yes</span></div></tag><tag title="okay tab and enter work" contenteditable="false" spellcheck="false" tabindex="-1" class="tagify__tag" __isvalid="true" value="okay tab and enter work"><x title="" class="tagify__tag__removeBtn" role="button" aria-label="remove tag"></x><div><span class="tagify__tag-text">okay tab and enter work</span></div></tag><span contenteditable="" data-placeholder="​" aria-placeholder="" class="tagify__input" role="textbox" aria-autocomplete="both" aria-multiline="false"></span>
+      </tags><input id="tagify-dataset-tags" name="tags" value="" autofocus="">
+              </div>
 
-                <div style="display: flex; flex-direction: column">
-                  <div
-                    id="div-button-add-tags"
-                    style="
-                      display: flex;
-                      flex-direction: column;
-                      justify-content: center;
-                      align-items: center;
-                      margin: 0 auto;
-                      padding-top: 20px;
-                    "
-                  >
-                    <button
-                      id="button-add-tags"
-                      class="btn_animated md"
-                      style="width: 190px; height: 40px; font-size: 15px"
-                    >
-                      Add Tags
-                    </button>
-                    <div
-                      id="bf-add-tags-dataset-spinner"
-                      class="spinner"
-                      style="display: none"
-                    >
-                      <div class="rect1"></div>
-                      <div class="rect2"></div>
-                      <div class="rect3"></div>
-                      <div class="rect4"></div>
-                      <div class="rect5"></div>
-                    </div>
+              <div style="display: flex; flex-direction: column">
+                <div id="div-button-add-tags" style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    margin: 0 auto;
+                    padding-top: 15px;
+                  ">
+                <div style="margin-bottom: 1rem;">
+                  <p>
+                    Click the X to delete a tag or double
+                    click an existing tag to edit its contents.
+                  </p>
+                </div>
+                  <button id="button-add-tags" class="btn_animated md" style="width: 190px; height: 40px; font-size: 15px">Edit tags</button>
+                  <div id="bf-add-tags-dataset-spinner" class="spinner" style="display: none">
+                    <div class="rect1"></div>
+                    <div class="rect2"></div>
+                    <div class="rect3"></div>
+                    <div class="rect4"></div>
+                    <div class="rect5"></div>
                   </div>
                 </div>
               </div>
@@ -2390,25 +2302,38 @@
         >
           <div class="ui form" style="width: 100%">
             <div class="grouped fields">
+              <div
+              style="
+                border-radius: 0.5rem;
+                margin-top: 7px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                width: 550px;
+                margin-bottom: 1rem;
+                align-self: center;
+              "
+            >
+              <label
+                style="
+                  font-size: 17px;
+                  font-weight: 700;
+                  color: var(--color-bg-plum) !important;
+                  margin-bottom: 0;
+                "
+                >About</label
+              >
+              <p style="color: dimgray">
+                Provide a detailed description of your dataset. This
+                description will be highly visible on the SPARC data portal
+                once your dataset is published.
+              </p>
+            </div>
               <label style="font-size: 17px; color: var(--color-bg-plum)"
                 >Which Pennsieve dataset would you like to work on?</label
               >
-              <div
-                style="
-                  border-radius: 0.5rem;
-                  margin-top: 7px;
-                  width: 500px;
-                  align-self: center;
-                  /* margin-bottom: 1rem; */
-                "
-              >
-                <p style="color: dimgray">
-                  Provide a detailed description of your dataset. This
-                  description will be highly visible on the SPARC data portal
-                  once your dataset is published. Refrain from markdown.
-                </p>
-              </div>
-              <div class="field" style="margin: auto; width: 500px">
+
+              <div class="field" style="margin: auto; width: 550px">
                 <div
                   style="
                     display: flex;
@@ -2439,7 +2364,7 @@
                         <div
                           class="change-current-account"
                           onclick="openDropdownPrompt(this, 'bf')"
-                          style="margin-left: -3px"
+                          style="margin-left: 10px"
                         >
                           <h5
                             class="card-right bf-account-span"
@@ -2475,7 +2400,7 @@
                       <div>
                         <h5
                           class="card-left"
-                          style="text-align: right; padding-right: 5px"
+                          style="text-align: right; padding-right: 21px"
                         >
                           Account details:
                         </h5>
@@ -2501,7 +2426,7 @@
                         <div
                           class="change-current-account"
                           onclick="openDropdownPrompt(this, 'dataset')"
-                          style="margin-left: -6px"
+                          style="margin-left: 10px"
                         >
                           <h5
                             class="card-right bf-dataset-span"
@@ -2566,251 +2491,108 @@
           </div>
         </div>
 
-        <div
-          class="individual-question manage-dataset"
-          id="div_add_edit_description"
-          style="height: auto"
-        >
+        <div class="individual-question manage-dataset show" id="div_add_edit_description" style="height: auto">
           <!--Adding the test section out-->
-          <div class="ui form" style="width: 100%">
-            <div class="field" style="margin: auto; width: 500px">
-              <label
-                style="
+          <div class="ui form" style="width: 550px !important;border-radius: .4rem;align-self: center;box-shadow: 0px 0px 10px #d5d5d5;">
+            <div class="field" style="margin: auto;width: 550px;">
+              <label style="
+                  margin-top: 1.5rem;
                   font-size: 17px;
                   color: var(--color-bg-plum);
                   text-align: center;
-                  margin-bottom: 1.5rem;
-                "
-                >Enter your description in the sections below
+                ">Enter your description in the sections below
               </label>
-
-              <div
-                class="ui styled accordion"
-                id="dd-accordion"
-                style="width: 100% !important"
-              >
-                <div
-                  class="title"
-                  style="background: var(--color-bg-light-green-button)"
-                >
-                  <i class="dropdown icon"></i>
+              <div style="margin: .5rem; display: flex; justify-content: center;"><p>
+                Refrain from markdown.
+              </p></div>
+<div class="ui form" style="width: 550px !important;">
+              <div class="grouped fields" style="/* width: 550px; */margin: auto;">
+                
+                <div class="title" style="/* background: var(--color-bg-light-green-button) */color: rgba(0, 0, 0, 0.8) !important;font-weight: 700;margin-top: .5rem;padding-left: 2rem;">
+                  
                   Study Purpose
-                  <span style="font-style: italic; opacity: 0.8"
-                    >(Mandatory)</span
-                  >
-                  <div style="border-radius: 0.5rem; margin-top: 7px">
+                  <span style="font-style: italic;opacity: 0.8;color: rgba(0, 0, 0, 0.8) !important;">(Mandatory)</span>
+                  <div style="border-radius: 0.5rem;/* margin-top: 7px */">
                     <p style="color: dimgray">
                       Explains the purpose of your study below.
                     </p>
                   </div>
-                </div>
-                <div class="content">
-                  <div
-                    style="
-                      display: block;
-                      width: 90%;
-                      margin: 0px auto;
-                      font-size: 13px;
-                      opacity: 0;
-                    "
-                  >
-                    <div>
-                      <div
-                        class="div-dd-info subjects"
-                        style="flex-direction: column"
-                      >
-                        <div class="demo-controls-body" style="width: 100%">
-                          <div
-                            class="ui input modified"
-                            id="ds-study-purpose-container"
-                            style="display: flex; flex-direction: column"
-                          >
-                            <textarea
-                              type="text"
-                              id="ds-description-study-purpose"
-                              placeholder="Enter your study purpose here..."
-                              style="
-                                font-size: 14px;
-                                width: 100%;
-                                margin: 10px 0px;
-                                overflow-wrap: break-word;
-                              "
-                              rows="4"
-                            >
-                            </textarea>
-
-                            <div
-                              class="isa_warning"
-                              id="ds-isa-warning"
-                              style="
-                                font-size: 14px;
-                                width: 100%;
-                                margin: 10px 0px;
-                                flex-direction: column;
-                                display: none;
-                              "
-                            >
-                              <button
-                                class="close-btn"
-                                title="close"
-                                id="ds-close-btn"
-                              >
-                                <span>X</span>
-                              </button>
-                              <span
-                                style="margin-bottom: 10px; padding-left: 10px"
-                              >
-                                <strong>
-                                  Warning: It seems there is text in your
-                                  description that does not follow SPARC
-                                  Guidelines. Barring special circumstances, all
-                                  text should be in Study Purpose, Data
-                                  Collection, or Primary conclusion sections.
-                                  The non-conforming text has been placed in the
-                                  above section. Please reorganize the text by
-                                  placing it into the appropriate section(s).
-                                  <br />
-                                  <a
-                                    href="https://docs.sodaforsparc.io/docs/manage-dataset/add-edit-description"
-                                    >Learn more.</a
-                                  >
-                                </strong>
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div
-                  class="title"
-                  style="background: var(--color-bg-light-green-button)"
-                >
-                  <i class="dropdown icon"></i>
-                  Data Collection
-                  <span style="font-style: italic; opacity: 0.8"
-                    >(Mandatory)</span
-                  >
-                  <div style="border-radius: 0.5rem; margin-top: 7px">
-                    <p style="color: dimgray">
-                      Explains the method you used for data collection below.
+                </div><div class="field" style="
+                    display: flex;
+                    justify-content: center;
+                    width: 100%;
+                    flex-direction: column;
+                  ">
+                  <div style="width: 500px;position: relative;display: flex;align-self: center;">
+                    <textarea id="ds-description-study-purpose" placeholder="Enter your study purpose here..." class="demo-response" style="position: relative; margin-top: 0px; margin-bottom: 0px; height: 122px;" rows="6" maxlength="256">                    </textarea>
+                    <p>
+                      
                     </p>
                   </div>
+                  
                 </div>
-                <div class="content">
-                  <div
-                    style="
-                      display: block;
-                      width: 90%;
-                      margin: 0px auto;
-                      font-size: 13px;
-                      opacity: 0;
-                    "
-                  >
-                    <div>
-                      <div
-                        class="div-dd-info subjects"
-                        style="flex-direction: column"
-                      >
-                        <div class="demo-controls-body" style="width: 100%">
-                          <div class="ui input modified">
-                            <textarea
-                              type="text"
-                              id="ds-description-data-collection"
-                              placeholder="Enter you data collection methods here..."
-                              style="
-                                font-size: 14px;
-                                width: 100%;
-                                margin: 15px 15px;
-                                overflow-wrap: break-word;
-                              "
-                              rows="4"
-                            >
-                            </textarea>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div
-                  class="title"
-                  style="background: var(--color-bg-light-green-button)"
-                >
-                  <i class="dropdown icon"></i>
-                  Primary Conclusion
-                  <span style="font-style: italic; opacity: 0.8"
-                    >(Mandatory)</span
-                  >
-                  <div style="border-radius: 0.5rem; margin-top: 7px">
+              </div><div class="grouped fields" style="/* width: 550px; */margin: auto;">
+                
+                <div class="title" style="/* background: var(--color-bg-light-green-button) */color: rgba(0, 0, 0, 0.8) !important;padding-left: 2rem;font-weight: 700;margin-top: .5rem;">Data Collection <span style="font-style: italic;opacity: 0.8;color: rgba(0, 0, 0, 0.8) !important;">(Mandatory)</span>
+                  <div style="border-radius: 0.5rem;/* margin-top: 7px */">
                     <p style="color: dimgray">
-                      Explains the primary conclusion of your study below.
+                      Explains the purpose of your study below.
                     </p>
                   </div>
-                </div>
-                <div class="content">
-                  <div
-                    style="
-                      display: block;
-                      width: 90%;
-                      margin: 0px auto;
-                      font-size: 13px;
-                      opacity: 0;
-                    "
-                  >
-                    <div>
-                      <div
-                        class="div-dd-info subjects"
-                        style="flex-direction: column"
-                      >
-                        <div class="demo-controls-body" style="width: 100%">
-                          <div class="ui input modified">
-                            <textarea
-                              type="text"
-                              id="ds-description-primary-conclusion"
-                              placeholder="Enter your primary conclusion here..."
-                              style="
-                                font-size: 14px;
-                                width: 100%;
-                                margin: 15px 15px;
-                                overflow-wrap: break-word;
-                              "
-                              rows="4"
-                            ></textarea>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                </div><div class="field" style="
+                    display: flex;
+                    justify-content: center;
+                    width: 100%;
+                    flex-direction: column;
+                  ">
+                  <div style="width: 500px;position: relative;display: flex;align-self: center;">
+                    <textarea id="ds-description-data-collection" placeholder="Enter you data collection methods here..." class="demo-response" style="position: relative" rows="6" maxlength="256">                    </textarea>
+                    <p>
+                      
+                    </p>
                   </div>
+                  
+                </div>
+              </div><div class="grouped fields" style="/* width: 550px; */margin: auto;">
+                
+                <div class="title" style="/* background: var(--color-bg-light-green-button) */color: rgba(0, 0, 0, 0.8) !important;font-weight: 700;padding-left: 2rem;margin-top: .5rem;">Primary Conclusion <span style="font-style: italic;opacity: 0.8;color: rgba(0, 0, 0, 0.8) !important;">(Mandatory)</span>
+                  <div style="border-radius: 0.5rem;/* margin-top: 7px */">
+                    <p style="color: dimgray">
+                      Explains the purpose of your study below.
+                    </p>
+                  </div>
+                </div><div class="field" style="
+                    display: flex;
+                    justify-content: center;
+                    width: 100%;
+                    margin-bottom: 2rem;
+                    flex-direction: column;
+                  ">
+                  <div style="width: 500px;position: relative;display: flex;align-self: center;">
+                    <textarea id="ds-description-primary-conclusion" placeholder="Enter your primary conclusion here..." class="demo-response" style="position: relative" rows="6" maxlength="256">                    </textarea>
+                    <p>
+                      
+                    </p>
+                  </div>
+                  
                 </div>
               </div>
             </div>
-            <div
-              id="div-button-add-description"
-              style="
+
+              
+            </div>
+            
+          </div>
+    <div id="div-button-add-description" style="
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
                 margin: 0 auto;
                 padding-top: 20px;
-              "
-            >
-              <button
-                id="button-add-description"
-                class="btn_animated md"
-                style="width: 200px; height: 40px; font-size: 15px"
-              >
-                Add description
-              </button>
-              <div
-                id="bf-add-description-dataset-spinner"
-                class="spinner"
-                style="display: none"
-              >
+              ">
+              <button id="button-add-description" class="btn_animated md" style="width: 200px; height: 40px; font-size: 15px"><div>Edit description</div></button>
+              <div id="bf-add-description-dataset-spinner" class="spinner" style="display: none">
                 <div class="rect1"></div>
                 <div class="rect2"></div>
                 <div class="rect3"></div>
@@ -2818,7 +2600,6 @@
                 <div class="rect5"></div>
               </div>
             </div>
-          </div>
         </div>
       </div>
 
@@ -2923,30 +2704,35 @@
         >
           <div class="ui form" style="width: 100%">
             <div class="grouped fields">
+              <div
+              style="
+                border-radius: 0.5rem;
+                margin-top: 7px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                width: 550px;
+                margin-bottom: 1rem;
+                align-self: center;
+              "
+            >
+              <label
+                style="
+                  font-size: 17px;
+                  font-weight: 700;
+                  color: var(--color-bg-plum) !important;
+                  margin-bottom: 0;
+                "
+                >About</label
+              >
+              <p style="color: dimgray">
+                This image will be associated with the dataset and used as a thumbnail once the dataset is published on the SPARC data portal.
+              </p>
+            </div>
               <label style="font-size: 17px; color: var(--color-bg-plum)"
                 >Which Pennsieve dataset would you like to work on?
               </label>
-              <div
-                style="
-                  border-radius: 0.5rem;
-                  margin-top: 7px;
-                  width: 500px;
-                  align-self: center;
-                "
-              >
-                <p style="color: dimgray">
-                  This image will be associated with the dataset and used as a
-                  thumbnail once the dataset is published.
-                  <br />
-                  This interface will help you make sure the uploaded image is
-                  square as per SPARC dataset requirements. Final image
-                  dimensions must be at least 512x512 px and over 1024x1024 px
-                  is highly recommended. The final image size must not exceed
-                  5MB as per Pennsieve's restriction. Banner image must not
-                  display animals or graphic/bloody tissues
-                </p>
-              </div>
-              <div class="field" style="margin: auto; width: 500px">
+              <div class="field" style="margin: auto; width: 550px">
                 <div
                   style="
                     display: flex;
@@ -2977,7 +2763,7 @@
                         <div
                           class="change-current-account"
                           onclick="openDropdownPrompt(this, 'bf')"
-                          style="margin-left: -4px"
+                          style="margin-left: 10px"
                         >
                           <h5
                             class="card-right bf-account-span"
@@ -3013,7 +2799,7 @@
                       <div>
                         <h5
                           class="card-left"
-                          style="text-align: right; padding-right: 5px"
+                          style="text-align: right; padding-right: 21px"
                         >
                           Account details:
                         </h5>
@@ -3039,7 +2825,7 @@
                         <div
                           class="change-current-account"
                           onclick="openDropdownPrompt(this, 'dataset')"
-                          style="margin-left: -5px"
+                          style="margin-left: 10px"
                         >
                           <h5
                             class="card-right bf-dataset-span"
@@ -3392,10 +3178,35 @@
         >
           <div class="ui form" style="width: 100%">
             <div class="grouped fields">
+              <div
+              style="
+                border-radius: 0.5rem;
+                margin-top: 7px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                width: 550px;
+                margin-bottom: 1rem;
+                align-self: center;
+              "
+            >
+              <label
+                style="
+                  font-size: 17px;
+                  font-weight: 700;
+                  color: var(--color-bg-plum) !important;
+                  margin-bottom: 0;
+                "
+                >About</label
+              >
+              <p style="color: dimgray">
+                The <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution (CC-BY 4.0) license</a> to your dataset is mandatory for all SPARC datasets
+              </p>
+            </div>
               <label style="font-size: 17px; color: var(--color-bg-plum)"
                 >Which Pennsieve dataset would you like to work on?
               </label>
-              <div class="field" style="margin: auto; width: 500px">
+              <div class="field" style="margin: auto; width: 550px">
                 <div
                   style="
                     display: flex;
@@ -3426,7 +3237,7 @@
                         <div
                           class="change-current-account"
                           onclick="openDropdownPrompt(this, 'bf')"
-                          style="margin-left: -4px"
+                          style="margin-left: 10px"
                         >
                           <h5
                             class="card-right bf-account-span"
@@ -3462,7 +3273,7 @@
                       <div>
                         <h5
                           class="card-left"
-                          style="text-align: right; padding-right: 5px"
+                          style="text-align: right; padding-right: 21px"
                         >
                           Account details:
                         </h5>
@@ -3493,7 +3304,7 @@
                         <div
                           class="change-current-account"
                           onclick="openDropdownPrompt(this, 'dataset')"
-                          style="margin-left: -5px"
+                          style="margin-left: 10px"
                         >
                           <h5
                             class="card-right bf-dataset-span"
@@ -3536,7 +3347,7 @@
                       <div>
                         <h5
                           class="card-left"
-                          style="text-align: right; padding-right: 5px"
+                          style="text-align: right; padding-right: 21px"
                         >
                           Current License:
                         </h5>
