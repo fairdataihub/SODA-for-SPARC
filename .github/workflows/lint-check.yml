@@ -33,6 +33,7 @@ jobs:
         with:
           prettier: true
           prettier_extensions: "css,html,js,json,jsx,md,sass,scss,ts,tsx,vue"
+          commit_message: "style: 🎨 fix code style issues with ${linter}"
           auto_fix: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
           git_email: "fairdataihub@gmail.com"
@@ -51,6 +52,7 @@ jobs:
         with:
           black: true
           black_dir: "./src/pysoda"
+          commit_message: "style: 🎨 fix code style issues with ${linter}"
           auto_fix: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
           git_email: "fairdataihub@gmail.com"
