@@ -2176,6 +2176,7 @@ def get_number_of_files_and_folders_locally(filepath):
 
     namespace_logger.info("Number of files: " + str(totalFiles))
     namespace_logger.info("Number of folders: " + str(totalDir))
+
     return {"totalFiles": totalFiles, "totalDir": totalDir}
 
 

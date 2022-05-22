@@ -106,10 +106,13 @@ class GetNumberOfFilesAndFoldersLocally(Resource):
     filepath = request.args.get('filepath')
     api.logger.info(f' get_number_of_files_and_folders_locally --  args -- filepath: {filepath}')
 
+    if filepath is None:
+      api.abort(400, "Cannot get number of files and folders locally without a filepath")
+
     try:
       return get_number_of_files_and_folders_locally(filepath)
     except Exception as e:
-      api.abort(400, e.args[0], status="failed", statusCode=400)
+      api.abort(500, e.args[0])
     
 
 
