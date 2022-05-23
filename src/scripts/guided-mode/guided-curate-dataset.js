@@ -3690,10 +3690,16 @@ const renderSampleMetadataTables = () => {
   //sampleMetadataTablesContainer.innerHTML = sampleMetadataTables.join("\n");
 };
 
+const removePermission = (clickedPermissionRemoveButton) => {
+  let permissionElementToRemove = clickedPermissionRemoveButton.closest("tr");
+  let permissionNameToRemove =
+    permissionToRemove.getAttribute("data-permission-id");
+};
+
 const createPermissionsTableRowElement = (name, permission) => {
   return `
     <tr>
-      <td class="middle aligned">${name}</td>
+      <td class="middle aligned permission-name-cell">${name}</td>
       <td class="middle aligned remove-left-border">${permission}</td>
       <td class="middle aligned text-center remove-left-border" style="width: 20px">
         <i
@@ -4034,6 +4040,17 @@ const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
 };
 
 const guidedAddUserPermission = (newUserPermissionObj) => {
+  for (userPermission of sodaJSONObj["digital-metadata"]["user-permissions"]) {
+    if (
+      userPermission["userString"] == newUserPermissionObj.userString &&
+      userPermission["UUID"] == newUserPermissionObj.UUID
+    ) {
+      userPermission["permission"] = newUserPermissionObj.permission;
+      renderPermissionsTable();
+      return;
+    }
+  }
+
   sodaJSONObj["digital-metadata"]["user-permissions"].push(
     newUserPermissionObj
   );
@@ -4042,6 +4059,17 @@ const guidedAddUserPermission = (newUserPermissionObj) => {
 const guidedRemoveUserPermission = (userParentElement) => {};
 
 const guidedAddTeamPermission = (newTeamPermissionObj) => {
+  for (teamPermission of sodaJSONObj["digital-metadata"]["team-permissions"]) {
+    if (
+      teamPermission["teamString"] == newTeamPermissionObj.teamString &&
+      teamPermission["UUID"] == newTeamPermissionObj.UUID
+    ) {
+      teamPermission["permission"] = newTeamPermissionObj.permission;
+      renderPermissionsTable();
+      return;
+    }
+  }
+
   sodaJSONObj["digital-metadata"]["team-permissions"].push(
     newTeamPermissionObj
   );
