@@ -49,10 +49,9 @@ const validatorServerConfiguration = {
   port: "5001",
 };
 
-
 const getScriptPath = (serverConfiguration) => {
   const { distributionFolder, folder, module } = serverConfiguration;
-  
+
   if (!guessPackaged(serverConfiguration)) {
     return path.join(__dirname, folder, module + ".py");
   }
@@ -64,9 +63,8 @@ const getScriptPath = (serverConfiguration) => {
   }
 };
 
- // check for pydist or pyflaskdist
- const guessPackaged = (serverConfiguration) => {
-
+// check for pydist or pyflaskdist
+const guessPackaged = (serverConfiguration) => {
   const { distributionFolder, module } = serverConfiguration;
 
   const windowsPath = path.join(__dirname, distributionFolder);
@@ -89,10 +87,10 @@ const getScriptPath = (serverConfiguration) => {
   }
 };
 
- // @param {object} serverConfiguration  - Contains Flask or Pysoda server configuration details and references to their child process handler
+// @param {object} serverConfiguration  - Contains Flask or Pysoda server configuration details and references to their child process handler
 const createPyProc = (serverConfiguration) => {
   let script = getScriptPath(serverConfiguration);
-  let {port} = "" + serverConfiguration
+  let { port } = "" + serverConfiguration;
 
   log.info(script);
   if (require("fs").existsSync(script)) {
@@ -102,14 +100,22 @@ const createPyProc = (serverConfiguration) => {
   }
   if (guessPackaged(serverConfiguration)) {
     log.info("execFile");
-    serverConfiguration.process = require("child_process").execFile(script, [port], {
-      stdio: "ignore",
-    });
+    serverConfiguration.process = require("child_process").execFile(
+      script,
+      [port],
+      {
+        stdio: "ignore",
+      }
+    );
   } else {
     log.info("spawn");
-    serverConfiguration.process = require("child_process").spawn("python", [script, port], {
-      stdio: "ignore",
-    });
+    serverConfiguration.process = require("child_process").spawn(
+      "python",
+      [script, port],
+      {
+        stdio: "ignore",
+      }
+    );
   }
 
   if (serverConfiguration.process != null) {
@@ -201,7 +207,7 @@ function initialize() {
         var first_launch = nodeStorage.getItem("firstlaunch");
         nodeStorage.setItem("firstlaunch", true);
         exitPyProc(PysodaConfiguration);
-        exitPyProc(validatorServerConfiguration)
+        exitPyProc(validatorServerConfiguration);
         app.exit();
       }
     });
