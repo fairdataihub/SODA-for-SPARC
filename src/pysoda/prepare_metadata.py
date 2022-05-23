@@ -85,6 +85,7 @@ def log_text(filepath, text):
     with open(filepath, "a") as f:
         f.write(text + "\n")
 
+
 # custom Exception class for when a DDD file is in an invalid form
 class InvalidDeliverablesDocument(Exception):
     pass
