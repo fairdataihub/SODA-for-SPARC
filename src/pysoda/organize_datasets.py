@@ -1222,17 +1222,19 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     create_soda_json_completed = 0
 
     def recursive_subfolder_check(subfolder_json, pennsieve_account, manifest):
+        #root level folder will pass subfolders into this function and will recursively check if there are subfolders while creating the json structure
         global create_soda_json_progress
         collection_id = subfolder_json["path"]
         bf = pennsieve_account
-        subfolder_layer = bf._api._get("/packages/" + str(collection_id))
-        children_content = subfolder_layer["children"]
+        subfolder= bf._api._get("/packages/" + str(collection_id))
+        children_content = subfolder["children"]
         for items in children_content:
             item_name = items["content"]["name"]
             create_soda_json_progress += 1
             item_id = items["content"]["id"]
             if item_id[2:9] == "package":
-                if item_name[0:8] != "manifest":
+                #if it is a file name check if there are additional manifest information to attach to files
+                if item_name[0:8] != "manifest": #manifest files are not being included json structure
                     subfolder_json["files"][item_name] = {
                         "action": ["existing"],
                         "path": item_id,
@@ -1256,19 +1258,19 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         temp_name += item_name
                     else:
                         temp_name = item_name
-                    if temp_name in manifest["filename"].values():
-                        # list(dictionary.values()).index()
-                        location_index = list(manifest["filename"].values()).index(
-                            temp_name
-                        )
-                        if manifest["description"][location_index] != "":
-                            subfolder_json["files"][item_name][
-                                "description"
-                            ] = manifest["description"][location_index]
-                        if manifest["Additional Metadata"] != "":
-                            subfolder_json["files"][item_name][
-                                "additional-metadata"
-                            ] = manifest["Additional Metadata"][location_index]
+                    if len(manifest.keys()) > 0:
+                        if temp_name in manifest["filename"].values():
+                            location_index = list(manifest["filename"].values()).index(
+                                temp_name
+                            )
+                            if manifest["description"][location_index] != "":
+                                subfolder_json["files"][item_name][
+                                    "description"
+                                ] = manifest["description"][location_index]
+                            if manifest["Additional Metadata"] != "":
+                                subfolder_json["files"][item_name][
+                                    "additional-metadata"
+                                ] = manifest["Additional Metadata"][location_index]
             else:  # another subfolder found
                 subfolder_json["folders"][item_name] = {
                     "action": ["existing"],
@@ -1283,12 +1285,11 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                 subfolder_json["folders"][item_name]["bfpath"].append(item_name)
 
                 # go through recursive again through subfolder
+
         if len(subfolder_json["folders"].keys()) != 0:  # there are subfolders
             for folder in subfolder_json["folders"].keys():
                 subfolder = subfolder_json["folders"][folder]
                 recursive_subfolder_check(subfolder, bf, manifest)
-
-        # subfolder is at current folder and will call packages of it to fill
 
     # START
 
@@ -1337,30 +1338,30 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         "files": {},
         "folders": {},
     }
-    root_dataset = bf._api._get("/datasets/" + str(dataset_id))
+
+    #root of dataset is pulled here
+    #root_children is the files and folders within root
+    root_folder = bf._api._get("/datasets/" + str(dataset_id))
     packages_list = bf._api._get("/datasets/" + str(dataset_id) + "/packageTypeCounts")
-    # create_soda_json_total_items = len(packages_list["packages"])
     for count in packages_list.values():
         create_soda_json_total_items += int(count)
-    root_children = root_dataset["children"]
+    root_children = root_folder["children"]
 
     for items in root_children:
-        #iterating through root children which could have metadata files or sparc folders
         item_id = items["content"]["id"]
         create_soda_json_progress += 1
         item_name = items["content"]["name"]
-        if (item_id[2:9]) == "package":
+        if (item_id[2:9]) == "package":  
             if item_name in high_level_metadata_sparc:
-                #is a package and high level metadata file
+            # is a metadata file
                 soda_json_structure["metadata-files"][item_name] = {
                     "type": "bf",
                     "action": ["existing"],
                     "path": item_id,
                 }
-        else: 
+        else:  
             if item_name in high_level_sparc_folders:
-            # is a subfolder that needs to be recursively checked
-            #checking if subfolders are one of SPARC's standard folders
+            # is a SPARC folder and will be checked recursively
                 soda_json_structure["dataset-structure"]["folders"][item_name] = {
                     "type": "bf",
                     "path": item_id,
@@ -1370,15 +1371,18 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                     "bfpath": [item_name],
                 }
 
+
+    #manifest information is needed so it is looked for before the recursive calls are made
     if len(soda_json_structure["dataset-structure"]["folders"].keys()) != 0:
         for folder in soda_json_structure["dataset-structure"]["folders"].keys():
-            # check subfolders surface to see if manifest files exist to then use within recursive_subfolder_check
             collection_id = soda_json_structure["dataset-structure"]["folders"][folder][
                 "path"
             ]
-            subfolder_layer = bf._api._get("/packages/" + str(collection_id))
-            children_content = subfolder_layer["children"]
+            subfolder = bf._api._get("/packages/" + str(collection_id))
+            children_content = subfolder["children"]
             for items in children_content:
+            # check subfolders surface to see if manifest files exist to then use within recursive_subfolder_check
+                manifest_dict[folder] = {}
                 package_name = items["content"]["name"]
                 package_id = items["content"]["id"]
                 if package_name in manifest_sparc:
@@ -1424,6 +1428,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     ]
 
     # now that we have the user and account info pull the top layer
+
 
 
 def monitor_pennsieve_json_progress():

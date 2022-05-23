@@ -47,7 +47,7 @@
 - [Issues and Feedback](#Issues-and-Feedback)
 - [Contributing](#Contributing)
 - [License](#license)
-- [Privacy Policy](#Privacy-Policy)
+- [Privacy Policy](https://docs.sodaforsparc.io/docs/privacypolicy)
 - [Acknowledgements](#acknowledgements)
 - [Citing](#Citing)
 
