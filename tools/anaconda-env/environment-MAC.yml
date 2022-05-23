@@ -18,3 +18,4 @@ dependencies:
   - python-docx == 0.8.10
   - xlrd == 1.2.0
   - biopython == 1.78
+  - flask == 2.0.2

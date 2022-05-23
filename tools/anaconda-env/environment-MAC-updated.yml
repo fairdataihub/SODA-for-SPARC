@@ -20,3 +20,4 @@ dependencies:
   - biopython == 1.79
   - gevent == 21.12.0
   - certifi == 2021.10.8
+  - flask == 2.0.2
