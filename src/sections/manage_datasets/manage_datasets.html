@@ -2325,197 +2325,58 @@
           </div>
         </div>
 
-        <div class="ui form">
-          <div class="grouped fields" style="width: 550px; margin: auto">
-            <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                width: 100%;
-                text-align: center;
-              "
-              >Enter tags below:
-              <br />
-              <span style="color: #696969; font-size: 13px"
-                >Any existing tags will be displayed
-              </span>
-            </label>
-            <div
-              class="field"
-              style="
-                display: flex;
-                justify-content: center;
-                width: 100%;
-                flex-direction: column;
-              "
-            >
-              <div style="width: 550px; position: relative">
-                <tags class="tagify" tabindex="-1">
-                  <tag
-                    title="something"
-                    contenteditable="false"
-                    spellcheck="false"
-                    tabindex="-1"
-                    class="tagify__tag"
-                    __isvalid="true"
-                    value="something"
-                    ><x
-                      title=""
-                      class="tagify__tag__removeBtn"
-                      role="button"
-                      aria-label="remove tag"
-                    ></x>
-                    <div>
-                      <span class="tagify__tag-text">something</span>
-                    </div></tag
-                  ><tag
-                    title="this is it"
-                    contenteditable="false"
-                    spellcheck="false"
-                    tabindex="-1"
-                    class="tagify__tag"
-                    __isvalid="true"
-                    value="this is it"
-                    ><x
-                      title=""
-                      class="tagify__tag__removeBtn"
-                      role="button"
-                      aria-label="remove tag"
-                    ></x>
-                    <div>
-                      <span class="tagify__tag-text">this is it</span>
-                    </div></tag
-                  ><tag
-                    title="hello"
-                    contenteditable="false"
-                    spellcheck="false"
-                    tabindex="-1"
-                    class="tagify__tag"
-                    __isvalid="true"
-                    value="hello"
-                    ><x
-                      title=""
-                      class="tagify__tag__removeBtn"
-                      role="button"
-                      aria-label="remove tag"
-                    ></x>
-                    <div><span class="tagify__tag-text">hello</span></div></tag
-                  ><tag
-                    title="more"
-                    contenteditable="false"
-                    spellcheck="false"
-                    tabindex="-1"
-                    class="tagify__tag"
-                    __isvalid="true"
-                    value="more"
-                    ><x
-                      title=""
-                      class="tagify__tag__removeBtn"
-                      role="button"
-                      aria-label="remove tag"
-                    ></x>
-                    <div><span class="tagify__tag-text">more</span></div></tag
-                  ><tag
-                    title="uhh"
-                    contenteditable="false"
-                    spellcheck="false"
-                    tabindex="-1"
-                    class="tagify__tag"
-                    __isvalid="true"
-                    value="uhh"
-                    ><x
-                      title=""
-                      class="tagify__tag__removeBtn"
-                      role="button"
-                      aria-label="remove tag"
-                    ></x>
-                    <div><span class="tagify__tag-text">uhh</span></div></tag
-                  ><tag
-                    title="yes"
-                    contenteditable="false"
-                    spellcheck="false"
-                    tabindex="-1"
-                    class="tagify__tag"
-                    __isvalid="true"
-                    value="yes"
-                    ><x
-                      title=""
-                      class="tagify__tag__removeBtn"
-                      role="button"
-                      aria-label="remove tag"
-                    ></x>
-                    <div><span class="tagify__tag-text">yes</span></div></tag
-                  ><tag
-                    title="okay tab and enter work"
-                    contenteditable="false"
-                    spellcheck="false"
-                    tabindex="-1"
-                    class="tagify__tag"
-                    __isvalid="true"
-                    value="okay tab and enter work"
-                    ><x
-                      title=""
-                      class="tagify__tag__removeBtn"
-                      role="button"
-                      aria-label="remove tag"
-                    ></x>
-                    <div>
-                      <span class="tagify__tag-text"
-                        >okay tab and enter work</span
-                      >
-                    </div></tag
-                  ><span
-                    contenteditable=""
-                    data-placeholder="​"
-                    aria-placeholder=""
-                    class="tagify__input"
-                    role="textbox"
-                    aria-autocomplete="both"
-                    aria-multiline="false"
-                  ></span> </tags
-                ><input
-                  id="tagify-dataset-tags"
-                  name="tags"
-                  value=""
-                  autofocus=""
-                />
-              </div>
+        <div class="individual-question manage-dataset" id="div_add_tags" style="height: auto">
+          <div class="ui form" style="width: 500px">
+            <div class="grouped fields" style="width: 500px; margin: auto">
+              <label style="
+                  font-size: 17px;
+                  color: var(--color-bg-plum);
+                  width: 100%;
+                  text-align: center;
+                ">Enter tags below:
+                <i class="fas fa-info-circle popover-tooltip"
+                  data-content="Add, edit, or remive metadata tags that describe key elements of your research. This will make your datasets more easily searchable once published. Click the x to delete a tag. Double click an existing tag to edit its contents."
+                  rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
+                <br />
+                <span style="color: #696969; font-size: 13px">Any existing tags will be displayed
+                </span>
+              </label>
+              <div class="field" style="
+                  display: flex;
+                  justify-content: center;
+                  width: 100%;
+                  flex-direction: column;
+                ">
+                <div style="width: 100%; position: relative">
+                  <input id="tagify-dataset-tags" name="tags" value="" autofocus />
+                </div>
 
-              <div style="display: flex; flex-direction: column">
-                <div
-                  id="div-button-add-tags"
-                  style="
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
-                    margin: 0 auto;
-                    padding-top: 15px;
-                  "
-                >
-                  <div style="margin-bottom: 1rem">
-                    <p>
-                      Click the X to delete a tag or double click an existing
-                      tag to edit its contents.
-                    </p>
-                  </div>
-                  <button
-                    id="button-add-tags"
-                    class="btn_animated md"
-                    style="width: 190px; height: 40px; font-size: 15px"
-                  >
-                    Edit tags
-                  </button>
-                  <div
-                    id="bf-add-tags-dataset-spinner"
-                    class="spinner"
-                    style="display: none"
-                  >
-                    <div class="rect1"></div>
-                    <div class="rect2"></div>
-                    <div class="rect3"></div>
-                    <div class="rect4"></div>
-                    <div class="rect5"></div>
+                <div style="display: flex; flex-direction: column">
+                  <div id="div-button-add-tags" style="
+                      display: flex;
+                      flex-direction: column;
+                      justify-content: center;
+                      align-items: center;
+                      margin: 0 auto;
+                      padding-top: 20px;
+                    ">
+                      <div style="margin-bottom: 1rem">
+                        <p>
+                          Click the X to delete a tag or double click an existing
+                          tag to edit its contents.
+                        </p>
+                      </div>
+                    <button id="button-add-tags" class="btn_animated md"
+                      style="width: 190px; height: 40px; font-size: 15px">
+                      Add Tags
+                    </button>
+                    <div id="bf-add-tags-dataset-spinner" class="spinner" style="display: none">
+                      <div class="rect1"></div>
+                      <div class="rect2"></div>
+                      <div class="rect3"></div>
+                      <div class="rect4"></div>
+                      <div class="rect5"></div>
+                    </div>
                   </div>
                 </div>
               </div>
