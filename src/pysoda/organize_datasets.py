@@ -1345,22 +1345,22 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     root_children = root_dataset["children"]
 
     for items in root_children:
-        #iterating through root children which could have metadata files or sparc folders
+        # iterating through root children which could have metadata files or sparc folders
         item_id = items["content"]["id"]
         create_soda_json_progress += 1
         item_name = items["content"]["name"]
         if (item_id[2:9]) == "package":
             if item_name in high_level_metadata_sparc:
-                #is a package and high level metadata file
+                # is a package and high level metadata file
                 soda_json_structure["metadata-files"][item_name] = {
                     "type": "bf",
                     "action": ["existing"],
                     "path": item_id,
                 }
-        else: 
+        else:
             if item_name in high_level_sparc_folders:
-            # is a subfolder that needs to be recursively checked
-            #checking if subfolders are one of SPARC's standard folders
+                # is a subfolder that needs to be recursively checked
+                # checking if subfolders are one of SPARC's standard folders
                 soda_json_structure["dataset-structure"]["folders"][item_name] = {
                     "type": "bf",
                     "path": item_id,
