@@ -5,9 +5,7 @@ from flask import Flask, request
 # from flask_cors import CORS
 from namespaces import configure_namespaces
 
-
 configure_namespaces()
-
 
 from utils import (configureLogger, configureRouteHandlers, configureAPI)
 

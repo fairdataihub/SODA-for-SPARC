@@ -1,3 +1,4 @@
+from http.client import HTTPException
 import logging
 from flask_restx import Namespace, Resource, fields
 
@@ -94,6 +95,7 @@ parser = api.parser()
 # parameters for the get_number_of_files_and_folders_locally endpoint
 parser.add_argument('filepath', type=str, required=True, help='Path to the local dataset folder')
 
+
 @api.route('/get_number_of_files_and_folders_locally')
 class GetNumberOfFilesAndFoldersLocally(Resource):
   @api.marshal_with( getNumberOfFilesAndFoldersLocally, False, 200)
@@ -116,8 +118,35 @@ class GetNumberOfFilesAndFoldersLocally(Resource):
     
 
 
-
-
-
-
 ## the model for the submit_dataset_progress endpoint defines what is returned from the endpoint
+successMessage = api.model('SuccessMessage', {
+  'message': fields.String(required=True, description="A message indicating success of the operation."),
+  })
+
+# selected_bfaccount, selected_bfdataset, selected_status
+parser = api.parser()
+parser.add_argument('selected_bfaccount', type=str, required=True, help='The selected bfaccount')
+parser.add_argument('selected_bfdataset', type=str, required=True, help='The selected bfdataset id or name')
+parser.add_argument('selected_status', type=str, required=True, help='The target status for the dataset')
+
+@api.route('/bf_change_dataset_status')
+class BfChangeDatasetStatus(Resource):
+  @api.marshal_with(successMessage, False, 200)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'})
+  # the request parameters
+  @api.expect(parser)
+
+  def get(self):
+    # get the selected_bfaccount, selected_bfdataset, selected_status from the request object
+    selected_bfaccount = request.args.get('selected_bfaccount')
+    selected_bfdataset = request.args.get('selected_bfdataset')
+    selected_status = request.args.get('selected_status')
+    api.logger.info(f' bf_change_dataset_status --  args -- selected_bfaccount: {selected_bfaccount} selected_bfdataset: {selected_bfdataset} selected_status: {selected_status}')
+
+    if selected_bfaccount is None or selected_bfdataset is None or selected_status is None:
+      api.abort(400, "Cannot change dataset status without a selected_bfaccount, selected_bfdataset, and selected_status")
+
+    try:
+      return bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_status)
+    except Exception as e:
+      raise e

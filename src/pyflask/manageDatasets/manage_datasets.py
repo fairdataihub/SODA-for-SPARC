@@ -2110,6 +2110,10 @@ def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
 
 def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_status):
 
+    from flask import abort 
+
+    abort(401, "You do not have access to this dataset")
+
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
