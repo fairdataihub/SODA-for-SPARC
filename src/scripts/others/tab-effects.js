@@ -1785,9 +1785,9 @@ const verify_sparc_folder = (root_folder_path, type) => {
         possible_metadata_files.includes(path.parse(item).name)
       ) {
         valid_dataset = true;
+        break;
       } else {
         valid_dataset = false;
-        break;
       }
     } else {
       if (
@@ -1796,9 +1796,9 @@ const verify_sparc_folder = (root_folder_path, type) => {
         item.substring(0, 1) != "."
       ) {
         valid_dataset = true;
+        break;
       } else {
         valid_dataset = false;
-        break;
       }
     }
   }
