@@ -721,7 +721,6 @@ const traverseToTab = (targetPageID) => {
       }
     }
     if (targetPageID === "guided-create-subjects-metadata-tab") {
-      //Create new subjectsArray variable and assign it to all properties in datasetStructureJSONObj.folders.primary.folders if defined
       renderSubjectsMetadataAsideItems();
 
       const [subjectsInPools, subjectsOutsidePools] =
@@ -742,7 +741,22 @@ const traverseToTab = (targetPageID) => {
       //renderSubjectsMetadataTable(subjectsArray);
     }
     if (targetPageID === "guided-create-samples-metadata-tab") {
-      renderSampleMetadataTables();
+      renderSamplesMetadataAsideItems();
+      /*const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamples();
+      //Combine sample data from samples in and out of pools
+      let samples = [...samplesInPools, ...samplesOutsidePools];
+      const samplesArray = samples.map((sample) => sample.sampleName);
+      console.log(samplesArray);
+      for (let sample of samplesArray) {
+        //check to see if sample already has data in the sodaJSONObj
+        if (
+          sodaJSONObj["dataset-metadata"]["sample-metadata"][sample] ===
+          undefined
+        ) {
+          sodaJSONObj["dataset-metadata"]["sample-metadata"][sample] = {};
+        }
+      }*/
+      //renderSampleMetadataTables();
     }
     if (targetPageID === "guided-add-code-metadata-tab") {
       const codeDescriptionLottieContainer = document.getElementById(
@@ -2309,17 +2323,17 @@ const guidedLoadSampleMetadataIfExists = (
   sampleMetadataId,
   subjectMetadataId
 ) => {
+  //loop through all samplesTableData elemenents besides the first one
+  console.log(samplesTableData);
   console.log(sampleMetadataId);
   console.log(subjectMetadataId);
-  //loop through all samplesTableData elemenents besides the first one
   for (let i = 1; i < samplesTableData.length; i++) {
     if (
       samplesTableData[i][0] === subjectMetadataId &&
       samplesTableData[i][1] === sampleMetadataId
     ) {
       //if the id matches, load the metadata into the form
-      alert("sample match found found");
-      console.log("populating forms");
+      console.log("match found");
       populateFormsSamples(subjectMetadataId, sampleMetadataId, "", "guided");
       return;
     }
@@ -2328,28 +2342,15 @@ const guidedLoadSampleMetadataIfExists = (
 const openModifySubjectMetadataPage = (subjectMetadataID) => {
   guidedLoadSubjectMetadataIfExists(subjectMetadataID);
   $("#guided-metadata-subject-id").text(subjectMetadataID);
-  $("#guided-generate-subjects-file").text(
-    `Save ${subjectMetadataID} metadata`
-  );
 };
-const openModifySampleMetadataPage = (clickedSampleAddMetadataButton) => {
-  let sampleMetadataID = clickedSampleAddMetadataButton
-    .closest("tr")
-    .find(".sample-metadata-id")
-    .text();
-  let sampleMetadataSubjectID = clickedSampleAddMetadataButton
-    .closest("tbody")
-    .siblings()
-    .find(".sample-subject-metadata-id")
-    .text();
+const openModifySampleMetadataPage = (
+  sampleMetadataID,
+  sampleMetadataSubjectID
+) => {
   guidedLoadSampleMetadataIfExists(sampleMetadataID, sampleMetadataSubjectID);
   $("#guided-metadata-sample-id").text(sampleMetadataID);
   $("#guided-metadata-sample-subject-id").text(sampleMetadataSubjectID);
-  $("#guided-generate-samples-file").text(`Save ${sampleMetadataID} metadata`);
-  traverseToTab("guided-sample-metadata-tab");
-  //Manually override active capsule to make it seem like they're still on the subjects tab
-  setActiveCapsule("guided-create-samples-metadata-capsule");
-  $("#guided-footer-div").hide();
+  //$("#guided-metadata-sample-subject-id").text(sampleMetadataSubjectID);
 };
 
 const openCopySampleMetadataPopup = async (clickedSampleCopyMetadataButton) => {
@@ -4247,7 +4248,7 @@ const renderSubjectsMetadataAsideItems = () => {
   //Add the subjects to the DOM
   asideElement.innerHTML = subjectItems;
 
-  //add click event to each sample item
+  //add click event to each subject item
   const selectionAsideItems = document.querySelectorAll(
     `a.subjects-metadata-aside-item`
   );
@@ -4263,7 +4264,7 @@ const renderSubjectsMetadataAsideItems = () => {
       console.log(e.target);
       clearAllSubjectFormFields(guidedSubjectsFormDiv);
 
-      //call openModifySubjectMetadataPage function on licked item
+      //call openModifySubjectMetadataPage function on clicked item
       openModifySubjectMetadataPage(e.target.innerText);
 
       //add selected class to clicked element
@@ -4281,6 +4282,69 @@ const renderSubjectsMetadataAsideItems = () => {
     });
     item.addEventListener("mouseout", (e) => {
       e.target.style.backgroundColor = "";
+    });
+  });
+};
+const renderSamplesMetadataAsideItems = () => {
+  const asideElement = document.getElementById(`guided-samples-metadata-aside`);
+  asideElement.innerHTML = "";
+
+  const [samplesInPools, samplesOutsidePools] =
+    sodaJSONObj.getAllSamplesFromSubjects();
+  //Combine sample data from samples in and out of pools
+  let samples = [...samplesInPools, ...samplesOutsidePools];
+
+  //sort samples object by sampleName property alphabetically
+  samples = samples.sort((a, b) => {
+    const sampleNameA = a.sampleName.toLowerCase();
+    const sampleNameB = b.sampleName.toLowerCase();
+    if (sampleNameA < sampleNameB) return -1;
+    if (sampleNameA > sampleNameB) return 1;
+    return 0;
+  });
+
+  console.log(samples);
+
+  //Create the HTML for the samples
+  const sampleItems = samples
+    .map((sample) => {
+      return `
+        <a
+          class="samples-metadata-aside-item selection-aside-item"
+          data-samples-subject-name="${sample.subjectName}"
+        >
+          <span class="sample-metadata-id">
+            ${sample.sampleName}
+          </span>
+        </a>
+        `;
+    })
+    .join("\n");
+
+  //Add the samples to the DOM
+  asideElement.innerHTML = sampleItems;
+
+  //add click event to each sample item
+  const selectionAsideItems = document.querySelectorAll(
+    `a.samples-metadata-aside-item`
+  );
+
+  selectionAsideItems.forEach((item) => {
+    item.addEventListener("click", (e) => {
+      const samplesSubject = e.target.getAttribute("data-samples-subject-name");
+      previousSample = document.getElementById(
+        "guided-metadata-sample-id"
+      ).innerHTML;
+
+      //check to see if previousSample is empty
+      if (previousSample) {
+        addSample("guided");
+      }
+      //clear all sample form fields
+      clearAllSubjectFormFields(guidedSamplesFormDiv);
+
+      //call openModifySampleMetadataPage function on clicked item
+      openModifySampleMetadataPage(e.target.innerText, samplesSubject);
     });
   });
 };

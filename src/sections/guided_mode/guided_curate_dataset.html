@@ -2565,7 +2565,6 @@
 
                 <div class="guided--section neumorphic mt-xl">
                   <h2 class="guided--text-sub-step mt-0">Custom fields:</h2>
-                  <div class="w-100" id="guided-accordian-custom-fields"></div>
                   <div
                     class="ui secondary submit button"
                     style="margin: 20px"
@@ -2621,6 +2620,10 @@
                 </button>
               </div>
               <div id="guided-form-add-a-sample" class="guided--panel">
+                <label class="guided--form-label centered"
+                  >Subject ID:
+                  <span id="guided-metadata-sample-subject-id"></span>
+                </label>
                 <label class="guided--form-label centered"
                   >Sample ID: <span id="guided-metadata-sample-id"></span>
                 </label>
@@ -2981,6 +2984,33 @@
                     A file containing experimental records for each sample.
                   </p>
                 </div>
+
+                <div class="guided--section neumorphic mt-xl">
+                  <h2 class="guided--text-sub-step mt-0">Custom fields:</h2>
+                  <div
+                    class="ui secondary submit button"
+                    style="margin: 20px"
+                    onclick="addCustomField('samples', 'guided')"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      style="vertical-align: middle"
+                      width="18"
+                      height="18"
+                      fill="currentColor"
+                      class="bi bi-plus"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
+                      />
+                    </svg>
+                    Add a field
+                  </div>
+                  <p class="guided--text-input-instructions mb-0">
+                    To add a custom field, click on the button above.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -3213,10 +3243,10 @@
             data-skip-page="true"
           >
             <label class="guided--form-label centered"
-              >Subject ID: <span id="guided-metadata-sample-subject-id"></span>
+              >Subject ID: <span id="guided-metadata-sample-subject-id2"></span>
             </label>
             <label class="guided--form-label centered"
-              >Sample ID: <span id="guided-metadata-sample-id"></span>
+              >Sample ID: <span id="guided-metadata-sample-id2"></span>
             </label>
             <div
               class="ui styled fluid accordion guided--accordion"
