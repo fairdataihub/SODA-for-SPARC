@@ -423,7 +423,6 @@ ipcMain.on("orcid", (event, url) => {
   });
 });
 
-
 /*
 
 const { app, BrowserWindow, dialog, shell } = require("electron");
