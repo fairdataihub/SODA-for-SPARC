@@ -2017,12 +2017,15 @@
                   <input
                     class="guided--input subjects-form-entry"
                     id="guided-bootbox-subject-pool-id"
+                    name="pool id"
                     type="text"
                     placeholder="Enter Pool ID here"
                     onkeyup="validateInput($(this))"
+                    readonly
                   />
                   <p class="guided--text-input-instructions mb-0">
-                    This will be disabled or not shown.
+                    The pool that contains the subject. <br />
+                    <b>No further action required.</b>
                   </p>
 
                   <label class="guided--form-label mt-xl"
@@ -2031,6 +2034,7 @@
                   <input
                     class="guided--input subjects-form-entry"
                     id="guided-bootbox-subject-exp-group"
+                    name="subject experimental group"
                     type="text"
                     placeholder="Enter subject experimental group here"
                     onkeyup="validateInput($(this))"
@@ -2038,7 +2042,7 @@
                   <p class="guided--text-input-instructions mb-0">
                     Experimental group of the subject if assigned to in the
                     research project.<br />
-                    <b>Example:</b> Control
+                    <b>Example:</b> Control or Experimental
                   </p>
                 </div>
                 <div class="guided--section neumorphic mt-xl">
@@ -2689,8 +2693,8 @@
                     </div>
                   </div>
                   <p class="guided--text-input-instructions mb-0">
-                    sample_id of the sample from which the current sample was
-                    derived DISABLE
+                    The subject the sample was derived from. <br />
+                    <b>No further action required.</b>
                   </p>
 
                   <label class="guided--form-label mt-xl">pool id:</label>
@@ -2706,7 +2710,8 @@
                     </div>
                   </div>
                   <p class="guided--text-input-instructions mb-0">
-                    disable or put N/A find out what to put here
+                    The pool that contains the sample. <br />
+                    <b>No further action required.</b>
                   </p>
 
                   <label class="guided--form-label mt-xl"

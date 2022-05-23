@@ -2348,12 +2348,16 @@ const openModifySubjectMetadataPage = (subjectMetadataID) => {
 };
 const openModifySampleMetadataPage = (
   sampleMetadataID,
-  sampleMetadataSubjectID
+  sampleMetadataSubjectID,
+  sampleMetadataPoolID
 ) => {
   guidedLoadSampleMetadataIfExists(sampleMetadataID, sampleMetadataSubjectID);
   $("#guided-metadata-sample-id").text(sampleMetadataID);
   $("#guided-metadata-sample-subject-id").text(sampleMetadataSubjectID);
-  //$("#guided-metadata-sample-subject-id").text(sampleMetadataSubjectID);
+  document.getElementById("guided-bootbox-wasDerivedFromSample").value =
+    sampleMetadataSubjectID;
+  document.getElementById("guided-bootbox-sample-pool-id").value =
+    sampleMetadataPoolID;
 };
 
 const openCopySubjectMetadataPopup = async () => {
@@ -4252,6 +4256,7 @@ const renderSubjectsMetadataAsideItems = () => {
       return `
           <a 
             class="subjects-metadata-aside-item selection-aside-item"
+            data-pool-id="${subject.poolName ? subject.poolName : "N/A"}"
           ><span class="subject-metadata-id">${subject.subjectName}</span></a>
         `;
     })
@@ -4273,6 +4278,7 @@ const renderSubjectsMetadataAsideItems = () => {
       if (previousSubject) {
         addSubject("guided");
       }
+
       clearAllSubjectFormFields(guidedSubjectsFormDiv);
 
       //call openModifySubjectMetadataPage function on clicked item
@@ -4286,6 +4292,9 @@ const renderSubjectsMetadataAsideItems = () => {
           item.classList.remove("is-selected");
         }
       });
+      //Set the pool id field based of clicked elements data-pool-id attribute
+      document.getElementById("guided-bootbox-subject-pool-id").value =
+        e.target.getAttribute("data-pool-id");
     });
     //add hover event that changes the background color
     item.addEventListener("mouseover", (e) => {
@@ -4323,6 +4332,7 @@ const renderSamplesMetadataAsideItems = () => {
         <a
           class="samples-metadata-aside-item selection-aside-item"
           data-samples-subject-name="${sample.subjectName}"
+          data-samples-pool-id="${sample.poolName ? sample.poolName : "N/A"}"
         >
           <span class="sample-metadata-id">
             ${sample.sampleName}
@@ -4350,7 +4360,18 @@ const renderSamplesMetadataAsideItems = () => {
           item.classList.remove("is-selected");
         }
       });
+
       const samplesSubject = e.target.getAttribute("data-samples-subject-name");
+      const samplesPool = e.target.getAttribute("data-samples-pool-id");
+
+      //Set the subject id field based of clicked elements data-subject-id attribute
+      document.getElementById("guided-bootbox-wasDerivedFromSample").value =
+        samplesSubject;
+
+      //Set the pool id field based of clicked elements data-pool-id attribute
+      document.getElementById("guided-bootbox-sample-pool-id").value =
+        samplesPool;
+
       previousSample = document.getElementById(
         "guided-metadata-sample-id"
       ).innerHTML;
@@ -4363,7 +4384,11 @@ const renderSamplesMetadataAsideItems = () => {
       clearAllSubjectFormFields(guidedSamplesFormDiv);
 
       //call openModifySampleMetadataPage function on clicked item
-      openModifySampleMetadataPage(e.target.innerText, samplesSubject);
+      openModifySampleMetadataPage(
+        e.target.innerText,
+        samplesSubject,
+        samplesPool
+      );
     });
 
     item.addEventListener("mouseover", (e) => {
@@ -4403,7 +4428,6 @@ $(document).ready(() => {
     sodaJSONObj.moveSubjectIntoPool("sub-4", "pool-2");
     sodaJSONObj.moveSubjectIntoPool("sub-5", "pool-3");
     sodaJSONObj.moveSubjectIntoPool("sub-6", "pool-3");
-    sodaJSONObj.moveSubjectIntoPool("sub-7", "pool-4");
     sodaJSONObj.addSample("sam-1");
     sodaJSONObj.addSample("sam-2");
     sodaJSONObj.addSample("sam-3");
@@ -4433,8 +4457,8 @@ $(document).ready(() => {
     sodaJSONObj.addSampleToSubject("sam-11", "sub-5");
     sodaJSONObj.addSampleToSubject("sam-12", "sub-5");
     sodaJSONObj.addSampleToSubject("sam-13", "sub-5");
-    sodaJSONObj.addSampleToSubject("sam-14", "sub-5");
-    sodaJSONObj.addSampleToSubject("sam-15", "sub-5");
+    sodaJSONObj.addSampleToSubject("sam-14", "sub-7");
+    sodaJSONObj.addSampleToSubject("sam-15", "sub-7");
 
     //show the next button after 5 seconds
     setTimeout(() => {
