@@ -9822,13 +9822,12 @@ $("#validate_dataset_bttn").on("click", async () => {
   $("#dataset_validator_spinner").hide();
 });
 
-
 function openFeedbackForm() {
   let feedback_btn = document.getElementById("feedback-btn");
   console.log(feedback_btn.classList);
-  if(!feedback_btn.classList.contains("is-open")) {
+  if (!feedback_btn.classList.contains("is-open")) {
     feedback_btn.click();
-  };
+  }
   setTimeout(() => {
     document.getElementById("feedback-btn").scrollIntoView({
       behavior: "smooth",
