@@ -154,7 +154,7 @@ client.invoke("echo", "server ready", (error, res) => {
           allowEscapeKey: false,
         }).then(async (result) => {
           if (result.isConfirmed) {
-            app.exit();
+            //app.exit();
           }
         });
       } else {

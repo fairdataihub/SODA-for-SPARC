@@ -1186,7 +1186,34 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only=True)
 
 
 def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
+    high_level_sparc_folders = [
+        "code",
+        "derivative",
+        "docs",
+        "primary",
+        "protocol",
+        "source",
+    ]
     manifest_sparc = ["manifest.xlsx", "manifest.csv"]
+    high_level_metadata_sparc = [
+        "submission.xlsx",
+        "submission.csv",
+        "submission.json",
+        "dataset_description.xlsx",
+        "dataset_description.csv",
+        "dataset_description.json",
+        "subjects.xlsx",
+        "subjects.csv",
+        "subjects.json",
+        "samples.xlsx",
+        "samples.csv",
+        "samples.json",
+        "README.txt",
+        "CHANGES.txt",
+        "code_description.xlsx",
+        "inputs_metadata.xlsx",
+        "outputs_metadata.xlsx",
+    ]
     global create_soda_json_completed
     global create_soda_json_total_items
     global create_soda_json_progress
@@ -1267,9 +1294,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
     error = []
 
-    # "<Dataset name='bug-test' id='N:dataset:20b1dee7-e8dc-46ac-83d7-2a88fc0dbf07'>"
-    # "<Pennsieve user='wheresdorian@gmail.com' organization='SPARC Consortium'>"
-
     # check that the Pennsieve account is valid
     try:
         bf_account_name = soda_json_structure["bf-account-selected"]["account-name"]
@@ -1313,33 +1337,38 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         "files": {},
         "folders": {},
     }
-    top_layer_dataset = bf._api._get("/datasets/" + str(dataset_id))
+    root_dataset = bf._api._get("/datasets/" + str(dataset_id))
     packages_list = bf._api._get("/datasets/" + str(dataset_id) + "/packageTypeCounts")
     # create_soda_json_total_items = len(packages_list["packages"])
     for count in packages_list.values():
         create_soda_json_total_items += int(count)
-    dataset_layers = top_layer_dataset["children"]
+    root_children = root_dataset["children"]
 
-    for items in dataset_layers:
+    for items in root_children:
+        #iterating through root children which could have metadata files or sparc folders
         item_id = items["content"]["id"]
         create_soda_json_progress += 1
-        # size_count += int(items["storage"])
         item_name = items["content"]["name"]
-        if (item_id[2:9]) == "package":  # is a metadata file
-            soda_json_structure["metadata-files"][item_name] = {
-                "type": "bf",
-                "action": ["existing"],
-                "path": item_id,
-            }
-        else:  # is a subfolder that needs to be recursively checked
-            soda_json_structure["dataset-structure"]["folders"][item_name] = {
-                "type": "bf",
-                "path": item_id,
-                "action": ["existing"],
-                "files": {},
-                "folders": {},
-                "bfpath": [item_name],
-            }
+        if (item_id[2:9]) == "package":
+            if item_name in high_level_metadata_sparc:
+                #is a package and high level metadata file
+                soda_json_structure["metadata-files"][item_name] = {
+                    "type": "bf",
+                    "action": ["existing"],
+                    "path": item_id,
+                }
+        else: 
+            if item_name in high_level_sparc_folders:
+            # is a subfolder that needs to be recursively checked
+            #checking if subfolders are one of SPARC's standard folders
+                soda_json_structure["dataset-structure"]["folders"][item_name] = {
+                    "type": "bf",
+                    "path": item_id,
+                    "action": ["existing"],
+                    "files": {},
+                    "folders": {},
+                    "bfpath": [item_name],
+                }
 
     if len(soda_json_structure["dataset-structure"]["folders"].keys()) != 0:
         for folder in soda_json_structure["dataset-structure"]["folders"].keys():
