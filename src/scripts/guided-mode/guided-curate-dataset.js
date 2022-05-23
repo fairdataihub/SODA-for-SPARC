@@ -721,6 +721,8 @@ const traverseToTab = (targetPageID) => {
       }
     }
     if (targetPageID === "guided-create-subjects-metadata-tab") {
+      console.log(subjectsTableData);
+
       renderSubjectsMetadataAsideItems();
 
       const [subjectsInPools, subjectsOutsidePools] =
@@ -728,6 +730,7 @@ const traverseToTab = (targetPageID) => {
       //Combine sample data from subjects in and out of pools
       let subjects = [...subjectsInPools, ...subjectsOutsidePools];
       const subjectsArray = subjects.map((subject) => subject.subjectName);
+      console.log(subjectsTableData);
 
       for (let subject of subjectsArray) {
         //check to see if subject already has data in the sodaJSONObj
@@ -2353,141 +2356,7 @@ const openModifySampleMetadataPage = (
   //$("#guided-metadata-sample-subject-id").text(sampleMetadataSubjectID);
 };
 
-const openCopySampleMetadataPopup = async (clickedSampleCopyMetadataButton) => {
-  const copyFromSampleMetadataID = clickedSampleCopyMetadataButton
-    .closest("tr")
-    .find(".sample-metadata-id")
-    .text();
-
-  const initialCopyFromMetadata = `
-          <div class="field text-left">
-            <div class="ui radio checkbox">
-              <input type="radio" name="copy-from" value="${copyFromSampleMetadataID}" checked="checked">
-              <label>${copyFromSampleMetadataID}</label>
-            </div>
-          </div>
-        `;
-  const subjectsArray = guidedGetSubjects();
-
-  let samplesArray = [];
-  //Add all subjects in sodaJSONObj to samplesArray
-  for (let subject of subjectsArray) {
-    let subjectsSamples = guidedGetSubjectSamples(subject);
-    samplesArray = samplesArray.concat(subjectsSamples);
-  }
-
-  const copyFromMetadata = samplesArray
-    .filter((sample) => sample !== copyFromSampleMetadataID)
-    .map((sample) => {
-      return `
-        <div class="field text-left">
-          <div class="ui radio checkbox">
-            <input type="radio" name="copy-from" value="${sample}">
-            <label>${sample}</label>
-          </div>
-        </div>`;
-    })
-    .join("\n");
-
-  const copyToMetadata = subjectsArray
-    .map((subject) => {
-      //get the samples of the subject being mapped over
-      let subjectSamples = guidedGetSubjectSamples(subject);
-      //create a checkbox for each of the samples
-      let subjectSamplesCheckboxes = subjectSamples
-        .map((sample) => {
-          return `
-            <div class="field text-left">
-              <div class="ui checkbox">
-              <input type="checkbox" name="copy-to" value="${sample}">
-              <label>${sample}</label>
-              </div>
-            </div>
-          `;
-        })
-        .join("\n");
-      return `
-        ${subject}
-        ${subjectSamplesCheckboxes}
-      `;
-    })
-    .join("\n");
-
-  const copyMetadataElement = `
-        <div class="space-between">
-          <div class="ui form">
-            <div class="grouped fields">
-              <label class="guided--form-label med text-left">Which sample would you like to copy metadata from?</label>
-              ${initialCopyFromMetadata}
-              ${copyFromMetadata}
-            </div>
-          </div>
-          <div class="ui form">
-            <div class="grouped fields">
-              <label class="guided--form-label med text-left">Which samples would you like to copy metadata to?</label>
-              ${copyToMetadata}
-            </div>
-          </div>
-        </div>
-        `;
-  swal
-    .fire({
-      width: 950,
-      html: copyMetadataElement,
-      showCancelButton: true,
-      reverseButtons: reverseSwalButtons,
-      confirmButtonText: "Copy",
-      focusCancel: true,
-    })
-    .then((result) => {
-      if (result.isConfirmed) {
-        const selectedCopyFromSample = $(
-          "input[name='copy-from']:checked"
-        ).val();
-        //loop through checked copy-to checkboxes and return the value of the checkbox element if checked
-        let selectedCopyToSamples = []; //["sam2","sam3"]
-        $("input[name='copy-to']:checked").each(function () {
-          selectedCopyToSamples.push($(this).val());
-        });
-
-        let copyFromSampleData = []; //["input1","input"]
-        //Add the data from the selected copy fro sample to cpoyFromSampleData array
-        for (var i = 1; i < samplesTableData.length; i++) {
-          if (samplesTableData[i][1] === selectedCopyFromSample) {
-            //copy all elements from matching array except the first one
-            copyFromSampleData = samplesTableData[i].slice(2);
-            console.log(copyFromSampleData);
-          }
-        }
-        for (sample of selectedCopyToSamples) {
-          let copyToSampleHasMetadata = false;
-          samplesTableData.forEach((sampleData, index) => {
-            console.log(sampleData);
-            if (sampleData[1] === sample) {
-              console.log(samplesTableData);
-              copyToSampleHasMetadata = true;
-              sampleData = [sampleData[0], sampleData[1]];
-              sampleData = sampleData.concat(copyFromSampleData);
-              samplesTableData[index] = sampleData;
-              console.log(samplesTableData);
-            }
-          });
-          if (!copyToSampleHasMetadata) {
-            console.log(samplesTableData);
-
-            newsampleData = [guidedGetSamplesSubject(sample), sample].concat(
-              copyFromSampleData
-            );
-            samplesTableData.push(newsampleData);
-            console.log(samplesTableData);
-          }
-        }
-      }
-    });
-};
-
 const openCopySubjectMetadataPopup = async () => {
-  //create an array of values with the innter contents of every link with the class subject-metadata-aside-item
   const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
   //Combine sample data from subjects in and out of pools
   let subjectsArray = [...subjectsInPools, ...subjectsOutsidePools];
@@ -2590,6 +2459,121 @@ const openCopySubjectMetadataPopup = async () => {
         }
 
         console.log(subjectsTableData);
+      }
+    });
+};
+
+const openCopySampleMetadataPopup = async () => {
+  const [samplesInPools, samplesOutsidePools] =
+    sodaJSONObj.getAllSamplesFromSubjects();
+  //Combine sample data from samples in and out of pools
+  let samples = [...samplesInPools, ...samplesOutsidePools];
+
+  //sort samples object by sampleName property alphabetically
+  samples = samples
+    .sort((a, b) => {
+      const sampleNameA = a.sampleName.toLowerCase();
+      const sampleNameB = b.sampleName.toLowerCase();
+      if (sampleNameA < sampleNameB) return -1;
+      if (sampleNameA > sampleNameB) return 1;
+      return 0;
+    })
+    .map((sample) => sample.sampleName);
+
+  const copyFromMetadata = samples
+    .map((sample) => {
+      return `
+        <div class="field text-left">
+          <div class="ui radio checkbox">
+            <input type="radio" name="copy-from" value="${sample}">
+            <label>${sample}</label>
+          </div>
+        </div>`;
+    })
+    .join("\n");
+
+  const copyToMetadata = samples
+    .map((sample) => {
+      return `
+        <div class="field text-left">
+          <div class="ui checkbox">
+          <input type="checkbox" name="copy-to" value="${sample}">
+          <label>${sample}</label>
+          </div>
+        </div>
+      `;
+    })
+    .join("\n");
+
+  const copyMetadataElement = `
+    <div class="space-between">
+      <div class="ui form">
+        <div class="grouped fields">
+          <label class="guided--form-label med text-left">Which sample would you like to copy metadata from?</label>
+          ${copyFromMetadata}
+        </div>
+      </div>
+      <div class="ui form">
+        <div class="grouped fields">
+          <label class="guided--form-label med text-left">Which samples would you like to copy metadata to?</label>
+          ${copyToMetadata}
+        </div>
+      </div>
+    </div>
+  `;
+
+  swal
+    .fire({
+      width: 950,
+      html: copyMetadataElement,
+      showCancelButton: true,
+      reverseButtons: reverseSwalButtons,
+      confirmButtonText: "Copy",
+      focusCancel: true,
+    })
+    .then((result) => {
+      if (result.isConfirmed) {
+        const selectedCopyFromSample = $(
+          "input[name='copy-from']:checked"
+        ).val();
+        //loop through checked copy-to checkboxes and return the value of the checkbox element if checked
+        let selectedCopyToSamples = []; //["sam2","sam3"]
+        $("input[name='copy-to']:checked").each(function () {
+          selectedCopyToSamples.push($(this).val());
+        });
+
+        let copyFromSampleData = []; //["input1","input"]
+        //Add the data from the selected copy fro sample to cpoyFromSampleData array
+        for (var i = 1; i < samplesTableData.length; i++) {
+          if (samplesTableData[i][1] === selectedCopyFromSample) {
+            //copy all elements from matching array except the first one
+            copyFromSampleData = samplesTableData[i].slice(2);
+            console.log(copyFromSampleData);
+          }
+        }
+        for (sample of selectedCopyToSamples) {
+          let copyToSampleHasMetadata = false;
+          samplesTableData.forEach((sampleData, index) => {
+            console.log(sampleData);
+            if (sampleData[1] === sample) {
+              console.log(samplesTableData);
+              copyToSampleHasMetadata = true;
+              sampleData = [sampleData[0], sampleData[1]];
+              sampleData = sampleData.concat(copyFromSampleData);
+              samplesTableData[index] = sampleData;
+              console.log(samplesTableData);
+            }
+          });
+          if (!copyToSampleHasMetadata) {
+            console.log(samplesTableData);
+
+            newsampleData = [guidedGetSamplesSubject(sample), sample].concat(
+              copyFromSampleData
+            );
+            samplesTableData.push(newsampleData);
+            console.log(samplesTableData);
+          }
+        }
       }
     });
 };
