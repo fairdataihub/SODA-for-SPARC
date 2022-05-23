@@ -103,6 +103,66 @@ console.log("User OS:", os.type(), os.platform(), "version:", os.release());
 const appVersion = window.require("electron").remote.app.getVersion();
 log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
+let over_view_section = document.getElementById("getting_started-section");
+let column1 = document.getElementById("lottie1")
+let column2 = document.getElementById("lottie2")
+let column3 = document.getElementById("lottie3")
+
+var observer = new MutationObserver(function (mutations) {
+  console.log(mutations);
+  mutations.forEach(function (mutation) {
+    var attributeValue = $(mutation.target).prop(mutation.attributeName);
+    console.log("Class attribute changed to:", attributeValue);
+    console.log(attributeValue);
+    if (attributeValue === "section js-section u-category-windows is-shown") {
+      //add lotties
+      column1.innerText = "";
+      column2.innerText = "";
+      column3.innerText = "";
+
+      column1_lottie = lottie.loadAnimation({
+        container: column1,
+        animationData:
+          column1Lottie /*(json js variable, (view src/assets/lotties)*/,
+        renderer: "svg",
+        loop: true /*controls looping*/,
+        autoplay: true,
+      });
+      column2_lottie = lottie.loadAnimation({
+        container: column2,
+        animationData:
+          column2Lottie /*(json js variable, (view src/assets/lotties)*/,
+        renderer: "svg",
+        loop: true /*controls looping*/,
+        autoplay: true,
+      });
+      column3_lottie = lottie.loadAnimation({
+        container: column3,
+        animationData: column3Lottie,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+    } else {
+      console.log("clearing and stopping lotties");
+      document.getElementById("demo-video").style.display = "none";
+      column1.innerText = "";
+      column2.innerText = "";
+      column3.innerText = "";
+      lottie.stop(column1_lottie);
+      lottie.stop(column2_lottie);
+      lottie.stop(column3_lottie);
+    }
+  });
+});
+
+observer.observe(over_view_section, {
+  attributes: true,
+  attributeFilter: ["class"],
+});
+document.getElementById("getting_starting_tab").click();
+
+
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -324,6 +384,7 @@ startupServerAndApiCheck();
 // Check app version on current app and display in the side bar
 // Also check the core systems to make sure they are all operational
 ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
+  
   // run pre flight checks once the server connection is confirmed
   // wait until soda is connected to the backend server
   while (!sodaIsConnected || !apiVersionChecked) {
@@ -10184,67 +10245,66 @@ $("#validate_dataset_bttn").on("click", async () => {
   $("#dataset_validator_spinner").hide();
 });
 
-let over_view_section = document.getElementById("getting_started-section");
+// var observer = new MutationObserver(function (mutations) {
+//   console.log(mutations);
+//   mutations.forEach(function (mutation) {
+//     var attributeValue = $(mutation.target).prop(mutation.attributeName);
+//     console.log("Class attribute changed to:", attributeValue);
+//     console.log(attributeValue);
+//     if (attributeValue === "section js-section u-category-windows is-shown") {
+//       //add lotties
+//       column1.innerText = "";
+//       column2.innerText = "";
+//       column3.innerText = "";
 
-var observer = new MutationObserver(function (mutations) {
-  console.log(mutations);
-  mutations.forEach(function (mutation) {
-    var attributeValue = $(mutation.target).prop(mutation.attributeName);
-    console.log("Class attribute changed to:", attributeValue);
-    console.log(attributeValue);
-    let column1 = document.getElementById("lottie1");
-    let column2 = document.getElementById("lottie2");
-    let column3 = document.getElementById("lottie3");
-    if (attributeValue === "section js-section u-category-windows is-shown") {
-      //add lotties
-      column1.innerText = "";
-      column2.innerText = "";
-      column3.innerText = "";
+//       column1_lottie = lottie.loadAnimation({
+//         container: column1,
+//         animationData:
+//           column1Lottie /*(json js variable, (view src/assets/lotties)*/,
+//         renderer: "svg",
+//         loop: true /*controls looping*/,
+//         autoplay: true,
+//       });
+//       column2_lottie = lottie.loadAnimation({
+//         container: column2,
+//         animationData:
+//           column2Lottie /*(json js variable, (view src/assets/lotties)*/,
+//         renderer: "svg",
+//         loop: true /*controls looping*/,
+//         autoplay: true,
+//       });
+//       column3_lottie = lottie.loadAnimation({
+//         container: column3,
+//         animationData: column3Lottie,
+//         renderer: "svg",
+//         loop: true,
+//         autoplay: true,
+//       });
+//     } else {
+//       console.log("clearing and stopping lotties");
+//       document.getElementById("demo-video").style.display = "none";
+//       column1.innerText = "";
+//       column2.innerText = "";
+//       column3.innerText = "";
+//       lottie.stop(column1_lottie);
+//       lottie.stop(column2_lottie);
+//       lottie.stop(column3_lottie);
+//     }
+//   });
+// });
 
-      var column1_lottie = lottie.loadAnimation({
-        container: column1,
-        animationData:
-          column1Lottie /*(json js variable, (view src/assets/lotties)*/,
-        renderer: "svg",
-        loop: true /*controls looping*/,
-        autoplay: true,
-      });
-      var column2_lottie = lottie.loadAnimation({
-        container: column2,
-        animationData:
-          column2Lottie /*(json js variable, (view src/assets/lotties)*/,
-        renderer: "svg",
-        loop: true /*controls looping*/,
-        autoplay: true,
-      });
-      var column3_lottie = lottie.loadAnimation({
-        container: column3,
-        animationData: column3Lottie,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-    } else {
-      console.log("clearing and stopping lotties");
-      document.getElementById("demo-video").style.display = "none";
-      column1.innerText = "";
-      column2.innerText = "";
-      column3.innerText = "";
-      lottie.stop(column1_lottie);
-      lottie.stop(column2_lottie);
-      lottie.stop(column3_lottie);
-    }
-  });
-});
+// observer.observe(over_view_section, {
+//   attributes: true,
+//   attributeFilter: ["class"],
+// });
 
-observer.observe(over_view_section, {
-  attributes: true,
-  attributeFilter: ["class"],
-});
+function gettingStarted() {
+  let getting_started = document.getElementById("main_tabs_view");
+  getting_started.click();
+
+}
 
 function sodaVideo() {
-  console.log("video");
-  console.log(this);
   document.getElementById("overview-column-1").blur();
   shell.openExternal(
     "https://docs.sodaforsparc.io/docs/getting-started/user-interface"
