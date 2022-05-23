@@ -675,7 +675,7 @@ const nextPrev = (n) => {
       var extraRequiredFile = "";
     }
     if (!subArrayBoolean) {
-      var notIncludedMessage = `<div style='text-align: left'>You did not include the following metadata files that are typically expected for all SPARC datasets: <br><ol style='text-align: left'><li> submission</li><li> dataset_description</li> <li> subjects</li> <li> README.txt</li> ${extraRequiredFile} </ol>Are you sure you want to continue?</div>`;
+      var notIncludedMessage = `<div style='text-align: left'>You did not include some of the following metadata files that are typically expected for all SPARC datasets: <br><ol style='text-align: left'><li> submission</li><li> dataset_description</li> <li> subjects</li> <li> README.txt</li> ${extraRequiredFile} </ol>Are you sure you want to continue?</div>`;
       Swal.fire({
         allowOutsideClick: false,
         allowEscapeKey: false,
