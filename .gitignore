@@ -14,7 +14,6 @@ semantic.json
 *.pyc
 src/package-lock.json
 src/.DS_Store
-api.spec
 .DS_Store
 electron-builder.yml
 website/.eslintcache
@@ -25,3 +24,7 @@ tools/analytics/result_csv
 tools/analytics/.ipynb_checkpoints
 tools/analytics/client_secrets.json
 tools/analytics/iframe_figures
+src/build
+.env
+.env.local
+.env.production

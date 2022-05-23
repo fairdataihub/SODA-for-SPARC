@@ -6,7 +6,6 @@ dependencies:
 - python = 3.9
 - PyInstaller = 4.7
 - nodejs = 10.13.0
-- pywin32 = 303
 - git = 2.20.1
 - pip
 - pip:
@@ -20,3 +19,4 @@ dependencies:
   - xlrd == 2.0.1
   - biopython == 1.79
   - gevent == 21.12.0
+  - certifi == 2021.10.8
