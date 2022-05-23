@@ -109,11 +109,8 @@ let column2 = document.getElementById("lottie2")
 let column3 = document.getElementById("lottie3")
 
 var observer = new MutationObserver(function (mutations) {
-  console.log(mutations);
   mutations.forEach(function (mutation) {
     var attributeValue = $(mutation.target).prop(mutation.attributeName);
-    console.log("Class attribute changed to:", attributeValue);
-    console.log(attributeValue);
     if (attributeValue === "section js-section u-category-windows is-shown") {
       //add lotties
       column1.innerText = "";
@@ -10244,59 +10241,6 @@ $("#validate_dataset_bttn").on("click", async () => {
   $("#dataset_validator_status").html("");
   $("#dataset_validator_spinner").hide();
 });
-
-// var observer = new MutationObserver(function (mutations) {
-//   console.log(mutations);
-//   mutations.forEach(function (mutation) {
-//     var attributeValue = $(mutation.target).prop(mutation.attributeName);
-//     console.log("Class attribute changed to:", attributeValue);
-//     console.log(attributeValue);
-//     if (attributeValue === "section js-section u-category-windows is-shown") {
-//       //add lotties
-//       column1.innerText = "";
-//       column2.innerText = "";
-//       column3.innerText = "";
-
-//       column1_lottie = lottie.loadAnimation({
-//         container: column1,
-//         animationData:
-//           column1Lottie /*(json js variable, (view src/assets/lotties)*/,
-//         renderer: "svg",
-//         loop: true /*controls looping*/,
-//         autoplay: true,
-//       });
-//       column2_lottie = lottie.loadAnimation({
-//         container: column2,
-//         animationData:
-//           column2Lottie /*(json js variable, (view src/assets/lotties)*/,
-//         renderer: "svg",
-//         loop: true /*controls looping*/,
-//         autoplay: true,
-//       });
-//       column3_lottie = lottie.loadAnimation({
-//         container: column3,
-//         animationData: column3Lottie,
-//         renderer: "svg",
-//         loop: true,
-//         autoplay: true,
-//       });
-//     } else {
-//       console.log("clearing and stopping lotties");
-//       document.getElementById("demo-video").style.display = "none";
-//       column1.innerText = "";
-//       column2.innerText = "";
-//       column3.innerText = "";
-//       lottie.stop(column1_lottie);
-//       lottie.stop(column2_lottie);
-//       lottie.stop(column3_lottie);
-//     }
-//   });
-// });
-
-// observer.observe(over_view_section, {
-//   attributes: true,
-//   attributeFilter: ["class"],
-// });
 
 function gettingStarted() {
   let getting_started = document.getElementById("main_tabs_view");
