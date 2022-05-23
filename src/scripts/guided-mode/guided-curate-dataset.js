@@ -4273,7 +4273,6 @@ const renderSubjectsMetadataAsideItems = () => {
       if (previousSubject) {
         addSubject("guided");
       }
-      console.log(e.target);
       clearAllSubjectFormFields(guidedSubjectsFormDiv);
 
       //call openModifySubjectMetadataPage function on clicked item
@@ -4341,8 +4340,27 @@ const renderSamplesMetadataAsideItems = () => {
     `a.samples-metadata-aside-item`
   );
 
+  //get the path prefix from the clicked item
+  const pathSuffix = e.target.dataset.pathSuffix;
+  console.log(pathSuffix);
+
+  const samplePageData = generateHighLevelFolderSubFolderPageData(
+    "subject",
+    highLevelFolderName,
+    pathSuffix
+  );
+  updateFolderStructureUI(samplePageData);
+
   selectionAsideItems.forEach((item) => {
     item.addEventListener("click", (e) => {
+      //add selected class to clicked element
+      e.target.classList.add("is-selected");
+      //remove selected class from all other elements
+      selectionAsideItems.forEach((item) => {
+        if (item != e.target) {
+          item.classList.remove("is-selected");
+        }
+      });
       const samplesSubject = e.target.getAttribute("data-samples-subject-name");
       previousSample = document.getElementById(
         "guided-metadata-sample-id"
@@ -4357,6 +4375,13 @@ const renderSamplesMetadataAsideItems = () => {
 
       //call openModifySampleMetadataPage function on clicked item
       openModifySampleMetadataPage(e.target.innerText, samplesSubject);
+    });
+
+    item.addEventListener("mouseover", (e) => {
+      e.target.style.backgroundColor = "whitesmoke";
+    });
+    item.addEventListener("mouseout", (e) => {
+      e.target.style.backgroundColor = "";
     });
   });
 };
@@ -7401,6 +7426,59 @@ $(document).ready(() => {
             message: "Please select the location of your local datset",
           });
           throw errorArray;
+        }
+      }
+      if (pageBeingLeftID === "guided-create-subjects-metadata-tab") {
+        //Save the subject metadata from the subject currently being modified
+        addSubject("guided");
+
+        const subjectsAsideItemsCount = document.querySelectorAll(
+          ".subjects-metadata-aside-item"
+        ).length;
+        const subjectsInTableDataCount = subjectsTableData.length - 1;
+        if (subjectsAsideItemsCount !== subjectsInTableDataCount) {
+          let result = await Swal.fire({
+            title: "Continue without adding subject metadata to all subjects?",
+            text: "In order for your dataset to be in compliance with SPARC's dataset structure, you must add subject metadata for all subjects.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Finish adding metadata to all subjects",
+            cancelButtonText:
+              "Continue without adding metadata to all subjects",
+          });
+          if (result.isConfirmed) {
+            throw new Error(
+              "Returning to subject metadata addition page to complete all fields"
+            );
+          }
+        }
+      }
+      if (pageBeingLeftID === "guided-create-samples-metadata-tab") {
+        //Save the sample metadata from the sample currently being modified
+        addSample("guided");
+
+        const samplesAsideItemsCount = document.querySelectorAll(
+          ".samples-metadata-aside-item"
+        ).length;
+        const samplesInTableDataCount = samplesTableData.length - 1;
+        if (samplesAsideItemsCount !== samplesInTableDataCount) {
+          let result = await Swal.fire({
+            title: "Continue without adding sample metadata to all samples?",
+            text: "In order for your dataset to be in compliance with SPARC's dataset structure, you must add sample metadata for all samples.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Finish adding metadata to all samples",
+            cancelButtonText: "Continue without adding metadata to all samples",
+          });
+          if (result.isConfirmed) {
+            throw new Error(
+              "Returning to sample metadata addition page to complete all fields"
+            );
+          }
         }
       }
       if (pageBeingLeftID === "guided-banner-image-tab") {
