@@ -104,9 +104,9 @@ const appVersion = window.require("electron").remote.app.getVersion();
 log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
 let over_view_section = document.getElementById("getting_started-section");
-let column1 = document.getElementById("lottie1")
-let column2 = document.getElementById("lottie2")
-let column3 = document.getElementById("lottie3")
+let column1 = document.getElementById("lottie1");
+let column2 = document.getElementById("lottie2");
+let column3 = document.getElementById("lottie3");
 
 var observer = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
@@ -158,8 +158,6 @@ observer.observe(over_view_section, {
   attributeFilter: ["class"],
 });
 document.getElementById("getting_starting_tab").click();
-
-
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -381,7 +379,6 @@ startupServerAndApiCheck();
 // Check app version on current app and display in the side bar
 // Also check the core systems to make sure they are all operational
 ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
-  
   // run pre flight checks once the server connection is confirmed
   // wait until soda is connected to the backend server
   while (!sodaIsConnected || !apiVersionChecked) {
@@ -10245,7 +10242,6 @@ $("#validate_dataset_bttn").on("click", async () => {
 function gettingStarted() {
   let getting_started = document.getElementById("main_tabs_view");
   getting_started.click();
-
 }
 
 function sodaVideo() {
