@@ -92,7 +92,7 @@ const getScriptPath = (serverConfiguration) => {
  // @param {object} serverConfiguration  - Contains Flask or Pysoda server configuration details and references to their child process handler
 const createPyProc = (serverConfiguration) => {
   let script = getScriptPath(serverConfiguration);
-  let {port} = "" + serverConfiguration
+  let {port} = serverConfiguration
 
   log.info(script);
   if (require("fs").existsSync(script)) {
