@@ -4340,17 +4340,6 @@ const renderSamplesMetadataAsideItems = () => {
     `a.samples-metadata-aside-item`
   );
 
-  //get the path prefix from the clicked item
-  const pathSuffix = e.target.dataset.pathSuffix;
-  console.log(pathSuffix);
-
-  const samplePageData = generateHighLevelFolderSubFolderPageData(
-    "subject",
-    highLevelFolderName,
-    pathSuffix
-  );
-  updateFolderStructureUI(samplePageData);
-
   selectionAsideItems.forEach((item) => {
     item.addEventListener("click", (e) => {
       //add selected class to clicked element
