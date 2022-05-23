@@ -1,7 +1,5 @@
 from http.client import HTTPException
-import logging
-from flask_restx import Namespace, Resource, fields
-
+from flask_restx import Namespace, Resource, fields, reqparse
 from manageDatasets import ( 
     get_pennsieve_api_key_secret, 
     get_number_of_files_and_folders_locally,
@@ -38,6 +36,7 @@ from manageDatasets import (
 from namespaces import get_namespace, NamespaceEnum
 # import the request object
 from flask import request
+from errorHandlers import notBadRequestException
 
 
 # TODO: Cover all possible status codes for each route
@@ -124,10 +123,11 @@ successMessage = api.model('SuccessMessage', {
   })
 
 # selected_bfaccount, selected_bfdataset, selected_status
-parser = api.parser()
-parser.add_argument('selected_bfaccount', type=str, required=True, help='The selected bfaccount')
-parser.add_argument('selected_bfdataset', type=str, required=True, help='The selected bfdataset id or name')
-parser.add_argument('selected_status', type=str, required=True, help='The target status for the dataset')
+parser = reqparse.RequestParser(bundle_errors=True)
+parser.add_argument('selected_bfaccount', type=str, required=True, help='The selected bfaccount', location='json')
+parser.add_argument('selected_bfdataset', type=str, required=True, help='The selected bfdataset id or name', location='json')
+parser.add_argument('selected_status', type=str, required=True, help='The target status for the dataset', location='json')
+
 
 @api.route('/bf_change_dataset_status')
 class BfChangeDatasetStatus(Resource):
@@ -135,12 +135,13 @@ class BfChangeDatasetStatus(Resource):
   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'})
   # the request parameters
   @api.expect(parser)
-
-  def get(self):
+  def put(self):
     # get the selected_bfaccount, selected_bfdataset, selected_status from the request object
-    selected_bfaccount = request.args.get('selected_bfaccount')
-    selected_bfdataset = request.args.get('selected_bfdataset')
-    selected_status = request.args.get('selected_status')
+    data = request.get_json()
+    selected_bfaccount = data['selected_bfaccount']
+    selected_bfdataset = data['selected_bfdataset']
+    selected_status = data['selected_status']
+
     api.logger.info(f' bf_change_dataset_status --  args -- selected_bfaccount: {selected_bfaccount} selected_bfdataset: {selected_bfdataset} selected_status: {selected_status}')
 
     if selected_bfaccount is None or selected_bfdataset is None or selected_status is None:
@@ -149,4 +150,7 @@ class BfChangeDatasetStatus(Resource):
     try:
       return bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_status)
     except Exception as e:
+      # something unexpected happened so abort with a 500
+      if notBadRequestException(e):
+        api.abort(500, e.args[0])
       raise e

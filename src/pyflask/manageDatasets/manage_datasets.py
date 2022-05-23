@@ -66,7 +66,9 @@ import itertools
 
 from datetime import datetime, timezone
 
+from flask import abort 
 from namespaces import NamespaceEnum, get_namespace_logger
+
 
 ### Global variables
 namespace_logger = get_namespace_logger(NamespaceEnum.MANAGE_DATASETS)
@@ -2109,28 +2111,20 @@ def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
 
 
 def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_status):
-
-    from flask import abort 
-
-    abort(401, "You do not have access to this dataset")
-
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        abort(400, "Error: Please select a valid Pennsieve account")
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        abort(400, "Error: Please select a valid Pennsieve dataset")
 
     try:
         role = bf_get_current_user_permission(bf, myds)
         if role not in ["owner", "manager"]:
-            error = "Error: You don't have permissions for changing the status of this Pennsieve dataset"
-            raise Exception(error)
+            abort(403, "Error: You don't have permissions for changing the status of this Pennsieve dataset")
     except Exception as e:
         raise e
 
@@ -2147,14 +2141,13 @@ def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_st
                 c += 1
                 break
         if c == 0:
-            error = "Error: Selected status is not available for this Pennsieve account"
-            raise Exception(error)
+            abort(400, "Error: Selected status is not available for this Pennsieve account")
 
         # gchange dataset status
         selected_dataset_id = myds.id
         jsonfile = {"status": new_status}
         bf._api.datasets._put("/" + str(selected_dataset_id), json=jsonfile)
-        return "Success: Changed dataset status to '" + selected_status + "'"
+        return { "message": "Success: Changed dataset status to '" + selected_status + "'" }
     except Exception as e:
         raise e
 
