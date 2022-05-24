@@ -1629,7 +1629,7 @@ button[data-id="bf_list_users_pi"] {
 }
 
 .front-page_logo {
-  margin-top: .5rem;
+  margin-top: 0.5rem;
   display: flex;
   align-items: center;
   flex-direction: row;
@@ -1659,7 +1659,7 @@ button[data-id="bf_list_users_pi"] {
 }
 
 .overview-lottie {
-  height: 100%
+  height: 100%;
 }
 
 .getting-started-buttons {
@@ -1675,7 +1675,7 @@ button[data-id="bf_list_users_pi"] {
   width: 14rem;
   justify-content: center;
   justify-self: center;
-  border-radius: .25rem;
+  border-radius: 0.25rem;
   align-items: center;
   height: 3.5rem;
   margin-right: 1rem;
@@ -1696,7 +1696,7 @@ button[data-id="bf_list_users_pi"] {
   margin-right: 1rem;
   justify-content: center;
   align-items: center;
-  border-radius: .25rem;
+  border-radius: 0.25rem;
   border-width: 2px;
   border-color: var(--color-accent);
 }
@@ -1706,7 +1706,7 @@ button[data-id="bf_list_users_pi"] {
   background: white;
   width: 14rem;
   justify-self: center;
-  border-radius: .25rem;
+  border-radius: 0.25rem;
   justify-content: center;
   align-items: center;
   height: 3.5rem;
