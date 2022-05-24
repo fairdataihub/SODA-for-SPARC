@@ -112,13 +112,13 @@ var observer = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
     var attributeValue = $(mutation.target).prop(mutation.attributeName);
     console.log(attributeValue);
-    console.log(attributeValue.includes)
+    console.log(attributeValue.includes);
     if (attributeValue.includes("is-shown") === true) {
       //add lotties
       column1.innerText = "";
       column2.innerText = "";
       column3.innerText = "";
-      console.log("adding animation")
+      console.log("adding animation");
 
       var column1_lottie = lottie.loadAnimation({
         container: column1,
@@ -10255,7 +10255,9 @@ function sodaVideo() {
 }
 
 function directToDocumentation() {
-  shell.openExternal("https://docs.sodaforsparc.io/docs/getting-started/organize-and-submit-sparc-datasets-with-soda");
+  shell.openExternal(
+    "https://docs.sodaforsparc.io/docs/getting-started/organize-and-submit-sparc-datasets-with-soda"
+  );
   document.getElementById("overview-column-2").blur();
   // window.open('https://docs.sodaforsparc.io', '_blank');
 }
