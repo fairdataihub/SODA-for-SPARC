@@ -2,39 +2,10 @@
 <template class="task-template">
   <section
     id="getting_started-section"
-    class="section js-section u-category-windows is-shown"
-    style="
-      padding-left: 0 !important;
-      display: grid;
-      grid-template-rows: 20%;
-      align-items: center;
-      margin-top: 1rem;
-    "
+    class="getting-started section js-section u-category-windows is-shown fullShown"
   >
-    <div
-      style="
-        width: auto;
-        height: 18rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        margin: 0 auto;
-        margin-top: 0rem;
-        align-items: center;
-        margin-bottom: 0rem;
-      "
-    >
-      <div
-        style="
-          margin-top: 0rem;
-          display: flex;
-          align-items: center;
-          flex-direction: row;
-          width: 63rem;
-          flex-direction: column;
-          justify-content: center;
-        "
-      >
+    <div class="getting-started-header">
+      <div class="front-page_logo">
         <img
           id="frontpage-logo"
           style="width: 35%; height: 100%"
@@ -42,32 +13,12 @@
           class="soda-can-welcome"
         />
       </div>
-      <p
-        style="
-          text-align: center;
-          font-size: 14px;
-          margin-top: 1.5rem;
-          margin-bottom: 0rem;
-        "
-      >
+      <p class="header-text">
         Your one-stop tool for curating and sharing SPARC datasets!<br />
       </p>
     </div>
 
-    <div
-      class="grid h-auto w-full grid-cols-3 gap-6"
-      style="
-        color: black;
-        padding-left: 1rem;
-        padding-right: 1rem;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 1.5rem;
-        display: grid;
-        width: 100%;
-        /* margin-bottom: 3rem; */
-        /* grid-template-rows: 105%; */
-      "
-    >
+    <div class="overview-card-layout grid h-auto w-full grid-cols-3 gap-6">
       <div
         id="overview-column-1"
         class="overview-column"
@@ -79,81 +30,48 @@
           border-color: #f2f2f2;
         "
       >
-        Rapidly prepare your dataset according to the FAIR SPARC data curation
-        guidelines
-        <div id="lottie1" style="height: 100%"></div>
+        <p style="margin: 0">
+          Rapidly prepare your dataset according to the FAIR SPARC data curation
+          guidelines
+        </p>
+
+        <div id="lottie1" class="overview-lottie">
+
+        </div>
+        <p style="margin: 0">Content goes here</p>
       </div>
       <div
         id="overview-column-2"
         class="overview-column"
-        style="
-          text-align: center;
-          height: 100% !important;
-          border: solid;
-          border-color: #f2f2f2;
-        "
       >
-        Easily upload your curated dataset on the SPARC Data platform Pennsieve
-        <div id="lottie2" style="height: 100%"></div>
+        <p style="margin: 0">
+          Easily upload your curated dataset on the SPARC Data platform
+          Pennsieve
+        </p>
+        <div id="lottie2" class="overview-lottie">
+
+        </div>
+        <p style="margin: 0">Content goes here</p>
       </div>
       <div
         id="overview-column-3"
         class="overview-column"
-        style="
-          /* text-align-last: center; */
-          text-align: center;
-          height: 100% !important;
-          border: solid;
-          border-color: #f2f2f2;
-        "
       >
-        Learn
-        <div id="lottie3" style="height: 100%"></div>
+        <p>Learn</p>
+        <div id="lottie3" class="overview-lottie">
+        </div>
+        <p style="margin: 0">Content goes here</p>
       </div>
     </div>
     <div
-      class="grid h-auto w-full grid-cols-3 gap-6"
-      style="
-        /* grid-template-columns: repeat(2, minmax(0, 1fr)); */
-        /* display: grid; */
-        /* width: 70%; */
-        display: flex;
-        justify-content: space-evenly;
-        /* margin-top: 12rem; */
-        /* margin-bottom: 0; */
-        /* height: 0% !important; */
-      "
+      class="getting-started-buttons grid h-auto w-full grid-cols-3 gap-6"
     >
       <button
-        class="secondary-plain-button text-base"
+        class="sodaVideo-button secondary-plain-button text-base"
         onclick="sodaVideo()"
-        style="
-          display: flex;
-          background: white;
-          width: 14rem;
-          justify-self: center;
-          /* margin-left: 11rem; */
-          border-radius: 0.25rem;
-          justify-content: center;
-          align-items: center;
-          /* margin-top: -10rem; */
-          height: 3.5rem;
-          /* margin-right: 4rem; */
-          /* margin-bottom: 6rem; */
-          color: #b80d49;
-          border-width: 2px;
-          border-color: #b80d49;
-        "
       >
         <p
-          style="
-            /* color: var(--color-accent); */
-            margin: 0;
-            font-weight: bold !important;
-            margin-right: 6px;
-            font-weight: 500;
-            line-height: 1rem;
-          "
+          class="interface-btn-txt"
         >
           Learn about the interface
         </p>
@@ -161,29 +79,8 @@
         <i class="fas fa-play"></i>
       </button>
       <button
-        class="primary-plain-button text-base"
+        class="direct-to-doc-btn primary-plain-button text-base"
         onclick="directToDocumentation()"
-        style="
-          color: var(--color-accent);
-          display: flex;
-          place-self: center;
-          background: white;
-          font-weight: bold;
-          line-height: 1rem;
-          font-size: 1rem;
-          width: 18rem !important;
-          height: 3.5rem;
-          /* margin-top: -10rem; */
-          /* margin-right: 24rem; */
-          /* padding-bottom: 6rem; */
-          justify-content: center;
-          align-items: center;
-          border-radius: 0.25rem;
-          /* margin-left: -1rem; */
-          /* margin-bottom: 6rem; */
-          border-width: 2px;
-          border-color: var(--color-accent);
-        "
       >
         <i class="el-icon"
           ><svg
@@ -209,35 +106,11 @@
         </p>
       </button>
       <button
-        class="secondary-plain-button text-base"
+        class="getting-started-btn secondary-plain-button text-base"
         onclick="gettingStarted()"
-        style="
-          display: flex;
-          background: white;
-          width: 14rem;
-          justify-self: center;
-          /* margin-left: 11rem; */
-          border-radius: 0.25rem;
-          justify-content: center;
-          align-items: center;
-          /* margin-top: -10rem; */
-          height: 3.5rem;
-          /* margin-right: 4rem; */
-          /* margin-bottom: 6rem; */
-          color: #b80d49;
-          border-width: 2px;
-          border-color: #b80d49;
-        "
       >
         <p
-          style="
-            /* color: var(--color-accent); */
-            margin: 0;
-            font-weight: bold !important;
-            margin-right: 2px;
-            font-weight: 500;
-            line-height: 1.5rem;
-          "
+          class="getting-started-btn-txt"
         >
           Getting Started
         </p>

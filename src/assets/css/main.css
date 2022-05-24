@@ -1589,14 +1589,15 @@ button[data-id="bf_list_users_pi"] {
   display: flex;
   cursor: pointer;
   margin-right: 30px;
-  font-weight: 600;
-  font-size: large;
-  height: 60% !important;
+  border: solid;
+  border-color: #f2f2f2;
+  height: 100% !important;
   border-radius: 2rem;
   align-items: center;
   border-width: 1px !important;
   justify-content: center;
   flex-direction: column;
+  text-align: center;
   padding: 1.5rem;
   --tw-border-opacity: 1;
   border-color: rgb(244 244 245 / var(--tw-border-opacity));
@@ -1606,4 +1607,126 @@ button[data-id="bf_list_users_pi"] {
     0 8px 10px -6px rgba(0, 0, 0, 0.1);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
     var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.getting-started {
+  padding: 0 !important;
+  display: grid;
+  grid-template-rows: 20% 70% 10%;
+  align-items: center;
+}
+
+.getting-started-header {
+  width: auto;
+  height: 18rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0 auto;
+  margin-top: 1rem;
+  align-items: center;
+  margin-bottom: 0rem;
+}
+
+.front-page_logo {
+  margin-top: .5rem;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  width: 63rem;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.header-text {
+  font-size: 18px;
+  margin-top: 1rem;
+  font-weight: bold;
+}
+
+.overview-card-layout {
+  display: grid;
+  color: black;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  height: 75% !important;
+  height: 75% !important;
+  max-width: 1080px;
+  place-self: center;
+}
+
+.overview-lottie {
+  height: 100%
+}
+
+.getting-started-buttons {
+  display: flex;
+  justify-content: center;
+  height: 50% !important;
+  margin-bottom: 1.5rem;
+}
+
+.sodaVideo-button {
+  display: flex;
+  background: white;
+  width: 14rem;
+  justify-content: center;
+  justify-self: center;
+  border-radius: .25rem;
+  align-items: center;
+  height: 3.5rem;
+  margin-right: 1rem;
+  color: #b80d49;
+  border-width: 2px;
+  border-color: #b80d49;
+}
+
+.direct-to-doc-btn {
+  color: var(--color-accent);
+  display: flex;
+  background: white;
+  font-weight: bold;
+  line-height: 1rem;
+  font-size: 1rem;
+  width: 18rem !important;
+  height: 3.5rem;
+  margin-right: 1rem;
+  justify-content: center;
+  align-items: center;
+  border-radius: .25rem;
+  border-width: 2px;
+  border-color: var(--color-accent);
+}
+
+.getting-started-btn {
+  display: flex;
+  background: white;
+  width: 14rem;
+  justify-self: center;
+  border-radius: .25rem;
+  justify-content: center;
+  align-items: center;
+  height: 3.5rem;
+  color: #b80d49;
+  border-width: 2px;
+  border-color: #b80d49;
+}
+
+.getting-started-btn-txt {
+  margin: 0;
+  font-weight: bold !important;
+  margin-right: 2px;
+  font-weight: 500;
+  line-height: 1.5rem;
+}
+
+.interface-btn-txt {
+  margin: 0;
+  font-weight: bold !important;
+  margin-right: 6px;
+  font-weight: 500;
+  line-height: 1rem;
 }

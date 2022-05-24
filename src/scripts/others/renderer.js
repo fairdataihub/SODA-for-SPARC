@@ -111,13 +111,16 @@ let column3 = document.getElementById("lottie3");
 var observer = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
     var attributeValue = $(mutation.target).prop(mutation.attributeName);
-    if (attributeValue === "section js-section u-category-windows is-shown") {
+    console.log(attributeValue);
+    console.log(attributeValue.includes)
+    if (attributeValue.includes("is-shown") === true) {
       //add lotties
       column1.innerText = "";
       column2.innerText = "";
       column3.innerText = "";
+      console.log("adding animation")
 
-      column1_lottie = lottie.loadAnimation({
+      var column1_lottie = lottie.loadAnimation({
         container: column1,
         animationData:
           column1Lottie /*(json js variable, (view src/assets/lotties)*/,
@@ -125,7 +128,7 @@ var observer = new MutationObserver(function (mutations) {
         loop: true /*controls looping*/,
         autoplay: true,
       });
-      column2_lottie = lottie.loadAnimation({
+      var column2_lottie = lottie.loadAnimation({
         container: column2,
         animationData:
           column2Lottie /*(json js variable, (view src/assets/lotties)*/,
@@ -133,7 +136,7 @@ var observer = new MutationObserver(function (mutations) {
         loop: true /*controls looping*/,
         autoplay: true,
       });
-      column3_lottie = lottie.loadAnimation({
+      var column3_lottie = lottie.loadAnimation({
         container: column3,
         animationData: column3Lottie,
         renderer: "svg",
@@ -142,7 +145,7 @@ var observer = new MutationObserver(function (mutations) {
       });
     } else {
       console.log("clearing and stopping lotties");
-      document.getElementById("demo-video").style.display = "none";
+      // document.getElementById("demo-video").style.display = "none";
       column1.innerText = "";
       column2.innerText = "";
       column3.innerText = "";
@@ -10252,8 +10255,7 @@ function sodaVideo() {
 }
 
 function directToDocumentation() {
-  shell.openExternal("https://docs.sodaforsparc.io");
-  console.log(this);
+  shell.openExternal("https://docs.sodaforsparc.io/docs/getting-started/organize-and-submit-sparc-datasets-with-soda");
   document.getElementById("overview-column-2").blur();
   // window.open('https://docs.sodaforsparc.io', '_blank');
 }
