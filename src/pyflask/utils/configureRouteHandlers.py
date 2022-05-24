@@ -1,5 +1,4 @@
-from namespaces import get_namespace
-from apis import manage_datasets_resource
+from apis import manage_datasets_resource, validate_dataset_resource
 
 def configureRouteHandlers(api):
     """
@@ -7,4 +6,5 @@ def configureRouteHandlers(api):
     """
     # api.add_namespace(version_resource)
     api.add_namespace(manage_datasets_resource)
+    api.add_namespace(validate_dataset_resource)
     print(api.namespaces)
