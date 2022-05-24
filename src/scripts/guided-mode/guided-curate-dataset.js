@@ -3685,15 +3685,24 @@ const renderSampleMetadataTables = () => {
 
 const removePermission = (clickedPermissionRemoveButton) => {
   let permissionElementToRemove = clickedPermissionRemoveButton.closest("tr");
-  let permissionNameToRemove =
-    permissionToRemove.getAttribute("data-permission-id");
+  let permissionNameToRemove = permissionElementToRemove
+    .find(".permission-name-cell")
+    .text();
+  let permissionTypeToRemove = permissionElementToRemove
+    .find(".permission-type-cell")
+    .text();
+
+  //remove the permission from the datasetStructureJSONObj
+  //TODOASDF
+  //Remove permission from the dom
+  permissionElementToRemove.remove();
 };
 
 const createPermissionsTableRowElement = (name, permission) => {
   return `
     <tr>
       <td class="middle aligned permission-name-cell">${name}</td>
-      <td class="middle aligned remove-left-border">${permission}</td>
+      <td class="middle aligned remove-left-border permission-type-cell">${permission}</td>
       <td class="middle aligned text-center remove-left-border" style="width: 20px">
         <i
         class="far fa-trash-alt"
