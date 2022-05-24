@@ -583,13 +583,30 @@ const traverseToTab = (targetPageID) => {
       $("#guided-file-explorer-elements").appendTo(
         $("#guided-primary-samples-file-explorer-container")
       );
-      updateFolderStructureUI(highLevelFolderPageData.primary); //temp
+
+      //Hide the file explorer and show the intro
       document
-        .getElementById("structure-folder-header")
+        .getElementById("guided-file-explorer-elements")
         .classList.add("hidden");
       document
-        .getElementById("structure-folder-contents")
-        .classList.add("hidden");
+        .getElementById("guided-primary-samples-file-explorer-intro")
+        .classList.remove("hidden");
+
+      //Load the black arrow lottie animation
+      const primarySamplesFileExplorerBlackArrowLottieContainer =
+        document.getElementById(
+          "primary-samples-file-explorer-black-arrow-lottie-container"
+        );
+      primarySamplesFileExplorerBlackArrowLottieContainer.innerHTML = "";
+      lottie.loadAnimation({
+        container: primarySamplesFileExplorerBlackArrowLottieContainer,
+        animationData: blackArrow,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+
+      //updateFolderStructureUI(highLevelFolderPageData.primary); //temp
     }
     if (targetPageID === "guided-primary-subjects-organization-tab") {
       renderSubjectsHighLevelFolderAsideItems("primary");
@@ -597,13 +614,28 @@ const traverseToTab = (targetPageID) => {
       $("#guided-file-explorer-elements").appendTo(
         $("#guided-primary-subjects-file-explorer-container")
       );
-      updateFolderStructureUI(highLevelFolderPageData.primary); //temp
+      //Hide the file explorer and show the intro
       document
-        .getElementById("structure-folder-header")
+        .getElementById("guided-file-explorer-elements")
         .classList.add("hidden");
       document
-        .getElementById("structure-folder-contents")
-        .classList.add("hidden");
+        .getElementById("guided-primary-subjects-file-explorer-intro")
+        .classList.remove("hidden");
+
+      //Load the black arrow lottie animation
+      const primarySubjectsFileExplorerBlackArrowLottieContainer =
+        document.getElementById(
+          "primary-subjects-file-explorer-black-arrow-lottie-container"
+        );
+      primarySubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
+      lottie.loadAnimation({
+        container: primarySubjectsFileExplorerBlackArrowLottieContainer,
+        animationData: blackArrow,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+      //updateFolderStructureUI(highLevelFolderPageData.primary);
     }
     if (targetPageID === "guided-source-samples-organization-tab") {
       renderSamplesHighLevelFolderAsideItems("source");
@@ -611,13 +643,30 @@ const traverseToTab = (targetPageID) => {
       $("#guided-file-explorer-elements").appendTo(
         $("#guided-source-samples-file-explorer-container")
       );
-      updateFolderStructureUI(highLevelFolderPageData.source);
+
+      //Hide the file explorer and show the intro
       document
-        .getElementById("structure-folder-header")
+        .getElementById("guided-file-explorer-elements")
         .classList.add("hidden");
       document
-        .getElementById("structure-folder-contents")
-        .classList.add("hidden");
+        .getElementById("guided-source-samples-file-explorer-intro")
+        .classList.remove("hidden");
+
+      //Load the black arrow lottie animation
+      const sourceSamplesFileExplorerBlackArrowLottieContainer =
+        document.getElementById(
+          "source-samples-file-explorer-black-arrow-lottie-container"
+        );
+      sourceSamplesFileExplorerBlackArrowLottieContainer.innerHTML = "";
+      lottie.loadAnimation({
+        container: sourceSamplesFileExplorerBlackArrowLottieContainer,
+        animationData: blackArrow,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+
+      //updateFolderStructureUI(highLevelFolderPageData.source);
     }
     if (targetPageID === "guided-source-subjects-organization-tab") {
       renderSubjectsHighLevelFolderAsideItems("source");
@@ -625,7 +674,28 @@ const traverseToTab = (targetPageID) => {
       $("#guided-file-explorer-elements").appendTo(
         $("#guided-source-subjects-file-explorer-container")
       );
-      updateFolderStructureUI(highLevelFolderPageData.source);
+      //Hide the file explorer and show the intro
+      document
+        .getElementById("guided-file-explorer-elements")
+        .classList.add("hidden");
+      document
+        .getElementById("guided-source-subjects-file-explorer-intro")
+        .classList.remove("hidden");
+
+      //Load the black arrow lottie animation
+      const sourceSubjectsFileExplorerBlackArrowLottieContainer =
+        document.getElementById(
+          "source-subjects-file-explorer-black-arrow-lottie-container"
+        );
+      sourceSubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
+      lottie.loadAnimation({
+        container: sourceSubjectsFileExplorerBlackArrowLottieContainer,
+        animationData: blackArrow,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+      //updateFolderStructureUI(highLevelFolderPageData.source);
     }
     if (targetPageID === "guided-derivative-samples-organization-tab") {
       renderSamplesHighLevelFolderAsideItems("derivative");
@@ -633,7 +703,30 @@ const traverseToTab = (targetPageID) => {
       $("#guided-file-explorer-elements").appendTo(
         $("#guided-derivative-samples-file-explorer-container")
       );
-      updateFolderStructureUI(highLevelFolderPageData.derivative);
+
+      //Hide the file explorer and show the intro
+      document
+        .getElementById("guided-file-explorer-elements")
+        .classList.add("hidden");
+      document
+        .getElementById("guided-derivative-samples-file-explorer-intro")
+        .classList.remove("hidden");
+
+      //Load the black arrow lottie animation
+      const derivativeSamplesFileExplorerBlackArrowLottieContainer =
+        document.getElementById(
+          "derivative-samples-file-explorer-black-arrow-lottie-container"
+        );
+      derivativeSamplesFileExplorerBlackArrowLottieContainer.innerHTML = "";
+      lottie.loadAnimation({
+        container: derivativeSamplesFileExplorerBlackArrowLottieContainer,
+        animationData: blackArrow,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+
+      //updateFolderStructureUI(highLevelFolderPageData.derivative);
     }
     if (targetPageID === "guided-derivative-subjects-organization-tab") {
       renderSubjectsHighLevelFolderAsideItems("derivative");
@@ -641,7 +734,28 @@ const traverseToTab = (targetPageID) => {
       $("#guided-file-explorer-elements").appendTo(
         $("#guided-derivative-subjects-file-explorer-container")
       );
-      updateFolderStructureUI(highLevelFolderPageData.derivative);
+      //Hide the file explorer and show the intro
+      document
+        .getElementById("guided-file-explorer-elements")
+        .classList.add("hidden");
+      document
+        .getElementById("guided-derivative-subjects-file-explorer-intro")
+        .classList.remove("hidden");
+
+      //Load the black arrow lottie animation
+      const derivativeSubjectsFileExplorerBlackArrowLottieContainer =
+        document.getElementById(
+          "derivative-subjects-file-explorer-black-arrow-lottie-container"
+        );
+      derivativeSubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
+      lottie.loadAnimation({
+        container: derivativeSubjectsFileExplorerBlackArrowLottieContainer,
+        animationData: blackArrow,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+      //updateFolderStructureUI(highLevelFolderPageData.derivative);
     }
 
     if (targetPageID === "guided-samples-folder-tab") {
@@ -4126,6 +4240,17 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
   );
   selectionAsideItems.forEach((item) => {
     item.addEventListener("click", (e) => {
+      //Hide intro and show subject folder explorer if intro is open
+      const introElement = document.getElementById(
+        `guided-${highLevelFolderName}-samples-file-explorer-intro`
+      );
+      if (!introElement.classList.contains("hidden")) {
+        switchElementVisibility(
+          `guided-${highLevelFolderName}-samples-file-explorer-intro`,
+          "guided-file-explorer-elements"
+        );
+      }
+
       //add selected class to clicked element
       e.target.classList.add("is-selected");
       //remove selected class from all other elements
@@ -4198,6 +4323,17 @@ const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
   );
   selectionAsideItems.forEach((item) => {
     item.addEventListener("click", (e) => {
+      //Hide intro and show subject folder explorer if intro is open
+      const introElement = document.getElementById(
+        `guided-${highLevelFolderName}-subjects-file-explorer-intro`
+      );
+      if (!introElement.classList.contains("hidden")) {
+        switchElementVisibility(
+          `guided-${highLevelFolderName}-subjects-file-explorer-intro`,
+          "guided-file-explorer-elements"
+        );
+      }
+
       //add selected class to clicked element
       e.target.classList.add("is-selected");
       //remove selected class from all other elements
@@ -4669,9 +4805,17 @@ $(document).ready(() => {
       nextQuestionElement = $(`#${nextQuestionID}`);
       nextQuestionElement.removeClass("hidden");
       //slow scroll to the next question
-      nextQuestionElement[0].scrollIntoView({
-        behavior: "smooth",
-      });
+      //temp fix to prevent scrolling error
+      const elementsToNotScrollTo = [
+        "guided-add-samples-table",
+        "guided-add-pools-table",
+        "guided-add-subjects-table",
+      ];
+      if (!elementsToNotScrollTo.includes(nextQuestionID)) {
+        nextQuestionElement[0].scrollIntoView({
+          behavior: "smooth",
+        });
+      }
     }
     //Hide all child containers of non-selected buttons
     notSelectedButton.each(function () {
