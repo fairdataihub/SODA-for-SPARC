@@ -4564,9 +4564,9 @@ $(document).ready(() => {
     $("#guided-button-start-new-curate").hide();
     $("#continue-curating-existing").hide();
     //temp bypass stuff
-    $("#guided-dataset-name-input").val(makeid(10));
+    /*$("#guided-dataset-name-input").val(makeid(10));
     $("#guided-dataset-subtitle-input").val(makeid(10));
-    $("#guided-create-new-dataset").click();
+    $("#guided-create-new-dataset").click();*/
     sodaJSONObj.addSubject("sub-1");
     sodaJSONObj.addSubject("sub-2");
     sodaJSONObj.addSubject("sub-3");
@@ -4615,12 +4615,12 @@ $(document).ready(() => {
     sodaJSONObj.addSampleToSubject("sam-13", "sub-5");
     sodaJSONObj.addSampleToSubject("sam-14", "sub-7");
     sodaJSONObj.addSampleToSubject("sam-15", "sub-7");
-
+    /*
     //show the next button after 5 seconds
     setTimeout(() => {
       $("#guided-next-button").show();
       traverseToTab("guided-create-subjects-metadata-tab");
-    }, 5000);
+    }, 5000);*/
   });
   $("#guided-button-cancel-create-new-dataset").on("click", () => {
     //remove text from dataset name and subtitle inputs
