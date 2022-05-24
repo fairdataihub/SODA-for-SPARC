@@ -1127,6 +1127,7 @@ const populateGuidedModePages = (loadedJSONObj) => {
 
     let startingPoint = loadedJSONObj["starting-point"]["type"];
     if (startingPoint == "new") {
+      //this will break when no/yes cards are changed
       handlePageBranching($("#guided-curate-new-dataset-card"));
       lastCompletedTab = "guided-dataset-starting-point-tab";
     }
@@ -4710,6 +4711,35 @@ $(document).ready(() => {
       $(this).removeClass("loading");
     }
   });
+  //WHEN STRUCTURING FOLDER GUIDED
+  $("#guided-button-guided-dataset-structuring").on("click", () => {
+    $("#guided-curate-new-dataset-branch-capsule-container").hide();
+    $("#guided-curate-existing-local-dataset-branch-capsule-container").css(
+      "display",
+      "flex"
+    );
+
+    $(".guided-curate-existing-local-dataset-branch-page").attr(
+      "data-skip-page",
+      "false"
+    );
+    $(".guided-curate-new-dataset-branch-page").attr("data-skip-page", "true");
+  });
+  //WHEN IMPORTING LOCAL STRUCTURE
+  $("#guided-button-import-existing-dataset-structure").on("click", () => {
+    $("#guided-curate-existing-local-dataset-branch-capsule-container").hide();
+    $("#guided-curate-new-dataset-branch-capsule-container").css(
+      "display",
+      "flex"
+    );
+
+    $(".guided-curate-new-dataset-branch-page").attr("data-skip-page", "false");
+    $(".guided-curate-existing-local-dataset-branch-page").attr(
+      "data-skip-page",
+      "true"
+    );
+  });
+
   $("#guided-structure-new-dataset").on("click", () => {
     $("#guided-next-button").click();
   });
@@ -7412,26 +7442,30 @@ $(document).ready(() => {
 
     try {
       if (pageBeingLeftID === "guided-dataset-starting-point-tab") {
+        const buttonYesGuidedCurate = document.getElementById(
+          "guided-button-guided-dataset-structuring"
+        );
+        const buttonNoImportExisting = document.getElementById(
+          "guided-button-import-existing-dataset-structure"
+        );
+
         if (
-          $("#guided-curate-new-dataset-card").hasClass("checked") ||
-          $("#guided-curate-existing-local-dataset-card").hasClass("checked")
+          !buttonYesGuidedCurate.classList.contains("selected") &&
+          !buttonNoImportExisting.classList.contains("selected")
         ) {
-          if ($("#guided-curate-new-dataset-card").hasClass("checked")) {
-            sodaJSONObj["starting-point"]["type"] = "new";
-          }
-          if (
-            $("#guided-curate-existing-local-dataset-card").hasClass("checked")
-          ) {
-            sodaJSONObj["starting-point"]["type"] = "local";
-          }
-          $(this).show();
-        } else {
           errorArray.push({
             type: "notyf",
             message: "Please select a dataset start location",
           });
           throw errorArray;
         }
+        if (buttonYesGuidedCurate.classList.contains("selected")) {
+          sodaJSONObj["starting-point"]["type"] = "new";
+        }
+        if (buttonNoImportExisting.classList.contains("selected")) {
+          sodaJSONObj["starting-point"]["type"] = "local";
+        }
+        $(this).show();
       }
       if (pageBeingLeftID === "guided-subjects-folder-tab") {
         const skipSubSamFolderAndMetadataPages = () => {
