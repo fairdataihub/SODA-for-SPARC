@@ -203,10 +203,7 @@
                 class="guided--capsule"
                 id="guided-subjects-folder-capsule"
               ></div>
-              <div
-                class="guided--capsule"
-                id="guided-high-level-folder-selection-capsule"
-              ></div>
+
               <div
                 class="guided--capsule"
                 id="guided-primary-samples-organization-capsule"
@@ -572,77 +569,6 @@
                     new sample
                   </button>
                 </div>
-              </div>
-            </div>
-          </div>
-          <div
-            id="guided-high-level-folder-selection-tab"
-            class="guided--panel hidden"
-          >
-            <div class="guided--section neumorphic mt-xl">
-              <h2 class="guided--text-sub-step mt-0">Primary data:</h2>
-              <p class="guided--help-text w-100">
-                SPARC datasets are organized according to the SPARC Data
-                Structure 2.0. More details about the structure are available in
-                the dedicated SPARC help page. Briefly, the each SPARC dataset
-                must contain all or a subset of the following six folders
-                depending on the type of data: primary, ... (list all). A
-                specific organization under subjects and/or samples folder is
-                also expected within the primary folder. A sample structure is
-                presented in the figure below along with a brief description of
-                the content of each folder.
-              </p>
-              <div class="ui checkbox">
-                <input
-                  type="checkbox"
-                  id="guided-license-checkbox2"
-                  name="license"
-                />
-                <label>The dataset contains primary data.</label>
-              </div>
-            </div>
-            <div class="guided--section neumorphic mt-xl">
-              <h2 class="guided--text-sub-step mt-0">Source data:</h2>
-              <p class="guided--help-text w-100">
-                SPARC datasets are organized according to the SPARC Data
-                Structure 2.0. More details about the structure are available in
-                the dedicated SPARC help page. Briefly, the each SPARC dataset
-                must contain all or a subset of the following six folders
-                depending on the type of data: primary, ... (list all). A
-                specific organization under subjects and/or samples folder is
-                also expected within the primary folder. A sample structure is
-                presented in the figure below along with a brief description of
-                the content of each folder.
-              </p>
-              <div class="ui checkbox">
-                <input
-                  type="checkbox"
-                  id="guided-license-checkbox2"
-                  name="license"
-                />
-                <label>The dataset contains source data.</label>
-              </div>
-            </div>
-            <div class="guided--section neumorphic mt-xl">
-              <h2 class="guided--text-sub-step mt-0">Derivative data:</h2>
-              <p class="guided--help-text w-100">
-                SPARC datasets are organized according to the SPARC Data
-                Structure 2.0. More details about the structure are available in
-                the dedicated SPARC help page. Briefly, the each SPARC dataset
-                must contain all or a subset of the following six folders
-                depending on the type of data: primary, ... (list all). A
-                specific organization under subjects and/or samples folder is
-                also expected within the primary folder. A sample structure is
-                presented in the figure below along with a brief description of
-                the content of each folder.
-              </p>
-              <div class="ui checkbox">
-                <input
-                  type="checkbox"
-                  id="guided-license-checkbo2"
-                  name="license"
-                />
-                <label>The dataset contains derivative data.</label>
               </div>
             </div>
           </div>
@@ -1991,7 +1917,7 @@
             <div class="guided--container-subject-samples w-100 mt-md">
               <div class="guided--hlf-selection-container ml-2">
                 <label class="guided--form-label centered"
-                  >Select a subject below to edit its metadata.
+                  >Dataset subjects:
                 </label>
                 <aside
                   class="guided--hlf-selection-aside"
@@ -2006,7 +1932,25 @@
                   Copy metadata from other subjects
                 </button>
               </div>
-              <div id="guided-form-add-a-subject" class="guided--panel">
+              <div
+                id="guided-form-add-a-subject-intro"
+                class="guided--panel"
+                style="height: 475px; padding: 25px"
+              >
+                <div
+                  class="guided--section"
+                  style="justify-content: flex-start"
+                >
+                  <h1 class="guided--text-sub-step">
+                    Select a subject on the left to edit its metadata.
+                  </h1>
+                  <div
+                    id="subjects-metadata-black-arrow-lottie-container"
+                    class="black-arrow-lottie-container"
+                  ></div>
+                </div>
+              </div>
+              <div id="guided-form-add-a-subject" class="guided--panel hidden">
                 <label class="guided--form-label centered"
                   >Subject ID: <span id="guided-metadata-subject-id"></span>
                 </label>
@@ -2665,6 +2609,24 @@
                 >
                   Copy metadata from other samples
                 </button>
+              </div>
+              <div
+                id="guided-form-add-a-sample-intro"
+                class="guided--panel"
+                style="height: 475px; padding: 25px"
+              >
+                <div
+                  class="guided--section"
+                  style="justify-content: flex-start"
+                >
+                  <h1 class="guided--text-sub-step">
+                    Select a sample on the left to edit its metadata.
+                  </h1>
+                  <div
+                    id="samples-metadata-black-arrow-lottie-container"
+                    class="black-arrow-lottie-container"
+                  ></div>
+                </div>
               </div>
               <div id="guided-form-add-a-sample" class="guided--panel">
                 <label class="guided--form-label centered"

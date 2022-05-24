@@ -720,46 +720,35 @@ const traverseToTab = (targetPageID) => {
         }
       }
     }
+
     if (targetPageID === "guided-create-subjects-metadata-tab") {
-      console.log(subjectsTableData);
-
       renderSubjectsMetadataAsideItems();
-
-      const [subjectsInPools, subjectsOutsidePools] =
-        sodaJSONObj.getAllSubjects();
-      //Combine sample data from subjects in and out of pools
-      let subjects = [...subjectsInPools, ...subjectsOutsidePools];
-      const subjectsArray = subjects.map((subject) => subject.subjectName);
-      console.log(subjectsTableData);
-
-      for (let subject of subjectsArray) {
-        //check to see if subject already has data in the sodaJSONObj
-        if (
-          sodaJSONObj["dataset-metadata"]["subject-metadata"][subject] ===
-          undefined
-        ) {
-          sodaJSONObj["dataset-metadata"]["subject-metadata"][subject] = {};
-        }
-      }
-      //renderSubjectsMetadataTable(subjectsArray);
+      const subjectsMetadataBlackArrowLottieContainer = document.getElementById(
+        "subjects-metadata-black-arrow-lottie-container"
+      );
+      subjectsMetadataBlackArrowLottieContainer.innerHTML = "";
+      lottie.loadAnimation({
+        container: subjectsMetadataBlackArrowLottieContainer,
+        animationData: blackArrow,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
     }
+
     if (targetPageID === "guided-create-samples-metadata-tab") {
       renderSamplesMetadataAsideItems();
-      /*const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamples();
-      //Combine sample data from samples in and out of pools
-      let samples = [...samplesInPools, ...samplesOutsidePools];
-      const samplesArray = samples.map((sample) => sample.sampleName);
-      console.log(samplesArray);
-      for (let sample of samplesArray) {
-        //check to see if sample already has data in the sodaJSONObj
-        if (
-          sodaJSONObj["dataset-metadata"]["sample-metadata"][sample] ===
-          undefined
-        ) {
-          sodaJSONObj["dataset-metadata"]["sample-metadata"][sample] = {};
-        }
-      }*/
-      //renderSampleMetadataTables();
+      const samplesMetadataBlackArrowLottieContainer = document.getElementById(
+        "samples-metadata-black-arrow-lottie-container"
+      );
+      samplesMetadataBlackArrowLottieContainer.innerHTML = "";
+      lottie.loadAnimation({
+        container: samplesMetadataBlackArrowLottieContainer,
+        animationData: blackArrow,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
     }
     if (targetPageID === "guided-add-code-metadata-tab") {
       const codeDescriptionLottieContainer = document.getElementById(
@@ -4271,6 +4260,17 @@ const renderSubjectsMetadataAsideItems = () => {
   );
   selectionAsideItems.forEach((item) => {
     item.addEventListener("click", (e) => {
+      //Hide intro and show metadata fields if intro is open
+      const introElement = document.getElementById(
+        "guided-form-add-a-subject-intro"
+      );
+      if (!introElement.classList.contains("hidden")) {
+        switchElementVisibility(
+          "guided-form-add-a-subject-intro",
+          "guided-form-add-a-subject"
+        );
+      }
+
       previousSubject = document.getElementById(
         "guided-metadata-subject-id"
       ).innerHTML;
@@ -4352,6 +4352,17 @@ const renderSamplesMetadataAsideItems = () => {
 
   selectionAsideItems.forEach((item) => {
     item.addEventListener("click", (e) => {
+      //Hide intro and show metadata fields if intro is open
+      const introElement = document.getElementById(
+        "guided-form-add-a-sample-intro"
+      );
+      if (!introElement.classList.contains("hidden")) {
+        switchElementVisibility(
+          "guided-form-add-a-sample-intro",
+          "guided-form-add-a-sample"
+        );
+      }
+
       //add selected class to clicked element
       e.target.classList.add("is-selected");
       //remove selected class from all other elements

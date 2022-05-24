@@ -26,6 +26,12 @@
   margin-top: 10px;
 }
 
+.black-arrow-lottie-container {
+  height: 150px;
+  width: 150px;
+  opacity: 0.7;
+  transform: rotate(180deg);
+}
 .code-metadata-lottie-container {
   height: 130px;
   opacity: 0.5;
