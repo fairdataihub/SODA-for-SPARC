@@ -245,10 +245,7 @@
                 class="guided--capsule"
                 id="guided-protocol-folder-capsule"
               ></div>
-              <div
-                class="guided--capsule"
-                id="guided-folder-structure-preview-capsule"
-              ></div>
+
               <button
                 class="ui yellow basic button"
                 id="guided-button-preview-folder-structure"
@@ -273,6 +270,10 @@
                 id="guided-folder-importation-capsule"
               ></div>
             </div>
+            <div
+              class="guided--capsule"
+              id="guided-folder-structure-preview-capsule"
+            ></div>
           </div>
 
           <div id="guided-dataset-starting-point-tab" class="guided--panel">
@@ -320,7 +321,7 @@
                 </button>
               </div>
               <div
-                class="guided--panel hidden"
+                class="guided--section hidden"
                 id="guided-structure-new-dataset-panel"
               >
                 <button
@@ -332,7 +333,7 @@
                 </button>
               </div>
               <div
-                class="guided--panel hidden"
+                class="guided--section hidden"
                 id="guided-import-existing-dataset-panel"
               >
                 <button
@@ -342,34 +343,6 @@
                 >
                   Import existing dataset
                 </button>
-              </div>
-
-              <div
-                id="generate-dataset-destination-panels"
-                class="guided--panel"
-              >
-                <div
-                  id="guided-curate-new-dataset-panel"
-                  class="guided--panel hidden"
-                >
-                  <div class="guided--section m-3">
-                    <button
-                      class="ui primary button"
-                      id="guided-structure-new-dataset"
-                      style="
-                        background-color: var(--color-light-green) !important;
-                      "
-                    >
-                      Start dataset structuring
-                    </button>
-                  </div>
-                </div>
-                <div
-                  id="guided-curate-existing-local-dataset-panel"
-                  class="guided--panel hidden"
-                >
-                  <div class="guided--section m-3"></div>
-                </div>
               </div>
             </div>
           </div>
@@ -1146,6 +1119,35 @@
             ></div>
           </div>
           <div
+            id="guided-folder-importation-tab"
+            class="guided--panel hidden guided-curate-existing-local-dataset-branch-page"
+            data-skip-page="true"
+          >
+            <div class="guided--section" id="guided_dataset_name_div">
+              <h1 class="guided--text-sub-step">
+                Where is your dataset located?
+              </h1>
+              <div
+                class="field"
+                style="display: flex; justify-content: center; width: 100%"
+              >
+                <input
+                  class="form-control"
+                  style="width: 600px !important; cursor: pointer"
+                  id="guided-input-destination-getting-started-locally"
+                  type="text"
+                  readonly
+                  placeholder="Browse here"
+                />
+              </div>
+              <p
+                class="hidden"
+                style="color: red; width: 500px; text-align: left; margin: auto"
+                id="guided-input-destination-getting-started-locally-warning-message"
+              ></p>
+            </div>
+          </div>
+          <div
             id="guided-folder-structure-preview-tab"
             class="guided--panel hidden"
           >
@@ -1273,35 +1275,6 @@
                 </div>
               </div>
               <div id="guided-folder-structure-container" class="w-100"></div>
-            </div>
-          </div>
-          <div
-            id="guided-folder-importation-tab"
-            class="guided--panel hidden guided-curate-existing-local-dataset-branch-page"
-            data-skip-page="true"
-          >
-            <div class="guided--section" id="guided_dataset_name_div">
-              <h1 class="guided--text-sub-step">
-                Where is your dataset located?
-              </h1>
-              <div
-                class="field"
-                style="display: flex; justify-content: center; width: 100%"
-              >
-                <input
-                  class="form-control"
-                  style="width: 600px !important; cursor: pointer"
-                  id="guided-input-destination-getting-started-locally"
-                  type="text"
-                  readonly
-                  placeholder="Browse here"
-                />
-              </div>
-              <p
-                class="hidden"
-                style="color: red; width: 500px; text-align: left; margin: auto"
-                id="guided-input-destination-getting-started-locally-warning-message"
-              ></p>
             </div>
           </div>
         </div>

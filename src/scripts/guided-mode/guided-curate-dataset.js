@@ -4662,7 +4662,6 @@ $(document).ready(() => {
         console.log(existingProgressNames);
         //If sodaJSONObj is empty, populate initial object properties
         guidedCreateSodaJSONObj();
-        sodaJSONObj["starting-point"]["type"] = "new";
 
         //Get the users information and set them as PI if a PI has not been designated yet
         if (sodaJSONObj["digital-metadata"]["pi-owner"] == undefined) {
