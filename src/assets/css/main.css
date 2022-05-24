@@ -1587,7 +1587,7 @@ button[data-id="bf_list_users_pi"] {
 
 .overview-column {
   display: flex;
-  margin-right: 30px;
+  margin-right: 15px;
   border: solid;
   border-color: #f2f2f2;
   height: 95% !important;
@@ -1649,10 +1649,9 @@ button[data-id="bf_list_users_pi"] {
   padding-left: 1rem;
   padding-right: 1rem;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.5rem;
   width: 100%;
   height: 60% !important;
-  max-width: 1024px;
+  max-width: 850px;
   place-self: center;
 }
 
@@ -1664,7 +1663,7 @@ button[data-id="bf_list_users_pi"] {
   display: flex;
   justify-content: center;
   height: 50% !important;
-  margin-top: 4rem;
+  margin-top: 2rem;
 }
 
 .sodaVideo-button {
@@ -1735,7 +1734,7 @@ button[data-id="bf_list_users_pi"] {
   }
 
   .getting-started-buttons {
-    margin-bottom: 3.5rem;
+    margin-bottom: 5.5rem;
     margin-top: 0;
   }
 }
