@@ -48,7 +48,7 @@ from threading import Thread
 import pathlib
 
 from datetime import datetime, timezone
-from pysoda import bf_get_current_user_permission
+from manageDatasets import bf_get_current_user_permission
 
 """
     Function to get current doi for a selected dataset

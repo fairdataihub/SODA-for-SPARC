@@ -6,7 +6,8 @@ from enum import Enum
 class NamespaceEnum(Enum):
     MANAGE_DATASETS = "manage_datasets"
     VALIDATE_DATASET = "validate_dataset"
-    CURATE_DATASETS = "curate_datasets"
+    CURATE_DATASETS = "curate_datasets",
+    DISSEMINATE_DATASETS = "disseminate_datasets",
 
 
 # namespaces dictionary that is given a namespace name as a key and returns the corresponding namespace object as a value
@@ -25,6 +26,9 @@ def configure_namespaces():
 
     curate_datasets_namespace = Namespace(NamespaceEnum.CURATE_DATASETS.value, description='Routes for handling dataset curation')
     namespaces[NamespaceEnum.CURATE_DATASETS] = curate_datasets_namespace
+
+    disseminate_datasets_namespace = Namespace(NamespaceEnum.DISSEMINATE_DATASETS.value, description='Routes for handling dataset dissemination')
+    namespaces[NamespaceEnum.DISSEMINATE_DATASETS] = disseminate_datasets_namespace
 
 def get_namespace(namespace_name):
     return namespaces[namespace_name]
