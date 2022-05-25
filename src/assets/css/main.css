@@ -1608,7 +1608,7 @@ button[data-id="bf_list_users_pi"] {
     var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
-.getting-started {
+.getting-started-overview {
   padding: 0 !important;
   display: grid;
   grid-template-rows: 20% 65% 15%;
@@ -1676,13 +1676,24 @@ button[data-id="bf_list_users_pi"] {
   align-items: center;
   height: 3.5rem;
   margin-right: 1rem;
-  color: #b80d49;
-  border-width: 2px;
-  border-color: #b80d49;
+  color: #666666;
+  border-width: 1px;
+  border-color: var(--color-accent);
+}
+
+.sodaVideo-button:hover {
+  box-shadow: 0 0 6px #b0b0b0;
+}
+.direct-to-doc-btn:hover {
+  box-shadow: 0 0 6px #b0b0b0;
+}
+
+.getting-started-btn:hover {
+  box-shadow: 0 0 6px #b0b0b0;
 }
 
 .direct-to-doc-btn {
-  color: var(--color-accent);
+  color: #666666;
   display: flex;
   background: white;
   font-weight: bold;
@@ -1694,8 +1705,8 @@ button[data-id="bf_list_users_pi"] {
   justify-content: center;
   align-items: center;
   border-radius: 0.25rem;
-  border-width: 2px;
-  border-color: var(--color-accent);
+  border-width: 1px;
+  border-color: #b80d49;
 }
 
 .getting-started-btn {
@@ -1707,9 +1718,9 @@ button[data-id="bf_list_users_pi"] {
   justify-content: center;
   align-items: center;
   height: 3.5rem;
-  color: #b80d49;
-  border-width: 2px;
-  border-color: #b80d49;
+  color: #666666;
+  border-width: 1px;
+  border-color: var(--color-accent);
 }
 
 .getting-started-btn-txt {
