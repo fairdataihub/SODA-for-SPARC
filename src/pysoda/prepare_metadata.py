@@ -92,14 +92,6 @@ def set_template_path(soda_base_path, soda_resources_path):
             TEMPLATE_PATH = join(soda_resources_path, "file_templates")
 
 
-# temporary logging file path (dev only)
-logs_path = join(userpath, "temp-soda-logs")
-
-# writes the given text to a txt file on a new line
-def log_text(filepath, text):
-    with open(filepath, "a") as f:
-        f.write(text + "\n")
-
 
 # custom Exception class for when a DDD file is in an invalid form
 class InvalidDeliverablesDocument(Exception):
@@ -158,15 +150,12 @@ def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_st
     font_submission = Font(name="Calibri", size=14, bold=False)
 
     source = join(TEMPLATE_PATH, "submission.xlsx")
-    log_text(logs_path, TEMPLATE_PATH + " (template path)")
 
     if upload_boolean:
         destination = join(METADATA_UPLOAD_BF_PATH, "submission.xlsx")
-        log_text(logs_path, METADATA_UPLOAD_BF_PATH + " (metadatauploadpath) BF path")
 
     else:
         destination = filepath
-        log_text(logs_path, destination + " (destionation file path, local)")
 
     shutil.copyfile(source, destination)
 
