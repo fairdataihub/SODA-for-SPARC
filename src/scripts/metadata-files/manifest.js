@@ -1092,8 +1092,9 @@ function extractBFManifestFile() {
         } else {
           resolve(res);
         }
-      })
-    })
+      }
+    );
+  });
 }
 
 // generate on Pennsieve without edits
