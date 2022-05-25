@@ -10258,7 +10258,10 @@ function directToDocumentation() {
   // window.open('https://docs.sodaforsparc.io', '_blank');
 }
 
-
 document.getElementById("sodaVideo-btn").addEventListener("click", sodaVideo);
-document.getElementById("direct-to-doc-button").addEventListener("click", directToDocumentation);
-document.getElementById("getting-started-button").addEventListener("click", gettingStarted);
+document
+  .getElementById("direct-to-doc-button")
+  .addEventListener("click", directToDocumentation);
+document
+  .getElementById("getting-started-button")
+  .addEventListener("click", gettingStarted);
