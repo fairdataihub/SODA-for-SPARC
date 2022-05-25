@@ -82,7 +82,6 @@
       type="text/css"
     />
 
-    <link rel="import" href="sections/welcome/welcome.html" />
     <link rel="import" href="sections/getting_started/getting_started.html" />
     <link rel="import" href="sections/manage_datasets/manage_datasets.html" />
     <link rel="import" href="sections/post_curation/post_curation.html" />
@@ -92,6 +91,10 @@
     <link rel="import" href="sections/help/help.html" />
     <link rel="import" href="sections/guided_mode/guided_curate_dataset.html" />
     <link rel="import" href="sections/validate/validate_dataset.html" />
+    <script
+      src="./assets/lotties/overview-lotties.js"
+      type="text/javascript"
+    ></script>
 
     <style>
       #notification {
@@ -147,7 +150,11 @@
           <!-- Sidebar Links -->
           <ul class="list-unstyled components">
             <li>
-              <a href="#" data-section="getting_started">
+              <a
+                href="#"
+                data-section="getting_started"
+                id="getting_starting_tab"
+              >
                 <svg
                   data-section="getting_started"
                   style="margin-right: 30px; margin-bottom: -5px"
@@ -330,5 +337,6 @@
     <script src="https://jsuites.net/v4/jsuites.js"></script>
     <script src="https://bossanova.uk/jspreadsheet/v4/jexcel.js"></script>
     <script src="./scripts/others/renderer.js" type="text/javascript"></script>
+    <script src="./assets/lotties.js" type="text/javascript"></script>
   </body>
 </html>

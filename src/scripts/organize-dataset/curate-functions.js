@@ -159,7 +159,7 @@ $(".button-individual-metadata.go-back").click(function () {
   }
 });
 
-const metadataFileExtentionObject = {
+const metadataFileExtensionObject = {
   submission: [".csv", ".xlsx", ".xls", ".json"],
   dataset_description: [".csv", ".xlsx", ".xls", ".json"],
   subjects: [".csv", ".xlsx", ".xls", ".json"],
@@ -187,7 +187,7 @@ function dropHandler(ev, paraElement, metadataFile, curationMode) {
       var extension = file.name.slice(file.name.indexOf("."));
 
       if (metadataWithoutExtension === metadataFile) {
-        if (metadataFileExtentionObject[metadataFile].includes(extension)) {
+        if (metadataFileExtensionObject[metadataFile].includes(extension)) {
           document.getElementById(paraElement).innerHTML = file.path;
           if (curationMode === "free-form") {
             $($("#" + paraElement).parents()[1])
