@@ -92,7 +92,6 @@ def set_template_path(soda_base_path, soda_resources_path):
             TEMPLATE_PATH = join(soda_resources_path, "file_templates")
 
 
-
 # custom Exception class for when a DDD file is in an invalid form
 class InvalidDeliverablesDocument(Exception):
     pass
