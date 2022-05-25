@@ -34,6 +34,7 @@ const ini = require("ini");
 const { homedir } = require("os");
 const cognitoClient = require("amazon-cognito-identity-js");
 const diskCheck = require("check-disk-space").default;
+const lottie = require("lottie-web");
 // TODO: Test with a build
 const {
   datasetUploadSession,
@@ -141,6 +142,60 @@ console.log("User OS:", os.type(), os.platform(), "version:", os.release());
 const appVersion = window.require("electron").remote.app.getVersion();
 log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
+let over_view_section = document.getElementById("getting_started-section");
+let column1 = document.getElementById("lottie1");
+let column2 = document.getElementById("lottie2");
+let column3 = document.getElementById("lottie3");
+
+var observer = new MutationObserver(function (mutations) {
+  mutations.forEach(function (mutation) {
+    var attributeValue = $(mutation.target).prop(mutation.attributeName);
+
+    if (attributeValue.includes("is-shown") == true) {
+      //add lotties
+      column1.innerText = "";
+      column2.innerText = "";
+      column3.innerText = "";
+
+      var column1_lottie = lottie.loadAnimation({
+        container: column1,
+        animationData:
+          column1Lottie /*(json js variable, (view src/assets/lotties)*/,
+        renderer: "svg",
+        loop: true /*controls looping*/,
+        autoplay: true,
+      });
+      var column2_lottie = lottie.loadAnimation({
+        container: column2,
+        animationData:
+          column2Lottie /*(json js variable, (view src/assets/lotties)*/,
+        renderer: "svg",
+        loop: true /*controls looping*/,
+        autoplay: true,
+      });
+      var column3_lottie = lottie.loadAnimation({
+        container: column3,
+        animationData: column3Lottie,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+    } else {
+      column1.innerText = "";
+      column2.innerText = "";
+      column3.innerText = "";
+      lottie.stop(column1_lottie);
+      lottie.stop(column2_lottie);
+      lottie.stop(column3_lottie);
+    }
+  });
+});
+
+observer.observe(over_view_section, {
+  attributes: true,
+  attributeFilter: ["class"],
+});
+document.getElementById("getting_starting_tab").click();
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -9821,3 +9876,31 @@ $("#validate_dataset_bttn").on("click", async () => {
   $("#dataset_validator_status").html("");
   $("#dataset_validator_spinner").hide();
 });
+
+function gettingStarted() {
+  let getting_started = document.getElementById("main_tabs_view");
+  getting_started.click();
+}
+
+function sodaVideo() {
+  document.getElementById("overview-column-1").blur();
+  shell.openExternal(
+    "https://docs.sodaforsparc.io/docs/getting-started/user-interface"
+  );
+}
+
+function directToDocumentation() {
+  shell.openExternal(
+    "https://docs.sodaforsparc.io/docs/getting-started/organize-and-submit-sparc-datasets-with-soda"
+  );
+  document.getElementById("overview-column-2").blur();
+  // window.open('https://docs.sodaforsparc.io', '_blank');
+}
+
+document.getElementById("sodaVideo-btn").addEventListener("click", sodaVideo);
+document
+  .getElementById("direct-to-doc-button")
+  .addEventListener("click", directToDocumentation);
+document
+  .getElementById("getting-started-button")
+  .addEventListener("click", gettingStarted);
