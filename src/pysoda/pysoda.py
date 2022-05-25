@@ -569,7 +569,9 @@ def bf_dataset_account(accountname):
             store = []
         for dataset in datasets_list:
             selected_dataset_id = dataset.id
-            user_role = bf._api._get(f"/datasets/{str(selected_dataset_id)}/role")["role"]
+            user_role = bf._api._get(f"/datasets/{str(selected_dataset_id)}/role")[
+                "role"
+            ]
             if user_role not in ["viewer", "editor"]:
                 store.append(
                     {"id": selected_dataset_id, "name": dataset.name, "role": user_role}
@@ -1079,9 +1081,9 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                         # update the start_index to end_index + 1
                         start_index = end_index + 1
                 elif len(files) > 0:
-                    submitdataprogress = (
-                        "Uploading folder '%s' to dataset '%s \n' "
-                        % (dirpath, bfdataset)
+                    submitdataprogress = "Uploading folder '%s' to dataset '%s \n' " % (
+                        dirpath,
+                        bfdataset,
                     )
 
                     files_with_destination = []
@@ -1093,7 +1095,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                     # get the current OS
                     current_os = platform.system()
 
-                        # Mac builds not able to spawn subprocess from Python at the moment
+                    # Mac builds not able to spawn subprocess from Python at the moment
                     if current_os != "Darwin":
                         # clear the pennsieve queue
                         clear_queue()
@@ -1224,9 +1226,9 @@ def bf_get_users(selected_bfaccount):
             list_users_first_last.append(first_last)
         list_users_first_last.sort()  # Returning the list of users in alphabetical order
         return list_users_first_last
-            # list_users_first_last = gevent.spawn(get_users_list())
-            # gevent.sleep(0)
-            # return list_users_first_last
+        # list_users_first_last = gevent.spawn(get_users_list())
+        # gevent.sleep(0)
+        # return list_users_first_last
     except Exception as e:
         raise e
 
@@ -1467,9 +1469,9 @@ def bf_add_permission(
                         "Error: you must be dataset owner to change the ownership"
                     )
             elif (
-                    first_name == first_name_current_user
-                    and last_name == last_name_current_user
-                ):
+                first_name == first_name_current_user
+                and last_name == last_name_current_user
+            ):
                 c += 1
             # check if selected user is owner, dataset permission cannot be changed for owner
             if user_id == selected_user_id and role == "owner":
@@ -1553,16 +1555,14 @@ def bf_add_permission_team(
     try:
         if (
             selected_team == "SPARC Data Curation Team"
-            and bf.context.id
-            != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
+            and bf.context.id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
         ):
             raise Exception(
                 "Error: Please login under the Pennsieve SPARC Consortium organization to share with the Curation Team"
             )
         if (
             selected_team == "SPARC Embargoed Data Sharing Group"
-            and bf.context.id
-            != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
+            and bf.context.id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
         ):
             raise Exception(
                 "Error: Please login under the Pennsieve SPARC Consortium organization to share with the SPARC consortium group"
@@ -1701,7 +1701,7 @@ def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
             else ""
         )
 
-            # return json.dumps(dataset_info)
+        # return json.dumps(dataset_info)
     except Exception as e:
         raise Exception(e)
 
@@ -2058,9 +2058,9 @@ def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
 
         # get current status of select dataset
         selected_dataset_id = myds.id
-        dataset_current_status = bf._api._get(
-            f"/datasets/{str(selected_dataset_id)}"
-        )["content"]["status"]
+        dataset_current_status = bf._api._get(f"/datasets/{str(selected_dataset_id)}")[
+            "content"
+        ]["status"]
 
         return [list_status, dataset_current_status]
     except Exception as e:

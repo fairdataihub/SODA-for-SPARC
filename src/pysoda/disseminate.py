@@ -142,8 +142,7 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
         )
 
         creators_list = [
-            item["firstName"] + " " + item["lastName"]
-            for item in contributors_list
+            item["firstName"] + " " + item["lastName"] for item in contributors_list
         ]
 
         jsonfile = {
@@ -184,14 +183,13 @@ def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
     try:
         selected_dataset_id = myds.id
 
-        review_request_status = bf._api._get(
-            f"/datasets/{str(selected_dataset_id)}"
-        )["publication"]["status"]
+        review_request_status = bf._api._get(f"/datasets/{str(selected_dataset_id)}")[
+            "publication"
+        ]["status"]
 
         publishing_status = bf._api._get(
             f"/datasets/{str(selected_dataset_id)}/published"
         )["status"]
-
 
         return [review_request_status, publishing_status]
     except Exception as e:
@@ -316,9 +314,7 @@ def bf_publish_dataset(selected_bfaccount, selected_bfdataset):
 
     try:
         selected_dataset_id = myds.id
-        request_publish = bf._api._post(
-            f"/datasets/{str(selected_dataset_id)}/publish"
-        )
+        request_publish = bf._api._post(f"/datasets/{str(selected_dataset_id)}/publish")
 
         return request_publish["status"]
     except Exception as e:
