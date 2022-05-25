@@ -8,6 +8,7 @@ class NamespaceEnum(Enum):
     VALIDATE_DATASET = "validate_dataset"
     CURATE_DATASETS = "curate_datasets"
     DISSEMINATE_DATASETS = "disseminate_datasets"
+    PREPARE_METADATA = "prepare_metadata"
 
 
 # namespaces dictionary that is given a namespace name as a key and returns the corresponding namespace object as a value
@@ -29,6 +30,9 @@ def configure_namespaces():
 
     disseminate_datasets_namespace = Namespace(NamespaceEnum.DISSEMINATE_DATASETS.value, description='Routes for handling dataset dissemination')
     namespaces[NamespaceEnum.DISSEMINATE_DATASETS] = disseminate_datasets_namespace
+
+    prepare_metadata_namespace = Namespace(NamespaceEnum.PREPARE_METADATA.value, description='Routes for handling metadata preparation')
+    namespaces[NamespaceEnum.PREPARE_METADATA] = prepare_metadata_namespace
 
 def get_namespace(namespace_name):
     return namespaces[namespace_name]

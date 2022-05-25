@@ -64,10 +64,11 @@ from datetime import datetime, timezone
 
 from Bio import Entrez
 
-from pysoda import (
+from manageDatasets import (
     bf_get_current_user_permission,
-    agent_running,
 )
+
+from pysodaUtils import agent_running
 
 userpath = expanduser("~")
 METADATA_UPLOAD_BF_PATH = join(userpath, "SODA", "METADATA")
