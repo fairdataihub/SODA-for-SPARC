@@ -9822,19 +9822,16 @@ $("#validate_dataset_bttn").on("click", async () => {
   $("#dataset_validator_spinner").hide();
 });
 
-
 function gatherLogs() {
   //function will be used to gather all logs on all OS's
   console.log(os.type());
   let log_path = "";
-  if(os.type() === "Darwin") {
+  if (os.type() === "Darwin") {
     console.log("on mac");
-  }
-  else if (os.type() === "Windows") {
+  } else if (os.type() === "Windows") {
     console.log("on windows");
-  }
-  else {
-    console.log("Should be on Linux")
+  } else {
+    console.log("Should be on Linux");
   }
 
   Swal.fire({
@@ -9843,7 +9840,7 @@ function gatherLogs() {
     heightAuto: false,
     allowOutsideClick: false,
     allowEscapeKey: true,
-  })
+  });
 
   // Swal.fire({
   //   title: "Determining your dataset permissions",
@@ -9858,5 +9855,4 @@ function gatherLogs() {
   //     Swal.showLoading();
   //   },
   // });
-
 }
