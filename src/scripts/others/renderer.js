@@ -7677,6 +7677,7 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
       if (error) {
         console.log(error);
       } else {
+        console.log(res);
         let percentage_amount = res[2].toFixed(2);
         finished = res[3];
         percentage_text.innerText = percentage_amount + "%";
@@ -7694,11 +7695,13 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
         }
 
         if (finished === 1) {
+          console.log("fnished == none")
           percentage_text.innerText = "100%";
           left_progress_bar.style.transform = `rotate(180deg)`;
-          right_progress_bar.classList.remove("notransition");
           clearInterval(pennsieve_progress);
           setTimeout(() => {
+            console.log("uhhh");
+            right_progress_bar.classList.remove("notransition");
             progress_container.style.display = "none";
           }, 2000);
         }
@@ -7720,9 +7723,7 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
         );
       } else {
         resolve(res);
-        percentage_text.innerText = "100%";
-        left_progress_bar.style.transform = `rotate(180deg)`;
-        right_progress_bar.classList.remove("notransition");
+        console.log("resolved");
         ipcRenderer.send(
           "track-event",
           "Success",

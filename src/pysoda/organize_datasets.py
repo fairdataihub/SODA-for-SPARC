@@ -1221,7 +1221,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     create_soda_json_total_items = 0
     create_soda_json_completed = 0
 
-    def recursive_subfolder_check(subfolder_json, pennsieve_account, manifest):
+    def depthFirstTraversal(subfolder_json, pennsieve_account, manifest):
         #root level folder will pass subfolders into this function and will recursively check if there are subfolders while creating the json structure
         global create_soda_json_progress
         collection_id = subfolder_json["path"]
@@ -1289,7 +1289,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         if len(subfolder_json["folders"].keys()) != 0:  # there are subfolders
             for folder in subfolder_json["folders"].keys():
                 subfolder = subfolder_json["folders"][folder]
-                recursive_subfolder_check(subfolder, bf, manifest)
+                depthFirstTraversal(subfolder, bf, manifest)
 
     # START
 
@@ -1349,10 +1349,10 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
     for items in root_children:
         item_id = items["content"]["id"]
-        create_soda_json_progress += 1
         item_name = items["content"]["name"]
         if (item_id[2:9]) == "package":  
             if item_name in high_level_metadata_sparc:
+                create_soda_json_progress += 1
             # is a metadata file
                 soda_json_structure["metadata-files"][item_name] = {
                     "type": "bf",
@@ -1361,6 +1361,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                 }
         else:  
             if item_name in high_level_sparc_folders:
+                create_soda_json_progress += 1
             # is a SPARC folder and will be checked recursively
                 soda_json_structure["dataset-structure"]["folders"][item_name] = {
                     "type": "bf",
@@ -1411,7 +1412,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             subfolder_section = soda_json_structure["dataset-structure"]["folders"][
                 folder
             ]
-            recursive_subfolder_check(
+            depthFirstTraversal(
                 subfolder_section, bf, manifest_dict[folder]
             )  # passing item's json and the collection ID
 
