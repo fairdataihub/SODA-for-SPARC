@@ -20,10 +20,7 @@ def initialize_analyticsreporting():
   """
   credentials = ServiceAccountCredentials.from_json_keyfile_name(KEY_FILE_LOCATION, SCOPES)
 
-  # Build the service object.
-  analytics = build('analyticsreporting', 'v4', credentials=credentials)
-
-  return analytics
+  return build('analyticsreporting', 'v4', credentials=credentials)
 
 def get_report(analytics, query):
   """Queries the Analytics Reporting API V4.
@@ -51,10 +48,10 @@ def print_response(response):
       dateRangeValues = row.get('metrics', [])
 
       for header, dimension in zip(dimensionHeaders, dimensions):
-        print(header + ': ', dimension)
+        print(f'{header}: ', dimension)
 
       for i, values in enumerate(dateRangeValues):
-        print('Date range:', str(i))
+        print('Date range:', i)
         for metricHeader, value in zip(metricHeaders, values.get('values')):
           print(metricHeader.get('name') + ':', value)
 

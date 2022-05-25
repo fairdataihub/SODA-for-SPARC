@@ -85,7 +85,7 @@ def bf_get_doi(selected_bfaccount, selected_bfdataset):
 
     try:
         selected_dataset_id = myds.id
-        doi_status = bf._api._get("/datasets/" + str(selected_dataset_id) + "/doi")
+        doi_status = bf._api._get(f"/datasets/{str(selected_dataset_id)}/doi")
         return doi_status["doi"]
     except Exception as e:
         if "doi" in str(e) and "not found" in str(e):
@@ -138,16 +138,19 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
     try:
         selected_dataset_id = myds.id
         contributors_list = bf._api._get(
-            "/datasets/" + str(selected_dataset_id) + "/contributors"
+            f"/datasets/{str(selected_dataset_id)}/contributors"
         )
-        creators_list = []
-        for item in contributors_list:
-            creators_list.append(item["firstName"] + " " + item["lastName"])
+
+        creators_list = [
+            item["firstName"] + " " + item["lastName"]
+            for item in contributors_list
+        ]
+
         jsonfile = {
             "title": selected_bfdataset,
             "creators": creators_list,
         }
-        bf._api.datasets._post("/" + str(selected_dataset_id) + "/doi", json=jsonfile)
+        bf._api.datasets._post(f"/{str(selected_dataset_id)}/doi", json=jsonfile)
         return "Done!"
     except Exception as e:
         raise e
@@ -181,12 +184,14 @@ def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
     try:
         selected_dataset_id = myds.id
 
-        review_request_status = bf._api._get("/datasets/" + str(selected_dataset_id))[
-            "publication"
-        ]["status"]
+        review_request_status = bf._api._get(
+            f"/datasets/{str(selected_dataset_id)}"
+        )["publication"]["status"]
+
         publishing_status = bf._api._get(
-            "/datasets/" + str(selected_dataset_id) + "/published"
+            f"/datasets/{str(selected_dataset_id)}/published"
         )["status"]
+
 
         return [review_request_status, publishing_status]
     except Exception as e:
@@ -228,13 +233,13 @@ def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset):
 
     try:
         selected_dataset_id = myds.id
-        request_publish = bf._api._post(
+        return bf._api._post(
             "/datasets/"
             + str(selected_dataset_id)
             + "/publication/request?publicationType="
             + "publication"
         )
-        return request_publish
+
     except Exception as e:
         raise e
 
@@ -263,13 +268,13 @@ def bf_withdraw_review_dataset(selected_bfaccount, selected_bfdataset):
 
     try:
         selected_dataset_id = myds.id
-        withdraw_review = bf._api._post(
+        return bf._api._post(
             "/datasets/"
             + str(selected_dataset_id)
             + "/publication/cancel?publicationType="
             + "publication"
         )
-        return withdraw_review
+
     except Exception as e:
         raise e
 
@@ -312,8 +317,9 @@ def bf_publish_dataset(selected_bfaccount, selected_bfdataset):
     try:
         selected_dataset_id = myds.id
         request_publish = bf._api._post(
-            "/datasets/" + str(selected_dataset_id) + "/publish"
+            f"/datasets/{str(selected_dataset_id)}/publish"
         )
+
         return request_publish["status"]
     except Exception as e:
         raise e

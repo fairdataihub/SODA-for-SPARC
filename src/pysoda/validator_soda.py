@@ -203,30 +203,28 @@ class DictValidator:
                 nonStandardFolders += " " + c + ","
 
         check1 = "All folders are SPARC standard folders"
-        check1f = "Only SPARC standard folders ('code', 'derivative', 'docs', 'primary', 'protocol', and/or 'source', all lowercase) are allowed. The following folder(s) must be removed:"
-
         check2 = "A 'primary' folder is included"
-        check2f = "A non-empty 'primary' folder is required in all datasets, make sure it is included"
-
         check3 = "All SPARC folders are non-empty"
-        check3f = "No empty SPARC folder should be included. Populate or remove the following folder(s):"
-
         if nonstandardf == 1:
-            self.fatal.append(check1 + "--" + check1f + nonStandardFolders[:-1])
-        else:
-            if primaryf == 1 and sparcf == 1:
-                self.passes.append(check1)
+            check1f = "Only SPARC standard folders ('code', 'derivative', 'docs', 'primary', 'protocol', and/or 'source', all lowercase) are allowed. The following folder(s) must be removed:"
+
+            self.fatal.append(f"{check1}--{check1f}" + nonStandardFolders[:-1])
+        elif primaryf == 1 and sparcf == 1:
+            self.passes.append(check1)
 
         if not primaryf:
-            self.fatal.append(check2 + "--" + check2f)
+            check2f = "A non-empty 'primary' folder is required in all datasets, make sure it is included"
+
+            self.fatal.append(f"{check2}--{check2f}")
         else:
             self.passes.append(check2)
 
         if emptyf == 1:
-            self.fatal.append(check3 + "--" + check3f + emptyFolders[:-1])
-        else:
-            if primaryf == 1 and sparcf == 1:
-                self.passes.append(check3)
+            check3f = "No empty SPARC folder should be included. Populate or remove the following folder(s):"
+
+            self.fatal.append(f"{check3}--{check3f}" + emptyFolders[:-1])
+        elif primaryf == 1 and sparcf == 1:
+            self.passes.append(check3)
 
     def check_high_level_metadata_files(self, jsonStruct):
         nofiles = 0
