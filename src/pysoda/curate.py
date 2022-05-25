@@ -2237,6 +2237,7 @@ def generate_relative_path(x, y):
         relative_path = y
     return relative_path
 
+
 def bf_get_existing_folders_details(bf_folder):
     bf_existing_folders = [x for x in bf_folder.items if x.type == "Collection"]
     bf_existing_folders_name = [x.name for x in bf_existing_folders]
