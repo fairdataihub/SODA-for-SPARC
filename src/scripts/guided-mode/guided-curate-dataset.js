@@ -184,23 +184,37 @@ const getProgressFileData = async (progressFile) => {
   console.log(progressFilePath);
   return readFileAsync(progressFilePath);
 };
-const deleteProgressCard = (progressCardDeleteButton) => {
+const deleteProgressCard = async (progressCardDeleteButton) => {
   const progressCard = progressCardDeleteButton.parentElement;
   const progressCardNameToDelete = progressCard.querySelector(
     ".progress-file-name"
   ).textContent;
-  //Get the path of the progress file to delete
-  const progressFilePathToDelete = path.join(
-    guidedProgressFilePath,
-    progressCardNameToDelete + ".json"
-  );
-  //delete the progress file
-  fs.unlinkSync(progressFilePathToDelete, (err) => {
-    console.log(err);
-  });
 
-  //remove the progress card from the DOM
-  progressCard.remove();
+  const result = await Swal.fire({
+    title: `Are you sure you would like to delete SODA progress made on the dataset: ${progressCardNameToDelete}?`,
+    text: "Your progress file will be deleted permanently, and all existing progress will be lost.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Delete progress file",
+    cancelButtonText: "Cancel",
+    focusCancel: true,
+  });
+  if (result.isConfirmed) {
+    //Get the path of the progress file to delete
+    const progressFilePathToDelete = path.join(
+      guidedProgressFilePath,
+      progressCardNameToDelete + ".json"
+    );
+    //delete the progress file
+    fs.unlinkSync(progressFilePathToDelete, (err) => {
+      console.log(err);
+    });
+
+    //remove the progress card from the DOM
+    progressCard.remove();
+  }
 };
 const renderProgressCards = (progressFileJSONdata) => {
   //sort progressFileJSONdata by date to place newest cards on top
@@ -391,7 +405,7 @@ const guidedPrepareHomeScreen = async () => {
     renderProgressCards(progressFileData);
   } else {
     $("#guided-continue-curation-header").text(
-      "After creating your dataset, your progress will be saved and be resumable below."
+      "After creating your dataset, your progress will be saved and resumable below."
     );
   }
   //empty new-dataset-lottie-container div
@@ -1703,6 +1717,7 @@ guidedCreateSodaJSONObj = () => {
     },
   };
 
+  sodaJSONObj["guided-options"] = {};
   sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
   sodaJSONObj["generate-dataset"] = {};
   sodaJSONObj["manifest-files"] = {};
@@ -3206,7 +3221,7 @@ const generateNewSampleRowTd = () => {
   return `
     <td class="middle aligned pool-cell collapsing">
       <div class="space-between" style="align-items: center; width: 250px;">
-        <span style="margin-right: 5px;">samp-</span>
+        <span style="margin-right: 5px;">sam-</span>
         <input
           class="guided--input"
           type="text"
@@ -4857,12 +4872,12 @@ $(document).ready(() => {
 
   //WHEN STRUCTURING FOLDER GUIDED
   $("#guided-button-guided-dataset-structuring").on("click", () => {
+    //Hide proper capsules and apply proper skip pages
     $("#guided-curate-new-dataset-branch-capsule-container").hide();
     $("#guided-curate-existing-local-dataset-branch-capsule-container").css(
       "display",
       "flex"
     );
-
     $(".guided-curate-existing-local-dataset-branch-page").attr(
       "data-skip-page",
       "false"
@@ -4871,6 +4886,7 @@ $(document).ready(() => {
   });
   //WHEN IMPORTING LOCAL STRUCTURE
   $("#guided-button-import-existing-dataset-structure").on("click", () => {
+    //Hide proper capsules and apply proper skip pages
     $("#guided-curate-existing-local-dataset-branch-capsule-container").hide();
     $("#guided-curate-new-dataset-branch-capsule-container").css(
       "display",
@@ -7586,30 +7602,30 @@ $(document).ready(() => {
 
     try {
       if (pageBeingLeftID === "guided-dataset-starting-point-tab") {
-        const buttonYesGuidedCurate = document.getElementById(
-          "guided-button-guided-dataset-structuring"
-        );
-        const buttonNoImportExisting = document.getElementById(
-          "guided-button-import-existing-dataset-structure"
-        );
+        const buttonNoGuidedCurateSelected = document
+          .getElementById("guided-button-guided-dataset-structuring")
+          .classList.contains("selected");
+        const buttonYesImportExistingSelected = document
+          .getElementById("guided-button-import-existing-dataset-structure")
+          .classList.contains("selected");
 
-        if (
-          !buttonYesGuidedCurate.classList.contains("selected") &&
-          !buttonNoImportExisting.classList.contains("selected")
-        ) {
+        if (!buttonNoGuidedCurateSelected && !buttonYesImportExistingSelected) {
           errorArray.push({
             type: "notyf",
             message: "Please select a dataset start location",
           });
           throw errorArray;
         }
-        if (buttonYesGuidedCurate.classList.contains("selected")) {
-          sodaJSONObj["starting-point"]["type"] = "new";
+
+        if (buttonNoGuidedCurateSelected) {
+          sodaJSONObj["guided-options"]["dataset-start-location"] =
+            "guided-curate";
         }
-        if (buttonNoImportExisting.classList.contains("selected")) {
-          sodaJSONObj["starting-point"]["type"] = "local";
+
+        if (buttonYesImportExistingSelected) {
+          sodaJSONObj["guided-options"]["dataset-start-location"] =
+            "import-existing";
         }
-        $(this).show();
       }
       if (pageBeingLeftID === "guided-subjects-folder-tab") {
         const skipSubSamFolderAndMetadataPages = () => {

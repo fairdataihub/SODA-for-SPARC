@@ -758,12 +758,12 @@ h1.guided--text-sub-step {
   transform: scale(1.1);
 }
 
-.guided--radio-button.selected {
+/*.guided--radio-button.selected {
   opacity: 1 !important;
 }
 .guided--radio-button.not-selected {
   opacity: 0.4 !important;
-}
+}*/
 
 .guided--card-large {
   max-width: 180px !important;

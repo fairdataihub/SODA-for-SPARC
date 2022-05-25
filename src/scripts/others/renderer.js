@@ -6853,8 +6853,6 @@ ipcRenderer.on(
             datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
             populate_existing_folders(datasetStructureJSONObj);
             populate_existing_metadata(sodaJSONObj);
-
-            enableProgressButton();
           }
         } else {
           Swal.fire({
