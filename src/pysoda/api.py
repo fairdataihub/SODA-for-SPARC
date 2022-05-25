@@ -82,6 +82,8 @@ from organize_datasets import (
     bf_get_dataset_files_folders,
     create_soda_json_object_backend,
     monitor_local_json_progress,
+    monitor_pennsieve_json_progress,
+    import_pennsieve_dataset,
 )
 
 import sys
@@ -556,11 +558,21 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
-    # def api_get_auth_key(self):
-    #     try:
-    #         return get_auth_key()
-    #     except Exception as e:
-    #         raise e
+    def api_import_pennsieve_dataset(
+        self, soda_json_structure, requested_sparc_only=True
+    ):
+        try:
+            return import_pennsieve_dataset(
+                soda_json_structure, requested_sparc_only=True
+            )
+        except Exception as e:
+            raise e
+
+    def api_monitor_pennsieve_json_progress(self):
+        try:
+            return monitor_pennsieve_json_progress()
+        except Exception as e:
+            raise e
 
     ### Check Login to Python Server
     def api_version_check(self):

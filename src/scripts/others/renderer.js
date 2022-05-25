@@ -202,6 +202,74 @@ document.getElementById("getting_starting_tab").click();
 //////////////////////////////////
 let client = new zerorpc.Client({ timeout: 300000 });
 client.connect("tcp://127.0.0.1:4242");
+client.invoke("echo", "server ready", (error, res) => {
+  if (error || res !== "server ready") {
+    log.error(error);
+    console.error(error);
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Establishing Python Connection",
+      error
+    );
+    Swal.fire({
+      icon: "error",
+      html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Restart now",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        app.relaunch();
+        app.exit();
+      }
+    });
+  } else {
+    console.log("Connected to Python back-end successfully");
+    log.info("Connected to Python back-end successfully");
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Establishing Python Connection"
+    );
+
+    // verify backend api versions
+    client.invoke("api_version_check", (error, res) => {
+      if (error || res !== appVersion) {
+        log.error(error);
+        console.error(error);
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Verifying App Version",
+          error
+        );
+
+        Swal.fire({
+          icon: "error",
+          html: `The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "Close now",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            app.exit();
+          }
+        });
+      } else {
+        ipcRenderer.send("track-event", "Success", "Verifying App Version");
+
+        //Load Default/global Pennsieve account if available
+        updateBfAccountList();
+        checkNewAppVersion(); // Added so that version will be displayed for new users
+      }
+    });
+  }
+});
 
 const notyf = new Notyf({
   position: { x: "right", y: "bottom" },
@@ -6415,7 +6483,7 @@ ipcRenderer.on(
                   return;
                 }
 
-                var numb = document.querySelector(".number");
+                let numb = document.getElementById("local_dataset_number");
                 numb.innerText = "0%";
                 progressBar_rightSide = document.getElementById(
                   "left-side_less_than_50"
@@ -6467,30 +6535,34 @@ ipcRenderer.on(
 
                         if (finished === 1) {
                           progressBar_leftSide.style.transform = `rotate(180deg)`;
-                          numb.innerText = "100%";
-                          clearInterval(local_progress);
-                          progressBar_rightSide.classList.remove(
-                            "notransition"
-                          );
-                          populate_existing_folders(datasetStructureJSONObj);
-                          populate_existing_metadata(sodaJSONObj);
-                          $(
-                            "#para-continue-location-dataset-getting-started"
-                          ).text("Please continue below.");
-                          $("#nextBtn").prop("disabled", false);
-                          // log the success to analytics
-                          logMetadataForAnalytics(
-                            "Success",
-                            PrepareDatasetsAnalyticsPrefix.CURATE,
-                            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-                            Actions.EXISTING,
-                            Destinations.LOCAL
-                          );
-                          setTimeout(() => {
-                            document.getElementById(
-                              "loading_local_dataset"
-                            ).style.display = "none";
-                          }, 1000);
+                          let numb_change = new Promise((resolve) => {
+                            numb.innerText = "100%";
+                            resolve();
+                          }).then(() => {
+                            clearInterval(local_progress);
+                            progressBar_rightSide.classList.remove(
+                              "notransition"
+                            );
+                            populate_existing_folders(datasetStructureJSONObj);
+                            populate_existing_metadata(sodaJSONObj);
+                            $(
+                              "#para-continue-location-dataset-getting-started"
+                            ).text("Please continue below.");
+                            $("#nextBtn").prop("disabled", false);
+                            // log the success to analytics
+                            logMetadataForAnalytics(
+                              "Success",
+                              PrepareDatasetsAnalyticsPrefix.CURATE,
+                              AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+                              Actions.EXISTING,
+                              Destinations.LOCAL
+                            );
+                            setTimeout(() => {
+                              document.getElementById(
+                                "loading_local_dataset"
+                              ).style.display = "none";
+                            }, 1000);
+                          });
                         }
                       }
                     }
@@ -6526,7 +6598,7 @@ ipcRenderer.on(
               );
               progressBar_leftSide.style.transform = `rotate(0deg)`;
               progressBar_rightSide.style.transform = `rotate(0deg)`;
-              let numb = document.querySelector(".number");
+              let numb = document.getElementById("local_dataset_number");
               numb.innerText = "0%";
 
               action = "";
@@ -7639,33 +7711,81 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
   }
 });
 
-var bf_request_and_populate_dataset = (sodaJSONObj) => {
-  return new Promise((resolve, reject) => {
-    client.invoke(
-      "api_bf_get_dataset_files_folders",
-      sodaJSONObj,
-      (error, res) => {
-        if (error) {
-          reject(userError(error));
-          log.error(error);
-          console.error(error);
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Retrieve Dataset - Pennsieve",
-            defaultBfDatasetId
-          );
+var bf_request_and_populate_dataset = async (sodaJSONObj) => {
+  let progress_container = document.getElementById("loading_pennsieve_dataset");
+  let percentage_text = document.getElementById(
+    "pennsieve_loading_dataset_percentage"
+  );
+  let left_progress_bar = document.getElementById(
+    "pennsieve_left-side_less_than_50"
+  );
+  let right_progress_bar = document.getElementById(
+    "pennsieve_right-side_greater_than_50"
+  );
+  percentage_text.innerText = "0%";
+  progress_container.style.display = "block";
+  left_progress_bar.style.transform = `rotate(0deg)`;
+  right_progress_bar.style.transform = `rotate(0deg)`;
+  let pennsieve_progress = setInterval(progressReport, 500);
+  function progressReport() {
+    client.invoke("api_monitor_pennsieve_json_progress", (error, res) => {
+      if (error) {
+        console.log(error);
+      } else {
+        let percentage_amount = res[2].toFixed(2);
+        finished = res[3];
+        percentage_text.innerText = percentage_amount + "%";
+        if (percentage_amount <= 50) {
+          left_progress_bar.style.transform = `rotate(${
+            percentage_amount * 0.01 * 360
+          }deg)`;
         } else {
-          resolve(res);
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Retrieve Dataset - Pennsieve",
-            defaultBfDatasetId
-          );
+          left_progress_bar.style.transition = "";
+          left_progress_bar.classList.add("notransition");
+          left_progress_bar.style.transform = `rotate(180deg)`;
+          right_progress_bar.style.transform = `rotate(${
+            percentage_amount * 0.01 * 180
+          }deg)`;
+        }
+
+        if (finished === 1) {
+          percentage_text.innerText = "100%";
+          left_progress_bar.style.transform = `rotate(180deg)`;
+          right_progress_bar.style.transform = `rotate(180deg)`;
+          right_progress_bar.classList.remove("notransition");
+          console.log(percentage_text.innerText);
+          clearInterval(pennsieve_progress);
+          setTimeout(() => {
+            progress_container.style.display = "none";
+          }, 2000);
         }
       }
-    );
+    });
+  }
+
+  return new Promise((resolve, reject) => {
+    client.invoke("api_import_pennsieve_dataset", sodaJSONObj, (error, res) => {
+      if (error) {
+        progress_container.style.display = "none";
+        reject(userError(error));
+        log.error(error);
+        console.error(error);
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Retrieve Dataset - Pennsieve",
+          defaultBfDatasetId
+        );
+      } else {
+        resolve(res);
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Retrieve Dataset - Pennsieve",
+          defaultBfDatasetId
+        );
+      }
+    });
   });
 };
 
@@ -8747,7 +8867,6 @@ const update_dataset_tags = async (datasetIdOrName, tags) => {
 
   // grab the dataset's id
   const id = dataset["content"]["id"];
-
   // setup the request options
   let options = {
     method: "PUT",
@@ -8808,7 +8927,6 @@ const getDatasetReadme = async (datasetIdOrName) => {
 
   // pull out the id from the result
   const id = dataset["content"]["id"];
-
   // fetch the readme file from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
   let readmeResponse = await fetch(
     `https://api.pennsieve.io/datasets/${id}/readme`,
@@ -8880,7 +8998,6 @@ const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
 
   // get the id out of the dataset
   let id = dataset.content.id;
-
   // put the new readme data in the readme on Pennsieve
   options = {
     method: "PUT",
@@ -9069,7 +9186,6 @@ const submitDatasetForPublication = async (
     `https://api.pennsieve.io/datasets/${id}/publication/request` + queryString,
     options
   );
-
   // get the status code out of the response
   let statusCode = publicationResponse.status;
 
@@ -9153,12 +9269,10 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
     // add the required publication type
     queryString = `?publicationType=publication`;
   }
-
   let withdrawResponse = await fetch(
     `https://api.pennsieve.io/datasets/${id}/publication/cancel${queryString}`,
     options
   );
-
   // get the status code out of the response
   let statusCode = withdrawResponse.status;
 
@@ -9235,7 +9349,6 @@ const getDatasetBannerImageURL = async (datasetIdOrName) => {
   let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
 
   let { id } = dataset["content"];
-
   // fetch the banner url from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
   let bannerResponse = await fetch(
     `https://api.pennsieve.io/datasets/${id}/banner`,
@@ -9247,7 +9360,6 @@ const getDatasetBannerImageURL = async (datasetIdOrName) => {
       },
     }
   );
-
   // get the status code out of the response
   let statusCode = bannerResponse.status;
 
@@ -9305,13 +9417,11 @@ const getCurrentUserPermissions = async (datasetIdOrName) => {
 
   // get the id out of the dataset
   let id = dataset.content.id;
-
   // get the user's permissions
   let permissionsResponse = await fetch(
     `https://api.pennsieve.io/datasets/${id}/role`,
     { headers: { Authorization: `Bearer ${jwt}` } }
   );
-
   // get the status code out of the response
   let statusCode = permissionsResponse.status;
 
@@ -9512,7 +9622,6 @@ const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
       headers: { Authorization: `Bearer ${jwt}` },
     }
   );
-
   // get the status code
   let statusCode = excludedFilesResponse.status;
 
@@ -9578,7 +9687,6 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
     `https://api.pennsieve.io/datasets/${id}/ignore-files`,
     options
   );
-
   // check the status code
   let { status } = excludeFilesResponse;
   switch (status) {
@@ -9633,7 +9741,6 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
       headers: { Authorization: `Bearer ${jwt}` },
     }
   );
-
   // check the status code
   let { status } = datasetWithChildrenResponse;
   switch (status) {
