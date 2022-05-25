@@ -9821,3 +9821,42 @@ $("#validate_dataset_bttn").on("click", async () => {
   $("#dataset_validator_status").html("");
   $("#dataset_validator_spinner").hide();
 });
+
+
+function gatherLogs() {
+  //function will be used to gather all logs on all OS's
+  console.log(os.type());
+  let log_path = "";
+  if(os.type() === "Darwin") {
+    console.log("on mac");
+  }
+  else if (os.type() === "Windows") {
+    console.log("on windows");
+  }
+  else {
+    console.log("Should be on Linux")
+  }
+
+  Swal.fire({
+    title: "Select a destination to create log folder.",
+    html: `<input class="form-control" id="selected-local-dataset-submit" type="text" readonly="" placeholder="Select a folder">`,
+    heightAuto: false,
+    allowOutsideClick: false,
+    allowEscapeKey: true,
+  })
+
+  // Swal.fire({
+  //   title: "Determining your dataset permissions",
+  //   html: "Please wait...",
+  //   // timer: 5000,
+  //   allowEscapeKey: true,
+  //   allowOutsideClick: false,
+  //   heightAuto: false,
+  //   backdrop: "rgba(0,0,0, 0.4)",
+  //   timerProgressBar: false,
+  //   didOpen: () => {
+  //     Swal.showLoading();
+  //   },
+  // });
+
+}
