@@ -6,8 +6,8 @@ from enum import Enum
 class NamespaceEnum(Enum):
     MANAGE_DATASETS = "manage_datasets"
     VALIDATE_DATASET = "validate_dataset"
-    CURATE_DATASETS = "curate_datasets",
-    DISSEMINATE_DATASETS = "disseminate_datasets",
+    CURATE_DATASETS = "curate_datasets"
+    DISSEMINATE_DATASETS = "disseminate_datasets"
 
 
 # namespaces dictionary that is given a namespace name as a key and returns the corresponding namespace object as a value
