@@ -16,6 +16,8 @@ from prepareMetadata import (
 )
 from namespaces import NamespaceEnum, get_namespace
 from flask_restx import Resource
+from flask import request
+import json
 
 
 api = get_namespace(NamespaceEnum.PREPARE_METADATA)
@@ -26,7 +28,7 @@ parser.add_argument('upload_boolean', type=bool, help='Boolean to indicate wheth
 parser.add_argument('bfaccount', type=str, help='Bionimbus account name', location="args")
 parser.add_argument('bfdataset', type=str, help='Bionimbus dataset name', location="args")
 parser.add_argument('filepath', type=str, help='Path to the file to be uploaded', location="args")
-parser.add_argument('json_str', type=str, help='JSON string to be uploaded', location="args")
+parser.add_argument('json_str', type=str, help='JSON string to be uploaded', location="json")
 
 
 @api.route('/save_submission_file')
@@ -39,7 +41,8 @@ class SaveSubmissionFile(Resource):
         bfaccount = args['bfaccount']
         bfdataset = args['bfdataset']
         filepath = args['filepath']
-        json_str = args['json_str']
+        json_data = request.json
+        json_str = json_data["json_str"]
 
         return save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_str)
 
