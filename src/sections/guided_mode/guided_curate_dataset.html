@@ -88,94 +88,6 @@
                   Begin curating a new dataset
                 </h2>
               </div>
-
-              <div
-                class="guided--panel hidden"
-                id="guided-new-dataset-info"
-                style="flex-grow: 1"
-              >
-                <div class="guided--section">
-                  <h1 class="guided--text-sub-step">
-                    Give your dataset a name and subtitle
-                  </h1>
-                </div>
-                <div class="guided--section">
-                  <label class="guided--form-label">Dataset name: </label>
-                  <input
-                    class="guided--input"
-                    id="guided-dataset-name-input"
-                    data-input-set="guided-dataset-starting-point-tab"
-                    data-alert-message="A Pennsieve dataset name cannot contain any of the following characters: /:*?'."
-                    data-alert-type="danger"
-                    type="text"
-                    name="guided-dataset-name"
-                    placeholder="Enter dataset name here"
-                    onkeyup="validateInput($(this))"
-                  />
-                  <p class="guided--text-input-instructions mb-0">
-                    Enter desired name for your new dataset. This is the field
-                    that will be displayed in public as the title of the
-                    dataset. Please make sure that your dataset title is
-                    different than your other dataset titles and that it is
-                    relatively informative.
-                  </p>
-                </div>
-                <div class="guided--section">
-                  <label class="guided--form-label">Dataset subtitle:</label>
-                  <p style="height: 0px; margin: 0px">
-                    <span
-                      id="guided-subtitle-char-count"
-                      style="
-                        position: relative;
-                        top: 100px;
-                        color: rgb(117, 107, 107);
-                      "
-                    >
-                      256 characters left
-                    </span>
-                  </p>
-                  <textarea
-                    class="guided--input guided--text-area"
-                    id="guided-dataset-subtitle-input"
-                    data-input-set="guided-dataset-starting-point-tab"
-                    data-alert-message="A Pennsieve dataset subtitle must be under 255 characters."
-                    data-alert-type="danger"
-                    type="text"
-                    name="guided-dataset-subtitle"
-                    placeholder="Enter datset subtitle here"
-                    style="height: 7.5em; padding-bottom: 20px"
-                    onkeyup="validateInput($(this))"
-                    maxlength="256"
-                  ></textarea>
-                  <p class="guided--text-input-instructions mb-0">
-                    Add two or three sentences (limit of 256 characters) that
-                    describe the content of your dataset such that it is
-                    possible to differentiate it from other datasets. This field
-                    will become the short description visible immediately under
-                    the title of your dataset once it is published.
-                  </p>
-                </div>
-                <div class="space-between">
-                  <button
-                    class="ui secondary basic button guided--button-footer"
-                    id="guided-button-cancel-create-new-dataset"
-                    style="width: 180px !important"
-                  >
-                    <i class="fas fa-arrow-left" style="margin-right: 10px"></i
-                    >Back
-                  </button>
-                  <button
-                    class="ui primary button"
-                    id="guided-create-new-dataset"
-                    style="
-                      background-color: var(--color-light-green) !important;
-                      width: 180px;
-                    "
-                  >
-                    Start curating dataset
-                  </button>
-                </div>
-              </div>
             </div>
 
             <div
@@ -191,6 +103,105 @@
                 class="guided--datasets-container"
                 id="resume-curation-container"
               ></div>
+            </div>
+          </div>
+        </div>
+        <div
+          id="guided-name-subtitle-parent-tab"
+          class="guided--parent-tab hidden"
+        >
+          <div
+            class="guided--panel"
+            id="guided-new-dataset-info"
+            style="flex-grow: 1"
+          >
+            <div class="guided--section">
+              <h1 class="guided--text-sub-step">Dataset name and subtitle</h1>
+            </div>
+            <div class="guided--section">
+              <label class="guided--form-label">Dataset name: </label>
+              <input
+                class="guided--input"
+                id="guided-dataset-name-input"
+                data-input-set="guided-dataset-starting-point-tab"
+                data-alert-message="A Pennsieve dataset name cannot contain any of the following characters: /:*?'."
+                data-alert-type="danger"
+                type="text"
+                name="guided-dataset-name"
+                placeholder="Enter dataset name here"
+                onkeyup="validateInput($(this))"
+              />
+              <p class="guided--text-input-instructions mb-0">
+                Enter desired name for your new dataset. This is the field that
+                will be displayed in public as the title of the dataset. Please
+                make sure that your dataset title is different than your other
+                dataset titles and that it is relatively informative.
+              </p>
+            </div>
+            <div class="guided--section">
+              <label class="guided--form-label">Dataset subtitle:</label>
+              <p style="height: 0px; margin: 0px">
+                <span
+                  id="guided-subtitle-char-count"
+                  style="
+                    position: relative;
+                    top: 100px;
+                    color: rgb(117, 107, 107);
+                  "
+                >
+                  256 characters left
+                </span>
+              </p>
+              <textarea
+                class="guided--input guided--text-area"
+                id="guided-dataset-subtitle-input"
+                data-input-set="guided-dataset-starting-point-tab"
+                data-alert-message="A Pennsieve dataset subtitle must be under 255 characters."
+                data-alert-type="danger"
+                type="text"
+                name="guided-dataset-subtitle"
+                placeholder="Enter datset subtitle here"
+                style="height: 7.5em; padding-bottom: 20px"
+                onkeyup="validateInput($(this))"
+                maxlength="256"
+              ></textarea>
+              <p class="guided--text-input-instructions mb-0">
+                Add two or three sentences (limit of 256 characters) that
+                describe the content of your dataset such that it is possible to
+                differentiate it from other datasets. This field will become the
+                short description visible immediately under the title of your
+                dataset once it is published.
+              </p>
+            </div>
+            <div class="space-between">
+              <button
+                class="ui secondary basic button guided--button-footer"
+                id="guided-button-cancel-create-new-dataset"
+                style="width: 180px !important"
+              >
+                <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+              </button>
+              <button
+                class="ui primary button"
+                id="guided-create-new-dataset"
+                style="
+                  background-color: var(--color-light-green) !important;
+                  width: 180px;
+                "
+              >
+                Start curating dataset
+              </button>
+              <button
+                class="ui primary button"
+                id="guided-modify-dataset-name-subtitle"
+                style="
+                  background-color: var(--color-light-green) !important;
+                  width: 180px;
+                  display: none;
+                "
+              >
+                Save and continue
+              </button>
             </div>
           </div>
         </div>

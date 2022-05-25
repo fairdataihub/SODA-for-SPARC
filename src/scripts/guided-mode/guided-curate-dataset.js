@@ -62,11 +62,20 @@ const guidedGetSamplesSubject = (sample) => {
 };
 
 const guidedTransitionFromHome = () => {
-  $("#guided-home").hide();
-  $("#guided-header-div").css("display", "flex");
-  $("#guided-footer-div").css("display", "flex");
-  $("#guided-next-button").hide();
-  $("#prepare-dataset-parent-tab").css("display", "flex");
+  //Hide the home screen
+  document.getElementById("guided-home").classList.add("hidden");
+  //Hide the header and footer for the dataset name/subtitle page
+  $("#guided-header-div").hide();
+  $("#guided-footer-div").hide();
+  //Show the dataset name/subtitle page
+  document
+    .getElementById("guided-name-subtitle-parent-tab")
+    .classList.remove("hidden");
+  //Swith the start curating/modify existing buttons if they were switched
+  $("#guided-create-new-dataset").show();
+  $("#guided-modify-dataset-name-subtitle").hide();
+
+  //Close the sidebar
   const sidebar = document.getElementById("sidebarCollapse");
   if (!sidebar.classList.contains("active")) {
     sidebar.click();
@@ -74,16 +83,29 @@ const guidedTransitionFromHome = () => {
 };
 const guidedTransitionToHome = () => {
   guidedPrepareHomeScreen();
-  $("#guided-home").css("display", "flex");
+  document.getElementById("guided-home").classList.remove("hidden");
   $("#guided-header-div").hide();
   $("#guided-footer-div").hide();
-  $("#prepare-dataset-parent-tab").hide();
+  document
+    .getElementById("guided-name-subtitle-parent-tab")
+    .classList.add("hidden");
 
   //get element with id "sidebarCollapse"
   const sidebar = document.getElementById("sidebarCollapse");
   if (sidebar.classList.contains("active")) {
     sidebar.click();
   }
+};
+
+const guidedTransitionFromDatasetNameSubtitlePage = () => {
+  //Hide dataset name and subtitle parent tab
+  document
+    .getElementById("guided-name-subtitle-parent-tab")
+    .classList.add("hidden");
+  //Show the dataset structure page
+  $("#prepare-dataset-parent-tab").css("display", "flex");
+  $("#guided-header-div").css("display", "flex");
+  $("#guided-footer-div").css("display", "flex");
 };
 
 const saveGuidedProgress = (guidedProgressFileName) => {
@@ -352,16 +374,12 @@ const guidedPrepareHomeScreen = async () => {
   if (!fs.existsSync(guidedProgressFilePath)) {
     fs.mkdirSync(guidedProgressFilePath);
   }
-  const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
 
   //Refresh Home page UI
-
   $("#guided-button-start-new-curate").css("display", "flex");
-  document.getElementById("guided-new-dataset-info").classList.add("hidden");
-  document.getElementById("guided-dataset-name-input").value = "";
-  document.getElementById("guided-dataset-subtitle-input").value = "";
   $("#continue-curating-existing").css("display", "flex");
 
+  const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
   //render progress resumption cards from progress file array on first page of guided mode
   if (guidedSavedProgressFiles.length != 0) {
     $("#guided-continue-curation-header").text(
@@ -4152,11 +4170,18 @@ const setGuidedDatasetName = (datasetName) => {
   sodaJSONObj["digital-metadata"]["name"] = datasetName;
   $(".guidedDatasetName").text(datasetName);
 };
+const getGuidedDatasetName = () => {
+  return sodaJSONObj["digital-metadata"]["name"];
+};
 
 const setGuidedDatasetSubtitle = (datasetSubtitle) => {
   sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitle;
   $(".guidedDatasetSubtitle").text(datasetSubtitle);
 };
+const getGuidedDatasetSubtitle = () => {
+  return sodaJSONObj["digital-metadata"]["subtitle"];
+};
+
 const guidedShowBannerImagePreview = (imagePath) => {
   const bannerImagePreviewelement = document.getElementById(
     "guided-banner-image-preview"
@@ -4588,63 +4613,12 @@ const renderSamplesMetadataAsideItems = () => {
 
 $(document).ready(() => {
   $("#guided-button-start-new-curate").on("click", () => {
-    document
-      .getElementById("guided-new-dataset-info")
-      .classList.remove("hidden");
-    $("#guided-button-start-new-curate").hide();
-    $("#continue-curating-existing").hide();
+    guidedTransitionFromHome();
     //temp bypass stuff
     /*$("#guided-dataset-name-input").val(makeid(10));
     $("#guided-dataset-subtitle-input").val(makeid(10));
     $("#guided-create-new-dataset").click();*/
-    sodaJSONObj.addSubject("sub-1");
-    sodaJSONObj.addSubject("sub-2");
-    sodaJSONObj.addSubject("sub-3");
-    sodaJSONObj.addSubject("sub-4");
-    sodaJSONObj.addSubject("sub-5");
-    sodaJSONObj.addSubject("sub-6");
-    sodaJSONObj.addSubject("sub-7");
-    sodaJSONObj.addPool("pool-1");
-    sodaJSONObj.addPool("pool-2");
-    sodaJSONObj.addPool("pool-3");
-    sodaJSONObj.addPool("pool-4");
-    sodaJSONObj.moveSubjectIntoPool("sub-1", "pool-1");
-    sodaJSONObj.moveSubjectIntoPool("sub-2", "pool-1");
-    sodaJSONObj.moveSubjectIntoPool("sub-3", "pool-2");
-    sodaJSONObj.moveSubjectIntoPool("sub-4", "pool-2");
-    sodaJSONObj.moveSubjectIntoPool("sub-5", "pool-3");
-    sodaJSONObj.moveSubjectIntoPool("sub-6", "pool-3");
-    sodaJSONObj.addSample("sam-1");
-    sodaJSONObj.addSample("sam-2");
-    sodaJSONObj.addSample("sam-3");
-    sodaJSONObj.addSample("sam-4");
-    sodaJSONObj.addSample("sam-5");
-    sodaJSONObj.addSample("sam-6");
-    sodaJSONObj.addSample("sam-7");
-    sodaJSONObj.addSample("sam-8");
-    sodaJSONObj.addSample("sam-9");
-    sodaJSONObj.addSample("sam-10");
-    sodaJSONObj.addSample("sam-11");
-    sodaJSONObj.addSample("sam-12");
-    sodaJSONObj.addSample("sam-13");
-    sodaJSONObj.addSample("sam-14");
-    sodaJSONObj.addSample("sam-15");
 
-    sodaJSONObj.addSampleToSubject("sam-1", "sub-1");
-    sodaJSONObj.addSampleToSubject("sam-2", "sub-1");
-    sodaJSONObj.addSampleToSubject("sam-3", "sub-2");
-    sodaJSONObj.addSampleToSubject("sam-4", "sub-2");
-    sodaJSONObj.addSampleToSubject("sam-5", "sub-3");
-    sodaJSONObj.addSampleToSubject("sam-6", "sub-3");
-    sodaJSONObj.addSampleToSubject("sam-7", "sub-4");
-    sodaJSONObj.addSampleToSubject("sam-8", "sub-4");
-    sodaJSONObj.addSampleToSubject("sam-9", "sub-4");
-    sodaJSONObj.addSampleToSubject("sam-10", "sub-4");
-    sodaJSONObj.addSampleToSubject("sam-11", "sub-5");
-    sodaJSONObj.addSampleToSubject("sam-12", "sub-5");
-    sodaJSONObj.addSampleToSubject("sam-13", "sub-5");
-    sodaJSONObj.addSampleToSubject("sam-14", "sub-7");
-    sodaJSONObj.addSampleToSubject("sam-15", "sub-7");
     /*
     //show the next button after 5 seconds
     setTimeout(() => {
@@ -4656,11 +4630,13 @@ $(document).ready(() => {
     //remove text from dataset name and subtitle inputs
     document.getElementById("guided-dataset-name-input").value = "";
     document.getElementById("guided-dataset-subtitle-input").value = "";
-    //hide the create dataset
-    document.getElementById("guided-new-dataset-info").classList.add("hidden");
     //show the home page
-    $("#guided-button-start-new-curate").show();
-    $("#continue-curating-existing").show();
+    document
+      .getElementById("guided-name-subtitle-parent-tab")
+      .classList.add("hidden");
+    document.getElementById("guided-home").classList.remove("hidden");
+
+    guidedPrepareHomeScreen();
   });
   $("#guided-create-new-dataset").on("click", async function () {
     let errorArray = [];
@@ -4691,6 +4667,54 @@ $(document).ready(() => {
         console.log(existingProgressNames);
         //If sodaJSONObj is empty, populate initial object properties
         guidedCreateSodaJSONObj();
+        sodaJSONObj.addSubject("sub-1");
+        sodaJSONObj.addSubject("sub-2");
+        sodaJSONObj.addSubject("sub-3");
+        sodaJSONObj.addSubject("sub-4");
+        sodaJSONObj.addSubject("sub-5");
+        sodaJSONObj.addSubject("sub-6");
+        sodaJSONObj.addSubject("sub-7");
+        sodaJSONObj.addPool("pool-1");
+        sodaJSONObj.addPool("pool-2");
+        sodaJSONObj.addPool("pool-3");
+        sodaJSONObj.addPool("pool-4");
+        sodaJSONObj.moveSubjectIntoPool("sub-1", "pool-1");
+        sodaJSONObj.moveSubjectIntoPool("sub-2", "pool-1");
+        sodaJSONObj.moveSubjectIntoPool("sub-3", "pool-2");
+        sodaJSONObj.moveSubjectIntoPool("sub-4", "pool-2");
+        sodaJSONObj.moveSubjectIntoPool("sub-5", "pool-3");
+        sodaJSONObj.moveSubjectIntoPool("sub-6", "pool-3");
+        sodaJSONObj.addSample("sam-1");
+        sodaJSONObj.addSample("sam-2");
+        sodaJSONObj.addSample("sam-3");
+        sodaJSONObj.addSample("sam-4");
+        sodaJSONObj.addSample("sam-5");
+        sodaJSONObj.addSample("sam-6");
+        sodaJSONObj.addSample("sam-7");
+        sodaJSONObj.addSample("sam-8");
+        sodaJSONObj.addSample("sam-9");
+        sodaJSONObj.addSample("sam-10");
+        sodaJSONObj.addSample("sam-11");
+        sodaJSONObj.addSample("sam-12");
+        sodaJSONObj.addSample("sam-13");
+        sodaJSONObj.addSample("sam-14");
+        sodaJSONObj.addSample("sam-15");
+
+        sodaJSONObj.addSampleToSubject("sam-1", "sub-1");
+        sodaJSONObj.addSampleToSubject("sam-2", "sub-1");
+        sodaJSONObj.addSampleToSubject("sam-3", "sub-2");
+        sodaJSONObj.addSampleToSubject("sam-4", "sub-2");
+        sodaJSONObj.addSampleToSubject("sam-5", "sub-3");
+        sodaJSONObj.addSampleToSubject("sam-6", "sub-3");
+        sodaJSONObj.addSampleToSubject("sam-7", "sub-4");
+        sodaJSONObj.addSampleToSubject("sam-8", "sub-4");
+        sodaJSONObj.addSampleToSubject("sam-9", "sub-4");
+        sodaJSONObj.addSampleToSubject("sam-10", "sub-4");
+        sodaJSONObj.addSampleToSubject("sam-11", "sub-5");
+        sodaJSONObj.addSampleToSubject("sam-12", "sub-5");
+        sodaJSONObj.addSampleToSubject("sam-13", "sub-5");
+        sodaJSONObj.addSampleToSubject("sam-14", "sub-7");
+        sodaJSONObj.addSampleToSubject("sam-15", "sub-7");
 
         //Get the users information and set them as PI if a PI has not been designated yet
         if (sodaJSONObj["digital-metadata"]["pi-owner"] == undefined) {
@@ -4707,7 +4731,7 @@ $(document).ready(() => {
         setGuidedDatasetSubtitle(datasetSubtitle);
         saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
-        guidedTransitionFromHome();
+        guidedTransitionFromDatasetNameSubtitlePage();
       } else {
         if (datasetName == "") {
           errorArray.push({
@@ -4739,6 +4763,98 @@ $(document).ready(() => {
       $(this).removeClass("loading");
     }
   });
+  $("#guided-modify-dataset-name-subtitle").on("click", async () => {
+    let errorArray = [];
+    try {
+      const datasetName = getGuidedDatasetName();
+      const datasetSubtitle = getGuidedDatasetSubtitle();
+      const datasetNameInputValue = document.getElementById(
+        "guided-dataset-name-input"
+      ).value;
+      const datasetSubtitleInputValue = document.getElementById(
+        "guided-dataset-subtitle-input"
+      ).value;
+
+      console.log(datasetName);
+
+      if (datasetNameInputValue != "" && datasetSubtitleInputValue != "") {
+        if (
+          datasetName === datasetNameInputValue &&
+          datasetSubtitle === datasetSubtitleInputValue
+        ) {
+          //If not changes were made to the name or subtitle, exit the page
+          guidedTransitionFromDatasetNameSubtitlePage();
+          return;
+        }
+
+        if (datasetName != datasetNameInputValue) {
+          //check if dataset name is already in use
+          const existingProgressFileNames = fs.readdirSync(
+            guidedProgressFilePath
+          );
+          //Get the name of the progress files without the file type
+          const existingProgressDatasetNames = existingProgressFileNames.map(
+            (fileName) => {
+              return fileName.split(".")[0];
+            }
+          );
+          if (existingProgressDatasetNames.includes(datasetNameInputValue)) {
+            const result = await Swal.fire({
+              title: "An existing progress file with this name already exists",
+              text: "Would you like to overwrite it? This will replace existing data saved under the old progress file with your current progress.",
+              icon: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#3085d6",
+              cancelButtonColor: "#d33",
+              confirmButtonText: "Yes, overwrite existing file",
+              cancelButtonText: "No, cancel",
+            });
+            if (result.isConfirmed) {
+              setGuidedDatasetName(datasetNameInputValue);
+              setGuidedDatasetSubtitle(datasetSubtitleInputValue);
+              saveGuidedProgress(datasetNameInputValue);
+              //delete the old progress file
+              fs.unlinkSync(`${guidedProgressFilePath}/${datasetName}.json`);
+            }
+          } else {
+            setGuidedDatasetName(datasetNameInputValue);
+            setGuidedDatasetSubtitle(datasetSubtitleInputValue);
+            saveGuidedProgress(datasetNameInputValue);
+            //delete the old progress file
+            fs.unlinkSync(`${guidedProgressFilePath}/${datasetName}.json`);
+          }
+        }
+        //transition out of dataset name/subtitle page
+        guidedTransitionFromDatasetNameSubtitlePage();
+      } else {
+        if (datasetNameInputValue == "") {
+          errorArray.push({
+            type: "notyf",
+            message: "Please enter a dataset name",
+          });
+        }
+        if (datasetSubtitleInputValue == "") {
+          errorArray.push({
+            type: "notyf",
+            message: "Please enter a dataset subtitle",
+          });
+        }
+        throw errorArray;
+      }
+    } catch (error) {
+      errorArray.map((error) => {
+        if (error.type === "notyf") {
+          notyf.open({
+            duration: "4000",
+            type: "error",
+            message: error.message,
+          });
+        }
+        errorArray = [];
+      });
+    }
+  });
+
   //WHEN STRUCTURING FOLDER GUIDED
   $("#guided-button-guided-dataset-structuring").on("click", () => {
     $("#guided-curate-new-dataset-branch-capsule-container").hide();
@@ -7975,8 +8091,31 @@ $(document).ready(() => {
     pageBeingLeftID = CURRENT_PAGE.attr("id");
 
     if (pageBeingLeftID === "guided-dataset-starting-point-tab") {
-      $("#guided-next-button").show();
-      guidedTransitionToHome();
+      //Hide dataset name and subtitle parent tab
+      document
+        .getElementById("guided-name-subtitle-parent-tab")
+        .classList.remove("hidden");
+      //Show the dataset structure page
+      $("#prepare-dataset-parent-tab").hide();
+      $("#guided-header-div").hide();
+      $("#guided-footer-div").hide();
+
+      //Set the dataset name and subtitle with the values from jsonObj
+      const datasetName = getGuidedDatasetName();
+      const datasetSubtitle = getGuidedDatasetSubtitle();
+      const datasetNameInputElement = document.getElementById(
+        "guided-dataset-name-input"
+      );
+      const datasetSubtitleInputElement = document.getElementById(
+        "guided-dataset-subtitle-input"
+      );
+      datasetNameInputElement.value = datasetName;
+      datasetSubtitleInputElement.value = datasetSubtitle;
+
+      //switch the create new / modify existing buttons
+      $("#guided-modify-dataset-name-subtitle").show();
+      $("#guided-create-new-dataset").hide();
+
       return;
     }
 
