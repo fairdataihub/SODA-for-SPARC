@@ -1855,7 +1855,7 @@ async function transitionSubQuestionsButton(
     try {
       var res = await bf_request_and_populate_dataset(sodaJSONObj);
       result = [true, res];
-      console.log("requested here")
+      console.log("requested here");
     } catch (err) {
       result = [false, err];
     }
