@@ -162,6 +162,10 @@ const getProgressFileData = async (progressFile) => {
   console.log(progressFilePath);
   return readFileAsync(progressFilePath);
 };
+const deleteProgressCard = (progressCardDeleteButton) => {
+  const progressCard = progressCardDeleteButton.parentElement;
+  progressCard.remove();
+};
 const renderProgressCards = (progressFileJSONdata) => {
   //sort progressFileJSONdata by date to place newest cards on top
   progressFileJSONdata.sort((a, b) => {
@@ -199,6 +203,17 @@ const renderProgressCards = (progressFileJSONdata) => {
 
     return `
       <div class="guided--dataset-card">
+        <i
+          class="fas fa-times fa-2x"
+          style="
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            color: black;
+            cursor: pointer;
+          "
+          onclick="deleteProgressCard(this)"
+        ></i>
         <div class="guided--container-dataset-card-center">  
         ${progressFileImage}     
           <div class="guided--dataset-card-title">

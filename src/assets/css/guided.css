@@ -517,11 +517,13 @@ h1.guided--text-sub-step {
 
 .guided--dataset-card {
   width: 250px;
+  min-height: 300px;
   border: none;
   border-radius: 5px;
   box-shadow: 0px 0px 10px #d5d5d5;
   margin: 10px;
   padding: 10px;
+  position: relative;
 }
 .guided--dataset-card-title {
   display: flex;
