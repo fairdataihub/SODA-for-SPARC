@@ -1,7 +1,7 @@
 {
   "name": "soda-for-sparc",
   "productName": "SODA for SPARC",
-  "version": "5.3.3",
+  "version": "6.0.0",
   "description": "Keep Calm and Curate ",
   "main": "main.js",
   "scripts": {
@@ -13,8 +13,10 @@
     "deploy-mac": "electron-builder build --mac --publish always",
     "deploy-linux": "electron-builder build --linux --publish always",
     "python-onefile-build": "python -m PyInstaller --onefile --clean ./pysoda/api.py --distpath ./pysodadist",
+    "python-onefile-build-win": "python -m PyInstaller api.spec --distpath pysodadist --clean --onefile",
     "postinstall": "electron-builder install-app-deps"
   },
+  "pyzmq-directory": "C:\\Users\\CMarroquin\\anaconda3\\envs\\env-electron-python\\Lib\\site-packages\\pyzmq.libs\\*;pyzmq.libs",
   "repository": {
     "type": "git",
     "url": "https://github.com/fairdataihub/SODA-for-SPARC.git"
@@ -34,7 +36,12 @@
     "win": {
       "asar": false,
       "target": "nsis",
-      "icon": "assets/app-icon/win/icon.ico"
+      "icon": "assets/app-icon/win/icon.ico",
+      "extraResources": [
+        {
+          "from": "./pysodadist/api"
+        }
+      ]
     },
     "mac": {
       "asar": true,
@@ -51,6 +58,10 @@
       "extraResources": [
         {
           "from": "./pysodadist/api"
+        },
+        {
+          "from": "./file_templates",
+          "to": "./file_templates"
         }
       ]
     },
@@ -61,6 +72,10 @@
       "extraResources": [
         {
           "from": "./pysodadist/api"
+        },
+        {
+          "from": "./file_templates",
+          "to": "./file_templates"
         }
       ]
     },
@@ -117,6 +132,7 @@
     "jquery": "^3.6.0",
     "jstree": "^3.3.11",
     "jsuites": "^4.9.33",
+    "lottie-web": "^5.9.4",
     "mv": "^2.1.1",
     "node-localstorage": "^2.1.6",
     "notyf": "^3.9.0",

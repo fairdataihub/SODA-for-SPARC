@@ -36,6 +36,7 @@ const cognitoClient = require("amazon-cognito-identity-js");
 const diskCheck = require("check-disk-space").default;
 const validator = require("validator");
 const doiRegex = require("doi-regex");
+const lottie = require("lottie-web");
 // TODO: Test with a build
 const {
   datasetUploadSession,
@@ -55,8 +56,6 @@ const DatePicker = require("tui-date-picker"); /* CommonJS */
 const excel4node = require("excel4node");
 
 const { backOff } = require("exponential-backoff");
-
-console.log(`Back off is:`, backOff);
 
 // const prevent_sleep_id = "";
 const electron_app = electron.app;
@@ -79,6 +78,47 @@ let introStatus = {
   submission: false,
   subjects: false,
   samples: false,
+};
+
+/**
+ * Clear the Pennsieve Agent's upload queue. Should be run after pre_rlight_checks have passed.
+ *
+ */
+const clearQueue = () => {
+  // determine OS
+  const os = require("os");
+  const platform = os.platform();
+  let pennsievePath;
+
+  if (platform === "darwin") {
+    pennsievePath = "/usr/local/opt/pennsieve/bin/pennsieve";
+  } else if (platform === "win32") {
+    pennsievePath = "C:\\Program Files\\PennSieve\\pennsieve.exe";
+  } else {
+    // linux pennsieve path
+    pennsievePath = "/usr/local/bin/pennsieve";
+  }
+
+  //* clear the Pennsieve Queue
+  const child = require("child_process").spawnSync(
+    pennsievePath,
+    ["upload-status", "--cancel-all"],
+    { timeout: 4000 }
+  );
+
+  //* check if there was an error in the subprocess that prevented it from launching
+  if (child.error !== undefined) {
+    console.error(child.error);
+    log.error(child.error);
+    return;
+  }
+
+  //* if Pennsieve had an error outputed to the console log it for debugging
+  if (child.stderr !== null && child.stderr.length > 0) {
+    console.error(child.stderr.toString("utf8"));
+    log.error(child.stderr.toString("utf8"));
+    return;
+  }
 };
 
 //////////////////////////////////
@@ -104,12 +144,134 @@ console.log("User OS:", os.type(), os.platform(), "version:", os.release());
 const appVersion = window.require("electron").remote.app.getVersion();
 log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
+let over_view_section = document.getElementById("getting_started-section");
+let column1 = document.getElementById("lottie1");
+let column2 = document.getElementById("lottie2");
+let column3 = document.getElementById("lottie3");
+
+var observer = new MutationObserver(function (mutations) {
+  mutations.forEach(function (mutation) {
+    var attributeValue = $(mutation.target).prop(mutation.attributeName);
+
+    if (attributeValue.includes("is-shown") == true) {
+      //add lotties
+      column1.innerText = "";
+      column2.innerText = "";
+      column3.innerText = "";
+
+      var column1_lottie = lottie.loadAnimation({
+        container: column1,
+        animationData:
+          column1Lottie /*(json js variable, (view src/assets/lotties)*/,
+        renderer: "svg",
+        loop: true /*controls looping*/,
+        autoplay: true,
+      });
+      var column2_lottie = lottie.loadAnimation({
+        container: column2,
+        animationData:
+          column2Lottie /*(json js variable, (view src/assets/lotties)*/,
+        renderer: "svg",
+        loop: true /*controls looping*/,
+        autoplay: true,
+      });
+      var column3_lottie = lottie.loadAnimation({
+        container: column3,
+        animationData: column3Lottie,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+    } else {
+      column1.innerText = "";
+      column2.innerText = "";
+      column3.innerText = "";
+      lottie.stop(column1_lottie);
+      lottie.stop(column2_lottie);
+      lottie.stop(column3_lottie);
+    }
+  });
+});
+
+observer.observe(over_view_section, {
+  attributes: true,
+  attributeFilter: ["class"],
+});
+document.getElementById("getting_starting_tab").click();
 
 //////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
 let client = new zerorpc.Client({ timeout: 300000 });
 client.connect("tcp://127.0.0.1:4242");
+client.invoke("echo", "server ready", (error, res) => {
+  if (error || res !== "server ready") {
+    log.error(error);
+    console.error(error);
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Establishing Python Connection",
+      error
+    );
+    Swal.fire({
+      icon: "error",
+      html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Restart now",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        app.relaunch();
+        app.exit();
+      }
+    });
+  } else {
+    console.log("Connected to Python back-end successfully");
+    log.info("Connected to Python back-end successfully");
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Establishing Python Connection"
+    );
+
+    // verify backend api versions
+    client.invoke("api_version_check", (error, res) => {
+      if (error || res !== appVersion) {
+        log.error(error);
+        console.error(error);
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Verifying App Version",
+          error
+        );
+
+        Swal.fire({
+          icon: "error",
+          html: `The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "Close now",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            app.exit();
+          }
+        });
+      } else {
+        ipcRenderer.send("track-event", "Success", "Verifying App Version");
+
+        //Load Default/global Pennsieve account if available
+        updateBfAccountList();
+        checkNewAppVersion(); // Added so that version will be displayed for new users
+      }
+    });
+  }
+});
 
 const notyf = new Notyf({
   position: { x: "right", y: "bottom" },
@@ -270,7 +432,7 @@ const startupServerAndApiCheck = async () => {
       delayFirstAttempt: true,
       startingDelay: 1000, // 1 second + 2 second + 4 second + 8 second
       timeMultiple: 2,
-      numOfAttempts: 2,
+      numOfAttempts: 4,
       maxDelay: 8000, // 16 seconds max wait time
     });
   } catch (e) {
@@ -332,7 +494,27 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
   }
 
   // check integrity of all the core systems
-  run_pre_flight_checks();
+  await run_pre_flight_checks();
+
+  // get apps base path
+  const basepath = app.getAppPath();
+  const resourcesPath = process.resourcesPath;
+
+  // set the templates path
+  client.invoke(
+    "api_set_template_path",
+    basepath,
+    resourcesPath,
+    (error, res) => {
+      if (error) {
+        console.log(error);
+        log.error(error);
+        ipcRenderer.send("track-event", "Error", "Setting Templates Path");
+      } else {
+        ipcRenderer.send("track-event", "Success", "Setting Templates Path");
+      }
+    }
+  );
 });
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
@@ -494,7 +676,6 @@ const serverIsLiveStartup = () => {
   return new Promise((resolve, reject) => {
     client.invoke("echo", "server ready", (error, res) => {
       if (error || res !== "server ready") {
-        console.error(error);
         reject(false);
       } else {
         resolve(true);
@@ -2733,360 +2914,7 @@ function detectEmptyRequiredFields(funding) {
 //////////////////////////End of Ds description section ///////////////////////////////////
 //////////////// //////////////// //////////////// //////////////// ////////////////////////
 
-// New instance for description editor
-// const tuiInstance = new Editor({
-//   el: document.querySelector("#editorSection"),
-//   initialEditType: "wysiwyg",
-//   previewStyle: "vertical",
-//   height: "400px",
-//   hideModeSwitch: true,
-//   placeholder: "Add a description here: ",
-//   toolbarItems: [
-//     "heading",
-//     "bold",
-//     "italic",
-//     "strike",
-//     "link",
-//     "hr",
-//     "divider",
-//     "ul",
-//     "ol",
-//   ],
-// });
-
 var displaySize = 1000;
-
-//////////////////////////////////
-// Prepare Dataset
-//////////////////////////////////
-
-////////////////// Validate current datasets ////////////////////////////////
-
-// /////// Convert table content into json format for transferring to Python
-// function grabCurrentDSValidator() {
-//   var jsonvect = tableToJsonWithDescription(tableNotOrganized);
-//   var jsonpath = jsonvect[0];
-//   var jsondescription = jsonvect[1];
-//   var jsonpathMetadata = tableToJsonMetadata(tableMetadata);
-//   jsonpath["main"] = jsonpathMetadata["metadata"];
-//   return [jsonpath, jsondescription];
-// }
-
-//// Check for empty JSON object and remove then
-// function checkJSONObj(jsonObj) {
-//   var empty = true;
-//   for (var key of Object.keys(jsonObj)) {
-//     if (jsonObj[key].length !== 0) {
-//       empty = false;
-//     } else {
-//       if (key !== "main") delete jsonObj[key];
-//     }
-//   }
-//   return [empty, jsonObj];
-// }
-
-///////// Clicking on Validate current DS
-// var checkCategory0 = "High-level folder structure";
-// var checkCategory1 = "High-level metadata files";
-// var checkCategory2 = "Sub-level organization";
-// var checkCategory3 = "submission file";
-// var checkCategory4 = "dataset_description file";
-// var checkCategory5 = "subjects file";
-// var checkCategory6 = "samples file";
-// var checkCategories = [
-//   checkCategory0,
-//   checkCategory1,
-//   checkCategory2,
-//   checkCategory3,
-//   checkCategory4,
-//   checkCategory5,
-//   checkCategory6,
-// ];
-//
-// validateCurrentDSBtn.addEventListener("click", function () {
-//   document.getElementById("div-validation-report-current").style.display =
-//     "none";
-//   document.getElementById("para-preview-current-ds").innerHTML = "";
-//   document.getElementById("para-validate-current-ds").innerHTML = "";
-//   document.getElementById("para-generate-report-current-ds").innerHTML = "";
-//   var jsonvect = grabCurrentDSValidator();
-//   var jsonpath = jsonvect[0];
-//   var jsondescription = jsonvect[1];
-//   var outCheck = checkJSONObj(jsonpath);
-//   var empty = outCheck[0];
-//   if (empty === true) {
-//     document.getElementById("para-validate-current-ds").innerHTML =
-//       "<span style='color: red;'>Please add files or folders to your dataset first!</span>";
-//   } else {
-//     validateCurrentDSBtn.disabled = true;
-//     if (manifestStatus.checked) {
-//       validateSODAProgressBar.style.display = "block";
-//       client.invoke(
-//         "api_create_folder_level_manifest",
-//         jsonpath,
-//         jsondescription,
-//         (error, res) => {
-//           if (error) {
-//             console.error(error);
-//             log.error(error);
-//             var emessage = userError(error);
-//             document.getElementById("para-validate-current-ds").innerHTML =
-//               "<span style='color: red;'>" + emessage + "</span>";
-//             validateCurrentDSBtn.disabled = false;
-//             validateSODAProgressBar.style.display = "none";
-//           } else {
-//             var validatorInput = res;
-//             localValidator(validatorInput);
-//           }
-//         }
-//       );
-//     } else {
-//       var validatorInput = jsonpath;
-//       console.log(validatorInput);
-//       localValidator(validatorInput);
-//     }
-//   }
-// });
-//
-// function localValidator(validatorInput) {
-//   var messageDisplay = "";
-//   client.invoke("api_validate_dataset", validatorInput, (error, res) => {
-//     if (error) {
-//       console.error(error);
-//       log.error(error);
-//       var emessage = userError(error);
-//       document.getElementById("para-validate-current-ds").innerHTML =
-//         "<span style='color: red;'>" + emessage + "</span>";
-//       validateCurrentDSBtn.disabled = false;
-//       validateSODAProgressBar.style.display = "none";
-//     } else {
-//       for (var i = 0; i < res.length; i++) {
-//         messageDisplay = errorMessageCategory(
-//           res[i],
-//           checkCategories[i],
-//           messageDisplay
-//         );
-//       }
-//       document.getElementById("div-validation-report-current").style.display =
-//         "block";
-//       document.getElementById("div-report-current").style.display = "block";
-//       document.getElementById("para-validate-current-ds").innerHTML =
-//         "Done, see report below!";
-//       validateCurrentDatasetReport.innerHTML = messageDisplay;
-//       validateCurrentDSBtn.disabled = false;
-//       validateSODAProgressBar.style.display = "none";
-//     }
-//   });
-// }
-//
-
-// Generate pdf validator file
-// currentDatasetReportBtn.addEventListener("click", function () {
-//   document.getElementById("para-generate-report-current-ds").innerHTML = "";
-//   ipcRenderer.send("save-file-dialog-validator-current");
-// });
-// ipcRenderer.on("selected-savedvalidatorcurrent", (event, filepath) => {
-//   if (filepath.length > 0) {
-//     if (filepath != null) {
-//       document.getElementById("para-generate-report-current-ds").innerHTML =
-//         "Please wait...";
-//       currentDatasetReportBtn.disabled = true;
-//       // obtain canvas and print to pdf
-//       const domElement = validateCurrentDatasetReport;
-//       // obtain canvas and print to pdf
-//       html2canvas(domElement).then((canvas) => {
-//         const img = canvas.toDataURL("image/png", 1.0);
-//         var data = img.replace(/^data:image\/\w+;base64,/, "");
-//         var buf = new Buffer(data, "base64");
-//
-//         // obtain canvas and print to pdf
-//         pdf = new PDFDocument({ autoFirstPage: false });
-//         var image = pdf.openImage(buf);
-//         pdf.addPage({ size: [image.width + 100, image.height + 25] });
-//         pdf.pipe(fs.createWriteStream(filepath));
-//         pdf.image(image, 25, 25);
-//
-//         pdf.end();
-//
-//         document.getElementById("para-generate-report-current-ds").innerHTML =
-//           "Report saved!";
-//       });
-//     }
-//   }
-//   currentDatasetReportBtn.disabled = false;
-// });
-
-/////////////////////// Validate local datasets //////////////////////////////
-//
-// //// when users click on Import local dataset
-// document
-//   .getElementById("input-local-ds-select")
-//   .addEventListener("click", function () {
-//     document.getElementById("para-generate-report-local-ds").innerHTML = "";
-//     document.getElementById("div-report-local").style.display = "none";
-//     ipcRenderer.send("open-file-dialog-validate-local-ds");
-//   });
-// ipcRenderer.on("selected-validate-local-dataset", (event, filepath) => {
-//   if (filepath.length > 0) {
-//     if (filepath != null) {
-//       document.getElementById("para-local-ds-info").innerHTML = "";
-//       document.getElementById("div-validation-report-local").style.display =
-//         "none";
-//       // used to communicate value to button-import-local-ds click eventlistener
-//       document.getElementById("input-local-ds-select").placeholder =
-//         filepath[0];
-//     } else {
-//       document.getElementById("para-local-ds-info").innerHTML =
-//         "<span style='color: red ;'>Please select a valid local dataset!</span>";
-//     }
-//   }
-// });
-//
-// validateLocalDSBtn.addEventListener("click", function () {
-//   document.getElementById("para-local-ds-info").innerHTML = "";
-//   document.getElementById("para-generate-report-local-ds").innerHTML = "";
-//   var datasetPath = document.getElementById("input-local-ds-select")
-//     .placeholder;
-//   var messageDisplay = "";
-//   if (datasetPath === "Select a folder") {
-//     document.getElementById("para-local-ds-info").innerHTML =
-//       "<span style='color: red ;'>Please select a local dataset first</span>";
-//   } else {
-//     if (datasetPath != null) {
-//       validateLocalProgressBar.style.display = "block";
-//       validateLocalDSBtn.disabled = true;
-//       validatorInput = datasetPath;
-//       client.invoke("api_validate_dataset", validatorInput, (error, res) => {
-//         if (error) {
-//           console.error(error);
-//           log.error(error);
-//           validateLocalProgressBar.style.display = "none";
-//         } else {
-//           for (var i = 0; i < res.length; i++) {
-//             if (res[i] !== "N/A") {
-//               messageDisplay = errorMessageCategory(
-//                 res[i],
-//                 checkCategories[i],
-//                 messageDisplay
-//               );
-//             }
-//           }
-//           document.getElementById("div-validation-report-local").style.display =
-//             "block";
-//           document.getElementById("div-report-local").style.display = "block";
-//           document.getElementById("para-local-ds-info").innerHTML =
-//             "Done, see report below!";
-//           validateLocalDatasetReport.innerHTML = messageDisplay;
-//           validateLocalProgressBar.style.display = "none";
-//         }
-//       });
-//       validateLocalDSBtn.disabled = false;
-//     }
-//   }
-// });
-
-// function validateMessageTransform(inString, classSelection, colorSelection) {
-//   //outString = inString.split("--").join("<br>")
-//   outString = inString.split("--");
-//   var msg =
-//     "<li class=" +
-//     classSelection +
-//     ">" +
-//     "<span style='color:" +
-//     colorSelection +
-//     ";'>";
-//   msg += outString[0];
-//   msg += "</span>" + "</li>";
-//   if (outString.length > 1) {
-//     msg += "<ul style='margin-top:-10px';>";
-//     for (var i = 1; i < outString.length; i++) {
-//       msg +=
-//         "<li>" +
-//         "<span style='color:" +
-//         colorSelection +
-//         ";'>" +
-//         outString[i] +
-//         "</span>" +
-//         "</li>";
-//     }
-//     msg += "</ul>";
-//   }
-//   return msg;
-// }
-
-// function errorMessageGenerator(resitem, category, messageDisplay) {
-//   if (resitem[category]) {
-//     var messageCategory = resitem[category];
-//     if (messageCategory.length > 0) {
-//       if (category === "fatal") {
-//         var colorSelection = "red";
-//         var classSelection = "bulleterror";
-//       } else if (category === "warnings") {
-//         var colorSelection = "#F4B800";
-//         var classSelection = "bulletwarning";
-//       } else if (category === "pass") {
-//         var colorSelection = "green";
-//         var classSelection = "bulletpass";
-//       }
-//       for (var i = 0; i < messageCategory.length; i++) {
-//         var message = validateMessageTransform(
-//           messageCategory[i],
-//           classSelection,
-//           colorSelection
-//         );
-//         messageDisplay += message;
-//       }
-//     }
-//   }
-//   return messageDisplay;
-// }
-
-// function errorMessageCategory(resitem, checkCategory, messageDisplay) {
-//   messageDisplay += "<b>" + checkCategory + "</b>";
-//   messageDisplay += "<ul class='validatelist' id='" + checkCategory + "'>";
-//   var category = "fatal";
-//   messageDisplay = errorMessageGenerator(resitem, category, messageDisplay);
-//   category = "warnings";
-//   messageDisplay = errorMessageGenerator(resitem, category, messageDisplay);
-//   category = "pass";
-//   messageDisplay = errorMessageGenerator(resitem, category, messageDisplay);
-//   messageDisplay += "</ul>";
-//   return messageDisplay;
-// }
-
-///// Generate pdf report for local validator report
-// localDatasetReportBtn.addEventListener("click", function () {
-//   document.getElementById("para-generate-report-local-ds").innerHTML = "";
-//   ipcRenderer.send("save-file-dialog-validator-local");
-// });
-// ipcRenderer.on("selected-savedvalidatorlocal", (event, filepath) => {
-//   if (filepath.length > 0) {
-//     if (filepath != null) {
-//       document.getElementById("para-generate-report-local-ds").innerHTML =
-//         "Please wait...";
-//       localDatasetReportBtn.disabled = true;
-//       const domElement = validateLocalDatasetReport;
-//       html2canvas(domElement).then((canvas) => {
-//         const img = canvas.toDataURL("image/png", 1.0);
-//         var data = img.replace(/^data:image\/\w+;base64,/, "");
-//         var buf = new Buffer(data, "base64");
-//
-//         // obtain canvas and print to pdf
-//         pdf = new PDFDocument({ autoFirstPage: false });
-//         var image = pdf.openImage(buf);
-//         pdf.addPage({ size: [image.width + 100, image.height + 25] });
-//         pdf.pipe(fs.createWriteStream(filepath));
-//         pdf.image(image, 25, 25);
-//
-//         pdf.end();
-//
-//         document.getElementById("para-generate-report-local-ds").innerHTML =
-//           "Report saved!";
-//       });
-//     }
-//   }
-//   localDatasetReportBtn.disabled = false;
-// });
 
 //////////////////////////////////
 // Manage Dataset
@@ -3173,6 +3001,7 @@ const { default: Swal } = require("sweetalert2");
 const { waitForDebugger } = require("inspector");
 const { resolve } = require("path");
 const { background } = require("jimp");
+const { rename } = require("fs");
 var cropOptions = {
   aspectRatio: 1,
   movable: false,
@@ -4209,14 +4038,6 @@ var highLevelFolderToolTip = {
     "<b>protocol</b>: This folder contains supplementary files to accompany the experimental protocols submitted to Protocols.io. Please note that this is not a substitution for the experimental protocol which must be submitted to <b><a target='_blank' href='https://www.protocols.io/groups/sparc'> Protocols.io/sparc </a></b>.",
 };
 
-listItems(datasetStructureJSONObj, "#items", 500);
-getInFolder(
-  ".single-item",
-  "#items",
-  organizeDSglobalPath,
-  datasetStructureJSONObj
-);
-
 var sodaJSONObj = {};
 
 /// back button Curate
@@ -5098,10 +4919,24 @@ async function addFoldersfunction(
           folderPath.push(folderArray[i]);
           duplicateFolders.push(originalFolderName);
         } else {
-          importedFolders[originalFolderName] = {
-            path: folderArray[i],
-            "original-basename": originalFolderName,
-          };
+          if (nonallowedFolderArray.includes(folderArray[i])) {
+            if (action !== "ignore" && action !== "") {
+              if (action === "remove") {
+                renamedFolderName = removeIrregularFolders(folderArray[i]);
+              } else if (action === "replace") {
+                renamedFolderName = replaceIrregularFolders(folderArray[i]);
+              }
+              importedFolders[renamedFolderName] = {
+                path: folderArray[i],
+                "original-basename": originalFolderName,
+              };
+            }
+          } else {
+            importedFolders[originalFolderName] = {
+              path: folderArray[i],
+              "original-basename": originalFolderName,
+            };
+          }
         }
       }
 
@@ -5216,6 +5051,8 @@ var filesElement;
 var targetElement;
 async function drop(ev) {
   irregularFolderArray = [];
+  let renamedFolderName = "";
+  let replaced = [];
   var action = "";
   filesElement = ev.dataTransfer.files;
   targetElement = ev.target;
@@ -5270,117 +5107,29 @@ async function drop(ev) {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
         action = "replace";
+        if (irregularFolderArray.length > 0) {
+          for (let i = 0; i < irregularFolderArray.length; i++) {
+            renamedFolderName = replaceIrregularFolders(
+              irregularFolderArray[i]
+            );
+            replaced.push(renamedFolderName);
+          }
+        }
       } else if (result.isDenied) {
         action = "remove";
+        if (irregularFolderArray.length > 0) {
+          for (let i = 0; i < irregularFolderArray.length; i++) {
+            renamedFolderName = removeIrregularFolders(irregularFolderArray[i]);
+            replaced.push(renamedFolderName);
+          }
+        }
       } else {
         return;
       }
-      if (ev.dataTranser.files.length > 500) {
-        let load_spinner_promise = new Promise(async (resolved) => {
-          let background = document.createElement("div");
-          let spinner_container = document.createElement("div");
-          let spinner_icon = document.createElement("div");
-          spinner_container.setAttribute("id", "items_loading_container");
-          spinner_icon.setAttribute("id", "item_load");
-          spinner_icon.setAttribute(
-            "class",
-            "ui large active inline loader icon-wrapper"
-          );
-          background.setAttribute("class", "loading-items-background");
-          background.setAttribute("id", "loading-items-background-overlay");
-
-          spinner_container.append(spinner_icon);
-          document.body.prepend(background);
-          document.body.prepend(spinner_container);
-          let loading_items_spinner = document.getElementById(
-            "items_loading_container"
-          );
-          loading_items_spinner.style.display = "block";
-          if (loading_items_spinner.style.display === "block") {
-            setTimeout(() => {
-              resolved();
-            }, 100);
-          }
-        }).then(async () => {
-          dropHelper(
-            filesElement,
-            targetElement,
-            action,
-            myPath,
-            importedFiles,
-            importedFolders,
-            nonAllowedDuplicateFiles,
-            uiFiles,
-            uiFolders
-          );
-          // Swal.close();
-          document.getElementById("loading-items-background-overlay").remove();
-          document.getElementById("items_loading_container").remove();
-          // background.remove();
-        });
-      } else {
-        dropHelper(
-          filesElement,
-          targetElement,
-          action,
-          myPath,
-          importedFiles,
-          importedFolders,
-          nonAllowedDuplicateFiles,
-          uiFiles,
-          uiFolders
-        );
-      }
-    });
-  } else {
-    if (ev.dataTransfer.files.length > 500) {
-      let load_spinner_promise = new Promise(async (resolved) => {
-        let background = document.createElement("div");
-        let spinner_container = document.createElement("div");
-        let spinner_icon = document.createElement("div");
-        spinner_container.setAttribute("id", "items_loading_container");
-        spinner_icon.setAttribute("id", "item_load");
-        spinner_icon.setAttribute(
-          "class",
-          "ui large active inline loader icon-wrapper"
-        );
-        background.setAttribute("class", "loading-items-background");
-        background.setAttribute("id", "loading-items-background-overlay");
-
-        spinner_container.append(spinner_icon);
-        document.body.prepend(background);
-        document.body.prepend(spinner_container);
-        let loading_items_spinner = document.getElementById(
-          "items_loading_container"
-        );
-        loading_items_spinner.style.display = "block";
-        if (loading_items_spinner.style.display === "block") {
-          setTimeout(() => {
-            resolved();
-          }, 100);
-        }
-      }).then(async () => {
-        dropHelper(
-          filesElement,
-          targetElement,
-          action,
-          myPath,
-          importedFiles,
-          importedFolders,
-          nonAllowedDuplicateFiles,
-          uiFiles,
-          uiFolders
-        );
-        // Swal.close();
-        document.getElementById("loading-items-background-overlay").remove();
-        document.getElementById("items_loading_container").remove();
-        // background.remove();
-      });
-    } else {
       dropHelper(
         filesElement,
         targetElement,
-        "",
+        action,
         myPath,
         importedFiles,
         importedFolders,
@@ -5388,7 +5137,19 @@ async function drop(ev) {
         uiFiles,
         uiFolders
       );
-    }
+    });
+  } else {
+    dropHelper(
+      filesElement,
+      targetElement,
+      "",
+      myPath,
+      importedFiles,
+      importedFolders,
+      nonAllowedDuplicateFiles,
+      uiFiles,
+      uiFolders
+    );
   }
 }
 
@@ -6724,7 +6485,7 @@ ipcRenderer.on(
                   return;
                 }
 
-                var numb = document.querySelector(".number");
+                let numb = document.getElementById("local_dataset_number");
                 numb.innerText = "0%";
                 progressBar_rightSide = document.getElementById(
                   "left-side_less_than_50"
@@ -6776,30 +6537,34 @@ ipcRenderer.on(
 
                         if (finished === 1) {
                           progressBar_leftSide.style.transform = `rotate(180deg)`;
-                          numb.innerText = "100%";
-                          clearInterval(local_progress);
-                          progressBar_rightSide.classList.remove(
-                            "notransition"
-                          );
-                          populate_existing_folders(datasetStructureJSONObj);
-                          populate_existing_metadata(sodaJSONObj);
-                          $(
-                            "#para-continue-location-dataset-getting-started"
-                          ).text("Please continue below.");
-                          $("#nextBtn").prop("disabled", false);
-                          // log the success to analytics
-                          logMetadataForAnalytics(
-                            "Success",
-                            PrepareDatasetsAnalyticsPrefix.CURATE,
-                            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-                            Actions.EXISTING,
-                            Destinations.LOCAL
-                          );
-                          setTimeout(() => {
-                            document.getElementById(
-                              "loading_local_dataset"
-                            ).style.display = "none";
-                          }, 1000);
+                          let numb_change = new Promise((resolve) => {
+                            numb.innerText = "100%";
+                            resolve();
+                          }).then(() => {
+                            clearInterval(local_progress);
+                            progressBar_rightSide.classList.remove(
+                              "notransition"
+                            );
+                            populate_existing_folders(datasetStructureJSONObj);
+                            populate_existing_metadata(sodaJSONObj);
+                            $(
+                              "#para-continue-location-dataset-getting-started"
+                            ).text("Please continue below.");
+                            $("#nextBtn").prop("disabled", false);
+                            // log the success to analytics
+                            logMetadataForAnalytics(
+                              "Success",
+                              PrepareDatasetsAnalyticsPrefix.CURATE,
+                              AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+                              Actions.EXISTING,
+                              Destinations.LOCAL
+                            );
+                            setTimeout(() => {
+                              document.getElementById(
+                                "loading_local_dataset"
+                              ).style.display = "none";
+                            }, 1000);
+                          });
                         }
                       }
                     }
@@ -6835,7 +6600,7 @@ ipcRenderer.on(
               );
               progressBar_leftSide.style.transform = `rotate(0deg)`;
               progressBar_rightSide.style.transform = `rotate(0deg)`;
-              let numb = document.querySelector(".number");
+              let numb = document.getElementById("local_dataset_number");
               numb.innerText = "0%";
 
               action = "";
@@ -7363,7 +7128,8 @@ async function initiate_generate() {
     datasetUploadSession.startSession();
   }
 
-  // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
+  // clear the Pennsieve Queue (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
+  clearQueue();
 
   client.invoke("api_main_curate_function", sodaJSONObj, async (error, res) => {
     if (error) {
@@ -7947,33 +7713,81 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
   }
 });
 
-var bf_request_and_populate_dataset = (sodaJSONObj) => {
-  return new Promise((resolve, reject) => {
-    client.invoke(
-      "api_bf_get_dataset_files_folders",
-      sodaJSONObj,
-      (error, res) => {
-        if (error) {
-          reject(userError(error));
-          log.error(error);
-          console.error(error);
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Retrieve Dataset - Pennsieve",
-            defaultBfDatasetId
-          );
+var bf_request_and_populate_dataset = async (sodaJSONObj) => {
+  let progress_container = document.getElementById("loading_pennsieve_dataset");
+  let percentage_text = document.getElementById(
+    "pennsieve_loading_dataset_percentage"
+  );
+  let left_progress_bar = document.getElementById(
+    "pennsieve_left-side_less_than_50"
+  );
+  let right_progress_bar = document.getElementById(
+    "pennsieve_right-side_greater_than_50"
+  );
+  percentage_text.innerText = "0%";
+  progress_container.style.display = "block";
+  left_progress_bar.style.transform = `rotate(0deg)`;
+  right_progress_bar.style.transform = `rotate(0deg)`;
+  let pennsieve_progress = setInterval(progressReport, 500);
+  function progressReport() {
+    client.invoke("api_monitor_pennsieve_json_progress", (error, res) => {
+      if (error) {
+        console.log(error);
+      } else {
+        let percentage_amount = res[2].toFixed(2);
+        finished = res[3];
+        percentage_text.innerText = percentage_amount + "%";
+        if (percentage_amount <= 50) {
+          left_progress_bar.style.transform = `rotate(${
+            percentage_amount * 0.01 * 360
+          }deg)`;
         } else {
-          resolve(res);
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Retrieve Dataset - Pennsieve",
-            defaultBfDatasetId
-          );
+          left_progress_bar.style.transition = "";
+          left_progress_bar.classList.add("notransition");
+          left_progress_bar.style.transform = `rotate(180deg)`;
+          right_progress_bar.style.transform = `rotate(${
+            percentage_amount * 0.01 * 180
+          }deg)`;
+        }
+
+        if (finished === 1) {
+          percentage_text.innerText = "100%";
+          left_progress_bar.style.transform = `rotate(180deg)`;
+          right_progress_bar.style.transform = `rotate(180deg)`;
+          right_progress_bar.classList.remove("notransition");
+          console.log(percentage_text.innerText);
+          clearInterval(pennsieve_progress);
+          setTimeout(() => {
+            progress_container.style.display = "none";
+          }, 2000);
         }
       }
-    );
+    });
+  }
+
+  return new Promise((resolve, reject) => {
+    client.invoke("api_import_pennsieve_dataset", sodaJSONObj, (error, res) => {
+      if (error) {
+        progress_container.style.display = "none";
+        reject(userError(error));
+        log.error(error);
+        console.error(error);
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Retrieve Dataset - Pennsieve",
+          defaultBfDatasetId
+        );
+      } else {
+        resolve(res);
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Retrieve Dataset - Pennsieve",
+          defaultBfDatasetId
+        );
+      }
+    });
   });
 };
 
@@ -9055,7 +8869,6 @@ const update_dataset_tags = async (datasetIdOrName, tags) => {
 
   // grab the dataset's id
   const id = dataset["content"]["id"];
-
   // setup the request options
   let options = {
     method: "PUT",
@@ -9116,7 +8929,6 @@ const getDatasetReadme = async (datasetIdOrName) => {
 
   // pull out the id from the result
   const id = dataset["content"]["id"];
-
   // fetch the readme file from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
   let readmeResponse = await fetch(
     `https://api.pennsieve.io/datasets/${id}/readme`,
@@ -9188,7 +9000,6 @@ const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
 
   // get the id out of the dataset
   let id = dataset.content.id;
-
   // put the new readme data in the readme on Pennsieve
   options = {
     method: "PUT",
@@ -9377,7 +9188,6 @@ const submitDatasetForPublication = async (
     `https://api.pennsieve.io/datasets/${id}/publication/request` + queryString,
     options
   );
-
   // get the status code out of the response
   let statusCode = publicationResponse.status;
 
@@ -9461,12 +9271,10 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
     // add the required publication type
     queryString = `?publicationType=publication`;
   }
-
   let withdrawResponse = await fetch(
     `https://api.pennsieve.io/datasets/${id}/publication/cancel${queryString}`,
     options
   );
-
   // get the status code out of the response
   let statusCode = withdrawResponse.status;
 
@@ -9543,7 +9351,6 @@ const getDatasetBannerImageURL = async (datasetIdOrName) => {
   let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
 
   let { id } = dataset["content"];
-
   // fetch the banner url from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
   let bannerResponse = await fetch(
     `https://api.pennsieve.io/datasets/${id}/banner`,
@@ -9555,7 +9362,6 @@ const getDatasetBannerImageURL = async (datasetIdOrName) => {
       },
     }
   );
-
   // get the status code out of the response
   let statusCode = bannerResponse.status;
 
@@ -9613,13 +9419,11 @@ const getCurrentUserPermissions = async (datasetIdOrName) => {
 
   // get the id out of the dataset
   let id = dataset.content.id;
-
   // get the user's permissions
   let permissionsResponse = await fetch(
     `https://api.pennsieve.io/datasets/${id}/role`,
     { headers: { Authorization: `Bearer ${jwt}` } }
   );
-
   // get the status code out of the response
   let statusCode = permissionsResponse.status;
 
@@ -9820,7 +9624,6 @@ const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
       headers: { Authorization: `Bearer ${jwt}` },
     }
   );
-
   // get the status code
   let statusCode = excludedFilesResponse.status;
 
@@ -9886,7 +9689,6 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
     `https://api.pennsieve.io/datasets/${id}/ignore-files`,
     options
   );
-
   // check the status code
   let { status } = excludeFilesResponse;
   switch (status) {
@@ -9941,7 +9743,6 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
       headers: { Authorization: `Bearer ${jwt}` },
     }
   );
-
   // check the status code
   let { status } = datasetWithChildrenResponse;
   switch (status) {
@@ -10184,3 +9985,31 @@ $("#validate_dataset_bttn").on("click", async () => {
   $("#dataset_validator_status").html("");
   $("#dataset_validator_spinner").hide();
 });
+
+function gettingStarted() {
+  let getting_started = document.getElementById("main_tabs_view");
+  getting_started.click();
+}
+
+function sodaVideo() {
+  document.getElementById("overview-column-1").blur();
+  shell.openExternal(
+    "https://docs.sodaforsparc.io/docs/getting-started/user-interface"
+  );
+}
+
+function directToDocumentation() {
+  shell.openExternal(
+    "https://docs.sodaforsparc.io/docs/getting-started/organize-and-submit-sparc-datasets-with-soda"
+  );
+  document.getElementById("overview-column-2").blur();
+  // window.open('https://docs.sodaforsparc.io', '_blank');
+}
+
+document.getElementById("sodaVideo-btn").addEventListener("click", sodaVideo);
+document
+  .getElementById("direct-to-doc-button")
+  .addEventListener("click", directToDocumentation);
+document
+  .getElementById("getting-started-button")
+  .addEventListener("click", gettingStarted);
