@@ -164,6 +164,20 @@ const getProgressFileData = async (progressFile) => {
 };
 const deleteProgressCard = (progressCardDeleteButton) => {
   const progressCard = progressCardDeleteButton.parentElement;
+  const progressCardNameToDelete = progressCard.querySelector(
+    ".progress-file-name"
+  ).textContent;
+  //Get the path of the progress file to delete
+  const progressFilePathToDelete = path.join(
+    guidedProgressFilePath,
+    progressCardNameToDelete + ".json"
+  );
+  //delete the progress file
+  fs.unlinkSync(progressFilePathToDelete, (err) => {
+    console.log(err);
+  });
+
+  //remove the progress card from the DOM
   progressCard.remove();
 };
 const renderProgressCards = (progressFileJSONdata) => {
