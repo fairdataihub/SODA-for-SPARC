@@ -72,7 +72,7 @@ from pysodaUtils import agent_running
 
 userpath = expanduser("~")
 METADATA_UPLOAD_BF_PATH = join(userpath, "SODA", "METADATA")
-DEV_TEMPLATE_PATH = join(dirname(__file__), "..", "file_templates")
+DEV_TEMPLATE_PATH = join(dirname(__file__), "..", "..", "file_templates")
 # once pysoda has been packaged with pyinstaller
 # it becomes nested into the pysodadist/api directory
 PROD_TEMPLATE_PATH = join(dirname(__file__), "..", "..", "file_templates")
@@ -136,6 +136,8 @@ def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_st
 
     source = join(TEMPLATE_PATH, "submission.xlsx")
 
+    print(source)
+
     if upload_boolean:
         destination = join(METADATA_UPLOAD_BF_PATH, "submission.xlsx")
 
@@ -145,13 +147,14 @@ def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_st
     shutil.copyfile(source, destination)
 
     # json array to python list
-    val_arr = json.loads(json_str)
+    val_arr = json_str
     # write to excel file
     wb = load_workbook(destination)
     ws1 = wb["Sheet1"]
     # date_obj = datetime.strptime(val_arr[2], "%Y-%m")
     # date_new = date_obj.strftime("%m-%Y")
     for column, arr in zip(excel_columns(start_index=2), val_arr):
+        print(arr)
         ws1[column + "2"] = arr["award"]
         ws1[column + "3"] = arr["milestone"]
         ws1[column + "4"] = arr["date"]
