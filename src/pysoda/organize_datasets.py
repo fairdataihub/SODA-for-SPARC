@@ -1221,7 +1221,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     create_soda_json_total_items = 0
     create_soda_json_completed = 0
 
-    def depthFirstTraversal(subfolder_json, pennsieve_account, manifest):
+    def createFolderStructure(subfolder_json, pennsieve_account, manifest):
         #root level folder will pass subfolders into this function and will recursively check if there are subfolders while creating the json structure
         global create_soda_json_progress
         collection_id = subfolder_json["path"]
@@ -1289,7 +1289,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         if len(subfolder_json["folders"].keys()) != 0:  # there are subfolders
             for folder in subfolder_json["folders"].keys():
                 subfolder = subfolder_json["folders"][folder]
-                depthFirstTraversal(subfolder, bf, manifest)
+                createFolderStructure(subfolder, bf, manifest)
 
     # START
 
@@ -1408,11 +1408,10 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         manifest_error_message.append(
                             items["parent"]["content"]["name"]
                         )
-                        pass
             subfolder_section = soda_json_structure["dataset-structure"]["folders"][
                 folder
             ]
-            depthFirstTraversal(
+            createFolderStructure(
                 subfolder_section, bf, manifest_dict[folder]
             )  # passing item's json and the collection ID
 
