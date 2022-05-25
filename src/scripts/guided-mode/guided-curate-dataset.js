@@ -4682,7 +4682,7 @@ $(document).ready(() => {
         console.log(existingProgressNames);
         //If sodaJSONObj is empty, populate initial object properties
         guidedCreateSodaJSONObj();
-        sodaJSONObj.addSubject("sub-1");
+        /*sodaJSONObj.addSubject("sub-1");
         sodaJSONObj.addSubject("sub-2");
         sodaJSONObj.addSubject("sub-3");
         sodaJSONObj.addSubject("sub-4");
@@ -4729,7 +4729,7 @@ $(document).ready(() => {
         sodaJSONObj.addSampleToSubject("sam-12", "sub-5");
         sodaJSONObj.addSampleToSubject("sam-13", "sub-5");
         sodaJSONObj.addSampleToSubject("sam-14", "sub-7");
-        sodaJSONObj.addSampleToSubject("sam-15", "sub-7");
+        sodaJSONObj.addSampleToSubject("sam-15", "sub-7");*/
 
         //Get the users information and set them as PI if a PI has not been designated yet
         if (sodaJSONObj["digital-metadata"]["pi-owner"] == undefined) {
