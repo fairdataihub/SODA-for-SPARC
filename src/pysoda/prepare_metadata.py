@@ -69,6 +69,10 @@ from pysoda import (
     agent_running,
 )
 
+from curate import (
+    create_high_level_manifest_files_existing_bf_starting_point
+)
+
 userpath = expanduser("~")
 METADATA_UPLOAD_BF_PATH = join(userpath, "SODA", "METADATA")
 TEMPLATE_PATH = ""
@@ -747,6 +751,16 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
 
     return transposeMatrix(sortMatrix)
 
+def convert_manifest_to_dict(url):
+
+    manifest_df = pd.read_excel(
+        url, engine="openpyxl", usecols=column_check, header=0
+    )
+    manifest_df = manifest_df.dropna(axis=0, how="all")
+    manifest_df = manifest_df.replace(np.nan, "", regex=True)
+    manifest_df = manifest_df.applymap(str)
+
+    return manifest_df.to_dict()
 
 def checkEmptyColumn(column):
     for element in column:
@@ -823,7 +837,6 @@ def checkEmptyColumn(column):
 ## load/import an existing local or Pennsieve submission.xlsx file
 def load_existing_submission_file(filepath):
 
-    ## TODO: check and read csv
     try:
         DD_df = pd.read_excel(
             filepath, engine="openpyxl", usecols=column_check, header=0
@@ -933,6 +946,87 @@ def import_bf_RC(bfaccount, bfdataset, file_type):
         f"No {file_type} file was found at the root of the dataset provided."
     )
 
+# path to local SODA folder for saving manifest files
+manifest_folder_path = join(userpath, "SODA", "manifest_files")
+
+def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
+    bf = Pennsieve(bfaccount)
+    myds = bf.get_dataset(bfdataset)
+
+
+    dataset_structure = soda_json_structure["dataset-structure"]
+    recursive_item_path_create(dataset_structure, [])
+
+    # first, create manifest files for all folders
+    create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure)
+
+    no_manifest_boolean = False
+
+    #
+    # # create local folder to save manifest files temporarly (delete any existing one first)
+    # shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
+    # makedirs(manifest_folder_path)
+
+    # if "folders" in dataset_structure:
+    #
+    #     for high_level_folder in list(dataset_structure["folders"]):
+    #
+    #         folderpath = join(manifest_folder_path, high_level_folder)
+    #         makedirs(folderpath)
+
+    # now, overwrite existing (fresh) manifest files with any existing manifest files from Pennsieve.
+    for i in range(len(myds.items)):
+
+        if myds.items[i].name in ['code', 'derivative', 'docs', 'primary', 'protocol', 'source']:
+            for j in range(len(myds.items[i])):
+                if myds.items[i][j].name == "manifest.xlsx":
+                    item_id = myds.items[i][j].id
+                    url = returnFileURL(bf, item_id)
+
+                    manifest_df = pd.read_excel(
+                        url, engine="openpyxl", usecols=column_check, header=0
+                    )
+
+                    filepath = join(manifest_folder_path, myds.items[i].name, "manifest.xlsx")
+                    manifest_df.to_excel(filepath, index=False)
+                    no_manifest_boolean = True
+                    break
+                    # TODO: allow for manifest.csv edits (after converting csv to xlsx).
+                    # Uploading the manifest.xlsx file (after edits) will replace any existing manifest.csv
+
+                    # if myds.items[i][j].name == "manifest.csv":
+                    #     item_id = myds.items[i][j].id
+                    #     url = returnFileURL(bf, item_id)
+                    #
+                    #     manifest_df = pd.read_csv(
+                    #         url, usecols=column_check, header=0
+                    #     )
+                    #
+                    #     filepath = join(manifest_folder_path, myds.items[i].name, "manifest.xlsx")
+                    #     manifest_df.to_excel(filepath, index=False)
+                    #
+                    #     no_manifest_boolean = True
+                    #
+                    #     break
+    #
+    # if not no_manifest_boolean:
+    #
+    #     shutil.rmtree(manifest_folder_path)
+    #
+    #     raise Exception(
+    #         f"No manifest.xlsx file was found at the root of the dataset provided."
+    #     )
+
+def copytree(src, dst, symlinks=False, ignore=None):
+    for item in os.listdir(src):
+        s = os.path.join(src, item)
+        d = os.path.join(dst, item)
+        if os.path.isdir(s):
+            if os.path.exists(d):
+                shutil.rmtree(d)
+            shutil.copytree(s, d, symlinks, ignore)
+        else:
+            shutil.copy2(s, d)
 
 # obtain Pennsieve S3 URL for an existing metadata file
 def returnFileURL(bf_object, item_id):
@@ -945,6 +1039,22 @@ def returnFileURL(bf_object, item_id):
 
     return file_url_info["url"]
 
+def recursive_item_path_create(folder, path):
+    if "files" in folder.keys():
+        for item in list(folder["files"]):
+            if "folderpath" not in folder["files"][item]:
+                folder["files"][item]["folderpath"] = path[:]
+
+    if "folders" in folder.keys():
+        for item in list(folder["folders"]):
+            if "folderpath" not in folder["folders"][item]:
+                folder["folders"][item]["folderpath"] = path[:]
+                folder["folders"][item]["folderpath"].append(item)
+            recursive_item_path_create(
+                folder["folders"][item], folder["folders"][item]["folderpath"][:]
+            )
+
+    return
 
 ## import an existing local or Pennsieve dataset_description.xlsx file
 def load_existing_DD_file(import_type, filepath):

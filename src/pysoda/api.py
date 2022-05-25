@@ -75,6 +75,7 @@ from prepare_metadata import (
     upload_RC_file,
     delete_manifest_dummy_folders,
     set_template_path,
+    import_bf_manifest_file
 )
 
 from organize_datasets import (
@@ -155,6 +156,9 @@ class SodaApi(object):
 
     def api_import_bf_RC(self, selected_bfaccount, selected_bfdataset, file_type):
         return import_bf_RC(selected_bfaccount, selected_bfdataset, file_type)
+
+    def api_import_bf_manifest_file(self, sodajson, selected_bfaccount, selected_bfdataset):
+        return import_bf_manifest_file(sodajson, selected_bfaccount, selected_bfdataset)
 
     ### Save samples file
     def api_save_samples_file(

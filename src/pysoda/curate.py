@@ -2197,36 +2197,37 @@ def create_high_level_manifest_files_existing_bf(
 
 
 def create_high_level_manifest_files_existing_local_starting_point(dataset_path):
-    soda_manifest_folder_path = join(userpath, "SODA", "SODA Manifest Files")
+    soda_manifest_folder_path = join(userpath, "SODA", "manifest_files")
     # # create local folder to save manifest files temporarily (delete any existing one first)
     # shutil.rmtree(soda_manifest_folder_path) if isdir(soda_manifest_folder_path) else 0
     # makedirs(soda_manifest_folder_path)
 
-    for high_level_fol in listdir(dataset_path):
+    if dataset_path != "":
+        for high_level_fol in listdir(dataset_path):
 
-        if high_level_fol in [
-            "primary",
-            "derivative",
-            "docs",
-            "code",
-            "source",
-            "protocol",
-        ]:
-            onlyfiles = [
-                join(dataset_path, high_level_fol, f)
-                for f in listdir(join(dataset_path, high_level_fol))
-                if isfile(join(dataset_path, high_level_fol, f))
-            ]
+            if high_level_fol in [
+                "primary",
+                "derivative",
+                "docs",
+                "code",
+                "source",
+                "protocol",
+            ]:
+                onlyfiles = [
+                    join(dataset_path, high_level_fol, f)
+                    for f in listdir(join(dataset_path, high_level_fol))
+                    if isfile(join(dataset_path, high_level_fol, f))
+                ]
 
-            for file in onlyfiles:
+                for file in onlyfiles:
 
-                p = pathlib.Path(file)
-                # create high-level folder at the temporary location
-                folderpath = join(soda_manifest_folder_path, high_level_fol)
-                # makedirs(folderpath)
-                if p.stem == "manifest":
-                    # make copy from this manifest path to folderpath
-                    shutil.copyfile(file, join(folderpath, p.name))
+                    p = pathlib.Path(file)
+                    # create high-level folder at the temporary location
+                    folderpath = join(soda_manifest_folder_path, high_level_fol)
+                    # makedirs(folderpath)
+                    if p.stem == "manifest":
+                        # make copy from this manifest path to folderpath
+                        shutil.copyfile(file, join(folderpath, p.name))
 
 
 def generate_relative_path(x, y):
@@ -2235,7 +2236,6 @@ def generate_relative_path(x, y):
     else:
         relative_path = y
     return relative_path
-
 
 def bf_get_existing_folders_details(bf_folder):
     bf_existing_folders = [x for x in bf_folder.items if x.type == "Collection"]
