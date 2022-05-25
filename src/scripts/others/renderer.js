@@ -7695,7 +7695,7 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
         }
 
         if (finished === 1) {
-          console.log("fnished == none")
+          console.log("fnished == none");
           percentage_text.innerText = "100%";
           left_progress_bar.style.transform = `rotate(180deg)`;
           clearInterval(pennsieve_progress);
