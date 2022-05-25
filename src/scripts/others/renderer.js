@@ -111,14 +111,12 @@ let column3 = document.getElementById("lottie3");
 var observer = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
     var attributeValue = $(mutation.target).prop(mutation.attributeName);
-    console.log(attributeValue);
-    console.log(attributeValue.includes);
-    if (attributeValue.includes("is-shown") === true) {
+
+    if (attributeValue.includes("is-shown") == true) {
       //add lotties
       column1.innerText = "";
       column2.innerText = "";
       column3.innerText = "";
-      console.log("adding animation");
 
       var column1_lottie = lottie.loadAnimation({
         container: column1,
@@ -144,8 +142,6 @@ var observer = new MutationObserver(function (mutations) {
         autoplay: true,
       });
     } else {
-      console.log("clearing and stopping lotties");
-      // document.getElementById("demo-video").style.display = "none";
       column1.innerText = "";
       column2.innerText = "";
       column3.innerText = "";
@@ -10261,3 +10257,8 @@ function directToDocumentation() {
   document.getElementById("overview-column-2").blur();
   // window.open('https://docs.sodaforsparc.io', '_blank');
 }
+
+
+document.getElementById("sodaVideo-btn").addEventListener("click", sodaVideo);
+document.getElementById("direct-to-doc-button").addEventListener("click", directToDocumentation);
+document.getElementById("getting-started-button").addEventListener("click", gettingStarted);
