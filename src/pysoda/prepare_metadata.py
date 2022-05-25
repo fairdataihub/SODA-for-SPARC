@@ -85,11 +85,9 @@ def set_template_path(soda_base_path, soda_resources_path):
     TEMPLATE_PATH = join(soda_base_path, "file_templates")
 
     # check if os is Darwin/Linux
-    if platform.system() == "Darwin" or platform.system() == "Linux":
-        # check if the TEMPLATE_PATH exists
-        if not exists(TEMPLATE_PATH):
-            # we are in production and we need to use the Resources folder for the file_templates folder
-            TEMPLATE_PATH = join(soda_resources_path, "file_templates")
+    if platform.system() in ["Darwin", "Linux"] and not exists(TEMPLATE_PATH):
+        # we are in production and we need to use the Resources folder for the file_templates folder
+        TEMPLATE_PATH = join(soda_resources_path, "file_templates")
 
 
 # temporary logging file path (dev only)
@@ -273,7 +271,7 @@ def rename_headers(workbook, max_len, start_index):
 
         for i, column in zip(range(2, max_len + 1), columns_list[1:]):
 
-            workbook[column + "1"] = "Value " + str(i)
+            workbook[column + "1"] = f"Value {str(i)}"
             cell = workbook[column + "1"]
 
             blueFill = PatternFill(
@@ -297,11 +295,9 @@ def grayout_subheaders(workbook, max_len, start_index):
     headers_list = ["4", "10", "18", "23", "28"]
     columns_list = excel_columns(start_index=start_index)
 
-    for i, column in zip(range(2, max_len + 1), columns_list[1:]):
-
-        for no in headers_list:
-            cell = workbook[column + no]
-            fillColor("B2B2B2", cell)
+    for (i, column), no in itertools.product(zip(range(2, max_len + 1), columns_list[1:]), headers_list):
+        cell = workbook[column + no]
+        fillColor("B2B2B2", cell)
 
 
 def grayout_single_value_rows(workbook, max_len, start_index):
@@ -311,11 +307,9 @@ def grayout_single_value_rows(workbook, max_len, start_index):
 
     columns_list = excel_columns(start_index=start_index)
     row_list = ["2", "3", "5", "6", "9", "11", "12", "13", "17", "29", "30"]
-    for i, column in zip(range(2, max_len + 1), columns_list[1:]):
-
-        for no in row_list:
-            cell = workbook[column + no]
-            fillColor("CCCCCC", cell)
+    for (i, column), no in itertools.product(zip(range(2, max_len + 1), columns_list[1:]), row_list):
+        cell = workbook[column + no]
+        fillColor("CCCCCC", cell)
 
 
 def fillColor(color, cell):
@@ -596,10 +590,7 @@ def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastruc
         for column, j in zip(excel_columns(start_index=0), range(len(item))):
             # import pdb; pdb.set_trace()
             cell = column + str(i + 1)
-            if refinedDatastructure[i][j]:
-                ws1[cell] = refinedDatastructure[i][j]
-            else:
-                ws1[cell] = ""
+            ws1[cell] = refinedDatastructure[i][j] or ""
             ws1[cell].font = Font(bold=False, size=11, name="Arial")
 
     wb.save(destination)
@@ -667,10 +658,7 @@ def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastruct
         for column, j in zip(excel_columns(start_index=0), range(len(item))):
             # import pdb; pdb.set_trace()
             cell = column + str(i + 1)
-            if refinedDatastructure[i][j]:
-                ws1[cell] = refinedDatastructure[i][j]
-            else:
-                ws1[cell] = ""
+            ws1[cell] = refinedDatastructure[i][j] or ""
             ws1[cell].font = Font(bold=False, size=11, name="Arial")
 
     wb.save(destination)
@@ -686,9 +674,7 @@ def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastruct
 
 # check for non-empty fields (cells)
 def column_check(x):
-    if "unnamed" in x.lower():
-        return False
-    return True
+    return "unnamed" not in x.lower()
 
 
 # import an existing subjects/samples files from an excel file
@@ -708,11 +694,10 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
                 "The header 'subject id' is required to import an existing subjects file. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/subjects.xlsx'>template</a> of the subjects file."
             )
 
-        else:
-            if checkEmptyColumn(subjects_df["subject id"]):
-                raise Exception(
-                    "At least 1 'subject id' is required to import an existing subjects file"
-                )
+        if checkEmptyColumn(subjects_df["subject id"]):
+            raise Exception(
+                "At least 1 'subject id' is required to import an existing subjects file"
+            )
 
         templateHeaderList = subjectsTemplateHeaderList
 
@@ -724,13 +709,12 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
                 "The headers 'subject id' and 'sample id' are required to import an existing samples file. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/samples.xlsx'>template</a> of the samples file."
             )
 
-        else:
-            if checkEmptyColumn(subjects_df["sample id"]) or checkEmptyColumn(
-                subjects_df["sample id"]
-            ):
-                raise Exception(
-                    "At least 1 'subject id' and 'sample id' pair is required to import an existing samples file"
-                )
+        if checkEmptyColumn(subjects_df["sample id"]) or checkEmptyColumn(
+            subjects_df["sample id"]
+        ):
+            raise Exception(
+                "At least 1 'subject id' and 'sample id' pair is required to import an existing samples file"
+            )
 
         templateHeaderList = samplesTemplateHeaderList
 
@@ -771,23 +755,21 @@ def checkEmptyColumn(column):
 # needed to sort subjects and samples table data to match the UI fields
 def sortedSubjectsTableData(matrix, fields):
     sortedMatrix = []
-    customHeaderMatrix = []
-
     for field in fields:
         for column in matrix:
             if column[0].lower() == field:
                 sortedMatrix.append(column)
                 break
 
-    for column in matrix:
-        if column[0].lower() not in fields:
-            customHeaderMatrix.append(column)
+    customHeaderMatrix = [
+        column for column in matrix if column[0].lower() not in fields
+    ]
 
-    if len(customHeaderMatrix) > 0:
-        npArray = np.concatenate((sortedMatrix, customHeaderMatrix)).tolist()
-    else:
-        npArray = sortedMatrix
-    return npArray
+    return (
+        np.concatenate((sortedMatrix, customHeaderMatrix)).tolist()
+        if customHeaderMatrix
+        else sortedMatrix
+    )
 
 
 # transpose a matrix (array of arrays)
@@ -797,12 +779,7 @@ def transposeMatrix(matrix):
 
 # helper function to process custom fields (users add and name them) for subjects and samples files
 def processMetadataCustomFields(matrix):
-    refined_matrix = []
-    for column in matrix:
-        if any(column[1:]):
-            refined_matrix.append(column)
-
-    return refined_matrix
+    return [column for column in matrix if any(column[1:])]
 
 
 # use Entrez library to load the scientific name for a species
@@ -879,15 +856,10 @@ def load_existing_submission_file(filepath):
     milestones = [DD_df["Value"][1]]
 
     for i in range(3, len(DD_df.columns)):
-        value = DD_df["Value " + str(i - 1)]
+        value = DD_df[f"Value {str(i - 1)}"]
         milestones.append(value[1])
 
-    if DD_df["Value"][2]:
-        date = DD_df["Value"][2]
-
-    else:
-        date = ""
-
+    date = DD_df["Value"][2] or ""
     return {
         "SPARC Award number": awardNo,
         "Milestone achieved": milestones,
@@ -937,9 +909,7 @@ def import_bf_RC(bfaccount, bfdataset, file_type):
             url = returnFileURL(bf, item_id)
 
             response = requests.get(url)
-            data = response.text
-
-            return data
+            return response.text
 
     raise Exception(
         f"No {file_type} file was found at the root of the dataset provided."
@@ -949,11 +919,12 @@ def import_bf_RC(bfaccount, bfdataset, file_type):
 # obtain Pennsieve S3 URL for an existing metadata file
 def returnFileURL(bf_object, item_id):
 
-    file_details = bf_object._api._get("/packages/" + str(item_id) + "/view")
+    file_details = bf_object._api._get(f"/packages/{str(item_id)}/view")
     file_id = file_details[0]["content"]["id"]
     file_url_info = bf_object._api._get(
-        "/packages/" + str(item_id) + "/files/" + str(file_id)
+        f"/packages/{str(item_id)}/files/{str(file_id)}"
     )
+
 
     return file_url_info["url"]
 
@@ -1045,21 +1016,18 @@ def load_existing_DD_file(import_type, filepath):
                 "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/dataset_description.xlsx'>template</a> of the dataset_description."
             )
 
-    if not "Metadata element" in DD_df:
+    if "Metadata element" not in DD_df:
         raise Exception(
             "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/dataset_description.xlsx'>template</a> of the dataset_description."
         )
 
-    else:
-        for header_name in header_list:
-            if header_name not in set(DD_df["Metadata element"]):
-                raise Exception(
-                    "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/dataset_description.xlsx'>template</a> of the dataset_description."
-                )
+    for header_name in header_list:
+        if header_name not in set(DD_df["Metadata element"]):
+            raise Exception(
+                "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/dataset_description.xlsx'>template</a> of the dataset_description."
+            )
 
-    # check for at least 1 value is included
-    non_empty_1st_value = checkEmptyColumn(DD_df["Value"])
-    if non_empty_1st_value:
+    if non_empty_1st_value := checkEmptyColumn(DD_df["Value"]):
         raise Exception(
             "At least 1 value is required to import an existing dataset_description file"
         )
@@ -1089,15 +1057,13 @@ def load_existing_DD_file(import_type, filepath):
         if array[0] in relatedInfoHeaders:
             relatedInfoSection.append(array)
 
-    transformedObj = {
+    return {
         "Basic information": basicInfoSection,
         "Study information": studyInfoSection,
         "Contributor information": transposeMatrix(conInfoSection),
         "Award information": awardInfoSection,
         "Related information": transposeMatrix(relatedInfoSection),
     }
-
-    return transformedObj
 
 
 def delete_manifest_dummy_folders(userpath_list):
