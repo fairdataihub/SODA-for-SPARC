@@ -321,28 +321,16 @@
                 <button
                   class="ui positive basic button guided--radio-button"
                   id="guided-button-import-existing-dataset-structure"
-                  data-next-question="guided-structure-new-dataset-panel"
+                  data-next-question="guided-import-existing-dataset-panel"
                 >
                   Yes
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button"
                   id="guided-button-guided-dataset-structuring"
-                  data-next-question="guided-import-existing-dataset-panel"
+                  data-next-question="guided-structure-new-dataset-panel"
                 >
                   No
-                </button>
-              </div>
-              <div
-                class="guided--section hidden"
-                id="guided-structure-new-dataset-panel"
-              >
-                <button
-                  class="ui primary button"
-                  id="guided-structure-new-dataset"
-                  style="background-color: var(--color-light-green) !important"
-                >
-                  Import existing dataset
                 </button>
               </div>
               <div
@@ -352,6 +340,18 @@
                 <button
                   class="ui primary button"
                   id="guided-import-existing-dataset"
+                  style="background-color: var(--color-light-green) !important"
+                >
+                  Import existing dataset
+                </button>
+              </div>
+              <div
+                class="guided--section hidden"
+                id="guided-structure-new-dataset-panel"
+              >
+                <button
+                  class="ui primary button"
+                  id="guided-structure-new-dataset"
                   style="background-color: var(--color-light-green) !important"
                 >
                   Start dataset structuring

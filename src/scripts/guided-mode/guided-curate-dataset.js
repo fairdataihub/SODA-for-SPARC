@@ -4871,7 +4871,7 @@ $(document).ready(() => {
   });
 
   //WHEN STRUCTURING FOLDER GUIDED
-  $("#guided-button-guided-dataset-structuring").on("click", () => {
+  $("#guided-button-import-existing-dataset-structure").on("click", () => {
     //Hide proper capsules and apply proper skip pages
     $("#guided-curate-new-dataset-branch-capsule-container").hide();
     $("#guided-curate-existing-local-dataset-branch-capsule-container").css(
@@ -4885,7 +4885,7 @@ $(document).ready(() => {
     $(".guided-curate-new-dataset-branch-page").attr("data-skip-page", "true");
   });
   //WHEN IMPORTING LOCAL STRUCTURE
-  $("#guided-button-import-existing-dataset-structure").on("click", () => {
+  $("#guided-button-guided-dataset-structuring").on("click", () => {
     //Hide proper capsules and apply proper skip pages
     $("#guided-curate-existing-local-dataset-branch-capsule-container").hide();
     $("#guided-curate-new-dataset-branch-capsule-container").css(
