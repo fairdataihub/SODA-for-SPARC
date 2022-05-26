@@ -4838,14 +4838,28 @@ $(document).ready(() => {
               setGuidedDatasetSubtitle(datasetSubtitleInputValue);
               saveGuidedProgress(datasetNameInputValue);
               //delete the old progress file
-              fs.unlinkSync(`${guidedProgressFilePath}/${datasetName}.json`);
+              const progressFilePathToDelete = path.join(
+                guidedProgressFilePath,
+                datasetName + ".json"
+              );
+              //delete the progress file
+              fs.unlinkSync(progressFilePathToDelete, (err) => {
+                console.log(err);
+              });
             }
           } else {
             setGuidedDatasetName(datasetNameInputValue);
             setGuidedDatasetSubtitle(datasetSubtitleInputValue);
             saveGuidedProgress(datasetNameInputValue);
             //delete the old progress file
-            fs.unlinkSync(`${guidedProgressFilePath}/${datasetName}.json`);
+            const progressFilePathToDelete = path.join(
+              guidedProgressFilePath,
+              datasetName + ".json"
+            );
+            //delete the progress file
+            fs.unlinkSync(progressFilePathToDelete, (err) => {
+              console.log(err);
+            });
           }
         }
         //transition out of dataset name/subtitle page
