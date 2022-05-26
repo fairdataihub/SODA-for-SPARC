@@ -1642,18 +1642,22 @@ guidedCreateSodaJSONObj = () => {
       for (const [poolName, pool] of Object.entries(
         this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
       )) {
-        for (const [subjectName, subject] of Object.entries(pool)) {
+        for (const [subjectName, subjectData] of Object.entries(pool)) {
           subjectsInPools.push({
             subjectName: subjectName,
             poolName: poolName,
+            samples: Object.keys(subjectData),
           });
         }
       }
 
-      for (const [subjectName, subject] of Object.entries(
+      for (const [subjectName, subjectData] of Object.entries(
         this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
       )) {
-        subjectsOutsidePools.push({ subjectName: subjectName });
+        subjectsOutsidePools.push({
+          subjectName: subjectName,
+          samples: Object.keys(subjectData),
+        });
       }
       return [subjectsInPools, subjectsOutsidePools];
     },
@@ -3082,27 +3086,39 @@ const specifySample = (event, sampleNameInput) => {
         const updateSampleSubjectsDropdown = (sampleSubjectsDropdown) => {
           //empty the dropdown's values
           sampleSubjectsDropdown.empty().trigger("change");
-          //Add the subjects outside of pools to the dropdown
-          const subjectsOutsidePools = sodaJSONObj.getSubjectsOutsidePools();
-          for (const subject of subjectsOutsidePools) {
-            const newOption = new Option(subject, subject, false, false);
-            console.log(newOption);
-            sampleSubjectsDropdown.append(newOption);
-          }
-          //Add the subjects inside pools to the dropdown
-          const subjectsData = sodaJSONObj.getSubjectsInPools();
-          for (const [subject, subjectData] of Object.entries(subjectsData)) {
-            const subjectGroup = document.createElement("OPTGROUP");
-            subjectGroup.label = subject;
-            sampleSubjectsDropdown.append(subjectGroup);
-            console.log(subjectData);
-            for (const sample of Object.keys(subjectData)) {
-              const newOption = new Option(sample, sample, false, false);
-              subjectGroup.append(newOption);
+
+          const [subjectsInPools, subjectsOutsidePools] =
+            sodaJSONObj.getAllSubjects();
+          //Combine sample data from subjects in and out of pools
+          const subjectsArray = [...subjectsInPools, ...subjectsOutsidePools];
+
+          for (const subject of subjectsArray) {
+            //check if sampleName in subject samples
+            if (subject.samples.includes(sampleName)) {
+              console.log(sampleName);
+              console.log(subject.samples);
+              console.log("subject includes sample");
+              //add pre-selected subject to top of dropdown select2
+              const subjectOption = new Option(
+                subject.subjectName,
+                subject.subjectName,
+                true,
+                true
+              );
+              sampleSubjectsDropdown.append(subjectOption).trigger("change");
+            } else {
+              //add non-selected subject to bottom of dropdown select2
+              const subjectOption = new Option(
+                subject.subjectName,
+                subject.subjectName,
+                false,
+                false
+              );
+              sampleSubjectsDropdown.append(subjectOption).trigger("change");
             }
           }
         };
-        $(newSampleSubjectsSelectElement).on("select2:opening", (e) => {
+        $(newSampleSubjectsSelectElement).on("select2:open", (e) => {
           updateSampleSubjectsDropdown($(e.currentTarget));
         });
         $(newSampleSubjectsSelectElement).on("select2:select", function (e) {
@@ -4138,6 +4154,7 @@ $("#guided-button-has-protocol-data").on("click", () => {
       type: "",
       action: [],
     };
+  console.log($("#guided-file-explorer-elements"));
   $("#guided-file-explorer-elements").appendTo(
     $("#guided-user-has-protocol-data")
   );
