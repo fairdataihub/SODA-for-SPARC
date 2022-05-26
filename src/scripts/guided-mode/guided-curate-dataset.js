@@ -1602,6 +1602,8 @@ guidedCreateSodaJSONObj = () => {
       }
     },
     addSampleToSubject: function (sampleName, subjectName) {
+      console.log(subjectName);
+      console.log(sampleName);
       console.log(sampleName, subjectName);
       //check to see if subject exists outside of the pool
       if (
@@ -1612,6 +1614,7 @@ guidedCreateSodaJSONObj = () => {
         this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
           subjectName
         ][sampleName] = {};
+        console.log("sam added to sub out pool");
       } else {
         //subject to add sample should be inside of a pool. Find the pool and add the
         //sample to the subject in the pool.
@@ -1623,6 +1626,7 @@ guidedCreateSodaJSONObj = () => {
             this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
               poolName
             ][subjectName][sampleName] = {};
+            console.log("sam added to sub in pool");
           }
         }
       }
@@ -2717,7 +2721,7 @@ const openCopySampleMetadataPopup = async () => {
         for (var i = 1; i < samplesTableData.length; i++) {
           if (samplesTableData[i][1] === selectedCopyFromSample) {
             //copy all elements from matching array except the first one
-            copyFromSampleData = samplesTableData[i].slice(2);
+            copyFromSampleData = samplesTableData[i].slice(4);
             console.log(copyFromSampleData);
           }
         }
@@ -2728,7 +2732,12 @@ const openCopySampleMetadataPopup = async () => {
             if (sampleData[1] === sample) {
               console.log(samplesTableData);
               copyToSampleHasMetadata = true;
-              sampleData = [sampleData[0], sampleData[1]];
+              sampleData = [
+                sampleData[0],
+                sampleData[1],
+                sampleData[2],
+                sampleData[3],
+              ];
               sampleData = sampleData.concat(copyFromSampleData);
               samplesTableData[index] = sampleData;
               console.log(samplesTableData);
@@ -3093,7 +3102,7 @@ const specifySample = (event, sampleNameInput) => {
             }
           }
         };
-        $(newSampleSubjectsSelectElement).on("select2:open", (e) => {
+        $(newSampleSubjectsSelectElement).on("select2:opening", (e) => {
           updateSampleSubjectsDropdown($(e.currentTarget));
         });
         $(newSampleSubjectsSelectElement).on("select2:select", function (e) {
