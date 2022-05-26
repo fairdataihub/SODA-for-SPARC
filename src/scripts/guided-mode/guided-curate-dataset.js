@@ -551,10 +551,12 @@ const traverseToTab = (targetPageID) => {
       $(".selectpicker").selectpicker("refresh");
     }
     if (targetPageID === "guided-subjects-folder-tab") {
-      //check it subjects exist in sodaJSONObj
-      if (guidedGetSubjects().length === 0) {
-        $("#number-of-subjects-prompt").css("display", "flex");
-      }
+      $("#guided-footer-div").hide();
+      document
+        .getElementById(
+          "guided-organize-subject-sample-pool-structure-footer-div"
+        )
+        .classList.remove("hidden");
     }
 
     if (targetPageID === "guided-folder-structure-preview-tab") {
@@ -6483,7 +6485,7 @@ $(document).ready(() => {
     $("#guided-add-subject-div").show();
   });
 
-  $("#guided-button-save-subject-fields").on("click", () => {
+  /*$("#guided-button-save-subject-fields").on("click", () => {
     document
       .getElementById("guided-organize-into-pools-prompt")
       .classList.remove("hidden");
@@ -6494,6 +6496,21 @@ $(document).ready(() => {
       .getElementById("guided-number-of-samples-prompt")
       .classList.remove("hidden");
     scrollToBottomOfGuidedBody();
+  });*/
+
+  $("#guided-specify-subjects-next-button").on("click", function () {
+    switchElementVisibility(
+      "guided-specify-subjects-page",
+      "guided-organize-subjects-into-pools-page"
+    );
+    $(this).hide();
+    $("#guided-specify-samples-next-button").css("display", "flex");
+  });
+  $("#guided-organize-subjects-into-pools-next-button").on("click", () => {
+    switchElementVisibility(
+      "guided-organize-subjects-into-pools-page",
+      "guided-specify-samples-page"
+    );
   });
 
   //submission
