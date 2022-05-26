@@ -20,7 +20,7 @@
               <span class="dot">1</span>
               <div class="guided--progression-tab-labels">
                 <h1 class="guided--progression-tab-label-main">
-                  Specify data files
+                  Structure dataset
                 </h1>
               </div>
             </div>
@@ -33,7 +33,7 @@
               <span class="dot">2</span>
               <div class="guided--progression-tab-labels">
                 <h1 class="guided--progression-tab-label-main">
-                  Dataset metadata
+                  Prepare metadata files
                 </h1>
               </div>
             </div>
@@ -46,7 +46,7 @@
               <span class="dot">3</span>
               <div class="guided--progression-tab-labels">
                 <h1 class="guided--progression-tab-label-main">
-                  Pennsieve metadata
+                  Add Pennsieve metadata
                 </h1>
               </div>
             </div>
@@ -291,23 +291,25 @@
 
           <div id="guided-dataset-starting-point-tab" class="guided--panel">
             <div class="guided--section w-100">
-              <h1 class="guided--text-sub-step">SPARC dataset structure</h1>
+              <h1 class="guided--text-sub-step">SPARC Data Structure</h1>
               <p class="guided--help-text w-100">
-                SPARC datasets are organized according to the SPARC Data
-                Structure 2.0. More details about the structure are available in
-                the dedicated SPARC help page. Briefly, the each SPARC dataset
-                must contain all or a subset of the following six folders
-                depending on the type of data: primary, ... (list all). A
-                specific organization under subjects and/or samples folder is
-                also expected within the primary folder. A sample structure is
-                presented in the figure below along with a brief description of
-                the content of each folder.
+                The first step of the curation process consists of organizing
+                your data according to the SPARC Data Structure (SDS). Briefly,
+                each SPARC dataset must organized into all or a subset of the
+                six folders shown in the picture below. A specific organization
+                under subjects and/or samples folders is also expected within
+                the primary folder. More details are available on the dedicated
+                <a
+                  href="https://docs.sparc.science/docs/overview-of-sparc-dataset-format"
+                >
+                  SPARC Help page </a
+                >.
               </p>
               <div class="guided--container-sub">
                 <img
                   src="assets/img/sparc-dataset-structure-example.png"
                   alt="SPARC dataset structure example"
-                  style="width: 50%"
+                  style="width: 80%"
                 />
               </div>
             </div>
@@ -366,41 +368,18 @@
           >
             <div class="guided--section">
               <h1 class="guided--text-sub-step">
-                Organize your SPARC dataset's structure
+                Organize your dataset according to the SPARC Data Structure
               </h1>
               <p class="guided--help-text w-100 text-left">
-                In order for your dataset to be in accordance with SPARC's
-                dataset structure guidelines, your dataset's data must be broken
-                down into the following three components:
+                Data collected from subjects and samples must be organized into
+                folders named following the ID of the corresponding subjects and
+                samples. Let's help you with that.
               </p>
-              <ul class="guided--help-text w-100">
-                <li
-                  class="guided--help-text w-100 text-left mb-3"
-                  style="color: hsl(0, 0%, 22%)"
-                >
-                  <b>Subjects:</b> Live human or non-human animal participants
-                  from which data was collected from.
-                </li>
-                <li
-                  class="guided--help-text w-100 text-left mb-3"
-                  style="color: hsl(0, 0%, 22%)"
-                >
-                  <b>Samples:</b> Non-living entities derived from the subjects
-                  that data was collected from.
-                </li>
-                <li
-                  class="guided--help-text w-100 text-left mb-3"
-                  style="color: hsl(0, 0%, 22%)"
-                >
-                  <b>Pools:</b> When data is gathered from multiple subjects at
-                  the same time, the subjects are pooled together ??????in order
-                  to group together????????
-                </li>
-              </ul>
             </div>
             <div class="guided--section" id="number-of-subjects-prompt">
               <label class="guided--form-label centered">
-                Does your dataset contain any subjects?
+                Did your dataset contain data collected in human or non-human
+                subjects?
               </label>
               <div
                 class="guided--radio-button-container"
@@ -429,7 +408,7 @@
                         style="min-width: 250px"
                         colspan="2"
                       >
-                        Subject IDs
+                        Enter a unique IDs for each of your subjects
                       </th>
                     </tr>
                   </thead>
@@ -455,6 +434,7 @@
                 id="guided-organize-into-pools-prompt"
               >
                 <label class="guided--form-label centered">
+                  In SPARC datasets, subjects can be regrouped under pools.
                   Would you like to organize subjects into pools?
                 </label>
                 <div
@@ -489,7 +469,8 @@
                         style="min-width: 250px"
                         colspan="3"
                       >
-                        Pools
+                        Enter a unique ID for each of your pools and specify the
+                        subjects they contain
                       </th>
                     </tr>
                   </thead>
@@ -515,8 +496,8 @@
                 id="guided-number-of-samples-prompt"
               >
                 <label class="guided--form-label centered">
-                  Do your subjects have samples you would like to add to your
-                  dataset?
+                  Does your dataset include data based on samples (e.g., tissue
+                  samples) collected from your subjects?
                 </label>
                 <div
                   class="guided--radio-button-container"
@@ -544,7 +525,8 @@
                           style="min-width: 250px"
                           colspan="3"
                         >
-                          Samples
+                          Enter an ID for each of your sample and specify what
+                          subject they belong to
                         </th>
                       </tr>
                     </thead>
@@ -568,17 +550,19 @@
             <div class="guided--section w-100">
               <h1 class="guided--text-sub-step">Primary data for samples</h1>
               <p class="guided--help-text w-100">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry. Lorem Ipsum has been the industry's standard dummy
-                text ever since the 1500s, when an unknown printer took a galley
-                of type and scrambled it to make a type specimen book.
+                Primary data refer from experimental subjects and/or samples
+                (e.g., time series data, tabular data, clinical imaging data,
+                genomic, metabolomic, or microscopy data). The data generally
+                have been minimally processed so they are in a form ready for
+                analysis.
               </p>
             </div>
 
             <div class="guided--panel" id="guided-add-sample-primary-data">
               <div class="guided--section">
                 <h1 class="guided--text-sub-step">
-                  Add primary data to your sample folder in the interface below.
+                  Specify in the interface below the primary data you have for
+                  each of your samples.
                 </h1>
               </div>
               <div
@@ -622,18 +606,20 @@
             <div class="guided--section w-100">
               <h1 class="guided--text-sub-step">Primary data for subjects</h1>
               <p class="guided--help-text w-100">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry. Lorem Ipsum has been the industry's standard dummy
-                text ever since the 1500s, when an unknown printer took a galley
-                of type and scrambled it to make a type specimen book.
+                Primary data refers to data from experimental subjects and/or
+                samples (e.g., time series data, tabular data, clinical imaging
+                data, genomic, metabolomic, or microscopy data). The data
+                generally have been minimally processed so they are in a form
+                ready for analysis.
               </p>
             </div>
 
             <div class="guided--panel" id="guided-add-subject-primary-data">
               <div class="guided--section">
                 <h1 class="guided--text-sub-step">
-                  Add primary data to your subject folder in the interface
-                  below.
+                  Specify in the interface below any primary data you have for
+                  your subjects other than the data related to their sample(s)
+                  (already specified in the previous page)
                 </h1>
               </div>
               <div
@@ -677,15 +663,16 @@
             <div class="guided--section w-100">
               <h1 class="guided--text-sub-step">Source data for samples</h1>
               <p class="guided--help-text w-100">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry. Lorem Ipsum has been the industry's standard dummy
-                text ever since the 1500s, when an unknown printer took a galley
-                of type and scrambled it to make a type specimen book.
+                Source data refers to unaltered, raw files from an experiment,
+                For example, this may include the “truly” raw k-space data for a
+                Magnetic Resonance (MR) image that has not yet been
+                reconstructed (in this case, the reconstructed DICOM or NIFTI
+                files would be found within the primary folder).
               </p>
             </div>
             <div class="guided--section">
               <label class="guided--form-label centered"
-                >Do your dataset's samples have source data?
+                >Do you have source data for your samples?
               </label>
 
               <div class="guided--radio-button-container">
@@ -709,7 +696,8 @@
             >
               <div class="guided--section">
                 <h1 class="guided--text-sub-step">
-                  Add source data to your sample folder in the interface below.
+                  Specify source data for each of your samples in the interface
+                  below.
                 </h1>
               </div>
               <div
@@ -753,15 +741,17 @@
             <div class="guided--section w-100">
               <h1 class="guided--text-sub-step">Source data for subjects</h1>
               <p class="guided--help-text w-100">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry. Lorem Ipsum has been the industry's standard dummy
-                text ever since the 1500s, when an unknown printer took a galley
-                of type and scrambled it to make a type specimen book.
+                Source data refers to unaltered, raw files from an experiment,
+                For example, this may include the “truly” raw k-space data for a
+                Magnetic Resonance (MR) image that has not yet been
+                reconstructed (in this case, the reconstructed DICOM or NIFTI
+                files would be found within the primary folder).
               </p>
             </div>
             <div class="guided--section">
               <label class="guided--form-label centered"
-                >Do your dataset's subjects have source data?
+                >Do you have source data for your subjects (besides what was
+                already specifief for your samples)?
               </label>
 
               <div class="guided--radio-button-container">
@@ -785,7 +775,8 @@
             >
               <div class="guided--section">
                 <h1 class="guided--text-sub-step">
-                  Add source data to your subject folder in the interface below.
+                  Specify source data for each of your subjects in the interface
+                  below.
                 </h1>
               </div>
               <div
