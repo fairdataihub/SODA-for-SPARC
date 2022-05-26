@@ -9824,13 +9824,12 @@ function gatherLogs() {
 
   if (os.type() === "Darwin") {
     console.log("on mac");
-    log_path = "~/Library/Logs/Soda for Sparc/"
+    log_path = "~/Library/Logs/Soda for Sparc/";
   } else if (os.type() === "Windows") {
     console.log("on windows");
   } else {
     console.log("Should be on Linux");
   }
-
 
   Swal.fire({
     title: "Select a destination to create log folder.",
@@ -9840,11 +9839,15 @@ function gatherLogs() {
     allowOutsideClick: false,
     allowEscapeKey: true,
     didOpen: () => {
-      let swal_alert_confirm = document.getElementsByClassName("swal2-confirm swal2-styled")[0];
+      let swal_alert_confirm = document.getElementsByClassName(
+        "swal2-confirm swal2-styled"
+      )[0];
       swal_alert_confirm.setAttribute("disabled", true);
       console.log(swal_alert_confirm);
 
-      let log_destination_input = document.getElementById("selected-log-destination");
+      let log_destination_input = document.getElementById(
+        "selected-log-destination"
+      );
       log_destination_input.addEventListener("click", function () {
         ipcRenderer.send("open-file-dialog-log-destination");
         console.log("clicked");
@@ -9852,7 +9855,7 @@ function gatherLogs() {
       ipcRenderer.on("selected-log-folder", (event, result) => {
         console.log(result["filePaths"][0]);
         file_path = result["filePaths"][0];
-        if(file_path != undefined) {
+        if (file_path != undefined) {
           log_destination_input.value = file_path;
           swal_alert_confirm.removeAttribute("disabled");
         } else {
@@ -9861,15 +9864,20 @@ function gatherLogs() {
       });
     },
     preConfirm: () => {
-      let log_destination_input = document.getElementById("selected-log-destination");
-      if (log_destination_input.value === "" || log_destination_input.value === undefined) {
+      let log_destination_input = document.getElementById(
+        "selected-log-destination"
+      );
+      if (
+        log_destination_input.value === "" ||
+        log_destination_input.value === undefined
+      ) {
         Swal.showValidationMessage(`Please enter a destination`);
       }
-    }
+    },
   }).then((result) => {
     console.log(result);
-    if(result.isConfirmed === true) {
-      if(file_path != undefined || file_path != "") {
+    if (result.isConfirmed === true) {
+      if (file_path != undefined || file_path != "") {
         Swal.fire({
           title: "Creating log folder",
           html: "Please wait...",
@@ -9883,8 +9891,8 @@ function gatherLogs() {
             Swal.showLoading();
           },
         });
-    
-        let log_folder = file_path + "/SODA-For-SPARC-Logs"
+
+        let log_folder = file_path + "/SODA-For-SPARC-Logs";
         try {
           console.log("making");
           console.log(log_folder);
@@ -9892,12 +9900,12 @@ function gatherLogs() {
           // destination will be created or overwritten by default.
           fs.copyFile(log_folder, log_path, (err) => {
             if (err) throw err;
-            console.log('File was copied to destination');
+            console.log("File was copied to destination");
             console.log(log_path);
             console.log(log_folder);
           });
           Swal.close();
-          
+
           Swal.fire({
             title: "Success!",
             text: `Succesfully created SODA-For-SPARC-Logs in ${file_path}`,
@@ -9906,11 +9914,15 @@ function gatherLogs() {
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
             didOpen: () => {
-              if(document.getElementsByClassName("swal2-loader").length > 0) {
-                document.getElementsByClassName("swal2-loader")[0].style.display = "none";
-                document.getElementsByClassName("swal2-confirm swal2-styled")[0].style.display = "block"
+              if (document.getElementsByClassName("swal2-loader").length > 0) {
+                document.getElementsByClassName(
+                  "swal2-loader"
+                )[0].style.display = "none";
+                document.getElementsByClassName(
+                  "swal2-confirm swal2-styled"
+                )[0].style.display = "block";
               }
-            }
+            },
           });
         } catch (error) {
           log.error(error);
@@ -9923,15 +9935,18 @@ function gatherLogs() {
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
             didOpen: () => {
-              if(document.getElementsByClassName("swal2-loader").length > 0) {
-                document.getElementsByClassName("swal2-loader")[0].style.display = "none";
-                document.getElementsByClassName("swal2-confirm swal2-styled")[0].style.display = "block"
+              if (document.getElementsByClassName("swal2-loader").length > 0) {
+                document.getElementsByClassName(
+                  "swal2-loader"
+                )[0].style.display = "none";
+                document.getElementsByClassName(
+                  "swal2-confirm swal2-styled"
+                )[0].style.display = "block";
               }
-            }
+            },
           });
         }
       }
     }
   });
-
 }
