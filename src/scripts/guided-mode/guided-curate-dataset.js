@@ -2611,7 +2611,7 @@ const openCopySubjectMetadataPopup = async () => {
         for (var i = 1; i < subjectsTableData.length; i++) {
           if (subjectsTableData[i][0] === selectedCopyFromSubject) {
             //copy all elements from matching array except the first one
-            copyFromSubjectData = subjectsTableData[i].slice(1);
+            copyFromSubjectData = subjectsTableData[i].slice(2);
           }
         }
         for (subject of selectedCopyToSubjects) {
@@ -2621,7 +2621,7 @@ const openCopySubjectMetadataPopup = async () => {
           subjectsTableData.forEach((subjectData, index) => {
             if (subjectData[0] === subject) {
               copyToSubjectHasMetadata = true;
-              subjectData = [subjectData[0]];
+              subjectData = [subjectData[0], subjectData[1]];
               subjectData = subjectData.concat(copyFromSubjectData);
               subjectsTableData[index] = subjectData;
             }
