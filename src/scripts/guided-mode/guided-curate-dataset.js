@@ -551,12 +551,6 @@ const traverseToTab = (targetPageID) => {
       $(".selectpicker").selectpicker("refresh");
     }
     if (targetPageID === "guided-subjects-folder-tab") {
-      $("#guided-footer-div").hide();
-      document
-        .getElementById(
-          "guided-organize-subject-sample-pool-structure-footer-div"
-        )
-        .classList.remove("hidden");
     }
 
     if (targetPageID === "guided-folder-structure-preview-tab") {
@@ -6496,6 +6490,54 @@ $(document).ready(() => {
       .classList.remove("hidden");
     scrollToBottomOfGuidedBody();
   });*/
+  $("#guided-button-sub-pool-sam-continue").on("click", () => {
+    const specifySubjectsElement = document.getElementById(
+      "guided-specify-subjects-page"
+    );
+    const organizeSubjectsIntoPoolsElement = document.getElementById(
+      "guided-organize-subjects-into-pools-page"
+    );
+    const specifySamplesPage = document.getElementById(
+      "guided-specify-samples-page"
+    );
+    if (!specifySubjectsElement.classList.contains("hidden")) {
+      specifySubjectsElement.classList.add("hidden");
+      organizeSubjectsIntoPoolsElement.classList.remove("hidden");
+      scrollToBottomOfGuidedBody();
+      return;
+    }
+    if (!organizeSubjectsIntoPoolsElement.classList.contains("hidden")) {
+      organizeSubjectsIntoPoolsElement.classList.add("hidden");
+      specifySamplesPage.classList.remove("hidden");
+      scrollToBottomOfGuidedBody();
+      return;
+    }
+  });
+  $("#guided-button-sub-pool-sam-back").on("click", () => {
+    const specifySubjectsElement = document.getElementById(
+      "guided-specify-subjects-page"
+    );
+    const organizeSubjectsIntoPoolsElement = document.getElementById(
+      "guided-organize-subjects-into-pools-page"
+    );
+    const specifySamplesPage = document.getElementById(
+      "guided-specify-samples-page"
+    );
+    if (!specifySamplesPage.classList.contains("hidden")) {
+      specifySamplesPage.classList.add("hidden");
+      organizeSubjectsIntoPoolsElement.classList.remove("hidden");
+      scrollToBottomOfGuidedBody();
+      return;
+    }
+    if (!organizeSubjectsIntoPoolsElement.classList.contains("hidden")) {
+      organizeSubjectsIntoPoolsElement.classList.add("hidden");
+      specifySubjectsElement.classList.remove("hidden");
+      scrollToBottomOfGuidedBody();
+      return;
+    }
+  });
+
+  $("#guided-button-has-subjects").on("click", () => {});
 
   $("#guided-specify-subjects-next-button").on("click", function () {
     switchElementVisibility(

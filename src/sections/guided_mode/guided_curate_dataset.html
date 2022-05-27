@@ -442,57 +442,62 @@
               </div>
             </div>
             <div class="guided--panel" id="guided-specify-subjects-page">
-              <label class="guided--form-label centered">
-                Does your dataset contain data collected in human or non-human
-                subjects?
-              </label>
-              <div
-                class="guided--radio-button-container"
-                style="margin-bottom: 7px"
-              >
-                <button
-                  class="ui positive basic button guided--radio-button"
-                  id="guided-button-has-subjects"
-                  data-next-element="guided-add-subjects-table"
+              <div class="guided--section" id="guided-specify-subjects-prompt">
+                <label class="guided--form-label centered">
+                  Does your dataset contain data collected in human or non-human
+                  subjects?
+                </label>
+                <div
+                  class="guided--radio-button-container"
+                  style="margin-bottom: 7px"
                 >
-                  Yes
-                </button>
-                <button class="ui negative basic button guided--radio-button">
-                  No
-                </button>
-              </div>
-              <div class="guided--panel hidden" id="guided-add-subjects-table">
-                <table
-                  class="ui celled striped table"
-                  style="margin-bottom: 10px; width: 800px"
+                  <button
+                    class="ui positive basic button guided--radio-button"
+                    id="guided-button-has-subjects"
+                    data-next-element="guided-add-subjects-table"
+                  >
+                    Yes
+                  </button>
+                  <button class="ui negative basic button guided--radio-button">
+                    No
+                  </button>
+                </div>
+                <div
+                  class="guided--panel hidden"
+                  id="guided-add-subjects-table"
                 >
-                  <thead>
-                    <tr>
-                      <th
-                        class="text-center"
-                        style="min-width: 250px"
-                        colspan="2"
-                      >
-                        Enter unique IDs for each of your subjects
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody id="subject-specification-table-body"></tbody>
-                </table>
-                <button
-                  class="ui primary basic button mt-0"
-                  onclick="addSubjectSpecificationTableRow()"
-                >
-                  <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new
-                  subject
-                </button>
-                <!--<button
+                  <table
+                    class="ui celled striped table"
+                    style="margin-bottom: 10px; width: 800px"
+                  >
+                    <thead>
+                      <tr>
+                        <th
+                          class="text-center"
+                          style="min-width: 250px"
+                          colspan="2"
+                        >
+                          Enter unique IDs for each of your subjects
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody id="subject-specification-table-body"></tbody>
+                  </table>
+                  <button
+                    class="ui primary basic button mt-0"
+                    onclick="addSubjectSpecificationTableRow()"
+                  >
+                    <i class="fas fa-plus" style="margin-right: 7px"></i>Add a
+                    new subject
+                  </button>
+                  <!--<button
                   class="ui primary button mt-md"
                   id="guided-button-save-subject-fields"
                   style="background-color: var(--color-light-green) !important"
                 >
                   Continue
                 </button>-->
+                </div>
               </div>
             </div>
             <div
@@ -513,7 +518,7 @@
                 >
                   <button
                     class="ui positive basic button guided--radio-button"
-                    id="guided-button-has-subjects2"
+                    id="guided-button-organize-subjects-into-pools"
                     data-next-element="guided-add-pools-table"
                   >
                     Yes
@@ -611,42 +616,25 @@
                     new sample
                   </button>
                 </div>
-                <div
-                  class="guided--radio-button-container"
-                  style="margin-bottom: 7px"
-                >
-                  <button
-                    class="ui positive button guided--radio-button selected"
-                    id="guided-button-has-subjects"
-                    data-next-element="guided-add-subjects-table"
-                  >
-                    Yes
-                  </button>
-                  <button
-                    class="ui negative button guided--radio-button not-selected basic"
-                  >
-                    No
-                  </button>
-                </div>
               </div>
             </div>
-            <div class="space-between">
+            <div class="space-between mt-md">
               <button
                 class="ui secondary basic button guided--button-footer"
-                id="guided-back-button2"
-                style="width: 120px !important"
+                id="guided-button-sub-pool-sam-back"
+                style="width: 130px !important"
               >
                 <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
               </button>
               <button
                 class="ui positive button guided--button-footer"
-                id="guided-next-button2"
+                id="guided-button-sub-pool-sam-continue"
                 style="
                   background-color: var(--color-light-green) !important;
-                  width: 180px !important;
+                  width: 130px !important;
                 "
               >
-                Save and Continue
+                Continue
               </button>
             </div>
           </div>
@@ -5532,39 +5520,6 @@
           "
         >
           Save and Continue
-        </button>
-      </footer>
-      <footer
-        class="guided--footer hidden"
-        id="guided-organize-subject-sample-pool-structure-footer-div"
-      >
-        <button
-          class="ui secondary basic button guided--button-footer"
-          id="guided-exit-subject-sample-pool-structure-button"
-          style="width: 120px !important"
-        >
-          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
-        </button>
-        <button
-          class="ui positive button guided--button-footer"
-          id="guided-specify-subjects-next-button"
-          style="
-            background-color: var(--color-light-green) !important;
-            width: 180px !important;
-          "
-        >
-          Do pools
-        </button>
-        <button
-          class="ui positive button guided--button-footer"
-          id="guided-organize-subjects-into-pools-next-button"
-          style="
-            background-color: var(--color-light-green) !important;
-            width: 180px !important;
-            display: none;
-          "
-        >
-          Organize samples
         </button>
       </footer>
     </div>
