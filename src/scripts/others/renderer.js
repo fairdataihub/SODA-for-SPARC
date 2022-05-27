@@ -9818,22 +9818,27 @@ $("#validate_dataset_bttn").on("click", async () => {
 function gatherLogs() {
   //function will be used to gather all logs on all OS's
   console.log(os.type());
+  let homedir = os.homedir();
   let file_path = "";
   let log_path = "";
-  let log_files = ["main.log", "renderer.log"];
+  let log_files = ["main.log", "renderer.log", "out.log"];
+  console.log(homedir)
 
   if (os.type() === "Darwin") {
     console.log("on mac");
-    log_path = "~/Library/Logs/Soda for Sparc/"
+    log_path = path.join(homedir, "/Library/Logs/SODA\ for\ SPARC/");
   } else if (os.type() === "Windows") {
     console.log("on windows");
+    log_path = path.join(homedir, "AppData", "Roaming","SODA\ for\ SPARC", "logs");
   } else {
     console.log("Should be on Linux");
+    log_path = path.join(homedir, ".config", "SODA\ for\ SPARC", "logs");
   }
 
 
   Swal.fire({
-    title: "Select a destination to create log folder.",
+    title: "Select a destination to create log folder",
+    text: "Please note that if there are any log files already they will be overwritten.",
     html: `<input class="form-control" id="selected-log-destination" type="text" readonly="" placeholder="Select a destination">`,
     heightAuto: false,
     showCancelButton: true,
@@ -9884,18 +9889,25 @@ function gatherLogs() {
           },
         });
     
-        let log_folder = file_path + "/SODA-For-SPARC-Logs"
+        let log_folder = path.join(file_path, "/SODA-For-SPARC-Logs/")
         try {
-          console.log("making");
-          console.log(log_folder);
           fs.mkdirSync(log_folder, { recursive: true });
           // destination will be created or overwritten by default.
-          fs.copyFile(log_folder, log_path, (err) => {
-            if (err) throw err;
-            console.log('File was copied to destination');
-            console.log(log_path);
-            console.log(log_folder);
-          });
+          for(let i = 0; i < log_files.length; i++) {
+            var log_file;
+            if(i === 2) {
+              log_file = path.join(homedir, ".pennsieve", log_files[i]);
+            } else {
+              log_file = path.join(log_path, log_files[i]);
+            }
+            let log_copy = path.join(log_folder, log_files[i]);
+            console.log(log_file);
+            console.log(log_copy);
+            fs.copyFileSync(log_file, log_copy, (err) => {
+              if (err) throw err;
+              console.log('File was copied to destination');
+            });
+          }
           Swal.close();
           
           Swal.fire({
