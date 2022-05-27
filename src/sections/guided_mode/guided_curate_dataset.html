@@ -323,14 +323,14 @@
                 <button
                   class="ui positive basic button guided--radio-button"
                   id="guided-button-import-existing-dataset-structure"
-                  data-next-question="guided-import-existing-dataset-panel"
+                  data-next-element="guided-import-existing-dataset-panel"
                 >
                   Yes
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button"
                   id="guided-button-guided-dataset-structuring"
-                  data-next-question="guided-structure-new-dataset-panel"
+                  data-next-element="guided-structure-new-dataset-panel"
                 >
                   No
                 </button>
@@ -453,7 +453,7 @@
                 <button
                   class="ui positive basic button guided--radio-button"
                   id="guided-button-has-subjects"
-                  data-next-question="guided-add-subjects-table"
+                  data-next-element="guided-add-subjects-table"
                 >
                   Yes
                 </button>
@@ -514,13 +514,13 @@
                   <button
                     class="ui positive basic button guided--radio-button"
                     id="guided-button-has-subjects2"
-                    data-next-question="guided-add-pools-table"
+                    data-next-element="guided-add-pools-table"
                   >
                     Yes
                   </button>
                   <button
                     class="ui negative basic button guided--radio-button"
-                    data-next-question="guided-number-of-samples-prompt"
+                    data-next-element="guided-number-of-samples-prompt"
                     id="guided-button-no-pools"
                   >
                     No
@@ -576,7 +576,7 @@
                 >
                   <button
                     class="ui positive basic button guided--radio-button"
-                    data-next-question="guided-add-samples-table"
+                    data-next-element="guided-add-samples-table"
                   >
                     Yes
                   </button>
@@ -611,9 +611,44 @@
                     new sample
                   </button>
                 </div>
+                <div
+                  class="guided--radio-button-container"
+                  style="margin-bottom: 7px"
+                >
+                  <button
+                    class="ui positive button guided--radio-button selected"
+                    id="guided-button-has-subjects"
+                    data-next-element="guided-add-subjects-table"
+                  >
+                    Yes
+                  </button>
+                  <button
+                    class="ui negative button guided--radio-button not-selected basic"
+                  >
+                    No
+                  </button>
+                </div>
               </div>
             </div>
-            <div class="guided--section" id="number-of-subjects-prompt"></div>
+            <div class="space-between">
+              <button
+                class="ui secondary basic button guided--button-footer"
+                id="guided-back-button2"
+                style="width: 120px !important"
+              >
+                <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+              </button>
+              <button
+                class="ui positive button guided--button-footer"
+                id="guided-next-button2"
+                style="
+                  background-color: var(--color-light-green) !important;
+                  width: 180px !important;
+                "
+              >
+                Save and Continue
+              </button>
+            </div>
           </div>
           <div
             id="guided-primary-samples-organization-tab"
@@ -750,7 +785,7 @@
               <div class="guided--radio-button-container">
                 <button
                   class="ui positive basic button guided--radio-button"
-                  data-next-question="guided-add-sample-source-data"
+                  data-next-element="guided-add-sample-source-data"
                 >
                   Yes
                 </button>
@@ -829,7 +864,7 @@
               <div class="guided--radio-button-container">
                 <button
                   class="ui positive basic button guided--radio-button"
-                  data-next-question="guided-add-subject-source-data"
+                  data-next-element="guided-add-subject-source-data"
                 >
                   Yes
                 </button>
@@ -906,7 +941,7 @@
               <div class="guided--radio-button-container">
                 <button
                   class="ui positive basic button guided--radio-button"
-                  data-next-question="guided-add-sample-derivative-data"
+                  data-next-element="guided-add-sample-derivative-data"
                 >
                   Yes
                 </button>
@@ -985,7 +1020,7 @@
               <div class="guided--radio-button-container">
                 <button
                   class="ui positive basic button guided--radio-button"
-                  data-next-question="guided-add-subject-derivative-data"
+                  data-next-element="guided-add-subject-derivative-data"
                 >
                   Yes
                 </button>
@@ -1060,7 +1095,7 @@
                 <button
                   class="ui positive basic button guided--radio-button"
                   id="guided-button-has-source-data"
-                  data-next-question="guided-user-has-source-data"
+                  data-next-element="guided-user-has-source-data"
                 >
                   Yes
                 </button>
@@ -1099,7 +1134,7 @@
                 <button
                   class="ui positive basic button guided--radio-button"
                   id="guided-button-has-code-data"
-                  data-next-question="guided-user-has-code-data"
+                  data-next-element="guided-user-has-code-data"
                 >
                   Yes
                 </button>
@@ -1138,7 +1173,7 @@
                 <button
                   class="ui positive basic button guided--radio-button"
                   id="guided-button-has-docs-data"
-                  data-next-question="guided-user-has-docs-data"
+                  data-next-element="guided-user-has-docs-data"
                 >
                   Yes
                 </button>
@@ -1177,7 +1212,7 @@
                 <button
                   class="ui positive basic button guided--radio-button"
                   id="guided-button-has-protocol-data"
-                  data-next-question="guided-user-has-protocol-data"
+                  data-next-element="guided-user-has-protocol-data"
                 >
                   Yes
                 </button>
@@ -1412,7 +1447,7 @@
               <div class="guided--radio-button-container">
                 <button
                   class="ui positive basic button guided--radio-button"
-                  data-next-question="guided-div-SPARC-award-import"
+                  data-next-element="guided-div-SPARC-award-import"
                 >
                   Yes
                 </button>
@@ -1474,13 +1509,13 @@
               <div class="guided--radio-button-container">
                 <button
                   class="ui positive basic button guided--radio-button"
-                  data-next-question="guided-div-import-data-deliverables"
+                  data-next-element="guided-div-import-data-deliverables"
                 >
                   Yes
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button"
-                  data-next-question="guided-div-submission-accordion"
+                  data-next-element="guided-div-submission-accordion"
                 >
                   No
                 </button>
@@ -1734,13 +1769,13 @@
               <div class="guided--radio-button-container">
                 <button
                   class="ui positive basic button guided--radio-button"
-                  data-next-question="guided-div-protocols-import"
+                  data-next-element="guided-div-protocols-import"
                 >
                   Yes
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button"
-                  data-next-question="guided-div-protocol-container"
+                  data-next-element="guided-div-protocol-container"
                 >
                   No
                 </button>
@@ -4340,14 +4375,14 @@
                 <button
                   class="ui positive basic button guided--radio-button"
                   id="guided-button-designate-self-PI"
-                  data-next-question="guided-designate-self-PI"
+                  data-next-element="guided-designate-self-PI"
                 >
                   Myself
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button"
                   id="guided-button-designate-other-PI"
-                  data-next-question="guided-designate-other-PI"
+                  data-next-element="guided-designate-other-PI"
                 >
                   Someone else
                 </button>
@@ -4456,14 +4491,14 @@
               <button
                 class="ui positive basic button guided--radio-button"
                 id="guided-button-add-permissions"
-                data-next-question="guided-add-permissions"
+                data-next-element="guided-add-permissions"
               >
                 Yes
               </button>
               <button
                 class="ui negative basic button guided--radio-button"
                 id="guided-button-no-permissions"
-                data-next-question="guided-no-permissions"
+                data-next-element="guided-no-permissions"
               >
                 No
               </button>

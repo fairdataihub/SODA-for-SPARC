@@ -2789,7 +2789,6 @@ $("#guided-button-generate-subjects-table").on("click", () => {
   subjectsTableBody.innerHTML = subjectRows.join("\n");
 
   guidedAddHighLevelFolderToDatasetStructureObj("primary");
-  $("#number-of-subjects-prompt").hide();
   $("#subjects-table").css("display", "flex");
 });
 
@@ -5030,9 +5029,9 @@ $(document).ready(() => {
     selectedButton.removeClass("not-selected basic");
     selectedButton.addClass("selected");
 
-    //Display and scroll to selected element container if data-next-question exists
-    if (selectedButton.data("next-question")) {
-      nextQuestionID = selectedButton.data("next-question");
+    //Display and scroll to selected element container if data-next-element exists
+    if (selectedButton.data("next-element")) {
+      nextQuestionID = selectedButton.data("next-element");
       console.log(nextQuestionID);
       nextQuestionElement = $(`#${nextQuestionID}`);
       nextQuestionElement.removeClass("hidden");
@@ -5052,8 +5051,8 @@ $(document).ready(() => {
     //Hide all child containers of non-selected buttons
     notSelectedButton.each(function () {
       console.log($(this));
-      if ($(this).data("next-question")) {
-        nextQuestionID = $(this).data("next-question");
+      if ($(this).data("next-element")) {
+        nextQuestionID = $(this).data("next-element");
         $(`#${nextQuestionID}`).addClass("hidden");
       }
     });
@@ -6504,7 +6503,10 @@ $(document).ready(() => {
       "guided-organize-subjects-into-pools-page"
     );
     $(this).hide();
-    $("#guided-specify-samples-next-button").css("display", "flex");
+    $("#guided-organize-subjects-into-pools-next-button").css(
+      "display",
+      "flex"
+    );
   });
   $("#guided-organize-subjects-into-pools-next-button").on("click", () => {
     switchElementVisibility(
