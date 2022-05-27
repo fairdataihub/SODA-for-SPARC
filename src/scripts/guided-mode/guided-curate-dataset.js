@@ -3092,6 +3092,36 @@ const generateSubjectSpecificationRowElement = () => {
     </tr>
   `;
 };
+const generateSampleSpecificationRowElement = () => {
+  return `
+    <tr>
+      <td class="middle aligned sample-id-cell">
+        <div class="space-between w-100" style="align-items: center">
+          <span style="margin-right: 5px;">sam-</span>
+          <input
+            class="guided--input"
+            type="text"
+            name="guided-sample-id"
+            placeholder="Enter sample ID and press enter"
+            onkeyup="specifySample(event, $(this))"
+            data-input-set="guided-samples-folder-tab"
+            data-alert-message="Sample IDs may not contain spaces or special characters"
+            data-alert-type="danger"
+            style="margin-right: 5px;"
+          />
+        </div>
+      </td>
+      <td class="middle aligned collapsing text-center remove-left-border">
+        <i
+          class="far fa-trash-alt"
+          style="color: red; cursor: pointer"
+          onclick="deleteSample($(this))"
+        ></i>
+      </td>
+    </tr>
+  `;
+};
+
 const addSubjectSpecificationTableRow = () => {
   const subjectSpecificationTableBody = document.getElementById(
     "subject-specification-table-body"
@@ -3117,6 +3147,35 @@ const addSubjectSpecificationTableRow = () => {
     );
     //focus on the new input element
     newSubjectInput.focus();
+    //scroll to bottom of guided body so back/continue buttons are visible
+    scrollToBottomOfGuidedBody();
+  }
+};
+const addSampleSpecificationTableRow = () => {
+  const sampleSpecificationTableBody = document.getElementById(
+    "samples-specification-table-body"
+  );
+  //check if subject specification table body has an input with the name guided-subject-id
+  const sampleSpecificationTableInput =
+    sampleSpecificationTableBody.querySelector(
+      "input[name='guided-sample-id']"
+    );
+
+  if (sampleSpecificationTableInput) {
+    //focus on the input that already exists
+    //No need to create a new row
+    sampleSpecificationTableInput.focus();
+  } else {
+    //create a new table row Input element
+    sampleSpecificationTableBody.innerHTML +=
+      generateSampleSpecificationRowElement();
+    const newSamplerow =
+      sampleSpecificationTableBody.querySelector("tr:last-child");
+    //Focus the new sample row element
+    const newSampleInput = newSamplerow.querySelector(
+      "input[name='guided-sample-id']"
+    );
+    newSampleInput.focus();
     //scroll to bottom of guided body so back/continue buttons are visible
     scrollToBottomOfGuidedBody();
   }
@@ -6373,9 +6432,9 @@ $(document).ready(() => {
       organizeSubjectsIntoPoolsElement.classList.add("hidden");
       specifySamplesPage.classList.remove("hidden");
       //render a table for each subject where samples can be added
-      const renderSubjectsampleAdditionTables = () => {
+      /*const renderSubjectsampleAdditionTables = () => {
         const [subjectsInPools, subjectsNotInPools] = getSubjectsInPools();
-      };
+      };*/
 
       scrollToBottomOfGuidedBody();
       return;
