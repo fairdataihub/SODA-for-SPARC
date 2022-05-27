@@ -6339,9 +6339,44 @@ $(document).ready(() => {
       scrollToBottomOfGuidedBody();
       return;
     }
+
+    const renderSubjectSampleAdditionTable = (
+      optionalPool,
+      subjectName,
+      samples
+    ) => {
+      return `
+        <table
+          class="ui celled striped table"
+          style="margin-bottom: 10px; width: 800px"
+        >
+          <thead>
+            <tr>
+              <th class="text-center" colspan="2">
+                <div class="space-between w-100">
+                  <span>${optionalPool}</span>
+                  <span>${subjectName}</span>
+                  l;kjasdjf
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+          
+          
+          </tbody>
+        </table>
+      `;
+    };
+
     if (!organizeSubjectsIntoPoolsElement.classList.contains("hidden")) {
       organizeSubjectsIntoPoolsElement.classList.add("hidden");
       specifySamplesPage.classList.remove("hidden");
+      //render a table for each subject where samples can be added
+      const renderSubjectsampleAdditionTables = () => {
+        const [subjectsInPools, subjectsNotInPools] = getSubjectsInPools();
+      };
+
       scrollToBottomOfGuidedBody();
       return;
     }
