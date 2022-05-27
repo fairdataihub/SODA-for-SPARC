@@ -9825,13 +9825,10 @@ function gatherLogs() {
   console.log(homedir)
 
   if (os.type() === "Darwin") {
-    console.log("on mac");
     log_path = path.join(homedir, "/Library/Logs/SODA\ for\ SPARC/");
   } else if (os.type() === "Windows") {
-    console.log("on windows");
-    log_path = path.join(homedir, "AppData", "Roaming","SODA\ for\ SPARC", "logs");
+    log_path = path.join(homedir, "AppData", "Roaming", "SODA\ for\ SPARC", "logs");
   } else {
-    console.log("Should be on Linux");
     log_path = path.join(homedir, ".config", "SODA\ for\ SPARC", "logs");
   }
 
@@ -9912,7 +9909,6 @@ function gatherLogs() {
 
             fs.copyFileSync(log_file, log_copy, (err) => {
               if (err) throw err;
-              console.log('File was copied to destination');
             });
           }
           Swal.close();
