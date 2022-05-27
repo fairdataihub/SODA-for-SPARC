@@ -689,11 +689,8 @@ ipcMain.on("open-folder-dialog-validate-local-dataset", (event) => {
 ipcMain.on("open-file-dialog-log-destination", async (event) => {
   console.log("something");
   console.log(event);
-  const result = await dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
-    {
-      properties: ["openDirectory"],
-    }
-  );
+  const result = await dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+    properties: ["openDirectory"],
+  });
   event.sender.send("selected-log-folder", result);
 });
