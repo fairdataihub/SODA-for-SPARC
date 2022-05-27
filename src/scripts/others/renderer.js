@@ -9825,11 +9825,17 @@ function gatherLogs() {
   console.log(homedir);
 
   if (os.type() === "Darwin") {
-    log_path = path.join(homedir, "/Library/Logs/SODA\ for\ SPARC/");
+    log_path = path.join(homedir, "/Library/Logs/SODA for SPARC/");
   } else if (os.type() === "Windows") {
-    log_path = path.join(homedir, "AppData", "Roaming", "SODA\ for\ SPARC", "logs");
+    log_path = path.join(
+      homedir,
+      "AppData",
+      "Roaming",
+      "SODA for SPARC",
+      "logs"
+    );
   } else {
-    log_path = path.join(homedir, ".config", "SODA\ for\ SPARC", "logs");
+    log_path = path.join(homedir, ".config", "SODA for SPARC", "logs");
   }
 
   Swal.fire({
