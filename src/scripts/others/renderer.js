@@ -9822,7 +9822,7 @@ function gatherLogs() {
   let file_path = "";
   let log_path = "";
   let log_files = ["main.log", "renderer.log", "out.log"];
-  console.log(homedir)
+  console.log(homedir);
 
   if (os.type() === "Darwin") {
     log_path = path.join(homedir, "/Library/Logs/SODA\ for\ SPARC/");
@@ -9893,14 +9893,14 @@ function gatherLogs() {
             Swal.showLoading();
           },
         });
-    
-        let log_folder = path.join(file_path, "/SODA-For-SPARC-Logs/")
+
+        let log_folder = path.join(file_path, "/SODA-For-SPARC-Logs/");
         try {
           fs.mkdirSync(log_folder, { recursive: true });
           // destination will be created or overwritten by default.
-          for(let i = 0; i < log_files.length; i++) {
+          for (let i = 0; i < log_files.length; i++) {
             var log_file;
-            if(i === 2) {
+            if (i === 2) {
               log_file = path.join(homedir, ".pennsieve", log_files[i]);
             } else {
               log_file = path.join(log_path, log_files[i]);
