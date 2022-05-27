@@ -2757,35 +2757,6 @@ const openCopySampleMetadataPopup = async () => {
     });
 };
 
-//Click handler that sets the Subject's name after enter press in the table input
-$("#guided-button-generate-subjects-table").on("click", () => {
-  let numSubjectRowsToCreate = parseInt(
-    $("#guided-number-of-subjects-input").val().trim()
-  );
-  // gets amount of samples to fill all number of sample input boxes
-  let numSamplesIfAllSubjectsSameNumSamples = "";
-  if ($("#guided-button-samples-same").hasClass("selected")) {
-    numSamplesIfAllSubjectsSameNumSamples = parseInt(
-      $("#guided-number-of-samples-input").val().trim()
-    );
-  }
-  console.log(numSamplesIfAllSubjectsSameNumSamples);
-  let subjectsTableBody = document.getElementById("subjects-table-body");
-  const subjectRows = Array(numSubjectRowsToCreate)
-    .fill(0)
-    .map((subject, index) => {
-      let tableIndex = index + 1;
-      return generateSubjectRowElement(
-        tableIndex,
-        numSamplesIfAllSubjectsSameNumSamples
-      );
-    });
-  subjectsTableBody.innerHTML = subjectRows.join("\n");
-
-  guidedAddHighLevelFolderToDatasetStructureObj("primary");
-  $("#subjects-table").css("display", "flex");
-});
-
 const specifySubject = (event, subjectNameInput) => {
   if (event.which == 13) {
     try {
@@ -2928,94 +2899,6 @@ const updatePoolDropdown = (poolDropDown, poolName) => {
   for (const subject of subjectsNotInPools) {
     var newOption = new Option(subject, subject, false, false);
     poolDropDown.append(newOption).trigger("change");
-  }
-};
-
-const createSubjectFolder = (event, subjectNameInput) => {
-  if (event.which == 13) {
-    try {
-      const subjectName = subjectNameInput.val().trim();
-      const subjectNameElement = `
-        <div class="space-between">
-          <span class="subject-id">${subjectName}</span>
-          <i
-            class="far fa-edit jump-back"
-            style="cursor: pointer;"
-            onclick="openSubjectRenameInput($(this))"
-          >
-          </i>
-        </div>
-      `;
-      const subjectIdCellToAddNameTo = subjectNameInput.parent();
-      let existingSubjectNames = Object.keys(
-        datasetStructureJSONObj.folders.primary.folders
-      );
-      //Throw error if entered subject name is duplicate
-      if (existingSubjectNames.includes(subjectName)) {
-        //Change input back to the previous name but throw an error to abort following logic
-        if (subjectNameInput.attr("data-prev-name") === subjectName) {
-          subjectIdCellToAddNameTo.html(subjectNameElement);
-        }
-        throw new Error("Subject name already exists");
-      }
-
-      if (subjectName.length > 0) {
-        if (subSamInputIsValid(subjectName)) {
-          removeAlertMessageIfExists(subjectNameInput);
-          //Add subject to subject-sample-structrure
-          sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
-            subjectName
-          ] = [];
-          subjectIdCellToAddNameTo.html(subjectNameElement);
-
-          subjectTargetFolder = getRecursivePath(
-            ["primary"],
-            datasetStructureJSONObj
-          ).folders;
-          //Check to see if input has prev-name data attribute
-          //Added when renaming a subject
-          if (subjectNameInput.attr("data-prev-name")) {
-            //get the name of the subject being renamed
-            const subjectFolderToRename =
-              subjectNameInput.attr("data-prev-name");
-            //Rename the previous subject name in sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"] to new subjectName
-            copiedSubjectToRename =
-              sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
-                subjectFolderToRename
-              ];
-            sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
-              subjectName
-            ] = copiedSubjectToRename;
-            //Remove the subject folder from sodaJSONObj
-            delete sodaJSONObj["dataset-metadata"][
-              "pool-subject-sample-structure"
-            ][subjectFolderToRename];
-            //create a temp copy of the folder to be renamed
-            copiedFolderToRename = subjectTargetFolder[subjectFolderToRename];
-            //set the copied obj from the prev name to the new obj name
-            subjectTargetFolder[subjectName] = copiedFolderToRename;
-            //delete the temp copy of the folder that was renamed
-            delete subjectTargetFolder[subjectFolderToRename];
-          } else {
-            //Create an empty folder for the new subject
-            subjectTargetFolder[subjectName] = {
-              folders: {},
-              files: {},
-              type: "",
-              action: [],
-            };
-          }
-        } else {
-          generateAlertMessage(subjectNameInput);
-        }
-      }
-    } catch (error) {
-      notyf.open({
-        duration: "3000",
-        type: "error",
-        message: error,
-      });
-    }
   }
 };
 
@@ -3232,8 +3115,10 @@ const addSubjectSpecificationTableRow = () => {
     const newSubjectInput = newSubjectRow.querySelector(
       "input[name='guided-subject-id']"
     );
-    smoothScrollToElement(newSubjectRow);
+    //focus on the new input element
     newSubjectInput.focus();
+    //scroll to bottom of guided body so back/continue buttons are visible
+    scrollToBottomOfGuidedBody();
   }
 };
 
@@ -3335,58 +3220,6 @@ const addPoolTableRow = () => {
   //smoothScrollToElement(poolsTableBody.querySelector("tr:last-child"));
 };
 
-const generateSubjectRowElement = (subjectIndex, subjectNumSamples) => {
-  return `
-    <tr>
-      <td class="middle aligned collapsing text-center">
-        <span class="subject-table-index">${subjectIndex}</span>
-      </td>
-      <td class="middle aligned subject-id-cell">
-        <input
-          class="guided--input"
-          type="text"
-          name="guided-subject-id"
-          placeholder="Enter subject ID and press enter"
-          onkeyup="createSubjectFolder(event, $(this))"
-          data-input-set="guided-subjects-folder-tab"
-          data-alert-message="Subject IDs may not contain spaces or special characters"
-          data-alert-type="danger"
-        />
-      </td>
-      <td class="middle aligned collapsing text-center">
-        <input
-          class="guided--input guided-input-sample-count"
-          type="text"
-          name="guided-number-of-samples"
-          placeholder="Quantity"
-          style="width: 120px; text-align: center;"
-          value="${subjectNumSamples}"
-        />
-      </td>
-      <td class="middle aligned collapsing text-center" style="min-width: 130px">
-        <button
-          type="button"
-          class="btn btn-primary btn-sm"
-          style="background-color: var(--color-light-green) !important"
-          onclick="openSubjectFolder($(this))"
-        >
-          Add files
-        </button>
-      </td>
-      <td class="middle aligned collapsing text-center">
-        <i
-          class="far fa-trash-alt"
-          style="color: red; cursor: pointer"
-          onclick="deleteSubject($(this))"
-        ></i>
-      </td>
-    </tr>
-  `;
-};
-const addSubjectFolder = () => {
-  $("#subjects-table-body").append(generateSubjectRowElement("", ""));
-  updateGuidedTableIndices("subject-table-index");
-};
 //Deletes the entered subject folder from dsJSONObj and updates UI
 const deleteSubjectFolder = (subjectDeleteButton) => {
   const subjectIdCellToDelete = subjectDeleteButton.closest("tr");
