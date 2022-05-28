@@ -551,6 +551,8 @@ const traverseToTab = (targetPageID) => {
       $(".selectpicker").selectpicker("refresh");
     }
     if (targetPageID === "guided-subjects-folder-tab") {
+      //Hide the footer div while user is in pool-sub-sam structuring
+      $("#guided-footer-div").hide();
     }
 
     if (targetPageID === "guided-folder-structure-preview-tab") {
@@ -2799,6 +2801,50 @@ const specifySubject = (event, subjectNameInput) => {
     }
   }
 };
+
+const specifySample = (event, sampleNameInput) => {
+  if (event.which == 13) {
+    //try {
+    const sampleName = `sam-${sampleNameInput.val().trim()}`;
+    const sampleRenameElement = `
+      <div class="space-between w-100">
+        <span class="sample-id">${sampleName}</span>
+        <i
+          class="far fa-edit jump-back"
+          style="cursor: pointer;"
+          onclick="openSampleRenameInput($(this))"
+        >
+        </i>
+      </div>
+    `;
+    const sampleIdCellToAddNameTo = sampleNameInput.parent();
+
+    if (sampleName.length > 0) {
+      if (!subSamInputIsValid(sampleName)) {
+        //show alert message below pool name input if input is invalid and abort function
+        generateAlertMessage(sampleNameInput);
+        return;
+      }
+      removeAlertMessageIfExists(sampleNameInput);
+      if (sampleNameInput.attr("data-prev-name")) {
+        const sampleFolderToRename = sampleNameInput.attr("data-prev-name");
+        sodaJSONObj.renamePool(sampleFolderToRename, sampleName);
+      } else {
+        //Add the new sample to sodaJSONObj
+        sodaJSONObj.addSample(sampleName);
+      }
+      sampleIdCellToAddNameTo.html(sampleRenameElement);
+    }
+    /*} catch (error) {
+      notyf.open({
+        duration: "3000",
+        type: "error",
+        message: error,
+      });
+    }*/
+  }
+};
+
 const specifyPool = (event, poolNameInput) => {
   if (event.which == 13) {
     try {
@@ -2902,120 +2948,6 @@ const updatePoolDropdown = (poolDropDown, poolName) => {
   }
 };
 
-const specifySample = (event, sampleNameInput) => {
-  if (event.which == 13) {
-    //try {
-    const sampleName = `sam-${sampleNameInput.val().trim()}`;
-    const sampleNameElement = `
-        <div class="space-between" style="width: 250px;">
-          <span class="sample-id">${sampleName}</span>
-          <i
-            class="far fa-edit jump-back"
-            style="cursor: pointer;"
-            onclick="openSampleRenameInput($(this))"
-          >
-          </i>
-        </div>
-      `;
-    const sampleSubjectSelectElement = `
-        <select 
-          class="js-example-basic-single"
-          name="${sampleName}-subject-selection-dropdown"
-        ></select>
-      `;
-    const sampleIdCellToAddNameTo = sampleNameInput.parent();
-
-    if (sampleName.length > 0) {
-      if (!subSamInputIsValid(sampleName)) {
-        //show alert message below pool name input if input is invalid and abort function
-        generateAlertMessage(sampleNameInput);
-        return;
-      }
-      removeAlertMessageIfExists(sampleNameInput);
-      if (sampleNameInput.attr("data-prev-name")) {
-        const sampleFolderToRename = sampleNameInput.attr("data-prev-name");
-        sodaJSONObj.renamePool(sampleFolderToRename, sampleName);
-      } else {
-        const sampleSubjectsDropdownCell = sampleNameInput
-          .parent()
-          .parent()
-          .next();
-
-        //Add left border back to subject dropdown cell to seperate sample name and subject dropdown
-        sampleSubjectsDropdownCell.removeClass("remove-left-border");
-        //Add the new sample to sodaJSONObj
-        sodaJSONObj.addSample(sampleName);
-
-        //Add the select2 base element
-        sampleSubjectsDropdownCell.html(sampleSubjectSelectElement);
-
-        //Get the newly created select2 element
-        const newSampleSubjectsSelectElement = document.querySelector(
-          `select[name="${sampleName}-subject-selection-dropdown"]`
-        );
-
-        //create a select2 dropdown for the pool subjects
-        $(newSampleSubjectsSelectElement).select2({
-          placeholder: "Select subject",
-          width: "100%",
-          closeOnSelect: true,
-        });
-
-        const updateSampleSubjectsDropdown = (sampleSubjectsDropdown) => {
-          //empty the dropdown's values
-          sampleSubjectsDropdown.empty().trigger("change");
-
-          const [subjectsInPools, subjectsOutsidePools] =
-            sodaJSONObj.getAllSubjects();
-          //Combine sample data from subjects in and out of pools
-          const subjectsArray = [...subjectsInPools, ...subjectsOutsidePools];
-
-          for (const subject of subjectsArray) {
-            //check if sampleName in subject samples
-            if (subject.samples.includes(sampleName)) {
-              console.log(sampleName);
-              console.log(subject.samples);
-              console.log("subject includes sample");
-              //add pre-selected subject to top of dropdown select2
-              const subjectOption = new Option(
-                subject.subjectName,
-                subject.subjectName,
-                true,
-                true
-              );
-              sampleSubjectsDropdown.append(subjectOption).trigger("change");
-            } else {
-              //add non-selected subject to bottom of dropdown select2
-              const subjectOption = new Option(
-                subject.subjectName,
-                subject.subjectName,
-                false,
-                false
-              );
-              sampleSubjectsDropdown.append(subjectOption).trigger("change");
-            }
-          }
-        };
-        $(newSampleSubjectsSelectElement).on("select2:open", (e) => {
-          updateSampleSubjectsDropdown($(e.currentTarget));
-        });
-        $(newSampleSubjectsSelectElement).on("select2:select", function (e) {
-          const selectedSubject = e.params.data.id;
-          sodaJSONObj.addSampleToSubject(sampleName, selectedSubject);
-        });
-      }
-      sampleIdCellToAddNameTo.html(sampleNameElement);
-    }
-    /*} catch (error) {
-      notyf.open({
-        duration: "3000",
-        type: "error",
-        message: error,
-      });
-    }*/
-  }
-};
-
 //On edit button click, creates a new subject ID rename input box
 const openSubjectRenameInput = (subjectNameEditButton) => {
   const subjectIdCellToRename = subjectNameEditButton.closest("td");
@@ -3063,6 +2995,33 @@ const updateGuidedTableIndices = (tableIndexClass) => {
     indexElement.innerHTML = newIndex;
   });
 };
+
+const generateSubjectRowElement = (subjectName) => {
+  return `
+    <tr>
+      <td class="middle aligned subject-id-cell">
+        <div class="space-between w-100" style="align-items: center">
+          <div class="space-between w-100">
+            <span class="subject-id">${subjectName}</span>
+            <i
+              class="far fa-edit jump-back"
+              style="cursor: pointer"
+              onclick="openSubjectRenameInput($(this))"
+            >
+            </i>
+          </div>
+        </div>
+      </td>
+      <td class="middle aligned collapsing text-center remove-left-border">
+        <i
+          class="far fa-trash-alt"
+          style="color: red; cursor: pointer"
+          onclick="deleteSubject($(this))"
+        ></i>
+      </td>
+    </tr>
+  `;
+};
 const generateSubjectSpecificationRowElement = () => {
   return `
     <tr>
@@ -3091,6 +3050,24 @@ const generateSubjectSpecificationRowElement = () => {
       </td>
     </tr>
   `;
+};
+
+const generateSampleRowElement = (sampleName) => {
+  return `
+    <tr>
+    <td class="middle aligned sample-id-cell">
+      <div class="space-between w-100" style="align-items: center">
+    <div class="space-between w-100">
+      <span class="sample-id">${sampleName}</span>
+      <i class="far fa-edit jump-back" style="cursor: pointer;" onclick="openSampleRenameInput($(this))">
+      </i>
+    </div>
+  </div>
+    </td>
+    <td class="middle aligned collapsing text-center remove-left-border">
+      <i class="far fa-trash-alt" style="color: red; cursor: pointer" onclick="deleteSample($(this))"></i>
+    </td>
+  </tr>`;
 };
 const generateSampleSpecificationRowElement = () => {
   return `
@@ -3151,15 +3128,14 @@ const addSubjectSpecificationTableRow = () => {
     scrollToBottomOfGuidedBody();
   }
 };
-const addSampleSpecificationTableRow = () => {
-  const sampleSpecificationTableBody = document.getElementById(
-    "samples-specification-table-body"
-  );
+const addSampleSpecificationTableRow = (clickedSubjectAddSampleButton) => {
+  const addSampleTable = clickedSubjectAddSampleButton.closest("table");
+  const addSampleTableBody = addSampleTable.querySelector("tbody");
+
   //check if subject specification table body has an input with the name guided-subject-id
-  const sampleSpecificationTableInput =
-    sampleSpecificationTableBody.querySelector(
-      "input[name='guided-sample-id']"
-    );
+  const sampleSpecificationTableInput = addSampleTableBody.querySelector(
+    "input[name='guided-sample-id']"
+  );
 
   if (sampleSpecificationTableInput) {
     //focus on the input that already exists
@@ -3167,17 +3143,15 @@ const addSampleSpecificationTableRow = () => {
     sampleSpecificationTableInput.focus();
   } else {
     //create a new table row Input element
-    sampleSpecificationTableBody.innerHTML +=
-      generateSampleSpecificationRowElement();
-    const newSamplerow =
-      sampleSpecificationTableBody.querySelector("tr:last-child");
+    addSampleTableBody.innerHTML += generateSampleSpecificationRowElement();
+    const newSamplerow = addSampleTableBody.querySelector("tr:last-child");
     //Focus the new sample row element
     const newSampleInput = newSamplerow.querySelector(
       "input[name='guided-sample-id']"
     );
     newSampleInput.focus();
     //scroll to bottom of guided body so back/continue buttons are visible
-    scrollToBottomOfGuidedBody();
+    smoothScrollToElement(newSampleInput);
   }
 };
 
@@ -3439,8 +3413,8 @@ const openSampleRenameInput = (subjectNameEditButton) => {
       class="guided--input"
       type="text"
       name="guided-sample-id"
-      placeholder="Enter new subject ID"
-      onkeyup="createSampleFolder(event, $(this))"
+      placeholder="Enter new sample ID"
+      onkeyup="specifySample(event, $(this))"
       data-input-set="guided-samples-folder-tab"
       data-alert-message="Sample IDs may not contain spaces or special characters"
       data-alert-type="danger"
@@ -3509,43 +3483,7 @@ const openSampleFolder = (clickedStructureButton) => {
     datasetStructureJSONObj
   );
 };
-const generateSampleRowElement = (sampleIndex) => {
-  return `
-    <tr>
-      <td class="middle aligned collapsing text-center">
-        <span class="sample-table-index">${sampleIndex}</span>
-      </td>
-      <td class="middle aligned sample-id-cell">
-        <input
-          class="guided--input"
-          type="text"
-          name="guided-sample-id"
-          placeholder="Enter sample ID and press enter"
-          onkeyup="createSampleFolder(event, $(this))"
-          data-alert-message="Sample IDs may not contain spaces or special characters"
-          data-alert-type="danger"
-        />
-      </td>
-      <td class="middle aligned collapsing text-center" style="min-width: 130px">
-        <button
-          type="button"
-          class="btn btn-primary btn-sm"
-          style="background-color: var(--color-light-green) !important"
-          onclick="openSampleFolder($(this))"
-        >
-          Add files
-        </button>
-      </td>
-      <td class="middle aligned collapsing text-center">
-        <i
-          class="far fa-trash-alt"
-          style="color: red; cursor: pointer"
-          onclick="deleteSampleFolder($(this))"
-        ></i>
-      </td>
-    </tr>
-  `;
-};
+
 const generateSampleMetadataRowElement = (tableIndex, sampleName) => {
   return `
     <tr>
@@ -3613,94 +3551,7 @@ const deleteSampleFolder = (sampleDeleteButton) => {
     samplesParentSubject
   ]["folders"][sampleIdToDelete];
 };
-const renderSamplesTables = () => {
-  //get subjects from the datasetStructureJSONObj
-  let subjectsToMap = guidedGetSubjects();
-  //get the sample count from the number of samples input on the subjects page and
-  //map the subjects to an array to create the sample tables
-  let sampleData = subjectsToMap.sort().map((subject) => {
-    let subjectNumSamples = $(`.subject-id:contains("${subject}")`)
-      .closest("tr")
-      .find(".guided-input-sample-count")
-      .val();
-    return {
-      subjectName: subject,
-      sampleCount: subjectNumSamples,
-    };
-  });
-  let sampleTables = sampleData.map((subject) => {
-    let sampleRows = Array(parseInt(subject.sampleCount))
-      .fill(0)
-      .map((subject, index) => {
-        let tableIndex = index + 1;
-        return generateSampleRowElement(tableIndex);
-      })
-      .join("\n");
-    return `
-      <table class="ui celled striped table" style="margin-bottom: 25px; min-width: 800px;">
-        <thead>
-          <tr>
-            <th
-              colspan="4"
-              class="text-center"
-              style="
-                z-index: 2;
-                height: 50px;
-                position: sticky !important;
-                top: -10px !important;
-              "
-            >
-              <span class="sample-table-name">
-                ${subject.subjectName}
-              </span>
-              <button
-                class="ui primary basic button small"
-                style="position: absolute;
-                  right: 20px;
-                  top: 50%;
-                  transform: translateY(-50%);"
-                  onclick="addSampleFolder($(this))"
-                >
-                <i class="fas fa-folder-plus" style="margin-right: 7px"></i
-                >Add ${subject.subjectName} sample row
-              </button>
-            </th>
-          </tr>
-          <tr>
-            <th
-              class="center aligned"
-              style="z-index: 2; position: sticky !important; top: 40px !important"
-            >
-              Index
-            </th>
-            <th style="z-index: 2; position: sticky !important; top: 40px !important">
-              Sample ID
-            </th>
-            <th
-              class="center aligned"
-              style="z-index: 2; position: sticky !important; top: 40px !important"
-            >
-              Specify data files for the sample
-            </th>
-            <th
-              class="center aligned"
-              style="z-index: 2; position: sticky !important; top: 40px !important"
-            >
-              Delete
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          ${sampleRows}
-        </tbody>
-      </table>
-    `;
-  });
-  let sampleTablesContainer = document.getElementById(
-    "sample-tables-container"
-  );
-  sampleTablesContainer.innerHTML = sampleTables.join("\n");
-};
+
 const renderSampleMetadataTables = () => {
   let subjectsToMap = guidedGetSubjects();
   let sampleMetadataTables = subjectsToMap.map((subject) => {
@@ -6370,18 +6221,6 @@ $(document).ready(() => {
     $("#guided-add-subject-div").show();
   });
 
-  /*$("#guided-button-save-subject-fields").on("click", () => {
-    document
-      .getElementById("guided-organize-into-pools-prompt")
-      .classList.remove("hidden");
-    scrollToBottomOfGuidedBody();
-  });
-  $("#guided-button-save-pool-fields").on("click", () => {
-    document
-      .getElementById("guided-number-of-samples-prompt")
-      .classList.remove("hidden");
-    scrollToBottomOfGuidedBody();
-  });*/
   $("#guided-button-sub-pool-sam-continue").on("click", () => {
     const specifySubjectsElement = document.getElementById(
       "guided-specify-subjects-page"
@@ -6389,9 +6228,14 @@ $(document).ready(() => {
     const organizeSubjectsIntoPoolsElement = document.getElementById(
       "guided-organize-subjects-into-pools-page"
     );
-    const specifySamplesPage = document.getElementById(
+    const specifySamplesElement = document.getElementById(
       "guided-specify-samples-page"
     );
+    if (!specifySamplesElement.classList.contains("hidden")) {
+      $("#guided-footer-div").css("display", "flex");
+      $("#guided-next-button").click();
+      return;
+    }
     if (!specifySubjectsElement.classList.contains("hidden")) {
       specifySubjectsElement.classList.add("hidden");
       organizeSubjectsIntoPoolsElement.classList.remove("hidden");
@@ -6399,11 +6243,7 @@ $(document).ready(() => {
       return;
     }
 
-    const renderSubjectSampleAdditionTable = (
-      optionalPool,
-      subjectName,
-      samples
-    ) => {
+    const renderSubjectSampleAdditionTable = (subject) => {
       return `
         <table
           class="ui celled striped table"
@@ -6413,16 +6253,25 @@ $(document).ready(() => {
             <tr>
               <th class="text-center" colspan="2">
                 <div class="space-between w-100">
-                  <span>${optionalPool}</span>
-                  <span>${subjectName}</span>
-                  l;kjasdjf
+                  <span>${subject.poolName ? subject.poolName : ""}</span>
+                  <span>${subject.subjectName}</span>
+                  <button
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  onclick="addSampleSpecificationTableRow(this)"
+                >
+                  Add sample
+                </button>
                 </div>
               </th>
             </tr>
           </thead>
           <tbody>
-          
-          
+            ${subject.samples
+              .map((sample) => {
+                return generateSampleRowElement(sample);
+              })
+              .join("\n")}
           </tbody>
         </table>
       `;
@@ -6430,12 +6279,39 @@ $(document).ready(() => {
 
     if (!organizeSubjectsIntoPoolsElement.classList.contains("hidden")) {
       organizeSubjectsIntoPoolsElement.classList.add("hidden");
-      specifySamplesPage.classList.remove("hidden");
-      //render a table for each subject where samples can be added
-      /*const renderSubjectsampleAdditionTables = () => {
-        const [subjectsInPools, subjectsNotInPools] = getSubjectsInPools();
-      };*/
+      specifySamplesElement.classList.remove("hidden");
 
+      const [subjectsInPools, subjectsOutsidePools] =
+        sodaJSONObj.getAllSubjects();
+      //Combine sample data from subjects in and out of pools
+      let subjects = [...subjectsInPools, ...subjectsOutsidePools];
+
+      //sort subjects object by subjectName property alphabetically
+      subjects = subjects.sort((a, b) => {
+        const subjectNameA = a.subjectName.toLowerCase();
+        const subjectNameB = b.subjectName.toLowerCase();
+        if (subjectNameA < subjectNameB) return -1;
+        if (subjectNameA > subjectNameB) return 1;
+        return 0;
+      });
+
+      console.log(subjects);
+
+      //Create the HTML for the subjects
+      const subjectSampleAdditionTables = subjects
+        .map((subject) => {
+          return renderSubjectSampleAdditionTable(subject);
+        })
+        .join("\n");
+      console.log(subjectSampleAdditionTables);
+
+      //Add the subject sample addition elements to the DOM
+      const subjectSampleAdditionTableContainer = document.getElementById(
+        "guided-add-samples-tables"
+      );
+
+      subjectSampleAdditionTableContainer.innerHTML =
+        subjectSampleAdditionTables;
       scrollToBottomOfGuidedBody();
       return;
     }
@@ -6447,11 +6323,16 @@ $(document).ready(() => {
     const organizeSubjectsIntoPoolsElement = document.getElementById(
       "guided-organize-subjects-into-pools-page"
     );
-    const specifySamplesPage = document.getElementById(
+    const specifySamplesElement = document.getElementById(
       "guided-specify-samples-page"
     );
-    if (!specifySamplesPage.classList.contains("hidden")) {
-      specifySamplesPage.classList.add("hidden");
+    if (!specifySubjectsElement.classList.contains("hidden")) {
+      $("#guided-footer-div").css("display", "flex");
+      $("#guided-back-button").click();
+    }
+
+    if (!specifySamplesElement.classList.contains("hidden")) {
+      specifySamplesElement.classList.add("hidden");
       organizeSubjectsIntoPoolsElement.classList.remove("hidden");
       scrollToBottomOfGuidedBody();
       return;

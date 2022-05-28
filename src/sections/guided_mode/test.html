@@ -1,17 +1,22 @@
-<table
-  class="ui celled striped table"
-  style="margin-bottom: 10px; width: 800px"
->
-  <thead>
-    <tr>
-      <th class="text-center" colspan="2">
-        <div class="space-between w-100">
-          <span>${optionalPool}</span>
-          <span>${subjectName}</span>
-          l;kjasdjf
-        </div>
-      </th>
-    </tr>
-  </thead>
-  <tbody id="subject-specification-table-body"></tbody>
-</table>
+<tr>
+  <td class="middle aligned subject-id-cell">
+    <div class="space-between w-100" style="align-items: center">
+      <div class="space-between w-100">
+        <span class="subject-id">sub-test</span>
+        <i
+          class="far fa-edit jump-back"
+          style="cursor: pointer"
+          onclick="openSubjectRenameInput($(this))"
+        >
+        </i>
+      </div>
+    </div>
+  </td>
+  <td class="middle aligned collapsing text-center remove-left-border">
+    <i
+      class="far fa-trash-alt"
+      style="color: red; cursor: pointer"
+      onclick="deleteSubject($(this))"
+    ></i>
+  </td>
+</tr>

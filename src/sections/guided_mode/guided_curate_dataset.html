@@ -514,27 +514,32 @@
                 >
                   <button
                     class="ui positive basic button guided--radio-button"
-                    id="guided-button-organize-subjects-into-pools"
-                    data-next-element="guided-add-pools-table"
+                    data-next-element="guided-button-organize-subjects-into-pools"
                   >
                     Yes
                   </button>
                   <button
                     class="ui negative basic button guided--radio-button"
-                    data-next-element="guided-number-of-samples-prompt"
                     id="guided-button-no-pools"
                   >
                     No
                   </button>
                 </div>
-                <div class="guided--panel hidden" id="guided-add-pools-table">
+                <div
+                  class="guided--panel hidden"
+                  id="guided-button-organize-subjects-into-pools"
+                >
                   <table
                     class="ui celled striped table"
                     style="margin-bottom: 10px; width: 800px"
                   >
                     <thead>
                       <tr>
-                        <th class="text-center" colspan="3">
+                        <th
+                          class="text-center"
+                          style="min-width: 250px"
+                          colspan="3"
+                        >
                           Enter a unique ID for each of your pools and specify
                           the subjects they contain
                         </th>
@@ -573,7 +578,7 @@
                 >
                   <button
                     class="ui positive basic button guided--radio-button"
-                    data-next-element="guided-add-samples-table"
+                    data-next-element="guided-add-samples-tables"
                   >
                     Yes
                   </button>
@@ -581,7 +586,10 @@
                     No
                   </button>
                 </div>
-                <div class="guided--panel hidden" id="guided-add-samples-table">
+                <div
+                  class="guided--panel hidden"
+                  id="guided-add-samples-tables"
+                >
                   <table
                     class="ui celled striped table"
                     style="margin-bottom: 10px; width: 800px"
