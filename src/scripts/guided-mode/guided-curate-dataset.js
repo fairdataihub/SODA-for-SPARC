@@ -6231,7 +6231,13 @@ $(document).ready(() => {
     const specifySamplesElement = document.getElementById(
       "guided-specify-samples-page"
     );
-    if (!specifySamplesElement.classList.contains("hidden")) {
+    const guidedButtonUserNoSubjects = document.getElementById(
+      "guided-button-no-subjects"
+    );
+    if (
+      !specifySamplesElement.classList.contains("hidden") ||
+      guidedButtonUserNoSubjects.classList.contains("selected")
+    ) {
       $("#guided-footer-div").css("display", "flex");
       $("#guided-next-button").click();
       return;
