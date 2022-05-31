@@ -114,16 +114,16 @@ const createPyProc = () => {
  * Kill the python server process. Needs to be called before SODA closes.
  */
 const exitPyProc = () => {
-  // Windows does not properly shut off the python server process. This ensures it is killed. 
+  // Windows does not properly shut off the python server process. This ensures it is killed.
   const killPythonProcess = () => {
-    // kill pyproc with command line 
+    // kill pyproc with command line
     const cmd = require("child_process").spawnSync("taskkill", [
       "/pid",
       pyflaskProcess.pid,
       "/f",
       "/t",
     ]);
-  }
+  };
 
   // check if the platform is Windows
   if (process.platform === "win32") {
@@ -137,7 +137,6 @@ const exitPyProc = () => {
     PORT = null;
   }
 };
-
 
 // 5.4.1 change: We call createPyProc in a spearate ready event
 // app.on("ready", createPyProc);
