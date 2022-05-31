@@ -1035,16 +1035,6 @@ const setActiveSubPage = (pageIdToActivate) => {
       siblingCapsule.classList.remove("active");
     }
   }
-
-  //switch case depending on pageIdToActivate
-  switch (pageIdToActivate) {
-    case "guided-create-subjects-metadata-tab":
-      renderSubjectsMetadataAsideItems();
-      break;
-    case "guided-create-samples-metadata-tab":
-      renderSamplesMetadataAsideItems();
-      break;
-  }
 };
 
 const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
@@ -1625,56 +1615,87 @@ guidedCreateSodaJSONObj = () => {
         ] = {};
       }
     },
-    deleteSample: function (sampleName) {
-      if (
-        this["dataset-metadata"]["pool-subject-sample-structure"]["samples"][
-          sampleName
-        ]
-      ) {
-        delete this["dataset-metadata"]["pool-subject-sample-structure"][
-          "samples"
-        ][sampleName];
-      } else {
-        for (const pool in this["dataset-metadata"][
-          "pool-subject-sample-structure"
-        ]["pools"]) {
-          console.log(pool);
+    addSampleToSubject: function (sampleName, subjectPoolName, subjectName) {
+      if (subjectPoolName) {
+        if (
+          this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+            subjectPoolName
+          ][subjectName][sampleName]
+        ) {
+          throw new Error("Sample names must be unique.");
         }
-      }
-    },
-    addSampleToSubject: function (sampleName, subjectName) {
-      console.log(subjectName);
-      console.log(sampleName);
-      console.log(sampleName, subjectName);
-      //check to see if subject exists outside of the pool
-      if (
-        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
-          subjectName
-        ]
-      ) {
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+          subjectPoolName
+        ][subjectName][sampleName] = {};
+      } else {
+        if (
+          this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+            subjectName
+          ][sampleName]
+        ) {
+          throw new Error("Sample names must be unique.");
+        }
         this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
           subjectName
         ][sampleName] = {};
-        console.log("sam added to sub out pool");
-      } else {
-        //subject to add sample should be inside of a pool. Find the pool and add the
-        //sample to the subject in the pool.
-
-        for (const [poolName, pool] of Object.entries(
-          this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
-        )) {
-          if (pool[subjectName]) {
-            this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-              poolName
-            ][subjectName][sampleName] = {};
-            console.log("sam added to sub in pool");
-          }
-        }
       }
-      //remove the sample that was moved
-      delete this["dataset-metadata"]["pool-subject-sample-structure"][
-        "samples"
-      ][sampleName];
+    },
+    renameSample: function (
+      sampleToRename,
+      newSampleName,
+      subjectPoolName,
+      subjectName
+    ) {
+      if (subjectPoolName) {
+        const sampleDataToRename =
+          this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+            subjectPoolName
+          ][subjectName][sampleToRename];
+
+        //try to add the sample to the subject
+        //this will throw if the sample name is already taken
+        this.addSampleToSubject(newSampleName, subjectPoolName, subjectName);
+
+        //Add previous sample data to the new sample
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+          subjectPoolName
+        ][subjectName][newSampleName] = sampleDataToRename;
+
+        //remove the old sample
+        delete this["dataset-metadata"]["pool-subject-sample-structure"][
+          "pools"
+        ][subjectPoolName][subjectName][sampleToRename];
+      } else {
+        const sampleDataToRename =
+          this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+            subjectName
+          ][sampleToRename];
+
+        //try to add the sample to the subject
+        //this will throw if the sample name is already taken
+        this.addSampleToSubject(newSampleName, subjectPoolName, subjectName);
+
+        //Add previous sample data to the new sample
+        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+          subjectName
+        ][newSampleName] = sampleDataToRename;
+
+        //remove the old sample
+        delete this["dataset-metadata"]["pool-subject-sample-structure"][
+          "subjects"
+        ][subjectName][sampleToRename];
+      }
+    },
+    deleteSample: function (sampleName, subjectPoolName, subjectName) {
+      if (subjectPoolName) {
+        delete this["dataset-metadata"]["pool-subject-sample-structure"][
+          "pools"
+        ][subjectPoolName][subjectName][sampleName];
+      } else {
+        delete this["dataset-metadata"]["pool-subject-sample-structure"][
+          "subjects"
+        ][subjectName][sampleName];
+      }
     },
     getAllSubjects: function () {
       let subjectsInPools = [];
@@ -2499,8 +2520,10 @@ const renderSubjectSampleAdditionTable = (subject) => {
         <tr>
           <th class="text-center" colspan="2">
             <div class="space-between w-100">
-              <span>${subject.poolName ? subject.poolName : ""}</span>
-              <span>${subject.subjectName}</span>
+              <span class="samples-subjects-pool">${
+                subject.poolName ? subject.poolName : ""
+              }</span>
+              <span class="samples-subject-name">${subject.subjectName}</span>
               <button
               type="button"
               class="btn btn-primary btn-sm"
@@ -2882,9 +2905,9 @@ const specifySubject = (event, subjectNameInput) => {
 
 const specifySample = (event, sampleNameInput) => {
   if (event.which == 13) {
-    //try {
-    const sampleName = `sam-${sampleNameInput.val().trim()}`;
-    const sampleRenameElement = `
+    try {
+      const sampleName = `sam-${sampleNameInput.val().trim()}`;
+      const sampleRenameElement = `
       <div class="space-between w-100">
         <span class="sample-id">${sampleName}</span>
         <i
@@ -2895,31 +2918,49 @@ const specifySample = (event, sampleNameInput) => {
         </i>
       </div>
     `;
-    const sampleIdCellToAddNameTo = sampleNameInput.parent();
+      const sampleIdCellToAddNameTo = sampleNameInput.parent();
 
-    if (sampleName.length > 0) {
-      if (!subSamInputIsValid(sampleName)) {
-        //show alert message below pool name input if input is invalid and abort function
-        generateAlertMessage(sampleNameInput);
-        return;
+      //get the pool of the subject that the sample is being added to
+      const subjectSampleAdditionTable = sampleNameInput.closest("table");
+      const subjectsPoolToAddSampleTo = subjectSampleAdditionTable
+        .find(".samples-subjects-pool")
+        .text();
+      const subjectToAddSampleTo = subjectSampleAdditionTable
+        .find(".samples-subject-name")
+        .text();
+
+      if (sampleName.length > 0) {
+        if (!subSamInputIsValid(sampleName)) {
+          //show alert message below pool name input if input is invalid and abort function
+          generateAlertMessage(sampleNameInput);
+          return;
+        }
+        removeAlertMessageIfExists(sampleNameInput);
+        if (sampleNameInput.attr("data-prev-name")) {
+          const sampleToRename = sampleNameInput.attr("data-prev-name");
+          sodaJSONObj.renameSample(
+            sampleToRename,
+            sampleName,
+            subjectsPoolToAddSampleTo,
+            subjectToAddSampleTo
+          );
+        } else {
+          //Add the new sample to sodaJSONObj
+          sodaJSONObj.addSampleToSubject(
+            sampleName,
+            subjectsPoolToAddSampleTo,
+            subjectToAddSampleTo
+          );
+        }
+        sampleIdCellToAddNameTo.html(sampleRenameElement);
       }
-      removeAlertMessageIfExists(sampleNameInput);
-      if (sampleNameInput.attr("data-prev-name")) {
-        const sampleFolderToRename = sampleNameInput.attr("data-prev-name");
-        sodaJSONObj.renamePool(sampleFolderToRename, sampleName);
-      } else {
-        //Add the new sample to sodaJSONObj
-        sodaJSONObj.addSample(sampleName);
-      }
-      sampleIdCellToAddNameTo.html(sampleRenameElement);
-    }
-    /*} catch (error) {
+    } catch (error) {
       notyf.open({
         duration: "3000",
         type: "error",
         message: error,
       });
-    }*/
+    }
   }
 };
 
@@ -3228,8 +3269,6 @@ const addSampleSpecificationTableRow = (clickedSubjectAddSampleButton) => {
       "input[name='guided-sample-id']"
     );
     newSampleInput.focus();
-    //scroll to bottom of guided body so back/continue buttons are visible
-    smoothScrollToElement(newSampleInput);
   }
 };
 
@@ -3367,9 +3406,29 @@ const deletePool = (poolDeleteButton) => {
 const deleteSample = (sampleDeleteButton) => {
   const sampleIdCellToDelete = sampleDeleteButton.closest("tr");
   const sampleIdToDelete = sampleIdCellToDelete.find(".sample-id").text();
+
+  //Check to see if a sample has been added to the element
+  //if it has, delete the sample from the pool-sub-sam structure
+  if (sampleIdToDelete) {
+    const subjectSampleAdditionTable = sampleDeleteButton.closest("table");
+    const samplesSubject = subjectSampleAdditionTable
+      .find(".samples-subject-name")
+      .text();
+    const samplesSubjectsPool = subjectSampleAdditionTable
+      .find(".samples-subjects-pool")
+      .text();
+    console.log(samplesSubject);
+    console.log(samplesSubjectsPool);
+
+    sodaJSONObj.deleteSample(
+      sampleIdToDelete,
+      samplesSubjectsPool,
+      samplesSubject
+    );
+  }
+
   //delete the table row element in the UI
   sampleIdCellToDelete.remove();
-  sodaJSONObj.deleteSample(sampleIdToDelete);
 };
 
 //SAMPLE TABLE FUNCTIONS
@@ -4557,21 +4616,9 @@ $(document).ready(() => {
         sodaJSONObj.addSample("sam-14");
         sodaJSONObj.addSample("sam-15");
 
-        sodaJSONObj.addSampleToSubject("sam-1", "sub-1");
-        sodaJSONObj.addSampleToSubject("sam-2", "sub-1");
-        sodaJSONObj.addSampleToSubject("sam-3", "sub-2");
-        sodaJSONObj.addSampleToSubject("sam-4", "sub-2");
-        sodaJSONObj.addSampleToSubject("sam-5", "sub-3");
-        sodaJSONObj.addSampleToSubject("sam-6", "sub-3");
-        sodaJSONObj.addSampleToSubject("sam-7", "sub-4");
-        sodaJSONObj.addSampleToSubject("sam-8", "sub-4");
-        sodaJSONObj.addSampleToSubject("sam-9", "sub-4");
-        sodaJSONObj.addSampleToSubject("sam-10", "sub-4");
-        sodaJSONObj.addSampleToSubject("sam-11", "sub-5");
-        sodaJSONObj.addSampleToSubject("sam-12", "sub-5");
-        sodaJSONObj.addSampleToSubject("sam-13", "sub-5");
-        sodaJSONObj.addSampleToSubject("sam-14", "sub-7");
-        sodaJSONObj.addSampleToSubject("sam-15", "sub-7");*/
+        sodaJSONObj.addSampleToSubject("sam-1", "pool-1", "sub-1");
+
+        sodaJSONObj.addSampleToSubject("sam-15", "", "sub-7");*/
 
         //Get the users information and set them as PI if a PI has not been designated yet
         if (sodaJSONObj["digital-metadata"]["pi-owner"] == undefined) {
@@ -4855,7 +4902,7 @@ $(document).ready(() => {
       const elementsToNotScrollTo = [
         "guided-add-samples-table",
         "guided-add-pools-table",
-        "guided-add-subjects-table",
+        "guided-div-add-subjects-table",
       ];
       if (!elementsToNotScrollTo.includes(nextQuestionID)) {
         nextQuestionElement[0].scrollIntoView({
@@ -6299,6 +6346,22 @@ $(document).ready(() => {
     $("#guided-add-subject-div").show();
   });
 
+  $("#guided-button-add-subjects-table").on("click", () => {
+    const [subjectsInPools, subjectsOutsidePools] =
+      sodaJSONObj.getAllSubjects();
+    //Combine sample data from subjects in and out of pools
+    let subjects = [...subjectsInPools, ...subjectsOutsidePools];
+    const subjectElementRows = subjects
+      .map((subject) => {
+        return generateSubjectRowElement(subject.subjectName);
+      })
+      .join("\n");
+    document.getElementById("subject-specification-table-body").innerHTML =
+      subjectElementRows;
+  });
+
+  $("#guided-button-organize-subjects-into-pools").on("click", () => {});
+
   $("#guided-button-add-samples-tables").on("click", () => {
     const [subjectsInPools, subjectsOutsidePools] =
       sodaJSONObj.getAllSubjects();
@@ -6392,8 +6455,6 @@ $(document).ready(() => {
       return;
     }
   });
-
-  $("#guided-button-has-subjects").on("click", () => {});
 
   $("#guided-specify-subjects-next-button").on("click", function () {
     switchElementVisibility(
