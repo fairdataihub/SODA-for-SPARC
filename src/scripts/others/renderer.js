@@ -2,7 +2,6 @@
 // Import required modules
 //////////////////////////////////
 
-
 const zerorpc = require("zerorpc");
 const fs = require("fs-extra");
 const os = require("os");
@@ -99,8 +98,7 @@ console.log("Current SODA version:", appVersion);
 // Connect to Python back-end
 //////////////////////////////////
 
-let client = null
-
+let client = null;
 
 const waitForAxios = (client) => {
   if (typeof axios !== "undefined") {
@@ -128,7 +126,6 @@ client = axios.create({
     if (response !== "server ready") {
       console.log("Python server not running");
       log.error("Python server not running");
-      
     }
   } catch (error) {
     console.log(error);
