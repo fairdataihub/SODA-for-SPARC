@@ -749,6 +749,7 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
 
     return transposeMatrix(sortMatrix)
 
+
 ### function to read existing Pennsieve manifest files and load info into a dictionary
 def convert_manifest_to_dict(url):
 
@@ -759,12 +760,14 @@ def convert_manifest_to_dict(url):
 
     return manifest_df.to_dict()
 
+
 def checkEmptyColumn(column):
     for element in column:
         if element:
             break
         return True
     return False
+
 
 # needed to sort subjects and samples table data to match the UI fields
 def sortedSubjectsTableData(matrix, fields):
@@ -946,6 +949,7 @@ def import_bf_RC(bfaccount, bfdataset, file_type):
 # path to local SODA folder for saving manifest files
 manifest_folder_path = join(userpath, "SODA", "manifest_files")
 
+
 def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
     bf = Pennsieve(bfaccount)
     myds = bf.get_dataset(bfdataset)
@@ -988,6 +992,7 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
 
                     # break because we only need to read the "manifest.xlsx" file in each high level folder.
                     break
+
 
 def copytree(src, dst, symlinks=False, ignore=None):
     for item in os.listdir(src):
