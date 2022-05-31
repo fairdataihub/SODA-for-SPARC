@@ -452,7 +452,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
     };
   }
   //Add pools to the datsetStructuresJSONObj if they don't exist
-  const pools = sodaJSONObj.getPools();
+  const pools = Object.keys(sodaJSONObj.getPools());
   for (const pool of pools) {
     if (!datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool]) {
       datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool] = {
@@ -1591,9 +1591,7 @@ guidedCreateSodaJSONObj = () => {
       //renderPoolTable();
     },
     getPools: function () {
-      return Object.keys(
-        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
-      );
+      return this["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
     },
     getPoolSubjects: function (poolName) {
       return Object.keys(
@@ -3165,6 +3163,41 @@ const generateSubjectSpecificationRowElement = () => {
           class="far fa-trash-alt"
           style="color: red; cursor: pointer"
           onclick="deleteSubject($(this))"
+        ></i>
+      </td>
+    </tr>
+  `;
+};
+
+const generatePoolRowElement = (poolName) => {
+  return `
+    <tr>
+      <td class="middle aligned pool-cell collapsing">
+        <div class="space-between" style="align-items: center; width: 250px">
+          <div class="space-between" style="width: 250px">
+            <span class="pool-id">${poolName}</span>
+            <i
+              class="far fa-edit jump-back"
+              style="cursor: pointer"
+              onclick="openPoolRenameInput($(this))"
+            >
+            </i>
+          </div>
+        </div>
+      </td>
+      <td class="middle aligned pool-subjects">
+        <select
+          class="js-example-basic-multiple"
+          style="width: 100%"
+          name="${poolName}-subjects-selection-dropdown"
+          multiple="multiple"
+        ></select>
+      </td>
+      <td class="middle aligned collapsing text-center remove-left-border">
+        <i
+          class="far fa-trash-alt"
+          style="color: red; cursor: pointer"
+          onclick="deletePool($(this))"
         ></i>
       </td>
     </tr>
@@ -6360,7 +6393,41 @@ $(document).ready(() => {
       subjectElementRows;
   });
 
-  $("#guided-button-organize-subjects-into-pools").on("click", () => {});
+  $("#guided-button-organize-subjects-into-pools").on("click", () => {
+    const pools = sodaJSONObj.getPools();
+
+    const poolElementRows = Object.keys(pools)
+      .map((pool) => {
+        return generatePoolRowElement(pool);
+      })
+      .join("\n");
+    document.getElementById("pools-specification-table-body").innerHTML =
+      poolElementRows;
+
+    for (const poolName of Object.keys(pools)) {
+      const newPoolSubjectsSelectElement = document.querySelector(
+        `select[name="${poolName}-subjects-selection-dropdown"]`
+      );
+      //create a select2 dropdown for the pool subjects
+      $(newPoolSubjectsSelectElement).select2({
+        placeholder: "Select subjects",
+        tags: true,
+        width: "100%",
+        closeOnSelect: false,
+      });
+      $(newPoolSubjectsSelectElement).on("select2:open", (e) => {
+        updatePoolDropdown($(e.currentTarget), poolName);
+      });
+      $(newPoolSubjectsSelectElement).on("select2:unselect", (e) => {
+        const subjectToRemove = e.params.data.id;
+        sodaJSONObj.moveSubjectOutOfPool(subjectToRemove, poolName);
+      });
+      $(newPoolSubjectsSelectElement).on("select2:select", function (e) {
+        const selectedSubject = e.params.data.id;
+        sodaJSONObj.moveSubjectIntoPool(selectedSubject, poolName);
+      });
+    }
+  });
 
   $("#guided-button-add-samples-tables").on("click", () => {
     const [subjectsInPools, subjectsOutsidePools] =

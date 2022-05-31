@@ -1,22 +1,32 @@
+`
 <tr>
-  <td class="middle aligned subject-id-cell">
-    <div class="space-between w-100" style="align-items: center">
-      <div class="space-between w-100">
-        <span class="subject-id">sub-test</span>
+  <td class="middle aligned pool-cell collapsing">
+    <div class="space-between" style="align-items: center; width: 250px">
+      <div class="space-between" style="width: 250px">
+        <span class="pool-id">${poolName}</span>
         <i
           class="far fa-edit jump-back"
           style="cursor: pointer"
-          onclick="openSubjectRenameInput($(this))"
+          onclick="openPoolRenameInput($(this))"
         >
         </i>
       </div>
     </div>
   </td>
+  <td class="middle aligned pool-subjects">
+    <select
+      class="js-example-basic-multiple"
+      style="width: 100%"
+      name="${poolName}-subjects-selection-dropdown"
+      multiple="multiple"
+    ></select>
+  </td>
   <td class="middle aligned collapsing text-center remove-left-border">
     <i
       class="far fa-trash-alt"
       style="color: red; cursor: pointer"
-      onclick="deleteSubject($(this))"
+      onclick="deletePool($(this))"
     ></i>
   </td>
 </tr>
+`
