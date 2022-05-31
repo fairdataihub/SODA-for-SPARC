@@ -735,6 +735,9 @@ function initiate_generate_manifest_bf() {
     }
   }
 
+  // clear the pennsieve queue
+  clearQueue();
+
   client.invoke("api_main_curate_function", sodaJSONObj, (error, res) => {
     if (error) {
       var emessage = userError(error);

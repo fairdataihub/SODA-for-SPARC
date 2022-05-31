@@ -53,6 +53,8 @@ const axios = require("axios").default;
 const DatePicker = require("tui-date-picker"); /* CommonJS */
 const excel4node = require("excel4node");
 
+const { backOff } = require("exponential-backoff");
+
 // const prevent_sleep_id = "";
 const electron_app = electron.app;
 const app = remote.app;
@@ -76,6 +78,47 @@ let introStatus = {
   samples: false,
 };
 
+/**
+ * Clear the Pennsieve Agent's upload queue. Should be run after pre_rlight_checks have passed.
+ *
+ */
+const clearQueue = () => {
+  // determine OS
+  const os = require("os");
+  const platform = os.platform();
+  let pennsievePath;
+
+  if (platform === "darwin") {
+    pennsievePath = "/usr/local/opt/pennsieve/bin/pennsieve";
+  } else if (platform === "win32") {
+    pennsievePath = "C:\\Program Files\\PennSieve\\pennsieve.exe";
+  } else {
+    // linux pennsieve path
+    pennsievePath = "/usr/local/bin/pennsieve";
+  }
+
+  //* clear the Pennsieve Queue
+  const child = require("child_process").spawnSync(
+    pennsievePath,
+    ["upload-status", "--cancel-all"],
+    { timeout: 4000 }
+  );
+
+  //* check if there was an error in the subprocess that prevented it from launching
+  if (child.error !== undefined) {
+    console.error(child.error);
+    log.error(child.error);
+    return;
+  }
+
+  //* if Pennsieve had an error outputed to the console log it for debugging
+  if (child.stderr !== null && child.stderr.length > 0) {
+    console.error(child.stderr.toString("utf8"));
+    log.error(child.stderr.toString("utf8"));
+    return;
+  }
+};
+
 //////////////////////////////////
 // App launch actions
 //////////////////////////////////
@@ -85,6 +128,11 @@ log.transports.console.level = false;
 log.transports.file.maxSize = 1024 * 1024 * 10;
 const homeDirectory = app.getPath("home");
 const SODA_SPARC_API_KEY = "SODA-Pennsieve";
+
+// set to true once the SODA server has been connected to
+let sodaIsConnected = false;
+// set to true once the API version has been confirmed
+let apiVersionChecked = false;
 
 //log user's OS version //
 log.info("User OS:", os.type(), os.platform(), "version:", os.release());
@@ -98,9 +146,15 @@ console.log("Current SODA version:", appVersion);
 //////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
+// let client = new zerorpc.Client({ timeout: 300000 });
+// client.connect("tcp://127.0.0.1:4242");
 
 let client = null
 
+client = axios.create({
+  baseURL: "http://127.0.0.1:4242/",
+  timeout: 300000,
+});
 
 const waitForAxios = (client) => {
   if (typeof axios !== "undefined") {
@@ -114,102 +168,32 @@ const waitForAxios = (client) => {
   }
 };
 
-client = axios.create({
-  baseURL: "http://127.0.0.1:5001/",
-  timeout: 300000,
-});
-
-// immediately invoked function expression that calls the echo endpoint
-(async () => {
-  try {
-    const responseObject = await client.get("echo?arg='server ready'");
-    let response = responseObject.data;
-
-    if (response !== "server ready") {
-      console.log("Python server not running");
-      log.error("Python server not running");
-      
-    }
-  } catch (error) {
-    console.log(error);
-  }
-})();
-
-client.invoke("echo", "server ready", (error, res) => {
-  if (error || res !== "server ready") {
-    log.error(error);
-    console.error(error);
-    ipcRenderer.send(
-      "track-event",
-      "Error",
-      "Establishing Python Connection",
-      error
-    );
-    Swal.fire({
-      icon: "error",
-      html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: "Restart now",
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        app.relaunch();
-        app.exit();
-      }
-    });
-  } else {
-    console.log("Connected to Python back-end successfully");
-    log.info("Connected to Python back-end successfully");
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      "Establishing Python Connection"
-    );
-
-    // verify backend api versions
-    client.invoke("api_version_check", (error, res) => {
-      if (error || res !== appVersion) {
-        log.error(error);
-        console.error(error);
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Verifying App Version",
-          error
-        );
-
-        Swal.fire({
-          icon: "error",
-          html: `The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: "Close now",
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-        }).then(async (result) => {
-          if (result.isConfirmed) {
-            app.exit();
-          }
-        });
-      } else {
-        ipcRenderer.send("track-event", "Success", "Verifying App Version");
-
-        //Load Default/global Pennsieve account if available
-        updateBfAccountList();
-        checkNewAppVersion(); // Added so that version will be displayed for new users
-      }
-    });
-  }
-});
-
 const notyf = new Notyf({
   position: { x: "right", y: "bottom" },
   ripple: true,
   dismissible: true,
   ripple: false,
   types: [
+    {
+      type: "checking_server_is_live",
+      background: "grey",
+      icon: {
+        className: "fas fa-wifi",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 1000,
+    },
+    {
+      type: "checking_server_api_version",
+      background: "grey",
+      icon: {
+        className: "fas fa-wifi",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 1000,
+    },
     {
       type: "loading_internet",
       background: "grey",
@@ -307,9 +291,125 @@ let connected_to_internet = false;
 let update_available_notification = "";
 let update_downloaded_notification = "";
 
+// utility function for async style set timeout
+const wait = async (delay) => {
+  return new Promise((resolve) => setTimeout(resolve, delay));
+};
+
+// check that the client connected to the server using exponential backoff
+// verify the api versions match
+const startupServerAndApiCheck = async () => {
+  // wait for SWAL to be loaded in
+  await wait(2000);
+
+  // notify the user that the application is starting connecting to the server
+  Swal.fire({
+    icon: "info",
+    title: `Connecting to the SODA server`,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    confirmButtonText: "Restart now",
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+
+  // Darwin executable starts slowly
+  // use an exponential backoff to wait for the app server to be ready
+  // this will give Mac users more time before receiving a backend server error message
+  // ( during the wait period the server should start )
+  // Bonus:  doesn't stop Windows and Linux users from starting right away
+  // NOTE: backOff is bad at surfacing errors to the console
+  try {
+    await backOff(serverIsLiveStartup, {
+      delayFirstAttempt: true,
+      startingDelay: 1000, // 1 second + 2 second + 4 second + 8 second
+      timeMultiple: 2,
+      numOfAttempts: 4,
+      maxDelay: 8000, // 16 seconds max wait time
+    });
+  } catch (e) {
+    log.error(e);
+    console.error(e);
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Establishing Python Connection",
+      e
+    );
+    // SWAL that the server needs to be restarted for the app to work
+    await Swal.fire({
+      icon: "error",
+      html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Restart now",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    });
+
+    // Restart the app
+    app.relaunch();
+    app.exit();
+  }
+
+  console.log("Connected to Python back-end successfully");
+  log.info("Connected to Python back-end successfully");
+  ipcRenderer.send("track-event", "Success", "Establishing Python Connection");
+
+  // inform observers that the app is connected to the server
+  sodaIsConnected = true;
+
+  // dismiss the Swal
+  Swal.close();
+
+  // check if the API versions match
+  try {
+    await apiVersionsMatch();
+  } catch (e) {
+    // api versions do not match
+    app.exit();
+  }
+
+  apiVersionChecked = true;
+};
+
+startupServerAndApiCheck();
+
+// Check if we are connected to the Pysoda server
 // Check app version on current app and display in the side bar
-ipcRenderer.on("run_pre_flight_checks", (event, arg) => {
-  run_pre_flight_checks();
+// Also check the core systems to make sure they are all operational
+ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
+  // run pre flight checks once the server connection is confirmed
+  // wait until soda is connected to the backend server
+  while (!sodaIsConnected || !apiVersionChecked) {
+    await wait(1000);
+  }
+
+  // check integrity of all the core systems
+  await run_pre_flight_checks();
+
+  // get apps base path
+  const basepath = app.getAppPath();
+  const resourcesPath = process.resourcesPath;
+
+  // set the templates path
+  client.invoke(
+    "api_set_template_path",
+    basepath,
+    resourcesPath,
+    (error, res) => {
+      if (error) {
+        console.log(error);
+        log.error(error);
+        ipcRenderer.send("track-event", "Error", "Setting Templates Path");
+      } else {
+        ipcRenderer.send("track-event", "Success", "Setting Templates Path");
+      }
+    }
+  );
 });
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
@@ -323,18 +423,26 @@ const run_pre_flight_checks = async (check_update = true) => {
     // Check the internet connection and if available check the rest.
     connection_response = await check_internet_connection();
     if (!connection_response) {
-      Swal.fire({
-        icon: "error",
+      await Swal.fire({
+        title: "No Internet Connection",
+        icon: "success",
         text: "It appears that your computer is not connected to the internet. You may continue, but you will not be able to use features of SODA related to Pennsieve and especially none of the features located under the 'Manage Datasets' section.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         confirmButtonText: "I understand",
+        showConfirmButton: true,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
       }).then(async (result) => {
         if (result.isConfirmed) {
           // Do nothing
         }
       });
-      resolve(false);
+      return resolve(false);
     } else {
       await wait(500);
 
@@ -458,8 +566,69 @@ const run_pre_flight_checks = async (check_update = true) => {
   });
 };
 
-const wait = async (delay) => {
-  return new Promise((resolve) => setTimeout(resolve, delay));
+// Check if the Pysoda server is live
+const serverIsLiveStartup = async () => {
+    let responseObject = await client.get("echo?arg=server ready")
+
+    let response = responseObject.data
+
+    if (response != "server ready") {
+      throw new Error("Server is not live")    
+    }
+
+    return true
+};
+
+// Check if the Pysoda server API version and the package.json versions match
+const apiVersionsMatch = async () => {
+  // notyf that tells the user that the server is checking the versions
+  let notification = notyf.open({
+    message: "Checking API Version",
+    type: "checking_server_api_version",
+  });
+
+  return new Promise((resolve, reject) => {
+    client.invoke("api_version_check", async (error, res) => {
+      if (error || res !== appVersion) {
+        log.error(error);
+        console.error(error);
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Verifying App Version",
+          error
+        );
+
+        await Swal.fire({
+          icon: "error",
+          html: `The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "Close now",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+        });
+
+        return reject();
+      } else {
+        ipcRenderer.send("track-event", "Success", "Verifying App Version");
+
+        notyf.dismiss(notification);
+
+        // create a success notyf for api version check
+        notyf.open({
+          message: "API Versions match",
+          type: "success",
+        });
+
+        //Load Default/global Pennsieve account if available
+        updateBfAccountList();
+        checkNewAppVersion(); // Added so that version will be displayed for new users
+
+        return resolve();
+      }
+    });
+  });
 };
 
 const check_internet_connection = async (show_notification = true) => {
@@ -471,6 +640,7 @@ const check_internet_connection = async (show_notification = true) => {
     });
   }
   await wait(800);
+
   return require("dns").resolve("www.google.com", (err) => {
     if (err) {
       console.error("No internet connection");
@@ -2639,360 +2809,7 @@ function detectEmptyRequiredFields(funding) {
 //////////////////////////End of Ds description section ///////////////////////////////////
 //////////////// //////////////// //////////////// //////////////// ////////////////////////
 
-// New instance for description editor
-// const tuiInstance = new Editor({
-//   el: document.querySelector("#editorSection"),
-//   initialEditType: "wysiwyg",
-//   previewStyle: "vertical",
-//   height: "400px",
-//   hideModeSwitch: true,
-//   placeholder: "Add a description here: ",
-//   toolbarItems: [
-//     "heading",
-//     "bold",
-//     "italic",
-//     "strike",
-//     "link",
-//     "hr",
-//     "divider",
-//     "ul",
-//     "ol",
-//   ],
-// });
-
 var displaySize = 1000;
-
-//////////////////////////////////
-// Prepare Dataset
-//////////////////////////////////
-
-////////////////// Validate current datasets ////////////////////////////////
-
-// /////// Convert table content into json format for transferring to Python
-// function grabCurrentDSValidator() {
-//   var jsonvect = tableToJsonWithDescription(tableNotOrganized);
-//   var jsonpath = jsonvect[0];
-//   var jsondescription = jsonvect[1];
-//   var jsonpathMetadata = tableToJsonMetadata(tableMetadata);
-//   jsonpath["main"] = jsonpathMetadata["metadata"];
-//   return [jsonpath, jsondescription];
-// }
-
-//// Check for empty JSON object and remove then
-// function checkJSONObj(jsonObj) {
-//   var empty = true;
-//   for (var key of Object.keys(jsonObj)) {
-//     if (jsonObj[key].length !== 0) {
-//       empty = false;
-//     } else {
-//       if (key !== "main") delete jsonObj[key];
-//     }
-//   }
-//   return [empty, jsonObj];
-// }
-
-///////// Clicking on Validate current DS
-// var checkCategory0 = "High-level folder structure";
-// var checkCategory1 = "High-level metadata files";
-// var checkCategory2 = "Sub-level organization";
-// var checkCategory3 = "submission file";
-// var checkCategory4 = "dataset_description file";
-// var checkCategory5 = "subjects file";
-// var checkCategory6 = "samples file";
-// var checkCategories = [
-//   checkCategory0,
-//   checkCategory1,
-//   checkCategory2,
-//   checkCategory3,
-//   checkCategory4,
-//   checkCategory5,
-//   checkCategory6,
-// ];
-//
-// validateCurrentDSBtn.addEventListener("click", function () {
-//   document.getElementById("div-validation-report-current").style.display =
-//     "none";
-//   document.getElementById("para-preview-current-ds").innerHTML = "";
-//   document.getElementById("para-validate-current-ds").innerHTML = "";
-//   document.getElementById("para-generate-report-current-ds").innerHTML = "";
-//   var jsonvect = grabCurrentDSValidator();
-//   var jsonpath = jsonvect[0];
-//   var jsondescription = jsonvect[1];
-//   var outCheck = checkJSONObj(jsonpath);
-//   var empty = outCheck[0];
-//   if (empty === true) {
-//     document.getElementById("para-validate-current-ds").innerHTML =
-//       "<span style='color: red;'>Please add files or folders to your dataset first!</span>";
-//   } else {
-//     validateCurrentDSBtn.disabled = true;
-//     if (manifestStatus.checked) {
-//       validateSODAProgressBar.style.display = "block";
-//       client.invoke(
-//         "api_create_folder_level_manifest",
-//         jsonpath,
-//         jsondescription,
-//         (error, res) => {
-//           if (error) {
-//             console.error(error);
-//             log.error(error);
-//             var emessage = userError(error);
-//             document.getElementById("para-validate-current-ds").innerHTML =
-//               "<span style='color: red;'>" + emessage + "</span>";
-//             validateCurrentDSBtn.disabled = false;
-//             validateSODAProgressBar.style.display = "none";
-//           } else {
-//             var validatorInput = res;
-//             localValidator(validatorInput);
-//           }
-//         }
-//       );
-//     } else {
-//       var validatorInput = jsonpath;
-//       console.log(validatorInput);
-//       localValidator(validatorInput);
-//     }
-//   }
-// });
-//
-// function localValidator(validatorInput) {
-//   var messageDisplay = "";
-//   client.invoke("api_validate_dataset", validatorInput, (error, res) => {
-//     if (error) {
-//       console.error(error);
-//       log.error(error);
-//       var emessage = userError(error);
-//       document.getElementById("para-validate-current-ds").innerHTML =
-//         "<span style='color: red;'>" + emessage + "</span>";
-//       validateCurrentDSBtn.disabled = false;
-//       validateSODAProgressBar.style.display = "none";
-//     } else {
-//       for (var i = 0; i < res.length; i++) {
-//         messageDisplay = errorMessageCategory(
-//           res[i],
-//           checkCategories[i],
-//           messageDisplay
-//         );
-//       }
-//       document.getElementById("div-validation-report-current").style.display =
-//         "block";
-//       document.getElementById("div-report-current").style.display = "block";
-//       document.getElementById("para-validate-current-ds").innerHTML =
-//         "Done, see report below!";
-//       validateCurrentDatasetReport.innerHTML = messageDisplay;
-//       validateCurrentDSBtn.disabled = false;
-//       validateSODAProgressBar.style.display = "none";
-//     }
-//   });
-// }
-//
-
-// Generate pdf validator file
-// currentDatasetReportBtn.addEventListener("click", function () {
-//   document.getElementById("para-generate-report-current-ds").innerHTML = "";
-//   ipcRenderer.send("save-file-dialog-validator-current");
-// });
-// ipcRenderer.on("selected-savedvalidatorcurrent", (event, filepath) => {
-//   if (filepath.length > 0) {
-//     if (filepath != null) {
-//       document.getElementById("para-generate-report-current-ds").innerHTML =
-//         "Please wait...";
-//       currentDatasetReportBtn.disabled = true;
-//       // obtain canvas and print to pdf
-//       const domElement = validateCurrentDatasetReport;
-//       // obtain canvas and print to pdf
-//       html2canvas(domElement).then((canvas) => {
-//         const img = canvas.toDataURL("image/png", 1.0);
-//         var data = img.replace(/^data:image\/\w+;base64,/, "");
-//         var buf = new Buffer(data, "base64");
-//
-//         // obtain canvas and print to pdf
-//         pdf = new PDFDocument({ autoFirstPage: false });
-//         var image = pdf.openImage(buf);
-//         pdf.addPage({ size: [image.width + 100, image.height + 25] });
-//         pdf.pipe(fs.createWriteStream(filepath));
-//         pdf.image(image, 25, 25);
-//
-//         pdf.end();
-//
-//         document.getElementById("para-generate-report-current-ds").innerHTML =
-//           "Report saved!";
-//       });
-//     }
-//   }
-//   currentDatasetReportBtn.disabled = false;
-// });
-
-/////////////////////// Validate local datasets //////////////////////////////
-//
-// //// when users click on Import local dataset
-// document
-//   .getElementById("input-local-ds-select")
-//   .addEventListener("click", function () {
-//     document.getElementById("para-generate-report-local-ds").innerHTML = "";
-//     document.getElementById("div-report-local").style.display = "none";
-//     ipcRenderer.send("open-file-dialog-validate-local-ds");
-//   });
-// ipcRenderer.on("selected-validate-local-dataset", (event, filepath) => {
-//   if (filepath.length > 0) {
-//     if (filepath != null) {
-//       document.getElementById("para-local-ds-info").innerHTML = "";
-//       document.getElementById("div-validation-report-local").style.display =
-//         "none";
-//       // used to communicate value to button-import-local-ds click eventlistener
-//       document.getElementById("input-local-ds-select").placeholder =
-//         filepath[0];
-//     } else {
-//       document.getElementById("para-local-ds-info").innerHTML =
-//         "<span style='color: red ;'>Please select a valid local dataset!</span>";
-//     }
-//   }
-// });
-//
-// validateLocalDSBtn.addEventListener("click", function () {
-//   document.getElementById("para-local-ds-info").innerHTML = "";
-//   document.getElementById("para-generate-report-local-ds").innerHTML = "";
-//   var datasetPath = document.getElementById("input-local-ds-select")
-//     .placeholder;
-//   var messageDisplay = "";
-//   if (datasetPath === "Select a folder") {
-//     document.getElementById("para-local-ds-info").innerHTML =
-//       "<span style='color: red ;'>Please select a local dataset first</span>";
-//   } else {
-//     if (datasetPath != null) {
-//       validateLocalProgressBar.style.display = "block";
-//       validateLocalDSBtn.disabled = true;
-//       validatorInput = datasetPath;
-//       client.invoke("api_validate_dataset", validatorInput, (error, res) => {
-//         if (error) {
-//           console.error(error);
-//           log.error(error);
-//           validateLocalProgressBar.style.display = "none";
-//         } else {
-//           for (var i = 0; i < res.length; i++) {
-//             if (res[i] !== "N/A") {
-//               messageDisplay = errorMessageCategory(
-//                 res[i],
-//                 checkCategories[i],
-//                 messageDisplay
-//               );
-//             }
-//           }
-//           document.getElementById("div-validation-report-local").style.display =
-//             "block";
-//           document.getElementById("div-report-local").style.display = "block";
-//           document.getElementById("para-local-ds-info").innerHTML =
-//             "Done, see report below!";
-//           validateLocalDatasetReport.innerHTML = messageDisplay;
-//           validateLocalProgressBar.style.display = "none";
-//         }
-//       });
-//       validateLocalDSBtn.disabled = false;
-//     }
-//   }
-// });
-
-// function validateMessageTransform(inString, classSelection, colorSelection) {
-//   //outString = inString.split("--").join("<br>")
-//   outString = inString.split("--");
-//   var msg =
-//     "<li class=" +
-//     classSelection +
-//     ">" +
-//     "<span style='color:" +
-//     colorSelection +
-//     ";'>";
-//   msg += outString[0];
-//   msg += "</span>" + "</li>";
-//   if (outString.length > 1) {
-//     msg += "<ul style='margin-top:-10px';>";
-//     for (var i = 1; i < outString.length; i++) {
-//       msg +=
-//         "<li>" +
-//         "<span style='color:" +
-//         colorSelection +
-//         ";'>" +
-//         outString[i] +
-//         "</span>" +
-//         "</li>";
-//     }
-//     msg += "</ul>";
-//   }
-//   return msg;
-// }
-
-// function errorMessageGenerator(resitem, category, messageDisplay) {
-//   if (resitem[category]) {
-//     var messageCategory = resitem[category];
-//     if (messageCategory.length > 0) {
-//       if (category === "fatal") {
-//         var colorSelection = "red";
-//         var classSelection = "bulleterror";
-//       } else if (category === "warnings") {
-//         var colorSelection = "#F4B800";
-//         var classSelection = "bulletwarning";
-//       } else if (category === "pass") {
-//         var colorSelection = "green";
-//         var classSelection = "bulletpass";
-//       }
-//       for (var i = 0; i < messageCategory.length; i++) {
-//         var message = validateMessageTransform(
-//           messageCategory[i],
-//           classSelection,
-//           colorSelection
-//         );
-//         messageDisplay += message;
-//       }
-//     }
-//   }
-//   return messageDisplay;
-// }
-
-// function errorMessageCategory(resitem, checkCategory, messageDisplay) {
-//   messageDisplay += "<b>" + checkCategory + "</b>";
-//   messageDisplay += "<ul class='validatelist' id='" + checkCategory + "'>";
-//   var category = "fatal";
-//   messageDisplay = errorMessageGenerator(resitem, category, messageDisplay);
-//   category = "warnings";
-//   messageDisplay = errorMessageGenerator(resitem, category, messageDisplay);
-//   category = "pass";
-//   messageDisplay = errorMessageGenerator(resitem, category, messageDisplay);
-//   messageDisplay += "</ul>";
-//   return messageDisplay;
-// }
-
-///// Generate pdf report for local validator report
-// localDatasetReportBtn.addEventListener("click", function () {
-//   document.getElementById("para-generate-report-local-ds").innerHTML = "";
-//   ipcRenderer.send("save-file-dialog-validator-local");
-// });
-// ipcRenderer.on("selected-savedvalidatorlocal", (event, filepath) => {
-//   if (filepath.length > 0) {
-//     if (filepath != null) {
-//       document.getElementById("para-generate-report-local-ds").innerHTML =
-//         "Please wait...";
-//       localDatasetReportBtn.disabled = true;
-//       const domElement = validateLocalDatasetReport;
-//       html2canvas(domElement).then((canvas) => {
-//         const img = canvas.toDataURL("image/png", 1.0);
-//         var data = img.replace(/^data:image\/\w+;base64,/, "");
-//         var buf = new Buffer(data, "base64");
-//
-//         // obtain canvas and print to pdf
-//         pdf = new PDFDocument({ autoFirstPage: false });
-//         var image = pdf.openImage(buf);
-//         pdf.addPage({ size: [image.width + 100, image.height + 25] });
-//         pdf.pipe(fs.createWriteStream(filepath));
-//         pdf.image(image, 25, 25);
-//
-//         pdf.end();
-//
-//         document.getElementById("para-generate-report-local-ds").innerHTML =
-//           "Report saved!";
-//       });
-//     }
-//   }
-//   localDatasetReportBtn.disabled = false;
-// });
 
 //////////////////////////////////
 // Manage Dataset
@@ -3079,6 +2896,7 @@ const { default: Swal } = require("sweetalert2");
 const { waitForDebugger } = require("inspector");
 const { resolve } = require("path");
 const { background } = require("jimp");
+const { rename } = require("fs");
 var cropOptions = {
   aspectRatio: 1,
   movable: false,
@@ -3884,6 +3702,7 @@ function loadDefaultAccount() {
       log.error(error);
       console.error(error);
       confirm_click_account_function();
+      console.log("Could not get default account");
     } else {
       if (res.length > 0) {
         var myitemselect = res[0];
@@ -4113,14 +3932,6 @@ var highLevelFolderToolTip = {
   protocol:
     "<b>protocol</b>: This folder contains supplementary files to accompany the experimental protocols submitted to Protocols.io. Please note that this is not a substitution for the experimental protocol which must be submitted to <b><a target='_blank' href='https://www.protocols.io/groups/sparc'> Protocols.io/sparc </a></b>.",
 };
-
-listItems(datasetStructureJSONObj, "#items", 500);
-getInFolder(
-  ".single-item",
-  "#items",
-  organizeDSglobalPath,
-  datasetStructureJSONObj
-);
 
 var sodaJSONObj = {};
 
@@ -4476,13 +4287,22 @@ var bfAddAccountBootboxMessage = `<form>
 
 var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Pennsieve API key and secret below: <i class="fas fa-info-circle swal-popover"  id="add-bf-account-tooltip" rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
 
-retrieveBFAccounts();
+// once connected to SODA get the user's accounts
+(async () => {
+  // wait until soda is connected to the backend server
+  while (!sodaIsConnected) {
+    await wait(1000);
+  }
+
+  retrieveBFAccounts();
+})();
 
 // this function is called in the beginning to load bf accounts to a list
 // which will be fed as dropdown options
-function retrieveBFAccounts() {
+async function retrieveBFAccounts() {
   bfAccountOptions = [];
   bfAccountOptionsStatus = "";
+
   client.invoke("api_bf_account_list", (error, res) => {
     if (error) {
       log.error(error);
@@ -4994,10 +4814,24 @@ async function addFoldersfunction(
           folderPath.push(folderArray[i]);
           duplicateFolders.push(originalFolderName);
         } else {
-          importedFolders[originalFolderName] = {
-            path: folderArray[i],
-            "original-basename": originalFolderName,
-          };
+          if (nonallowedFolderArray.includes(folderArray[i])) {
+            if (action !== "ignore" && action !== "") {
+              if (action === "remove") {
+                renamedFolderName = removeIrregularFolders(folderArray[i]);
+              } else if (action === "replace") {
+                renamedFolderName = replaceIrregularFolders(folderArray[i]);
+              }
+              importedFolders[renamedFolderName] = {
+                path: folderArray[i],
+                "original-basename": originalFolderName,
+              };
+            }
+          } else {
+            importedFolders[originalFolderName] = {
+              path: folderArray[i],
+              "original-basename": originalFolderName,
+            };
+          }
         }
       }
 
@@ -5112,6 +4946,8 @@ var filesElement;
 var targetElement;
 async function drop(ev) {
   irregularFolderArray = [];
+  let renamedFolderName = "";
+  let replaced = [];
   var action = "";
   filesElement = ev.dataTransfer.files;
   targetElement = ev.target;
@@ -5166,117 +5002,29 @@ async function drop(ev) {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
         action = "replace";
+        if (irregularFolderArray.length > 0) {
+          for (let i = 0; i < irregularFolderArray.length; i++) {
+            renamedFolderName = replaceIrregularFolders(
+              irregularFolderArray[i]
+            );
+            replaced.push(renamedFolderName);
+          }
+        }
       } else if (result.isDenied) {
         action = "remove";
+        if (irregularFolderArray.length > 0) {
+          for (let i = 0; i < irregularFolderArray.length; i++) {
+            renamedFolderName = removeIrregularFolders(irregularFolderArray[i]);
+            replaced.push(renamedFolderName);
+          }
+        }
       } else {
         return;
       }
-      if (ev.dataTranser.files.length > 500) {
-        let load_spinner_promise = new Promise(async (resolved) => {
-          let background = document.createElement("div");
-          let spinner_container = document.createElement("div");
-          let spinner_icon = document.createElement("div");
-          spinner_container.setAttribute("id", "items_loading_container");
-          spinner_icon.setAttribute("id", "item_load");
-          spinner_icon.setAttribute(
-            "class",
-            "ui large active inline loader icon-wrapper"
-          );
-          background.setAttribute("class", "loading-items-background");
-          background.setAttribute("id", "loading-items-background-overlay");
-
-          spinner_container.append(spinner_icon);
-          document.body.prepend(background);
-          document.body.prepend(spinner_container);
-          let loading_items_spinner = document.getElementById(
-            "items_loading_container"
-          );
-          loading_items_spinner.style.display = "block";
-          if (loading_items_spinner.style.display === "block") {
-            setTimeout(() => {
-              resolved();
-            }, 100);
-          }
-        }).then(async () => {
-          dropHelper(
-            filesElement,
-            targetElement,
-            action,
-            myPath,
-            importedFiles,
-            importedFolders,
-            nonAllowedDuplicateFiles,
-            uiFiles,
-            uiFolders
-          );
-          // Swal.close();
-          document.getElementById("loading-items-background-overlay").remove();
-          document.getElementById("items_loading_container").remove();
-          // background.remove();
-        });
-      } else {
-        dropHelper(
-          filesElement,
-          targetElement,
-          action,
-          myPath,
-          importedFiles,
-          importedFolders,
-          nonAllowedDuplicateFiles,
-          uiFiles,
-          uiFolders
-        );
-      }
-    });
-  } else {
-    if (ev.dataTransfer.files.length > 500) {
-      let load_spinner_promise = new Promise(async (resolved) => {
-        let background = document.createElement("div");
-        let spinner_container = document.createElement("div");
-        let spinner_icon = document.createElement("div");
-        spinner_container.setAttribute("id", "items_loading_container");
-        spinner_icon.setAttribute("id", "item_load");
-        spinner_icon.setAttribute(
-          "class",
-          "ui large active inline loader icon-wrapper"
-        );
-        background.setAttribute("class", "loading-items-background");
-        background.setAttribute("id", "loading-items-background-overlay");
-
-        spinner_container.append(spinner_icon);
-        document.body.prepend(background);
-        document.body.prepend(spinner_container);
-        let loading_items_spinner = document.getElementById(
-          "items_loading_container"
-        );
-        loading_items_spinner.style.display = "block";
-        if (loading_items_spinner.style.display === "block") {
-          setTimeout(() => {
-            resolved();
-          }, 100);
-        }
-      }).then(async () => {
-        dropHelper(
-          filesElement,
-          targetElement,
-          action,
-          myPath,
-          importedFiles,
-          importedFolders,
-          nonAllowedDuplicateFiles,
-          uiFiles,
-          uiFolders
-        );
-        // Swal.close();
-        document.getElementById("loading-items-background-overlay").remove();
-        document.getElementById("items_loading_container").remove();
-        // background.remove();
-      });
-    } else {
       dropHelper(
         filesElement,
         targetElement,
-        "",
+        action,
         myPath,
         importedFiles,
         importedFolders,
@@ -5284,7 +5032,19 @@ async function drop(ev) {
         uiFiles,
         uiFolders
       );
-    }
+    });
+  } else {
+    dropHelper(
+      filesElement,
+      targetElement,
+      "",
+      myPath,
+      importedFiles,
+      importedFolders,
+      nonAllowedDuplicateFiles,
+      uiFiles,
+      uiFolders
+    );
   }
 }
 
@@ -7176,6 +6936,9 @@ async function initiate_generate() {
 
   let organizeDataset = document.getElementById("organize_dataset_btn");
   let uploadLocally = document.getElementById("upload_local_dataset_btn");
+  let organizeDataset_option_buttons = document.getElementById(
+    "div-generate-comeback"
+  );
   let statusBarContainer = document.getElementById("div-new-curate-progress");
   var statusBarClone = statusBarContainer.cloneNode(true);
   let navContainer = document.getElementById("nav-items");
@@ -7256,10 +7019,15 @@ async function initiate_generate() {
     datasetUploadSession.startSession();
   }
 
-  // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
+  // clear the Pennsieve Queue (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
+  clearQueue();
 
   client.invoke("api_main_curate_function", sodaJSONObj, async (error, res) => {
     if (error) {
+      organizeDataset_option_buttons.style.display = "flex";
+      organizeDataset.disabled = false;
+      organizeDataset.className = "content-button is-selected";
+      organizeDataset.style = "background-color: #fff";
       $("#sidebarCollapse").prop("disabled", false);
       var emessage = userError(error);
       document.getElementById(
@@ -7270,15 +7038,20 @@ async function initiate_generate() {
       uploadLocally.style = "background-color: #fff";
       Swal.fire({
         icon: "error",
-        title: "An error occurred",
-        html: "Please return to progress page to see full error",
+        title: "An Error Occurred While Uploading Your Dataset",
+        html: "Check the error text in the Organize Dataset's upload page to see what went wrong.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
       }).then((result) => {
         statusBarClone.remove();
         sparc_container.style.display = "inline";
         if (result.isConfirmed) {
-          organizeDataset.disabled = false;
-          organizeDataset.className = "content-button is-selected";
-          organizeDataset.style = "background-color: #fff";
           organizeDataset.click();
           let button = document.getElementById("button-generate");
           $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
@@ -7375,6 +7148,7 @@ async function initiate_generate() {
           "para-new-curate-progress-bar-error-status"
         ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
         log.error(error);
+        organizeDataset_option_buttons.style.display = "flex";
         organizeDataset.disabled = false;
         organizeDataset.className = "content-button is-selected";
         organizeDataset.style = "background-color: #fff";
@@ -7383,12 +7157,20 @@ async function initiate_generate() {
         uploadLocally.style = "background-color: #fff";
         Swal.fire({
           icon: "error",
-          title: "An error occurred",
-          html: "An error occurred",
+          title: "An Error Occurred While Uploading Your Dataset",
+          html: "Check the error text in the Organize Dataset's upload page to see what went wrong.",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
         }).then((result) => {
           //statusBarClone.remove();
           if (result.isConfirmed) {
-            document.getElementById("organize_dataset_btn").click();
+            organizeDataset.click();
             let button = document.getElementById("button-generate");
             $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
             document.getElementById("prevBtn").style.display = "none";
@@ -7402,7 +7184,16 @@ async function initiate_generate() {
             ).style.display = "flex";
           }
         });
+        organizeDataset_option_buttons.style.display = "flex";
+        organizeDataset.disabled = false;
+        organizeDataset.className = "content-button is-selected";
+        organizeDataset.style = "background-color: #fff";
+        uploadLocally.disabled = false;
+        uploadLocally.className = "content-button is-selected";
+        uploadLocally.style = "background-color: #fff";
         console.error(error);
+        //Clear the interval to stop the generation of new sweet alerts after intitial error
+        clearInterval(timerProgress);
       } else {
         main_curate_status = res[0];
         var start_generate = res[1];
@@ -7498,6 +7289,7 @@ async function initiate_generate() {
         statusBarClone.remove();
         sparc_container.style.display = "inline";
         if (successful === true) {
+          organizeDataset_option_buttons.style.display = "flex";
           organizeDataset.disabled = false;
           organizeDataset.className = "content-button is-selected";
           organizeDataset.style = "background-color: #fff";
@@ -7508,6 +7300,15 @@ async function initiate_generate() {
             type: "success",
             message: "Dataset created successfully",
           });
+        } else {
+          //enable buttons anyways
+          organizeDataset_option_buttons.style.display = "flex";
+          organizeDataset.disabled = false;
+          organizeDataset.className = "content-button is-selected";
+          organizeDataset.style = "background-color: #fff";
+          uploadLocally.disabled = false;
+          uploadLocally.className = "content-button is-selected";
+          uploadLocally.style = "background-color: #fff";
         }
         // then show the sidebar again
         // forceActionSidebar("show");

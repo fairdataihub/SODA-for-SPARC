@@ -169,7 +169,7 @@ const logCurationErrorsToAnalytics = async (
       "Error",
       "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
       `${datasetUploadSession.id}`,
-      main_total_generate_dataset_size
+      mainTotalGenerateDatasetSize
     );
   }
 };

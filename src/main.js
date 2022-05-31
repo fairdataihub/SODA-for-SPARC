@@ -11,6 +11,7 @@ const { autoUpdater } = require("electron-updater");
 const { JSONStorage } = require("node-localstorage");
 const { trackEvent } = require("./scripts/others/analytics/analytics");
 const { fstat } = require("fs");
+const { resolve } = require("path");
 
 log.transports.console.level = false;
 log.transports.file.level = "debug";
@@ -27,8 +28,8 @@ const nodeStorage = new JSONStorage(app.getPath("userData"));
 const PY_FLASK_DIST_FOLDER = "pyflaskdist";
 const PY_FLASK_FOLDER = "pyflask";
 const PY_FLASK_MODULE = "api";
-const PORT = "5001";
-const PYFLASK_PROCESS = null;
+const PORT = "4242";
+let pyflaskProcess = null;
 
 /**
  * Determine if the application is running from a packaged version or from a dev version.
@@ -36,8 +37,24 @@ const PYFLASK_PROCESS = null;
  * @returns {boolean} True if the app is packaged, false if it is running from a dev version.
  */
 const guessPackaged = () => {
-  const fullPath = path.join(__dirname, PY_FLASK_DIST_FOLDER);
-  return require("fs").existsSync(fullPath);
+  const windowsPath = path.join(__dirname, PY_DIST_FOLDER);
+  const unixPath = path.join(process.resourcesPath, PY_MODULE);
+
+  if (process.platform === "darwin" || process.platform === "linux") {
+    if (require("fs").existsSync(unixPath)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  if (process.platform === "win32") {
+    if (require("fs").existsSync(windowsPath)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 };
 
 /**
@@ -47,19 +64,25 @@ const guessPackaged = () => {
  * @returns {string} The path to the api server script that needs to be executed to start the Python server
  */
 const getScriptPath = () => {
-  if (!guessPackaged(PY_FLASK_DIST_FOLDER)) {
+  if (!guessPackaged()) {
     return path.join(__dirname, PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py");
   }
+
   if (process.platform === "win32") {
     return path.join(__dirname, PY_FLASK_DIST_FOLDER, PY_FLASK_MODULE + ".exe");
+  } else {
+    return path.join(process.resourcesPath, PY_FLASK_MODULE);
   }
-
-  return path.join(__dirname, PY_FLASK_DIST_FOLDER, PY_FLASK_MODULE);
 };
 
-// Start the python server in the background when in production mode or runs the api script in dev mode.
+const selectPort = () => {
+  PORT = 4242;
+  return PORT;
+};
+
 const createPyProc = () => {
   let script = getScriptPath();
+  let port = "" + selectPort();
 
   log.info(script);
   if (require("fs").existsSync(script)) {
@@ -67,22 +90,21 @@ const createPyProc = () => {
   } else {
     log.info("file does not exist");
   }
-
   if (guessPackaged()) {
     log.info("execFile");
-    PYFLASK_PROCESS = require("child_process").execFile(script, [PORT], {
+    pyProc = require("child_process").execFile(script, [port], {
       stdio: "ignore",
     });
   } else {
     log.info("spawn");
-    PYFLASK_PROCESS = require("child_process").spawn("python", [script, PORT], {
+    pyProc = require("child_process").spawn("python", [script, port], {
       stdio: "ignore",
     });
   }
 
-  if (PYFLASK_PROCESS != null) {
-    console.log("child process success on port " + PORT);
-    log.info("child process success on port " + PORT);
+  if (pyflaskProcess != null) {
+    console.log("child process success on port " + port);
+    log.info("child process success on port " + port);
   } else {
     console.error("child process failed to start on port" + PORT);
   }
@@ -92,18 +114,34 @@ const createPyProc = () => {
  * Kill the python server process. Needs to be called before SODA closes.
  */
 const exitPyProc = () => {
-  PYFLASK_PROCESS.kill();
-  PYFLASK_PROCESS = null;
-  PORT = null;
+  // Windows does not properly shut off the python server process. This ensures it is killed. 
+  const killPythonProcess = () => {
+    // kill pyproc with command line 
+    const cmd = require("child_process").spawnSync("taskkill", [
+      "/pid",
+      pyflaskProcess.pid,
+      "/f",
+      "/t",
+    ]);
+  }
+
+  // check if the platform is Windows
+  if (process.platform === "win32") {
+    killPythonProcess();
+    pyflaskProcess = null;
+    PORT = null;
+  } else {
+    // kill signal to pyProc
+    pyflaskProcess.kill();
+    pyflaskProcess = null;
+    PORT = null;
+  }
 };
 
-app.on("ready", () => {
-  createPyProc(pyFlaskConfiguration);
-});
 
-app.on("will-quit", () => {
-  exitPyProc(pyFlaskConfiguration);
-});
+// 5.4.1 change: We call createPyProc in a spearate ready event
+// app.on("ready", createPyProc);
+// 5.4.1 change: We call exitPyreProc when all windows are killed so it has time to kill the process before closing
 
 /*************************************************************
  * Main app window
@@ -156,7 +194,7 @@ function initialize() {
       } else {
         var first_launch = nodeStorage.getItem("firstlaunch");
         nodeStorage.setItem("firstlaunch", true);
-        exitPyProc(pyFlaskConfiguration);
+        exitPyProc();
         app.exit();
       }
     });
@@ -173,6 +211,8 @@ function initialize() {
   };
 
   app.on("ready", () => {
+    createPyProc();
+
     const windowOptions = {
       minWidth: 1121,
       minHeight: 735,
@@ -212,7 +252,7 @@ function initialize() {
           mainWindow.reload();
           mainWindow.focus();
           nodeStorage.setItem("firstlaunch", false);
-          run_pre_flight_checks();
+          // run_pre_flight_checks();
         }
         run_pre_flight_checks();
         autoUpdater.checkForUpdatesAndNotify();
@@ -247,9 +287,8 @@ function initialize() {
     // }
   });
 
-  app.on("uncaughtException", function (err) {
-    //log the message and stack trace
-    console.log(err);
+  app.on("will-quit", () => {
+    exitPyProc();
   });
 }
 
@@ -336,7 +375,7 @@ autoUpdater.on("update-downloaded", () => {
   mainWindow.webContents.send("update_downloaded");
 });
 
-ipcMain.on("restart_app", () => {
+ipcMain.on("restart_app", async () => {
   user_restart_confirmed = true;
   log.info("quitAndInstall");
   autoUpdater.quitAndInstall();
