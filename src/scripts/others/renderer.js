@@ -555,7 +555,7 @@ const run_pre_flight_checks = async (check_update = true) => {
 
 // Check if the Pysoda server is live
 const serverIsLiveStartup = async () => {
-    let responseObject = await client.get("/startup/echo?arg=server ready")
+  let responseObject = await client.get("/startup/echo?arg=server ready");
 
   let response = responseObject.data;
 

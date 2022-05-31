@@ -201,7 +201,7 @@ function initialize() {
   }
 
   const quit_app = () => {
-    console.log("Quit app called")
+    console.log("Quit app called");
     app.showExitPrompt = false;
     mainWindow.close();
     /// feedback form iframe prevents closing gracefully
@@ -214,7 +214,7 @@ function initialize() {
   app.on("ready", () => {
     createPyProc();
 
-    console.log("Creating py proc")
+    console.log("Creating py proc");
 
     const windowOptions = {
       minWidth: 1121,
@@ -291,7 +291,7 @@ function initialize() {
   });
 
   app.on("will-quit", () => {
-    console.log("About to quit")
+    console.log("About to quit");
     exitPyProc();
   });
 }
