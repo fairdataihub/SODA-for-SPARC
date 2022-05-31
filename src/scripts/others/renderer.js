@@ -2,6 +2,7 @@
 // Import required modules
 //////////////////////////////////
 
+
 const zerorpc = require("zerorpc");
 const fs = require("fs-extra");
 const os = require("os");
@@ -97,8 +98,43 @@ console.log("Current SODA version:", appVersion);
 //////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
-let client = new zerorpc.Client({ timeout: 300000 });
-client.connect("tcp://127.0.0.1:4242");
+
+let client = null
+
+
+const waitForAxios = (client) => {
+  if (typeof axios !== "undefined") {
+    //variable exists, do what you want
+    client = axios.create({
+      baseURL: "http://127.0.0.1:5001/",
+      timeout: 0,
+    });
+  } else {
+    setTimeout(waitForAxios, 1000);
+  }
+};
+
+client = axios.create({
+  baseURL: "http://127.0.0.1:5001/",
+  timeout: 300000,
+});
+
+// immediately invoked function expression that calls the echo endpoint
+(async () => {
+  try {
+    const responseObject = await client.get("echo?arg='server ready'");
+    let response = responseObject.data;
+
+    if (response !== "server ready") {
+      console.log("Python server not running");
+      log.error("Python server not running");
+      
+    }
+  } catch (error) {
+    console.log(error);
+  }
+})();
+
 client.invoke("echo", "server ready", (error, res) => {
   if (error || res !== "server ready") {
     log.error(error);
