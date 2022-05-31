@@ -1116,7 +1116,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only=True)
     except Exception as e:
         error.append("Error: Please select a valid Pennsieve account")
         raise Exception(error)
-        
+
     # check that the Pennsieve dataset is valid
     try:
         bf_dataset_name = soda_json_structure["bf-dataset-selected"]["dataset-name"]

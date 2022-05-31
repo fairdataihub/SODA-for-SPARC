@@ -85,6 +85,9 @@ class InvalidDeliverablesDocument(Exception):
 
 ### Import Data Deliverables document
 def import_milestone(filepath):
+    """
+        Import Data Deliverables document
+    """
     doc = Document(filepath)
     try:
         table = doc.tables[0]

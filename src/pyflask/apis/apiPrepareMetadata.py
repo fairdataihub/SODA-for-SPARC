@@ -18,6 +18,7 @@ from namespaces import NamespaceEnum, get_namespace
 from flask_restx import Resource
 from flask import request
 import json
+from errorHandlers import notBadRequestException
 
 
 api = get_namespace(NamespaceEnum.PREPARE_METADATA)
@@ -46,3 +47,19 @@ class SaveSubmissionFile(Resource):
 
         return save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_str)
 
+
+parser = api.parser()
+parser.add_argument('path', type=str, help='Path to the local data deliverables document', location="args")
+@api.route('/import_milestone')
+class ImportMilestone(Resource):
+
+    @api.expect(parser)
+    def get(self):
+        args = parser.parse_args()
+        path = args['path']
+        try:
+            return import_milestone(path)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, e.args[0])
+            raise e
