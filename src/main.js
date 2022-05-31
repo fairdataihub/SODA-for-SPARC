@@ -27,21 +27,21 @@ const nodeStorage = new JSONStorage(app.getPath("userData"));
 const PY_FLASK_DIST_FOLDER = "pyflaskdist";
 const PY_FLASK_FOLDER = "pyflask";
 const PY_FLASK_MODULE = "api";
-const PORT = "5001"
-const PYFLASK_PROCESS = null 
+const PORT = "5001";
+const PYFLASK_PROCESS = null;
 
 /**
  * Determine if the application is running from a packaged version or from a dev version.
  * The resources path is used for Linux and Mac builds and the app.getAppPath() is used for Windows builds.
  * @returns {boolean} True if the app is packaged, false if it is running from a dev version.
-*/ 
+ */
 const guessPackaged = () => {
   const fullPath = path.join(__dirname, PY_FLASK_DIST_FOLDER);
   return require("fs").existsSync(fullPath);
 };
 
 /**
- * Get the system path to the api server script. 
+ * Get the system path to the api server script.
  * The script is located in the resources folder for packaged Linux and Mac builds and in the app.getAppPath() for Windows builds.
  * It is relative to the main.js file directory when in dev mode.
  * @returns {string} The path to the api server script that needs to be executed to start the Python server
@@ -57,7 +57,6 @@ const getScriptPath = () => {
   return path.join(__dirname, PY_FLASK_DIST_FOLDER, PY_FLASK_MODULE);
 };
 
-
 // Start the python server in the background when in production mode or runs the api script in dev mode.
 const createPyProc = () => {
   let script = getScriptPath();
@@ -71,22 +70,14 @@ const createPyProc = () => {
 
   if (guessPackaged()) {
     log.info("execFile");
-    PYFLASK_PROCESS = require("child_process").execFile(
-      script,
-      [PORT],
-      {
-        stdio: "ignore",
-      }
-    );
+    PYFLASK_PROCESS = require("child_process").execFile(script, [PORT], {
+      stdio: "ignore",
+    });
   } else {
     log.info("spawn");
-    PYFLASK_PROCESS = require("child_process").spawn(
-      "python",
-      [script, PORT],
-      {
-        stdio: "ignore",
-      }
-    );
+    PYFLASK_PROCESS = require("child_process").spawn("python", [script, PORT], {
+      stdio: "ignore",
+    });
   }
 
   if (PYFLASK_PROCESS != null) {
