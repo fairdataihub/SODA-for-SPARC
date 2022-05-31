@@ -6415,6 +6415,8 @@ $(document).ready(() => {
         width: "100%",
         closeOnSelect: false,
       });
+      //update the newPoolSubjectsElement with the subjects in the pool
+      updatePoolDropdown($(newPoolSubjectsSelectElement), poolName);
       $(newPoolSubjectsSelectElement).on("select2:open", (e) => {
         updatePoolDropdown($(e.currentTarget), poolName);
       });
