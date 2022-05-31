@@ -23,58 +23,44 @@ const nodeStorage = new JSONStorage(app.getPath("userData"));
  * Python Process
  *************************************************************/
 
-const PY_DIST_FOLDER = "pysodadist";
-const PY_FOLDER = "pysoda";
-const PY_MODULE = "api"; // without .py suffix
-
-const PysodaConfiguration = {
-  distributionFolder: PY_DIST_FOLDER,
-  folder: PY_FOLDER,
-  module: PY_MODULE,
-  process: null,
-  port: "4242",
-};
-
 // flask setup environment variables
 const PY_FLASK_DIST_FOLDER = "pyflaskdist";
 const PY_FLASK_FOLDER = "pyflask";
 const PY_FLASK_MODULE = "api";
+const PORT = "5001"
+const PYFLASK_PROCESS = null 
 
-const pyFlaskConfiguration = {
-  distributionFolder: PY_FLASK_DIST_FOLDER,
-  folder: PY_FLASK_FOLDER,
-  module: PY_FLASK_MODULE,
-  process: null,
-  port: "5001",
-};
-
-// check for pydist or pyflaskdist
-const guessPackaged = (pythonDistributableFolder) => {
-  const fullPath = path.join(__dirname, pythonDistributableFolder);
+/**
+ * Determine if the application is running from a packaged version or from a dev version.
+ * The resources path is used for Linux and Mac builds and the app.getAppPath() is used for Windows builds.
+ * @returns {boolean} True if the app is packaged, false if it is running from a dev version.
+*/ 
+const guessPackaged = () => {
+  const fullPath = path.join(__dirname, PY_FLASK_DIST_FOLDER);
   return require("fs").existsSync(fullPath);
 };
 
-// get path for either pysoda or pyflask
-const getScriptPath = (serverConfiguration) => {
-  const { distributionFolder, folder, module } = serverConfiguration;
-
-  if (!guessPackaged(distributionFolder)) {
-    return path.join(__dirname, folder, module + ".py");
+/**
+ * Get the system path to the api server script. 
+ * The script is located in the resources folder for packaged Linux and Mac builds and in the app.getAppPath() for Windows builds.
+ * It is relative to the main.js file directory when in dev mode.
+ * @returns {string} The path to the api server script that needs to be executed to start the Python server
+ */
+const getScriptPath = () => {
+  if (!guessPackaged(PY_FLASK_DIST_FOLDER)) {
+    return path.join(__dirname, PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py");
   }
   if (process.platform === "win32") {
-    return path.join(__dirname, distributionFolder, module, module + ".exe");
+    return path.join(__dirname, PY_FLASK_DIST_FOLDER, PY_FLASK_MODULE + ".exe");
   }
 
-  return path.join(__dirname, distributionFolder, module, module);
+  return path.join(__dirname, PY_FLASK_DIST_FOLDER, PY_FLASK_MODULE);
 };
 
-// @param {object} serverConfiguration  - Contains Flask or Pysoda server configuration details and references to their child process handler
-const createPyProc = (serverConfiguration) => {
-  let script = getScriptPath(serverConfiguration);
 
-  console.log("Executing this proc: ", script);
-
-  const { distributionFolder, port } = serverConfiguration;
+// Start the python server in the background when in production mode or runs the api script in dev mode.
+const createPyProc = () => {
+  let script = getScriptPath();
 
   log.info(script);
   if (require("fs").existsSync(script)) {
@@ -83,50 +69,49 @@ const createPyProc = (serverConfiguration) => {
     log.info("file does not exist");
   }
 
-  if (guessPackaged(distributionFolder)) {
+  if (guessPackaged()) {
     log.info("execFile");
-    serverConfiguration.process = require("child_process").execFile(
+    PYFLASK_PROCESS = require("child_process").execFile(
       script,
-      [port],
+      [PORT],
       {
         stdio: "ignore",
       }
     );
   } else {
     log.info("spawn");
-    serverConfiguration.process = require("child_process").spawn(
+    PYFLASK_PROCESS = require("child_process").spawn(
       "python",
-      [script, port],
+      [script, PORT],
       {
         stdio: "ignore",
       }
     );
   }
 
-  log.info(serverConfiguration.process);
-  if (serverConfiguration.process != null) {
-    console.log("child process success on port " + port);
-    log.info("child process success on port " + port);
+  if (PYFLASK_PROCESS != null) {
+    console.log("child process success on port " + PORT);
+    log.info("child process success on port " + PORT);
   } else {
-    console.error("child process failed to start on port" + port);
+    console.error("child process failed to start on port" + PORT);
   }
 };
 
-// @param {object} serverConfiguration  - Contains Flask or Pysoda server configuration details and references to their child process handler
-const exitPyProc = (serverConfiguration) => {
-  serverConfiguration.process.kill();
-  serverConfiguration.process = null;
-  serverConfiguration.port = null;
+/**
+ * Kill the python server process. Needs to be called before SODA closes.
+ */
+const exitPyProc = () => {
+  PYFLASK_PROCESS.kill();
+  PYFLASK_PROCESS = null;
+  PORT = null;
 };
 
 app.on("ready", () => {
-  createPyProc(PysodaConfiguration);
-  // createPyProc(pyFlaskConfiguration);
+  createPyProc(pyFlaskConfiguration);
 });
 
 app.on("will-quit", () => {
-  exitPyProc(PysodaConfiguration);
-  // exitPyProc(pyFlaskConfiguration);
+  exitPyProc(pyFlaskConfiguration);
 });
 
 /*************************************************************
@@ -180,8 +165,7 @@ function initialize() {
       } else {
         var first_launch = nodeStorage.getItem("firstlaunch");
         nodeStorage.setItem("firstlaunch", true);
-        exitPyProc(PysodaConfiguration);
-        // to do: exitPyProc(pyFlaskConfiguration);
+        exitPyProc(pyFlaskConfiguration);
         app.exit();
       }
     });
