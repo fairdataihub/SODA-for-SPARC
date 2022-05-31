@@ -1,5 +1,5 @@
 from flask_restx import Namespace
-from enum import Enum 
+from enum import Enum
 
 
 # namespaces enums
@@ -9,14 +9,14 @@ class NamespaceEnum(Enum):
     CURATE_DATASETS = "curate_datasets"
     DISSEMINATE_DATASETS = "disseminate_datasets"
     PREPARE_METADATA = "prepare_metadata"
-
+    ORGANIZE_DATASETS = "organize_datasets"
 
 # namespaces dictionary that is given a namespace name as a key and returns the corresponding namespace object as a value
 namespaces = { }
 
 def configure_namespaces():
     """
-    Create namespaces for each pysoda file: pysoda, prepare_metadata, etc
+    Create namespaces for each pysoda file: pysoda ( now manage_datasets), prepare_metadata, etc
     """
 
     manage_datasets_namespace = Namespace(NamespaceEnum.MANAGE_DATASETS.value, description='Routes for handling manage datsets functionality')
@@ -33,6 +33,9 @@ def configure_namespaces():
 
     prepare_metadata_namespace = Namespace(NamespaceEnum.PREPARE_METADATA.value, description='Routes for handling metadata preparation')
     namespaces[NamespaceEnum.PREPARE_METADATA] = prepare_metadata_namespace
+
+    organize_datasets_namespace = Namespace(NamespaceEnum.ORGANIZE_DATASETS.value, description='Routes for handling dataset organization')
+    namespaces[NamespaceEnum.ORGANIZE_DATASETS] = organize_datasets_namespace
 
 def get_namespace(namespace_name):
     return namespaces[namespace_name]

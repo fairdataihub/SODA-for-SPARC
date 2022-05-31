@@ -4,3 +4,4 @@ from .apiValidator import api as validate_dataset_resource
 from .apiCurate import api as curate_datasets_resource
 from .apiDisseminate import api as disseminate_datasets_resource
 from .apiPrepareMetadata import api as prepare_metadata_resource
+from .apiOrganizeDatasets import api as organize_datasets_resource
