@@ -10,6 +10,7 @@ class NamespaceEnum(Enum):
     DISSEMINATE_DATASETS = "disseminate_datasets"
     PREPARE_METADATA = "prepare_metadata"
     ORGANIZE_DATASETS = "organize_datasets"
+    STARTUP = "startup"
 
 # namespaces dictionary that is given a namespace name as a key and returns the corresponding namespace object as a value
 namespaces = { }
@@ -36,6 +37,11 @@ def configure_namespaces():
 
     organize_datasets_namespace = Namespace(NamespaceEnum.ORGANIZE_DATASETS.value, description='Routes for handling dataset organization')
     namespaces[NamespaceEnum.ORGANIZE_DATASETS] = organize_datasets_namespace
+
+    organize_datasets_namespace = Namespace(NamespaceEnum.STARTUP.value, description='Routes for handling python server startup verification')
+    namespaces[NamespaceEnum.STARTUP] = organize_datasets_namespace
+
+
 
 def get_namespace(namespace_name):
     return namespaces[namespace_name]

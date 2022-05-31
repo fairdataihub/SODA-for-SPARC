@@ -2,7 +2,7 @@
 // Import required modules
 //////////////////////////////////
 
-const zerorpc = require("zerorpc");
+// const zerorpc = require("zerorpc");
 const fs = require("fs-extra");
 const os = require("os");
 const path = require("path");
@@ -154,18 +154,6 @@ client = axios.create({
   baseURL: "http://127.0.0.1:4242/",
   timeout: 300000,
 });
-
-const waitForAxios = (client) => {
-  if (typeof axios !== "undefined") {
-    //variable exists, do what you want
-    client = axios.create({
-      baseURL: "http://127.0.0.1:5001/",
-      timeout: 0,
-    });
-  } else {
-    setTimeout(waitForAxios, 1000);
-  }
-};
 
 const notyf = new Notyf({
   position: { x: "right", y: "bottom" },
@@ -567,7 +555,7 @@ const run_pre_flight_checks = async (check_update = true) => {
 
 // Check if the Pysoda server is live
 const serverIsLiveStartup = async () => {
-    let responseObject = await client.get("echo?arg=server ready")
+    let responseObject = await client.get("/startup/echo?arg=server ready")
 
     let response = responseObject.data
 
@@ -1556,62 +1544,62 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
     },
   }).then((result) => {});
 
-  // new client that has a longer timeout
-  let clientLongTimeout = new zerorpc.Client({
-    timeout: 300000,
-    heartbeatInterval: 60000,
-  });
-  clientLongTimeout.connect("tcp://127.0.0.1:4242");
-  clientLongTimeout.invoke(
-    "api_save_samples_file",
-    uploadBFBoolean,
-    defaultBfAccount,
-    $("#bf_dataset_load_samples").text().trim(),
-    samplesDestinationPath,
-    samplesTableData,
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        Swal.fire({
-          title: "Failed to generate the samples.xlsx file.",
-          html: emessage,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          icon: "error",
-        });
+  // // new client that has a longer timeout
+  // let clientLongTimeout = new zerorpc.Client({
+  //   timeout: 300000,
+  //   heartbeatInterval: 60000,
+  // });
+  // clientLongTimeout.connect("tcp://127.0.0.1:4242");
+  // clientLongTimeout.invoke(
+  //   "api_save_samples_file",
+  //   uploadBFBoolean,
+  //   defaultBfAccount,
+  //   $("#bf_dataset_load_samples").text().trim(),
+  //   samplesDestinationPath,
+  //   samplesTableData,
+  //   (error, res) => {
+  //     if (error) {
+  //       var emessage = userError(error);
+  //       log.error(error);
+  //       console.error(error);
+  //       Swal.fire({
+  //         title: "Failed to generate the samples.xlsx file.",
+  //         html: emessage,
+  //         heightAuto: false,
+  //         backdrop: "rgba(0,0,0, 0.4)",
+  //         icon: "error",
+  //       });
 
-        logMetadataForAnalytics(
-          "Error",
-          MetadataAnalyticsPrefix.SAMPLES,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Generate",
-          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
-        );
-      } else {
-        Swal.fire({
-          title:
-            "The samples.xlsx file has been successfully generated at the specified location.",
-          icon: "success",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
+  //       logMetadataForAnalytics(
+  //         "Error",
+  //         MetadataAnalyticsPrefix.SAMPLES,
+  //         AnalyticsGranularity.ALL_LEVELS,
+  //         "Generate",
+  //         uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+  //       );
+  //     } else {
+  //       Swal.fire({
+  //         title:
+  //           "The samples.xlsx file has been successfully generated at the specified location.",
+  //         icon: "success",
+  //         heightAuto: false,
+  //         backdrop: "rgba(0,0,0, 0.4)",
+  //       });
 
-        logMetadataForAnalytics(
-          "Success",
-          MetadataAnalyticsPrefix.SAMPLES,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Generate",
-          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
-        );
+  //       logMetadataForAnalytics(
+  //         "Success",
+  //         MetadataAnalyticsPrefix.SAMPLES,
+  //         AnalyticsGranularity.ALL_LEVELS,
+  //         "Generate",
+  //         uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+  //       );
 
-        // log the size of the metadata file that was generated at varying levels of granularity
-        const size = res;
-        logMetadataSizeForAnalytics(uploadBFBoolean, "samples.xlsx", size);
-      }
-    }
-  );
+  //       // log the size of the metadata file that was generated at varying levels of granularity
+  //       const size = res;
+  //       logMetadataSizeForAnalytics(uploadBFBoolean, "samples.xlsx", size);
+  //     }
+  //   }
+  // );
 }
 
 // import Primary folder

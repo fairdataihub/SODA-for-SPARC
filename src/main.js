@@ -27,8 +27,8 @@ const nodeStorage = new JSONStorage(app.getPath("userData"));
 // flask setup environment variables
 const PY_FLASK_DIST_FOLDER = "pyflaskdist";
 const PY_FLASK_FOLDER = "pyflask";
-const PY_FLASK_MODULE = "api";
-const PORT = "4242";
+const PY_FLASK_MODULE = "app";
+let PORT = "4242";
 let pyflaskProcess = null;
 
 /**
@@ -37,8 +37,8 @@ let pyflaskProcess = null;
  * @returns {boolean} True if the app is packaged, false if it is running from a dev version.
  */
 const guessPackaged = () => {
-  const windowsPath = path.join(__dirname, PY_DIST_FOLDER);
-  const unixPath = path.join(process.resourcesPath, PY_MODULE);
+  const windowsPath = path.join(__dirname, PY_FLASK_DIST_FOLDER);
+  const unixPath = path.join(process.resourcesPath, PY_FLASK_MODULE);
 
   if (process.platform === "darwin" || process.platform === "linux") {
     if (require("fs").existsSync(unixPath)) {
@@ -85,6 +85,7 @@ const createPyProc = () => {
   let port = "" + selectPort();
 
   log.info(script);
+  console.log(script);
   if (require("fs").existsSync(script)) {
     log.info("file exists");
   } else {
@@ -92,12 +93,12 @@ const createPyProc = () => {
   }
   if (guessPackaged()) {
     log.info("execFile");
-    pyProc = require("child_process").execFile(script, [port], {
+    pyflaskProcess = require("child_process").execFile(script, [port], {
       stdio: "ignore",
     });
   } else {
     log.info("spawn");
-    pyProc = require("child_process").spawn("python", [script, port], {
+    pyflaskProcess = require("child_process").spawn("python", [script, port], {
       stdio: "ignore",
     });
   }
@@ -201,6 +202,7 @@ function initialize() {
   }
 
   const quit_app = () => {
+    console.log("Quit app called")
     app.showExitPrompt = false;
     mainWindow.close();
     /// feedback form iframe prevents closing gracefully
@@ -212,6 +214,8 @@ function initialize() {
 
   app.on("ready", () => {
     createPyProc();
+
+    console.log("Creating py proc")
 
     const windowOptions = {
       minWidth: 1121,
@@ -288,6 +292,7 @@ function initialize() {
   });
 
   app.on("will-quit", () => {
+    console.log("About to quit")
     exitPyProc();
   });
 }

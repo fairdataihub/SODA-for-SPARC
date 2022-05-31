@@ -22,5 +22,7 @@ configureRouteHandlers(api)
 
 api.init_app(app)
 
-app.run(debug=True, host=getenv('HOST'), port=getenv('PORT'))
+
+
+app.run(debug=True, host=getenv('HOST'), port='4242')
 
