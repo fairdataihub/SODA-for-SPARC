@@ -1004,6 +1004,49 @@ const traverseToTab = (targetPageID) => {
   }
 };
 
+const setActiveSubPage = (pageIdToActivate) => {
+  const pageElementToActivate = document.getElementById(pageIdToActivate);
+
+  //Show target page and hide its siblings
+  pageElementToActivate.classList.remove("hidden");
+  const pageElementSiblings = pageElementToActivate.parentElement.children;
+  //filter pageelementSiblings to only contain elements with class "sub-page"
+  const pageElementSiblingsToHide = Array.from(pageElementSiblings).filter(
+    (pageElementSibling) => {
+      return (
+        pageElementSibling.classList.contains("sub-page") &&
+        pageElementSibling.id !== pageIdToActivate
+      );
+    }
+  );
+  //hide all pageElementSiblingsToHide
+  pageElementSiblingsToHide.forEach((pageElementSibling) => {
+    pageElementSibling.classList.add("hidden");
+  });
+
+  //Set page's capsule to active and remove active from sibling capsules
+  const pageCapsuleToActivate = document.getElementById(
+    `${pageIdToActivate}-capsule`
+  );
+  pageCapsuleToActivate.classList.add("active");
+  const siblingCapsules = pageCapsuleToActivate.parentElement.children;
+  for (const siblingCapsule of siblingCapsules) {
+    if (siblingCapsule.id !== `${pageIdToActivate}-capsule`) {
+      siblingCapsule.classList.remove("active");
+    }
+  }
+
+  //switch case depending on pageIdToActivate
+  switch (pageIdToActivate) {
+    case "guided-create-subjects-metadata-tab":
+      renderSubjectsMetadataAsideItems();
+      break;
+    case "guided-create-samples-metadata-tab":
+      renderSamplesMetadataAsideItems();
+      break;
+  }
+};
+
 const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
   $("#guided-progress-bar-new-curate").attr(
     "value",
@@ -2445,6 +2488,41 @@ const returnToSampleMetadataTableFromSampleMetadataForm = () => {
   traverseToTab("guided-create-samples-metadata-tab");
   $("#guided-footer-div").css("display", "flex");
 };
+
+const renderSubjectSampleAdditionTable = (subject) => {
+  return `
+    <table
+      class="ui celled striped table"
+      style="margin-bottom: 10px; width: 800px"
+    >
+      <thead>
+        <tr>
+          <th class="text-center" colspan="2">
+            <div class="space-between w-100">
+              <span>${subject.poolName ? subject.poolName : ""}</span>
+              <span>${subject.subjectName}</span>
+              <button
+              type="button"
+              class="btn btn-primary btn-sm"
+              onclick="addSampleSpecificationTableRow(this)"
+            >
+              Add sample
+            </button>
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        ${subject.samples
+          .map((sample) => {
+            return generateSampleRowElement(sample);
+          })
+          .join("\n")}
+      </tbody>
+    </table>
+  `;
+};
+
 const renderSubjectsMetadataTable = (subjects) => {
   let subjectMetadataRows = subjects
     .sort()
@@ -6221,6 +6299,39 @@ $(document).ready(() => {
     $("#guided-add-subject-div").show();
   });
 
+  $("#guided-button-add-samples-tables").on("click", () => {
+    const [subjectsInPools, subjectsOutsidePools] =
+      sodaJSONObj.getAllSubjects();
+    //Combine sample data from subjects in and out of pools
+    let subjects = [...subjectsInPools, ...subjectsOutsidePools];
+
+    //sort subjects object by subjectName property alphabetically
+    subjects = subjects.sort((a, b) => {
+      const subjectNameA = a.subjectName.toLowerCase();
+      const subjectNameB = b.subjectName.toLowerCase();
+      if (subjectNameA < subjectNameB) return -1;
+      if (subjectNameA > subjectNameB) return 1;
+      return 0;
+    });
+
+    console.log(subjects);
+
+    //Create the HTML for the subjects
+    const subjectSampleAdditionTables = subjects
+      .map((subject) => {
+        return renderSubjectSampleAdditionTable(subject);
+      })
+      .join("\n");
+    console.log(subjectSampleAdditionTables);
+
+    //Add the subject sample addition elements to the DOM
+    const subjectSampleAdditionTableContainer = document.getElementById(
+      "guided-div-add-samples-tables"
+    );
+
+    subjectSampleAdditionTableContainer.innerHTML = subjectSampleAdditionTables;
+  });
+
   $("#guided-button-sub-pool-sam-continue").on("click", () => {
     const specifySubjectsElement = document.getElementById(
       "guided-specify-subjects-page"
@@ -6243,81 +6354,14 @@ $(document).ready(() => {
       return;
     }
     if (!specifySubjectsElement.classList.contains("hidden")) {
-      specifySubjectsElement.classList.add("hidden");
-      organizeSubjectsIntoPoolsElement.classList.remove("hidden");
+      setActiveSubPage("guided-organize-subjects-into-pools-page");
       scrollToBottomOfGuidedBody();
       return;
     }
 
-    const renderSubjectSampleAdditionTable = (subject) => {
-      return `
-        <table
-          class="ui celled striped table"
-          style="margin-bottom: 10px; width: 800px"
-        >
-          <thead>
-            <tr>
-              <th class="text-center" colspan="2">
-                <div class="space-between w-100">
-                  <span>${subject.poolName ? subject.poolName : ""}</span>
-                  <span>${subject.subjectName}</span>
-                  <button
-                  type="button"
-                  class="btn btn-primary btn-sm"
-                  onclick="addSampleSpecificationTableRow(this)"
-                >
-                  Add sample
-                </button>
-                </div>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            ${subject.samples
-              .map((sample) => {
-                return generateSampleRowElement(sample);
-              })
-              .join("\n")}
-          </tbody>
-        </table>
-      `;
-    };
-
     if (!organizeSubjectsIntoPoolsElement.classList.contains("hidden")) {
-      organizeSubjectsIntoPoolsElement.classList.add("hidden");
-      specifySamplesElement.classList.remove("hidden");
+      setActiveSubPage("guided-specify-samples-page");
 
-      const [subjectsInPools, subjectsOutsidePools] =
-        sodaJSONObj.getAllSubjects();
-      //Combine sample data from subjects in and out of pools
-      let subjects = [...subjectsInPools, ...subjectsOutsidePools];
-
-      //sort subjects object by subjectName property alphabetically
-      subjects = subjects.sort((a, b) => {
-        const subjectNameA = a.subjectName.toLowerCase();
-        const subjectNameB = b.subjectName.toLowerCase();
-        if (subjectNameA < subjectNameB) return -1;
-        if (subjectNameA > subjectNameB) return 1;
-        return 0;
-      });
-
-      console.log(subjects);
-
-      //Create the HTML for the subjects
-      const subjectSampleAdditionTables = subjects
-        .map((subject) => {
-          return renderSubjectSampleAdditionTable(subject);
-        })
-        .join("\n");
-      console.log(subjectSampleAdditionTables);
-
-      //Add the subject sample addition elements to the DOM
-      const subjectSampleAdditionTableContainer = document.getElementById(
-        "guided-add-samples-tables"
-      );
-
-      subjectSampleAdditionTableContainer.innerHTML =
-        subjectSampleAdditionTables;
       scrollToBottomOfGuidedBody();
       return;
     }
@@ -6338,14 +6382,12 @@ $(document).ready(() => {
     }
 
     if (!specifySamplesElement.classList.contains("hidden")) {
-      specifySamplesElement.classList.add("hidden");
-      organizeSubjectsIntoPoolsElement.classList.remove("hidden");
+      setActiveSubPage("guided-organize-subjects-into-pools-page");
       scrollToBottomOfGuidedBody();
       return;
     }
     if (!organizeSubjectsIntoPoolsElement.classList.contains("hidden")) {
-      organizeSubjectsIntoPoolsElement.classList.add("hidden");
-      specifySubjectsElement.classList.remove("hidden");
+      setActiveSubPage("guided-specify-subjects-page");
       scrollToBottomOfGuidedBody();
       return;
     }

@@ -376,72 +376,24 @@
                 samples. Let's help you with that.
               </p>
             </div>
-            <div class="guided--section">
+            <div class="guided--capsule-container-sub-page">
               <div
-                class="guided--progression-tab-container"
-                style="border-bottom: 0px"
-              >
-                <div
-                  class="guided--progression-tab guided--progression-tab-triangle"
-                  id="specify-subjects-sub"
-                >
-                  <div
-                    class="guided--progression-tab-content"
-                    style="
-                      border-top: 1px solid var(--color-border);
-                      border-bottom: 1px solid var(--color-border);
-                    "
-                  >
-                    <span class="dot">1</span>
-                    <div class="guided--progression-tab-labels">
-                      <h1 class="guided--progression-tab-label-main">
-                        Specify subjects
-                      </h1>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="guided--progression-tab guided--progression-tab-triangle"
-                  id="specify-samples-sub"
-                  style="border-bottom: 0px"
-                >
-                  <div
-                    class="guided--progression-tab-content"
-                    style="
-                      border-top: 1px solid var(--color-border);
-                      border-bottom: 1px solid var(--color-border);
-                    "
-                  >
-                    <span class="dot">2</span>
-                    <div class="guided--progression-tab-labels">
-                      <h1 class="guided--progression-tab-label-main">
-                        Organize subjects into pools
-                      </h1>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="guided--progression-tab guided--progression-tab-triangle"
-                  id="specify-pools-sub"
-                >
-                  <div
-                    class="guided--progression-tab-content"
-                    style="
-                      border-top: 1px solid var(--color-border);
-                      border-bottom: 1px solid var(--color-border);
-                    "
-                  >
-                    <span class="dot">3</span>
-                    <div class="guided--progression-tab-labels">
-                      <h1 class="guided--progression-tab-label-main">
-                        Specify samples
-                      </h1>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                class="guided--capsule-sub-page active"
+                id="guided-specify-subjects-page-capsule"
+              ></div>
+              <div
+                class="guided--capsule-sub-page"
+                id="guided-organize-subjects-into-pools-page-capsule"
+              ></div>
+              <div
+                class="guided--capsule-sub-page"
+                id="guided-specify-samples-page-capsule"
+              ></div>
             </div>
-            <div class="guided--panel" id="guided-specify-subjects-page">
+            <div
+              class="guided--panel sub-page"
+              id="guided-specify-subjects-page"
+            >
               <div class="guided--section" id="guided-specify-subjects-prompt">
                 <label class="guided--form-label centered">
                   Does your dataset contain data collected in human or non-human
@@ -500,7 +452,7 @@
               </div>
             </div>
             <div
-              class="guided--panel hidden"
+              class="guided--panel sub-page hidden"
               id="guided-organize-subjects-into-pools-page"
             >
               <div
@@ -517,7 +469,8 @@
                 >
                   <button
                     class="ui positive basic button guided--radio-button"
-                    data-next-element="guided-button-organize-subjects-into-pools"
+                    id="guided-button-organize-subjects-into-pools"
+                    data-next-element="guided-div-organize-subjects-into-pools"
                   >
                     Yes
                   </button>
@@ -530,7 +483,7 @@
                 </div>
                 <div
                   class="guided--panel hidden"
-                  id="guided-button-organize-subjects-into-pools"
+                  id="guided-div-organize-subjects-into-pools"
                 >
                   <table
                     class="ui celled striped table"
@@ -569,7 +522,10 @@
                 </div>
               </div>
             </div>
-            <div class="guided--panel hidden" id="guided-specify-samples-page">
+            <div
+              class="guided--panel sub-page hidden"
+              id="guided-specify-samples-page"
+            >
               <div class="guided--section" id="guided-number-of-samples-prompt">
                 <label class="guided--form-label centered">
                   Does your dataset include data based on samples (e.g., tissue
@@ -581,7 +537,8 @@
                 >
                   <button
                     class="ui positive basic button guided--radio-button"
-                    data-next-element="guided-add-samples-tables"
+                    id="guided-button-add-samples-tables"
+                    data-next-element="guided-div-add-samples-tables"
                   >
                     Yes
                   </button>
@@ -591,34 +548,8 @@
                 </div>
                 <div
                   class="guided--panel hidden"
-                  id="guided-add-samples-tables"
-                >
-                  <table
-                    class="ui celled striped table"
-                    style="margin-bottom: 10px; width: 800px"
-                  >
-                    <thead>
-                      <tr>
-                        <th
-                          class="text-center"
-                          style="min-width: 250px"
-                          colspan="3"
-                        >
-                          Enter an ID for each of your sample and specify what
-                          subject they belong to
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody id="samples-specification-table-body"></tbody>
-                  </table>
-                  <button
-                    class="ui primary basic button mt-0"
-                    onclick="addSampleSpecificationTableRow()"
-                  >
-                    <i class="fas fa-plus" style="margin-right: 7px"></i>Add a
-                    new sample
-                  </button>
-                </div>
+                  id="guided-div-add-samples-tables"
+                ></div>
               </div>
             </div>
             <div class="space-between mt-md">
