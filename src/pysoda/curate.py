@@ -1163,7 +1163,6 @@ def check_local_dataset_files_validity(soda_json_structure):
 manifest_sparc = ["manifest.xlsx", "manifest.csv"]
 manifest_folder_path = join(userpath, "SODA", "manifest_files")
 
-
 def create_high_level_manifest_files(soda_json_structure):
     """
     Function to create manifest files for each high-level SPARC folder.
@@ -1314,96 +1313,6 @@ def create_high_level_manifest_files(soda_json_structure):
     except Exception as e:
         raise e
 
-
-# def add_local_manifest_files(manifest_files_structure, datasetpath):
-#     try:
-#         for key in manifest_files_structure.keys():
-#             manifestpath = manifest_files_structure[key]
-#             destination_folder = join(datasetpath, key)
-#             if isdir(destination_folder):
-#                 dst = join(destination_folder, "manifest.xlsx")
-#                 mycopyfile_with_metadata(manifestpath, dst)
-
-#         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
-
-#     except Exception as e:
-#         raise e
-
-# def bf_add_manifest_files(manifest_files_structure, ds):
-#     try:
-#         for key in manifest_files_structure.keys():
-#             manifestpath = manifest_files_structure[key]
-#             for item in ds:
-#                 if item.name == key and item.type == "Collection":
-#                     destination_folder_id = item.id
-#                     #delete existing manifest files
-#                     for subitem in item:
-#                         if subitem.name == "manifest":
-#                             subitem.delete()
-#                     #upload new manifest files
-#                     bf_upload_file(item, manifestpath)
-#                     break
-#         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
-
-#     except Exception as e:
-#         raise e
-
-# def bf_upload_file(item, path):
-#     item.upload(path)
-
-
-# def get_generate_dataset_size(soda_json_structure):
-#     """
-#     Function to get the size of the data to be generated (not existing at the local or Pennsieve destination)
-
-#     Args:
-#         soda_json_structure: soda dict with information about all specified files and folders
-#         manifest_files_structure: soda dict with information about the manifest files (if requested)
-#     Output:
-#         generate_dataset_size: total size of data to be generated (in bytes)
-#     """
-
-#     def recursive_dataset_size(my_folder):
-#         total_size = 0
-
-#         if "folders" in my_folder.keys():
-#             for folder_key, folder in my_folder["folders"].items():
-#                 total_size += recursive_dataset_size(folder)
-#         if "files" in my_folder.keys():
-#             for file_key, file in my_folder["files"].items():
-#                 file_type = file["type"]
-#                 if file_type == "local":
-#                     if "new" in file["action"]:
-#                         file_path = file["path"]
-#                         if isfile(file_path):
-#                             total_size += getsize(file_path)
-#         return total_size
-
-#     try:
-#         dataset_structure = soda_json_structure["dataset-structure"]
-
-#         generate_dataset_size = 0
-#         for folder_key, folder in dataset_structure["folders"].items():
-#             generate_dataset_size += recursive_dataset_size(folder)
-
-#         if manifest_files_structure:
-#             for key in manifest_files_structure.keys():
-#                 manifest_path = manifest_files_structure[key]
-#                 generate_dataset_size += getsize(manifest_path)
-
-#         if "metadata-files" in soda_json_structure.keys():
-#             metadata_files = soda_json_structure["metadata-files"]
-#             for file_key, file in metadata_files.items():
-#                 if file["type"] == "local":
-#                     if "new" in file["action"]:
-#                         metadata_path = file["path"]
-#                         generate_dataset_size += getsize(metadata_path)
-
-#         return generate_dataset_size
-
-#     except Exception as e:
-#         raise e
-
 # This function is called to check size of files
 # that will be created locally on a user's device
 def check_JSON_size(jsonStructure):
@@ -1451,7 +1360,6 @@ def check_JSON_size(jsonStructure):
                 if isfile(manifestpath):
                     total_dataset_size += getsize(manifestpath)
 
-        # total_dataset_size = total_dataset_size/(1024**2)
         # returns in bytes
         return total_dataset_size
     except Exception as e:
@@ -1601,17 +1509,6 @@ def generate_dataset_locally(soda_json_structure):
 
     except Exception as e:
         raise e
-
-    # gev = []
-    # gev.append(gevent.spawn(generate, soda_json_structure))
-    # gevent.sleep(0)
-    # gevent.joinall(gev)
-
-    # try:
-    #     return gev[0].get()
-    # except Exception as e:
-    #      raise e
-
 
 def mymovefile_with_metadata(src, dst):
     shutil.move(src, dst)
@@ -2198,9 +2095,6 @@ def create_high_level_manifest_files_existing_bf(
 
 def create_high_level_manifest_files_existing_local_starting_point(dataset_path):
     soda_manifest_folder_path = join(userpath, "SODA", "manifest_files")
-    # # create local folder to save manifest files temporarily (delete any existing one first)
-    # shutil.rmtree(soda_manifest_folder_path) if isdir(soda_manifest_folder_path) else 0
-    # makedirs(soda_manifest_folder_path)
 
     if dataset_path != "":
         for high_level_fol in listdir(dataset_path):
@@ -2224,7 +2118,6 @@ def create_high_level_manifest_files_existing_local_starting_point(dataset_path)
                     p = pathlib.Path(file)
                     # create high-level folder at the temporary location
                     folderpath = join(soda_manifest_folder_path, high_level_fol)
-                    # makedirs(folderpath)
                     if p.stem == "manifest":
                         # make copy from this manifest path to folderpath
                         shutil.copyfile(file, join(folderpath, p.name))
@@ -2307,8 +2200,6 @@ def bf_get_existing_files_details(bf_folder):
                 file_details["content"]["name"], file_details["extension"]
             )
 
-        # file_extension = splitext(file_name_with_extension)[1]
-        # file_name_with_extension = splitext(file.name)[0] + file_extension
         bf_existing_files_name_with_extension.append(file_name_with_extension)
 
     return (
@@ -2353,8 +2244,6 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     global main_total_generate_dataset_size
     global start_generate
     global main_initial_bfdataset_size
-    # global progress_percentage
-    # global progress_percentage_array
     bfsd = ""
 
     # Delete any files on Pennsieve that have been marked as deleted
@@ -2593,8 +2482,6 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
     global main_curation_uploaded_files
     global uploaded_folder_counter
     global current_size_of_uploaded_files
-    # global progress_percentage
-    # global progress_percentage_array
 
     uploaded_folder_counter = 0
     current_size_of_uploaded_files = 0

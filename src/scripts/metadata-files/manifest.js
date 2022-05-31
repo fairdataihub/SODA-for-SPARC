@@ -996,7 +996,6 @@ async function extractBFDatasetForManifestFile(
       continueErrorManifest = [true, err];
     }
     if (continueErrorManifest[0]) {
-      // return [true, emessage]
       Swal.fire({
         title: "Failed to load the manifest files for edits.",
         html: continueErrorManifest[1],
@@ -1676,11 +1675,6 @@ function checkInvalidHighLevelFolders(datasetStructure) {
 // function to generate edited manifest files onto Pennsieve (basically just upload the local SODA Manifest Files folder to Pennsieve)
 function generateAfterEdits() {
   let dir = path.join(homeDirectory, "SODA", "manifest_files");
-  // // 1. delete json files
-  // 2. convert local SODA Manifest Files folder to sodaJsonObj
-  // a. generate options: existing-folders: "merge", "existing-files": "replace"
-  // b. starting-point: "local"
-  // c. starting-point, "local-destination": sodaJSONObj["manifest-files"]["local-destination"] = path.join(homeDirectory, "SODA");
   // set up sodaJSonObject
   sodaJSONObj = {
     "bf-account-selected": {},
@@ -1704,6 +1698,6 @@ function generateAfterEdits() {
     "if-existing-files": "replace",
     "generate-option": "new",
   };
-  // 3. generate on Pennsieve: call the function
+  // generate on Pennsieve: call the function
   initiate_generate_manifest_bf();
 }

@@ -749,7 +749,7 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
 
     return transposeMatrix(sortMatrix)
 
-
+### function to read existing Pennsieve manifest files and load info into a dictionary
 def convert_manifest_to_dict(url):
 
     manifest_df = pd.read_excel(url, engine="openpyxl", usecols=column_check, header=0)
@@ -759,14 +759,12 @@ def convert_manifest_to_dict(url):
 
     return manifest_df.to_dict()
 
-
 def checkEmptyColumn(column):
     for element in column:
         if element:
             break
         return True
     return False
-
 
 # needed to sort subjects and samples table data to match the UI fields
 def sortedSubjectsTableData(matrix, fields):
@@ -948,7 +946,6 @@ def import_bf_RC(bfaccount, bfdataset, file_type):
 # path to local SODA folder for saving manifest files
 manifest_folder_path = join(userpath, "SODA", "manifest_files")
 
-
 def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
     bf = Pennsieve(bfaccount)
     myds = bf.get_dataset(bfdataset)
@@ -961,19 +958,9 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
 
     no_manifest_boolean = False
 
-    #
-    # # create local folder to save manifest files temporarly (delete any existing one first)
-    # shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
-    # makedirs(manifest_folder_path)
-
-    # if "folders" in dataset_structure:
-    #
-    #     for high_level_folder in list(dataset_structure["folders"]):
-    #
-    #         folderpath = join(manifest_folder_path, high_level_folder)
-    #         makedirs(folderpath)
-
-    # now, overwrite existing (fresh) manifest files with any existing manifest files from Pennsieve.
+    # now, overwrite existing (created by SODA) manifest files with existing manifest files from Pennsieve (if there's any).
+    # doing this allows for high level folders with no manifest files to get manifest files created by SODA while also allows for folders that
+    # already have manifest files be read and loaded onto SODA for edits.
     for i in range(len(myds.items)):
 
         if myds.items[i].name in [
@@ -998,33 +985,9 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
                     )
                     manifest_df.to_excel(filepath, index=False)
                     no_manifest_boolean = True
+
+                    # break because we only need to read the "manifest.xlsx" file in each high level folder.
                     break
-                    # TODO: allow for manifest.csv edits (after converting csv to xlsx).
-                    # Uploading the manifest.xlsx file (after edits) will replace any existing manifest.csv
-
-                    # if myds.items[i][j].name == "manifest.csv":
-                    #     item_id = myds.items[i][j].id
-                    #     url = returnFileURL(bf, item_id)
-                    #
-                    #     manifest_df = pd.read_csv(
-                    #         url, usecols=column_check, header=0
-                    #     )
-                    #
-                    #     filepath = join(manifest_folder_path, myds.items[i].name, "manifest.xlsx")
-                    #     manifest_df.to_excel(filepath, index=False)
-                    #
-                    #     no_manifest_boolean = True
-                    #
-                    #     break
-    #
-    # if not no_manifest_boolean:
-    #
-    #     shutil.rmtree(manifest_folder_path)
-    #
-    #     raise Exception(
-    #         f"No manifest.xlsx file was found at the root of the dataset provided."
-    #     )
-
 
 def copytree(src, dst, symlinks=False, ignore=None):
     for item in os.listdir(src):
@@ -1208,8 +1171,3 @@ def load_existing_DD_file(import_type, filepath):
     }
 
     return transformedObj
-
-
-def delete_manifest_dummy_folders(userpath_list):
-    for userpath in userpath_list:
-        shutil.rmtree(userpath) if isdir(userpath) else 0
