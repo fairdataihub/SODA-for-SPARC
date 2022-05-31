@@ -1,4 +1,4 @@
-from startup import echo 
+from startup import echo, get_api_version
 from flask_restx import Resource
 from namespaces import get_namespace, NamespaceEnum
 from flask import request
@@ -14,3 +14,9 @@ class Echo(Resource):
     def get(self):
         args = parser.parse_args()
         return args["arg"]
+
+
+@api.route("/minimum_api_version")
+class MinimumApiVersion(Resource):
+    def get(self):
+        return get_api_version()
