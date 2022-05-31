@@ -148,7 +148,7 @@ console.log("Current SODA version:", appVersion);
 // let client = new zerorpc.Client({ timeout: 300000 });
 // client.connect("tcp://127.0.0.1:4242");
 
-let client = null
+let client = null;
 
 client = axios.create({
   baseURL: "http://127.0.0.1:4242/",
@@ -557,13 +557,13 @@ const run_pre_flight_checks = async (check_update = true) => {
 const serverIsLiveStartup = async () => {
     let responseObject = await client.get("/startup/echo?arg=server ready")
 
-    let response = responseObject.data
+  let response = responseObject.data;
 
-    if (response != "server ready") {
-      throw new Error("Server is not live")    
-    }
+  if (response != "server ready") {
+    throw new Error("Server is not live");
+  }
 
-    return true
+  return true;
 };
 
 // Check if the Pysoda server API version and the package.json versions match
