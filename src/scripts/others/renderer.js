@@ -2,7 +2,6 @@
 // Import required modules
 //////////////////////////////////
 
-
 const zerorpc = require("zerorpc");
 const fs = require("fs-extra");
 const os = require("os");
