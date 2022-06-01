@@ -34,6 +34,9 @@ const ini = require("ini");
 const { homedir } = require("os");
 const cognitoClient = require("amazon-cognito-identity-js");
 const diskCheck = require("check-disk-space").default;
+const validator = require("validator");
+const doiRegex = require("doi-regex");
+const lottie = require("lottie-web");
 // TODO: Test with a build
 const {
   datasetUploadSession,
@@ -141,12 +144,134 @@ console.log("User OS:", os.type(), os.platform(), "version:", os.release());
 const appVersion = window.require("electron").remote.app.getVersion();
 log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
+let over_view_section = document.getElementById("getting_started-section");
+let column1 = document.getElementById("lottie1");
+let column2 = document.getElementById("lottie2");
+let column3 = document.getElementById("lottie3");
+
+var observer = new MutationObserver(function (mutations) {
+  mutations.forEach(function (mutation) {
+    var attributeValue = $(mutation.target).prop(mutation.attributeName);
+
+    if (attributeValue.includes("is-shown") == true) {
+      //add lotties
+      column1.innerText = "";
+      column2.innerText = "";
+      column3.innerText = "";
+
+      var column1_lottie = lottie.loadAnimation({
+        container: column1,
+        animationData:
+          column1Lottie /*(json js variable, (view src/assets/lotties)*/,
+        renderer: "svg",
+        loop: true /*controls looping*/,
+        autoplay: true,
+      });
+      var column2_lottie = lottie.loadAnimation({
+        container: column2,
+        animationData:
+          column2Lottie /*(json js variable, (view src/assets/lotties)*/,
+        renderer: "svg",
+        loop: true /*controls looping*/,
+        autoplay: true,
+      });
+      var column3_lottie = lottie.loadAnimation({
+        container: column3,
+        animationData: column3Lottie,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+    } else {
+      column1.innerText = "";
+      column2.innerText = "";
+      column3.innerText = "";
+      lottie.stop(column1_lottie);
+      lottie.stop(column2_lottie);
+      lottie.stop(column3_lottie);
+    }
+  });
+});
+
+observer.observe(over_view_section, {
+  attributes: true,
+  attributeFilter: ["class"],
+});
+document.getElementById("getting_starting_tab").click();
 
 //////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
 let client = new zerorpc.Client({ timeout: 300000 });
 client.connect("tcp://127.0.0.1:4242");
+client.invoke("echo", "server ready", (error, res) => {
+  if (error || res !== "server ready") {
+    log.error(error);
+    console.error(error);
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Establishing Python Connection",
+      error
+    );
+    Swal.fire({
+      icon: "error",
+      html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Restart now",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        app.relaunch();
+        app.exit();
+      }
+    });
+  } else {
+    console.log("Connected to Python back-end successfully");
+    log.info("Connected to Python back-end successfully");
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Establishing Python Connection"
+    );
+
+    // verify backend api versions
+    client.invoke("api_version_check", (error, res) => {
+      if (error || res !== appVersion) {
+        log.error(error);
+        console.error(error);
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Verifying App Version",
+          error
+        );
+
+        Swal.fire({
+          icon: "error",
+          html: `The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "Close now",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            app.exit();
+          }
+        });
+      } else {
+        ipcRenderer.send("track-event", "Success", "Verifying App Version");
+
+        //Load Default/global Pennsieve account if available
+        updateBfAccountList();
+        checkNewAppVersion(); // Added so that version will be displayed for new users
+      }
+    });
+  }
+});
 
 const notyf = new Notyf({
   position: { x: "right", y: "bottom" },
@@ -6360,7 +6485,7 @@ ipcRenderer.on(
                   return;
                 }
 
-                var numb = document.querySelector(".number");
+                let numb = document.getElementById("local_dataset_number");
                 numb.innerText = "0%";
                 progressBar_rightSide = document.getElementById(
                   "left-side_less_than_50"
@@ -6412,30 +6537,34 @@ ipcRenderer.on(
 
                         if (finished === 1) {
                           progressBar_leftSide.style.transform = `rotate(180deg)`;
-                          numb.innerText = "100%";
-                          clearInterval(local_progress);
-                          progressBar_rightSide.classList.remove(
-                            "notransition"
-                          );
-                          populate_existing_folders(datasetStructureJSONObj);
-                          populate_existing_metadata(sodaJSONObj);
-                          $(
-                            "#para-continue-location-dataset-getting-started"
-                          ).text("Please continue below.");
-                          $("#nextBtn").prop("disabled", false);
-                          // log the success to analytics
-                          logMetadataForAnalytics(
-                            "Success",
-                            PrepareDatasetsAnalyticsPrefix.CURATE,
-                            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-                            Actions.EXISTING,
-                            Destinations.LOCAL
-                          );
-                          setTimeout(() => {
-                            document.getElementById(
-                              "loading_local_dataset"
-                            ).style.display = "none";
-                          }, 1000);
+                          let numb_change = new Promise((resolve) => {
+                            numb.innerText = "100%";
+                            resolve();
+                          }).then(() => {
+                            clearInterval(local_progress);
+                            progressBar_rightSide.classList.remove(
+                              "notransition"
+                            );
+                            populate_existing_folders(datasetStructureJSONObj);
+                            populate_existing_metadata(sodaJSONObj);
+                            $(
+                              "#para-continue-location-dataset-getting-started"
+                            ).text("Please continue below.");
+                            $("#nextBtn").prop("disabled", false);
+                            // log the success to analytics
+                            logMetadataForAnalytics(
+                              "Success",
+                              PrepareDatasetsAnalyticsPrefix.CURATE,
+                              AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+                              Actions.EXISTING,
+                              Destinations.LOCAL
+                            );
+                            setTimeout(() => {
+                              document.getElementById(
+                                "loading_local_dataset"
+                              ).style.display = "none";
+                            }, 1000);
+                          });
                         }
                       }
                     }
@@ -6471,7 +6600,7 @@ ipcRenderer.on(
               );
               progressBar_leftSide.style.transform = `rotate(0deg)`;
               progressBar_rightSide.style.transform = `rotate(0deg)`;
-              let numb = document.querySelector(".number");
+              let numb = document.getElementById("local_dataset_number");
               numb.innerText = "0%";
 
               action = "";
@@ -7584,33 +7713,81 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
   }
 });
 
-var bf_request_and_populate_dataset = (sodaJSONObj) => {
-  return new Promise((resolve, reject) => {
-    client.invoke(
-      "api_bf_get_dataset_files_folders",
-      sodaJSONObj,
-      (error, res) => {
-        if (error) {
-          reject(userError(error));
-          log.error(error);
-          console.error(error);
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Retrieve Dataset - Pennsieve",
-            defaultBfDatasetId
-          );
+var bf_request_and_populate_dataset = async (sodaJSONObj) => {
+  let progress_container = document.getElementById("loading_pennsieve_dataset");
+  let percentage_text = document.getElementById(
+    "pennsieve_loading_dataset_percentage"
+  );
+  let left_progress_bar = document.getElementById(
+    "pennsieve_left-side_less_than_50"
+  );
+  let right_progress_bar = document.getElementById(
+    "pennsieve_right-side_greater_than_50"
+  );
+  percentage_text.innerText = "0%";
+  progress_container.style.display = "block";
+  left_progress_bar.style.transform = `rotate(0deg)`;
+  right_progress_bar.style.transform = `rotate(0deg)`;
+  let pennsieve_progress = setInterval(progressReport, 500);
+  function progressReport() {
+    client.invoke("api_monitor_pennsieve_json_progress", (error, res) => {
+      if (error) {
+        console.log(error);
+      } else {
+        let percentage_amount = res[2].toFixed(2);
+        finished = res[3];
+        percentage_text.innerText = percentage_amount + "%";
+        if (percentage_amount <= 50) {
+          left_progress_bar.style.transform = `rotate(${
+            percentage_amount * 0.01 * 360
+          }deg)`;
         } else {
-          resolve(res);
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Retrieve Dataset - Pennsieve",
-            defaultBfDatasetId
-          );
+          left_progress_bar.style.transition = "";
+          left_progress_bar.classList.add("notransition");
+          left_progress_bar.style.transform = `rotate(180deg)`;
+          right_progress_bar.style.transform = `rotate(${
+            percentage_amount * 0.01 * 180
+          }deg)`;
+        }
+
+        if (finished === 1) {
+          percentage_text.innerText = "100%";
+          left_progress_bar.style.transform = `rotate(180deg)`;
+          right_progress_bar.style.transform = `rotate(180deg)`;
+          right_progress_bar.classList.remove("notransition");
+          console.log(percentage_text.innerText);
+          clearInterval(pennsieve_progress);
+          setTimeout(() => {
+            progress_container.style.display = "none";
+          }, 2000);
         }
       }
-    );
+    });
+  }
+
+  return new Promise((resolve, reject) => {
+    client.invoke("api_import_pennsieve_dataset", sodaJSONObj, (error, res) => {
+      if (error) {
+        progress_container.style.display = "none";
+        reject(userError(error));
+        log.error(error);
+        console.error(error);
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Retrieve Dataset - Pennsieve",
+          defaultBfDatasetId
+        );
+      } else {
+        resolve(res);
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Retrieve Dataset - Pennsieve",
+          defaultBfDatasetId
+        );
+      }
+    });
   });
 };
 
@@ -8692,7 +8869,6 @@ const update_dataset_tags = async (datasetIdOrName, tags) => {
 
   // grab the dataset's id
   const id = dataset["content"]["id"];
-
   // setup the request options
   let options = {
     method: "PUT",
@@ -8753,7 +8929,6 @@ const getDatasetReadme = async (datasetIdOrName) => {
 
   // pull out the id from the result
   const id = dataset["content"]["id"];
-
   // fetch the readme file from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
   let readmeResponse = await fetch(
     `https://api.pennsieve.io/datasets/${id}/readme`,
@@ -8825,7 +9000,6 @@ const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
 
   // get the id out of the dataset
   let id = dataset.content.id;
-
   // put the new readme data in the readme on Pennsieve
   options = {
     method: "PUT",
@@ -9014,7 +9188,6 @@ const submitDatasetForPublication = async (
     `https://api.pennsieve.io/datasets/${id}/publication/request` + queryString,
     options
   );
-
   // get the status code out of the response
   let statusCode = publicationResponse.status;
 
@@ -9098,12 +9271,10 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
     // add the required publication type
     queryString = `?publicationType=publication`;
   }
-
   let withdrawResponse = await fetch(
     `https://api.pennsieve.io/datasets/${id}/publication/cancel${queryString}`,
     options
   );
-
   // get the status code out of the response
   let statusCode = withdrawResponse.status;
 
@@ -9180,7 +9351,6 @@ const getDatasetBannerImageURL = async (datasetIdOrName) => {
   let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
 
   let { id } = dataset["content"];
-
   // fetch the banner url from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
   let bannerResponse = await fetch(
     `https://api.pennsieve.io/datasets/${id}/banner`,
@@ -9192,7 +9362,6 @@ const getDatasetBannerImageURL = async (datasetIdOrName) => {
       },
     }
   );
-
   // get the status code out of the response
   let statusCode = bannerResponse.status;
 
@@ -9250,13 +9419,11 @@ const getCurrentUserPermissions = async (datasetIdOrName) => {
 
   // get the id out of the dataset
   let id = dataset.content.id;
-
   // get the user's permissions
   let permissionsResponse = await fetch(
     `https://api.pennsieve.io/datasets/${id}/role`,
     { headers: { Authorization: `Bearer ${jwt}` } }
   );
-
   // get the status code out of the response
   let statusCode = permissionsResponse.status;
 
@@ -9457,7 +9624,6 @@ const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
       headers: { Authorization: `Bearer ${jwt}` },
     }
   );
-
   // get the status code
   let statusCode = excludedFilesResponse.status;
 
@@ -9523,7 +9689,6 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
     `https://api.pennsieve.io/datasets/${id}/ignore-files`,
     options
   );
-
   // check the status code
   let { status } = excludeFilesResponse;
   switch (status) {
@@ -9578,7 +9743,6 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
       headers: { Authorization: `Bearer ${jwt}` },
     }
   );
-
   // check the status code
   let { status } = datasetWithChildrenResponse;
   switch (status) {
@@ -9956,3 +10120,32 @@ function gatherLogs() {
     }
   });
 }
+
+function gettingStarted() {
+  let getting_started = document.getElementById("main_tabs_view");
+  getting_started.click();
+}
+
+function sodaVideo() {
+  document.getElementById("overview-column-1").blur();
+  shell.openExternal(
+    "https://docs.sodaforsparc.io/docs/getting-started/user-interface"
+  );
+}
+
+function directToDocumentation() {
+  shell.openExternal(
+    "https://docs.sodaforsparc.io/docs/getting-started/organize-and-submit-sparc-datasets-with-soda"
+  );
+  document.getElementById("overview-column-2").blur();
+  // window.open('https://docs.sodaforsparc.io', '_blank');
+}
+
+document.getElementById("sodaVideo-btn").addEventListener("click", sodaVideo);
+document
+  .getElementById("direct-to-doc-button")
+  .addEventListener("click", directToDocumentation);
+document
+  .getElementById("getting-started-button")
+  .addEventListener("click", gettingStarted);
+

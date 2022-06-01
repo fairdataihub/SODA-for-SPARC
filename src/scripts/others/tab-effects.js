@@ -1785,9 +1785,9 @@ const verify_sparc_folder = (root_folder_path, type) => {
         possible_metadata_files.includes(path.parse(item).name)
       ) {
         valid_dataset = true;
+        break;
       } else {
         valid_dataset = false;
-        break;
       }
     } else {
       if (
@@ -1796,9 +1796,9 @@ const verify_sparc_folder = (root_folder_path, type) => {
         item.substring(0, 1) != "."
       ) {
         valid_dataset = true;
+        break;
       } else {
         valid_dataset = false;
-        break;
       }
     }
   }
@@ -1855,6 +1855,7 @@ async function transitionSubQuestionsButton(
     try {
       var res = await bf_request_and_populate_dataset(sodaJSONObj);
       result = [true, res];
+      console.log("requested here");
     } catch (err) {
       result = [false, err];
     }
@@ -1872,7 +1873,7 @@ async function transitionSubQuestionsButton(
       $("#nextBtn").prop("disabled", true);
       $("#para-continue-bf-dataset-getting-started").text("");
       $("body").removeClass("waiting");
-      $("#bf-dataset-spinner").css("visibility", "hidden");
+      // $("#bf-dataset-spinner").css("visibility", "hidden");
       showHideDropdownButtons("dataset", "hide");
       $("#current-bf-dataset").text("None");
       $(datasetPermissionDiv)
