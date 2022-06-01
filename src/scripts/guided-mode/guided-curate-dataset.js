@@ -551,11 +551,13 @@ const traverseToTab = (targetPageID) => {
       $(".selectpicker").selectpicker("refresh");
     }
     if (targetPageID === "guided-subjects-folder-tab") {
-      //Hide the footer div while user is in pool-sub-sam structuring
-      //wait one second then setActivateSubPage
       //setActivePage to the first page so subjects table updatesasd a
       setActiveSubPage("guided-specify-subjects-page");
+
+      //Hide the footer div while user is in pool-sub-sam structuring
       $("#guided-footer-div").hide();
+
+      //Show the pool-sub-sam footer
       $("#guided-pools-subject-sample-footer-div").css("display", "flex");
     }
 
@@ -1607,6 +1609,23 @@ guidedCreateSodaJSONObj = () => {
       ][subjectName];
     },
     moveSubjectOutOfPool: function (subjectName, poolName) {
+      console.log(subjectName);
+      console.log(poolName);
+      console.log(
+        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+          subjectName
+        ]
+      );
+      console.log(
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+          poolName
+        ][subjectName]
+      );
+      console.log(
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+          poolName
+        ][subjectName]
+      );
       this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
         subjectName
       ] =
@@ -3070,6 +3089,7 @@ const specifyPool = (event, poolNameInput) => {
           multiple="multiple"
         ></select>
       `;
+      const poolSubjectsDropdownCell = poolNameInput.parent().parent().next();
       const poolIdCellToAddNameTo = poolNameInput.parent();
       if (poolName.length > 0) {
         if (!subSamInputIsValid(poolName)) {
@@ -3080,12 +3100,13 @@ const specifyPool = (event, poolNameInput) => {
         removeAlertMessageIfExists(poolNameInput);
         if (poolNameInput.attr("data-prev-name")) {
           const poolFolderToRename = poolNameInput.attr("data-prev-name");
+
           sodaJSONObj.renamePool(poolFolderToRename, poolName);
+
+          //refresh the UI to update the dropdowns to avoid having to update select2 dropdowns
+          setActiveSubPage("guided-organize-subjects-into-pools-page");
+          return;
         } else {
-          const poolSubjectsDropdownCell = poolNameInput
-            .parent()
-            .parent()
-            .next();
           console.log(poolSubjectsDropdownCell);
           //Add left border back to subject dropdown cell to seperate pool name and subject dropdown
           poolSubjectsDropdownCell.removeClass("remove-left-border");
