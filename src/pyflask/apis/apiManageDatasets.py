@@ -178,6 +178,28 @@ class BfDefaultAccountLoad(Resource):
 class BfGetUsers(Resource):
   def get(self):
     try:
-      return bf_get_users()
+      # get the selected account out of the request args
+      selected_account = request.args.get('selected_account')
+      return bf_get_users(selected_account)
+    except Exception as e:
+      api.abort(500, e.args[0])
+
+@api.route('/bf_get_teams')
+class BfGetTeams(Resource):
+  def get(self):
+    try:
+      # get the selected account out of the request args
+      selected_account = request.args.get('selected_account')
+      return bf_get_teams(selected_account)
+    except Exception as e:
+      api.abort(500, e.args[0])
+
+@api.route('/bf_account_details')
+class BfAccountDetails(Resource):
+  def get(self):
+    try:
+      # get the selected account out of the request args
+      selected_account = request.args.get('selected_account')
+      return bf_account_details(selected_account)
     except Exception as e:
       api.abort(500, e.args[0])
