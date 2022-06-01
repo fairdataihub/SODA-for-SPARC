@@ -665,7 +665,6 @@ const nextPrev = (n) => {
         if (requiredFiles.includes(file_name)) {
           let element_index = requiredFiles.indexOf(file_name);
           requiredFiles.splice(element_index, 1);
-          console.log(requiredFiles);
           missingFiles = [];
           for (element in requiredFiles) {
             let swal_element = `<li>${requiredFiles[element]}</li>`;
@@ -674,9 +673,8 @@ const nextPrev = (n) => {
         }
       });
     } else {
-      for (element in requiredFiles) {
+      for (let element in requiredFiles) {
         let swal_element = `<li>${requiredFiles[element]}</li>`;
-        console.log(swal_element);
         missingFiles.push(swal_element);
       }
     }
