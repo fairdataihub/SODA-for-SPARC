@@ -10078,7 +10078,7 @@ function gatherLogs() {
 
           Swal.fire({
             title: "Success!",
-            text: `Succesfully created SODA-For-SPARC-Logs in ${file_path}`,
+            text: `Successfully created SODA-For-SPARC-Logs in ${file_path}`,
             icon: "success",
             showConfirmButton: true,
             heightAuto: false,
