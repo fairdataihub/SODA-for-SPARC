@@ -553,6 +553,7 @@ const traverseToTab = (targetPageID) => {
     if (targetPageID === "guided-subjects-folder-tab") {
       //Hide the footer div while user is in pool-sub-sam structuring
       $("#guided-footer-div").hide();
+      $("#guided-pools-subject-sample-footer-div").css("display", "flex");
     }
 
     if (targetPageID === "guided-folder-structure-preview-tab") {
@@ -1423,81 +1424,59 @@ guidedCreateSodaJSONObj = () => {
       ) {
         throw new Error("Subject names must be unique.");
       }
-      //Add "Sub-" to beginning of subject name
       this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
         subjectName
       ] = {};
     },
     renameSubject: function (prevSubjectName, newSubjectName) {
-      console.log(prevSubjectName, newSubjectName);
-      //check if name already exists
-      if (
-        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-          newSubjectName
-        ] ||
-        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
-          newSubjectName
-        ]
-      ) {
-        console.log("subject already exists");
-        throw new Error("Subject names must be unique.");
-      }
-      //check to see if subject is inside of a pool
-      if (
-        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-          prevSubjectName
-        ]
-      ) {
-        //rename nested prevSubjectName key to newSubjectName
-
-        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-          newSubjectName
-        ] =
+      const [subjectsInPools, subjectsOutsidePools] = this.getAllSubjects();
+      //Check subjectsInPools for a subject matching previousSubjectName
+      //if found, rename the subject
+      for (const subjectData of subjectsInPools) {
+        if (subjectData.subjectName === prevSubjectName) {
           this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-            prevSubjectName
-          ];
-        delete this["dataset-metadata"]["pool-subject-sample-structure"][
-          "pools"
-        ][prevSubjectName];
+            subjectData.poolName
+          ][newSubjectName] = subjectData;
+          delete this["dataset-metadata"]["pool-subject-sample-structure"][
+            "pools"
+          ][subjectData.poolName][prevSubjectName];
+          return;
+        }
       }
 
-      //check to see if subject is outside of a pool
-      if (
-        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
-          prevSubjectName
-        ]
-      ) {
-        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
-          newSubjectName
-        ] =
+      //Check subjectsOutsidePools for a subject matching previousSubjectName
+      //if found, rename the subject
+      for (const subjectData of subjectsOutsidePools) {
+        if (subjectData.subjectName === prevSubjectName) {
           this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
-            prevSubjectName
-          ];
-        delete this["dataset-metadata"]["pool-subject-sample-structure"][
-          "subjects"
-        ][prevSubjectName];
+            newSubjectName
+          ] = subjectData;
+          delete this["dataset-metadata"]["pool-subject-sample-structure"][
+            "subjects"
+          ][prevSubjectName];
+          return;
+        }
       }
     },
     deleteSubject: function (subjectName) {
-      //check to see if subject is inside of a pool
-      if (
-        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-          subjectName
-        ]
-      ) {
-        delete this["dataset-metadata"]["pool-subject-sample-structure"][
-          "pools"
-        ][subjectName];
+      const [subjectsInPools, subjectsOutsidePools] = this.getAllSubjects();
+      //Check subjectsInPools for a subject matching subjectName
+      //if found, delete from pool
+      for (const subjectData of subjectsInPools) {
+        if (subjectData.subjectName === subjectName) {
+          delete this["dataset-metadata"]["pool-subject-sample-structure"][
+            "pools"
+          ][subjectData.poolName][subjectName];
+        }
       }
-      //check to see if subject is outside of a pool
-      else if (
-        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
-          subjectName
-        ]
-      ) {
-        delete this["dataset-metadata"]["pool-subject-sample-structure"][
-          "subjects"
-        ][subjectName];
+      //Check subjectsOutsidePools for a subject matching subjectName
+      //if found, delete subject
+      for (const subjectData of subjectsOutsidePools) {
+        if (subjectData.subjectName === subjectName) {
+          delete this["dataset-metadata"]["pool-subject-sample-structure"][
+            "subjects"
+          ][subjectName];
+        }
       }
     },
     getSubjectsOutsidePools: function () {
@@ -2882,8 +2861,8 @@ const specifySubject = (event, subjectNameInput) => {
         }
         removeAlertMessageIfExists(subjectNameInput);
         if (subjectNameInput.attr("data-prev-name")) {
-          const subjectFolderToRename = subjectNameInput.attr("data-prev-name");
-          sodaJSONObj.renameSubject(subjectFolderToRename, subjectName);
+          const subjectToRename = subjectNameInput.attr("data-prev-name");
+          sodaJSONObj.renameSubject(subjectToRename, subjectName);
         } else {
           //case where subject name is valid and not being renamed:
           sodaJSONObj.addSubject(subjectName);
@@ -3424,9 +3403,15 @@ const deleteSubjectFolder = (subjectDeleteButton) => {
 const deleteSubject = (subjectDeleteButton) => {
   const subjectIdCellToDelete = subjectDeleteButton.closest("tr");
   const subjectIdToDelete = subjectIdCellToDelete.find(".subject-id").text();
+
+  //Check to see if a subject has been added to the element
+  //if it has, delete the subject from the pool-sub-sam structure
+  if (subjectIdToDelete) {
+    sodaJSONObj.deleteSubject(subjectIdToDelete);
+  }
+
   //delete the table row element in the UI
   subjectIdCellToDelete.remove();
-  sodaJSONObj.deleteSubject(subjectIdToDelete);
 };
 const deletePool = (poolDeleteButton) => {
   const poolIdCellToDelete = poolDeleteButton.closest("tr");
@@ -4594,9 +4579,13 @@ $(document).ready(() => {
       let datasetName = document
         .getElementById("guided-dataset-name-input")
         .value.trim();
+      //temp bypass stuff
+      datasetName = makeid("10");
       let datasetSubtitle = document
         .getElementById("guided-dataset-subtitle-input")
         .value.trim();
+      //temp bypass stuff
+      datasetSubtitle = makeid("10");
       if (datasetName != "" && datasetSubtitle != "") {
         //get names of existing progress saves
         const existingProgressNames = fs.readdirSync(guidedProgressFilePath);
@@ -4616,7 +4605,27 @@ $(document).ready(() => {
         console.log(existingProgressNames);
         //If sodaJSONObj is empty, populate initial object properties
         guidedCreateSodaJSONObj();
-        /*sodaJSONObj.addSubject("sub-1");
+
+        //Get the users information and set them as PI if a PI has not been designated yet
+        if (sodaJSONObj["digital-metadata"]["pi-owner"] == undefined) {
+          let user = await getUserInformation();
+          const originalDatasetCreator = {
+            userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
+            UUID: user["id"],
+            name: `${user["firstName"]} ${user["lastName"]}`,
+          };
+          setGuidedDatasetPiOwner(originalDatasetCreator);
+          generateAlertMessage($("#guided-designated-PI-info"));
+        }
+        setGuidedDatasetName(datasetName);
+        setGuidedDatasetSubtitle(datasetSubtitle);
+        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+
+        guidedTransitionFromDatasetNameSubtitlePage();
+
+        $("#guided-button-guided-dataset-structuring").click();
+        $("#guided-next-button").click();
+        sodaJSONObj.addSubject("sub-1");
         sodaJSONObj.addSubject("sub-2");
         sodaJSONObj.addSubject("sub-3");
         sodaJSONObj.addSubject("sub-4");
@@ -4651,24 +4660,7 @@ $(document).ready(() => {
 
         sodaJSONObj.addSampleToSubject("sam-1", "pool-1", "sub-1");
 
-        sodaJSONObj.addSampleToSubject("sam-15", "", "sub-7");*/
-
-        //Get the users information and set them as PI if a PI has not been designated yet
-        if (sodaJSONObj["digital-metadata"]["pi-owner"] == undefined) {
-          let user = await getUserInformation();
-          const originalDatasetCreator = {
-            userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
-            UUID: user["id"],
-            name: `${user["firstName"]} ${user["lastName"]}`,
-          };
-          setGuidedDatasetPiOwner(originalDatasetCreator);
-          generateAlertMessage($("#guided-designated-PI-info"));
-        }
-        setGuidedDatasetName(datasetName);
-        setGuidedDatasetSubtitle(datasetSubtitle);
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-
-        guidedTransitionFromDatasetNameSubtitlePage();
+        sodaJSONObj.addSampleToSubject("sam-15", "", "sub-7");
       } else {
         if (datasetName == "") {
           errorArray.push({
@@ -6482,6 +6474,7 @@ $(document).ready(() => {
       guidedButtonUserNoSubjects.classList.contains("selected")
     ) {
       $("#guided-footer-div").css("display", "flex");
+      $("#guided-pools-subject-sample-footer-div").hide();
       $("#guided-next-button").click();
       return;
     }
@@ -6493,7 +6486,6 @@ $(document).ready(() => {
 
     if (!organizeSubjectsIntoPoolsElement.classList.contains("hidden")) {
       setActiveSubPage("guided-specify-samples-page");
-
       scrollToBottomOfGuidedBody();
       return;
     }
@@ -6510,7 +6502,9 @@ $(document).ready(() => {
     );
     if (!specifySubjectsElement.classList.contains("hidden")) {
       $("#guided-footer-div").css("display", "flex");
+      $("#guided-pools-subject-sample-footer-div").hide();
       $("#guided-back-button").click();
+      return;
     }
 
     if (!specifySamplesElement.classList.contains("hidden")) {
@@ -7714,6 +7708,7 @@ $(document).ready(() => {
             "import-existing";
         }
       }
+
       if (pageBeingLeftID === "guided-subjects-folder-tab") {
         const skipSubSamFolderAndMetadataPages = () => {
           $("#guided-create-subjects-metadata-tab").attr(
