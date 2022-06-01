@@ -656,19 +656,19 @@ const nextPrev = (n) => {
       sodaJSONObj["metadata-files"] = {};
     }
 
-    if(Object.keys(sodaJSONObj["metadata-files"]).length > 0) {
+    if (Object.keys(sodaJSONObj["metadata-files"]).length > 0) {
       Object.keys(sodaJSONObj["metadata-files"]).forEach((element) => {
         let file_name = path.parse(element).name;
         if (!element.includes("-DELETED")) {
           withoutExtMetadataArray.push(path.parse(element).name);
         }
-        if(requiredFiles.includes(file_name)) {
+        if (requiredFiles.includes(file_name)) {
           let element_index = requiredFiles.indexOf(file_name);
           requiredFiles.splice(element_index, 1);
-          console.log(requiredFiles)
+          console.log(requiredFiles);
           missingFiles = [];
-          for(element in requiredFiles) {
-            let swal_element = `<li>${requiredFiles[element]}</li>`
+          for (element in requiredFiles) {
+            let swal_element = `<li>${requiredFiles[element]}</li>`;
             missingFiles.push(swal_element);
           }
         }
@@ -677,12 +677,14 @@ const nextPrev = (n) => {
       for (element in requiredFiles) {
         let swal_element = `<li>${requiredFiles[element]}</li>`;
         console.log(swal_element);
-        missingFiles.push(swal_element)
+        missingFiles.push(swal_element);
       }
     }
 
     if (missingFiles.length > 0) {
-      var notIncludedMessage = `<div style='text-align: left'>You did not include some of the following metadata files that are typically expected for all SPARC datasets: <br><ol style='text-align: left'>${missingFiles.join('')} </ol>Are you sure you want to continue?</div>`;
+      var notIncludedMessage = `<div style='text-align: left'>You did not include some of the following metadata files that are typically expected for all SPARC datasets: <br><ol style='text-align: left'>${missingFiles.join(
+        ""
+      )} </ol>Are you sure you want to continue?</div>`;
       Swal.fire({
         allowOutsideClick: false,
         allowEscapeKey: false,
