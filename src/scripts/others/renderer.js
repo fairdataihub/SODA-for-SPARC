@@ -6,7 +6,7 @@ const zerorpc = require("zerorpc");
 const fs = require("fs-extra");
 const os = require("os");
 const path = require("path");
-const { ipcRenderer, BrowserWindow, ipcMain } = require("electron");
+const { ipcRenderer, BrowserWindow } = require("electron");
 const Editor = require("@toast-ui/editor");
 const remote = require("electron").remote;
 const { Notyf } = require("notyf");
@@ -9878,7 +9878,7 @@ function gatherLogs() {
     },
   }).then((result) => {
     if (result.isConfirmed === true) {
-      if (file_path != undefined || file_path != "") {
+      if (file_path !== undefined || file_path !== "") {
         Swal.fire({
           title: "Creating log folder",
           html: "Please wait...",
