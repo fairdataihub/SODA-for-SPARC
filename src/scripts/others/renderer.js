@@ -9817,12 +9817,10 @@ $("#validate_dataset_bttn").on("click", async () => {
 
 function gatherLogs() {
   //function will be used to gather all logs on all OS's
-  console.log(os.type());
   let homedir = os.homedir();
   let file_path = "";
   let log_path = "";
   let log_files = ["main.log", "renderer.log", "out.log"];
-  console.log(homedir);
 
   if (os.type() === "Darwin") {
     log_path = path.join(homedir, "/Library/Logs/SODA for SPARC/");
@@ -9840,7 +9838,7 @@ function gatherLogs() {
 
   Swal.fire({
     title: "Select a destination to create log folder",
-    html: `<div><p>Please note that any log files that are in your destination already will be overwritten.</p></div><input class="form-control" id="selected-log-destination" type="text" readonly="" placeholder="Select a destination">`,
+    html: `<div style="margin-bottom:1rem;"><p>Please note that any log files that are in your destination already will be overwritten.</p></div><input class="form-control" id="selected-log-destination" type="text" readonly="" placeholder="Select a destination">`,
     heightAuto: false,
     showCancelButton: true,
     allowOutsideClick: false,
@@ -9850,17 +9848,14 @@ function gatherLogs() {
         "swal2-confirm swal2-styled"
       )[0];
       swal_alert_confirm.setAttribute("disabled", true);
-      console.log(swal_alert_confirm);
 
       let log_destination_input = document.getElementById(
         "selected-log-destination"
       );
       log_destination_input.addEventListener("click", function () {
         ipcRenderer.send("open-file-dialog-log-destination");
-        console.log("clicked");
       });
       ipcRenderer.on("selected-log-folder", (event, result) => {
-        console.log(result["filePaths"][0]);
         file_path = result["filePaths"][0];
         if (file_path != undefined) {
           log_destination_input.value = file_path;
@@ -9882,7 +9877,6 @@ function gatherLogs() {
       }
     },
   }).then((result) => {
-    console.log(result);
     if (result.isConfirmed === true) {
       if (file_path != undefined || file_path != "") {
         Swal.fire({
