@@ -9840,8 +9840,7 @@ function gatherLogs() {
 
   Swal.fire({
     title: "Select a destination to create log folder",
-    text: "Please note that if there are any log files already they will be overwritten.",
-    html: `<input class="form-control" id="selected-log-destination" type="text" readonly="" placeholder="Select a destination">`,
+    html: `<div><p>Please note that any log files that are in your destination already will be overwritten.</p></div><input class="form-control" id="selected-log-destination" type="text" readonly="" placeholder="Select a destination">`,
     heightAuto: false,
     showCancelButton: true,
     allowOutsideClick: false,
