@@ -552,6 +552,9 @@ const traverseToTab = (targetPageID) => {
     }
     if (targetPageID === "guided-subjects-folder-tab") {
       //Hide the footer div while user is in pool-sub-sam structuring
+      //wait one second then setActivateSubPage
+      //setActivePage to the first page so subjects table updatesasd a
+      setActiveSubPage("guided-specify-subjects-page");
       $("#guided-footer-div").hide();
       $("#guided-pools-subject-sample-footer-div").css("display", "flex");
     }
@@ -1008,6 +1011,100 @@ const traverseToTab = (targetPageID) => {
 const setActiveSubPage = (pageIdToActivate) => {
   const pageElementToActivate = document.getElementById(pageIdToActivate);
 
+  //create a switch statement for pageIdToActivate to load data from sodaJSONObj
+  //depending on page being opened
+  switch (pageIdToActivate) {
+    case "guided-specify-subjects-page": {
+      console.log("foo");
+      const [subjectsInPools, subjectsOutsidePools] =
+        sodaJSONObj.getAllSubjects();
+      //Combine sample data from subjects in and out of pools
+      let subjects = [...subjectsInPools, ...subjectsOutsidePools];
+      const subjectElementRows = subjects
+        .map((subject) => {
+          return generateSubjectRowElement(subject.subjectName);
+        })
+        .join("\n");
+      document.getElementById("subject-specification-table-body").innerHTML =
+        subjectElementRows;
+      break;
+    }
+
+    case "guided-organize-subjects-into-pools-page": {
+      const pools = sodaJSONObj.getPools();
+
+      const poolElementRows = Object.keys(pools)
+        .map((pool) => {
+          return generatePoolRowElement(pool);
+        })
+        .join("\n");
+      document.getElementById("pools-specification-table-body").innerHTML =
+        poolElementRows;
+
+      for (const poolName of Object.keys(pools)) {
+        const newPoolSubjectsSelectElement = document.querySelector(
+          `select[name="${poolName}-subjects-selection-dropdown"]`
+        );
+        //create a select2 dropdown for the pool subjects
+        $(newPoolSubjectsSelectElement).select2({
+          placeholder: "Select subjects",
+          tags: true,
+          width: "100%",
+          closeOnSelect: false,
+        });
+        //update the newPoolSubjectsElement with the subjects in the pool
+        updatePoolDropdown($(newPoolSubjectsSelectElement), poolName);
+        $(newPoolSubjectsSelectElement).on("select2:open", (e) => {
+          updatePoolDropdown($(e.currentTarget), poolName);
+        });
+        $(newPoolSubjectsSelectElement).on("select2:unselect", (e) => {
+          const subjectToRemove = e.params.data.id;
+          sodaJSONObj.moveSubjectOutOfPool(subjectToRemove, poolName);
+        });
+        $(newPoolSubjectsSelectElement).on("select2:select", function (e) {
+          const selectedSubject = e.params.data.id;
+          sodaJSONObj.moveSubjectIntoPool(selectedSubject, poolName);
+        });
+      }
+      break;
+    }
+
+    case "guided-specify-samples-page": {
+      const [subjectsInPools, subjectsOutsidePools] =
+        sodaJSONObj.getAllSubjects();
+      //Combine sample data from subjects in and out of pools
+      let subjects = [...subjectsInPools, ...subjectsOutsidePools];
+
+      //sort subjects object by subjectName property alphabetically
+      subjects = subjects.sort((a, b) => {
+        const subjectNameA = a.subjectName.toLowerCase();
+        const subjectNameB = b.subjectName.toLowerCase();
+        if (subjectNameA < subjectNameB) return -1;
+        if (subjectNameA > subjectNameB) return 1;
+        return 0;
+      });
+
+      console.log(subjects);
+
+      //Create the HTML for the subjects
+      const subjectSampleAdditionTables = subjects
+        .map((subject) => {
+          return renderSubjectSampleAdditionTable(subject);
+        })
+        .join("\n");
+      console.log(subjectSampleAdditionTables);
+
+      //Add the subject sample addition elements to the DOM
+      const subjectSampleAdditionTableContainer = document.getElementById(
+        "guided-div-add-samples-tables"
+      );
+
+      subjectSampleAdditionTableContainer.innerHTML =
+        subjectSampleAdditionTables;
+      break;
+    }
+  }
+
   //Show target page and hide its siblings
   pageElementToActivate.classList.remove("hidden");
   const pageElementSiblings = pageElementToActivate.parentElement.children;
@@ -1433,10 +1530,15 @@ guidedCreateSodaJSONObj = () => {
       //Check subjectsInPools for a subject matching previousSubjectName
       //if found, rename the subject
       for (const subjectData of subjectsInPools) {
+        console.log(subjectData);
         if (subjectData.subjectName === prevSubjectName) {
           this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
             subjectData.poolName
-          ][newSubjectName] = subjectData;
+          ][newSubjectName] =
+            this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+              subjectData.poolName
+            ][prevSubjectName];
+
           delete this["dataset-metadata"]["pool-subject-sample-structure"][
             "pools"
           ][subjectData.poolName][prevSubjectName];
@@ -1450,7 +1552,10 @@ guidedCreateSodaJSONObj = () => {
         if (subjectData.subjectName === prevSubjectName) {
           this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
             newSubjectName
-          ] = subjectData;
+          ] =
+            this["dataset-metadata"]["pool-subject-sample-structure"][
+              "subjects"
+            ][prevSubjectName];
           delete this["dataset-metadata"]["pool-subject-sample-structure"][
             "subjects"
           ][prevSubjectName];
@@ -4623,7 +4728,7 @@ $(document).ready(() => {
 
         guidedTransitionFromDatasetNameSubtitlePage();
 
-        $("#guided-button-guided-dataset-structuring").click();
+        /*$("#guided-button-guided-dataset-structuring").click();
         $("#guided-next-button").click();
         sodaJSONObj.addSubject("sub-1");
         sodaJSONObj.addSubject("sub-2");
@@ -4660,7 +4765,7 @@ $(document).ready(() => {
 
         sodaJSONObj.addSampleToSubject("sam-1", "pool-1", "sub-1");
 
-        sodaJSONObj.addSampleToSubject("sam-15", "", "sub-7");
+        sodaJSONObj.addSampleToSubject("sam-15", "", "sub-7");*/
       } else {
         if (datasetName == "") {
           errorArray.push({
@@ -6371,7 +6476,7 @@ $(document).ready(() => {
     $("#guided-add-subject-div").show();
   });
 
-  $("#guided-button-add-subjects-table").on("click", () => {
+  /*$("#guided-button-add-subjects-table").on("click", () => {
     const [subjectsInPools, subjectsOutsidePools] =
       sodaJSONObj.getAllSubjects();
     //Combine sample data from subjects in and out of pools
@@ -6383,9 +6488,9 @@ $(document).ready(() => {
       .join("\n");
     document.getElementById("subject-specification-table-body").innerHTML =
       subjectElementRows;
-  });
+  });*/
 
-  $("#guided-button-organize-subjects-into-pools").on("click", () => {
+  /*$("#guided-button-organize-subjects-into-pools").on("click", () => {
     const pools = sodaJSONObj.getPools();
 
     const poolElementRows = Object.keys(pools)
@@ -6421,9 +6526,9 @@ $(document).ready(() => {
         sodaJSONObj.moveSubjectIntoPool(selectedSubject, poolName);
       });
     }
-  });
+  });*/
 
-  $("#guided-button-add-samples-tables").on("click", () => {
+  /*$("#guided-button-add-samples-tables").on("click", () => {
     const [subjectsInPools, subjectsOutsidePools] =
       sodaJSONObj.getAllSubjects();
     //Combine sample data from subjects in and out of pools
@@ -6454,7 +6559,7 @@ $(document).ready(() => {
     );
 
     subjectSampleAdditionTableContainer.innerHTML = subjectSampleAdditionTables;
-  });
+  });*/
 
   $("#guided-button-sub-pool-sam-continue").on("click", () => {
     const specifySubjectsElement = document.getElementById(
