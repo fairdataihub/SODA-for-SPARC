@@ -666,10 +666,15 @@ def bf_account_details(accountname):
     Action:
         Returns: return details of user associated with the account
     """
+    print(accountname)
+
+    print(type(accountname))
     try:
         bf = Pennsieve(accountname)
         acc_details = "User email: " + bf.profile.email + "<br>"
         acc_details = acc_details + "Organization: " + bf.context.name
+
+
 
         if exists(configpath):
             config = ConfigParser()

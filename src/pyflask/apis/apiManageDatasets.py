@@ -203,3 +203,21 @@ class BfAccountDetails(Resource):
       return bf_account_details(selected_account)
     except Exception as e:
       api.abort(500, e.args[0])
+
+@api.route('/check_agent_install')
+class CheckAgentInstall(Resource):
+  def get(self):
+    try:
+      return check_agent_install()
+    except Exception as e:
+      api.abort(500, e.args[0])
+
+@api.route('/bf_dataset_account')
+class BfDatasetAccount(Resource):
+  def get(self):
+    try:
+      # get the selected account out of the request args
+      selected_account = request.args.get('selected_account')
+      return bf_dataset_account(selected_account)
+    except Exception as e:
+      api.abort(500, e.args[0])
