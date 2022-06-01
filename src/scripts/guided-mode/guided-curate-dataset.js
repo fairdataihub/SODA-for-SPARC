@@ -1709,7 +1709,7 @@ guidedCreateSodaJSONObj = () => {
           sampleName
         ]
       ) {
-        throw new Error("Sample names must be unique.");
+        throw new Error("Sample IDs must be unique for each subject.");
       } else {
         this["dataset-metadata"]["pool-subject-sample-structure"]["samples"][
           sampleName
@@ -1717,13 +1717,14 @@ guidedCreateSodaJSONObj = () => {
       }
     },
     addSampleToSubject: function (sampleName, subjectPoolName, subjectName) {
+      console.log(sampleName, subjectPoolName, subjectName);
       if (subjectPoolName) {
         if (
           this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
             subjectPoolName
           ][subjectName][sampleName]
         ) {
-          throw new Error("Sample names must be unique.");
+          throw new Error("Sample IDs must be unique for each subject.");
         }
         this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
           subjectPoolName
@@ -1734,7 +1735,7 @@ guidedCreateSodaJSONObj = () => {
             subjectName
           ][sampleName]
         ) {
-          throw new Error("Sample names must be unique.");
+          throw new Error("Sample IDs must be unique for each subject.");
         }
         this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
           subjectName
@@ -4318,20 +4319,52 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
     `guided-${highLevelFolderName}-samples-aside`
   );
   asideElement.innerHTML = "";
-  const [samplesInPools, samplesOutsidePools] =
-    sodaJSONObj.getAllSamplesFromSubjects();
-  //Combine sample data from samples in and out of pools
-  let samples = [...samplesInPools, ...samplesOutsidePools];
 
-  //sort samples object by sampleName property alphabetically
-  samples = samples.sort((a, b) => {
-    const sampleNameA = a.sampleName.toLowerCase();
-    const sampleNameB = b.sampleName.toLowerCase();
-    if (sampleNameA < sampleNameB) return -1;
-    if (sampleNameA > sampleNameB) return 1;
-    return 0;
+  const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+  //Combine sample data from subjects in and out of pools
+  let subjects = [...subjectsInPools, ...subjectsOutsidePools];
+
+  const subjectsWithSamples = subjects.filter((subject) => {
+    return subject.samples.length > 0;
   });
 
+  //create an array of objects that groups subjectsWithSamples by poolName property
+  const subjectsByPool = subjectsWithSamples.reduce((acc, subject) => {
+    if (subject.poolName) {
+      if (acc[subject.poolName]) {
+        acc[subject.poolName].push(subject);
+      } else {
+        acc[subject.poolName] = [subject];
+      }
+    }
+    return acc;
+  }, {});
+  console.log(subjectsByPool);
+  let string = "";
+  for (const [poolName, subjects] of Object.entries(subjectsByPool)) {
+    //concat to string
+    string += `
+      <div>${poolName}</div>
+        ${subjects
+          .map((subject) => {
+            console.log(subject);
+            return `
+            <div>${subject.subjectName}</div>
+              ${subject.samples
+                .map((sample) => {
+                  return `
+                  <a 
+                    class="${highLevelFolderName}-selection-aside-item selection-aside-item"
+                    data-path-suffix="${subject.poolName}/${subject.subjectName}/${sample}"
+                  >${sample}</a>
+                `;
+                })
+                .join("\n")}
+          `;
+          })
+          .join("\n")}
+    `;
+  } /*
   //Create the HTML for the samples
   const sampleItems = samples
     .map((sample) => {
@@ -4344,10 +4377,10 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
         >${sample.sampleName}</a>
       `;
     })
-    .join("\n");
+    .join("\n");*/
 
   //Add the samples to the DOM
-  asideElement.innerHTML = sampleItems;
+  asideElement.innerHTML = string;
 
   //add click event to each sample item
   const selectionAsideItems = document.querySelectorAll(
@@ -4749,7 +4782,7 @@ $(document).ready(() => {
 
         guidedTransitionFromDatasetNameSubtitlePage();
 
-        /*$("#guided-button-guided-dataset-structuring").click();
+        $("#guided-button-guided-dataset-structuring").click();
         $("#guided-next-button").click();
         sodaJSONObj.addSubject("sub-1");
         sodaJSONObj.addSubject("sub-2");
@@ -4758,35 +4791,66 @@ $(document).ready(() => {
         sodaJSONObj.addSubject("sub-5");
         sodaJSONObj.addSubject("sub-6");
         sodaJSONObj.addSubject("sub-7");
+        sodaJSONObj.addSubject("sub-8");
+        sodaJSONObj.addSubject("sub-9");
+        sodaJSONObj.addSubject("sub-10");
+        sodaJSONObj.addSubject("sub-11");
+        sodaJSONObj.addSubject("sub-12");
+        sodaJSONObj.addSubject("sub-13");
+        sodaJSONObj.addSubject("sub-14");
+        sodaJSONObj.addSubject("sub-15");
+        sodaJSONObj.addSubject("sub-16");
+        sodaJSONObj.addSubject("sub-17");
+        sodaJSONObj.addSubject("sub-18");
+        sodaJSONObj.addSubject("sub-19");
+        sodaJSONObj.addSubject("sub-20");
+        sodaJSONObj.addSubject("sub-21");
+        sodaJSONObj.addSubject("sub-22");
+        sodaJSONObj.addSubject("sub-23");
+        sodaJSONObj.addSubject("sub-24");
+        sodaJSONObj.addSubject("sub-25");
+        sodaJSONObj.addSubject("sub-26");
+        sodaJSONObj.addSubject("sub-27");
+        sodaJSONObj.addSubject("sub-28");
+        sodaJSONObj.addSubject("sub-29");
+        sodaJSONObj.addSubject("sub-30");
+
         sodaJSONObj.addPool("pool-1");
         sodaJSONObj.addPool("pool-2");
         sodaJSONObj.addPool("pool-3");
         sodaJSONObj.addPool("pool-4");
+        sodaJSONObj.addPool("pool-5");
+        sodaJSONObj.addPool("pool-6");
+        sodaJSONObj.addPool("pool-7");
+        sodaJSONObj.addPool("pool-8");
+        sodaJSONObj.addPool("pool-9");
+        sodaJSONObj.addPool("pool-10");
         sodaJSONObj.moveSubjectIntoPool("sub-1", "pool-1");
         sodaJSONObj.moveSubjectIntoPool("sub-2", "pool-1");
-        sodaJSONObj.moveSubjectIntoPool("sub-3", "pool-2");
-        sodaJSONObj.moveSubjectIntoPool("sub-4", "pool-2");
-        sodaJSONObj.moveSubjectIntoPool("sub-5", "pool-3");
-        sodaJSONObj.moveSubjectIntoPool("sub-6", "pool-3");
-        sodaJSONObj.addSample("sam-1");
-        sodaJSONObj.addSample("sam-2");
-        sodaJSONObj.addSample("sam-3");
-        sodaJSONObj.addSample("sam-4");
-        sodaJSONObj.addSample("sam-5");
-        sodaJSONObj.addSample("sam-6");
-        sodaJSONObj.addSample("sam-7");
-        sodaJSONObj.addSample("sam-8");
-        sodaJSONObj.addSample("sam-9");
-        sodaJSONObj.addSample("sam-10");
-        sodaJSONObj.addSample("sam-11");
-        sodaJSONObj.addSample("sam-12");
-        sodaJSONObj.addSample("sam-13");
-        sodaJSONObj.addSample("sam-14");
-        sodaJSONObj.addSample("sam-15");
+        sodaJSONObj.moveSubjectIntoPool("sub-3", "pool-1");
+        sodaJSONObj.moveSubjectIntoPool("sub-4", "pool-1");
+        sodaJSONObj.moveSubjectIntoPool("sub-5", "pool-1");
+        sodaJSONObj.moveSubjectIntoPool("sub-6", "pool-2");
+        sodaJSONObj.moveSubjectIntoPool("sub-7", "pool-2");
+        sodaJSONObj.moveSubjectIntoPool("sub-8", "pool-2");
+        sodaJSONObj.moveSubjectIntoPool("sub-9", "pool-2");
+        sodaJSONObj.moveSubjectIntoPool("sub-10", "pool-2");
 
-        sodaJSONObj.addSampleToSubject("sam-1", "pool-1", "sub-1");
+        sodaJSONObj.addSampleToSubject("sam-asdf", "pool-1", "sub-1");
+        sodaJSONObj.addSampleToSubject("sam-2", "pool-1", "sub-1");
+        sodaJSONObj.addSampleToSubject("sam-3", "pool-1", "sub-1");
+        sodaJSONObj.addSampleToSubject("sam-4", "pool-1", "sub-1");
+        sodaJSONObj.addSampleToSubject("sam-5", "pool-1", "sub-1");
+        //(sampleName, subjectPoolName, subjectName)
+        sodaJSONObj.addSampleToSubject("sam-1", "pool-1", "sub-2");
+        sodaJSONObj.addSampleToSubject("sam-2", "pool-1", "sub-2");
+        sodaJSONObj.addSampleToSubject("sam-3", "pool-1", "sub-2");
 
-        sodaJSONObj.addSampleToSubject("sam-15", "", "sub-7");*/
+        sodaJSONObj.addSampleToSubject("sam-1", "pool-2", "sub-10");
+        sodaJSONObj.addSampleToSubject("sam-2", "pool-2", "sub-10");
+        sodaJSONObj.addSampleToSubject("sam-3", "pool-2", "sub-10");
+        sodaJSONObj.addSampleToSubject("sam-4", "pool-2", "sub-10");
+        sodaJSONObj.addSampleToSubject("sam-5", "pool-2", "sub-10");
       } else {
         if (datasetName == "") {
           errorArray.push({
