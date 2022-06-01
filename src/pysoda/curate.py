@@ -1163,6 +1163,7 @@ def check_local_dataset_files_validity(soda_json_structure):
 manifest_sparc = ["manifest.xlsx", "manifest.csv"]
 manifest_folder_path = join(userpath, "SODA", "manifest_files")
 
+
 def create_high_level_manifest_files(soda_json_structure):
     """
     Function to create manifest files for each high-level SPARC folder.
@@ -1312,6 +1313,7 @@ def create_high_level_manifest_files(soda_json_structure):
 
     except Exception as e:
         raise e
+
 
 # This function is called to check size of files
 # that will be created locally on a user's device
@@ -1509,6 +1511,7 @@ def generate_dataset_locally(soda_json_structure):
 
     except Exception as e:
         raise e
+
 
 def mymovefile_with_metadata(src, dst):
     shutil.move(src, dst)
