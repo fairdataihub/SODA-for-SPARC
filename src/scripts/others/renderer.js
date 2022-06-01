@@ -579,7 +579,7 @@ const apiVersionsMatch = async () => {
   let responseObject;
 
   try {
-    responseObject = await client.get("/startup/minimum_api_version")
+    responseObject = await client.get("/startup/minimum_api_version");
   } catch (e) {
     log.error(error);
     console.error(error);
@@ -3597,28 +3597,31 @@ function refreshBfUsersList() {
   bfListUsersPI.appendChild(optionUserPI);
 
   if (accountSelected !== "Select") {
-    client.get(`manage_datasets/bf_get_users?selected_bfaccount=${accountSelected}`).then(res => {
-      // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
-      $("#bf_list_users").selectpicker("refresh");
-      $("#bf_list_users").find("option:not(:first)").remove();
-      $("#button-add-permission-user").hide();
-      $("#bf_list_users_pi").selectpicker("refresh");
-      $("#bf_list_users_pi").find("option:not(:first)").remove();
-      for (var myItem in res) {
-        // returns like [..,''fname lname email !!**!! pennsieve_id',',..]
-        let sep_pos = res[myItem].lastIndexOf("!|**|!");
-        var myUser = res[myItem].substring(0, sep_pos);
-        var optionUser = document.createElement("option");
-        optionUser.textContent = myUser;
-        optionUser.value = res[myItem].substring(sep_pos + 6);
-        bfListUsers.appendChild(optionUser);
-        var optionUser2 = optionUser.cloneNode(true);
-        bfListUsersPI.appendChild(optionUser2);
-      }
-    }).catch(error => {
-      log.error(error);
-      console.error(error);
-    })
+    client
+      .get(`manage_datasets/bf_get_users?selected_bfaccount=${accountSelected}`)
+      .then((res) => {
+        // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
+        $("#bf_list_users").selectpicker("refresh");
+        $("#bf_list_users").find("option:not(:first)").remove();
+        $("#button-add-permission-user").hide();
+        $("#bf_list_users_pi").selectpicker("refresh");
+        $("#bf_list_users_pi").find("option:not(:first)").remove();
+        for (var myItem in res) {
+          // returns like [..,''fname lname email !!**!! pennsieve_id',',..]
+          let sep_pos = res[myItem].lastIndexOf("!|**|!");
+          var myUser = res[myItem].substring(0, sep_pos);
+          var optionUser = document.createElement("option");
+          optionUser.textContent = myUser;
+          optionUser.value = res[myItem].substring(sep_pos + 6);
+          bfListUsers.appendChild(optionUser);
+          var optionUser2 = optionUser.cloneNode(true);
+          bfListUsersPI.appendChild(optionUser2);
+        }
+      })
+      .catch((error) => {
+        log.error(error);
+        console.error(error);
+      });
   }
 }
 
@@ -3703,51 +3706,56 @@ const populateDatasetDropdowns = (mylist) => {
 ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
 
 function loadDefaultAccount() {
-  client.get("/manage_datasets/bf_default_account_load").then(res => {
-    if (res.length > 0) {
-      var myitemselect = res[0];
-      defaultBfAccount = myitemselect;
-      $("#current-bf-account").text(myitemselect);
-      $("#current-bf-account-generate").text(myitemselect);
-      $("#create_empty_dataset_BF_account_span").text(myitemselect);
-      $(".bf-account-span").text(myitemselect);
-      showHideDropdownButtons("account", "show");
-      refreshBfUsersList();
-      refreshBfTeamsList(bfListTeams);
-    }
-  }).catch(e => {
-    log.error(error);
-    console.error(error);
-    confirm_click_account_function();
-    console.log("Could not get default account");
-  })
+  client
+    .get("/manage_datasets/bf_default_account_load")
+    .then((res) => {
+      if (res.length > 0) {
+        var myitemselect = res[0];
+        defaultBfAccount = myitemselect;
+        $("#current-bf-account").text(myitemselect);
+        $("#current-bf-account-generate").text(myitemselect);
+        $("#create_empty_dataset_BF_account_span").text(myitemselect);
+        $(".bf-account-span").text(myitemselect);
+        showHideDropdownButtons("account", "show");
+        refreshBfUsersList();
+        refreshBfTeamsList(bfListTeams);
+      }
+    })
+    .catch((e) => {
+      log.error(error);
+      console.error(error);
+      confirm_click_account_function();
+      console.log("Could not get default account");
+    });
 }
 
 function updateBfAccountList() {
-  client.get("manage_datasets/bf_account_list").then(res => {
-    for (myitem in res) {
-      var myitemselect = res[myitem];
-      var option = document.createElement("option");
-      option.textContent = myitemselect;
-      option.value = myitemselect;
-      var option2 = option.cloneNode(true);
-    }
-    loadDefaultAccount();
-    if (res[0] === "Select" && res.length === 1) {
-      // todo: no existing accounts to load
-    }
-    refreshBfUsersList();
-    refreshBfTeamsList(bfListTeams);
-  }).catch(err => {
-    log.error(error);
-    console.error(error);
-    var emessage = userError(error);
-    confirm_click_account_function();
-    refreshBfUsersList();
-    refreshBfTeamsList(bfListTeams);
-  })
+  client
+    .get("manage_datasets/bf_account_list")
+    .then((res) => {
+      for (myitem in res) {
+        var myitemselect = res[myitem];
+        var option = document.createElement("option");
+        option.textContent = myitemselect;
+        option.value = myitemselect;
+        var option2 = option.cloneNode(true);
+      }
+      loadDefaultAccount();
+      if (res[0] === "Select" && res.length === 1) {
+        // todo: no existing accounts to load
+      }
+      refreshBfUsersList();
+      refreshBfTeamsList(bfListTeams);
+    })
+    .catch((err) => {
+      log.error(error);
+      console.error(error);
+      var emessage = userError(error);
+      confirm_click_account_function();
+      refreshBfUsersList();
+      refreshBfTeamsList(bfListTeams);
+    });
 }
-
 
 const showPrePublishingPageElements = () => {
   var selectedBfAccount = defaultBfAccount;
