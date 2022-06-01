@@ -10148,4 +10148,3 @@ document
 document
   .getElementById("getting-started-button")
   .addEventListener("click", gettingStarted);
-
