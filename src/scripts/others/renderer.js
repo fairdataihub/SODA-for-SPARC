@@ -155,7 +155,6 @@ client = axios.create({
   timeout: 300000,
 });
 
-
 const notyf = new Notyf({
   position: { x: "right", y: "bottom" },
   ripple: true,
@@ -376,12 +375,12 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
     await wait(1000);
   }
 
-  log.info("Done with startup")
+  log.info("Done with startup");
 
   // check integrity of all the core systems
   await run_pre_flight_checks();
 
-  log.info("Running pre flight checks finished")
+  log.info("Running pre flight checks finished");
 
   // get apps base path
   const basepath = app.getAppPath();
@@ -561,21 +560,20 @@ const run_pre_flight_checks = async (check_update = true) => {
 
 // Check if the Pysoda server is live
 const serverIsLiveStartup = async () => {
-
   let echoResponseObject;
 
   try {
-    echoResponseObject = await client.get("/startup/echo?arg=server ready")
+    echoResponseObject = await client.get("/startup/echo?arg=server ready");
   } catch {
-    throw new Error("Server did not connect")
+    throw new Error("Server did not connect");
   }
 
-  let echoResponse = echoResponseObject.data
+  let echoResponse = echoResponseObject.data;
 
-  console.log(`Echo response is: ${echoResponse}`)
-  log.info(`Echo response is: ${echoResponse}`)
+  console.log(`Echo response is: ${echoResponse}`);
+  log.info(`Echo response is: ${echoResponse}`);
 
-  return echoResponse === "server ready" ? true : false
+  return echoResponse === "server ready" ? true : false;
 };
 
 // Check if the Pysoda server API version and the package.json versions match
@@ -589,16 +587,11 @@ const apiVersionsMatch = async () => {
   let responseObject;
 
   try {
-    responseObject = await client.get("/startup/minimum_api_version")
+    responseObject = await client.get("/startup/minimum_api_version");
   } catch (e) {
     log.error(error);
     console.error(error);
-    ipcRenderer.send(
-      "track-event",
-      "Error",
-      "Verifying App Version",
-      error
-    );
+    ipcRenderer.send("track-event", "Error", "Verifying App Version", error);
 
     await Swal.fire({
       icon: "error",
@@ -610,25 +603,19 @@ const apiVersionsMatch = async () => {
       allowEscapeKey: false,
     });
 
-    throw e
+    throw e;
   }
 
-  let serverAppVersion = responseObject.data.version
+  let serverAppVersion = responseObject.data.version;
 
-  log.info(`Server version is ${serverAppVersion}`)
+  log.info(`Server version is ${serverAppVersion}`);
 
   if (serverAppVersion !== appVersion) {
-
-    log.info("Server version does not match client version")
+    log.info("Server version does not match client version");
 
     log.error(error);
     console.error(error);
-    ipcRenderer.send(
-      "track-event",
-      "Error",
-      "Verifying App Version",
-      error
-    );
+    ipcRenderer.send("track-event", "Error", "Verifying App Version", error);
 
     await Swal.fire({
       icon: "error",
@@ -640,7 +627,7 @@ const apiVersionsMatch = async () => {
       allowEscapeKey: false,
     });
 
-    throw new Error()
+    throw new Error();
   }
 
   ipcRenderer.send("track-event", "Success", "Verifying App Version");
@@ -653,7 +640,7 @@ const apiVersionsMatch = async () => {
     type: "success",
   });
 
-  log.info("About to do unsupported stuff")
+  log.info("About to do unsupported stuff");
 
   //Load Default/global Pennsieve account if available
   updateBfAccountList();
@@ -711,7 +698,7 @@ const check_api_key = async () => {
   let responseObject;
 
   try {
-    responseObject = await client.get("manage_datasets/bf_account_list")
+    responseObject = await client.get("manage_datasets/bf_account_list");
   } catch (e) {
     notyf.dismiss(notification);
     notyf.open({
@@ -720,10 +707,10 @@ const check_api_key = async () => {
     });
     log.error(error);
     console.error(error);
-    return false
+    return false;
   }
 
-  let res = responseObject.data
+  let res = responseObject.data;
   log.info("Found a set of valid API keys");
   if (res[0] === "Select" && res.length === 1) {
     //no api key found
@@ -732,14 +719,14 @@ const check_api_key = async () => {
       type: "error",
       message: "No account was found",
     });
-    return false
+    return false;
   } else {
     notyf.dismiss(notification);
     notyf.open({
       type: "success",
       message: "Connected to Pennsieve",
     });
-    return true 
+    return true;
   }
 };
 
@@ -1353,7 +1340,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => { });
+            }).then((result) => {});
             generateSubjectsFileHelper(false);
           }
         });
@@ -1369,7 +1356,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => { });
+        }).then((result) => {});
         generateSubjectsFileHelper(false);
       }
     }
@@ -1423,7 +1410,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   client.invoke(
     "api_save_subjects_file",
@@ -1515,7 +1502,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => { });
+            }).then((result) => {});
             generateSamplesFileHelper(uploadBFBoolean);
           }
         });
@@ -1531,7 +1518,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => { });
+        }).then((result) => {});
         generateSamplesFileHelper(uploadBFBoolean);
       }
     }
@@ -1585,7 +1572,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   // new client that has a longer timeout
   let clientLongTimeout = new zerorpc.Client({
@@ -2103,7 +2090,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   await client.invoke(
     "api_load_taxonomy_species",
     [commonName],
@@ -2820,9 +2807,9 @@ function detectEmptyRequiredFields(funding) {
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
   var emptyMessageArray = [
     "- Missing required fields under Dataset Info section: " +
-    dsEmptyField.join(", "),
+      dsEmptyField.join(", "),
     "- Missing required fields under Contributor Info section: " +
-    conEmptyField.join(", "),
+      conEmptyField.join(", "),
     "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
   ];
   var allFieldsSatisfied = true;
@@ -3607,7 +3594,7 @@ function userError(error) {
 
 function refreshBfUsersList() {
   var accountSelected = defaultBfAccount;
-  console.log("Default bf account is: ", defaultBfAccount)
+  console.log("Default bf account is: ", defaultBfAccount);
 
   removeOptions(bfListUsers);
   var optionUser = document.createElement("option");
@@ -3620,30 +3607,33 @@ function refreshBfUsersList() {
   bfListUsersPI.appendChild(optionUserPI);
 
   if (accountSelected !== "Select") {
-    client.get(`manage_datasets/bf_get_users?selected_account=${accountSelected}`).then(res => {
-      let users = res.data;
-      console.log("Get users response: ", users)
-      // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
-      $("#bf_list_users").selectpicker("refresh");
-      $("#bf_list_users").find("option:not(:first)").remove();
-      $("#button-add-permission-user").hide();
-      $("#bf_list_users_pi").selectpicker("refresh");
-      $("#bf_list_users_pi").find("option:not(:first)").remove();
-      for (var myItem in users) {
-        // returns like [..,''fname lname email !!**!! pennsieve_id',',..]
-        let sep_pos = users[myItem].lastIndexOf("!|**|!");
-        var myUser = users[myItem].substring(0, sep_pos);
-        var optionUser = document.createElement("option");
-        optionUser.textContent = myUser;
-        optionUser.value = users[myItem].substring(sep_pos + 6);
-        bfListUsers.appendChild(optionUser);
-        var optionUser2 = optionUser.cloneNode(true);
-        bfListUsersPI.appendChild(optionUser2);
-      }
-    }).catch(error => {
-      log.error(error);
-      console.error(error);
-    })
+    client
+      .get(`manage_datasets/bf_get_users?selected_account=${accountSelected}`)
+      .then((res) => {
+        let users = res.data;
+        console.log("Get users response: ", users);
+        // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
+        $("#bf_list_users").selectpicker("refresh");
+        $("#bf_list_users").find("option:not(:first)").remove();
+        $("#button-add-permission-user").hide();
+        $("#bf_list_users_pi").selectpicker("refresh");
+        $("#bf_list_users_pi").find("option:not(:first)").remove();
+        for (var myItem in users) {
+          // returns like [..,''fname lname email !!**!! pennsieve_id',',..]
+          let sep_pos = users[myItem].lastIndexOf("!|**|!");
+          var myUser = users[myItem].substring(0, sep_pos);
+          var optionUser = document.createElement("option");
+          optionUser.textContent = myUser;
+          optionUser.value = users[myItem].substring(sep_pos + 6);
+          bfListUsers.appendChild(optionUser);
+          var optionUser2 = optionUser.cloneNode(true);
+          bfListUsersPI.appendChild(optionUser2);
+        }
+      })
+      .catch((error) => {
+        log.error(error);
+        console.error(error);
+      });
   }
 }
 
@@ -3657,25 +3647,28 @@ function refreshBfTeamsList(teamList) {
   teamList.appendChild(optionTeam);
 
   if (accountSelected !== "Select") {
-    client.get(`/manage_datasets/bf_get_teams?selected_account=${accountSelected}`).then(res => {
-      let teams = res.data
-      // The removeoptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
-      $("#bf_list_teams").selectpicker("refresh");
-      $("#bf_list_teams").find("option:not(:first)").remove();
-      $("#button-add-permission-team").hide();
-      for (var myItem in teams) {
-        var myTeam = teams[myItem];
-        var optionTeam = document.createElement("option");
-        optionTeam.textContent = myTeam;
-        optionTeam.value = myTeam;
-        teamList.appendChild(optionTeam);
-      }
-      confirm_click_account_function();
-    }).catch(error => {
-      log.error(error);
-      console.error(error);
-      confirm_click_account_function();
-    })
+    client
+      .get(`/manage_datasets/bf_get_teams?selected_account=${accountSelected}`)
+      .then((res) => {
+        let teams = res.data;
+        // The removeoptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
+        $("#bf_list_teams").selectpicker("refresh");
+        $("#bf_list_teams").find("option:not(:first)").remove();
+        $("#button-add-permission-team").hide();
+        for (var myItem in teams) {
+          var myTeam = teams[myItem];
+          var optionTeam = document.createElement("option");
+          optionTeam.textContent = myTeam;
+          optionTeam.value = myTeam;
+          teamList.appendChild(optionTeam);
+        }
+        confirm_click_account_function();
+      })
+      .catch((error) => {
+        log.error(error);
+        console.error(error);
+        confirm_click_account_function();
+      });
   }
 }
 
@@ -3729,7 +3722,7 @@ const populateDatasetDropdowns = (mylist) => {
 async function updateBfAccountList() {
   let responseObject;
   try {
-    responseObject = await client.get("manage_datasets/bf_account_list")
+    responseObject = await client.get("manage_datasets/bf_account_list");
   } catch (error) {
     log.error(error);
     console.error(error);
@@ -3738,10 +3731,10 @@ async function updateBfAccountList() {
     refreshBfUsersList();
     refreshBfTeamsList(bfListTeams);
 
-    return
+    return;
   }
 
-  let accountList = responseObject.data
+  let accountList = responseObject.data;
   for (myitem in accountList) {
     var myitemselect = accountList[myitem];
     var option = document.createElement("option");
@@ -3755,24 +3748,25 @@ async function updateBfAccountList() {
   }
   refreshBfUsersList();
   refreshBfTeamsList(bfListTeams);
-
 }
 
 async function loadDefaultAccount() {
-  let responseObject
+  let responseObject;
 
   try {
-    responseObject = await client.get("/manage_datasets/bf_default_account_load")
+    responseObject = await client.get(
+      "/manage_datasets/bf_default_account_load"
+    );
   } catch (e) {
-    console.log("Default account load error")
+    console.log("Default account load error");
     log.error(error);
     console.error(error);
     confirm_click_account_function();
     console.log("Could not get default account");
   }
 
-  let accounts = responseObject.data
-  console.log("Default account success: ", accounts)
+  let accounts = responseObject.data;
+  console.log("Default account success: ", accounts);
   if (accounts.length > 0) {
     var myitemselect = accounts[0];
     defaultBfAccount = myitemselect;
@@ -3785,7 +3779,6 @@ async function loadDefaultAccount() {
     refreshBfTeamsList(bfListTeams);
   }
 }
-
 
 const showPrePublishingPageElements = () => {
   var selectedBfAccount = defaultBfAccount;
@@ -4312,63 +4305,73 @@ async function retrieveBFAccounts() {
   bfAccountOptions = [];
   bfAccountOptionsStatus = "";
 
-  client.get("manage_datasets/bf_account_list").then(res => {
-    let accounts = res.data
-    for (myitem in accounts) {
-      bfAccountOptions[accounts[myitem]] = accounts[myitem];
-    }
-    showDefaultBFAccount();
-  }).catch(error => {
-    log.error(error);
-    console.error(error);
-    bfAccountOptionsStatus = error;
-  })
+  client
+    .get("manage_datasets/bf_account_list")
+    .then((res) => {
+      let accounts = res.data;
+      for (myitem in accounts) {
+        bfAccountOptions[accounts[myitem]] = accounts[myitem];
+      }
+      showDefaultBFAccount();
+    })
+    .catch((error) => {
+      log.error(error);
+      console.error(error);
+      bfAccountOptionsStatus = error;
+    });
   return [bfAccountOptions, bfAccountOptionsStatus];
 }
 
 function showDefaultBFAccount() {
-  client.get("manage_datasets/bf_default_account_load")
-    .then(res => {
-      let accounts = res.data
+  client
+    .get("manage_datasets/bf_default_account_load")
+    .then((res) => {
+      let accounts = res.data;
       if (accounts.length > 0) {
         var myitemselect = accounts[0];
         defaultBfAccount = myitemselect;
 
-        client.get(`manage_datasets/bf_account_details?account_selected=${defaultBfAccount}`).then(res => {
-          let accountDetails = res.data
-          $("#para-account-detail-curate").html(accountDetails);
-          $("#current-bf-account").text(defaultBfAccount);
-          $("#current-bf-account-generate").text(defaultBfAccount);
-          $("#create_empty_dataset_BF_account_span").text(defaultBfAccount);
-          $(".bf-account-span").text(defaultBfAccount);
-          $("#para-account-detail-curate-generate").html(accountDetails);
-          $("#para_create_empty_dataset_BF_account").html(accountDetails);
-          $(".bf-account-details-span").html(accountDetails);
+        client
+          .get(
+            `manage_datasets/bf_account_details?account_selected=${defaultBfAccount}`
+          )
+          .then((res) => {
+            let accountDetails = res.data;
+            $("#para-account-detail-curate").html(accountDetails);
+            $("#current-bf-account").text(defaultBfAccount);
+            $("#current-bf-account-generate").text(defaultBfAccount);
+            $("#create_empty_dataset_BF_account_span").text(defaultBfAccount);
+            $(".bf-account-span").text(defaultBfAccount);
+            $("#para-account-detail-curate-generate").html(accountDetails);
+            $("#para_create_empty_dataset_BF_account").html(accountDetails);
+            $(".bf-account-details-span").html(accountDetails);
 
-          $("#div-bf-account-load-progress").css("display", "none");
-          showHideDropdownButtons("account", "show");
-          // refreshDatasetList()
-          updateDatasetList();
-        }).catch(error => {
-          log.error(error);
-          console.error(error);
-          $("#para-account-detail-curate").html("None");
-          $("#current-bf-account").text("None");
-          $("#current-bf-account-generate").text("None");
-          $("#create_empty_dataset_BF_account_span").text("None");
-          $(".bf-account-span").text("None");
-          $("#para-account-detail-curate-generate").html("None");
-          $("#para_create_empty_dataset_BF_account").html("None");
-          $(".bf-account-details-span").html("None");
+            $("#div-bf-account-load-progress").css("display", "none");
+            showHideDropdownButtons("account", "show");
+            // refreshDatasetList()
+            updateDatasetList();
+          })
+          .catch((error) => {
+            log.error(error);
+            console.error(error);
+            $("#para-account-detail-curate").html("None");
+            $("#current-bf-account").text("None");
+            $("#current-bf-account-generate").text("None");
+            $("#create_empty_dataset_BF_account_span").text("None");
+            $(".bf-account-span").text("None");
+            $("#para-account-detail-curate-generate").html("None");
+            $("#para_create_empty_dataset_BF_account").html("None");
+            $(".bf-account-details-span").html("None");
 
-          $("#div-bf-account-load-progress").css("display", "none");
-          showHideDropdownButtons("account", "hide");
-        })
+            $("#div-bf-account-load-progress").css("display", "none");
+            showHideDropdownButtons("account", "hide");
+          });
       }
-    }).catch(error => {
+    })
+    .catch((error) => {
       log.error(error);
       console.error(error);
-    })
+    });
 }
 
 ////// function to trigger action for each context menu option
@@ -6422,14 +6425,16 @@ ipcRenderer.on(
 
                         numb.innerText = percentage_amount + "%";
                         if (percentage_amount <= 50) {
-                          progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
-                            }deg)`;
+                          progressBar_rightSide.style.transform = `rotate(${
+                            percentage_amount * 0.01 * 360
+                          }deg)`;
                         } else {
                           progressBar_rightSide.style.transition = "";
                           progressBar_rightSide.classList.add("notransition");
                           progressBar_rightSide.style.transform = `rotate(180deg)`;
-                          progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
-                            }deg)`;
+                          progressBar_leftSide.style.transform = `rotate(${
+                            percentage_amount * 0.01 * 180
+                          }deg)`;
                         }
 
                         if (finished === 1) {
@@ -6523,14 +6528,16 @@ ipcRenderer.on(
 
                       numb.innerText = percentage_amount + "%";
                       if (percentage_amount <= 50) {
-                        progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
-                          }deg)`;
+                        progressBar_rightSide.style.transform = `rotate(${
+                          percentage_amount * 0.01 * 360
+                        }deg)`;
                       } else {
                         progressBar_rightSide.style.transition = "";
                         progressBar_rightSide.classList.add("notransition");
                         progressBar_rightSide.style.transform = `rotate(180deg)`;
-                        progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
-                          }deg)`;
+                        progressBar_leftSide.style.transform = `rotate(${
+                          percentage_amount * 0.01 * 180
+                        }deg)`;
                       }
                       if (finished === 1) {
                         progressBar_leftSide.style.transform = `rotate(180deg)`;
@@ -6791,9 +6798,9 @@ document
     for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
       if (
         "manifest.xlsx" in
-        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
         sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-        "manifest.xlsx"
+          "manifest.xlsx"
         ]["forTreeview"]
       ) {
         delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
@@ -7354,7 +7361,7 @@ async function initiate_generate() {
             "track-event",
             "Success",
             PrepareDatasetsAnalyticsPrefix.CURATE +
-            " - Step 7 - Generate - Dataset - Number of Files",
+              " - Step 7 - Generate - Dataset - Number of Files",
             `${datasetUploadSession.id}`,
             uploadedFiles
           );
@@ -7364,7 +7371,7 @@ async function initiate_generate() {
             "track-event",
             "Success",
             PrepareDatasetsAnalyticsPrefix.CURATE +
-            " - Step 7 - Generate - Dataset - Size",
+              " - Step 7 - Generate - Dataset - Size",
             `${datasetUploadSession.id}`,
             increaseInFileSize
           );
