@@ -577,11 +577,11 @@ const apiVersionsMatch = async () => {
   });
 
 
-  let responseObject; 
-  
+  let responseObject;
+
   try {
     responseObject = await client.get("/startup/minimum_api_version")
-  } catch(e) {
+  } catch (e) {
     log.error(error);
     console.error(error);
     ipcRenderer.send(
@@ -3609,30 +3609,28 @@ function refreshBfUsersList() {
   bfListUsersPI.appendChild(optionUserPI);
 
   if (accountSelected !== "Select") {
-    client.invoke("api_bf_get_users", accountSelected, (error, res) => {
-      if (error) {
-        log.error(error);
-        console.error(error);
-      } else {
-        // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
-        $("#bf_list_users").selectpicker("refresh");
-        $("#bf_list_users").find("option:not(:first)").remove();
-        $("#button-add-permission-user").hide();
-        $("#bf_list_users_pi").selectpicker("refresh");
-        $("#bf_list_users_pi").find("option:not(:first)").remove();
-        for (var myItem in res) {
-          // returns like [..,''fname lname email !!**!! pennsieve_id',',..]
-          let sep_pos = res[myItem].lastIndexOf("!|**|!");
-          var myUser = res[myItem].substring(0, sep_pos);
-          var optionUser = document.createElement("option");
-          optionUser.textContent = myUser;
-          optionUser.value = res[myItem].substring(sep_pos + 6);
-          bfListUsers.appendChild(optionUser);
-          var optionUser2 = optionUser.cloneNode(true);
-          bfListUsersPI.appendChild(optionUser2);
-        }
+    client.get(`manage_datasets/bf_get_users?selected_bfaccount=${accountSelected}`).then(res => {
+      // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
+      $("#bf_list_users").selectpicker("refresh");
+      $("#bf_list_users").find("option:not(:first)").remove();
+      $("#button-add-permission-user").hide();
+      $("#bf_list_users_pi").selectpicker("refresh");
+      $("#bf_list_users_pi").find("option:not(:first)").remove();
+      for (var myItem in res) {
+        // returns like [..,''fname lname email !!**!! pennsieve_id',',..]
+        let sep_pos = res[myItem].lastIndexOf("!|**|!");
+        var myUser = res[myItem].substring(0, sep_pos);
+        var optionUser = document.createElement("option");
+        optionUser.textContent = myUser;
+        optionUser.value = res[myItem].substring(sep_pos + 6);
+        bfListUsers.appendChild(optionUser);
+        var optionUser2 = optionUser.cloneNode(true);
+        bfListUsersPI.appendChild(optionUser2);
       }
-    });
+    }).catch(error => {
+      log.error(error);
+      console.error(error);
+    })
   }
 }
 
@@ -3717,86 +3715,51 @@ const populateDatasetDropdowns = (mylist) => {
 ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
 
 function loadDefaultAccount() {
-  client.invoke("api_bf_default_account_load", (error, res) => {
-    if (error) {
-      log.error(error);
-      console.error(error);
-      confirm_click_account_function();
-      console.log("Could not get default account");
-    } else {
-      if (res.length > 0) {
-        var myitemselect = res[0];
-        defaultBfAccount = myitemselect;
-        $("#current-bf-account").text(myitemselect);
-        $("#current-bf-account-generate").text(myitemselect);
-        $("#create_empty_dataset_BF_account_span").text(myitemselect);
-        $(".bf-account-span").text(myitemselect);
-        showHideDropdownButtons("account", "show");
-        refreshBfUsersList();
-        refreshBfTeamsList(bfListTeams);
-      }
+  client.get("/manage_datasets/bf_default_account_load").then(res => {
+    if (res.length > 0) {
+      var myitemselect = res[0];
+      defaultBfAccount = myitemselect;
+      $("#current-bf-account").text(myitemselect);
+      $("#current-bf-account-generate").text(myitemselect);
+      $("#create_empty_dataset_BF_account_span").text(myitemselect);
+      $(".bf-account-span").text(myitemselect);
+      showHideDropdownButtons("account", "show");
+      refreshBfUsersList();
+      refreshBfTeamsList(bfListTeams);
     }
-  });
+  }).catch(e => {
+    log.error(error);
+    console.error(error);
+    confirm_click_account_function();
+    console.log("Could not get default account");
+  })
 }
 
 function updateBfAccountList() {
-  client.invoke("api_bf_account_list", (error, res) => {
-    if (error) {
-      log.error(error);
-      console.error(error);
-      var emessage = userError(error);
-      confirm_click_account_function();
-    } else {
-      for (myitem in res) {
-        var myitemselect = res[myitem];
-        var option = document.createElement("option");
-        option.textContent = myitemselect;
-        option.value = myitemselect;
-        var option2 = option.cloneNode(true);
-      }
-      loadDefaultAccount();
-      if (res[0] === "Select" && res.length === 1) {
-        // todo: no existing accounts to load
-      }
+  client.get("manage_datasets/bf_account_list").then(res => {
+    for (myitem in res) {
+      var myitemselect = res[myitem];
+      var option = document.createElement("option");
+      option.textContent = myitemselect;
+      option.value = myitemselect;
+      var option2 = option.cloneNode(true);
+    }
+    loadDefaultAccount();
+    if (res[0] === "Select" && res.length === 1) {
+      // todo: no existing accounts to load
     }
     refreshBfUsersList();
     refreshBfTeamsList(bfListTeams);
-  });
+  }).catch(err => {
+    log.error(error);
+    console.error(error);
+    var emessage = userError(error);
+    confirm_click_account_function();
+    refreshBfUsersList();
+    refreshBfTeamsList(bfListTeams);
+  })
 }
 
-/*
-function showCurrentDOI() {
-  currentDOI.value = "Please wait...";
-  reserveDOIStatus.innerHTML = "";
-  bfPostCurationProgressDOI.style.display = "block";
-  var selectedBfAccount = defaultBfAccount;
-  var selectedBfDataset = defaultBfDataset;
-  if (selectedBfDataset === "Select dataset") {
-    currentDOI.value = "-------";
-    bfPostCurationProgressDOI.style.display = "none";
-  } else {
-    client.invoke(
-      "api_bf_get_doi",
-      selectedBfAccount,
-      selectedBfDataset,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-          currentDOI.value = "-------";
-          var emessage = userError(error);
-          reserveDOIStatus.innerHTML =
-            "<span style='color: red;'> " + emessage + "</span>";
-          bfPostCurationProgressDOI.style.display = "none";
-        } else {
-          currentDOI.value = res;
-          bfPostCurationProgressDOI.style.display = "none";
-        }
-      }
-    );
-  }
-}
-*/
 
 const showPrePublishingPageElements = () => {
   var selectedBfAccount = defaultBfAccount;
@@ -9679,61 +9642,6 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
   // return the metdata files to the client
   return metadataFiles;
 };
-
-// Test calls for the validator
-
-// let validation_report_template = `
-//   <div class="title active">
-//     <i class="dropdown icon"></i>
-//       What is a dog?
-//   </div>
-//   <div class="content active">
-//     <p class="visible" style="display: block !important;">A dog is a type of domesticated animal. Known for its loyalty and faithfulness, it can be found as a welcome guest in many households across the world.</p>
-//   </div>`;
-
-// const create_validation_report = (error_report) => {
-//   // let accordion_elements = ` <div class="title active"> `;
-//   let accordion_elements = "";
-//   let elements = Object.keys(error_report).length;
-
-//   if ((elements = 0)) {
-//     accordion_elements += `<div class="title active"><i class="dropdown icon"></i> No errors found  </div> <div class="content active"> - </div>`;
-//   } else if (elements == 1) {
-//     let key = Object.keys(error_report)[0];
-//     accordion_elements += `<div class="title active"><i class="dropdown icon"></i> ${key} </div> <div class="content active"> `;
-//     if ("messages" in error_report[key]) {
-//       for (let i = 0; i < error_report[key]["messages"].length; i++) {
-//         accordion_elements += ` <p> ${error_report[key]["messages"][i]} </p>`;
-//       }
-//     }
-//     accordion_elements += `</div>`;
-//   } else {
-//     let keys = Object.keys(error_report);
-//     for (key_index in keys) {
-//       key = keys[key_index];
-//       if (key == keys[0]) {
-//         accordion_elements += `<div class="title active"> <i class="dropdown icon"></i> ${key} </div> <div class="content active"> `;
-//         if ("messages" in error_report[key]) {
-//           for (let i = 0; i < error_report[key]["messages"].length; i++) {
-//             accordion_elements += ` <p> ${error_report[key]["messages"][i]} </p>`;
-//           }
-//         }
-//         accordion_elements += `</div> `;
-//       } else {
-//         accordion_elements += `<div class="title"><i class="dropdown icon"></i> ${key} </div> <div class="content"> `;
-//         if ("messages" in error_report[key]) {
-//           for (let i = 0; i < error_report[key]["messages"].length; i++) {
-//             accordion_elements += ` <p> ${error_report[key]["messages"][i]} </p>`;
-//           }
-//         }
-//         accordion_elements += `</div>`;
-//       }
-//     }
-//     accordion_elements += `</div>`;
-//   }
-//   $("#validation_error_accordion").html(accordion_elements);
-//   // $("#validation_error_accordion").accordion();
-// };
 
 const create_validation_report = (error_report) => {
   // let accordion_elements = ` <div class="title active"> `;

@@ -154,3 +154,30 @@ class BfChangeDatasetStatus(Resource):
       if notBadRequestException(e):
         api.abort(500, e.args[0])
       raise e
+
+
+# TODO: Add rest of the boilerplate to this route
+@api.route('/bf_account_list')
+class BfAccountList(Resource):
+  def get(self):
+    try:
+      return bf_account_list()
+    except Exception as e:
+      api.abort(500, e.args[0])
+
+
+@api.route('/bf_default_account_load')
+class BfDefaultAccountLoad(Resource):
+  def get(self):
+    try:
+      return bf_default_account_load()
+    except Exception as e:
+      api.abort(500, e.args[0])
+
+@api.route('/bf_get_users')
+class BfGetUsers(Resource):
+  def get(self):
+    try:
+      return bf_get_users()
+    except Exception as e:
+      api.abort(500, e.args[0])
