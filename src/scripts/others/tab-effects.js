@@ -650,32 +650,39 @@ const nextPrev = (n) => {
       "subjects",
       "README",
     ];
-    if (
-      $(".metadata-button.button-generate-dataset.code-metadata").css(
-        "display"
-      ) === "block"
-    ) {
-      requiredFiles.push("code_description");
-    }
+    let missingFiles = [];
     var withoutExtMetadataArray = [];
     if (!("metadata-files" in sodaJSONObj)) {
       sodaJSONObj["metadata-files"] = {};
     }
-    Object.keys(sodaJSONObj["metadata-files"]).forEach((element) => {
-      if (!element.includes("-DELETED")) {
-        withoutExtMetadataArray.push(path.parse(element).name);
-      }
-    });
-    var subArrayBoolean = requiredFiles.every((val) => {
-      withoutExtMetadataArray.includes(val);
-    });
-    if (requiredFiles.includes("code_description")) {
-      var extraRequiredFile = "<li> code_description</li>";
+
+    if(Object.keys(sodaJSONObj["metadata-files"]).length > 0) {
+      Object.keys(sodaJSONObj["metadata-files"]).forEach((element) => {
+        let file_name = path.parse(element).name;
+        if (!element.includes("-DELETED")) {
+          withoutExtMetadataArray.push(path.parse(element).name);
+        }
+        if(requiredFiles.includes(file_name)) {
+          let element_index = requiredFiles.indexOf(file_name);
+          requiredFiles.splice(element_index, 1);
+          console.log(requiredFiles)
+          missingFiles = [];
+          for(element in requiredFiles) {
+            let swal_element = `<li>${requiredFiles[element]}</li>`
+            missingFiles.push(swal_element);
+          }
+        }
+      });
     } else {
-      var extraRequiredFile = "";
+      for (element in requiredFiles) {
+        let swal_element = `<li>${requiredFiles[element]}</li>`;
+        console.log(swal_element);
+        missingFiles.push(swal_element)
+      }
     }
-    if (!subArrayBoolean) {
-      var notIncludedMessage = `<div style='text-align: left'>You did not include some of the following metadata files that are typically expected for all SPARC datasets: <br><ol style='text-align: left'><li> submission</li><li> dataset_description</li> <li> subjects</li> <li> README.txt</li> ${extraRequiredFile} </ol>Are you sure you want to continue?</div>`;
+
+    if (missingFiles.length > 0) {
+      var notIncludedMessage = `<div style='text-align: left'>You did not include some of the following metadata files that are typically expected for all SPARC datasets: <br><ol style='text-align: left'>${missingFiles.join('')} </ol>Are you sure you want to continue?</div>`;
       Swal.fire({
         allowOutsideClick: false,
         allowEscapeKey: false,
