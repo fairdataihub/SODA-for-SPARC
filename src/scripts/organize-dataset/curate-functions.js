@@ -1207,12 +1207,13 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
           let responseObject;
           try {
             responseObject = await client.get(
-              `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`)
+              `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
+            );
           } catch (error) {
             log.error(error);
             console.log(error);
             var emessage = error;
-            return
+            return;
           }
 
           let result = responseObject.data;
@@ -1926,9 +1927,9 @@ async function moveItems(ev, category) {
   for (var highLevelFol in datasetStructureJSONObj["folders"]) {
     if (
       "manifest.xlsx" in
-      datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
+        datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
       datasetStructureJSONObj["folders"][highLevelFol]["files"][
-      "manifest.xlsx"
+        "manifest.xlsx"
       ]["forTreeview"] === true
     ) {
       delete datasetStructureJSONObj["folders"][highLevelFol]["files"][
