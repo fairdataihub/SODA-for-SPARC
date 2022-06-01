@@ -9968,23 +9968,158 @@ $("#validate_dataset_bttn").on("click", async () => {
   } catch (error) {
     log.error(error);
     console.error(error);
-    // var emessage = userError(error);
     $("#dataset_validator_spinner").hide();
     $("#dataset_validator_status").html(
       `<span style='color: red;'> ${error}</span>`
     );
-    // ipcRenderer.send(
-    //   "track-event",
-    //   "Error",
-    //   "Validate Dataset",
-    //   defaultBfDataset
-    // );
   }
 
   create_validation_report(res);
   $("#dataset_validator_status").html("");
   $("#dataset_validator_spinner").hide();
 });
+
+function gatherLogs() {
+  //function will be used to gather all logs on all OS's
+  let homedir = os.homedir();
+  let file_path = "";
+  let log_path = "";
+  let log_files = ["main.log", "renderer.log", "out.log"];
+
+  if (os.type() === "Darwin") {
+    log_path = path.join(homedir, "/Library/Logs/SODA for SPARC/");
+  } else if (os.type() === "Windows") {
+    log_path = path.join(
+      homedir,
+      "AppData",
+      "Roaming",
+      "SODA for SPARC",
+      "logs"
+    );
+  } else {
+    log_path = path.join(homedir, ".config", "SODA for SPARC", "logs");
+  }
+
+  Swal.fire({
+    title: "Select a destination to create log folder",
+    html: `<div style="margin-bottom:1rem;"><p>Please note that any log files that are in your destination already will be overwritten.</p></div><input class="form-control" id="selected-log-destination" type="text" readonly="" placeholder="Select a destination">`,
+    heightAuto: false,
+    showCancelButton: true,
+    allowOutsideClick: false,
+    allowEscapeKey: true,
+    didOpen: () => {
+      let swal_alert_confirm = document.getElementsByClassName(
+        "swal2-confirm swal2-styled"
+      )[0];
+      swal_alert_confirm.setAttribute("disabled", true);
+
+      let log_destination_input = document.getElementById(
+        "selected-log-destination"
+      );
+      log_destination_input.addEventListener("click", function () {
+        ipcRenderer.send("open-file-dialog-log-destination");
+      });
+      ipcRenderer.on("selected-log-folder", (event, result) => {
+        file_path = result["filePaths"][0];
+        if (file_path != undefined) {
+          log_destination_input.value = file_path;
+          swal_alert_confirm.removeAttribute("disabled");
+        } else {
+          Swal.showValidationMessage(`Please enter a destination`);
+        }
+      });
+    },
+    preConfirm: () => {
+      let log_destination_input = document.getElementById(
+        "selected-log-destination"
+      );
+      if (
+        log_destination_input.value === "" ||
+        log_destination_input.value === undefined
+      ) {
+        Swal.showValidationMessage(`Please enter a destination`);
+      }
+    },
+  }).then((result) => {
+    if (result.isConfirmed === true) {
+      if (file_path !== undefined || file_path !== "") {
+        Swal.fire({
+          title: "Creating log folder",
+          html: "Please wait...",
+          // timer: 5000,
+          allowEscapeKey: false,
+          allowOutsideClick: false,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          timerProgressBar: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
+        let log_folder = path.join(file_path, "/SODA-For-SPARC-Logs/");
+        try {
+          fs.mkdirSync(log_folder, { recursive: true });
+          // destination will be created or overwritten by default.
+          for (let i = 0; i < log_files.length; i++) {
+            var log_file;
+            if (i === 2) {
+              log_file = path.join(homedir, ".pennsieve", log_files[i]);
+            } else {
+              log_file = path.join(log_path, log_files[i]);
+            }
+            let log_copy = path.join(log_folder, log_files[i]);
+
+            fs.copyFileSync(log_file, log_copy, (err) => {
+              if (err) throw err;
+            });
+          }
+          Swal.close();
+
+          Swal.fire({
+            title: "Success!",
+            text: `Succesfully created SODA-For-SPARC-Logs in ${file_path}`,
+            icon: "success",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            didOpen: () => {
+              if (document.getElementsByClassName("swal2-loader").length > 0) {
+                document.getElementsByClassName(
+                  "swal2-loader"
+                )[0].style.display = "none";
+                document.getElementsByClassName(
+                  "swal2-confirm swal2-styled"
+                )[0].style.display = "block";
+              }
+            },
+          });
+        } catch (error) {
+          log.error(error);
+          console.log(error);
+          Swal.fire({
+            title: "Failed to create log folder!",
+            text: error,
+            icon: "error",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            didOpen: () => {
+              if (document.getElementsByClassName("swal2-loader").length > 0) {
+                document.getElementsByClassName(
+                  "swal2-loader"
+                )[0].style.display = "none";
+                document.getElementsByClassName(
+                  "swal2-confirm swal2-styled"
+                )[0].style.display = "block";
+              }
+            },
+          });
+        }
+      }
+    }
+  });
+}
 
 function gettingStarted() {
   let getting_started = document.getElementById("main_tabs_view");
