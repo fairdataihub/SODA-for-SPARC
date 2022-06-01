@@ -37,7 +37,10 @@ from datetime import datetime, timezone
 from validator_soda import pathToJsonStruct, validate_high_level_folder_structure, validate_high_level_metadata_files, \
 validate_sub_level_organization, validate_submission_file, validate_dataset_description_file
 
-from pysoda import clear_queue, agent_running, check_forbidden_characters, check_forbidden_characters_bf, bf_dataset_size
+from pysoda import ( 
+    # clear_queue,
+    agent_running, check_forbidden_characters, check_forbidden_characters_bf, bf_dataset_size
+)
 
 from organize_datasets import bf_get_dataset_files_folders
 

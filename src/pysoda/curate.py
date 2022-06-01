@@ -826,260 +826,6 @@ def bf_get_current_user_permission(bf, myds):
         raise e
 
 
-# def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetname,\
-#         manifeststatus, jsonpath, jsondescription):
-#     """
-#     Associated with 'Generate' button in the 'Generate dataset' section of SODA interface
-#     Checks validity of files / paths / folders and then generates the files and folders
-#     as requested along with progress status
-
-#     Args:
-#         sourcedataset: state of the source dataset ('already organized' or 'not organized')
-#         destinationdataset: type of destination dataset ('modify existing', 'create new', or 'upload to pennsieve')
-#         pathdataset: destination path of new dataset if created locally or name of pennsieve account (string)
-#         newdatasetname: name of the local dataset or name of the dataset on pennsieve (string)
-#         manifeststatus: boolean to check if user request manifest files
-#         jsonpath: path of the files to be included in the dataset (dictionary)
-#         jsondescription: associated description to be included in manifest file (dictionary)
-#     """
-#     global curatestatus #set to 'Done' when completed or error to stop progress tracking from front-end
-#     global curateprogress #GUI messages shown to user to provide update on progress
-#     global curateprintstatus # If = "Curating" Progress messages are shown to user
-#     global total_dataset_size # total size of the dataset to be generated
-#     global curated_dataset_size # total size of the dataset generated (locally or on pennsieve) at a given time
-#     global start_time
-#     global bf
-#     global myds
-#     global upload_directly_to_bf
-#     global start_submit
-#     global initial_bfdataset_size
-
-#     curateprogress = ' '
-#     curatestatus = ''
-#     curateprintstatus = ' '
-#     error, c = '', 0
-#     curated_dataset_size = 0
-#     start_time = 0
-#     upload_directly_to_bf = 0
-#     start_submit = 0
-#     initial_bfdataset_size = 0
-
-#     # if sourcedataset == 'already organized':
-#     #     if not isdir(pathdataset):
-#     #         curatestatus = 'Done'
-#     #         raise Exception('Error: Please select a valid dataset folder')
-
-#     if destinationdataset == 'create new':
-#         if not isdir(pathdataset):
-#             curatestatus = 'Done'
-#             raise Exception('Error: Please select a valid folder for new dataset')
-#         if not newdatasetname:
-#             curatestatus = 'Done'
-#             raise Exception('Error: Please enter a valid name for new dataset folder')
-#         if check_forbidden_characters(newdatasetname):
-#             curatestatus = 'Done'
-#             raise Exception('Error: A folder name cannot contain any of the following characters ' + forbidden_characters)
-
-#     # check if path in jsonpath are valid and calculate total dataset size
-#     error, c = '', 0
-#     total_dataset_size = 1
-#     for folders in jsonpath.keys():
-#         if jsonpath[folders] != []:
-#             for path in jsonpath[folders]:
-#                 if exists(path):
-
-#                     if isfile(path):
-#                         mypathsize =  getsize(path)
-#                         if mypathsize == 0:
-#                             c += 1
-#                             error = error + path + ' is 0 KB <br>'
-#                         else:
-#                             total_dataset_size += mypathsize
-#                     else:
-
-#                         myfoldersize = folder_size(path)
-#                         if myfoldersize == 0:
-#                             c += 1
-#                             error = error + path + ' is empty <br>'
-#                         else:
-#                             for path, dirs, files in walk(path):
-#                                 for f in files:
-#                                     fp = join(path, f)
-#                                     mypathsize =  getsize(fp)
-#                                     if mypathsize == 0:
-#                                         c += 1
-#                                         error = error + fp + ' is 0 KB <br>'
-#                                     else:
-#                                         total_dataset_size += mypathsize
-#                                 for d in dirs:
-#                                     dp = join(path,d)
-#                                     myfoldersize = folder_size(dp)
-#                                     if myfoldersize == 0:
-#                                         c += 1
-#                                         error = error + dp + ' is empty <br>'
-#                 else:
-#                     c += 1
-#                     error = error + path + ' does not exist <br>'
-
-#     if c > 0:
-#         error = error + '<br>Please remove invalid files/folders from your dataset and try again'
-#         curatestatus = 'Done'
-#         raise Exception(error)
-
-#     total_dataset_size = total_dataset_size - 1
-
-#     # Add metadata to jsonpath
-#     curateprogress = 'Generating metadata'
-
-#     if manifeststatus:
-#         try:
-#             jsonpath = create_folder_level_manifest(jsonpath, jsondescription)
-#         except Exception as e:
-#             curatestatus = 'Done'
-#             raise e
-
-#     # CREATE NEW
-#     if destinationdataset == 'create new':
-#         try:
-#             pathnewdatasetfolder = join(pathdataset, newdatasetname)
-#             pathnewdatasetfolder  = return_new_path(pathnewdatasetfolder)
-#             open_file(pathnewdatasetfolder)
-
-#             curateprogress = 'Started'
-#             curateprintstatus = 'Curating'
-#             start_time = time.time()
-#             start_submit = 1
-
-#             pathdataset = pathnewdatasetfolder
-#             mkdir(pathdataset)
-#             create_dataset(jsonpath, pathdataset)
-
-#             curateprogress = 'New dataset created'
-#             curateprogress = 'Success: COMPLETED!'
-#             curatestatus = 'Done'
-#             shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
-
-#         except Exception as e:
-#             curatestatus = 'Done'
-#             shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
-#             raise e
-
-#     # UPLOAD TO Pennsieve
-#     elif destinationdataset == 'upload to pennsieve':
-#         error, c = '', 0
-#         accountname = pathdataset
-#         bfdataset = newdatasetname
-#         upload_directly_to_bf = 1
-
-#         try:
-#             bf = Pennsieve(accountname)
-#         except Exception as e:
-#             curatestatus = 'Done'
-#             error = error + 'Error: Please select a valid Pennsieve account<br>'
-#             c += 1
-
-#         try:
-#             myds = bf.get_dataset(bfdataset)
-#         except Exception as e:
-#             curatestatus = 'Done'
-#             error = error + 'Error: Please select a valid Pennsieve dataset<br>'
-#             c += 1
-
-#         if c>0:
-#             shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
-#             raise Exception(error)
-
-#         try:
-#             role = bf_get_current_user_permission(bf, myds)
-#             if role not in ['owner', 'manager', 'editor']:
-#                 curatestatus = 'Done'
-#                 error = "Error: You don't have permissions for uploading to this Pennsieve dataset"
-#                 raise Exception(error)
-#         except Exception as e:
-#             raise e
-
-#         clear_queue()
-#         try:
-#             agent_running()
-#             def calluploaddirectly():
-
-#                 try:
-#                     global curateprogress
-#                     global curatestatus
-
-#                     myds = bf.get_dataset(bfdataset)
-
-#                     for folder in jsonpath.keys():
-#                         if jsonpath[folder] != []:
-#                             if folder != 'main':
-#                                 mybffolder = myds.create_collection(folder)
-#                             else:
-#                                 mybffolder = myds
-#                             for mypath in jsonpath[folder]:
-#                                 if isdir(mypath):
-#                                     curateprogress = "Uploading folder '%s' to dataset '%s' " %(mypath, bfdataset)
-#                                     mybffolder.upload(mypath, recursive=True, use_agent=True)
-#                                 else:
-#                                     curateprogress = "Uploading file '%s' to dataset '%s' " %(mypath, bfdataset)
-#                                     mybffolder.upload(mypath, use_agent=True)
-
-#                     curateprogress = 'Success: COMPLETED!'
-#                     curatestatus = 'Done'
-#                     shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
-
-#                 except Exception as e:
-#                     shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
-#                     raise e
-
-
-#             curateprintstatus = 'Curating'
-#             start_time = time.time()
-#             initial_bfdataset_size = bf_dataset_size()
-#             start_submit = 1
-#             gev = []
-#             gev.append(gevent.spawn(calluploaddirectly))
-#             gevent.sleep(0)
-#             gevent.joinall(gev) #wait for gevent to finish before exiting the function
-#             curatestatus = 'Done'
-
-#             try:
-#                 return gev[0].get()
-#             except Exception as e:
-#                 raise e
-
-#         except Exception as e:
-#             curatestatus = 'Done'
-#             shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
-#             raise e
-
-# def curate_dataset_progress():
-#     """
-#     Function frequently called by front end to help keep track of the dataset generation progress
-#     """
-#     global curateprogress
-#     global curatestatus
-#     global curateprintstatus
-#     global total_dataset_size
-#     global curated_dataset_size
-#     global start_time
-#     global upload_directly_to_bf
-#     global start_submit
-#     global initial_bfdataset_size
-
-#     if start_submit == 1:
-#         if upload_directly_to_bf == 1:
-#             curated_dataset_size = bf_dataset_size() - initial_bfdataset_size
-#         elapsed_time = time.time() - start_time
-#         elapsed_time_formatted = time_format(elapsed_time)
-#         elapsed_time_formatted_display = '<br>' + 'Elapsed time: ' + elapsed_time_formatted + '<br>'
-#     else:
-#         if upload_directly_to_bf == 1:
-#             curated_dataset_size = 0
-#         elapsed_time_formatted = 0
-#         elapsed_time_formatted_display = '<br>' + 'Initiating...' + '<br>'
-
-#     return (curateprogress+elapsed_time_formatted_display, curatestatus, curateprintstatus, total_dataset_size, curated_dataset_size, elapsed_time_formatted)
-
 ### Validate dataset
 def validate_dataset(validator_input):
     try:
@@ -1569,95 +1315,6 @@ def create_high_level_manifest_files(soda_json_structure):
         raise e
 
 
-# def add_local_manifest_files(manifest_files_structure, datasetpath):
-#     try:
-#         for key in manifest_files_structure.keys():
-#             manifestpath = manifest_files_structure[key]
-#             destination_folder = join(datasetpath, key)
-#             if isdir(destination_folder):
-#                 dst = join(destination_folder, "manifest.xlsx")
-#                 mycopyfile_with_metadata(manifestpath, dst)
-
-#         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
-
-#     except Exception as e:
-#         raise e
-
-# def bf_add_manifest_files(manifest_files_structure, ds):
-#     try:
-#         for key in manifest_files_structure.keys():
-#             manifestpath = manifest_files_structure[key]
-#             for item in ds:
-#                 if item.name == key and item.type == "Collection":
-#                     destination_folder_id = item.id
-#                     #delete existing manifest files
-#                     for subitem in item:
-#                         if subitem.name == "manifest":
-#                             subitem.delete()
-#                     #upload new manifest files
-#                     bf_upload_file(item, manifestpath)
-#                     break
-#         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
-
-#     except Exception as e:
-#         raise e
-
-# def bf_upload_file(item, path):
-#     item.upload(path)
-
-
-# def get_generate_dataset_size(soda_json_structure):
-#     """
-#     Function to get the size of the data to be generated (not existing at the local or Pennsieve destination)
-
-#     Args:
-#         soda_json_structure: soda dict with information about all specified files and folders
-#         manifest_files_structure: soda dict with information about the manifest files (if requested)
-#     Output:
-#         generate_dataset_size: total size of data to be generated (in bytes)
-#     """
-
-#     def recursive_dataset_size(my_folder):
-#         total_size = 0
-
-#         if "folders" in my_folder.keys():
-#             for folder_key, folder in my_folder["folders"].items():
-#                 total_size += recursive_dataset_size(folder)
-#         if "files" in my_folder.keys():
-#             for file_key, file in my_folder["files"].items():
-#                 file_type = file["type"]
-#                 if file_type == "local":
-#                     if "new" in file["action"]:
-#                         file_path = file["path"]
-#                         if isfile(file_path):
-#                             total_size += getsize(file_path)
-#         return total_size
-
-#     try:
-#         dataset_structure = soda_json_structure["dataset-structure"]
-
-#         generate_dataset_size = 0
-#         for folder_key, folder in dataset_structure["folders"].items():
-#             generate_dataset_size += recursive_dataset_size(folder)
-
-#         if manifest_files_structure:
-#             for key in manifest_files_structure.keys():
-#                 manifest_path = manifest_files_structure[key]
-#                 generate_dataset_size += getsize(manifest_path)
-
-#         if "metadata-files" in soda_json_structure.keys():
-#             metadata_files = soda_json_structure["metadata-files"]
-#             for file_key, file in metadata_files.items():
-#                 if file["type"] == "local":
-#                     if "new" in file["action"]:
-#                         metadata_path = file["path"]
-#                         generate_dataset_size += getsize(metadata_path)
-
-#         return generate_dataset_size
-
-#     except Exception as e:
-#         raise e
-
 # This function is called to check size of files
 # that will be created locally on a user's device
 def check_JSON_size(jsonStructure):
@@ -1705,7 +1362,6 @@ def check_JSON_size(jsonStructure):
                 if isfile(manifestpath):
                     total_dataset_size += getsize(manifestpath)
 
-        # total_dataset_size = total_dataset_size/(1024**2)
         # returns in bytes
         return total_dataset_size
     except Exception as e:
@@ -1855,16 +1511,6 @@ def generate_dataset_locally(soda_json_structure):
 
     except Exception as e:
         raise e
-
-    # gev = []
-    # gev.append(gevent.spawn(generate, soda_json_structure))
-    # gevent.sleep(0)
-    # gevent.joinall(gev)
-
-    # try:
-    #     return gev[0].get()
-    # except Exception as e:
-    #      raise e
 
 
 def mymovefile_with_metadata(src, dst):
@@ -2451,36 +2097,33 @@ def create_high_level_manifest_files_existing_bf(
 
 
 def create_high_level_manifest_files_existing_local_starting_point(dataset_path):
-    soda_manifest_folder_path = join(userpath, "SODA", "SODA Manifest Files")
-    # # create local folder to save manifest files temporarily (delete any existing one first)
-    # shutil.rmtree(soda_manifest_folder_path) if isdir(soda_manifest_folder_path) else 0
-    # makedirs(soda_manifest_folder_path)
+    soda_manifest_folder_path = join(userpath, "SODA", "manifest_files")
 
-    for high_level_fol in listdir(dataset_path):
+    if dataset_path != "":
+        for high_level_fol in listdir(dataset_path):
 
-        if high_level_fol in [
-            "primary",
-            "derivative",
-            "docs",
-            "code",
-            "source",
-            "protocol",
-        ]:
-            onlyfiles = [
-                join(dataset_path, high_level_fol, f)
-                for f in listdir(join(dataset_path, high_level_fol))
-                if isfile(join(dataset_path, high_level_fol, f))
-            ]
+            if high_level_fol in [
+                "primary",
+                "derivative",
+                "docs",
+                "code",
+                "source",
+                "protocol",
+            ]:
+                onlyfiles = [
+                    join(dataset_path, high_level_fol, f)
+                    for f in listdir(join(dataset_path, high_level_fol))
+                    if isfile(join(dataset_path, high_level_fol, f))
+                ]
 
-            for file in onlyfiles:
+                for file in onlyfiles:
 
-                p = pathlib.Path(file)
-                # create high-level folder at the temporary location
-                folderpath = join(soda_manifest_folder_path, high_level_fol)
-                # makedirs(folderpath)
-                if p.stem == "manifest":
-                    # make copy from this manifest path to folderpath
-                    shutil.copyfile(file, join(folderpath, p.name))
+                    p = pathlib.Path(file)
+                    # create high-level folder at the temporary location
+                    folderpath = join(soda_manifest_folder_path, high_level_fol)
+                    if p.stem == "manifest":
+                        # make copy from this manifest path to folderpath
+                        shutil.copyfile(file, join(folderpath, p.name))
 
 
 def generate_relative_path(x, y):
@@ -2560,8 +2203,6 @@ def bf_get_existing_files_details(bf_folder):
                 file_details["content"]["name"], file_details["extension"]
             )
 
-        # file_extension = splitext(file_name_with_extension)[1]
-        # file_name_with_extension = splitext(file.name)[0] + file_extension
         bf_existing_files_name_with_extension.append(file_name_with_extension)
 
     return (
@@ -2606,8 +2247,6 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     global main_total_generate_dataset_size
     global start_generate
     global main_initial_bfdataset_size
-    # global progress_percentage
-    # global progress_percentage_array
     bfsd = ""
 
     # Delete any files on Pennsieve that have been marked as deleted
@@ -2846,8 +2485,6 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
     global main_curation_uploaded_files
     global uploaded_folder_counter
     global current_size_of_uploaded_files
-    # global progress_percentage
-    # global progress_percentage_array
 
     uploaded_folder_counter = 0
     current_size_of_uploaded_files = 0
@@ -3245,8 +2882,13 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                         relative_path
                     )
 
-                    # clear the pennsieve queue for successive batches
-                    clear_queue()
+                    # get the current OS
+                    current_os = platform.system()
+
+                    # Mac builds not able to spawn subprocess from Python at the moment
+                    if not current_os == "Darwin":
+                        # clear the pennsieve queue
+                        clear_queue()
 
                     # upload the files
                     bf_folder.upload(*upload_bucket)
@@ -3293,8 +2935,13 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                     # update the start_index to end_index + 1
                     start_index = end_index + 1
             else:
-                # clear the pennsieve queue
-                clear_queue()
+                # get the current OS
+                current_os = platform.system()
+
+                # Mac builds not able to spawn subprocess from Python at the moment
+                if not current_os == "Darwin":
+                    # clear the pennsieve queue
+                    clear_queue()
 
                 # upload all files at once for the folder
                 main_curate_progress_message = "Uploading files in " + str(
