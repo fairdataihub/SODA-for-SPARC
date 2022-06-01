@@ -1204,67 +1204,64 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
         //account is signed in but no datasets have been fetched or created
         //invoke dataset request to ensure no datasets have been created
         if (datasetList.length === 0) {
-          const fetchData = new Promise((resolve, reject) => {
-            client.invoke(
-              "api_bf_dataset_account",
-              defaultBfAccount,
-              (error, result) => {
-                if (error) {
-                  log.error(error);
-                  console.log(error);
-                  var emessage = error;
-                  reject(emessage);
-                } else {
-                  datasetList = [];
-                  datasetList = result;
-                  refreshDatasetList();
-                  resolve();
-                }
-              }
-            );
-          });
+          let responseObject;
+          try {
+            responseObject = await client.get(
+              `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`)
+          } catch (error) {
+            log.error(error);
+            console.log(error);
+            var emessage = error;
+            return
+          }
+
+          let result = responseObject.data;
+
+          datasetList = [];
+          datasetList = result;
+          refreshDatasetList();
         }
-        //after request check length again
-        //if 0 then no datasets have been created
-        if (datasetList.length === 0) {
-          Swal.fire({
-            backdrop: "rgba(0,0,0, 0.4)",
-            cancelButtonText: "Cancel",
-            confirmButtonText: "Create new dataset",
-            focusCancel: false,
-            focusConfirm: true,
-            showCloseButton: true,
-            showCancelButton: true,
-            heightAuto: false,
-            allowOutsideClick: false,
-            allowEscapeKey: true,
-            title:
-              "<h3 style='margin-bottom:20px !important'>No dataset found</h3>",
-            html: "It appears that your don't have any datasets on Pennsieve with owner or manage permission.<br><br>Please create one to get started.",
-            showClass: {
-              popup: "animate__animated animate__fadeInDown animate__faster",
-            },
-            hideClass: {
-              popup:
-                "animate__animated animate__fadeOutUp animate__faster animate_fastest",
-            },
-            didOpen: () => {
-              $(".ui.active.green.inline.loader.small").css("display", "none");
-              $(".svg-change-current-account.dataset").css("display", "block");
-            },
-          }).then((result) => {
-            if (result.isConfirmed) {
-              $("#create_new_bf_dataset_btn").click();
-            }
-          });
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Selecting dataset",
-            "User has not created any datasets",
-            1
-          );
-        }
+      }
+      //after request check length again
+      //if 0 then no datasets have been created
+      if (datasetList.length === 0) {
+        Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          cancelButtonText: "Cancel",
+          confirmButtonText: "Create new dataset",
+          focusCancel: false,
+          focusConfirm: true,
+          showCloseButton: true,
+          showCancelButton: true,
+          heightAuto: false,
+          allowOutsideClick: false,
+          allowEscapeKey: true,
+          title:
+            "<h3 style='margin-bottom:20px !important'>No dataset found</h3>",
+          html: "It appears that your don't have any datasets on Pennsieve with owner or manage permission.<br><br>Please create one to get started.",
+          showClass: {
+            popup: "animate__animated animate__fadeInDown animate__faster",
+          },
+          hideClass: {
+            popup:
+              "animate__animated animate__fadeOutUp animate__faster animate_fastest",
+          },
+          didOpen: () => {
+            $(".ui.active.green.inline.loader.small").css("display", "none");
+            $(".svg-change-current-account.dataset").css("display", "block");
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $("#create_new_bf_dataset_btn").click();
+          }
+        });
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Selecting dataset",
+          "User has not created any datasets",
+          1
+        );
       }
       //datasets do exist so display popup with dataset options
       //else datasets have been created
@@ -1929,9 +1926,9 @@ async function moveItems(ev, category) {
   for (var highLevelFol in datasetStructureJSONObj["folders"]) {
     if (
       "manifest.xlsx" in
-        datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
+      datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
       datasetStructureJSONObj["folders"][highLevelFol]["files"][
-        "manifest.xlsx"
+      "manifest.xlsx"
       ]["forTreeview"] === true
     ) {
       delete datasetStructureJSONObj["folders"][highLevelFol]["files"][
