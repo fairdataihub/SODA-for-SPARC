@@ -537,7 +537,7 @@ def bf_account_list():
             #             pass
             #     with open(configpath, 'w') as configfile:
             #         config.write(configfile)
-        return accountlist
+        return {"accounts": accountlist}
         # My accountlist
 
     except Exception as e:
