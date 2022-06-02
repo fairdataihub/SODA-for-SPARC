@@ -13,6 +13,7 @@ from prepareMetadata import (
     import_bf_RC,
     upload_RC_file,
     delete_manifest_dummy_folders,
+    set_template_path
 )
 from namespaces import NamespaceEnum, get_namespace
 from flask_restx import Resource
@@ -38,6 +39,8 @@ class SaveSubmissionFile(Resource):
     @api.expect(parser)
     def get(self):
         args = parser.parse_args()
+        print("Here are args")
+        print(args)
         upload_boolean = args['upload_boolean']
         bfaccount = args['bfaccount']
         bfdataset = args['bfdataset']
@@ -47,19 +50,32 @@ class SaveSubmissionFile(Resource):
 
         return save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_str)
 
-
-parser = api.parser()
-parser.add_argument('path', type=str, help='Path to the local data deliverables document', location="args")
-@api.route('/import_milestone')
-class ImportMilestone(Resource):
+@api.route('/set_template_paths')
+class SetTemplatePath(Resource):
 
     @api.expect(parser)
-    def get(self):
-        args = parser.parse_args()
-        path = args['path']
+    def put(self):
+        args = request.get_json()
+        basepath = args['basepath']
+        resourcesPath = args['resourcesPath']
         try:
-            return import_milestone(path)
+            return set_template_path(basepath, resourcesPath)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, e.args[0])
-            raise e
+            api.abort(500, e.args[0])
+
+
+# parser = api.parser()
+# parser.add_argument('path', type=str, help='Path to the local data deliverables document', location="args")
+# @api.route('/import_milestone')
+# class ImportMilestone(Resource):
+
+#     @api.expect(parser)
+#     def get(self):
+#         args = parser.parse_args()
+#         path = args['path']
+#         try:
+#             return import_milestone(path)
+#         except Exception as e:
+#             if notBadRequestException(e):
+#                 api.abort(500, e.args[0])
+#             raise e

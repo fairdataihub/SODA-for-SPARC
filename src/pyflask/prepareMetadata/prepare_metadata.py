@@ -72,11 +72,30 @@ from pysodaUtils import agent_running
 
 userpath = expanduser("~")
 METADATA_UPLOAD_BF_PATH = join(userpath, "SODA", "METADATA")
-DEV_TEMPLATE_PATH = join(dirname(__file__), "..", "..", "file_templates")
-# once pysoda has been packaged with pyinstaller
-# it becomes nested into the pysodadist/api directory
-PROD_TEMPLATE_PATH = join(dirname(__file__), "..", "..", "file_templates")
-TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLATE_PATH
+TEMPLATE_PATH = ""
+
+### Sets the TEMPLATE_PATH using SODA-for-SPARC's basepath so that the prepare_metadata section can find
+### the templates stored in file_templates direcotory
+def set_template_path(soda_base_path, soda_resources_path):
+    """
+    Sets the TEMPLATE_PATH using SODA-for-SPARC's basepath so that the prepare_metadata section can find
+    the templates stored in file_templates direcotory.
+    """
+    global TEMPLATE_PATH
+
+    # once pysoda has been packaged with pyinstaller
+    # it creates an archive that slef extracts to an OS-specific temp directory.
+    # Due to this we can no longer use a relative path from the pysoda directory to the file_templates folder.
+    # When running in dev mode this also works
+    TEMPLATE_PATH = join(soda_base_path, "file_templates")
+
+    # check if os is Darwin/Linux
+    if platform.system() == "Darwin" or platform.system() == "Linux":
+        # check if the TEMPLATE_PATH exists
+        if not exists(TEMPLATE_PATH):
+            # we are in production and we need to use the Resources folder for the file_templates folder
+            TEMPLATE_PATH = join(soda_resources_path, "file_templates")
+
 
 # custom Exception class for when a DDD file is in an invalid form
 class InvalidDeliverablesDocument(Exception):
