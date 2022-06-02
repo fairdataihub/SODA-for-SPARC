@@ -1258,6 +1258,10 @@ def bf_get_users(selected_bfaccount):
         list_users : list of users (first name -- last name) associated with the organization of the
         selected Pennsieve account (list of string)
     """
+
+    global namespace_logger
+
+
     try:
         # def get_users_list():
         bf = Pennsieve(selected_bfaccount)
@@ -1279,9 +1283,6 @@ def bf_get_users(selected_bfaccount):
             list_users_first_last.append(first_last)
         list_users_first_last.sort()  # Returning the list of users in alphabetical order
         return list_users_first_last
-        # list_users_first_last = gevent.spawn(get_users_list())
-        # gevent.sleep(0)
-        # return list_users_first_last
     except Exception as e:
         raise e
 
