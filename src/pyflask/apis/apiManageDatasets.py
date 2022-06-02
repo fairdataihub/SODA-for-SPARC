@@ -127,10 +127,10 @@ successMessage = api.model('SuccessMessage', {
   })
 
 # selected_bfaccount, selected_bfdataset, selected_status
-parser = reqparse.RequestParser(bundle_errors=True)
-parser.add_argument('selected_bfaccount', type=str, required=True, help='The selected bfaccount', location='json')
-parser.add_argument('selected_bfdataset', type=str, required=True, help='The selected bfdataset id or name', location='json')
-parser.add_argument('selected_status', type=str, required=True, help='The target status for the dataset', location='json')
+parser_change_dataset_status = reqparse.RequestParser(bundle_errors=True)
+parser_change_dataset_status.add_argument('selected_bfaccount', type=str, required=True, help='The selected bfaccount.', location='json')
+parser_change_dataset_status.add_argument('selected_bfdataset', type=str, required=True, help='The selected bfdataset id or name.', location='json')
+parser_change_dataset_status.add_argument('selected_status', type=str, required=True, help='The target status for the dataset.', location='json')
 
 
 @api.route('/bf_change_dataset_status')
@@ -138,18 +138,15 @@ class BfChangeDatasetStatus(Resource):
   @api.marshal_with(successMessage, False, 200)
   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'})
   # the request parameters
-  @api.expect(parser)
+  @api.expect(parser_change_dataset_status)
   def put(self):
     # get the selected_bfaccount, selected_bfdataset, selected_status from the request object
-    data = request.get_json()
+    data = parser_change_dataset_status.parse_args(strict=True)
     selected_bfaccount = data['selected_bfaccount']
     selected_bfdataset = data['selected_bfdataset']
     selected_status = data['selected_status']
 
     api.logger.info(f' bf_change_dataset_status --  args -- selected_bfaccount: {selected_bfaccount} selected_bfdataset: {selected_bfdataset} selected_status: {selected_status}')
-
-    if selected_bfaccount is None or selected_bfdataset is None or selected_status is None:
-      api.abort(400, "Cannot change dataset status without a selected_bfaccount, selected_bfdataset, and selected_status")
 
     try:
       return bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_status)
@@ -171,8 +168,8 @@ account_list_model = api.model('AccountList', {
 
 @api.route('/bf_account_list')
 class BfAccountList(Resource):
-  # @api.marshal_with(account_list_model, False, 200)
-  # @api.doc(responses={500: 'There was an internal server error'})
+  @api.marshal_with(account_list_model, False, 200)
+  @api.doc(responses={500: 'There was an internal server error'})
   def get(self):
     try:
       return bf_account_list()
@@ -191,8 +188,8 @@ default_account_model = api.model('DefaultAccount', {
 
 @api.route('/bf_default_account_load')
 class BfDefaultAccountLoad(Resource):
-  # @api.marshal_with(default_account_model, False, 200)
-  # @api.doc(responses={500: 'There was an internal server error'})
+  @api.marshal_with(default_account_model, False, 200)
+  @api.doc(responses={500: 'There was an internal server error'})
   def get(self):
     try:
       return bf_default_account_load()
@@ -214,9 +211,9 @@ parser_get_users.add_argument('account', type=str, required=True, help='The acco
 
 @api.route('/bf_get_users')
 class BfGetUsers(Resource):
-  # @api.marshal_with(usersModel, False, 200)
-  # @api.docs(responses={500: 'There was an internal server error', 400: 'Bad request'})
-  # @api.expect(parser_get_users)
+  @api.marshal_with(users_response_model, False, 200)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'})
+  @api.expect(parser_get_users)
   def get(self):
     try:
       # get the selected account out of the request args
