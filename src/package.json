@@ -57,7 +57,7 @@
       "entitlementsInherit": "entitlements.mac.inherit.plist",
       "extraResources": [
         {
-          "from": "./pysodadist/api"
+          "from": "./pyflaskdist/app"
         },
         {
           "from": "./file_templates",
