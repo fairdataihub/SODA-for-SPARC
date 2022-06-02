@@ -876,7 +876,7 @@ h1.guided--text-sub-step {
   align-items: center;
   width: 350px;
   height: 475px;
-  padding: 20px;
+  padding: 20px 0px;
   border: 1px solid #ccc;
   border-radius: 5px;
   position: sticky;

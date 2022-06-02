@@ -1220,14 +1220,15 @@
                       font-weight: 600;
                       cursor: default;
                       color: #898989;
-                      display: none;
                     "
                     id="guided-input-global-path"
                     value="My_dataset_folder/"
                     readonly
                   />
                 </div>
-                <div class="guided--folder-organization-buttons-container-sub">
+                <div
+                  class="guided--folder-organization-buttons-container-sub hidden"
+                >
                   <button
                     class="ui primary basic button small"
                     id="guided-new-folder"
@@ -5439,20 +5440,45 @@
       </footer>
       <footer
         class="guided--footer hidden"
-        id="guided-pools-subject-sample-footer-div"
+        id="guided-sub-page-navigation-footer-div"
         style="justify-content: center"
       >
         <div class="space-between">
           <button
             class="ui secondary basic button guided--button-footer"
-            id="guided-button-sub-pool-sam-back"
+            id="guided-button-sub-page-back"
             style="width: 130px !important"
           >
             <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
           </button>
           <button
             class="ui positive button guided--button-footer"
-            id="guided-button-sub-pool-sam-continue"
+            id="guided-button-sub-page-continue"
+            style="
+              background-color: var(--color-bg-orange) !important;
+              width: 130px !important;
+            "
+          >
+            Next
+          </button>
+        </div>
+      </footer>
+      <footer
+        class="guided--footer hidden"
+        id="guided-primary-primary-data-footer-div"
+        style="justify-content: center"
+      >
+        <div class="space-between">
+          <button
+            class="ui secondary basic button guided--button-footer"
+            id="guided-button-primary-data-back"
+            style="width: 130px !important"
+          >
+            <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+          </button>
+          <button
+            class="ui positive button guided--button-footer"
+            id="guided-button-primary-data-continue"
             style="
               background-color: var(--color-bg-orange) !important;
               width: 130px !important;

@@ -43,6 +43,12 @@ const scrollToBottomOfGuidedBody = () => {
   elementToScrollTo.scrollTop = elementToScrollTo.scrollHeight;
 };
 
+const getOpenSubPageInPage = (pageID) => {
+  const subPageContainer = document.getElementById(pageID);
+  const openPage = subPageContainer.querySelector(".sub-page:not(.hidden)");
+  return openPage.id;
+};
+
 const guidedGetSubjects = () => {
   return Object.keys(
     sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]
@@ -551,14 +557,14 @@ const traverseToTab = (targetPageID) => {
       $(".selectpicker").selectpicker("refresh");
     }
     if (targetPageID === "guided-subjects-folder-tab") {
-      //setActivePage to the first page so subjects table updatesasd a
-      setActiveSubPage("guided-specify-subjects-page");
-
+      //Get the id of the page that's currently open and might need a refresh
+      const openSubPageID = getOpenSubPageInPage(targetPageID);
+      //Refresh data on the open sub-page
+      setActiveSubPage(openSubPageID);
       //Hide the footer div while user is in pool-sub-sam structuring
       $("#guided-footer-div").hide();
-
       //Show the pool-sub-sam footer
-      $("#guided-pools-subject-sample-footer-div").css("display", "flex");
+      $("#guided-sub-page-navigation-footer-div").css("display", "flex");
     }
 
     if (targetPageID === "guided-folder-structure-preview-tab") {
@@ -645,6 +651,15 @@ const traverseToTab = (targetPageID) => {
     if (targetPageID === "guided-primary-samples-organization-tab") {
       renderSamplesHighLevelFolderAsideItems("primary");
       guidedUpdateFolderStructure("primary", "samples");
+
+      const openSubPageID = getOpenSubPageInPage(targetPageID);
+      //Refresh data on the open sub-page
+      setActiveSubPage(openSubPageID);
+      //Hide the footer div while user is in pool-sub-sam structuring
+      $("#guided-footer-div").hide();
+      //Show the primary-data-organizationg footer
+      $("#guided-primary-primary-data-footer-div").css("display", "flex");
+
       $("#guided-file-explorer-elements").appendTo(
         $("#guided-primary-samples-file-explorer-container")
       );
@@ -4344,23 +4359,30 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
   for (const [poolName, subjects] of Object.entries(subjectsByPool)) {
     //concat to string
     string += `
-      <div>${poolName}</div>
+      <div class="justify-center mt-md">
+        <label class="guided--form-label centered">
+          ${poolName}
+        </label>
+      </div>
         ${subjects
           .map((subject) => {
-            console.log(subject);
             return `
-            <div>${subject.subjectName}</div>
-              ${subject.samples
-                .map((sample) => {
-                  return `
-                  <a 
-                    class="${highLevelFolderName}-selection-aside-item selection-aside-item"
-                    data-path-suffix="${subject.poolName}/${subject.subjectName}/${sample}"
-                  >${sample}</a>
-                `;
-                })
-                .join("\n")}
-          `;
+              <div class="w-100">
+                <label class="guided--form-label text-left">
+                  ${subject.subjectName}
+                </label>
+              </div>
+                ${subject.samples
+                  .map((sample) => {
+                    return `
+                    <a 
+                      class="${highLevelFolderName}-selection-aside-item selection-aside-item"
+                      data-path-suffix="${subject.poolName}/${subject.subjectName}/${sample}"
+                    >${sample}</a>
+                  `;
+                  })
+                  .join("\n")}
+            `;
           })
           .join("\n")}
     `;
@@ -6646,87 +6668,6 @@ $(document).ready(() => {
     subjectSampleAdditionTableContainer.innerHTML = subjectSampleAdditionTables;
   });*/
 
-  $("#guided-button-sub-pool-sam-continue").on("click", () => {
-    const specifySubjectsElement = document.getElementById(
-      "guided-specify-subjects-page"
-    );
-    const organizeSubjectsIntoPoolsElement = document.getElementById(
-      "guided-organize-subjects-into-pools-page"
-    );
-    const specifySamplesElement = document.getElementById(
-      "guided-specify-samples-page"
-    );
-    const guidedButtonUserNoSubjects = document.getElementById(
-      "guided-button-no-subjects"
-    );
-    if (
-      !specifySamplesElement.classList.contains("hidden") ||
-      guidedButtonUserNoSubjects.classList.contains("selected")
-    ) {
-      $("#guided-footer-div").css("display", "flex");
-      $("#guided-pools-subject-sample-footer-div").hide();
-      $("#guided-next-button").click();
-      return;
-    }
-    if (!specifySubjectsElement.classList.contains("hidden")) {
-      setActiveSubPage("guided-organize-subjects-into-pools-page");
-      scrollToBottomOfGuidedBody();
-      return;
-    }
-
-    if (!organizeSubjectsIntoPoolsElement.classList.contains("hidden")) {
-      setActiveSubPage("guided-specify-samples-page");
-      scrollToBottomOfGuidedBody();
-      return;
-    }
-  });
-  $("#guided-button-sub-pool-sam-back").on("click", () => {
-    const specifySubjectsElement = document.getElementById(
-      "guided-specify-subjects-page"
-    );
-    const organizeSubjectsIntoPoolsElement = document.getElementById(
-      "guided-organize-subjects-into-pools-page"
-    );
-    const specifySamplesElement = document.getElementById(
-      "guided-specify-samples-page"
-    );
-    if (!specifySubjectsElement.classList.contains("hidden")) {
-      $("#guided-footer-div").css("display", "flex");
-      $("#guided-pools-subject-sample-footer-div").hide();
-      $("#guided-back-button").click();
-      return;
-    }
-
-    if (!specifySamplesElement.classList.contains("hidden")) {
-      setActiveSubPage("guided-organize-subjects-into-pools-page");
-      scrollToBottomOfGuidedBody();
-      return;
-    }
-    if (!organizeSubjectsIntoPoolsElement.classList.contains("hidden")) {
-      setActiveSubPage("guided-specify-subjects-page");
-      scrollToBottomOfGuidedBody();
-      return;
-    }
-  });
-
-  $("#guided-specify-subjects-next-button").on("click", function () {
-    switchElementVisibility(
-      "guided-specify-subjects-page",
-      "guided-organize-subjects-into-pools-page"
-    );
-    $(this).hide();
-    $("#guided-organize-subjects-into-pools-next-button").css(
-      "display",
-      "flex"
-    );
-  });
-  $("#guided-organize-subjects-into-pools-next-button").on("click", () => {
-    switchElementVisibility(
-      "guided-organize-subjects-into-pools-page",
-      "guided-specify-samples-page"
-    );
-  });
-
   //submission
   $("#guided-button-save-checked-milestones").on("click", () => {
     const checkedMilestoneData = getCheckedMilestones();
@@ -8451,6 +8392,119 @@ $(document).ready(() => {
     let targetPage = getPrevPageNotSkipped(CURRENT_PAGE);
     let targetPageID = targetPage.attr("id");
     traverseToTab(targetPageID);
+  });
+
+  $("#guided-button-sub-pool-sam-continue").on("click", () => {
+    //Get the id of the sub-page that's currently open
+    const openSubPageID = getOpenSubPageInPage("guided-subjects-folder-tab");
+
+    const guidedButtonUserNoSubjects = document.getElementById(
+      "guided-button-no-subjects"
+    );
+
+    if (
+      openSubPageID === "guided-specify-samples-page" ||
+      guidedButtonUserNoSubjects.classList.contains("selected")
+    ) {
+      $("#guided-sub-page-navigation-footer-div").hide();
+      $("#guided-footer-div").css("display", "flex");
+      $("#guided-next-button").click();
+    }
+
+    if (openSubPageID === "guided-specify-subjects-page") {
+      setActiveSubPage("guided-organize-subjects-into-pools-page");
+      scrollToBottomOfGuidedBody();
+    }
+
+    if (openSubPageID === "guided-organize-subjects-into-pools-page") {
+      setActiveSubPage("guided-specify-samples-page");
+      scrollToBottomOfGuidedBody();
+    }
+  });
+
+  //sub page next button click handler
+  $("#guided-button-sub-page-continue").on("click", () => {
+    //Get the id of the parent page that's currently open
+    currentParentPageID = CURRENT_PAGE.attr("id");
+    //Get the id of the sub-page that's currently open
+    const openSubPageID = getOpenSubPageInPage(currentParentPageID);
+
+    switch (currentParentPageID) {
+      case "guided-subjects-folder-tab": {
+        switch (openSubPageID) {
+          case "guided-specify-subjects-page": {
+            setActiveSubPage("guided-organize-subjects-into-pools-page");
+            break;
+          }
+
+          case "guided-organize-subjects-into-pools-page": {
+            setActiveSubPage("guided-specify-samples-page");
+            break;
+          }
+
+          case "guided-specify-samples-page": {
+            $("#guided-sub-page-navigation-footer-div").hide();
+            $("#guided-footer-div").css("display", "flex");
+            $("#guided-next-button").click();
+            break;
+          }
+        }
+      }
+    }
+  });
+
+  $("#guided-button-sub-pool-sam-back").on("click", () => {
+    //Get the id of the sub-page that's currently open
+    const openSubPageID = getOpenSubPageInPage("guided-subjects-folder-tab");
+
+    if (openSubPageID === "guided-specify-subjects-page") {
+      $("#guided-sub-page-navigation-footer-div").hide();
+      $("#guided-footer-div").css("display", "flex");
+      $("#guided-back-button").click();
+    }
+
+    if (openSubPageID === "guided-specify-samples-page") {
+      setActiveSubPage("guided-organize-subjects-into-pools-page");
+      scrollToBottomOfGuidedBody();
+    }
+
+    if (openSubPageID === "guided-organize-subjects-into-pools-page") {
+      setActiveSubPage("guided-specify-subjects-page");
+      scrollToBottomOfGuidedBody();
+    }
+  });
+
+  //sub page back button click handler
+  $("#guided-button-sub-page-back").on("click", () => {
+    //Get the id of the parent page that's currently open
+    currentParentPageID = CURRENT_PAGE.attr("id");
+    //Get the id of the sub-page that's currently open
+    const openSubPageID = getOpenSubPageInPage(currentParentPageID);
+
+    switch (currentParentPageID) {
+      case "guided-subjects-folder-tab": {
+        switch (openSubPageID) {
+          case "guided-specify-subjects-page": {
+            $("#guided-sub-page-navigation-footer-div").hide();
+            $("#guided-footer-div").css("display", "flex");
+            $("#guided-back-button").click();
+            break;
+          }
+
+          case "guided-organize-subjects-into-pools-page": {
+            setActiveSubPage("guided-specify-subjects-page");
+            scrollToBottomOfGuidedBody();
+            break;
+          }
+
+          case "guided-specify-samples-page": {
+            setActiveSubPage("guided-organize-subjects-into-pools-page");
+            scrollToBottomOfGuidedBody();
+            break;
+          }
+        }
+      }
+    }
   });
 
   //tagify initializations
