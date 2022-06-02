@@ -75,6 +75,7 @@ from prepare_metadata import (
     upload_RC_file,
     delete_manifest_dummy_folders,
     set_template_path,
+    import_bf_manifest_file,
 )
 
 from organize_datasets import (
@@ -82,6 +83,8 @@ from organize_datasets import (
     bf_get_dataset_files_folders,
     create_soda_json_object_backend,
     monitor_local_json_progress,
+    monitor_pennsieve_json_progress,
+    import_pennsieve_dataset,
 )
 
 import sys
@@ -155,6 +158,11 @@ class SodaApi(object):
 
     def api_import_bf_RC(self, selected_bfaccount, selected_bfdataset, file_type):
         return import_bf_RC(selected_bfaccount, selected_bfdataset, file_type)
+
+    def api_import_bf_manifest_file(
+        self, sodajson, selected_bfaccount, selected_bfdataset
+    ):
+        return import_bf_manifest_file(sodajson, selected_bfaccount, selected_bfdataset)
 
     ### Save samples file
     def api_save_samples_file(
@@ -556,11 +564,21 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
-    # def api_get_auth_key(self):
-    #     try:
-    #         return get_auth_key()
-    #     except Exception as e:
-    #         raise e
+    def api_import_pennsieve_dataset(
+        self, soda_json_structure, requested_sparc_only=True
+    ):
+        try:
+            return import_pennsieve_dataset(
+                soda_json_structure, requested_sparc_only=True
+            )
+        except Exception as e:
+            raise e
+
+    def api_monitor_pennsieve_json_progress(self):
+        try:
+            return monitor_pennsieve_json_progress()
+        except Exception as e:
+            raise e
 
     ### Check Login to Python Server
     def api_version_check(self):
