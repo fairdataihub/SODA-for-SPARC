@@ -660,38 +660,7 @@ const traverseToTab = (targetPageID) => {
       );
     }
 
-    if (targetPageID === "guided-primary-subjects-organization-tab") {
-      //updateFolderStructureUI(highLevelFolderPageData.primary);
-    }
     if (targetPageID === "guided-source-samples-organization-tab") {
-      renderSamplesHighLevelFolderAsideItems("source");
-      guidedUpdateFolderStructure("source", "samples");
-      $("#guided-file-explorer-elements").appendTo(
-        $("#guided-source-samples-file-explorer-container")
-      );
-
-      //Hide the file explorer and show the intro
-      document
-        .getElementById("guided-file-explorer-elements")
-        .classList.add("hidden");
-      document
-        .getElementById("guided-source-samples-file-explorer-intro")
-        .classList.remove("hidden");
-
-      //Load the black arrow lottie animation
-      const sourceSamplesFileExplorerBlackArrowLottieContainer =
-        document.getElementById(
-          "source-samples-file-explorer-black-arrow-lottie-container"
-        );
-      sourceSamplesFileExplorerBlackArrowLottieContainer.innerHTML = "";
-      lottie.loadAnimation({
-        container: sourceSamplesFileExplorerBlackArrowLottieContainer,
-        animationData: blackArrow,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-
       //updateFolderStructureUI(highLevelFolderPageData.source);
     }
     if (targetPageID === "guided-source-subjects-organization-tab") {
@@ -1072,7 +1041,7 @@ const setActiveSubPage = (pageIdToActivate) => {
       guidedUpdateFolderStructure("primary", "samples");
 
       $("#guided-file-explorer-elements").appendTo(
-        $("#guided-primary-samples-organization-page")
+        $("#guided-primary-samples-file-explorer-container")
       );
 
       //Hide the file explorer and show the intro
@@ -1103,7 +1072,7 @@ const setActiveSubPage = (pageIdToActivate) => {
       renderSubjectsHighLevelFolderAsideItems("primary");
       guidedUpdateFolderStructure("primary", "subjects");
       $("#guided-file-explorer-elements").appendTo(
-        $("#guided-primary-subjects-organization-page")
+        $("#guided-primary-subjects-file-explorer-container")
       );
       //Hide the file explorer and show the intro
       document
@@ -1121,6 +1090,36 @@ const setActiveSubPage = (pageIdToActivate) => {
       primarySubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
       lottie.loadAnimation({
         container: primarySubjectsFileExplorerBlackArrowLottieContainer,
+        animationData: blackArrow,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+    }
+
+    case "guided-source-samples-organization-page": {
+      renderSamplesHighLevelFolderAsideItems("source");
+      guidedUpdateFolderStructure("source", "samples");
+      $("#guided-file-explorer-elements").appendTo(
+        $("#guided-source-samples-file-explorer-container")
+      );
+
+      //Hide the file explorer and show the intro
+      document
+        .getElementById("guided-file-explorer-elements")
+        .classList.add("hidden");
+      document
+        .getElementById("guided-source-samples-file-explorer-intro")
+        .classList.remove("hidden");
+
+      //Load the black arrow lottie animation
+      const sourceSamplesFileExplorerBlackArrowLottieContainer =
+        document.getElementById(
+          "source-samples-file-explorer-black-arrow-lottie-container"
+        );
+      sourceSamplesFileExplorerBlackArrowLottieContainer.innerHTML = "";
+      lottie.loadAnimation({
+        container: sourceSamplesFileExplorerBlackArrowLottieContainer,
         animationData: blackArrow,
         renderer: "svg",
         loop: true,

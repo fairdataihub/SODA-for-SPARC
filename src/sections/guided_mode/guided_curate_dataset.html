@@ -226,10 +226,7 @@
                 class="guided--capsule"
                 id="guided-primary-data-organization-capsule"
               ></div>
-              <div
-                class="guided--capsule"
-                id="guided-primary-subjects-organization-capsule"
-              ></div>
+
               <div
                 class="guided--capsule"
                 id="guided-source-samples-organization-capsule"
@@ -588,100 +585,131 @@
                 ></div>
               </div>
               <div
-                class="guided--container-subject-samples mt-md sub-page"
+                class="guided--panel mt-md sub-page"
                 id="guided-primary-samples-organization-page"
               >
-                <div class="guided--hlf-selection-container">
-                  <label class="guided--form-label centered"
-                    >Dataset samples:
+                <div class="guided--section" id="guided-primary-samples-prompt">
+                  <label class="guided--form-label centered">
+                    Do you have primary data for your samples?
                   </label>
-                  <aside
-                    class="guided--hlf-selection-aside"
-                    id="guided-primary-samples-aside"
-                  ></aside>
+                  <div
+                    class="guided--radio-button-container"
+                    style="margin-bottom: 7px"
+                  >
+                    <button
+                      class="ui positive basic button guided--radio-button"
+                      id="guided-button-add-sample-primary-data"
+                      data-next-element="guided-primary-samples-file-explorer-container"
+                    >
+                      Yes
+                    </button>
+                    <button
+                      class="ui negative basic button guided--radio-button"
+                      id="guided-button-no-sample-primary-data"
+                    >
+                      No
+                    </button>
+                  </div>
                 </div>
                 <div
-                  id="guided-primary-samples-file-explorer-intro"
-                  class="guided--panel"
-                  style="height: 475px; padding: 25px"
+                  class="guided--container-subject-samples mt-md hidden"
+                  id="guided-primary-samples-file-explorer-container"
                 >
+                  <div class="guided--hlf-selection-container">
+                    <label class="guided--form-label centered"
+                      >Dataset samples:
+                    </label>
+                    <aside
+                      class="guided--hlf-selection-aside"
+                      id="guided-primary-samples-aside"
+                    ></aside>
+                  </div>
                   <div
-                    class="guided--section"
-                    style="justify-content: flex-start"
+                    id="guided-primary-samples-file-explorer-intro"
+                    class="guided--panel"
+                    style="height: 475px; padding: 25px"
                   >
-                    <h1 class="guided--text-sub-step">
-                      Select a sample on the left to add its primary data.
-                    </h1>
                     <div
-                      id="primary-samples-file-explorer-black-arrow-lottie-container"
-                      class="black-arrow-lottie-container"
-                    ></div>
+                      class="guided--section"
+                      style="justify-content: flex-start"
+                    >
+                      <h1 class="guided--text-sub-step">
+                        Select a sample on the left to add its primary data.
+                      </h1>
+                      <div
+                        id="primary-samples-file-explorer-black-arrow-lottie-container"
+                        class="black-arrow-lottie-container"
+                      ></div>
+                    </div>
                   </div>
                 </div>
               </div>
               <div
-                class="guided--container-subject-samples mt-md sub-page hidden"
+                class="guided--panel mt-md sub-page hidden"
                 id="guided-primary-subjects-organization-page"
               >
-                <div class="guided--hlf-selection-container">
-                  <label class="guided--form-label centered"
-                    >Dataset subjects:
+                <div
+                  class="guided--section"
+                  id="guided-primary-subjects-prompt"
+                >
+                  <label class="guided--form-label centered">
+                    Do you have primary data for your subjects?
                   </label>
-                  <aside
-                    class="guided--hlf-selection-aside"
-                    id="guided-primary-subjects-aside"
-                  ></aside>
+                  <div
+                    class="guided--radio-button-container"
+                    style="margin-bottom: 7px"
+                  >
+                    <button
+                      class="ui positive basic button guided--radio-button"
+                      id="guided-button-add-subject-primary-data"
+                      data-next-element="guided-primary-subjects-file-explorer-container"
+                    >
+                      Yes
+                    </button>
+                    <button
+                      class="ui negative basic button guided--radio-button"
+                      id="guided-button-no-subject-primary-data"
+                    >
+                      No
+                    </button>
+                  </div>
                 </div>
                 <div
-                  id="guided-primary-subjects-file-explorer-intro"
-                  class="guided--panel"
-                  style="height: 475px; padding: 25px"
+                  class="guided--container-subject-samples mt-md hidden"
+                  id="guided-primary-subjects-file-explorer-container"
                 >
+                  <div class="guided--hlf-selection-container">
+                    <label class="guided--form-label centered"
+                      >Dataset subjects:
+                    </label>
+                    <aside
+                      class="guided--hlf-selection-aside"
+                      id="guided-primary-subjects-aside"
+                    ></aside>
+                  </div>
                   <div
-                    class="guided--section"
-                    style="justify-content: flex-start"
+                    id="guided-primary-subjects-file-explorer-intro"
+                    class="guided--panel"
+                    style="height: 475px; padding: 25px"
                   >
-                    <h1 class="guided--text-sub-step">
-                      Select a subject on the left to add its primary data.
-                    </h1>
                     <div
-                      id="primary-subjects-file-explorer-black-arrow-lottie-container"
-                      class="black-arrow-lottie-container"
-                    ></div>
+                      class="guided--section"
+                      style="justify-content: flex-start"
+                    >
+                      <h1 class="guided--text-sub-step">
+                        Select a subject on the left to add its primary data.
+                      </h1>
+                      <div
+                        id="primary-subjects-file-explorer-black-arrow-lottie-container"
+                        class="black-arrow-lottie-container"
+                      ></div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div
-            id="guided-primary-subjects-organization-tab"
-            class="guided--panel hidden guided-curate-new-dataset-branch-page"
-          >
-            <div class="guided--section w-100">
-              <h1 class="guided--text-sub-step">Primary data for subjects</h1>
-              <p class="guided--help-text w-100">
-                Primary data refers to data from experimental subjects and/or
-                samples (e.g., time series data, tabular data, clinical imaging
-                data, genomic, metabolomic, or microscopy data). The data
-                generally have been minimally processed so they are in a form
-                ready for analysis.
-              </p>
-            </div>
 
-            <div class="guided--panel" id="guided-add-subject-primary-data">
-              <div class="guided--section">
-                <h1 class="guided--text-sub-step">
-                  Specify in the interface below any primary data you have for
-                  your subjects other than the data related to their sample(s)
-                  (already specified in the previous page)
-                </h1>
-              </div>
-              <div
-                id="guided-primary-subjects-file-explorer-container2"
-                class="guided--container-subject-samples mt-md"
-              ></div>
-            </div>
-          </div>
           <div
             id="guided-source-samples-organization-tab"
             class="guided--panel hidden guided-curate-new-dataset-branch-page"
