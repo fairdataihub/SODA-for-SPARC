@@ -55,8 +55,8 @@ class SaveSubmissionFile(Resource):
 
 
 parser_set_template_path = reqparse.RequestParser(bundle_errors=True)
-parser_set_template_path.add_argument('basepath', type=str, help='Path to the template directory', location="args")
-parser_set_template_path.add_argument('resourcesPath', type=str, help='Path to the template directory', location="args")
+parser_set_template_path.add_argument('basepath', type=str, help='Path to the template directory', location="json")
+parser_set_template_path.add_argument('resourcesPath', type=str, help='Path to the template directory', location="json")
 @api.route('/set_template_paths')
 class SetTemplatePath(Resource):
 
@@ -81,9 +81,9 @@ parser_import_milestone.add_argument('path', type=str, help='Path to the local d
 @api.route('/import_milestone')
 class ImportMilestone(Resource):
 
-    @api.expect(parser)
+    @api.expect(parser_import_milestone)
     def get(self):
-        args = parser.parse_args()
+        args = parser_import_milestone.parse_args()
         path = args['path']
         try:
             return import_milestone(path)
