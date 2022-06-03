@@ -712,7 +712,7 @@ const check_api_key = async () => {
     return false;
   }
 
-  let res = responseObject.data["accounts"]
+  let res = responseObject.data["accounts"];
   log.info("Found a set of valid API keys");
   if (res[0] === "Select" && res.length === 1) {
     //no api key found
@@ -3615,7 +3615,7 @@ function refreshBfUsersList() {
     client
       .get(`manage_datasets/bf_get_users?selected_account=${accountSelected}`)
       .then((res) => {
-        let users = res.data["users"]
+        let users = res.data["users"];
         console.log("Get users response: ", users);
         // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
         $("#bf_list_users").selectpicker("refresh");
@@ -3655,7 +3655,7 @@ function refreshBfTeamsList(teamList) {
     client
       .get(`/manage_datasets/bf_get_teams?selected_account=${accountSelected}`)
       .then((res) => {
-        let teams = res.data["teams"]
+        let teams = res.data["teams"];
         // The removeoptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
         $("#bf_list_teams").selectpicker("refresh");
         $("#bf_list_teams").find("option:not(:first)").remove();
@@ -3770,7 +3770,7 @@ async function loadDefaultAccount() {
     console.log("Could not get default account");
   }
 
-  let accounts = responseObject.data["defaultAccounts"]
+  let accounts = responseObject.data["defaultAccounts"];
   console.log("Default account success: ", accounts);
   if (accounts.length > 0) {
     var myitemselect = accounts[0];
