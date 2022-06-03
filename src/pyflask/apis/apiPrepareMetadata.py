@@ -1,3 +1,4 @@
+from urllib import response
 from prepareMetadata import (
     save_submission_file,
     save_ds_description_file,
@@ -17,7 +18,7 @@ from prepareMetadata import (
 )
 from namespaces import NamespaceEnum, get_namespace
 from flask_restx import Resource, reqparse
-from flask import request
+from flask import jsonify, request
 import json
 from errorHandlers import notBadRequestException
 
@@ -25,29 +26,42 @@ from errorHandlers import notBadRequestException
 api = get_namespace(NamespaceEnum.PREPARE_METADATA)
 
 # upload_boolean, bfaccount, bfdataset, filepath, json_str
-parser_save_submission_file = reqparse.RequestParser(bundle_errors=True)
-parser_save_submission_file.add_argument('upload_boolean', type=bool, help='Boolean to indicate whether to upload the file to the Bionimbus server', location="args")
-parser_save_submission_file.add_argument('bfaccount', type=str, help='Bionimbus account name', location="args")
-parser_save_submission_file.add_argument('bfdataset', type=str, help='Bionimbus dataset name', location="args")
-parser_save_submission_file.add_argument('filepath', type=str, help='Path to the file to be uploaded', location="args")
-parser_save_submission_file.add_argument('json_str', type=str, help='JSON string to be uploaded', location="json")
+# parser_save_submission_file = reqparse.RequestParser(bundle_errors=True)
+# parser_save_submission_file.add_argument('upload_boolean', type=bool, help='Boolean to indicate whether to upload the file to the Bionimbus server', location="args", required=True)
+# parser_save_submission_file.add_argument('bfaccount', type=str, help='Bionimbus account name', location="args", required=True)
+# parser_save_submission_file.add_argument('bfdataset', type=str, help='Bionimbus dataset name', location="args")
+# parser_save_submission_file.add_argument('filepath', type=str, help='Path to the file to be uploaded', location="args")
+# parser_save_submission_file.add_argument('json_str', type=str, help='JSON string to be uploaded', location="json", required=True)
 
 
 @api.route('/save_submission_file')
 class SaveSubmissionFile(Resource):
 
-    @api.expect(parser_save_submission_file)
-    def get(self):
-        args = parser_save_submission_file.parse_args()
-        upload_boolean = args['upload_boolean']
-        bfaccount = args['bfaccount']
-        bfdataset = args['bfdataset']
-        filepath = args['filepath']
+    # @api.expect(parser_save_submission_file)
+    def post(self):
+        args = request.args # parser_save_submission_file.parse_args(strict=True)
+        print(request.headers)
+        print(request)
+
+        print(args)
+        upload_boolean = args.get('upload_boolean')
+        bfaccount = args.get('bfaccount')
+        bfdataset = args.get('bfdataset')
+        filepath = args.get('filepath')
         json_data = request.json
-        json_str = json_data["json_str"]
+        json_str = json_data.get("json_str")
 
-        return save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_str)
+        print(json_str)
 
+        if upload_boolean is None or bfaccount is None or json_str is None:
+            return api.abort(400, "Missing required parameters: upload_boolean, bfaccount, json_str")
+
+        try:
+            return save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_str)
+        except Exception as e:
+            response = jsonify({"message": str(e)})
+            response.status_code = 500
+            return response
 
 
 

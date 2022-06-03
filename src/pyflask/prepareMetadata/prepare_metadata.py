@@ -7,7 +7,7 @@ from gevent import monkey
 monkey.patch_all()
 import platform
 import os
-from os import listdir, stat, makedirs, mkdir, walk, remove, pardir
+from os import abort, listdir, stat, makedirs, mkdir, walk, remove, pardir
 from os.path import (
     isdir,
     isfile,
@@ -166,10 +166,14 @@ def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_st
     else:
         destination = filepath
 
-    shutil.copyfile(source, destination)
-
+    try:
+        shutil.copyfile(source, destination)
+    except FileNotFoundError as e:
+        raise e
+    
     # json array to python list
     val_arr = json_str
+
     # write to excel file
     wb = load_workbook(destination)
     ws1 = wb["Sheet1"]

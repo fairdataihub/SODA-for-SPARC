@@ -599,66 +599,87 @@ async function generateSubmissionHelper(uploadBFBoolean) {
       });
     }
   }
-  json_str = JSON.stringify(json_arr);
-  client.invoke(
-    "api_save_submission_file",
-    uploadBFBoolean,
-    defaultBfAccount,
-    $("#bf_dataset_load_submission").text().trim(),
-    submissionDestinationPath,
-    json_str,
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
+
+  let datasetName = $("#bf_dataset_load_submission").text().trim()
+  client.post(`/prepare_metadata/save_submission_file?upload_boolean=${uploadBFBoolean}&bfaccount=${defaultBfAccount}&bfdataset=${datasetName}&filepath=${submissionDestinationPath}`,
+    {
+      json_str: json_arr,
+    }).then(res => {
+      if (uploadBFBoolean) {
+        var successMessage =
+          "Successfully generated the submission.xlsx file on your Pennsieve dataset.";
+      } else {
+        var successMessage =
+          "Successfully generated the submission.xlsx file at the specified location.";
+      }
+      Swal.fire({
+        title: successMessage,
+        icon: "success",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Ok",
+        allowOutsideClick: true,
+      });
+
+      logMetadataForAnalytics(
+        "Success",
+        MetadataAnalyticsPrefix.SUBMISSION,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Generate",
+        uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+      );
+
+      // get the size of the uploaded file from the result
+      const size = res;
+
+      // log the size of the metadata file that was generated at varying levels of granularity
+      logMetadataSizeForAnalytics(uploadBFBoolean, "submission.xlsx", size);
+    }).catch(error => {
+      if (error.response) {
+        console.log(error.response)
+        const message = error.response.data.message
+        console.log(error.response.status);
         Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
           icon: "error",
-          html: emessage,
+          html: message,
           title: "Failed to generate the submission file",
         });
-        logMetadataForAnalytics(
-          "Error",
-          MetadataAnalyticsPrefix.SUBMISSION,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Generate",
-          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
-        );
-      } else {
-        if (uploadBFBoolean) {
-          var successMessage =
-            "Successfully generated the submission.xlsx file on your Pennsieve dataset.";
-        } else {
-          var successMessage =
-            "Successfully generated the submission.xlsx file at the specified location.";
-        }
+      } else if(error.request) {
+        console.log("Request")
+        console.log(error.request);
         Swal.fire({
-          title: successMessage,
-          icon: "success",
-          heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: "Ok",
-          allowOutsideClick: true,
+          heightAuto: false,
+          icon: "error",
+          html: error.request.responsText,
+          title: "Failed to generate the submission file",
         });
-
-        logMetadataForAnalytics(
-          "Success",
-          MetadataAnalyticsPrefix.SUBMISSION,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Generate",
-          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
-        );
-
-        // get the size of the uploaded file from the result
-        const size = res;
-
-        // log the size of the metadata file that was generated at varying levels of granularity
-        logMetadataSizeForAnalytics(uploadBFBoolean, "submission.xlsx", size);
+      } else {
+        console.log("Else")
+        console.log("Error", error.message);
+        Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          icon: "error",
+          html: error.message,
+          title: "Failed to generate the submission file",
+        });
       }
-    }
-  );
+      // console.log(error)
+      // console.log(error.message)
+      // log.error(error);
+      // //console.error(error);
+      
+      logMetadataForAnalytics(
+        "Error",
+        MetadataAnalyticsPrefix.SUBMISSION,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Generate",
+        uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+      );
+    })
 }
 
 $("#submission-completion-date").change(function () {
@@ -738,7 +759,7 @@ function changeAirtableDiv(divHide, divShow, buttonHide, buttonShow) {
 function showExistingSubmissionFile(type) {
   if (
     $(`#existing-submission-file-destination`).prop("placeholder") !==
-      "Browse here" &&
+    "Browse here" &&
     $(`#Question-prepare-submission-2`).hasClass("show")
   ) {
     Swal.fire({
@@ -818,7 +839,7 @@ function importExistingSubmissionFile(type) {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       setTimeout(loadExistingSubmissionFile(filePath), 1000);
     }
   }
@@ -924,7 +945,7 @@ function checkBFImportSubmission() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   client.invoke(
     "api_import_bf_metadata_file",
     "submission.xlsx",
