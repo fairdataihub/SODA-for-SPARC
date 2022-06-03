@@ -222,7 +222,7 @@ users_response_model = api.model('Users', {
 class BfGetUsers(Resource):
 
   parser_get_users = reqparse.RequestParser(bundle_errors=True)
-  parser_get_users.add_argument('default_account', type=str, required=True, location='args', help='The account to get associated users for.')
+  parser_get_users.add_argument('selected_account', type=str, required=True, location='args', help='The account to get associated users for.')
 
 
   @api.marshal_with(users_response_model, False, 200)
@@ -236,7 +236,7 @@ class BfGetUsers(Resource):
       if "selected_account" not in data:
         api.abort(400, "Request must include the default_account parameter")
 
-      selected_account = data['default_account']
+      selected_account = data['selected_account']
 
       return bf_get_users(selected_account)
     except Exception as e:
