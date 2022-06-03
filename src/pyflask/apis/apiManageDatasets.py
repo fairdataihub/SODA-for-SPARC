@@ -250,15 +250,25 @@ class BfGetUsers(Resource):
 
 
 
+model_bf_get_teams_response = api.model('BfGetTeamsResponse', {'teams': fields.List(fields.String, required=True, description="List of the teams in the user's organization.")})
 @api.route('/bf_get_teams')
 class BfGetTeams(Resource):
+
+  @api.marshal_with(model_bf_get_teams_response, False, 200)
+  @api.doc(responses={500: 'There was an internal server error'}, params={'selected_account': 'The target account to retrieve inter-organization teams for.'})
   def get(self):
     try:
       # get the selected account out of the request args
       selected_account = request.args.get('selected_account')
+
+      if selected_account is None:
+        api.abort(400, "Request must include the selected_account parameter")
+      
       return bf_get_teams(selected_account)
     except Exception as e:
-      api.abort(500, e.args[0])
+      if notBadRequestException(e):
+        api.abort(500, e.args[0])
+      raise e
 
 @api.route('/bf_account_details')
 class BfAccountDetails(Resource):

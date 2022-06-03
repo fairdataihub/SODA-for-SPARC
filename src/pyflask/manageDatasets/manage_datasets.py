@@ -1260,11 +1260,12 @@ def bf_get_users(selected_bfaccount):
     """
 
     global namespace_logger
-
-
     try:
-        # def get_users_list():
         bf = Pennsieve(selected_bfaccount)
+    except Exception as e:
+        abort(400, f"{e}")
+        
+    try:
         # organization_name = bf.context.name
         organization_id = bf.context.id
         list_users = bf._api._get("/organizations/" + str(organization_id) + "/members")
@@ -1300,6 +1301,10 @@ def bf_get_teams(selected_bfaccount):
     """
     try:
         bf = Pennsieve(selected_bfaccount)
+    except Exception as e:
+        abort(400, f"{e}")
+    
+    try:
         # organization_name = bf.context.name
         organization_id = bf.context.id
         list_teams = bf._api._get("/organizations/" + str(organization_id) + "/teams")
@@ -1308,7 +1313,7 @@ def bf_get_teams(selected_bfaccount):
             team_name = list_teams[i]["team"]["name"]
             list_teams_name.append(team_name)
         list_teams_name.sort()  # Returning the list of teams in alphabetical order
-        return list_teams_name
+        return {"teams": list_teams_name}
     except Exception as e:
         raise e
 
