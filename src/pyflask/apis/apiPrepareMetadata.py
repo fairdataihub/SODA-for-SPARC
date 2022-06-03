@@ -15,7 +15,7 @@ from prepareMetadata import (
     delete_manifest_dummy_folders,
 )
 from namespaces import NamespaceEnum, get_namespace
-from flask_restx import Resource
+from flask_restx import Resource, reqparse
 from flask import request
 import json
 from errorHandlers import notBadRequestException

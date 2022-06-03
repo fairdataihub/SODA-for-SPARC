@@ -117,6 +117,10 @@ class GetNumberOfFilesAndFoldersLocally(Resource):
     
 
 
+
+
+
+
 ## the model for the submit_dataset_progress endpoint defines what is returned from the endpoint
 successMessage = api.model('SuccessMessage', {
   'message': fields.String(required=True, description="A message indicating success of the operation."),
@@ -156,9 +160,19 @@ class BfChangeDatasetStatus(Resource):
       raise e
 
 
-# TODO: Add rest of the boilerplate to this route
+
+
+
+
+
+account_list_model = api.model('AccountList', {
+  'accounts': fields.List(fields.String, required=True, description="List of the user's accounts"),
+  })
+
 @api.route('/bf_account_list')
 class BfAccountList(Resource):
+  # @api.marshal_with(account_list_model, False, 200)
+  # @api.doc(responses={500: 'There was an internal server error'})
   def get(self):
     try:
       return bf_account_list()
@@ -166,23 +180,52 @@ class BfAccountList(Resource):
       api.abort(500, e.args[0])
 
 
+
+
+
+
+
+default_account_model = api.model('DefaultAccount', {
+  'default_account': fields.String(required=True, description="The default account"),
+})
+
 @api.route('/bf_default_account_load')
 class BfDefaultAccountLoad(Resource):
+  # @api.marshal_with(default_account_model, False, 200)
+  # @api.doc(responses={500: 'There was an internal server error'})
   def get(self):
     try:
       return bf_default_account_load()
     except Exception as e:
       api.abort(500, e.args[0])
 
+
+
+
+
+
+
+users_response_model = api.model('Users', {
+  'users': fields.List(fields.String, required=True, description="List of the user's accounts"),
+})
+
+parser_get_users = reqparse.RequestParser(bundle_errors=True)
+parser_get_users.add_argument('account', type=str, required=True, help='The account to get the users for', location='args')
+
 @api.route('/bf_get_users')
 class BfGetUsers(Resource):
+  # @api.marshal_with(usersModel, False, 200)
+  # @api.docs(responses={500: 'There was an internal server error', 400: 'Bad request'})
+  # @api.expect(parser_get_users)
   def get(self):
     try:
       # get the selected account out of the request args
       selected_account = request.args.get('selected_account')
       return bf_get_users(selected_account)
     except Exception as e:
-      api.abort(500, e.args[0])
+      if notBadRequestException(e):
+        api.abort(500, e.args[0])
+      raise e
 
 @api.route('/bf_get_teams')
 class BfGetTeams(Resource):
