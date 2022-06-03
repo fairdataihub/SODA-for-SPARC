@@ -600,11 +600,15 @@ async function generateSubmissionHelper(uploadBFBoolean) {
     }
   }
 
-  let datasetName = $("#bf_dataset_load_submission").text().trim()
-  client.post(`/prepare_metadata/save_submission_file?upload_boolean=${uploadBFBoolean}&bfaccount=${defaultBfAccount}&bfdataset=${datasetName}&filepath=${submissionDestinationPath}`,
-    {
-      json_str: json_arr,
-    }).then(res => {
+  let datasetName = $("#bf_dataset_load_submission").text().trim();
+  client
+    .post(
+      `/prepare_metadata/save_submission_file?upload_boolean=${uploadBFBoolean}&bfaccount=${defaultBfAccount}&bfdataset=${datasetName}&filepath=${submissionDestinationPath}`,
+      {
+        json_str: json_arr,
+      }
+    )
+    .then((res) => {
       if (uploadBFBoolean) {
         var successMessage =
           "Successfully generated the submission.xlsx file on your Pennsieve dataset.";
@@ -634,10 +638,11 @@ async function generateSubmissionHelper(uploadBFBoolean) {
 
       // log the size of the metadata file that was generated at varying levels of granularity
       logMetadataSizeForAnalytics(uploadBFBoolean, "submission.xlsx", size);
-    }).catch(error => {
+    })
+    .catch((error) => {
       if (error.response) {
-        console.log(error.response)
-        const message = error.response.data.message
+        console.log(error.response);
+        const message = error.response.data.message;
         console.log(error.response.status);
         Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
@@ -646,8 +651,8 @@ async function generateSubmissionHelper(uploadBFBoolean) {
           html: message,
           title: "Failed to generate the submission file",
         });
-      } else if(error.request) {
-        console.log("Request")
+      } else if (error.request) {
+        console.log("Request");
         console.log(error.request);
         Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
@@ -657,7 +662,7 @@ async function generateSubmissionHelper(uploadBFBoolean) {
           title: "Failed to generate the submission file",
         });
       } else {
-        console.log("Else")
+        console.log("Else");
         console.log("Error", error.message);
         Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
@@ -671,7 +676,7 @@ async function generateSubmissionHelper(uploadBFBoolean) {
       // console.log(error.message)
       // log.error(error);
       // //console.error(error);
-      
+
       logMetadataForAnalytics(
         "Error",
         MetadataAnalyticsPrefix.SUBMISSION,
@@ -679,7 +684,7 @@ async function generateSubmissionHelper(uploadBFBoolean) {
         "Generate",
         uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
       );
-    })
+    });
 }
 
 $("#submission-completion-date").change(function () {
@@ -759,7 +764,7 @@ function changeAirtableDiv(divHide, divShow, buttonHide, buttonShow) {
 function showExistingSubmissionFile(type) {
   if (
     $(`#existing-submission-file-destination`).prop("placeholder") !==
-    "Browse here" &&
+      "Browse here" &&
     $(`#Question-prepare-submission-2`).hasClass("show")
   ) {
     Swal.fire({
@@ -839,7 +844,7 @@ function importExistingSubmissionFile(type) {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       setTimeout(loadExistingSubmissionFile(filePath), 1000);
     }
   }
@@ -945,7 +950,7 @@ function checkBFImportSubmission() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   client.invoke(
     "api_import_bf_metadata_file",
     "submission.xlsx",
