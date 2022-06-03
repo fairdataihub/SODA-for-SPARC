@@ -4377,22 +4377,29 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
     return subject.samples.length > 0;
   });
 
+  console.log(subjectsWithSamples);
+
+  let asideElementTemplateLiteral = ``;
+
   //create an array of objects that groups subjectsWithSamples by poolName property
-  const subjectsByPool = subjectsWithSamples.reduce((acc, subject) => {
-    if (subject.poolName) {
-      if (acc[subject.poolName]) {
-        acc[subject.poolName].push(subject);
-      } else {
-        acc[subject.poolName] = [subject];
+  const subjectsWithSamplesInPools = subjectsWithSamples.reduce(
+    (acc, subject) => {
+      if (subject.poolName) {
+        if (acc[subject.poolName]) {
+          acc[subject.poolName].push(subject);
+        } else {
+          acc[subject.poolName] = [subject];
+        }
       }
-    }
-    return acc;
-  }, {});
-  console.log(subjectsByPool);
-  let string = "";
-  for (const [poolName, subjects] of Object.entries(subjectsByPool)) {
-    //concat to string
-    string += `
+      return acc;
+    },
+    {}
+  );
+  //loop through the pools and create an aside element for each sample in the pools subjects
+  for (const [poolName, subjects] of Object.entries(
+    subjectsWithSamplesInPools
+  )) {
+    asideElementTemplateLiteral += `
       <div class="justify-center mt-md">
         <label class="guided--form-label centered">
           ${poolName}
@@ -4420,28 +4427,43 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
           })
           .join("\n")}
     `;
-  } /*
-  //Create the HTML for the samples
-  const sampleItems = samples
-    .map((sample) => {
-      return `
-        <a 
-          class="${highLevelFolderName}-selection-aside-item selection-aside-item"
-          data-path-suffix="${sample.poolName ? sample.poolName + "/" : ""}${
-        sample.subjectName
-      }/${sample.sampleName}"
-        >${sample.sampleName}</a>
-      `;
-    })
-    .join("\n");*/
+  }
+
+  //filter out subjects that are not in a pool
+  const subjectsWithSamplesOutsidePools = subjectsWithSamples.filter(
+    (subject) => {
+      return !subject.poolName;
+    }
+  );
+  //loop through the subjects and create an aside element for each
+  for (const subject of subjectsWithSamplesOutsidePools) {
+    asideElementTemplateLiteral += `
+      <div class="justify-center mt-md">
+        <label class="guided--form-label centered">
+          ${subject.subjectName}
+        </label>
+      </div>
+        ${subject.samples
+          .map((sample) => {
+            return `  
+              <a
+                class="${highLevelFolderName}-selection-aside-item selection-aside-item"
+                data-path-suffix="${subject.subjectName}/${sample}"
+              >${sample}</a>
+            `;
+          })
+          .join("\n")}
+    `;
+  }
 
   //Add the samples to the DOM
-  asideElement.innerHTML = string;
+  asideElement.innerHTML = asideElementTemplateLiteral;
 
   //add click event to each sample item
   const selectionAsideItems = document.querySelectorAll(
     `a.${highLevelFolderName}-selection-aside-item`
   );
+
   selectionAsideItems.forEach((item) => {
     item.addEventListener("click", (e) => {
       //Hide intro and show subject folder explorer if intro is open
@@ -4907,6 +4929,14 @@ $(document).ready(() => {
         sodaJSONObj.addSampleToSubject("sam-3", "pool-2", "sub-10");
         sodaJSONObj.addSampleToSubject("sam-4", "pool-2", "sub-10");
         sodaJSONObj.addSampleToSubject("sam-5", "pool-2", "sub-10");
+
+        sodaJSONObj.addSampleToSubject("sam-sub111", "", "sub-11");
+        sodaJSONObj.addSampleToSubject("sam-sub112", "", "sub-11");
+        sodaJSONObj.addSampleToSubject("sam-sub113", "", "sub-11");
+
+        sodaJSONObj.addSampleToSubject("sam-sub121", "", "sub-12");
+        sodaJSONObj.addSampleToSubject("sam-sub122", "", "sub-12");
+        sodaJSONObj.addSampleToSubject("sam-sub123", "", "sub-12");
       } else {
         if (datasetName == "") {
           errorArray.push({
