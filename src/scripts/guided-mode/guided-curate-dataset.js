@@ -561,9 +561,9 @@ const traverseToTab = (targetPageID) => {
       const openSubPageID = getOpenSubPageInPage(targetPageID);
       //Refresh data on the open sub-page
       setActiveSubPage(openSubPageID);
-      //Hide the footer div while user is in pool-sub-sam structuring
+      //Hide the footer div while user is in sub-page navigation
       $("#guided-footer-div").hide();
-      //Show the pool-sub-sam footer
+      //Show the sub-page navigation footer
       $("#guided-sub-page-navigation-footer-div").css("display", "flex");
     }
     if (targetPageID === "guided-primary-data-organization-tab") {
@@ -571,12 +571,32 @@ const traverseToTab = (targetPageID) => {
       const openSubPageID = getOpenSubPageInPage(targetPageID);
       //Refresh data on the open sub-page
       setActiveSubPage(openSubPageID);
-      //Hide the footer div while user is in pool-sub-sam structuring
+      //Hide the footer div while user is in sub-page navigation
       $("#guided-footer-div").hide();
-      //Show the pool-sub-sam footer
+      //Show the sub-page navigation footer
       $("#guided-sub-page-navigation-footer-div").css("display", "flex");
 
       //updateFolderStructureUI(highLevelFolderPageData.primary); //temp
+    }
+    if (targetPageID === "guided-source-data-organization-tab") {
+      //Get the id of the page that's currently open and might need a refresh
+      const openSubPageID = getOpenSubPageInPage(targetPageID);
+      //Refresh data on the open sub-page
+      setActiveSubPage(openSubPageID);
+      //Hide the footer div while user is in sub-page navigation
+      $("#guided-footer-div").hide();
+      //Show the sub-page navigation footer
+      $("#guided-sub-page-navigation-footer-div").css("display", "flex");
+    }
+    if (targetPageID === "guided-derivative-data-organization-tab") {
+      //Get the id of the page that's currently open and might need a refresh
+      const openSubPageID = getOpenSubPageInPage(targetPageID);
+      //Refresh data on the open sub-page
+      setActiveSubPage(openSubPageID);
+      //Hide the footer div while user is in sub-page navigation
+      $("#guided-footer-div").hide();
+      //Show the sub-page navigation footer
+      $("#guided-sub-page-navigation-footer-div").css("display", "flex");
     }
 
     if (targetPageID === "guided-folder-structure-preview-tab") {
@@ -660,38 +680,6 @@ const traverseToTab = (targetPageID) => {
       );
     }
 
-    if (targetPageID === "guided-source-samples-organization-tab") {
-      //updateFolderStructureUI(highLevelFolderPageData.source);
-    }
-    if (targetPageID === "guided-source-subjects-organization-tab") {
-      renderSubjectsHighLevelFolderAsideItems("source");
-      guidedUpdateFolderStructure("source", "subjects");
-      $("#guided-file-explorer-elements").appendTo(
-        $("#guided-source-subjects-file-explorer-container")
-      );
-      //Hide the file explorer and show the intro
-      document
-        .getElementById("guided-file-explorer-elements")
-        .classList.add("hidden");
-      document
-        .getElementById("guided-source-subjects-file-explorer-intro")
-        .classList.remove("hidden");
-
-      //Load the black arrow lottie animation
-      const sourceSubjectsFileExplorerBlackArrowLottieContainer =
-        document.getElementById(
-          "source-subjects-file-explorer-black-arrow-lottie-container"
-        );
-      sourceSubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
-      lottie.loadAnimation({
-        container: sourceSubjectsFileExplorerBlackArrowLottieContainer,
-        animationData: blackArrow,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-      //updateFolderStructureUI(highLevelFolderPageData.source);
-    }
     if (targetPageID === "guided-derivative-samples-organization-tab") {
       renderSamplesHighLevelFolderAsideItems("derivative");
       guidedUpdateFolderStructure("derivative", "samples");
@@ -1120,6 +1108,94 @@ const setActiveSubPage = (pageIdToActivate) => {
       sourceSamplesFileExplorerBlackArrowLottieContainer.innerHTML = "";
       lottie.loadAnimation({
         container: sourceSamplesFileExplorerBlackArrowLottieContainer,
+        animationData: blackArrow,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+    }
+
+    case "guided-source-subjects-organization-page": {
+      renderSubjectsHighLevelFolderAsideItems("source");
+      guidedUpdateFolderStructure("source", "subjects");
+      $("#guided-file-explorer-elements").appendTo(
+        $("#guided-source-subjects-file-explorer-container")
+      );
+      //Hide the file explorer and show the intro
+      document
+        .getElementById("guided-file-explorer-elements")
+        .classList.add("hidden");
+      document
+        .getElementById("guided-source-subjects-file-explorer-intro")
+        .classList.remove("hidden");
+
+      //Load the black arrow lottie animation
+      const sourceSubjectsFileExplorerBlackArrowLottieContainer =
+        document.getElementById(
+          "source-subjects-file-explorer-black-arrow-lottie-container"
+        );
+      sourceSubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
+      lottie.loadAnimation({
+        container: sourceSubjectsFileExplorerBlackArrowLottieContainer,
+        animationData: blackArrow,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+    }
+
+    case "guided-derivative-samples-organization-page": {
+      renderSamplesHighLevelFolderAsideItems("derivative");
+      guidedUpdateFolderStructure("derivative", "samples");
+      $("#guided-file-explorer-elements").appendTo(
+        $("#guided-derivative-samples-file-explorer-container")
+      );
+
+      //Hide the file explorer and show the intro
+      document
+        .getElementById("guided-file-explorer-elements")
+        .classList.add("hidden");
+      document
+        .getElementById("guided-derivative-samples-file-explorer-intro")
+        .classList.remove("hidden");
+
+      //Load the black arrow lottie animation
+      const derivativeSamplesFileExplorerBlackArrowLottieContainer =
+        document.getElementById(
+          "derivative-samples-file-explorer-black-arrow-lottie-container"
+        );
+      derivativeSamplesFileExplorerBlackArrowLottieContainer.innerHTML = "";
+      lottie.loadAnimation({
+        container: derivativeSamplesFileExplorerBlackArrowLottieContainer,
+        animationData: blackArrow,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+    }
+
+    case "guided-derivative-subjects-organization-page": {
+      renderSubjectsHighLevelFolderAsideItems("derivative");
+      guidedUpdateFolderStructure("derivative", "subjects");
+      $("#guided-file-explorer-elements").appendTo(
+        $("#guided-derivative-subjects-file-explorer-container")
+      );
+      //Hide the file explorer and show the intro
+      document
+        .getElementById("guided-file-explorer-elements")
+        .classList.add("hidden");
+      document
+        .getElementById("guided-derivative-subjects-file-explorer-intro")
+        .classList.remove("hidden");
+
+      //Load the black arrow lottie animation
+      const derivativeSubjectsFileExplorerBlackArrowLottieContainer =
+        document.getElementById(
+          "derivative-subjects-file-explorer-black-arrow-lottie-container"
+        );
+      derivativeSubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
+      lottie.loadAnimation({
+        container: derivativeSubjectsFileExplorerBlackArrowLottieContainer,
         animationData: blackArrow,
         renderer: "svg",
         loop: true,
