@@ -59,16 +59,16 @@ pennsieveAPIKeyAndSecret = api.model('PennsieveAPIKeyAndSecret', {
 })
 
 
-# the parser for the pennsieve and api key secret endpoint defines the parameters that are accepted in the request
-parser = api.parser()
-parser.add_argument('username', type=str, required=True, help='Username of the user')
-parser.add_argument('password', type=str, required=True, help='Password of the user')
-parser.add_argument('api_key', type=str, required=True, help='API key from the Pennsieve platform')
-
-
 
 @api.route('/pennsieve_api_key_secret')
 class PennsieveAPIKeyAndSecret(Resource):
+
+  # the parser for the pennsieve and api key secret endpoint defines the parameters that are accepted in the request
+  parser = reqparse.RequestParser(bundle_errors=True)
+  parser.add_argument('username', type=str, required=True, help='Username of the user')
+  parser.add_argument('password', type=str, required=True, help='Password of the user')
+  parser.add_argument('api_key', type=str, required=True, help='API key from the Pennsieve platform')
+
   # the response object
   @api.marshal_with(pennsieveAPIKeyAndSecret, False, 201)
   # response types/codes
@@ -90,13 +90,17 @@ getNumberOfFilesAndFoldersLocally =  api.model('FilesAndFolders', {
     "totalDir": fields.Integer(required=True, description="Total number of folders in the dataset"),
 })
 
-parser = api.parser()
+# parser = api.parser()
 # parameters for the get_number_of_files_and_folders_locally endpoint
-parser.add_argument('filepath', type=str, required=True, help='Path to the local dataset folder')
+
 
 
 @api.route('/get_number_of_files_and_folders_locally')
 class GetNumberOfFilesAndFoldersLocally(Resource):
+
+  parser = reqparse.RequestParser(bundle_errors=True)
+  parser.add_argument('filepath', type=str, required=True, help='Path to the local dataset folder')
+
   @api.marshal_with( getNumberOfFilesAndFoldersLocally, False, 200)
   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'})
   # the request parameters
@@ -104,7 +108,9 @@ class GetNumberOfFilesAndFoldersLocally(Resource):
 
   def get(self):
     # get the filepath from the request object
-    filepath = request.args.get('filepath')
+    data = self.parser.parse_args(strict=True)
+    filepath = data['filepath']
+
     api.logger.info(f' get_number_of_files_and_folders_locally --  args -- filepath: {filepath}')
 
     if filepath is None:
@@ -126,22 +132,26 @@ successMessage = api.model('SuccessMessage', {
   'message': fields.String(required=True, description="A message indicating success of the operation."),
   })
 
-# selected_bfaccount, selected_bfdataset, selected_status
-parser_change_dataset_status = reqparse.RequestParser(bundle_errors=True)
-parser_change_dataset_status.add_argument('selected_bfaccount', type=str, required=True, help='The selected bfaccount.', location='json')
-parser_change_dataset_status.add_argument('selected_bfdataset', type=str, required=True, help='The selected bfdataset id or name.', location='json')
-parser_change_dataset_status.add_argument('selected_status', type=str, required=True, help='The target status for the dataset.', location='json')
+
 
 
 @api.route('/bf_change_dataset_status')
 class BfChangeDatasetStatus(Resource):
+
+
+  # selected_bfaccount, selected_bfdataset, selected_status
+  parser_change_dataset_status = reqparse.RequestParser(bundle_errors=True)
+  parser_change_dataset_status.add_argument('selected_bfaccount', type=str, required=True, help='The selected bfaccount.', location='json')
+  parser_change_dataset_status.add_argument('selected_bfdataset', type=str, required=True, help='The selected bfdataset id or name.', location='json')
+  parser_change_dataset_status.add_argument('selected_status', type=str, required=True, help='The target status for the dataset.', location='json')
+
   @api.marshal_with(successMessage, False, 200)
   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'})
   # the request parameters
   @api.expect(parser_change_dataset_status)
   def put(self):
     # get the selected_bfaccount, selected_bfdataset, selected_status from the request object
-    data = parser_change_dataset_status.parse_args(strict=True)
+    data = self.parser_change_dataset_status.parse_args(strict=True)
     selected_bfaccount = data['selected_bfaccount']
     selected_bfdataset = data['selected_bfdataset']
     selected_status = data['selected_status']
@@ -203,26 +213,42 @@ class BfDefaultAccountLoad(Resource):
 
 
 users_response_model = api.model('Users', {
-  'users': fields.List(fields.String, required=True, description="List of the user's accounts"),
+  'users': fields.List(fields.String, required=True, description="List of the accounts in the user's organization."),
 })
 
-parser_get_users = reqparse.RequestParser(bundle_errors=True)
-parser_get_users.add_argument('account', type=str, required=True, help='The account to get the users for', location='args')
+
 
 @api.route('/bf_get_users')
 class BfGetUsers(Resource):
+
+  parser_get_users = reqparse.RequestParser(bundle_errors=True)
+  parser_get_users.add_argument('default_account', type=str, required=True, location='args', help='The account to get associated users for.')
+
+
   @api.marshal_with(users_response_model, False, 200)
   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'})
   @api.expect(parser_get_users)
   def get(self):
     try:
       # get the selected account out of the request args
-      selected_account = request.args.get('selected_account')
+      data = request.args
+
+      if "selected_account" not in data:
+        api.abort(400, "Request must include the default_account parameter")
+
+      selected_account = data['default_account']
+
       return bf_get_users(selected_account)
     except Exception as e:
       if notBadRequestException(e):
         api.abort(500, e.args[0])
       raise e
+
+
+
+
+
+
 
 @api.route('/bf_get_teams')
 class BfGetTeams(Resource):

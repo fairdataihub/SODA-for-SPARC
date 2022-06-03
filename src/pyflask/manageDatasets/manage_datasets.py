@@ -1282,7 +1282,7 @@ def bf_get_users(selected_bfaccount):
             )
             list_users_first_last.append(first_last)
         list_users_first_last.sort()  # Returning the list of users in alphabetical order
-        return list_users_first_last
+        return {"users": list_users_first_last}
     except Exception as e:
         raise e
 
