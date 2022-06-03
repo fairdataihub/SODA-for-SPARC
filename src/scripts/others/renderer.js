@@ -1856,7 +1856,6 @@ function loadSubjectsFileToDataframe(filePath) {
           result = transformImportedExcelFile("subjects", res);
           if (result !== false) {
             subjectsTableData = result;
-            alert("hi");
           } else {
             Swal.fire({
               title: "Couldn't load existing subjects.xlsx file",

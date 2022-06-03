@@ -49,6 +49,17 @@ const getOpenSubPageInPage = (pageID) => {
   return openPage.id;
 };
 
+const openSubPageNavigation = (pageBeingNavigatedTo) => {
+  //Get the id of the page that's currently open and might need a refresh
+  const openSubPageID = getOpenSubPageInPage(pageBeingNavigatedTo);
+  //Refresh data on the open sub-page
+  setActiveSubPage(openSubPageID);
+  //Hide the footer div while user is in sub-page navigation
+  $("#guided-footer-div").hide();
+  //Show the sub-page navigation footer
+  $("#guided-sub-page-navigation-footer-div").css("display", "flex");
+};
+
 const guidedGetSubjects = () => {
   return Object.keys(
     sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]
@@ -557,46 +568,49 @@ const traverseToTab = (targetPageID) => {
       $(".selectpicker").selectpicker("refresh");
     }
     if (targetPageID === "guided-subjects-folder-tab") {
-      //Get the id of the page that's currently open and might need a refresh
-      const openSubPageID = getOpenSubPageInPage(targetPageID);
-      //Refresh data on the open sub-page
-      setActiveSubPage(openSubPageID);
-      //Hide the footer div while user is in sub-page navigation
-      $("#guided-footer-div").hide();
-      //Show the sub-page navigation footer
-      $("#guided-sub-page-navigation-footer-div").css("display", "flex");
+      openSubPageNavigation(targetPageID);
     }
     if (targetPageID === "guided-primary-data-organization-tab") {
-      //Get the id of the page that's currently open and might need a refresh
-      const openSubPageID = getOpenSubPageInPage(targetPageID);
-      //Refresh data on the open sub-page
-      setActiveSubPage(openSubPageID);
-      //Hide the footer div while user is in sub-page navigation
-      $("#guided-footer-div").hide();
-      //Show the sub-page navigation footer
-      $("#guided-sub-page-navigation-footer-div").css("display", "flex");
-
-      //updateFolderStructureUI(highLevelFolderPageData.primary); //temp
+      openSubPageNavigation(targetPageID);
     }
     if (targetPageID === "guided-source-data-organization-tab") {
-      //Get the id of the page that's currently open and might need a refresh
-      const openSubPageID = getOpenSubPageInPage(targetPageID);
-      //Refresh data on the open sub-page
-      setActiveSubPage(openSubPageID);
-      //Hide the footer div while user is in sub-page navigation
-      $("#guided-footer-div").hide();
-      //Show the sub-page navigation footer
-      $("#guided-sub-page-navigation-footer-div").css("display", "flex");
+      openSubPageNavigation(targetPageID);
     }
     if (targetPageID === "guided-derivative-data-organization-tab") {
-      //Get the id of the page that's currently open and might need a refresh
-      const openSubPageID = getOpenSubPageInPage(targetPageID);
-      //Refresh data on the open sub-page
-      setActiveSubPage(openSubPageID);
-      //Hide the footer div while user is in sub-page navigation
-      $("#guided-footer-div").hide();
-      //Show the sub-page navigation footer
-      $("#guided-sub-page-navigation-footer-div").css("display", "flex");
+      openSubPageNavigation(targetPageID);
+    }
+    if (targetPageID === "guided-code-folder-tab") {
+      //Append the guided-file-explorer element to the code folder organization container
+      $("#guided-file-explorer-elements").appendTo(
+        $("#guided-user-has-code-data")
+      );
+      //Remove hidden class from file explorer element in case it was hidden
+      //when showing the intro for prim/src/deriv organization
+      document
+        .getElementById("guided-file-explorer-elements")
+        .classList.remove("hidden");
+    }
+    if (targetPageID === "guided-docs-folder-tab") {
+      //Append the guided-file-explorer element to the docs folder organization container
+      $("#guided-file-explorer-elements").appendTo(
+        $("#guided-user-has-docs-data")
+      );
+      //Remove hidden class from file explorer element in case it was hidden
+      //when showing the intro for prim/src/deriv organization
+      document
+        .getElementById("guided-file-explorer-elements")
+        .classList.remove("hidden");
+    }
+    if (targetPageID === "guided-protocol-folder-tab") {
+      //Append the guided-file-explorer element to the derivative folder organization container
+      $("#guided-file-explorer-elements").appendTo(
+        $("#guided-user-has-protocol-data")
+      );
+      //Remove hidden class from file explorer element in case it was hidden
+      //when showing the intro for prim/src/deriv organization
+      document
+        .getElementById("guided-file-explorer-elements")
+        .classList.remove("hidden");
     }
 
     if (targetPageID === "guided-folder-structure-preview-tab") {
@@ -678,67 +692,6 @@ const traverseToTab = (targetPageID) => {
         sodaJSONObj["digital-metadata"]["name"],
         folderStructurePreview
       );
-    }
-
-    if (targetPageID === "guided-derivative-samples-organization-tab") {
-      renderSamplesHighLevelFolderAsideItems("derivative");
-      guidedUpdateFolderStructure("derivative", "samples");
-      $("#guided-file-explorer-elements").appendTo(
-        $("#guided-derivative-samples-file-explorer-container")
-      );
-
-      //Hide the file explorer and show the intro
-      document
-        .getElementById("guided-file-explorer-elements")
-        .classList.add("hidden");
-      document
-        .getElementById("guided-derivative-samples-file-explorer-intro")
-        .classList.remove("hidden");
-
-      //Load the black arrow lottie animation
-      const derivativeSamplesFileExplorerBlackArrowLottieContainer =
-        document.getElementById(
-          "derivative-samples-file-explorer-black-arrow-lottie-container"
-        );
-      derivativeSamplesFileExplorerBlackArrowLottieContainer.innerHTML = "";
-      lottie.loadAnimation({
-        container: derivativeSamplesFileExplorerBlackArrowLottieContainer,
-        animationData: blackArrow,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-
-      //updateFolderStructureUI(highLevelFolderPageData.derivative);
-    }
-    if (targetPageID === "guided-derivative-subjects-organization-tab") {
-      renderSubjectsHighLevelFolderAsideItems("derivative");
-      guidedUpdateFolderStructure("derivative", "subjects");
-      $("#guided-file-explorer-elements").appendTo(
-        $("#guided-derivative-subjects-file-explorer-container")
-      );
-      //Hide the file explorer and show the intro
-      document
-        .getElementById("guided-file-explorer-elements")
-        .classList.add("hidden");
-      document
-        .getElementById("guided-derivative-subjects-file-explorer-intro")
-        .classList.remove("hidden");
-
-      //Load the black arrow lottie animation
-      const derivativeSubjectsFileExplorerBlackArrowLottieContainer =
-        document.getElementById(
-          "derivative-subjects-file-explorer-black-arrow-lottie-container"
-        );
-      derivativeSubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
-      lottie.loadAnimation({
-        container: derivativeSubjectsFileExplorerBlackArrowLottieContainer,
-        animationData: blackArrow,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-      //updateFolderStructureUI(highLevelFolderPageData.derivative);
     }
 
     if (targetPageID === "guided-samples-folder-tab") {
@@ -1083,6 +1036,7 @@ const setActiveSubPage = (pageIdToActivate) => {
         loop: true,
         autoplay: true,
       });
+      break;
     }
 
     case "guided-source-samples-organization-page": {
@@ -1113,6 +1067,7 @@ const setActiveSubPage = (pageIdToActivate) => {
         loop: true,
         autoplay: true,
       });
+      break;
     }
 
     case "guided-source-subjects-organization-page": {
@@ -1142,6 +1097,7 @@ const setActiveSubPage = (pageIdToActivate) => {
         loop: true,
         autoplay: true,
       });
+      break;
     }
 
     case "guided-derivative-samples-organization-page": {
@@ -1172,6 +1128,7 @@ const setActiveSubPage = (pageIdToActivate) => {
         loop: true,
         autoplay: true,
       });
+      break;
     }
 
     case "guided-derivative-subjects-organization-page": {
@@ -1201,6 +1158,7 @@ const setActiveSubPage = (pageIdToActivate) => {
         loop: true,
         autoplay: true,
       });
+      break;
     }
   }
 
@@ -4065,9 +4023,7 @@ $("#guided-button-has-source-data").on("click", () => {
       type: "",
       action: [],
     };
-  $("#guided-file-explorer-elements").appendTo(
-    $("#guided-user-has-source-data")
-  );
+
   updateFolderStructureUI(highLevelFolderPageData.source);
 });
 
@@ -4171,7 +4127,6 @@ $("#guided-button-has-code-data").on("click", () => {
       type: "",
       action: [],
     };
-  $("#guided-file-explorer-elements").appendTo($("#guided-user-has-code-data"));
   updateFolderStructureUI(highLevelFolderPageData.code);
 });
 $("#guided-button-no-code-data").on("click", () => {
@@ -4221,7 +4176,6 @@ $("#guided-button-has-docs-data").on("click", () => {
       type: "",
       action: [],
     };
-  $("#guided-file-explorer-elements").appendTo($("#guided-user-has-docs-data"));
   updateFolderStructureUI(highLevelFolderPageData.docs);
 });
 $("#guided-button-no-docs-data").on("click", () => {
@@ -4272,9 +4226,7 @@ $("#guided-button-has-protocol-data").on("click", () => {
       action: [],
     };
   console.log($("#guided-file-explorer-elements"));
-  $("#guided-file-explorer-elements").appendTo(
-    $("#guided-user-has-protocol-data")
-  );
+
   updateFolderStructureUI(highLevelFolderPageData.protocol);
 });
 $("#guided-button-no-protocol-data").on("click", () => {
@@ -8482,6 +8434,7 @@ $(document).ready(() => {
     currentParentPageID = CURRENT_PAGE.attr("id");
     //Get the id of the sub-page that's currently open
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
+    console.log(openSubPageID);
 
     switch (currentParentPageID) {
       case "guided-subjects-folder-tab": {
@@ -8513,6 +8466,38 @@ $(document).ready(() => {
           }
 
           case "guided-primary-subjects-organization-page": {
+            $("#guided-sub-page-navigation-footer-div").hide();
+            $("#guided-footer-div").css("display", "flex");
+            $("#guided-next-button").click();
+            break;
+          }
+        }
+      }
+
+      case "guided-source-data-organization-tab": {
+        switch (openSubPageID) {
+          case "guided-source-samples-organization-page": {
+            setActiveSubPage("guided-source-subjects-organization-page");
+            break;
+          }
+
+          case "guided-source-subjects-organization-page": {
+            $("#guided-sub-page-navigation-footer-div").hide();
+            $("#guided-footer-div").css("display", "flex");
+            $("#guided-next-button").click();
+            break;
+          }
+        }
+      }
+
+      case "guided-derivative-data-organization-tab": {
+        switch (openSubPageID) {
+          case "guided-derivative-samples-organization-page": {
+            setActiveSubPage("guided-derivative-subjects-organization-page");
+            break;
+          }
+
+          case "guided-derivative-subjects-organization-page": {
             $("#guided-sub-page-navigation-footer-div").hide();
             $("#guided-footer-div").css("display", "flex");
             $("#guided-next-button").click();
@@ -8563,6 +8548,38 @@ $(document).ready(() => {
 
           case "guided-primary-subjects-organization-page": {
             setActiveSubPage("guided-primary-samples-organization-page");
+            break;
+          }
+        }
+      }
+
+      case "guided-source-data-organization-tab": {
+        switch (openSubPageID) {
+          case "guided-source-samples-organization-page": {
+            $("#guided-sub-page-navigation-footer-div").hide();
+            $("#guided-footer-div").css("display", "flex");
+            $("#guided-back-button").click();
+            break;
+          }
+
+          case "guided-source-subjects-organization-page": {
+            setActiveSubPage("guided-source-samples-organization-page");
+            break;
+          }
+        }
+      }
+
+      case "guided-derivative-data-organization-tab": {
+        switch (openSubPageID) {
+          case "guided-derivative-samples-organization-page": {
+            $("#guided-sub-page-navigation-footer-div").hide();
+            $("#guided-footer-div").css("display", "flex");
+            $("#guided-back-button").click();
+            break;
+          }
+
+          case "guided-derivative-subjects-organization-page": {
+            setActiveSubPage("guided-derivative-samples-organization-page");
             break;
           }
         }
@@ -9063,13 +9080,3 @@ const guided_generate = async () => {
   var countDone = 0;
   var timerProgress = setInterval(main_progressfunction, 1000);
 };
-
-//add a disabled tagify element to guidedSubmissionTagsTagify with the name cat
-function add_disabled_tagify(cat) {
-  var tagify = document.getElementById("guidedSubmissionTagsTagify");
-  var tagify_disabled = document.createElement("input");
-  tagify_disabled.setAttribute("type", "hidden");
-  tagify_disabled.setAttribute("name", "tagify_disabled");
-  tagify_disabled.setAttribute("value", cat);
-  tagify.appendChild(tagify_disabled);
-}
