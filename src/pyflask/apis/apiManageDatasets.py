@@ -193,7 +193,7 @@ class BfAccountList(Resource):
 
 
 default_account_model = api.model('DefaultAccount', {
-  'defaultAccount': fields.String(required=True, description="The default account"),
+  'defaultAccounts': fields.List(fields.String,required=True, description="The default account"),
 })
 
 @api.route('/bf_default_account_load')

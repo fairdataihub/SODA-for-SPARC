@@ -581,7 +581,7 @@ def bf_default_account_load():
             #             pass
             #     with open(configpath, 'w') as configfile:
             #         config.write(configfile)
-        return {"defaultAccount": accountlist}
+        return {"defaultAccounts": accountlist}
     except Exception as e:
         raise e
 
