@@ -7,12 +7,12 @@ block_cipher = None
 home = os.path.expanduser("~")
 
 
-a = Analysis(['pysoda\\api.py'],
+a = Analysis(['pyflask\\app.py'],
              pathex=[],
-             binaries=[(f'{home}\\\\anaconda3\\\\envs\\\\env-electron-python\\\\Lib\\\\site-packages\\\\pyzmq.libs\\\\*', 'pyzmq.libs')],
-             datas=[],
+             binaries=[],
+             datas=[('..\\..\\anaconda3\\envs\\env-electron-python\\share\\pyontutils', 'share')],
              hiddenimports=[],
-             hookspath=[],
+             hookspath=['pyflask\\validator\\hooks'],
              hooksconfig={},
              runtime_hooks=[],
              excludes=[],
