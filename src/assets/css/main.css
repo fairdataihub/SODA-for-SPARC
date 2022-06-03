@@ -1615,7 +1615,7 @@ details[open] > summary::before {
 .getting-started-overview {
   padding: 0 !important;
   display: grid;
-  grid-template-rows: 20% 65% 15%;
+  grid-template-rows: 15% 70% 16% 5%;
   align-items: center;
 }
 
@@ -1667,7 +1667,7 @@ details[open] > summary::before {
   display: flex;
   justify-content: center;
   height: 50% !important;
-  margin-top: 2rem;
+  margin-top: 0rem;
 }
 
 .sodaVideo-button {
@@ -1758,4 +1758,16 @@ details[open] > summary::before {
   margin: 0;
   font-weight: 600;
   font-size: 16px;
+}
+
+
+.heart-lottie {
+  --lottie-animation-container-width: 20px;
+  --lottie-animation-container-height: 20px;
+  --lottie-animation-container-background-color: transparent;
+  width: var(--lottie-animation-container-width);
+  height: var(--lottie-animation-container-height);
+  background: var(--lottie-animation-container-background-color);
+  overflow: hidden;
+  margin: 0 !important;
 }

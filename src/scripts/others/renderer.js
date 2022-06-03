@@ -148,6 +148,7 @@ let over_view_section = document.getElementById("getting_started-section");
 let column1 = document.getElementById("lottie1");
 let column2 = document.getElementById("lottie2");
 let column3 = document.getElementById("lottie3");
+let heart_lottie = document.getElementById("heart_lottie");
 
 var observer = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
@@ -158,6 +159,7 @@ var observer = new MutationObserver(function (mutations) {
       column1.innerText = "";
       column2.innerText = "";
       column3.innerText = "";
+      heart_lottie.innerText = "";
 
       var column1_lottie = lottie.loadAnimation({
         container: column1,
@@ -182,13 +184,22 @@ var observer = new MutationObserver(function (mutations) {
         loop: true,
         autoplay: true,
       });
+      var heart_container = lottie.loadAnimation({
+        container: heart_lottie,
+        animationData: heartLottie,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
     } else {
       column1.innerText = "";
       column2.innerText = "";
       column3.innerText = "";
+      heart_lottie.innerText = "";
       lottie.stop(column1_lottie);
       lottie.stop(column2_lottie);
       lottie.stop(column3_lottie);
+      lottie.stop(heart_container);
     }
   });
 });
