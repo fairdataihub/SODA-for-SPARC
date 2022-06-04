@@ -17,6 +17,7 @@ document.body.addEventListener("custom-back", (e) => {
 
 function handleSectionTrigger(event) {
   hideAllSectionsAndDeselectButtons();
+  console.log(event);
 
   if (event.detail.target) {
     let previous_section = `${event.detail.target.dataset.section}-section`;
@@ -28,6 +29,7 @@ function handleSectionTrigger(event) {
   event.target.classList.add("is-selected");
   // Display the current section
   const sectionId = `${event.target.dataset.section}-section`;
+  console.log(sectionId);
 
   document.getElementById(sectionId).classList.add("is-shown");
 
@@ -36,6 +38,8 @@ function handleSectionTrigger(event) {
     "getting_started-section",
     "guided_mode-section",
     "help-section",
+    "documentation-section",
+    "contact-us-section",
   ];
 
   if (showSidebarSections.includes(sectionId)) {

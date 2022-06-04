@@ -1682,7 +1682,7 @@ details[open] > summary::before {
   margin-right: 1rem;
   color: #666666;
   border-width: 1px;
-  border-color: var(--color-accent);
+  border-color: var(--color-accent) !important;
 }
 
 .sodaVideo-button:hover {
@@ -1770,4 +1770,110 @@ details[open] > summary::before {
   background: var(--lottie-animation-container-background-color);
   overflow: hidden;
   margin: 0 !important;
+}
+
+
+.documentation_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+}
+
+.document_container {
+  overflow-y: auto;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.doc_container {
+  padding-right: 1.25rem;
+  padding-top: .5rem;
+  justify-content: center;
+  align-items: center;
+  padding: .75rem;
+  flex-direction: column;
+  max-width: 1024px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.dc_con {
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.doc_header {
+  font-weight: 700;
+  font-size: 1.875rem !important;
+  line-height: 2.25rem;
+  padding-bottom: .25rem;
+  margin: 0;
+  padding-top: 1.25rem;
+}
+
+.docu_divide {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  height: 0;
+  color: inherit;
+  border-top-width: 1px;
+}
+
+.document-content {
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.documentation-lottie_style {
+  --lottie-animation-container-width: 300px;
+  --lottie-animation-container-height: 300px;
+  --lottie-animation-container-background-color: transparent;
+  width: var(--lottie-animation-container-width);
+  height: var(--lottie-animation-container-height);
+  background-color: var(--lottie-animation-container-background-color);
+  overflow: hidden;
+  margin: 0px !important;
+}
+
+.view_doc_button {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+  border-width: 1px;
+  --tw-border-opacity: 1;
+  border-color: rgb(147 197 253 / var(--tw-border-opacity));
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  min-width: 130px;
+  font-size: 14px;
+  font-weight: 500;
+  --tw-text-opacity: 1;
+  color: rgb(17 24 39 / var(--tw-text-opacity));
+  cursor: pointer;
+  -webkit-appearance: button;
+  background-color: transparent;
+  background-image: none;
+}
+
+.document_text {
+  font-size: 1.3rem !important;
+  color: black !important;
 }

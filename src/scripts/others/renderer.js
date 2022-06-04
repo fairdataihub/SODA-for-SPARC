@@ -564,6 +564,7 @@ const run_pre_flight_checks = async (check_update = true) => {
 
       // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
       account_present = await check_api_key();
+      console.log(account_present);
       if (account_present) {
         // Check for an installed Pennsieve agent
         await wait(500);
@@ -788,6 +789,8 @@ const check_internet_connection = async (show_notification = true) => {
 };
 
 const check_api_key = async () => {
+  let jwt = await get_access_token();
+  console.log(jwt);
   let notification = null;
   notification = notyf.open({
     type: "api_key_search",
@@ -807,6 +810,7 @@ const check_api_key = async () => {
         console.error(error);
         resolve(false);
       } else {
+        console.log(res);
         log.info("Found a set of valid API keys");
         if (res[0] === "Select" && res.length === 1) {
           //no api key found
@@ -8712,6 +8716,7 @@ const get_access_token = async () => {
   let userInformation;
   try {
     userInformation = get_api_key_and_secret_from_ini();
+    console.log(userInformation);
   } catch (e) {
     throw e;
   }
@@ -10151,7 +10156,9 @@ function directToDocumentation() {
   document.getElementById("overview-column-2").blur();
   // window.open('https://docs.sodaforsparc.io', '_blank');
 }
-
+document
+  .getElementById("doc-btn")
+  .addEventListener("click", directToDocumentation);
 document.getElementById("sodaVideo-btn").addEventListener("click", sodaVideo);
 document
   .getElementById("direct-to-doc-button")
@@ -10159,3 +10166,68 @@ document
 document
   .getElementById("getting-started-button")
   .addEventListener("click", gettingStarted);
+
+let docu_lottie_section = document.getElementById("documentation-section");
+let doc_lottie = document.getElementById("documentation-lottie");
+
+var documentation_lottie_observer = new MutationObserver(function (mutations) {
+  mutations.forEach(function (mutation) {
+    var attributeValue = $(mutation.target).prop(mutation.attributeName);
+    console.log("HMM");
+    if (attributeValue.includes("is-shown") == true) {
+      console.log("UHH WHATS");
+      //add lotties
+
+      var documentation_lottie = lottie.loadAnimation({
+        container: doc_lottie,
+        animationData:
+          docu_lottie /*(json js variable, (view src/assets/lotties)*/,
+        renderer: "svg",
+        loop: true /*controls looping*/,
+        autoplay: true,
+      });
+    } else {
+      doc_lottie.innerText = "";
+
+      lottie.stop(documentation_lottie);
+    }
+  });
+});
+
+let contact_section = document.getElementById("contact-us-section");
+let contact_lottie_container = document.getElementById("contact-us-lottie");
+var contact_us_lottie_observer = new MutationObserver(function (mutations) {
+  mutations.forEach(function (mutation) {
+    console.log("HMMM");
+    var attributeValue = $(mutation.target).prop(mutation.attributeName);
+    console.log(attributeValue);
+    if (attributeValue.includes("is-shown") == true) {
+      //add lotties
+      console.log("is shown");
+
+      var contact_lottie_animation = lottie.loadAnimation({
+        container: contact_lottie_container,
+        animationData:
+          contact_lottie /*(json js variable, (view src/assets/lotties)*/,
+        renderer: "svg",
+        loop: true /*controls looping*/,
+        autoplay: true,
+      });
+      console.log(contact_lottie_animation);
+    } else {
+      contact_lottie_container.innerText = "";
+
+      lottie.stop(contact_lottie_animation);
+    }
+  });
+});
+
+documentation_lottie_observer.observe(docu_lottie_section, {
+  attributes: true,
+  attributeFilter: ["class"],
+});
+
+contact_us_lottie_observer.observe(contact_section, {
+  attributes: true,
+  attributeFilter: ["class"],
+});

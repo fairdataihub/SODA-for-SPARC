@@ -856,6 +856,7 @@ const get_api_key = async (login, password, key_name) => {
           console.error(error);
           resolve(["failed", error]);
         } else {
+          console.log(res);
           resolve(res);
         }
       }
