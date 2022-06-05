@@ -1255,7 +1255,6 @@ def bf_get_teams(selected_bfaccount):
         abort(400, f"{e}")
     
     try:
-        # organization_name = bf.context.name
         organization_id = bf.context.id
         list_teams = bf._api._get("/organizations/" + str(organization_id) + "/teams")
         list_teams_name = []
