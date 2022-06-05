@@ -619,7 +619,7 @@ def bf_account_details(accountname):
     try:
         bf = Pennsieve(accountname)
     except Exception as e:
-        abort(400, "Please provide a valid Pennsieve account name")
+        abort(400, str(e))
 
     acc_details = "User email: " + bf.profile.email + "<br>"
     acc_details = acc_details + "Organization: " + bf.context.name
@@ -2073,12 +2073,12 @@ def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_st
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        abort(400, "Error: Please select a valid Pennsieve account")
+        abort(400, str(e))
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        abort(400, "Error: Please select a valid Pennsieve dataset")
+        abort(400, str(e))
 
     try:
         role = bf_get_current_user_permission(bf, myds)
@@ -2100,7 +2100,7 @@ def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_st
                 c += 1
                 break
         if c == 0:
-            abort(400, "Error: Selected status is not available for this Pennsieve account")
+            abort(400, str(e))
 
         # gchange dataset status
         selected_dataset_id = myds.id
