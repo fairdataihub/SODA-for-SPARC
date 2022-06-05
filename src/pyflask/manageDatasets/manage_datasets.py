@@ -616,16 +616,15 @@ def bf_account_details(accountname):
     Action:
         Returns: return details of user associated with the account
     """
-    print(accountname)
-
-    print(type(accountname))
     try:
         bf = Pennsieve(accountname)
-        acc_details = "User email: " + bf.profile.email + "<br>"
-        acc_details = acc_details + "Organization: " + bf.context.name
+    except Exception as e:
+        abort(400, "Please provide a valid Pennsieve account name")
 
+    acc_details = "User email: " + bf.profile.email + "<br>"
+    acc_details = acc_details + "Organization: " + bf.context.name
 
-
+    try: 
         if exists(configpath):
             config = ConfigParser()
             config.read(configpath)
@@ -640,7 +639,7 @@ def bf_account_details(accountname):
             config.write(configfile)
 
         ## return account details and datasets where such an account has some permission
-        return acc_details
+        return {"account_details": acc_details}
 
     except Exception as e:
         raise e
