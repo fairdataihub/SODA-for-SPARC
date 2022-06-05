@@ -272,9 +272,19 @@ class BfGetTeams(Resource):
 
 
 
+model_account_details_response = api.model('AccountDetailsResponse', {
+  'account_details': fields.String(required=True, description="The email and organization for the given Pennsieve account."),
+})
 
 @api.route('/bf_account_details')
 class BfAccountDetails(Resource):
+
+  parser_account_details = reqparse.RequestParser(bundle_errors=True)
+  parser_account_details.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve details for.')
+
+  @api.marshal_with(model_account_details_response, False, 200)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns the email and organization for the given Pennsieve account.")
+  @api.expect(parser_account_details)
   def get(self):
     try:
       # get the selected account out of the request args
@@ -282,6 +292,12 @@ class BfAccountDetails(Resource):
       return bf_account_details(selected_account)
     except Exception as e:
       api.abort(500, e.args[0])
+
+
+
+
+
+
 
 @api.route('/check_agent_install')
 class CheckAgentInstall(Resource):
