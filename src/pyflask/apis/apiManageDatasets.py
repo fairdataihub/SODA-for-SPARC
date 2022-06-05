@@ -184,7 +184,7 @@ class BfAccountList(Resource):
     try:
       return bf_account_list()
     except Exception as e:
-      api.abort(500, e.args[0])
+      api.abort(500, str(e))
 
 
 
@@ -199,12 +199,12 @@ default_account_model = api.model('DefaultAccount', {
 @api.route('/bf_default_account_load')
 class BfDefaultAccountLoad(Resource):
   @api.marshal_with(default_account_model, False, 200)
-  @api.doc(responses={500: 'There was an internal server error'})
+  @api.doc(responses={500: 'There was an internal server error'}, description="Returns the first valid account as the default account. Usually SODA-Pennsieve.")
   def get(self):
     try:
       return bf_default_account_load()
     except Exception as e:
-      api.abort(500, e.args[0])
+      api.abort(500, str(e))
 
 
 
