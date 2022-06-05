@@ -1,5 +1,5 @@
-from http.client import HTTPException
-from flask_restx import Namespace, Resource, fields, reqparse
+from pennsieve.api.agent import AgentError
+from flask_restx import Resource, fields, reqparse
 from manageDatasets import ( 
     get_pennsieve_api_key_secret, 
     get_number_of_files_and_folders_locally,
@@ -307,7 +307,16 @@ class CheckAgentInstall(Resource):
     try:
       return check_agent_install()
     except Exception as e:
-      api.abort(500, e.args[0])
+      # if the exception is an AgentError, then return a 500 
+      if isinstance(e, AgentError):
+        api.abort(400, str(e))
+      api.abort(500, str(e))
+
+
+
+
+
+
 
 @api.route('/bf_dataset_account')
 class BfDatasetAccount(Resource):
