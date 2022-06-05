@@ -822,7 +822,7 @@ def agent_version(settings):
         env = agent_env(settings)
         env["PENNSIEVE_LOG_LEVEL"] = "ERROR"  # Avoid spurious output with the version
         version = subprocess.check_output([agent_cmd(), "version"], env=env)
-        return version.decode().strip()
+        return {"agent_version": version.decode().strip()}
     except (AgentError, subprocess.CalledProcessError, EnvironmentError) as e:
         raise AgentError(
             "Agent not installed. Visit https://developer.pennsieve.io/agent for installation directions."
