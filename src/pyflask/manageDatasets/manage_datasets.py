@@ -531,32 +531,6 @@ def bf_default_account_load():
             valid_account = bf_get_accounts()
             if valid_account != "":
                 accountlist.append(valid_account)
-            # # CHANGE BACK
-            # bf_remove_additional_accounts() # remove non consortium accounts
-            # config = ConfigParser()
-            # config.read(configpath)
-            # keys = config.sections()
-            # accountlist = []
-            # if "global" in keys:
-            #     default_acc = config["global"]
-            #     if "default_profile" in default_acc:
-            #         n = default_acc["default_profile"]
-            #         try:
-            #             bfn = Pennsieve(n)
-            #             accountlist.append(n)
-            #         except Exception as e:
-            #             return accountlist
-            # accountnamenoglobal = [n for n in accountname]
-            # if accountnamenoglobal:
-            #     for n in accountnamenoglobal:
-            #         try:
-            #             bfn = Pennsieve(n)
-            #             accountlist.append(n)
-            #             break
-            #         except:
-            #             pass
-            #     with open(configpath, 'w') as configfile:
-            #         config.write(configfile)
         return {"defaultAccounts": accountlist}
     except Exception as e:
         raise e
