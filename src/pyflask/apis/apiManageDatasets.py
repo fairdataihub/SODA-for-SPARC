@@ -301,8 +301,14 @@ class BfAccountDetails(Resource):
 
 
 
+model_pennsieve_agent_response = api.model('PennsieveAgentResponse', {
+  'agent_version': fields.String(required=True, description="The version number of the installed Pennsieve Agent."),
+})
+
 @api.route('/check_agent_install')
 class CheckAgentInstall(Resource):
+  @api.marshal_with(model_pennsieve_agent_response, False, 200)
+  @api.doc(responses={500: 'There was an internal server error', 400: "Pennsieve Agent is not installed"}, description="Returns the Pennsieve Agent version if it is installed.")
   def get(self):
     try:
       return check_agent_install()
