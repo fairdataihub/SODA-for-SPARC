@@ -146,7 +146,7 @@ class BfChangeDatasetStatus(Resource):
   parser_change_dataset_status.add_argument('selected_status', type=str, required=True, help='The target status for the dataset.', location='json')
 
   @api.marshal_with(successMessage, False, 200)
-  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'})
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Change the status of a dataset.")
   # the request parameters
   @api.expect(parser_change_dataset_status)
   def put(self):
@@ -163,7 +163,7 @@ class BfChangeDatasetStatus(Resource):
     except Exception as e:
       # something unexpected happened so abort with a 500
       if notBadRequestException(e):
-        api.abort(500, e.args[0])
+        api.abort(500, str(e))
       raise e
 
 
@@ -179,7 +179,7 @@ account_list_model = api.model('AccountList', {
 @api.route('/bf_account_list')
 class BfAccountList(Resource):
   @api.marshal_with(account_list_model, False, 200)
-  @api.doc(responses={500: 'There was an internal server error'})
+  @api.doc(responses={500: 'There was an internal server error'}, description="Returns a list of the user's accounts stored in the system.")
   def get(self):
     try:
       return bf_account_list()
