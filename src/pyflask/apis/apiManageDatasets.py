@@ -288,10 +288,12 @@ class BfAccountDetails(Resource):
   def get(self):
     try:
       # get the selected account out of the request args
-      selected_account = request.args.get('selected_account')
+      selected_account = self.parser_account_details.parse_args().get('selected_account')
       return bf_account_details(selected_account)
     except Exception as e:
-      api.abort(500, e.args[0])
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
 
 
 
