@@ -513,30 +513,6 @@ def bf_account_list():
             valid_account = bf_get_accounts()
             if valid_account != "":
                 accountlist.append(valid_account)
-            # config = ConfigParser()
-            # config.read(configpath)
-            # accountname = config.sections()
-
-            # if (SODA_SPARC_API_KEY in accountname):
-            #     try:
-            #         bfn = Pennsieve(SODA_SPARC_API_KEY)
-            #         accountlist.append(SODA_SPARC_API_KEY)
-            #         with open(configpath, 'w') as configfile:
-            #             config.write(configfile)
-            #         return accountlist
-            #     except Exception as e:
-            #         pass
-            # else:
-            #     accountnamenoglobal = [n for n in accountname]
-            #     # if accountnamenoglobal:
-            #     for n in accountnamenoglobal:
-            #         try:
-            #             bfn = Pennsieve(n)
-            #             accountlist.append(n)
-            #         except Exception as e:
-            #             pass
-            #     with open(configpath, 'w') as configfile:
-            #         config.write(configfile)
         return {"accounts": accountlist}
         # My accountlist
 
