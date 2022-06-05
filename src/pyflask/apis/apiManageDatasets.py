@@ -221,7 +221,7 @@ users_response_model = api.model('Users', {
 @api.route('/bf_get_users')
 class BfGetUsers(Resource):
 
-  parser_get_users = reqparse.RequestParser(bundle_errors=False)
+  parser_get_users = reqparse.RequestParser(bundle_errors=True)
   parser_get_users.add_argument('selected_account', type=str, required=True, location='args', help='The account to get associated users for.')
 
 
@@ -251,21 +251,27 @@ model_bf_get_teams_response = api.model('BfGetTeamsResponse', {'teams': fields.L
 @api.route('/bf_get_teams')
 class BfGetTeams(Resource):
 
+  parser_get_teams = reqparse.RequestParser(bundle_errors=True)
+  parser_get_teams.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve inter-organization teams for.')
+
   @api.marshal_with(model_bf_get_teams_response, False, 200)
-  @api.doc(responses={500: 'There was an internal server error'}, params={'selected_account': 'The target account to retrieve inter-organization teams for.'})
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns a list of the teams in the given Pennsieve Account's organization.")
   def get(self):
     try:
       # get the selected account out of the request args
-      selected_account = request.args.get('selected_account')
-
-      if selected_account is None:
-        api.abort(400, "Request must include the selected_account parameter")
+      selected_account = self.parser_get_teams.parse_args().get('selected_account')
       
       return bf_get_teams(selected_account)
     except Exception as e:
       if notBadRequestException(e):
-        api.abort(500, e.args[0])
+        api.abort(500, str(e))
       raise e
+
+
+
+
+
+
 
 @api.route('/bf_account_details')
 class BfAccountDetails(Resource):
