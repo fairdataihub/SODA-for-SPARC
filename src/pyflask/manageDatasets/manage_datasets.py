@@ -1783,7 +1783,11 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
         raise Exception(e)
 
 
-"""
+
+
+
+def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
+    """
     Function to get url of current banner image associated with a selected dataset
 
     Args:
@@ -1793,20 +1797,17 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
         url of banner image (string)
     """
 
-
-def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
-
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        error_message = "Error: Please select a valid Pennsieve account"
+        abort(400, error_message)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        error_message = "Error: Please select a valid Pennsieve dataset"
+        abort(400, error_message)
 
     try:
         selected_dataset_id = myds.id
@@ -1818,12 +1819,16 @@ def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
             res = dataset_banner_info["banner"]
         else:
             res = "No banner image"
-        return res
+        return {"banner_image": res}
     except Exception as e:
         raise Exception(e)
 
 
-"""
+
+
+
+def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_path):
+    """
     Function to add banner to a selected dataset
 
     Args:
@@ -1834,28 +1839,24 @@ def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
         Success or error message
     """
 
-
-def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_path):
-
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        error_message = "Error: Please select a valid Pennsieve account"
+        abort(400, error_message)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        error_message = "Error: Please select a valid Pennsieve dataset"
+        abort(400, error_message)
 
-    try:
-        role = bf_get_current_user_permission(bf, myds)
-        if role not in ["owner", "manager"]:
-            error = "Error: You don't have permissions for editing metadata on this Pennsieve dataset"
-            raise Exception(error)
-    except Exception as e:
-        raise Exception(error)
+
+    role = bf_get_current_user_permission(bf, myds)
+    if role not in ["owner", "manager"]:
+        error_message = "Error: You don't have permissions for editing metadata on this Pennsieve dataset"
+        abort(403, error_message)
+
 
     try:
         selected_dataset_id = myds.id
@@ -1872,7 +1873,7 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
         image_folder = dirname(banner_image_path)
         if isdir(image_folder) and ("SODA" in image_folder):
             shutil.rmtree(image_folder, ignore_errors=True)
-        return "Uploaded!"
+        return {"message": "Uploaded!"}
     except Exception as e:
         raise Exception(e)
 
