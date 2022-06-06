@@ -406,3 +406,56 @@ class DatasetSubtitle(Resource):
       if notBadRequestException(e):
         api.abort(500, str(e))
       raise e
+
+
+
+
+
+
+
+model_get_dataset_description_response = api.model('GetDatasetDescriptionResponse', {
+  'description': fields.String(required=True, description="The description for the given dataset."),
+})
+
+class DatasetDescription(Resource):
+  
+    parser_dataset_description = reqparse.RequestParser(bundle_errors=True)
+    parser_dataset_description.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve the dataset description for.')
+    parser_dataset_description.add_argument('selected_dataset', type=str, required=True, location='args', help='The name or id of the dataset to retrieve the description for.')
+
+    @api.marshal_with(model_get_dataset_description_response, False, 200)
+    @api.expect(parser_dataset_description)
+    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns the description for the given dataset.")
+    def get(self):
+      data = self.parser_dataset_description.parse_args()
+      selected_account = data.get('selected_account')
+      selected_dataset = data.get('selected_dataset')
+
+      try:
+        return bf_get_description(selected_account, selected_dataset)
+      except Exception as e:
+        if notBadRequestException(e):
+          api.abort(500, str(e))
+        raise e
+
+
+    parser_add_dataset_description = parser_dataset_description.copy()
+    parser_add_dataset_description.add_argument('input_description', type=str, required=True, location='json', help='The description to add to the dataset.')
+
+    @api.marshal_with(successMessage, False, 200)
+    @api.expect(parser_add_dataset_description)
+    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 403: 'Forbidden'}, description="Adds a description to the given dataset.")
+    def put(self):
+      # update the dataset description for the selected account and dataset ID
+      data = self.parser_add_dataset_description.parse_args()
+
+      selected_account = data.get('selected_account')
+      selected_dataset = data.get('selected_dataset')
+      input_description = data.get('input_description')
+
+      try:
+        return bf_add_description(selected_account, selected_dataset, input_description)
+      except Exception as e:
+        if notBadRequestException(e):
+          api.abort(500, str(e))
+        raise e
