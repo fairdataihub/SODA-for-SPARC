@@ -417,6 +417,7 @@ model_get_dataset_description_response = api.model('GetDatasetDescriptionRespons
   'description': fields.String(required=True, description="The description for the given dataset."),
 })
 
+@api.route('/bf_dataset_description')
 class DatasetDescription(Resource):
   
     parser_dataset_description = reqparse.RequestParser(bundle_errors=True)
