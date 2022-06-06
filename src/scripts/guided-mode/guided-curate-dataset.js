@@ -624,9 +624,65 @@ const cleanUpEmptyGuidedStructureFolders = async (
   subjectsOrSamples
 ) => {
   if (subjectsOrSamples === "subjects") {
+    const subjectsWithEmptyFolders = [];
     //Remove subjects from datsetStructuresJSONObj if they don't exist
     const [subjectsInPools, subjectsOutsidePools] =
       sodaJSONObj.getAllSubjects();
+    //loop through subjectsInPools and add subjects with empty folders to subjectsWithEmptyFolders
+    for (subject of subjectsInPools) {
+      const subjectFolderContents =
+        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+          subject.poolName
+        ]["folders"][subject.subjectName];
+      if (
+        Object.keys(subjectFolderContents.folders).length === 0 &&
+        Object.keys(subjectFolderContents.files).length === 0
+      ) {
+        subjectsWithEmptyFolders.push(subject);
+      }
+    }
+
+    //loop through subjectsOutsidePools and add subjects with empty folders to subjectsWithEmptyFolders
+    for (subject of subjectsOutsidePools) {
+      const subjectFolderContents =
+        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+          subject.subjectName
+        ];
+      if (
+        Object.keys(subjectFolderContents.folders).length === 0 &&
+        Object.keys(subjectFolderContents.files).length === 0
+      ) {
+        subjectsWithEmptyFolders.push(subject);
+      }
+    }
+
+    if (subjectsWithEmptyFolders.length > 0) {
+      let result = await Swal.fire({
+        title: "Continue?",
+        text: `${highLevelFolder} data was not added to all of your subjects.`,
+        icon: "warning",
+        reverseButtons: true,
+        showCancelButton: true,
+        cancelButtonColor: "#6e7881",
+        cancelButtonText: `Finish adding ${highLevelFolder} data to subjects`,
+        confirmButtonText: `Continue without adding ${highLevelFolder} data to all subjects`,
+      });
+      if (result.isConfirmed) {
+        for (subject of subjectsWithEmptyFolders) {
+          if (subject.poolName) {
+            delete datasetStructureJSONObj["folders"][highLevelFolder][
+              "folders"
+            ][subject.poolName]["folders"][subject.subjectName];
+          } else {
+            delete datasetStructureJSONObj["folders"][highLevelFolder][
+              "folders"
+            ][subject.subjectName];
+          }
+        }
+      }
+    } else {
+      return true;
+    }
   }
 
   if (subjectsOrSamples === "samples") {
@@ -664,7 +720,6 @@ const cleanUpEmptyGuidedStructureFolders = async (
     }
 
     if (samplesWithEmptyFolders.length > 0) {
-      console.log(samplesWithEmptyFolders);
       let result = await Swal.fire({
         title: "Continue?",
         text: `${highLevelFolder} data was not added to all of your samples.`,
@@ -703,10 +758,10 @@ const cleanUpEmptyGuidedStructureFolders = async (
         }
         return true;
       }
+    } else {
+      return true;
     }
   }
-  //return false if the user would not like to add more subject or sample data
-  return false;
 };
 
 const traverseToTab = (targetPageID) => {
@@ -8644,7 +8699,6 @@ $(document).ready(() => {
       case "guided-primary-data-organization-tab": {
         switch (openSubPageID) {
           case "guided-primary-samples-organization-page": {
-            //await cleanUpEmptyGuidedstructurefolders to decide if setActiveSubPage should be called
             const continueWithoutAddingPrimaryDataToAllSamples =
               await cleanUpEmptyGuidedStructureFolders("primary", "samples");
             if (continueWithoutAddingPrimaryDataToAllSamples) {
@@ -8654,6 +8708,8 @@ $(document).ready(() => {
           }
 
           case "guided-primary-subjects-organization-page": {
+            const continueWithoutAddingPrimaryDataToAllSamples =
+              await cleanUpEmptyGuidedStructureFolders("primary", "subjects");
             $("#guided-sub-page-navigation-footer-div").hide();
             $("#guided-footer-div").css("display", "flex");
             $("#guided-next-button").click();
@@ -8665,7 +8721,11 @@ $(document).ready(() => {
       case "guided-source-data-organization-tab": {
         switch (openSubPageID) {
           case "guided-source-samples-organization-page": {
-            setActiveSubPage("guided-source-subjects-organization-page");
+            const continueWithoutAddingSourceDataToAllSamples =
+              await cleanUpEmptyGuidedStructureFolders("source", "samples");
+            if (continueWithoutAddingSourceDataToAllSamples) {
+              setActiveSubPage("guided-source-subjects-organization-page");
+            }
             break;
           }
 
@@ -8681,7 +8741,11 @@ $(document).ready(() => {
       case "guided-derivative-data-organization-tab": {
         switch (openSubPageID) {
           case "guided-derivative-samples-organization-page": {
-            setActiveSubPage("guided-derivative-subjects-organization-page");
+            const continueWithoutAddingDerivativeDataToAllSamples =
+              await cleanUpEmptyGuidedStructureFolders("derivative", "samples");
+            if (continueWithoutAddingDerivativeDataToAllSamples) {
+              setActiveSubPage("guided-derivative-subjects-organization-page");
+            }
             break;
           }
 
