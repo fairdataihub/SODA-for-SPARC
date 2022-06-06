@@ -1979,7 +1979,11 @@ def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
 
 
 
-"""
+
+
+
+def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
+    """
     Function to get current status for a selected dataset
 
     Args:
@@ -1990,20 +1994,17 @@ def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
         Current dataset status (string)
     """
 
-
-def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
-
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        error_message = "Error: Please select a valid Pennsieve account"
+        abort(400, error_message)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        error_message = "Error: Please select a valid Pennsieve dataset"
+        abort(400, error_message)
 
     try:
         # get list of available status options
@@ -2016,7 +2017,7 @@ def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
         dataset_current_status = bf._api._get("/datasets/" + str(selected_dataset_id))[
             "content"
         ]["status"]
-        return [list_status, dataset_current_status]
+        return {"status_options": list_status, "current_status": dataset_current_status}
     except Exception as e:
         raise e
 

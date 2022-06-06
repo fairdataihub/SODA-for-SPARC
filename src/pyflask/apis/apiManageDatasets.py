@@ -132,9 +132,22 @@ successMessage = api.model('SuccessMessage', {
   })
 
 
+model_status_options = api.model('StatusOptions', {
+  'id': fields.String(required=True, description="The id of the dataset"),
+  'name': fields.String(required=True, description="The name of the dataset"),
+  'diplayName': fields.String(required=True, description="The display name of the dataset"),
+  'color': fields.String(required=True, description="The color of the dataset"),
+  'inUse': fields.Boolean(required=True, description="Whether the dataset is in use"),
+})
+
+model_get_dataset_status_response = api.model('GetDatasetStatusResponse', {
+  'status_options': fields.List(fields.Nested(model_status_options), required=True, description="The status of the dataset"),
+  "current_status": fields.String(required=True, description="The current status of the dataset"),
+})
 
 
-@api.route('/bf_change_dataset_status')
+
+@api.route('/bf_dataset_status')
 class BfChangeDatasetStatus(Resource):
 
 
@@ -159,6 +172,30 @@ class BfChangeDatasetStatus(Resource):
 
     try:
       return bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_status)
+    except Exception as e:
+      # something unexpected happened so abort with a 500
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
+
+
+  parser_dataset_status = reqparse.RequestParser(bundle_errors=True)
+  
+  parser_dataset_status.add_argument('selected_account', type=str, required=True, help='The selected bfaccount.', location='args')
+  parser_dataset_status.add_argument('selected_dataset', type=str, required=True, help='The selected bfdataset id or name.', location='args')
+
+  @api.marshal_with(model_get_dataset_status_response, False, 200)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Get the status of a dataset and available statuses.")
+  @api.expect(parser_dataset_status)
+  def get(self):
+
+    # get the selected_bfaccount, selected_bfdataset from the request object
+    data = self.parser_dataset_status.parse_args()
+    selected_bfaccount = data.get('selected_account')
+    selected_bfdataset = data.get('selected_dataset')
+
+    try:
+      return bf_get_dataset_status(selected_bfaccount, selected_bfdataset)
     except Exception as e:
       # something unexpected happened so abort with a 500
       if notBadRequestException(e):
