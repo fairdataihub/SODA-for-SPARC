@@ -346,4 +346,6 @@ class BfDatasetAccount(Resource):
       selected_account = request.args.get('selected_account')
       return bf_dataset_account(selected_account)
     except Exception as e:
-      api.abort(500, str(e))
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
