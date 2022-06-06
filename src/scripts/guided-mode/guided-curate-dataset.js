@@ -480,80 +480,142 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
       };
     }
   }
-
-  //Add subjects to datsetStructuresJSONObj if they don't exist
-  const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
-  for (subject of subjectsInPools) {
-    if (
-      !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-        subject.poolName
-      ]["folders"][subject.subjectName]
-    ) {
-      datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-        subject.poolName
-      ]["folders"][subject.subjectName] = {
-        folders: {},
-        files: {},
-        type: "",
-        action: [],
-      };
+  if (subjectsOrSamples === "subjects") {
+    //Add subjects to datsetStructuresJSONObj if they don't exist
+    const [subjectsInPools, subjectsOutsidePools] =
+      sodaJSONObj.getAllSubjects();
+    for (subject of subjectsInPools) {
+      if (
+        !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+          subject.poolName
+        ]["folders"][subject.subjectName]
+      ) {
+        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+          subject.poolName
+        ]["folders"][subject.subjectName] = {
+          folders: {},
+          files: {},
+          type: "",
+          action: [],
+        };
+      }
     }
-  }
-  for (subject of subjectsOutsidePools) {
-    if (
-      !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-        subject.subjectName
-      ]
-    ) {
-      datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-        subject.subjectName
-      ] = {
-        folders: {},
-        files: {},
-        type: "",
-        action: [],
-      };
-    }
-  }
-
-  //Add samples to datsetStructuresJSONObj if they don't exist
-  const [samplesInPools, samplesOutsidePools] =
-    sodaJSONObj.getAllSamplesFromSubjects();
-  for (sample of samplesInPools) {
-    if (
-      !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-        sample.poolName
-      ]["folders"][sample.subjectName]["folders"][sample.sampleName]
-    ) {
-      datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-        sample.poolName
-      ]["folders"][sample.subjectName]["folders"][sample.sampleName] = {
-        folders: {},
-        files: {},
-        type: "",
-        action: [],
-      };
-    }
-  }
-  for (sample of samplesOutsidePools) {
-    if (
-      !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-        sample.subjectName
-      ]["folders"][sample.sampleName]
-    ) {
-      datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-        sample.subjectName
-      ]["folders"][sample.sampleName] = {
-        folders: {},
-        files: {},
-        type: "",
-        action: [],
-      };
+    for (subject of subjectsOutsidePools) {
+      if (
+        !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+          subject.subjectName
+        ]
+      ) {
+        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+          subject.subjectName
+        ] = {
+          folders: {},
+          files: {},
+          type: "",
+          action: [],
+        };
+      }
     }
   }
 
-  //update folder structure
   if (subjectsOrSamples === "samples") {
+    //Add samples to datsetStructuresJSONObj if they don't exist
+    const [samplesInPools, samplesOutsidePools] =
+      sodaJSONObj.getAllSamplesFromSubjects();
+    for (sample of samplesInPools) {
+      /**
+       * Check to see if the sample's pool is in the datasetStructureJSONObj.
+       * If not, add it.
+       */
+      if (
+        !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+          sample.poolName
+        ]
+      ) {
+        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+          sample.poolName
+        ] = {
+          folders: {},
+          files: {},
+          type: "",
+          action: [],
+        };
+      }
+      /**
+       * Check to see if the sample's subject is in the datasetStructureJSONObj.
+       * If not, add it.
+       */
+      if (
+        !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+          sample.poolName
+        ]["folders"][sample.subjectName]
+      ) {
+        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+          sample.poolName
+        ]["folders"][sample.subjectName] = {
+          folders: {},
+          files: {},
+          type: "",
+          action: [],
+        };
+      }
+      /**
+       * Check to see if the sample's folder is in the datasetStructureJSONObj.
+       * If not, add it.
+       */
+      if (
+        !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+          sample.poolName
+        ]["folders"][sample.subjectName]["folders"][sample.sampleName]
+      ) {
+        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+          sample.poolName
+        ]["folders"][sample.subjectName]["folders"][sample.sampleName] = {
+          folders: {},
+          files: {},
+          type: "",
+          action: [],
+        };
+      }
+    }
+    for (sample of samplesOutsidePools) {
+      /**
+       * Check to see if the sample's subject is in the datasetStructureJSONObj.
+       * If not, add it.
+       */
+      if (
+        !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+          sample.subjectName
+        ]
+      ) {
+        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+          sample.subjectName
+        ] = {
+          folders: {},
+          files: {},
+          type: "",
+          action: [],
+        };
+      }
+      /**
+       * Check to see if the sample's folder is in the datasetStructureJSONObj.
+       * If not, add it.
+       */
+      if (
+        !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+          sample.subjectName
+        ]["folders"][sample.sampleName]
+      ) {
+        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+          sample.subjectName
+        ]["folders"][sample.sampleName] = {
+          folders: {},
+          files: {},
+          type: "",
+          action: [],
+        };
+      }
+    }
   }
 };
 
@@ -602,23 +664,48 @@ const cleanUpEmptyGuidedStructureFolders = async (
     }
 
     if (samplesWithEmptyFolders.length > 0) {
+      console.log(samplesWithEmptyFolders);
       let result = await Swal.fire({
         title: "Continue?",
-        text: "You indicated that your dataset contained subjects, however, you did not add any subjects to your subjects table.",
+        text: `${highLevelFolder} data was not added to all of your samples.`,
         icon: "warning",
+        reverseButtons: true,
         showCancelButton: true,
-        confirmButtonColor: "#3085D6",
-        confirmButtonText: "I want to add subjects into the subject table",
-        cancelButtonText: "I do not have any subjects",
+        cancelButtonColor: "#6e7881",
+        cancelButtonText: `Finish adding ${highLevelFolder} to samples`,
+        confirmButtonText: `Continue without adding ${highLevelFolder} data to all samples`,
       });
       //If the user indicates they do not have any subjects, skip to source folder
       if (result.isConfirmed) {
+        //delete empty samples from the datasetStructureJSONObj
+        for (sample of samplesWithEmptyFolders) {
+          if (sample.poolName) {
+            console.log(
+              datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                sample.poolName
+              ]["folders"][sample.subjectName]["folders"][sample.sampleName]
+            );
+            delete datasetStructureJSONObj["folders"][highLevelFolder][
+              "folders"
+            ][sample.poolName]["folders"][sample.subjectName]["folders"][
+              sample.sampleName
+            ];
+          } else {
+            console.log(
+              datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                sample.subjectName
+              ]["folders"][sample.sampleName]
+            );
+            delete datasetStructureJSONObj["folders"][highLevelFolder][
+              "folders"
+            ][sample.subjectName]["folders"][sample.sampleName];
+          }
+        }
         return true;
-      } else {
       }
     }
   }
-  //return false if the user would not like to more subject or sample data
+  //return false if the user would not like to add more subject or sample data
   return false;
 };
 
@@ -8558,9 +8645,9 @@ $(document).ready(() => {
         switch (openSubPageID) {
           case "guided-primary-samples-organization-page": {
             //await cleanUpEmptyGuidedstructurefolders to decide if setActiveSubPage should be called
-            const userWantsToFinishAddingSamples =
+            const continueWithoutAddingPrimaryDataToAllSamples =
               await cleanUpEmptyGuidedStructureFolders("primary", "samples");
-            if (!userWantsToFinishAddingSamples) {
+            if (continueWithoutAddingPrimaryDataToAllSamples) {
               setActiveSubPage("guided-primary-subjects-organization-page");
             }
             break;
