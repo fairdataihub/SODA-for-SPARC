@@ -587,7 +587,7 @@ def bf_dataset_account(accountname):
 
     sorted_bf_datasets = sorted(store, key=lambda k: k["name"].upper())
 
-    return sorted_bf_datasets
+    return {"datasets": sorted_bf_datasets}
 
 
 def get_username(accountname):
