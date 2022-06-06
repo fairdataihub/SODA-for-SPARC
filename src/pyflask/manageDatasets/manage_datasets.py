@@ -1278,14 +1278,14 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        error_message = "Error: Please select a valid Pennsieve account"
+        abort(400, error_message)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset" + "<br>"
-        raise Exception(error)
+        error_message = "Error: Please select a valid Pennsieve dataset" + "<br>"
+        abort(400, error_message)
 
     try:
         # user permissions
@@ -1345,7 +1345,7 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
                         + organization_role
                     )
 
-        return list_dataset_permission_first_last_role
+        return {"permissions": list_dataset_permission_first_last_role}
 
     except Exception as e:
         raise e
