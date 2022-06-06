@@ -1732,7 +1732,7 @@ def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
         selected_dataset_id = myds.id
         jsonfile = {"description": input_subtitle}
         bf._api.datasets._put("/" + str(selected_dataset_id), json=jsonfile)
-        return "Subtitle added!"
+        return{ "success": "Subtitle added!"}
     except Exception as e:
         raise Exception(e)
 
