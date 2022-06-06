@@ -1771,7 +1771,6 @@ details[open] > summary::before {
   margin: 0 !important;
 }
 
-
 .documentation_container {
   display: flex;
   justify-content: center;
@@ -1790,10 +1789,10 @@ details[open] > summary::before {
 
 .doc_container {
   padding-right: 1.25rem;
-  padding-top: .5rem;
+  padding-top: 0.5rem;
   justify-content: center;
   align-items: center;
-  padding: .75rem;
+  padding: 0.75rem;
   flex-direction: column;
   max-width: 1024px;
   width: 100%;
@@ -1812,7 +1811,7 @@ details[open] > summary::before {
   font-weight: 700;
   font-size: 1.875rem !important;
   line-height: 2.25rem;
-  padding-bottom: .25rem;
+  padding-bottom: 0.25rem;
   margin: 0;
   padding-top: 1.25rem;
 }
