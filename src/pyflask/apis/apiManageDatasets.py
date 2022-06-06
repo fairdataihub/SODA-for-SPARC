@@ -338,12 +338,16 @@ model_account_datasets_list_response = api.model('AccountDatasetsResponse', {
 
 @api.route('/bf_dataset_account')
 class BfDatasetAccount(Resource):
+
+  parser_dataset_account = reqparse.RequestParser(bundle_errors=True)
+  parser_dataset_account.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve datasets for.')
+
   @api.marshal_with(model_account_datasets_list_response, False, 200)
   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns a list of the datasets the given Pennsieve account has access to.")
   def get(self):
     try:
       # get the selected account out of the request args
-      selected_account = request.args.get('selected_account')
+      selected_account = self.parser_dataset_account.parse_args().get('selected_account')
       return bf_dataset_account(selected_account)
     except Exception as e:
       if notBadRequestException(e):
