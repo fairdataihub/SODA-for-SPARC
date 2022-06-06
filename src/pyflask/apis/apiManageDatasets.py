@@ -353,3 +353,46 @@ class BfDatasetAccount(Resource):
       if notBadRequestException(e):
         api.abort(500, str(e))
       raise e
+
+
+
+
+
+@api.route('/bf_dataset_subtitle')
+class DatasetSubtitle(Resource):
+
+  parser_dataset_subtitle = reqparse.RequestParser(bundle_errors=True)
+  parser_dataset_subtitle.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve the dataset subitle for.')
+  parser_dataset_subtitle.add_argument('selected_dataset', type=str, required=True, location='args', help='The name or id of the dataset to retrieve the subtitle for.')
+
+
+  def get(self):
+    data = self.parser_dataset_subtitle.parse_args()
+
+    selected_account = data.get('selected_account')
+    selected_dataset = data.get('selected_dataset')
+
+    try:
+      return bf_get_subtitle(selected_account, selected_dataset)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
+
+  # parser_add_dataset_subtitle = parser_dataset_subtitle.copy()
+  # parser_add_dataset_subtitle.add_argument('input_subtitle', type=str, required=True, location='form', help='The subtitle to add to the dataset.')
+
+  # def put(self): 
+  #   # update the dataset subtitle for the selected account and dataset ID
+  #   data = self.parser_add_dataset_subtitle.parse_args()
+
+  #   selected_account = data.get('selected_account')
+  #   selected_dataset = data.get('selected_dataset')
+  #   input_subtitle = data.get('input_subtitle')
+
+  #   try:
+  #     return bf_add_subtitle(selected_account, selected_dataset, input_subtitle)
+  #   except Exception as e:
+  #     if notBadRequestException(e):
+  #       api.abort(500, str(e))
+  #     raise e
