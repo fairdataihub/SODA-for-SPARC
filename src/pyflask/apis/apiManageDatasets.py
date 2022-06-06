@@ -387,20 +387,20 @@ class DatasetSubtitle(Resource):
         api.abort(500, str(e))
       raise e
 
-  # parser_add_dataset_subtitle = parser_dataset_subtitle.copy()
-  # parser_add_dataset_subtitle.add_argument('input_subtitle', type=str, required=True, location='form', help='The subtitle to add to the dataset.')
+  parser_add_dataset_subtitle = parser_dataset_subtitle.copy()
+  parser_add_dataset_subtitle.add_argument('input_subtitle', type=str, required=True, location='json', help='The subtitle to add to the dataset.')
 
-  # def put(self): 
-  #   # update the dataset subtitle for the selected account and dataset ID
-  #   data = self.parser_add_dataset_subtitle.parse_args()
+  def put(self): 
+    # update the dataset subtitle for the selected account and dataset ID
+    data = self.parser_add_dataset_subtitle.parse_args()
 
-  #   selected_account = data.get('selected_account')
-  #   selected_dataset = data.get('selected_dataset')
-  #   input_subtitle = data.get('input_subtitle')
+    selected_account = data.get('selected_account')
+    selected_dataset = data.get('selected_dataset')
+    input_subtitle = data.get('input_subtitle')
 
-  #   try:
-  #     return bf_add_subtitle(selected_account, selected_dataset, input_subtitle)
-  #   except Exception as e:
-  #     if notBadRequestException(e):
-  #       api.abort(500, str(e))
-  #     raise e
+    try:
+      return bf_add_subtitle(selected_account, selected_dataset, input_subtitle)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
