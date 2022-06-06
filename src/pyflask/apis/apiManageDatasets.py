@@ -493,5 +493,43 @@ class DatasetPermissions(Resource):
       if notBadRequestException(e):
         api.abort(500, str(e))
       raise e
+
+  
+  parser_add_dataset_permissions = parser_dataset_permissions.copy()
+  parser_add_dataset_permissions.add_argument('scope', type=str, required=True, location='args', help='Defines who or what will have their permissions for the dataset changed. Options are: team or user.')
+  parser_add_dataset_permissions.add_argument('input_role', type=str, required=True, location='json', help='The permissions to add to the dataset. Can be either: owner, manager, viewer, remove current permissions.')
+  parser_add_dataset_permissions.add_argument('name', type=str, required=True, location='args', help='The name of the team or user to change permissions for.')
+
+  @api.marshal_with(successMessage, False, 200)
+  @api.expect(parser_add_dataset_permissions)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 403: 'Forbidden'}, description="Adds permissions to the given dataset. Permissions are a list of the users/organizations/teams and their roles (viewer, manager, owner, etc) for the given dataset.")
+  def patch(self):
+    # update the dataset permissions for the selected account and dataset ID
+    data = self.parser_add_dataset_permissions.parse_args()
+
+    selected_account = data.get('selected_account')
+    selected_dataset = data.get('selected_dataset')
+    scope = data.get('scope')
+    input_role = data.get('input_role')
+    name = data.get('name')
+
+    if scope != 'team' and scope != 'user':
+      api.abort(400, 'Invalid scope. Must be either team or user.')
+
+    if scope == 'team':
+      try:
+        return bf_add_permission_team(selected_account, selected_dataset, name, input_role)
+      except Exception as e:
+        if notBadRequestException(e):
+          api.abort(500, str(e))
+        raise e
+    else:
+      try:
+        return bf_add_permission(selected_account, selected_dataset, name, input_role)
+      except Exception as e:
+        if notBadRequestException(e):
+          api.abort(500, str(e))
+        raise e
+
     
 
