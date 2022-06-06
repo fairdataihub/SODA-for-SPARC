@@ -1690,7 +1690,7 @@ def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
         res = ""
         if "description" in dataset_info["content"]:
             res = dataset_info["content"]["description"]
-        return res
+        return {"subtitle": res}
         # return json.dumps(dataset_info)
     except Exception as e:
         raise Exception(e)
