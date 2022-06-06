@@ -1674,14 +1674,14 @@ def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        error_message = "Error: Please select a valid Pennsieve account"
+        abort(400, error_message)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        error_message = "Error: Please select a valid Pennsieve dataset"
+        abort(400, error_message)
 
     try:
         selected_dataset_id = myds.id
