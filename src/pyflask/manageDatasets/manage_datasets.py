@@ -544,15 +544,11 @@ def bf_dataset_account(accountname):
     Output: a filtered dataset list with objects as elements: {"name": dataset's name, "id": dataset's id, "role": permission}
 
     """
-    # # current_user = bf._api._get('/user')
-    # # current_user_id = current_user['id']
-    # # for ds in bf.datasets():
-    # #     dataset_list.append(ds.name)
-    # dataset_list.sort(key=lambda v: v.upper()) # Returning the list of datasets in alphabetical order
-    # dataset_list.insert(0, ['Select dataset'])
-    # return dataset_list
-
-    bf = Pennsieve(accountname)
+    try:
+        bf = Pennsieve(accountname)
+    except Exception as e:
+        abort(400, str(e))
+    
     # bfaccountname = bf.profile.id
     datasets_list = bf.datasets()
 
