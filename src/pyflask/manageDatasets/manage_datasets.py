@@ -1737,7 +1737,9 @@ def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
         raise Exception(e)
 
 
-"""
+
+def bf_get_description(selected_bfaccount, selected_bfdataset):
+    """
     Function to get current description associated with a selected dataset
 
     Args:
@@ -1747,20 +1749,17 @@ def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
         Description (string with markdown code)
     """
 
-
-def bf_get_description(selected_bfaccount, selected_bfdataset):
-
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        error_message = "Error: Please select a valid Pennsieve account"
+        abort(400, error_message)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        error_message = "Error: Please select a valid Pennsieve dataset"
+        abort(400, error_message)
 
     try:
         selected_dataset_id = myds.id
@@ -1773,7 +1772,11 @@ def bf_get_description(selected_bfaccount, selected_bfdataset):
         raise Exception(e)
 
 
-"""
+
+
+
+def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
+    """
     Args:
         selected_bfaccount: name of selected Pennsieve acccount (string)
         selected_bfdataset: name of selected Pennsieve dataset (string)
@@ -1784,34 +1787,30 @@ def bf_get_description(selected_bfaccount, selected_bfdataset):
         Success messsge or error
     """
 
-
-def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
-
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        error_message = "Error: Please select a valid Pennsieve account"
+        abort(400, error_message)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        error_message = "Error: Please select a valid Pennsieve dataset"
+        abort(400, error_message)
 
-    try:
-        role = bf_get_current_user_permission(bf, myds)
-        if role not in ["owner", "manager"]:
-            error = "Error: You don't have permissions for editing metadata on this Pennsieve dataset"
-            raise Exception(error)
-    except Exception as e:
-        raise e
+
+    role = bf_get_current_user_permission(bf, myds)
+    if role not in ["owner", "manager"]:
+        error_message = "Error: You don't have permissions for editing metadata on this Pennsieve dataset"
+        abort(403, error_message)
+
 
     try:
         selected_dataset_id = myds.id
         jsonfile = {"readme": markdown_input}
         bf._api.datasets._put("/" + str(selected_dataset_id) + "/readme", json=jsonfile)
-        return "Description added!"
+        return{ "message": "Description added!"}
     except Exception as e:
         raise Exception(e)
 
