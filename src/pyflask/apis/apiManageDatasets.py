@@ -372,6 +372,8 @@ class DatasetSubtitle(Resource):
 
 
   @api.marshal_with(model_get_dataset_subtitle_response, False, 200)
+  @api.expect(parser_dataset_subtitle)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns the subtitle for the given dataset.")
   def get(self):
     data = self.parser_dataset_subtitle.parse_args()
 
