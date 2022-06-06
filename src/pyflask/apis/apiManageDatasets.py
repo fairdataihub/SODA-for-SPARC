@@ -362,7 +362,6 @@ model_get_dataset_subtitle_response = api.model('GetDatasetSubtitleResponse', {
   'subtitle': fields.String(required=True, description="The subtitle for the given dataset."),
 })
 
-
 @api.route('/bf_dataset_subtitle')
 class DatasetSubtitle(Resource):
 
@@ -390,6 +389,9 @@ class DatasetSubtitle(Resource):
   parser_add_dataset_subtitle = parser_dataset_subtitle.copy()
   parser_add_dataset_subtitle.add_argument('input_subtitle', type=str, required=True, location='json', help='The subtitle to add to the dataset.')
 
+  @api.marshal_with(successMessage, False, 200)
+  @api.expect(parser_add_dataset_subtitle)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 403: 'Forbidden'}, description="Adds a subtitle to the given dataset.")
   def put(self): 
     # update the dataset subtitle for the selected account and dataset ID
     data = self.parser_add_dataset_subtitle.parse_args()
