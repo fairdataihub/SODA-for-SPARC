@@ -357,6 +357,10 @@ class BfDatasetAccount(Resource):
 
 
 
+model_get_dataset_subtitle_response = api.model('GetDatasetSubtitleResponse', {
+  'subtitle': fields.String(required=True, description="The subtitle for the given dataset."),
+})
+
 
 @api.route('/bf_dataset_subtitle')
 class DatasetSubtitle(Resource):
@@ -366,6 +370,7 @@ class DatasetSubtitle(Resource):
   parser_dataset_subtitle.add_argument('selected_dataset', type=str, required=True, location='args', help='The name or id of the dataset to retrieve the subtitle for.')
 
 
+  @api.marshal_with(model_get_dataset_subtitle_response, False, 200)
   def get(self):
     data = self.parser_dataset_subtitle.parse_args()
 
