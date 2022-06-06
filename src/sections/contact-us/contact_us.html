@@ -1,37 +1,50 @@
+<!DOCTYPE html>
 <template class="task-template">
   <section id="contact-us-section" class="section js-section u-category-menu">
-    <div class="documentation_container">
+    <div
+      class="documentation_container"
+      style="height: 100%; max-height: 1000px"
+    >
       <div class="document_container">
         <div class="doc_container">
           <div class="dc_con">
             <h1 class="doc_header">Contact Us</h1>
             <hr class="docu_divide" />
-            <div class="document-content">
+            <div class="document-content" style="justify-content: center">
               <div
                 id="contact-us-lottie"
                 class="documentation-lottie_style"
               ></div>
             </div>
-            <h2 class="document_text" style="margin-top: 0 !important">
-              If you have any issue or suggestions, please email us at
-              <a
-                style="text-decoration: underline"
-                href="mailto:help@fairdataihub.org"
-                >help@fairdataihub.org</a
-              >
-              <br />If you are reaching us regarding an issue, we suggest that
-              you attach the SODA and Pennsieve log files to the email. Just
-              click on the button below to save those logs file at your desired
-              location.
-            </h2>
-            <div style="display: flex; justify-content: center">
-              <button
-                class="view_doc_button sodaVideo-button"
-                onclick="gatherLogs()"
-                style="margin-top: 4rem"
-              >
-                Gather Logs
-              </button>
+            <div
+              style="
+                margin-bottom: 1rem;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+              "
+            >
+              <h2 class="document_text" style="margin-top: 0 !important">
+                If you have any issue or suggestions, please email us at
+                <a
+                  style="text-decoration: underline"
+                  href="mailto:help@fairdataihub.org"
+                  >help@fairdataihub.org</a
+                >
+                <br />If you are reaching us regarding an issue, we suggest that
+                you attach the SODA and Pennsieve log files to the email. Just
+                click on the button below to save those logs file at your
+                desired location.
+              </h2>
+              <div style="display: flex; justify-content: center">
+                <button
+                  class="view_doc_button sodaVideo-button"
+                  onclick="gatherLogs()"
+                  style="margin-top: 4rem"
+                >
+                  Gather Logs
+                </button>
+              </div>
             </div>
           </div>
         </div>

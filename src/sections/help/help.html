@@ -1,32 +1,48 @@
+<!DOCTYPE html>
 <template class="task-template">
   <section
     id="documentation-section"
     class="section js-section u-category-menu"
+    style="height: 100%"
   >
-    <div class="documentation_container">
+    <div
+      class="documentation_container"
+      style="height: 100%; max-height: 1000px"
+    >
       <div class="document_container">
         <div class="doc_container">
           <div class="dc_con">
             <h1 class="doc_header">Documentation</h1>
             <hr class="docu_divide" />
-            <div class="document-content">
+            <div class="document-content" style="justify-content: center">
               <div
                 id="documentation-lottie"
                 class="documentation-lottie_style"
               ></div>
             </div>
-            <h2 class="document_text" style="margin-top: 0 !important">
-              We have created a documentation page for each feature in SODA. You
-              can find the documentation site by clicking on the button below:
-            </h2>
-            <div style="display: flex; justify-content: center">
-              <button
-                id="doc-btn"
-                class="view_doc_button sodaVideo-button"
-                style="margin-top: 4rem"
-              >
-                View the Documentation
-              </button>
+            <div
+              style="
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                align-items: center;
+                margin-bottom: 3rem;
+              "
+            >
+              <h2 class="document_text" style="margin-top: 0 !important">
+                We have created a documentation page for each feature in SODA.
+                You can find the documentation site by clicking on the button
+                below:
+              </h2>
+              <div>
+                <button
+                  id="doc-btn"
+                  class="view_doc_button sodaVideo-button"
+                  style="margin-top: 4rem"
+                >
+                  View the Documentation
+                </button>
+              </div>
             </div>
           </div>
         </div>

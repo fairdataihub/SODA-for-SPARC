@@ -564,7 +564,6 @@ const run_pre_flight_checks = async (check_update = true) => {
 
       // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
       account_present = await check_api_key();
-      console.log(account_present);
       if (account_present) {
         // Check for an installed Pennsieve agent
         await wait(500);
@@ -790,7 +789,6 @@ const check_internet_connection = async (show_notification = true) => {
 
 const check_api_key = async () => {
   let jwt = await get_access_token();
-  console.log(jwt);
   let notification = null;
   notification = notyf.open({
     type: "api_key_search",
@@ -10173,9 +10171,7 @@ let doc_lottie = document.getElementById("documentation-lottie");
 var documentation_lottie_observer = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
     var attributeValue = $(mutation.target).prop(mutation.attributeName);
-    console.log("HMM");
     if (attributeValue.includes("is-shown") == true) {
-      console.log("UHH WHATS");
       //add lotties
 
       var documentation_lottie = lottie.loadAnimation({
@@ -10198,12 +10194,10 @@ let contact_section = document.getElementById("contact-us-section");
 let contact_lottie_container = document.getElementById("contact-us-lottie");
 var contact_us_lottie_observer = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
-    console.log("HMMM");
     var attributeValue = $(mutation.target).prop(mutation.attributeName);
     console.log(attributeValue);
     if (attributeValue.includes("is-shown") == true) {
       //add lotties
-      console.log("is shown");
 
       var contact_lottie_animation = lottie.loadAnimation({
         container: contact_lottie_container,

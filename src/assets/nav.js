@@ -17,7 +17,6 @@ document.body.addEventListener("custom-back", (e) => {
 
 function handleSectionTrigger(event) {
   hideAllSectionsAndDeselectButtons();
-  console.log(event);
 
   if (event.detail.target) {
     let previous_section = `${event.detail.target.dataset.section}-section`;
@@ -29,7 +28,6 @@ function handleSectionTrigger(event) {
   event.target.classList.add("is-selected");
   // Display the current section
   const sectionId = `${event.target.dataset.section}-section`;
-  console.log(sectionId);
 
   document.getElementById(sectionId).classList.add("is-shown");
 
