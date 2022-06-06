@@ -1878,7 +1878,11 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
         raise Exception(e)
 
 
-"""
+
+
+
+def bf_get_license(selected_bfaccount, selected_bfdataset):
+    """
     Function to get current license associated with a selected dataset
 
     Args:
@@ -1888,20 +1892,17 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
         License name, if any, or "No license" message
     """
 
-
-def bf_get_license(selected_bfaccount, selected_bfdataset):
-
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        error_message = "Error: Please select a valid Pennsieve account"
+        abort(400, error_message)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        error_message = "Error: Please select a valid Pennsieve dataset"
+        abort(400, error_message)
 
     try:
         selected_dataset_id = myds.id
@@ -1911,12 +1912,16 @@ def bf_get_license(selected_bfaccount, selected_bfdataset):
             res = dataset_info["content"]["license"]
         else:
             res = "No license is currently assigned to this dataset"
-        return res
+        return {"license": res}
     except Exception as e:
         raise Exception(e)
 
 
-"""
+
+
+
+def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
+    """
     Args:
         selected_bfaccount: name of selected Pennsieve acccount (string)
         selected_bfdataset: name of selected Pennsieve dataset (string)
@@ -1927,54 +1932,51 @@ def bf_get_license(selected_bfaccount, selected_bfdataset):
         Success messsge or error
     """
 
-
-def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
-
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        error_message = "Error: Please select a valid Pennsieve account"
+        abort(400, error_message)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        error_message = "Error: Please select a valid Pennsieve dataset"
+        abort(400, error_message)
 
-    try:
-        role = bf_get_current_user_permission(bf, myds)
-        if role not in ["owner", "manager"]:
-            error = "Error: You don't have permissions for editing metadata on this Pennsieve dataset"
-            raise Exception(error)
-    except Exception as e:
-        raise e
 
-    try:
-        allowed_licenses_list = [
-            "Community Data License Agreement – Permissive",
-            "Community Data License Agreement – Sharing",
-            "Creative Commons Zero 1.0 Universal",
-            "Creative Commons Attribution",
-            "Creative Commons Attribution - ShareAlike",
-            "Open Data Commons Open Database",
-            "Open Data Commons Attribution",
-            "Open Data Commons Public Domain Dedication and License",
-            "Apache 2.0",
-            "GNU General Public License v3.0",
-            "GNU Lesser General Public License",
-            "MIT",
-            "Mozilla Public License 2.0",
-        ]
-        if selected_license not in allowed_licenses_list:
-            error = "Error: Please select a valid license"
-            raise Exception(error)
-        selected_dataset_id = myds.id
-        jsonfile = {"license": selected_license}
+    role = bf_get_current_user_permission(bf, myds)
+    if role not in ["owner", "manager"]:
+        error_message = "Error: You don't have permissions for editing metadata on this Pennsieve dataset"
+        abort(403, error_message)
+
+
+    allowed_licenses_list = [
+        "Community Data License Agreement – Permissive",
+        "Community Data License Agreement – Sharing",
+        "Creative Commons Zero 1.0 Universal",
+        "Creative Commons Attribution",
+        "Creative Commons Attribution - ShareAlike",
+        "Open Data Commons Open Database",
+        "Open Data Commons Attribution",
+        "Open Data Commons Public Domain Dedication and License",
+        "Apache 2.0",
+        "GNU General Public License v3.0",
+        "GNU Lesser General Public License",
+        "MIT",
+        "Mozilla Public License 2.0",
+    ]
+    if selected_license not in allowed_licenses_list:
+        error = "Error: Please select a valid license"
+        abort(403, error)
+    selected_dataset_id = myds.id
+    jsonfile = {"license": selected_license}
+    try: 
         bf._api.datasets._put("/" + str(selected_dataset_id), json=jsonfile)
-        return "License added!"
     except Exception as e:
         raise Exception(e)
+    return {"message": "License added!"}
+
 
 
 """

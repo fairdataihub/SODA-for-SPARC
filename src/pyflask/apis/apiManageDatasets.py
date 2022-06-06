@@ -587,3 +587,53 @@ class BfBannerImage(Resource):
 
 
 
+
+
+model_get_license_response = api.model('GetLicenseResponse', {
+  'license': fields.String(required=True, description="License for the dataset."),
+})
+
+
+@api.route("/bf_license")
+class BfLicense(Resource):
+  parser_license = reqparse.RequestParser(bundle_errors=True)
+  parser_license.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve the license for.')
+  parser_license.add_argument('selected_dataset', type=str, required=True, location='args', help='The name or id of the dataset to retrieve the license for.')
+
+  @api.marshal_with(model_get_license_response, False, 200)
+  @api.expect(parser_license)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns the license for the given dataset.")
+  def get(self):
+    data = self.parser_license.parse_args()
+
+    selected_account = data.get('selected_account')
+    selected_dataset = data.get('selected_dataset')
+
+    try:
+      return bf_get_license(selected_account, selected_dataset)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
+
+  
+  parser_add_license = parser_license.copy()
+  parser_add_license.add_argument('input_license', type=str, required=True, location='json', help='License for the dataset.')
+
+  @api.marshal_with(successMessage, False, 200)
+  @api.expect(parser_add_license)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 403: 'Forbidden'}, description="Adds a license to the given dataset.")
+  def put(self):
+    # update the dataset license for the selected account and dataset ID
+    data = self.parser_add_license.parse_args()
+
+    selected_account = data.get('selected_account')
+    selected_dataset = data.get('selected_dataset')
+    input_license = data.get('input_license')
+
+    try:
+      return bf_add_license(selected_account, selected_dataset, input_license)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
