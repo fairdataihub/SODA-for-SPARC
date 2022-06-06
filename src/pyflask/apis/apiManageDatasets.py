@@ -344,6 +344,7 @@ class BfDatasetAccount(Resource):
 
   @api.marshal_with(model_account_datasets_list_response, False, 200)
   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns a list of the datasets the given Pennsieve account has access to.")
+  @api.expect(parser_dataset_account)
   def get(self):
     try:
       # get the selected account out of the request args
