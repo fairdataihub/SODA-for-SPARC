@@ -1767,7 +1767,7 @@ def bf_get_description(selected_bfaccount, selected_bfdataset):
             "/datasets/" + str(selected_dataset_id) + "/readme"
         )
         res = dataset_readme_info["readme"]
-        return res
+        return {"description": res}
     except Exception as e:
         raise Exception(e)
 
