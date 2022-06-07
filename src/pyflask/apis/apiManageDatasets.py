@@ -674,3 +674,31 @@ class BfLicense(Resource):
       if notBadRequestException(e):
         api.abort(500, str(e))
       raise e
+
+
+
+
+
+@api.route("/bf_rename_dataset")
+class BfRenameDataset(Resource):
+  parser_rename_dataset = reqparse.RequestParser(bundle_errors=True)
+  parser_rename_dataset.add_argument('selected_account', type=str, required=True, location='args', help='The target account to rename the dataset for.')
+  parser_rename_dataset.add_argument('selected_dataset', type=str, required=True, location='args', help='The target account to rename the dataset for.')
+  parser_rename_dataset.add_argument('input_new_name', type=str, required=True, location='json', help='The new name for the dataset.')
+
+  @api.expect(parser_rename_dataset)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 403: 'Forbidden', 200: 'OK'}, description="Renames the given dataset.")
+  def put(self):
+    # update the dataset name for the selected account and dataset ID
+    data = self.parser_rename_dataset.parse_args()
+
+    selected_account = data.get('selected_account')
+    selected_dataset = data.get('selected_dataset')
+    input_new_name = data.get('input_new_name')
+
+    try:
+      return bf_rename_dataset(selected_account, selected_dataset, input_new_name)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e

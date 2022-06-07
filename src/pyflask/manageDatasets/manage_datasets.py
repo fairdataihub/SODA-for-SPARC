@@ -731,21 +731,19 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
         c += 1
 
     if c > 0:
-        raise Exception(error)
+        abort(400, error)
 
     try:
         myds = bf.get_dataset(current_dataset_name)
     except Exception as e:
         error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        abort(400, error)
 
-    try:
-        role = bf_get_current_user_permission(bf, myds)
-        if role not in ["owner", "manager"]:
-            error = "Error: You don't have permissions to change the name of this Pennsieve dataset"
-            raise Exception(error)
-    except Exception as e:
-        raise e
+    role = bf_get_current_user_permission(bf, myds)
+    if role not in ["owner", "manager"]:
+        error_message = "Error: You don't have permissions to change the name of this Pennsieve dataset"
+        abort(403, error_message)
+
 
     dataset_list = []
     for ds in bf.datasets():
