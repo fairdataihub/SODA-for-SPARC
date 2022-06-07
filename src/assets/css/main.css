@@ -1755,7 +1755,7 @@ details[open] > summary::before {
   .getting-started-overview {
     grid-template-rows: 15% 65% 10% 21%;
   }
-  
+
   .docu_divide {
     margin-bottom: 13rem;
   }
@@ -1771,7 +1771,6 @@ details[open] > summary::before {
   .docu_divide {
     margin-bottom: 10rem !important;
   }
-
 }
 
 .overview_lottie_header {
