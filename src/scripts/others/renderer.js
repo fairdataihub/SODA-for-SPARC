@@ -150,61 +150,57 @@ let column2 = document.getElementById("lottie2");
 let column3 = document.getElementById("lottie3");
 let heart_lottie = document.getElementById("heart_lottie");
 
-var observer = new MutationObserver(function (mutations) {
+var column1_lottie = lottie.loadAnimation({
+  container: column1,
+  animationData: column1Lottie /*(json js variable, (view src/assets/lotties)*/,
+  renderer: "svg",
+  loop: true /*controls looping*/,
+  autoplay: true,
+});
+var column2_lottie = lottie.loadAnimation({
+  container: column2,
+  animationData: column2Lottie /*(json js variable, (view src/assets/lotties)*/,
+  renderer: "svg",
+  loop: true /*controls looping*/,
+  autoplay: true,
+});
+var column3_lottie = lottie.loadAnimation({
+  container: column3,
+  animationData: column3Lottie,
+  renderer: "svg",
+  loop: true,
+  autoplay: true,
+});
+var heart_container = lottie.loadAnimation({
+  container: heart_lottie,
+  animationData: heartLottie,
+  renderer: "svg",
+  loop: true,
+  autoplay: true,
+});
+
+var overview_observer = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
     var attributeValue = $(mutation.target).prop(mutation.attributeName);
 
     if (attributeValue.includes("is-shown") == true) {
+      console.log("home lotties enable");
       //add lotties
-      column1.innerText = "";
-      column2.innerText = "";
-      column3.innerText = "";
-      heart_lottie.innerText = "";
-
-      var column1_lottie = lottie.loadAnimation({
-        container: column1,
-        animationData:
-          column1Lottie /*(json js variable, (view src/assets/lotties)*/,
-        renderer: "svg",
-        loop: true /*controls looping*/,
-        autoplay: true,
-      });
-      var column2_lottie = lottie.loadAnimation({
-        container: column2,
-        animationData:
-          column2Lottie /*(json js variable, (view src/assets/lotties)*/,
-        renderer: "svg",
-        loop: true /*controls looping*/,
-        autoplay: true,
-      });
-      var column3_lottie = lottie.loadAnimation({
-        container: column3,
-        animationData: column3Lottie,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-      var heart_container = lottie.loadAnimation({
-        container: heart_lottie,
-        animationData: heartLottie,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
+      column1_lottie.play();
+      column2_lottie.play();
+      column3_lottie.play();
+      heart_container.play();
     } else {
-      column1.innerText = "";
-      column2.innerText = "";
-      column3.innerText = "";
-      heart_lottie.innerText = "";
-      lottie.stop(column1_lottie);
-      lottie.stop(column2_lottie);
-      lottie.stop(column3_lottie);
-      lottie.stop(heart_container);
+      console.log("removing overview lotties");
+      column1_lottie.stop();
+      column2_lottie.stop();
+      column3_lottie.stop();
+      heart_container.stop();
     }
   });
 });
 
-observer.observe(over_view_section, {
+overview_observer.observe(over_view_section, {
   attributes: true,
   attributeFilter: ["class"],
 });
@@ -10168,50 +10164,56 @@ document
 let docu_lottie_section = document.getElementById("documentation-section");
 let doc_lottie = document.getElementById("documentation-lottie");
 
+let contact_section = document.getElementById("contact-us-section");
+let contact_lottie_container = document.getElementById("contact-us-lottie");
+
+var contact_lottie_animation = lottie.loadAnimation({
+  container: contact_lottie_container,
+  animationData:
+    contact_lottie /*(json js variable, (view src/assets/lotties)*/,
+  renderer: "svg",
+  loop: true /*controls looping*/,
+  autoplay: true,
+});
+contact_lottie_animation.pause();
+var documentation_lottie = lottie.loadAnimation({
+  container: doc_lottie,
+  animationData: docu_lottie /*(json js variable, (view src/assets/lotties)*/,
+  renderer: "svg",
+  loop: true /*controls looping*/,
+  autoplay: true,
+});
+documentation_lottie.pause();
+
 var documentation_lottie_observer = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
     var attributeValue = $(mutation.target).prop(mutation.attributeName);
     if (attributeValue.includes("is-shown") == true) {
-      //add lotties
-
-      var documentation_lottie = lottie.loadAnimation({
-        container: doc_lottie,
-        animationData:
-          docu_lottie /*(json js variable, (view src/assets/lotties)*/,
-        renderer: "svg",
-        loop: true /*controls looping*/,
-        autoplay: true,
-      });
+      console.log("work for docs");
+      //play lottie
+      documentation_lottie.play();
     } else {
-      doc_lottie.innerText = "";
+      console.log("remove docs lotties");
 
-      lottie.stop(documentation_lottie);
+      // lottie.stop(documentation_lottie);
+      documentation_lottie.stop();
     }
   });
 });
 
-let contact_section = document.getElementById("contact-us-section");
-let contact_lottie_container = document.getElementById("contact-us-lottie");
 var contact_us_lottie_observer = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
     var attributeValue = $(mutation.target).prop(mutation.attributeName);
     console.log(attributeValue);
     if (attributeValue.includes("is-shown") == true) {
-      //add lotties
-
-      var contact_lottie_animation = lottie.loadAnimation({
-        container: contact_lottie_container,
-        animationData:
-          contact_lottie /*(json js variable, (view src/assets/lotties)*/,
-        renderer: "svg",
-        loop: true /*controls looping*/,
-        autoplay: true,
-      });
-      console.log(contact_lottie_animation);
+      console.log("should for contact");
+      //play lottie
+      contact_lottie_animation.play();
     } else {
-      contact_lottie_container.innerText = "";
-
-      lottie.stop(contact_lottie_animation);
+      console.log("removing contact lottie");
+      console.log(contact_lottie_animation);
+      contact_lottie_animation.stop();
+      // lottie.stop(contact_lottie_animation);
     }
   });
 });

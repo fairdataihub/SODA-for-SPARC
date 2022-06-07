@@ -1615,7 +1615,7 @@ details[open] > summary::before {
 .getting-started-overview {
   padding: 0 !important;
   display: grid;
-  grid-template-rows: 15% 70% 16% 5%;
+  grid-template-rows: 15% 70% 16% 3%;
   align-items: center;
 }
 
@@ -1651,11 +1651,11 @@ details[open] > summary::before {
   display: grid;
   color: black;
   padding-left: 1rem;
-  padding-right: 1rem;
+  padding-right: 2rem;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   width: 100%;
   height: 60% !important;
-  max-width: 850px;
+  max-width: 1000px;
   place-self: center;
 }
 
@@ -1749,9 +1749,29 @@ details[open] > summary::before {
   }
 
   .getting-started-buttons {
-    margin-bottom: 5.5rem;
-    margin-top: 0;
+    margin-top: -18rem;
   }
+
+  .getting-started-overview {
+    grid-template-rows: 15% 65% 10% 21%;
+  }
+  
+  .docu_divide {
+    margin-bottom: 13rem;
+  }
+
+  .front-page_logo {
+    width: 80rem;
+  }
+
+  .document-content {
+    height: 55% !important;
+  }
+
+  .docu_divide {
+    margin-bottom: 10rem !important;
+  }
+
 }
 
 .overview_lottie_header {
@@ -1829,13 +1849,13 @@ details[open] > summary::before {
   align-items: center;
   flex-direction: column;
   width: 100%;
-  height: 100%;
+  height: 57%;
   display: flex;
 }
 
 .documentation-lottie_style {
-  --lottie-animation-container-width: 300px;
-  --lottie-animation-container-height: 300px;
+  --lottie-animation-container-width: 400px;
+  --lottie-animation-container-height: 400px;
   --lottie-animation-container-background-color: transparent;
   width: var(--lottie-animation-container-width);
   height: var(--lottie-animation-container-height);
@@ -1874,4 +1894,5 @@ details[open] > summary::before {
 .document_text {
   font-size: 1.3rem !important;
   color: black !important;
+  font-weight: 500;
 }
