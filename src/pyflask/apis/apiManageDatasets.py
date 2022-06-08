@@ -762,3 +762,35 @@ class BfGetUsername(Resource):
       if notBadRequestException(e):
         api.abort(500, str(e))
       raise e
+
+
+
+
+
+
+
+@api.route("/account/api_key")
+class BfAddAccountApiKey(Resource):
+
+  parser_add_api_key = reqparse.RequestParser(bundle_errors=True)
+  parser_add_api_key.add_argument('keyname', type=str, required=True, location='json', help="Name of the account to be associated with the given credentials.")
+  parser_add_api_key.add_argument('key', type=str, required=True, location='json', help="The API key the user generated on Pennsieve.")
+  parser_add_api_key.add_argument('secret', type=str, required=True, location='json', help="The API secret the user generated on Pennsieve.")
+
+  @api.expect(parser_add_api_key)
+  @api.doc(responses={500: "Internal Server Error", 400: "Bad Request", 401: "Unauthenticated", 403: "Forbidden"}, description="Adds account to the Pennsieve configuration file.")
+  @api.marshal_with(successMessage, 200, False)
+  def put(self):
+
+    data = self.parser_add_api_key.parse_args()
+
+    keyname = data.get('keyname')
+    key = data.get('key')
+    secret = data.get('secret')
+
+    try:
+      return bf_add_account_api_key(keyname, key, secret)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e

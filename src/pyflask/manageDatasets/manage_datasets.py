@@ -186,10 +186,10 @@ def bf_add_account_api_key(keyname, key, secret):
         error = ""
         keyname = keyname.strip()
         if (not keyname) or (not key) or (not secret):
-            raise Exception("Error: Please enter valid keyname, key, and/or secret")
+            abort(401, "Error: Please enter valid keyname, key, and/or secret")
 
         if (keyname.isspace()) or (key.isspace()) or (secret.isspace()):
-            raise Exception("Error: Please enter valid keyname, key, and/or secret")
+            abort(401, "Error: Please enter valid keyname, key, and/or secret")
 
         bfpath = join(userpath, ".pennsieve")
         # Load existing or create new config file
@@ -197,7 +197,7 @@ def bf_add_account_api_key(keyname, key, secret):
         if exists(configpath):
             config.read(configpath)
             if config.has_section(keyname):
-                raise Exception("Error: Key name already exists")
+                abort(400, "Error: Key name already exists")
         else:
             if not exists(bfpath):
                 mkdir(bfpath)
@@ -209,7 +209,6 @@ def bf_add_account_api_key(keyname, key, secret):
         if not config.has_section(agentkey):
             config.add_section(agentkey)
             config.set(agentkey, "proxy_local_port", "8080")
-            # config.set(agentkey, 'cache_base_path', join(bfpath, 'cache'))
             config.set(agentkey, "uploader", "true")
             config.set(agentkey, "cache_hard_cache_size", "10000000000")
             config.set(agentkey, "status_port", "11235")
@@ -237,7 +236,7 @@ def bf_add_account_api_key(keyname, key, secret):
 
     except:
         bf_delete_account(keyname)
-        raise Exception(
+        abort(401, 
             "Authentication Error: please check that key name, key, and secret are entered properly"
         )
 
@@ -246,8 +245,8 @@ def bf_add_account_api_key(keyname, key, secret):
         org_id = bf.context.id
 
         # CHANGE BACK
-        if org_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-            raise Exception(
+        if org_id == "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
+            abort(403,
                 "Error: Please check that your account is within the SPARC Consortium Organization"
             )
 
@@ -260,10 +259,7 @@ def bf_add_account_api_key(keyname, key, secret):
         with open(configpath, "w") as configfile:
             config.write(configfile)
 
-        # CHANGE BACK
-        # bf_keep_only_account(keyname)
-
-        return "Successfully added account " + str(bf)
+        return {"message": "Successfully added account " + str(bf)}
 
     except Exception as e:
         bf_delete_account(keyname)
