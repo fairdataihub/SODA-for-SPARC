@@ -1,4 +1,6 @@
+from http.client import responses
 from flask_restx import Resource, fields, reqparse
+from numpy import require
 from manageDatasets import ( 
     get_pennsieve_api_key_secret, 
     get_number_of_files_and_folders_locally,
@@ -713,7 +715,7 @@ model_get_username_response = api.model("GetUsernameResponse", {
   'username': fields.String(required=True, description="The current SODA user's first and last name stored in the Pennsieve system.")
 })
 
-@api.route("/get_username")
+@api.route("/account/username")
 class BfGetUsername(Resource):
 
   parser_get_username = reqparse.RequestParser(bundle_errors=True)
@@ -730,6 +732,32 @@ class BfGetUsername(Resource):
 
     try:
       return get_username(selected_account)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
+
+  
+  parser_add_username = reqparse.RequestParser(bundle_errors=True)
+  parser_add_username.add_argument('keyname', type=str, required=True, location='json', help="Name of the account to be associated with the given credentials.")
+  parser_add_username.add_argument('key', type=str, required=True, location='json', help="The API key the user generated on Pennsieve.")
+  parser_add_username.add_argument('secret', type=str, required=True, location='json', help="The API secret the user generated on Pennsieve.")
+
+
+  @api.expect(parser_add_username)
+  @api.doc(responses={500: "Internal Server Error", 400: "Bad Request", 401: "Unauthenticated", 403: "Forbidden"}, description="Adds account username to the Pennsieve configuration file.")
+  @api.marshal_with(successMessage, 200, False)
+  def put(self):
+
+    data = self.parser_add_username.parse_args()
+
+    keyname = data.get('keyname')
+    key = data.get('key')
+    secret = data.get('secret')
+
+
+    try:
+      return bf_add_account_username(keyname, key, secret)
     except Exception as e:
       if notBadRequestException(e):
         api.abort(500, str(e))
