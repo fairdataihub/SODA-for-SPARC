@@ -852,7 +852,7 @@ class BfCreateDatasetFolder(Resource):
       if isinstance(e, AgentError):
         # for now raise the mysterious AgentError all the way back to the client. 
         # pretty sure we don't have to do this but I'll have to verify with tests later
-        raise e
+        api.abort(400, str(e))
       elif notBadRequestException(e): 
         api.abort(500, str(e))
       else:
