@@ -9996,9 +9996,9 @@ function gatherLogs() {
   let log_path = "";
   let log_files = ["main.log", "renderer.log", "out.log"];
 
-  if (os.type() === "Darwin") {
+  if (os.type().includes("Darwin") === true) {
     log_path = path.join(homedir, "/Library/Logs/SODA for SPARC/");
-  } else if (os.type() === "Windows") {
+  } else if (os.type().includes("Windows") === true) {
     log_path = path.join(
       homedir,
       "AppData",
