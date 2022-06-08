@@ -20,7 +20,7 @@ $(document).ready(function () {
             "display",
             "flex"
           );
-          $($("#div-confirm-manifest-local-folder-dataset button")[0]).show()
+          $($("#div-confirm-manifest-local-folder-dataset button")[0]).show();
         } else {
           document.getElementById(
             "input-manifest-local-folder-dataset"
@@ -1559,9 +1559,7 @@ function createChildNodeManifest(
       let disabled = false;
       let opened = true;
       let selected = false;
-      if (
-        nodeName === "My_dataset_structure"
-      ) {
+      if (nodeName === "My_dataset_structure") {
         newFormatNode.state.selected = true;
         newFormatNode.state.opened = true;
         newFormatNode.state.disabled = false;
