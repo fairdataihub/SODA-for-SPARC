@@ -1,6 +1,4 @@
-from http.client import responses
 from flask_restx import Resource, fields, reqparse
-from numpy import require
 from manageDatasets import ( 
     get_pennsieve_api_key_secret, 
     get_number_of_files_and_folders_locally,
@@ -794,3 +792,42 @@ class BfAddAccountApiKey(Resource):
       if notBadRequestException(e):
         api.abort(500, str(e))
       raise e
+
+
+
+
+
+
+
+model_dataset_folder_response = api.model("DatasetFolderResponse", {
+  'id': fields.String(required=True, description="The ID of the dataset that has been created.")
+})
+
+
+@api.route('/bf_dataset_folder')
+class BfCreateDatasetFolder(Resource):
+  parser_create_dataset_folder = reqparse.RequestParser(bundle_errors=True)
+  parser_create_dataset_folder.add_argument('selected_account', type=str, required=True, location='args', help='The target account to rename the dataset for.')
+  parser_create_dataset_folder.add_argument('input_dataset_name', type=str, required=True, location='json', help='The name of the dataset to create.')
+
+  @api.expect(parser_create_dataset_folder)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 200: 'OK'}, description="Creates a new dataset folder.")
+  @api.marshal_with(model_dataset_folder_response, 200, False)
+  def post(self):
+    # create a new dataset folder for the selected account and dataset ID
+    data = self.parser_create_dataset_folder.parse_args()
+
+    selected_account = data.get('selected_account')
+    dataset_name = data.get('input_dataset_name')
+
+    print(selected_account)
+
+    try:
+      return bf_new_dataset_folder(dataset_name, selected_account)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
+
+
+  
