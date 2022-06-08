@@ -804,14 +804,14 @@ model_dataset_folder_response = api.model("DatasetFolderResponse", {
 })
 
 
-@api.route('/bf_dataset_folder')
+@api.route('/datasets')
 class BfCreateDatasetFolder(Resource):
   parser_create_dataset_folder = reqparse.RequestParser(bundle_errors=True)
   parser_create_dataset_folder.add_argument('selected_account', type=str, required=True, location='args', help='The target account to rename the dataset for.')
   parser_create_dataset_folder.add_argument('input_dataset_name', type=str, required=True, location='json', help='The name of the dataset to create.')
 
   @api.expect(parser_create_dataset_folder)
-  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 200: 'OK'}, description="Creates a new dataset folder.")
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 200: 'OK'}, description="Creates a new dataset on the Pennsieve platform.")
   @api.marshal_with(model_dataset_folder_response, 200, False)
   def post(self):
     # create a new dataset folder for the selected account and dataset ID
@@ -828,19 +828,13 @@ class BfCreateDatasetFolder(Resource):
       raise e
 
 
-  
-
-  bf_submit_dataset
-@api.route('/bf_submit_dataset')
-class BfSubmitDataset(Resource):
   parser_submit_dataset = reqparse.RequestParser(bundle_errors=True)
   parser_submit_dataset.add_argument('selected_account', type=str, required=True, location='args', help='The target account to rename the dataset for.')
   parser_submit_dataset.add_argument('selected_dataset', type=str, required=True, location='args', help='The name of the dataset to create.')
-  parser_submit_dataset.add_argument('filepath', type=str, required=True, location='json', help='The data/dataset folder that will upload to the target dataset.')
+  parser_submit_dataset.add_argument('filepath', type=str, required=True, location='json', help='The local data/dataset folder that will upload to the target dataset.')
 
   @api.expect(parser_submit_dataset)
-  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 200: 'OK'}, description="Submits a dataset for processing.")
-
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 200: 'OK'}, description="Add data to an existing dataset entity on the Pennsieve platform.")
   def put(self):
     from pennsieve.api.agent import AgentError
 
@@ -863,4 +857,3 @@ class BfSubmitDataset(Resource):
         api.abort(500, str(e))
       else:
         raise e
-
