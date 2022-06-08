@@ -405,7 +405,7 @@ const importDatasetStructure = (object) => {
   }
 };
 
-const importGenerateDatasetStep = (object) => {
+async function importGenerateDatasetStep(object) {
   if ("generate-dataset" in sodaJSONObj) {
     // Step 1: Where to generate the dataset
     if (sodaJSONObj["generate-dataset"]["destination"] === "local") {
@@ -439,6 +439,21 @@ const importGenerateDatasetStep = (object) => {
         }
         $("#current-bf-account-generate").text(bfAccountSelected);
         $("#para-account-detail-curate").html("");
+        let account = accounts[0];
+        console.log(account);
+
+        try {
+          dataset_request = await client.get(
+            `/manage_datasets/bf_dataset_account?selected_account=${bFAccountSelected}`
+          );
+        } catch (error) {
+          client_error(error);
+          log.error(error);
+          console.error(error);
+          console.log("other work here");
+          showHideDropdownButtons("account", "hide");
+        }
+
         client.invoke(
           "api_bf_account_details",
           bfAccountSelected,
@@ -525,7 +540,7 @@ const importGenerateDatasetStep = (object) => {
       exitCurate();
     }
   }
-};
+}
 
 // check metadata files
 function populateMetadataProgress(

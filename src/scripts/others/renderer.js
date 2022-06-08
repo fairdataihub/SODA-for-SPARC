@@ -3616,7 +3616,7 @@ function refreshBfUsersList() {
       .get(`manage_datasets/bf_get_users?selected_account=${accountSelected}`)
       .then((res) => {
         let users = res.data["users"];
-        console.log("Get users response: ", users);
+        // console.log("Get users response: ", users);
         // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
         $("#bf_list_users").selectpicker("refresh");
         $("#bf_list_users").find("option:not(:first)").remove();
@@ -3756,12 +3756,13 @@ async function updateBfAccountList() {
 }
 
 function client_error(error) {
-  let error_message = error.response.data;
+  let error_message = error.response.data.message;
   let error_status = error.response.status;
   let error_headers = error.response.headers;
-  console.log("Error caused from: " + error_message);
-  console.log("Response Status: " + error_status);
-  console.log("Headers: " + error_headers);
+  console.log("Error caused from: " + JSON.stringify(error_message));
+  console.log("Response Status: " + JSON.stringify(error_status));
+  console.log("Headers: ");
+  console.log(error_headers);
 }
 
 async function loadDefaultAccount() {
@@ -3781,12 +3782,18 @@ async function loadDefaultAccount() {
   }
 
   let accounts = responseObject.data["defaultAccounts"];
+
   let account = accounts[0];
   console.log(account);
 
   dataset_request = await client
-    .get(`/manage_datasets/bf_dataset_account?selected_account=${"account"}`)
-    .catch(client_error);
+    .get(`/manage_datasets/bf_dataset_account?selected_account=${account}`)
+    .catch(function (error) {
+      client_error(error);
+      log.error(error);
+      console.error(error);
+      console.log("other work here");
+    });
   console.log(dataset_request);
 
   console.log("Default account success: ", accounts);
