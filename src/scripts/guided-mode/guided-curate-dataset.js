@@ -38,6 +38,18 @@ const switchElementVisibility = (elementIdToHide, elementIdToShow) => {
   elementToHide.classList.add("hidden");
   elementToShow.classList.remove("hidden");
 };
+const hideSubNavAndShowMainNav = (navButtonToClick) => {
+  $("#guided-sub-page-navigation-footer-div").hide();
+  $("#guided-footer-div").css("display", "flex");
+  if (navButtonToClick) {
+    if (navButtonToClick === "next") {
+      $("#guided-next-button").click();
+    }
+    if (navButtonToClick === "back") {
+      $("#guided-back-button").click();
+    }
+  }
+};
 const scrollToBottomOfGuidedBody = () => {
   const elementToScrollTo = document.querySelector(".guided--body");
   elementToScrollTo.scrollTop = elementToScrollTo.scrollHeight;
@@ -629,7 +641,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
     const [subjectsInPools, subjectsOutsidePools] =
       sodaJSONObj.getAllSubjects();
     //loop through subjectsInPools and add subjects with empty folders to subjectsWithEmptyFolders
-    for (subject of subjectsInPools) {
+    for (const subject of subjectsInPools) {
       const subjectFolderContents =
         datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
           subject.poolName
@@ -643,7 +655,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
     }
 
     //loop through subjectsOutsidePools and add subjects with empty folders to subjectsWithEmptyFolders
-    for (subject of subjectsOutsidePools) {
+    for (const subject of subjectsOutsidePools) {
       const subjectFolderContents =
         datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
           subject.subjectName
@@ -657,7 +669,9 @@ const cleanUpEmptyGuidedStructureFolders = async (
     }
 
     if (subjectsWithEmptyFolders.length > 0) {
+      console.log(subjectsWithEmptyFolders);
       let result = await Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
         title: "Continue?",
         text: `${highLevelFolder} data was not added to all of your subjects.`,
         icon: "warning",
@@ -679,6 +693,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
             ][subject.subjectName];
           }
         }
+        return true;
       }
     } else {
       return true;
@@ -693,7 +708,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
       sodaJSONObj.getAllSamplesFromSubjects();
 
     //loop through samplesInPools and add samples with empty folders to samplesWithEmptyFolders
-    for (sample of samplesInPools) {
+    for (const sample of samplesInPools) {
       const sampleFolderContents =
         datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
           sample.poolName
@@ -706,7 +721,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
       }
     }
     //loop through samplesOutsidePools and add samples with empty folders to samplesWithEmptyFolders
-    for (sample of samplesOutsidePools) {
+    for (const sample of samplesOutsidePools) {
       const sampleFolderContents =
         datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
           sample.subjectName
@@ -727,7 +742,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
         reverseButtons: true,
         showCancelButton: true,
         cancelButtonColor: "#6e7881",
-        cancelButtonText: `Finish adding ${highLevelFolder} to samples`,
+        cancelButtonText: `Finish adding ${highLevelFolder} data to samples`,
         confirmButtonText: `Continue without adding ${highLevelFolder} data to all samples`,
       });
       //If the user indicates they do not have any subjects, skip to source folder
@@ -5122,7 +5137,7 @@ $(document).ready(() => {
         sodaJSONObj.moveSubjectIntoPool("sub-9", "pool-2");
         sodaJSONObj.moveSubjectIntoPool("sub-10", "pool-2");
         await sleep(200);
-        sodaJSONObj.addSampleToSubject("sam-asdf", "pool-1", "sub-1");
+        sodaJSONObj.addSampleToSubject("sam-1", "pool-1", "sub-1");
         sodaJSONObj.addSampleToSubject("sam-2", "pool-1", "sub-1");
         sodaJSONObj.addSampleToSubject("sam-3", "pool-1", "sub-1");
         sodaJSONObj.addSampleToSubject("sam-4", "pool-1", "sub-1");
@@ -8688,9 +8703,7 @@ $(document).ready(() => {
           }
 
           case "guided-specify-samples-page": {
-            $("#guided-sub-page-navigation-footer-div").hide();
-            $("#guided-footer-div").css("display", "flex");
-            $("#guided-next-button").click();
+            hideSubNavAndShowMainNav("next");
             break;
           }
         }
@@ -8699,20 +8712,66 @@ $(document).ready(() => {
       case "guided-primary-data-organization-tab": {
         switch (openSubPageID) {
           case "guided-primary-samples-organization-page": {
-            const continueWithoutAddingPrimaryDataToAllSamples =
-              await cleanUpEmptyGuidedStructureFolders("primary", "samples");
-            if (continueWithoutAddingPrimaryDataToAllSamples) {
-              setActiveSubPage("guided-primary-subjects-organization-page");
+            const buttonYesPrimarySampleData = document.getElementById(
+              "guided-button-add-sample-primary-data"
+            );
+            const buttonNoPrimarySampleData = document.getElementById(
+              "guided-button-no-sample-primary-data"
+            );
+            if (
+              !buttonYesPrimarySampleData.classList.contains("selected") &&
+              !buttonNoPrimarySampleData.classList.contains("selected")
+            ) {
+              notyf.open({
+                duration: "5000",
+                type: "error",
+                message:
+                  "Please indicate if you have primary data to add to your samples.",
+              });
+              return;
+            }
+            if (buttonYesPrimarySampleData.classList.contains("selected")) {
+              const continueWithoutAddingPrimaryDataToAllSamples =
+                await cleanUpEmptyGuidedStructureFolders("primary", "samples");
+              if (continueWithoutAddingPrimaryDataToAllSamples) {
+                setActiveSubPage("guided-primary-subjects-organization-page");
+              }
+            }
+            if (buttonNoPrimarySampleData.classList.contains("selected")) {
             }
             break;
           }
 
           case "guided-primary-subjects-organization-page": {
-            const continueWithoutAddingPrimaryDataToAllSamples =
-              await cleanUpEmptyGuidedStructureFolders("primary", "subjects");
-            $("#guided-sub-page-navigation-footer-div").hide();
-            $("#guided-footer-div").css("display", "flex");
-            $("#guided-next-button").click();
+            const buttonYesPrimarySubjectData = document.getElementById(
+              "guided-button-add-subject-primary-data"
+            );
+            const buttonNoPrimarySubjectData = document.getElementById(
+              "guided-button-no-subject-primary-data"
+            );
+            if (
+              !buttonYesPrimarySubjectData.classList.contains("selected") &&
+              !buttonNoPrimarySubjectData.classList.contains("selected")
+            ) {
+              notyf.open({
+                duration: "5000",
+                type: "error",
+                message:
+                  "Please indicate if you have primary data to add to your subjects.",
+              });
+              return;
+            }
+            if (buttonYesPrimarySubjectData.classList.contains("selected")) {
+              const continueWithoutAddingPrimaryDataToAllSubjects =
+                await cleanUpEmptyGuidedStructureFolders("primary", "subjects");
+              if (continueWithoutAddingPrimaryDataToAllSubjects) {
+                hideSubNavAndShowMainNav("next");
+              }
+            }
+            if (buttonNoPrimarySubjectData.classList.contains("selected")) {
+              hideSubNavAndShowMainNav("next");
+            }
+
             break;
           }
         }
@@ -8721,18 +8780,65 @@ $(document).ready(() => {
       case "guided-source-data-organization-tab": {
         switch (openSubPageID) {
           case "guided-source-samples-organization-page": {
-            const continueWithoutAddingSourceDataToAllSamples =
-              await cleanUpEmptyGuidedStructureFolders("source", "samples");
-            if (continueWithoutAddingSourceDataToAllSamples) {
-              setActiveSubPage("guided-source-subjects-organization-page");
+            const buttonYesSourceSampleData = document.getElementById(
+              "guided-button-add-sample-source-data"
+            );
+            const buttonNoSourceSampleData = document.getElementById(
+              "guided-button-no-sample-source-data"
+            );
+            if (
+              !buttonYesSourceSampleData.classList.contains("selected") &&
+              !buttonNoSourceSampleData.classList.contains("selected")
+            ) {
+              notyf.open({
+                duration: "5000",
+                type: "error",
+                message:
+                  "Please indicate if you have source data to add to your samples.",
+              });
+              return;
+            }
+            if (buttonYesSourceSampleData.classList.contains("selected")) {
+              const continueWithoutAddingSourceDataToAllSamples =
+                await cleanUpEmptyGuidedStructureFolders("source", "samples");
+              if (continueWithoutAddingSourceDataToAllSamples) {
+                setActiveSubPage("guided-source-subjects-organization-page");
+              }
+            }
+            if (buttonNoSourceSampleData.classList.contains("selected")) {
             }
             break;
           }
 
           case "guided-source-subjects-organization-page": {
-            $("#guided-sub-page-navigation-footer-div").hide();
-            $("#guided-footer-div").css("display", "flex");
-            $("#guided-next-button").click();
+            const buttonYesSourceSubjectData = document.getElementById(
+              "guided-button-add-subject-source-data"
+            );
+            const buttonNoSourceSubjectData = document.getElementById(
+              "guided-button-no-subject-source-data"
+            );
+            if (
+              !buttonYesSourceSubjectData.classList.contains("selected") &&
+              !buttonNoSourceSubjectData.classList.contains("selected")
+            ) {
+              notyf.open({
+                duration: "5000",
+                type: "error",
+                message:
+                  "Please indicate if you have source data to add to your subjects.",
+              });
+              return;
+            }
+            if (buttonYesSourceSubjectData.classList.contains("selected")) {
+              const continueWithoutAddingSourceDataToAllSubjects =
+                await cleanUpEmptyGuidedStructureFolders("source", "subjects");
+              if (continueWithoutAddingSourceDataToAllSubjects) {
+                hideSubNavAndShowMainNav("next");
+              }
+            }
+            if (buttonNoSourceSubjectData.classList.contains("selected")) {
+              hideSubNavAndShowMainNav("next");
+            }
             break;
           }
         }
@@ -8741,19 +8847,73 @@ $(document).ready(() => {
       case "guided-derivative-data-organization-tab": {
         switch (openSubPageID) {
           case "guided-derivative-samples-organization-page": {
-            const continueWithoutAddingDerivativeDataToAllSamples =
-              await cleanUpEmptyGuidedStructureFolders("derivative", "samples");
-            if (continueWithoutAddingDerivativeDataToAllSamples) {
-              setActiveSubPage("guided-derivative-subjects-organization-page");
+            const buttonYesDerivativeSampleData = document.getElementById(
+              "guided-button-add-sample-derivative-data"
+            );
+            const buttonNoDerivativeSampleData = document.getElementById(
+              "guided-button-no-sample-derivative-data"
+            );
+            if (
+              !buttonYesDerivativeSampleData.classList.contains("selected") &&
+              !buttonNoDerivativeSampleData.classList.contains("selected")
+            ) {
+              notyf.open({
+                duration: "5000",
+                type: "error",
+                message:
+                  "Please indicate if you have derivative data to add to your samples.",
+              });
+              return;
+            }
+            if (buttonYesDerivativeSampleData.classList.contains("selected")) {
+              const continueWithoutAddingDerivativeDataToAllSamples =
+                await cleanUpEmptyGuidedStructureFolders(
+                  "derivative",
+                  "samples"
+                );
+              if (continueWithoutAddingDerivativeDataToAllSamples) {
+                setActiveSubPage(
+                  "guided-derivative-subjects-organization-page"
+                );
+              }
+            }
+            if (buttonNoDerivativeSampleData.classList.contains("selected")) {
             }
             break;
           }
 
           case "guided-derivative-subjects-organization-page": {
-            cleanUpEmptyGuidedStructureFolders("derivative", "subjects");
-            $("#guided-sub-page-navigation-footer-div").hide();
-            $("#guided-footer-div").css("display", "flex");
-            $("#guided-next-button").click();
+            const buttonYesDerivativeSubjectData = document.getElementById(
+              "guided-button-add-subject-derivative-data"
+            );
+            const buttonNoDerivativeSubjectData = document.getElementById(
+              "guided-button-no-subject-derivative-data"
+            );
+            if (
+              !buttonYesDerivativeSubjectData.classList.contains("selected") &&
+              !buttonNoDerivativeSubjectData.classList.contains("selected")
+            ) {
+              notyf.open({
+                duration: "5000",
+                type: "error",
+                message:
+                  "Please indicate if you have derivative data to add to your subjects.",
+              });
+              return;
+            }
+            if (buttonYesDerivativeSubjectData.classList.contains("selected")) {
+              const continueWithoutAddingDerivativeDataToAllSubjects =
+                await cleanUpEmptyGuidedStructureFolders(
+                  "derivative",
+                  "subjects"
+                );
+              if (continueWithoutAddingDerivativeDataToAllSubjects) {
+                hideSubNavAndShowMainNav("next");
+              }
+            }
+            if (buttonNoDerivativeSubjectData.classList.contains("selected")) {
+              hideSubNavAndShowMainNav("next");
+            }
             break;
           }
         }
