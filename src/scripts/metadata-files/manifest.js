@@ -20,7 +20,7 @@ $(document).ready(function () {
             "display",
             "flex"
           );
-          $("#div-confirm-manifest-local-folder-dataset button")[0].show();
+          $($("#div-confirm-manifest-local-folder-dataset button")[0]).show()
         } else {
           document.getElementById(
             "input-manifest-local-folder-dataset"
@@ -1551,29 +1551,39 @@ function createChildNodeManifest(
   };
   if (oldFormatNode) {
     for (const [key, value] of Object.entries(oldFormatNode["folders"])) {
-      let disabled = true;
-      let opened = false;
+      let disabled = false;
+      let opened = true;
       let selected = false;
       if (
-        highLevelFolders.includes(nodeName) ||
         nodeName === "My_dataset_structure"
       ) {
-        opened = true;
-        selected = true;
-        disabled = false;
+        newFormatNode.state.selected = true;
+        newFormatNode.state.opened = true;
+        newFormatNode.state.disabled = false;
+        var new_node = createChildNodeManifest(
+          value,
+          key,
+          "folder",
+          "",
+          opened,
+          selected,
+          disabled
+        );
       }
-      newFormatNode.state.selected = selected;
-      newFormatNode.state.opened = opened;
-      newFormatNode.state.disabled = disabled;
-      var new_node = createChildNodeManifest(
-        value,
-        key,
-        "folder",
-        "",
-        opened,
-        selected,
-        disabled
-      );
+      if (highLevelFolders.includes(key)) {
+        newFormatNode.state.selected = selected;
+        newFormatNode.state.opened = true;
+        newFormatNode.state.disabled = disabled;
+        var new_node = createChildNodeManifest(
+          value,
+          key,
+          "folder",
+          "",
+          true,
+          selected,
+          disabled
+        );
+      }
       newFormatNode["children"].push(new_node);
       newFormatNode["children"].sort((a, b) => (a.text > b.text ? 1 : -1));
     }
@@ -1609,17 +1619,11 @@ function createChildNodeManifest(
                 state: { disabled: false },
                 type: nodeType,
               };
-            } else {
-              var new_node = {
-                text: key,
-                state: { disabled: true },
-                type: nodeType,
-              };
+              newFormatNode["children"].push(new_node);
+              newFormatNode["children"].sort((a, b) =>
+                a.text > b.text ? 1 : -1
+              );
             }
-            newFormatNode["children"].push(new_node);
-            newFormatNode["children"].sort((a, b) =>
-              a.text > b.text ? 1 : -1
-            );
           }
         }
       }
