@@ -702,3 +702,35 @@ class BfRenameDataset(Resource):
       if notBadRequestException(e):
         api.abort(500, str(e))
       raise e
+
+
+
+
+
+
+
+model_get_username_response = api.model("GetUsernameResponse", {
+  'username': fields.String(required=True, description="The current SODA user's first and last name stored in the Pennsieve system.")
+})
+
+@api.route("/get_username")
+class BfGetUsername(Resource):
+
+  parser_get_username = reqparse.RequestParser(bundle_errors=True)
+  parser_get_username.add_argument('selected_account', type=str, required=True, location='args', help='The target account to rename the dataset for.')
+
+  @api.marshal_with(model_get_username_response, 200, False)
+  @api.doc(responses={500: "Internal Server Error", 400: "Bad Request"}, description="Retrieves the current SODA user's first and last name stored in the Pennsieve system.")
+  @api.expect(parser_get_username)
+  def get(self):
+    
+    data = self.parser_get_username.parse_args()
+
+    selected_account = data.get("selected_account")
+
+    try:
+      return get_username(selected_account)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
