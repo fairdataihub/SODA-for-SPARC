@@ -3755,6 +3755,15 @@ async function updateBfAccountList() {
   refreshBfTeamsList(bfListTeams);
 }
 
+function client_error(error) {
+  let error_message = error.response.data;
+  let error_status = error.response.status;
+  let error_headers = error.response.headers;
+  console.log("Error caused from: " + error_message);
+  console.log("Response Status: " + error_status);
+  console.log("Headers: " + error_headers);
+}
+
 async function loadDefaultAccount() {
   let responseObject;
 
@@ -3762,6 +3771,7 @@ async function loadDefaultAccount() {
     responseObject = await client.get(
       "/manage_datasets/bf_default_account_load"
     );
+    console.log(responseObject);
   } catch (e) {
     console.log("Default account load error");
     log.error(error);
@@ -3771,6 +3781,14 @@ async function loadDefaultAccount() {
   }
 
   let accounts = responseObject.data["defaultAccounts"];
+  let account = accounts[0];
+  console.log(account);
+
+  dataset_request = await client
+    .get(`/manage_datasets/bf_dataset_account?selected_account=${"account"}`)
+    .catch(client_error);
+  console.log(dataset_request);
+
   console.log("Default account success: ", accounts);
   if (accounts.length > 0) {
     var myitemselect = accounts[0];
@@ -4328,6 +4346,7 @@ async function retrieveBFAccounts() {
 }
 
 function showDefaultBFAccount() {
+  console.log("uhhh");
   client
     .get("manage_datasets/bf_default_account_load")
     .then((res) => {
@@ -7647,9 +7666,10 @@ var bf_request_and_populate_dataset = (sodaJSONObj) => {
 };
 
 // When mode = "update", the buttons won't be hidden or shown to prevent button flickering effect
-const curation_consortium_check = (mode = "") => {
+const curation_consortium_check = async (mode = "") => {
   let selected_account = defaultBfAccount;
   let selected_dataset = defaultBfDataset;
+  console.log(selected_account);
 
   $(".spinner.post-curation").show();
   $("#curation-team-unshare-btn").hide();
@@ -7657,6 +7677,7 @@ const curation_consortium_check = (mode = "") => {
   $("#curation-team-share-btn").hide();
   $("#sparc-consortium-share-btn").hide();
 
+  //client.invoke replaced with axiosInstance
   client.invoke("api_bf_account_details", selected_account, (error, res) => {
     $(".spinner.post-curation").show();
     if (error) {
