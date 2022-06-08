@@ -1618,5 +1618,5 @@ input:checked + .slider.round.manifest:before {
 .sub-text {
   color: #898989 !important;
   font-size: 12px;
-  margin-top: 10px
+  margin-top: 10px;
 }
