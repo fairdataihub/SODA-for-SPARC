@@ -186,10 +186,10 @@ def bf_add_account_api_key(keyname, key, secret):
         error = ""
         keyname = keyname.strip()
         if (not keyname) or (not key) or (not secret):
-            raise Exception("Error: Please enter valid keyname, key, and/or secret")
+            abort(401, "Error: Please enter valid keyname, key, and/or secret")
 
         if (keyname.isspace()) or (key.isspace()) or (secret.isspace()):
-            raise Exception("Error: Please enter valid keyname, key, and/or secret")
+            abort(401, "Error: Please enter valid keyname, key, and/or secret")
 
         bfpath = join(userpath, ".pennsieve")
         # Load existing or create new config file
@@ -197,7 +197,7 @@ def bf_add_account_api_key(keyname, key, secret):
         if exists(configpath):
             config.read(configpath)
             if config.has_section(keyname):
-                raise Exception("Error: Key name already exists")
+                abort(400, "Error: Key name already exists")
         else:
             if not exists(bfpath):
                 mkdir(bfpath)
@@ -209,7 +209,6 @@ def bf_add_account_api_key(keyname, key, secret):
         if not config.has_section(agentkey):
             config.add_section(agentkey)
             config.set(agentkey, "proxy_local_port", "8080")
-            # config.set(agentkey, 'cache_base_path', join(bfpath, 'cache'))
             config.set(agentkey, "uploader", "true")
             config.set(agentkey, "cache_hard_cache_size", "10000000000")
             config.set(agentkey, "status_port", "11235")
@@ -237,7 +236,7 @@ def bf_add_account_api_key(keyname, key, secret):
 
     except:
         bf_delete_account(keyname)
-        raise Exception(
+        abort(401, 
             "Authentication Error: please check that key name, key, and secret are entered properly"
         )
 
@@ -246,8 +245,8 @@ def bf_add_account_api_key(keyname, key, secret):
         org_id = bf.context.id
 
         # CHANGE BACK
-        if org_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-            raise Exception(
+        if org_id == "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
+            abort(403,
                 "Error: Please check that your account is within the SPARC Consortium Organization"
             )
 
@@ -260,10 +259,7 @@ def bf_add_account_api_key(keyname, key, secret):
         with open(configpath, "w") as configfile:
             config.write(configfile)
 
-        # CHANGE BACK
-        # bf_keep_only_account(keyname)
-
-        return "Successfully added account " + str(bf)
+        return {"message": "Successfully added account " + str(bf)}
 
     except Exception as e:
         bf_delete_account(keyname)
@@ -284,19 +280,12 @@ def bf_add_account_username(keyname, key, secret):
     temp_keyname = "SODA_temp_generated"
     try:
         keyname = keyname.strip()
-        # if (not keyname) or (not key) or (not secret):
-        #     raise Exception('Error: Please enter valid keyname, key, and/or secret')
-
-        # if (keyname.isspace()) or (key.isspace()) or (secret.isspace()):
-        #     raise Exception('Error: Please enter valid keyname, key, and/or secret')
 
         bfpath = join(userpath, ".pennsieve")
         # Load existing or create new config file
         config = ConfigParser()
         if exists(configpath):
             config.read(configpath)
-            # if config.has_section(keyname):
-            #     raise Exception('Error: Key name already exists')
         else:
             if not exists(bfpath):
                 mkdir(bfpath)
@@ -308,7 +297,6 @@ def bf_add_account_username(keyname, key, secret):
         if not config.has_section(agentkey):
             config.add_section(agentkey)
             config.set(agentkey, "proxy_local_port", "8080")
-            # config.set(agentkey, 'cache_base_path', join(bfpath, 'cache'))
             config.set(agentkey, "uploader", "true")
             config.set(agentkey, "cache_hard_cache_size", "10000000000")
             config.set(agentkey, "status_port", "11235")
@@ -335,19 +323,18 @@ def bf_add_account_username(keyname, key, secret):
         bf = Pennsieve(temp_keyname)
     except:
         bf_delete_account(temp_keyname)
-        raise Exception(
-            "Authentication Error: please check that key name, key, and secret are entered properly"
+        abort(401, 
+            "Error: please check that key name, key, and secret are entered properly"
         )
 
     # Check that the Pennsieve account is in the SPARC Consortium organization
+    if bf.context.id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
+        bf_delete_account(temp_keyname)
+        abort(403,
+            "Error: Please check that your account is within the SPARC Consortium Organization"
+        )
+
     try:
-
-        # CHANGE BACK
-        if bf.context.id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-            raise Exception(
-                "Error: Please check that your account is within the SPARC Consortium Organization"
-            )
-
         if not config.has_section("global"):
             config.add_section("global")
 
@@ -364,10 +351,8 @@ def bf_add_account_username(keyname, key, secret):
             config.write(configfile)
 
         bf_delete_account(temp_keyname)
-        # # CHANGE BACK
-        # bf_keep_only_account(keyname)
 
-        return "Successfully added account " + str(bf)
+        return {"message": "Successfully added account " + str(bf)}
 
     except Exception as e:
         bf_delete_account(temp_keyname)
@@ -467,39 +452,6 @@ def bf_get_accounts():
                 return account
     return ""
 
-    # first_consortium_found = False
-    # consortium_keyname = "agent"
-
-    # config = ConfigParser()
-    # config.read(configpath)
-    # config_sections = config.sections()
-
-    # for section in config_sections:
-    #     print(section)
-    #     if (section != 'agent' and section != 'global'):
-    #         try:
-    #             bf = Pennsieve(section)
-    #             acc_details = bf.context.name
-
-    #             if acc_details.find('SPARC Consortium') != -1:
-    #                 first_consortium_found = True
-    #                 consortium_keyname = section
-
-    #                 if not config.has_section("global"):
-    #                     config.add_section("global")
-
-    #                 default_acc = config["global"]
-    #                 default_acc["default_profile"] = consortium_keyname
-
-    #                 with open(configpath, 'w+') as configfile:
-    #                     config.write(configfile)
-    #         except Exception as e:
-    #             pass
-    #     if first_consortium_found == True:
-    #         break
-
-    # bf_keep_only_account(consortium_keyname)
-
 
 def bf_account_list():
     """
@@ -597,10 +549,14 @@ def get_username(accountname):
     Output: User's name
     """
 
-    bf = Pennsieve(accountname)
+    try:
+        bf = Pennsieve(accountname)
+    except Exception as e:
+        abort(400, "Error: Please select a valid Pennsieve account.")
+    
     bfname = bf.profile.first_name + " " + bf.profile.last_name
 
-    return bfname
+    return {"username": bfname}
 
 
 def bf_account_details(accountname):
@@ -679,16 +635,16 @@ def bf_new_dataset_folder(datasetname, accountname):
             c += 1
 
         if c > 0:
-            raise Exception(error)
+            abort(400, error)
 
         dataset_list = []
         for ds in bf.datasets():
             dataset_list.append(ds.name)
         if datasetname in dataset_list:
-            raise Exception("Error: Dataset name already exists")
+            abort(400, "Error: Dataset name already exists")
         else:
             d = bf.create_dataset(datasetname)
-            return d.id
+            return {"id": d.id}
 
     except Exception as e:
         raise e
@@ -731,21 +687,19 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
         c += 1
 
     if c > 0:
-        raise Exception(error)
+        abort(400, error)
 
     try:
         myds = bf.get_dataset(current_dataset_name)
     except Exception as e:
         error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        abort(400, error)
 
-    try:
-        role = bf_get_current_user_permission(bf, myds)
-        if role not in ["owner", "manager"]:
-            error = "Error: You don't have permissions to change the name of this Pennsieve dataset"
-            raise Exception(error)
-    except Exception as e:
-        raise e
+    role = bf_get_current_user_permission(bf, myds)
+    if role not in ["owner", "manager"]:
+        error_message = "Error: You don't have permissions to change the name of this Pennsieve dataset"
+        abort(403, error_message)
+
 
     dataset_list = []
     for ds in bf.datasets():

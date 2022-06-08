@@ -674,3 +674,160 @@ class BfLicense(Resource):
       if notBadRequestException(e):
         api.abort(500, str(e))
       raise e
+
+
+
+
+
+@api.route("/bf_rename_dataset")
+class BfRenameDataset(Resource):
+  parser_rename_dataset = reqparse.RequestParser(bundle_errors=True)
+  parser_rename_dataset.add_argument('selected_account', type=str, required=True, location='args', help='The target account to rename the dataset for.')
+  parser_rename_dataset.add_argument('selected_dataset', type=str, required=True, location='args', help='The target account to rename the dataset for.')
+  parser_rename_dataset.add_argument('input_new_name', type=str, required=True, location='json', help='The new name for the dataset.')
+
+  @api.expect(parser_rename_dataset)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 403: 'Forbidden', 200: 'OK'}, description="Renames the given dataset.")
+  def put(self):
+    # update the dataset name for the selected account and dataset ID
+    data = self.parser_rename_dataset.parse_args()
+
+    selected_account = data.get('selected_account')
+    selected_dataset = data.get('selected_dataset')
+    input_new_name = data.get('input_new_name')
+
+    try:
+      return bf_rename_dataset(selected_account, selected_dataset, input_new_name)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
+
+
+
+
+
+
+
+model_get_username_response = api.model("GetUsernameResponse", {
+  'username': fields.String(required=True, description="The current SODA user's first and last name stored in the Pennsieve system.")
+})
+
+@api.route("/account/username")
+class BfGetUsername(Resource):
+
+  parser_get_username = reqparse.RequestParser(bundle_errors=True)
+  parser_get_username.add_argument('selected_account', type=str, required=True, location='args', help='The target account to rename the dataset for.')
+
+  @api.marshal_with(model_get_username_response, 200, False)
+  @api.doc(responses={500: "Internal Server Error", 400: "Bad Request"}, description="Retrieves the current SODA user's first and last name stored in the Pennsieve system.")
+  @api.expect(parser_get_username)
+  def get(self):
+    
+    data = self.parser_get_username.parse_args()
+
+    selected_account = data.get("selected_account")
+
+    try:
+      return get_username(selected_account)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
+
+  
+  parser_add_username = reqparse.RequestParser(bundle_errors=True)
+  parser_add_username.add_argument('keyname', type=str, required=True, location='json', help="Name of the account to be associated with the given credentials.")
+  parser_add_username.add_argument('key', type=str, required=True, location='json', help="The API key the user generated on Pennsieve.")
+  parser_add_username.add_argument('secret', type=str, required=True, location='json', help="The API secret the user generated on Pennsieve.")
+
+
+  @api.expect(parser_add_username)
+  @api.doc(responses={500: "Internal Server Error", 400: "Bad Request", 401: "Unauthenticated", 403: "Forbidden"}, description="Adds account username to the Pennsieve configuration file.")
+  @api.marshal_with(successMessage, 200, False)
+  def put(self):
+
+    data = self.parser_add_username.parse_args()
+
+    keyname = data.get('keyname')
+    key = data.get('key')
+    secret = data.get('secret')
+
+
+    try:
+      return bf_add_account_username(keyname, key, secret)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
+
+
+
+
+
+
+
+@api.route("/account/api_key")
+class BfAddAccountApiKey(Resource):
+
+  parser_add_api_key = reqparse.RequestParser(bundle_errors=True)
+  parser_add_api_key.add_argument('keyname', type=str, required=True, location='json', help="Name of the account to be associated with the given credentials.")
+  parser_add_api_key.add_argument('key', type=str, required=True, location='json', help="The API key the user generated on Pennsieve.")
+  parser_add_api_key.add_argument('secret', type=str, required=True, location='json', help="The API secret the user generated on Pennsieve.")
+
+  @api.expect(parser_add_api_key)
+  @api.doc(responses={500: "Internal Server Error", 400: "Bad Request", 401: "Unauthenticated", 403: "Forbidden"}, description="Adds account to the Pennsieve configuration file.")
+  @api.marshal_with(successMessage, 200, False)
+  def put(self):
+
+    data = self.parser_add_api_key.parse_args()
+
+    keyname = data.get('keyname')
+    key = data.get('key')
+    secret = data.get('secret')
+
+    try:
+      return bf_add_account_api_key(keyname, key, secret)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
+
+
+
+
+
+
+
+model_dataset_folder_response = api.model("DatasetFolderResponse", {
+  'id': fields.String(required=True, description="The ID of the dataset that has been created.")
+})
+
+
+@api.route('/bf_dataset_folder')
+class BfCreateDatasetFolder(Resource):
+  parser_create_dataset_folder = reqparse.RequestParser(bundle_errors=True)
+  parser_create_dataset_folder.add_argument('selected_account', type=str, required=True, location='args', help='The target account to rename the dataset for.')
+  parser_create_dataset_folder.add_argument('input_dataset_name', type=str, required=True, location='json', help='The name of the dataset to create.')
+
+  @api.expect(parser_create_dataset_folder)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 200: 'OK'}, description="Creates a new dataset folder.")
+  @api.marshal_with(model_dataset_folder_response, 200, False)
+  def post(self):
+    # create a new dataset folder for the selected account and dataset ID
+    data = self.parser_create_dataset_folder.parse_args()
+
+    selected_account = data.get('selected_account')
+    dataset_name = data.get('input_dataset_name')
+
+    print(selected_account)
+
+    try:
+      return bf_new_dataset_folder(dataset_name, selected_account)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
+
+
+  
