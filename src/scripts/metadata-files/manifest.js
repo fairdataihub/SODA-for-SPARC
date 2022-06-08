@@ -1338,7 +1338,12 @@ async function generateManifestFolderLocallyForEdit(ev) {
     // Case 2: bf dataset
     sodaJSONObj["bf-account-selected"] = { "account-name": defaultBfAccount };
     sodaJSONObj["bf-dataset-selected"] = { "dataset-name": defaultBfDataset };
-    extractBFDatasetForManifestFile(true, defaultBfAccount, defaultBfDataset, ev);
+    extractBFDatasetForManifestFile(
+      true,
+      defaultBfAccount,
+      defaultBfDataset,
+      ev
+    );
   }
 }
 
