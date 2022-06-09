@@ -644,36 +644,49 @@ const cleanUpEmptyGuidedStructureFolders = async (
     if (boolCleanUpAllGuidedStructureFolders === true) {
       //Delete folders for pools
       for (const subject of subjectsInPools) {
-        if (
+        const subjectFolderContents =
           datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
             subject.poolName
-          ]
+          ]["folders"][subject.subjectName];
+        if (
+          Object.keys(subjectFolderContents.folders).length === 0 &&
+          Object.keys(subjectFolderContents.files).length === 0
         ) {
-          console.log(
-            "deleting pool: " +
-              subject.poolName +
-              datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                subject.poolName
-              ]
-          );
           delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
             subject.poolName
-          ];
+          ]["folders"][subject.subjectName];
         }
       }
 
       //Delete all folders for subjects outside of pools
       for (const subject of subjectsOutsidePools) {
-        console.log(
-          "deleting subject: " +
-            subject.subjectName +
-            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-              subject.subjectName
-            ]
-        );
-        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-          subject.subjectName
-        ];
+        const subjectFolderContents =
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+            subject.subjectName
+          ];
+        if (
+          Object.keys(subjectFolderContents.folders).length === 0 &&
+          Object.keys(subjectFolderContents.files).length === 0
+        ) {
+          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+            subject.subjectName
+          ];
+        }
+      }
+
+      //Delete all pools with empty folders
+      const pools = sodaJSONObj.getPools();
+      for (const pool of Object.keys(pools)) {
+        const poolFolderContents =
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+        if (
+          Object.keys(poolFolderContents.folders).length === 0 &&
+          Object.keys(poolFolderContents.files).length === 0
+        ) {
+          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+            pool
+          ];
+        }
       }
 
       return true;
@@ -721,12 +734,12 @@ const cleanUpEmptyGuidedStructureFolders = async (
           },
           icon: "warning",
           title: "Continue?",
-          text: `${highLevelFolder} data was not added to all of your subjects.`,
+          text: `${highLevelFolder.toUpperCase()} data was not added to all of your subjects. Continuing will delete all dataset folders for subjects that do not contain samples with data. You will be able to come back and add additional subject data at a later time.`,
           reverseButtons: true,
           showCancelButton: true,
           cancelButtonColor: "#6e7881",
-          cancelButtonText: `Finish adding ${highLevelFolder} data to subjects`,
-          confirmButtonText: `Continue without adding ${highLevelFolder} data to all subjects`,
+          cancelButtonText: `Finish adding ${highLevelFolder.toUpperCase()} data to subjects`,
+          confirmButtonText: `Continue without adding ${highLevelFolder.toUpperCase()} data to all subjects`,
         });
         if (result.isConfirmed) {
           for (subject of subjectsWithEmptyFolders) {
@@ -740,9 +753,41 @@ const cleanUpEmptyGuidedStructureFolders = async (
               ][subject.subjectName];
             }
           }
+          //Delete all pools with empty folders
+          const pools = sodaJSONObj.getPools();
+          for (const pool of Object.keys(pools)) {
+            const poolFolderContents =
+              datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                pool
+              ];
+            if (
+              Object.keys(poolFolderContents.folders).length === 0 &&
+              Object.keys(poolFolderContents.files).length === 0
+            ) {
+              delete datasetStructureJSONObj["folders"][highLevelFolder][
+                "folders"
+              ][pool];
+            }
+          }
           return true;
         }
       } else {
+        //Delete all pools with empty folders
+        const pools = sodaJSONObj.getPools();
+        for (const pool of Object.keys(pools)) {
+          const poolFolderContents =
+            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+              pool
+            ];
+          if (
+            Object.keys(poolFolderContents.folders).length === 0 &&
+            Object.keys(poolFolderContents.files).length === 0
+          ) {
+            delete datasetStructureJSONObj["folders"][highLevelFolder][
+              "folders"
+            ][pool];
+          }
+        }
         return true;
       }
     }
@@ -809,13 +854,13 @@ const cleanUpEmptyGuidedStructureFolders = async (
             popup: "animate__animated animate__zoomOut animate__faster",
           },
           title: "Continue?",
-          text: `${highLevelFolder} data was not added to all of your samples.`,
+          text: `${highLevelFolder.toUpperCase()} data was not added to all of your samples.\n\nContinuing will delete all dataset folders for samples that do not contain sample data.\n\nYou will be able to come back and add additional sample data at a later time.`,
           icon: "warning",
           reverseButtons: true,
           showCancelButton: true,
           cancelButtonColor: "#6e7881",
-          cancelButtonText: `Finish adding ${highLevelFolder} data to samples`,
-          confirmButtonText: `Continue without adding ${highLevelFolder} data to all samples`,
+          cancelButtonText: `Finish adding ${highLevelFolder.toUpperCase()} data to samples`,
+          confirmButtonText: `Continue without adding ${highLevelFolder.toUpperCase()} data to all samples`,
         });
         //If the user indicates they do not have any subjects, skip to source folder
         if (result.isConfirmed) {
@@ -9205,16 +9250,14 @@ $(document).ready(() => {
         myPath = myPath["folders"][item];
       }
       // construct UI with files and folders
-      var appendString = loadFileFolder(myPath);
-
-      /// empty the div
       $("#items").empty();
-
-      $("#items").html(appendString);
-
+      already_created_elem = [];
+      let items = loadFileFolder(myPath); //array -
+      let total_item_count = items[1].length + items[0].length;
+      //we have some items to display
+      listItems(myPath, "#items", 500, (reset = true));
+      organizeLandingUIEffect();
       // reconstruct div with new elements
-      listItems(myPath, "#items");
-
       getInFolder(
         ".single-item",
         "#items",
