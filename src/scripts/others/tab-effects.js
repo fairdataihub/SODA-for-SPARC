@@ -3754,7 +3754,7 @@ $(document).ready(() => {
 
     if (section === "rename_existing_bf_dataset") {
       let rename_dataset_name = $("#rename_dataset_name").html();
-      console.log(rename_dataset_name)
+      console.log(rename_dataset_name);
       if (rename_dataset_name.trim() != "None" && rename_dataset_name != "") {
         $("#bf-rename-dataset-name").val(rename_dataset_name);
       } else {
