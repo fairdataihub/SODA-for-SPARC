@@ -28,6 +28,11 @@ model_save_submission_file_response = api.model('saveSubmissionFileResponse', {
     'size': fields.Integer(required=True, description='Size of the file in bytes'),
 })
 
+model_get_submission_file_response = api.model('getSubmissionFileResponse', {
+    "SPARC Award number": fields.String(required=True, description='SPARC Award number'),
+    "Milestone achieved": fields.List(fields.String, required=True, description='Milestone achieved'),
+    "Milestone completion date": fields.String(required=True, description='Milestone completion date'),
+})
 @api.route('/submission_file')
 class SaveSubmissionFile(Resource):
 
@@ -60,6 +65,22 @@ class SaveSubmissionFile(Resource):
             api.abort(500, str(e))
 
 
+
+    parser_get_submission_file = reqparse.RequestParser(bundle_errors=True)
+    parser_get_submission_file.add_argument('filepath', type=str, help="Path to the submission file on the user's machine", location="json", required=True)
+
+
+    @api.expect(parser_get_submission_file)
+    @api.marshal_with(model_get_submission_file_response, 200, False)
+    @api.doc(description='Get the submission file from the user\'s machine.', responses={500: "Internal Server Error", 400: "Bad Request"})
+    def get(self):
+        data = self.parser_get_submission_file.parse_args()
+        filepath = data.get('filepath')
+
+        try:
+            return load_existing_submission_file(filepath)
+        except Exception as e:
+            api.abort(500, str(e))
 
 
 
