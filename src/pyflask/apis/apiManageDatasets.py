@@ -38,9 +38,6 @@ from flask import request
 from errorHandlers import notBadRequestException
 
 
-# TODO: Cover all possible status codes for each route
-
-
 ##--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ## -----------------------------------------------------------------Begin manage_datasets endpoints ------------------------------------------------------------------------
 ##--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -89,11 +86,6 @@ getNumberOfFilesAndFoldersLocally =  api.model('FilesAndFolders', {
     "totalDir": fields.Integer(required=True, description="Total number of folders in the dataset"),
 })
 
-# parser = api.parser()
-# parameters for the get_number_of_files_and_folders_locally endpoint
-
-
-
 @api.route('/get_number_of_files_and_folders_locally')
 class GetNumberOfFilesAndFoldersLocally(Resource):
 
@@ -131,7 +123,6 @@ successMessage = api.model('SuccessMessage', {
   'message': fields.String(required=True, description="A message indicating success of the operation."),
   })
 
-
 model_status_options = api.model('StatusOptions', {
   'id': fields.String(required=True, description="The id of the dataset"),
   'name': fields.String(required=True, description="The name of the dataset"),
@@ -144,8 +135,6 @@ model_get_dataset_status_response = api.model('GetDatasetStatusResponse', {
   'status_options': fields.List(fields.Nested(model_status_options), required=True, description="The status of the dataset"),
   "current_status": fields.String(required=True, description="The current status of the dataset"),
 })
-
-
 
 @api.route('/bf_dataset_status')
 class BfChangeDatasetStatus(Resource):
@@ -252,8 +241,6 @@ users_response_model = api.model('Users', {
   'users': fields.List(fields.String, required=True, description="List of the accounts in the user's organization."),
 })
 
-
-
 @api.route('/bf_get_users')
 class BfGetUsers(Resource):
 
@@ -284,6 +271,7 @@ class BfGetUsers(Resource):
 
 
 model_bf_get_teams_response = api.model('BfGetTeamsResponse', {'teams': fields.List(fields.String, required=True, description="List of the teams in the user's organization.")})
+
 @api.route('/bf_get_teams')
 class BfGetTeams(Resource):
 
@@ -372,7 +360,6 @@ model_account_datasets_list_response = api.model('AccountDatasetsResponse', {
   'datasets': fields.List(fields.Nested(model_account_dataset), required=True, description="List of the datasets in the user's organization."),
 })
 
-
 @api.route('/bf_dataset_account')
 class BfDatasetAccount(Resource):
 
@@ -391,6 +378,9 @@ class BfDatasetAccount(Resource):
       if notBadRequestException(e):
         api.abort(500, str(e))
       raise e
+
+
+
 
 
 
@@ -507,7 +497,6 @@ model_get_permissions_response = api.model('GetPermissionsResponse', {
   'permissions': fields.List(fields.String, required=True, description="A list of the users/organizations/teams and their roles (viewer, manager, owner, etc) for the given dataset."),
 })
 
-
 @api.route('/bf_dataset_permissions')
 class DatasetPermissions(Resource):
   parser_dataset_permissions = reqparse.RequestParser(bundle_errors=True)
@@ -573,6 +562,7 @@ class DatasetPermissions(Resource):
 
 
 
+
 model_get_banner_image_response = api.model('GetBannerImageResponse', {
   'banner_image': fields.String(required=True, description="AWS URI for the dataset banner image."),
 })
@@ -626,10 +616,10 @@ class BfBannerImage(Resource):
 
 
 
+
 model_get_license_response = api.model('GetLicenseResponse', {
   'license': fields.String(required=True, description="License for the dataset."),
 })
-
 
 @api.route("/bf_license")
 class BfLicense(Resource):
@@ -674,6 +664,8 @@ class BfLicense(Resource):
       if notBadRequestException(e):
         api.abort(500, str(e))
       raise e
+
+
 
 
 
@@ -803,7 +795,6 @@ model_dataset_folder_response = api.model("DatasetFolderResponse", {
   'id': fields.String(required=True, description="The ID of the dataset that has been created.")
 })
 
-
 @api.route('/datasets')
 class BfCreateDatasetFolder(Resource):
   parser_create_dataset_folder = reqparse.RequestParser(bundle_errors=True)
@@ -883,6 +874,7 @@ class BfGetUploadProgress(Resource):
       return submit_dataset_progress()
     except Exception as e:
       api.abort(500, str(e))
+
 
 
 
