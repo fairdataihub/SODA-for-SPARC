@@ -127,6 +127,28 @@ class RCFile(Resource):
             raise e
 
 
+    parser_create_RC_file = parser_get_RC_file.copy()
+    parser_create_RC_file.add_argument('text', type=str, help="Text of the file", location="json", required=True)
+
+
+    @api.expect(parser_create_RC_file)
+    @api.marshal_with(model_upload_RC_file_response, 200, False)
+    @api.doc(description='Create a readme or changes file on the given dataset for the given Pennsieve account.', responses={500: "Internal Server Error", 400: "Bad Request", 403: "Forbidden"})
+    def post(self):
+        data = self.parser_create_RC_file.parse_args()
+
+        file_type = data.get('file_type')
+        bfaccount = data.get('selected_account')
+        bfdataset = data.get('selected_dataset')
+        text = data.get('text')
+
+        try:
+            return upload_RC_file(bfaccount, bfdataset, file_type, text)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
+    
 
 
 

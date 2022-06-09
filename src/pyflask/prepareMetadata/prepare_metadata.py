@@ -205,43 +205,43 @@ def upload_RC_file(text_string, file_type, bfaccount, bfdataset):
 
     upload_metadata_file(file_type, bfaccount, bfdataset, file_path)
 
-    return size, file_path
+    return { "size": size, "file_path": file_path }
 
 
 def upload_metadata_file(file_type, bfaccount, bfdataset, file_path):
     ## check if agent is running in the background
     agent_running()
 
-    bf = Pennsieve(bfaccount)
-
+    try:
+        bf = Pennsieve(bfaccount)
+    except Exception:
+        abort(400, "Error: Please select a valid Pennsieve account.")
+    
     # check that the Pennsieve dataset is valid
     try:
         myds = bf.get_dataset(bfdataset)
+    except Exception:
+        abort(400, "Error: Please select a valid Pennsieve dataset")
 
-    except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
 
-    else:
-        # check that the user has permissions for uploading and modifying the dataset
-        role = bf_get_current_user_permission(bf, myds)
-        if role not in ["owner", "manager", "editor"]:
-            error = "Error: You don't have permissions for uploading to this Pennsieve dataset."
-            raise Exception(error)
+    # check that the user has permissions for uploading and modifying the dataset
+    role = bf_get_current_user_permission(bf, myds)
+    if role not in ["owner", "manager", "editor"]:
+        abort(403, "Error: You don't have permissions for uploading to this Pennsieve dataset.")
 
-        # handle duplicates on Pennsieve: first, obtain the existing file ID
-        for i in range(len(myds.items)):
+    # handle duplicates on Pennsieve: first, obtain the existing file ID
+    for i in range(len(myds.items)):
 
-            if myds.items[i].name == file_type:
+        if myds.items[i].name == file_type:
 
-                item_id = myds.items[i].id
+            item_id = myds.items[i].id
 
-                # then, delete it using Pennsieve method delete(id)
-                bf.delete(item_id)
+            # then, delete it using Pennsieve method delete(id)
+            bf.delete(item_id)
 
-        myds.upload(file_path)
-        # delete the local file that was created for the purpose of uploading to Pennsieve
-        os.remove(file_path)
+    myds.upload(file_path)
+    # delete the local file that was created for the purpose of uploading to Pennsieve
+    os.remove(file_path)
 
 
 def excel_columns(start_index=0):
@@ -926,7 +926,7 @@ def import_bf_RC(bfaccount, bfdataset, file_type):
         myds = bf.get_dataset(bfdataset)
     except Exception:
         abort(400, "Error: Please select a valid Pennsieve dataset.")
-        
+
     for i in range(len(myds.items)):
 
         if myds.items[i].name == file_type:
