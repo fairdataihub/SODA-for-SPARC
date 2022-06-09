@@ -4,32 +4,19 @@
 from gevent import monkey
 
 monkey.patch_all()
-import platform
 import os
-from os import listdir, stat, makedirs, mkdir, walk, remove, pardir
+from os import listdir, mkdir, walk
 from os.path import (
     isdir,
-    isfile,
     join,
-    splitext,
-    getmtime,
-    basename,
-    normpath,
     exists,
     expanduser,
-    split,
     dirname,
     getsize,
-    abspath,
 )
-import pandas as pd
 import time
-from time import strftime, localtime
 import shutil
-from shutil import copy2
 from configparser import ConfigParser
-import numpy as np
-from collections import defaultdict
 import subprocess
 from websocket import create_connection
 import socket
@@ -37,34 +24,20 @@ import errno
 import re
 import gevent
 from pennsieve import Pennsieve
-from pennsieve.log import get_logger
 from pennsieve.api.agent import (
     agent_cmd,
     validate_agent_installation,
     agent_env,
     agent_cmd,
 )
-import semver
-from pennsieve.api.agent import AgentError, check_port, socket_address
-from pennsieve import Settings
-from urllib.request import urlopen
-import json
-import collections
-from threading import Thread
-import pathlib
 
-from openpyxl import load_workbook
-from openpyxl import Workbook
-from openpyxl.styles import PatternFill, Font
-from docx import Document
+from pennsieve.api.agent import AgentError, socket_address
+from pennsieve import Settings
+from threading import Thread
+
 
 import boto3
 import requests
-
-from string import ascii_uppercase
-import itertools
-
-from datetime import datetime, timezone
 
 from flask import abort 
 from namespaces import NamespaceEnum, get_namespace_logger
