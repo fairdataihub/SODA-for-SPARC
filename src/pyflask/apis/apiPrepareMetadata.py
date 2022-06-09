@@ -80,8 +80,9 @@ class SaveSubmissionFile(Resource):
         try:
             return load_existing_submission_file(filepath)
         except Exception as e:
-            api.abort(500, str(e))
-
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
 
 
 
