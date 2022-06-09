@@ -20,7 +20,7 @@ $(document).ready(function () {
             "display",
             "flex"
           );
-          $("#div-confirm-manifest-local-folder-dataset button").show();
+          $($("#div-confirm-manifest-local-folder-dataset button")[0]).show();
         } else {
           document.getElementById(
             "input-manifest-local-folder-dataset"
@@ -151,14 +151,7 @@ $(document).ready(function () {
       var localFolderPath = path.join(
         homeDirectory,
         "SODA",
-        "SODA Manifest Files",
-        parentFolderName
-      );
-      // load onto library
-      var localFolderPath = path.join(
-        homeDirectory,
-        "SODA",
-        "SODA Manifest Files",
+        "manifest_files",
         parentFolderName
       );
       var selectedManifestFilePath = path.join(
@@ -324,7 +317,7 @@ const processManifestInfo = (headers, data) => {
 
 var localDatasetFolderPath = "";
 
-async function generateManifestPrecheck(manifestEditBoolean) {
+async function generateManifestPrecheck(manifestEditBoolean, ev) {
   var type = "local";
   if (
     $('input[name="generate-manifest-1"]:checked').prop("id") ===
@@ -363,10 +356,10 @@ async function generateManifestPrecheck(manifestEditBoolean) {
   if (!continueProgress) {
     return;
   }
-  generateManifest("", type, manifestEditBoolean);
+  generateManifest("", type, manifestEditBoolean, ev);
 }
 
-async function generateManifest(action, type, manifestEditBoolean) {
+async function generateManifest(action, type, manifestEditBoolean, ev) {
   Swal.fire({
     title: "Reviewing the dataset structure.",
     html: "Please wait...",
@@ -534,7 +527,8 @@ async function generateManifest(action, type, manifestEditBoolean) {
       extractBFDatasetForManifestFile(
         false,
         defaultBfAccount,
-        defaultBfDataset
+        defaultBfDataset,
+        ev
       );
     }
   }
@@ -645,7 +639,7 @@ async function initiate_generate_manifest_local(
     createManifestLocally("local", false, originalDataset);
   } else {
     // SODA Manifest Files folder
-    let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files");
+    let dir = path.join(homeDirectory, "SODA", "manifest_files");
     // Move manifest files to the local dataset
     let moveFinishedBool = await moveManifestFiles(dir, originalDataset);
     if (moveFinishedBool) {
@@ -706,14 +700,6 @@ function initiate_generate_manifest_bf() {
   let manifest_files_requested = false;
   var main_curate_status = "Solving";
   var main_total_generate_dataset_size;
-  // if ("manifest-files" in sodaJSONObj) {
-  //   if ("destination" in sodaJSONObj["manifest-files"]) {
-  //     if (sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
-  //       manifest_files_requested = true;
-  //       delete_imported_manifest();
-  //     }
-  //   }
-  // }
 
   let dataset_name = "";
   let dataset_destination = "";
@@ -920,7 +906,8 @@ const removeDir = function (pathdir) {
 async function extractBFDatasetForManifestFile(
   editBoolean,
   bfaccount,
-  bfdataset
+  bfdataset,
+  ev
 ) {
   var result;
   try {
@@ -965,6 +952,7 @@ async function extractBFDatasetForManifestFile(
       datasetStructureJSONObj = { folders: {}, files: {} };
     }
     sodaJSONObj["manifest-files"] = { destination: "generate-dataset" };
+
     sodaJSONObj["generate-dataset"] = {
       destination: "bf",
       "generate-option": "existing-bf",
@@ -975,10 +963,44 @@ async function extractBFDatasetForManifestFile(
     let continueProgressEmptyFolder = await checkEmptySubFolders(
       sodaJSONObj["dataset-structure"]
     );
+
     if (!continueProgressEmptyFolder) {
       Swal.fire({
         title: "Failed to generate the manifest files.",
         text: "The dataset contains one or more empty folder(s). Per SPARC guidelines, a dataset must not contain any empty folders. Please remove them before generating the manifest files.",
+        heightAuto: false,
+        showConfirmButton: true,
+        icon: "error",
+        backdrop: "rgba(0,0,0, 0.4)",
+        didOpen: () => {
+          Swal.hideLoading();
+        },
+      }).then((result) => {});
+      $("#Question-prepare-manifest-4").removeClass("show");
+      $("#Question-prepare-manifest-4").removeClass("prev");
+      $("#Question-prepare-manifest-3").removeClass("prev");
+      $("#bf_dataset_create_manifest").text("None");
+      defaultBfDataset = "Select dataset";
+      logMetadataForAnalytics(
+        "Error",
+        MetadataAnalyticsPrefix.MANIFEST,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Generate",
+        Destinations.PENNSIEVE
+      );
+      return;
+    }
+    var continueErrorManifest;
+    try {
+      let res = await extractBFManifestFile();
+      continueErrorManifest = [false, res];
+    } catch (err) {
+      continueErrorManifest = [true, err];
+    }
+    if (continueErrorManifest[0]) {
+      Swal.fire({
+        title: "Failed to load the manifest files for edits.",
+        html: continueErrorManifest[1],
         heightAuto: false,
         showConfirmButton: true,
         icon: "error",
@@ -1036,10 +1058,48 @@ async function extractBFDatasetForManifestFile(
   if (!editBoolean) {
     generateManifestOnPennsieve();
   } else {
-    createManifestLocally("bf", editBoolean, "");
+    $("#preview-manifest-fake-confirm-pennsieve").click();
+    $("#Question-prepare-manifest-4").removeClass("show");
+    $("#Question-prepare-manifest-4").removeClass("prev");
+    $(ev).hide();
+    loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
+    Swal.fire({
+      title: "Successfully generated!",
+      heightAuto: false,
+      showConfirmButton: false,
+      timer: 800,
+      icon: "success",
+      backdrop: "rgba(0,0,0, 0.4)",
+      didOpen: () => {
+        Swal.hideLoading();
+      },
+    }).then((result) => {});
+    localDatasetFolderPath = "";
   }
 }
 
+function extractBFManifestFile() {
+  return new Promise((resolve, reject) => {
+    client.invoke(
+      "api_import_bf_manifest_file",
+      sodaJSONObj,
+      defaultBfAccount,
+      defaultBfDataset,
+      async (error, res) => {
+        if (error) {
+          var emessage = userError(error);
+          log.error(error);
+          console.error(error);
+          reject(userError(error));
+        } else {
+          resolve(res);
+        }
+      }
+    );
+  });
+}
+
+// generate on Pennsieve without edits
 function generateManifestOnPennsieve() {
   generateManifestHelper();
   initiate_generate_manifest_bf();
@@ -1147,8 +1207,10 @@ function resetManifest(skip_permission) {
         );
         $("#div-confirm-manifest-local-folder-dataset").hide();
         $("#bf_dataset_create_manifest").text("None");
-        let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files");
-        removeDir(dir);
+        let dir1 = path.join(homeDirectory, "SODA", "manifest_files");
+        let dir2 = path.join(homeDirectory, "SODA", "SODA Manifest Files");
+        removeDir(dir1);
+        removeDir(dir2);
       } else {
         return;
       }
@@ -1173,8 +1235,10 @@ function resetManifest(skip_permission) {
     );
     $("#div-confirm-manifest-local-folder-dataset").hide();
     $("#bf_dataset_create_manifest").text("None");
-    let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files");
-    removeDir(dir);
+    let dir1 = path.join(homeDirectory, "SODA", "manifest_files");
+    let dir2 = path.join(homeDirectory, "SODA", "SODA Manifest Files");
+    removeDir(dir1);
+    removeDir(dir2);
   }
 }
 
@@ -1206,7 +1270,7 @@ function checkEmptySubFolders(datasetStructure) {
 // helper function 1: First, generate manifest file folder locally
 // Parameter: dataset structure object
 // Return: manifest file folder path
-async function generateManifestFolderLocallyForEdit() {
+async function generateManifestFolderLocallyForEdit(ev) {
   // Show loading popup
   Swal.fire({
     title: `Generating manifest files for edits`,
@@ -1268,17 +1332,22 @@ async function generateManifestFolderLocallyForEdit() {
       }).then((result) => {});
       return;
     } else {
-      createManifestLocally("local", true, "");
+      createManifestLocally("local", true, "", ev);
     }
   } else {
     // Case 2: bf dataset
     sodaJSONObj["bf-account-selected"] = { "account-name": defaultBfAccount };
     sodaJSONObj["bf-dataset-selected"] = { "dataset-name": defaultBfDataset };
-    extractBFDatasetForManifestFile(true, defaultBfAccount, defaultBfDataset);
+    extractBFDatasetForManifestFile(
+      true,
+      defaultBfAccount,
+      defaultBfDataset,
+      ev
+    );
   }
 }
 
-function createManifestLocally(type, editBoolean, originalDataset) {
+function createManifestLocally(type, editBoolean, originalDataset, ev) {
   // generateManifestHelper();
   var generatePath = "";
   sodaJSONObj["manifest-files"]["local-destination"] = path.join(
@@ -1288,7 +1357,7 @@ function createManifestLocally(type, editBoolean, originalDataset) {
   if (type === "local") {
     generatePath = localDatasetFolderPath;
   } else {
-    generatePath = path.join(homeDirectory, "SODA", "manifest_files");
+    generatePath = "";
   }
   client.invoke(
     "api_generate_manifest_file_locally",
@@ -1316,46 +1385,48 @@ function createManifestLocally(type, editBoolean, originalDataset) {
         $("#bf_dataset_create_manifest").text("None");
       } else {
         if (editBoolean) {
-          //// else: create locally for the purpose of generating of manifest files locally
-          client.invoke(
-            "api_create_high_level_manifest_files_existing_local_starting_point",
-            generatePath,
-            async (error, res) => {
-              if (error) {
-                var emessage = userError(error);
-                log.error(error);
-                console.error(error);
-                Swal.fire({
-                  title: "Failed to load the manifest files for edits.",
-                  html: emessage,
-                  heightAuto: false,
-                  showConfirmButton: true,
-                  icon: "error",
-                  backdrop: "rgba(0,0,0, 0.4)",
-                  didOpen: () => {
-                    Swal.hideLoading();
-                  },
-                }).then((result) => {});
-              } else {
-                Swal.fire({
-                  title: "Successfully generated!",
-                  heightAuto: false,
-                  showConfirmButton: false,
-                  timer: 800,
-                  icon: "success",
-                  backdrop: "rgba(0,0,0, 0.4)",
-                  didOpen: () => {
-                    Swal.hideLoading();
-                  },
-                }).then((result) => {});
-                $("#preview-manifest-fake-confirm").click();
-                $("#Question-prepare-manifest-4").removeClass("show");
-                $("#Question-prepare-manifest-4").removeClass("prev");
-                loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
+          if (type === "local") {
+            //// else: create locally for the purpose of generating of manifest files locally
+            client.invoke(
+              "api_create_high_level_manifest_files_existing_local_starting_point",
+              generatePath,
+              async (error, res) => {
+                if (error) {
+                  var emessage = userError(error);
+                  log.error(error);
+                  console.error(error);
+                  Swal.fire({
+                    title: "Failed to load the manifest files for edits.",
+                    html: emessage,
+                    heightAuto: false,
+                    showConfirmButton: true,
+                    icon: "error",
+                    backdrop: "rgba(0,0,0, 0.4)",
+                    didOpen: () => {
+                      Swal.hideLoading();
+                    },
+                  }).then((result) => {});
+                } else {
+                  Swal.fire({
+                    title: "Successfully generated!",
+                    heightAuto: false,
+                    showConfirmButton: false,
+                    timer: 800,
+                    icon: "success",
+                    backdrop: "rgba(0,0,0, 0.4)",
+                    didOpen: () => {
+                      Swal.hideLoading();
+                    },
+                  }).then((result) => {});
+                  $("#preview-manifest-fake-confirm-local").click();
+                  $("#Question-prepare-manifest-4").removeClass("show");
+                  $("#Question-prepare-manifest-4").removeClass("prev");
+                  $(ev).hide();
+                  loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
+                }
               }
-            }
-          );
-
+            );
+          }
           Swal.fire({
             title: "Successfully generated!",
             heightAuto: false,
@@ -1370,7 +1441,7 @@ function createManifestLocally(type, editBoolean, originalDataset) {
           localDatasetFolderPath = "";
         } else {
           // SODA Manifest Files folder
-          let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files");
+          let dir = path.join(homeDirectory, "SODA", "manifest_files");
           // Move manifest files to the local dataset
           let moveFinishedBool = await moveManifestFiles(dir, originalDataset);
           if (moveFinishedBool) {
@@ -1485,29 +1556,37 @@ function createChildNodeManifest(
   };
   if (oldFormatNode) {
     for (const [key, value] of Object.entries(oldFormatNode["folders"])) {
-      let disabled = true;
-      let opened = false;
+      let disabled = false;
+      let opened = true;
       let selected = false;
-      if (
-        highLevelFolders.includes(nodeName) ||
-        nodeName === "My_dataset_structure"
-      ) {
-        opened = true;
-        selected = true;
-        disabled = false;
+      if (nodeName === "My_dataset_structure") {
+        newFormatNode.state.selected = true;
+        newFormatNode.state.opened = true;
+        newFormatNode.state.disabled = false;
+        var new_node = createChildNodeManifest(
+          value,
+          key,
+          "folder",
+          "",
+          opened,
+          selected,
+          disabled
+        );
       }
-      newFormatNode.state.selected = selected;
-      newFormatNode.state.opened = opened;
-      newFormatNode.state.disabled = disabled;
-      var new_node = createChildNodeManifest(
-        value,
-        key,
-        "folder",
-        "",
-        opened,
-        selected,
-        disabled
-      );
+      if (highLevelFolders.includes(key)) {
+        newFormatNode.state.selected = selected;
+        newFormatNode.state.opened = true;
+        newFormatNode.state.disabled = disabled;
+        var new_node = createChildNodeManifest(
+          value,
+          key,
+          "folder",
+          "",
+          true,
+          selected,
+          disabled
+        );
+      }
       newFormatNode["children"].push(new_node);
       newFormatNode["children"].sort((a, b) => (a.text > b.text ? 1 : -1));
     }
@@ -1543,17 +1622,11 @@ function createChildNodeManifest(
                 state: { disabled: false },
                 type: nodeType,
               };
-            } else {
-              var new_node = {
-                text: key,
-                state: { disabled: true },
-                type: nodeType,
-              };
+              newFormatNode["children"].push(new_node);
+              newFormatNode["children"].sort((a, b) =>
+                a.text > b.text ? 1 : -1
+              );
             }
-            newFormatNode["children"].push(new_node);
-            newFormatNode["children"].sort((a, b) =>
-              a.text > b.text ? 1 : -1
-            );
           }
         }
       }
@@ -1612,13 +1685,7 @@ function checkInvalidHighLevelFolders(datasetStructure) {
 
 // function to generate edited manifest files onto Pennsieve (basically just upload the local SODA Manifest Files folder to Pennsieve)
 function generateAfterEdits() {
-  let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files");
-  // // 1. delete json files
-  // removeManifestJSONFiles(dir);
-  // 2. convert local SODA Manifest Files folder to sodaJsonObj
-  // a. generate options: existing-folders: "merge", "existing-files": "replace"
-  // b. starting-point: "local"
-  // c. starting-point, "local-destination": sodaJSONObj["manifest-files"]["local-destination"] = path.join(homeDirectory, "SODA");
+  let dir = path.join(homeDirectory, "SODA", "manifest_files");
   // set up sodaJSonObject
   sodaJSONObj = {
     "bf-account-selected": {},
@@ -1642,6 +1709,6 @@ function generateAfterEdits() {
     "if-existing-files": "replace",
     "generate-option": "new",
   };
-  // 3. generate on Pennsieve: call the function
+  // generate on Pennsieve: call the function
   initiate_generate_manifest_bf();
 }
