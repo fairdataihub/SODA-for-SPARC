@@ -550,7 +550,7 @@ class DatasetPermissions(Resource):
     input_role = data.get('input_role')
     name = data.get('name')
 
-    if scope != 'team' and scope != 'user':
+    if scope not in ['team', 'user']:
       api.abort(400, 'Invalid scope. Must be either team or user.')
 
     if scope == 'team':
