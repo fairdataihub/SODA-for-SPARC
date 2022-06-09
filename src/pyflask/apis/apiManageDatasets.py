@@ -32,9 +32,8 @@ from manageDatasets import (
     SODA_SPARC_API_KEY,
     bf_submit_dataset_upload_details
 )
+
 from namespaces import get_namespace, NamespaceEnum
-# import the request object
-from flask import request
 from errorHandlers import notBadRequestException
 
 
