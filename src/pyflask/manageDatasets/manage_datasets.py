@@ -822,28 +822,28 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         submitdatastatus = "Done"
         did_fail = True
         did_upload = False
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        error_message = "Error: Please select a valid Pennsieve account"
+        abort(400, error_message)
 
-    error, c = "", 0
+    error_message, c = "", 0
     try:
         myds = bf.get_dataset(bfdataset)
     except Exception as e:
         submitdatastatus = "Done"
         did_fail = True
         did_upload = False
-        error = error + "Error: Please select a valid Pennsieve dataset" + "<br>"
+        error_message = error_message + "Error: Please select a valid Pennsieve dataset" + "<br>"
         c += 1
 
     if not isdir(pathdataset):
         submitdatastatus = "Done"
-        error = error + "Error: Please select a valid local dataset folder" + "<br>"
+        error_message = error_message + "Error: Please select a valid local dataset folder" + "<br>"
         did_fail = True
         did_upload = False
         c += 1
 
     if c > 0:
-        raise Exception(error)
+        abort(400, error_message)
 
     error, c = "", 0
     total_file_size = 1
@@ -881,19 +881,19 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         )
         did_fail = True
         did_upload = False
-        raise Exception(error)
+        abort(400, error)
 
     total_file_size = total_file_size - 1
 
     role = bf_get_current_user_permission(bf, myds)
     if role not in ["owner", "manager", "editor"]:
         submitdatastatus = "Done"
-        error = (
+        error_message = (
             "Error: You don't have permissions for uploading to this Pennsieve dataset"
         )
         did_fail = True
         did_upload = False
-        raise Exception(error)
+        abort(403, error_message)
 
     ## check if agent is installed
     try:
