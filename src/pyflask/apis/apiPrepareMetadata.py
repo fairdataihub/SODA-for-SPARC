@@ -17,9 +17,7 @@ from prepareMetadata import (
 )
 from namespaces import NamespaceEnum, get_namespace
 from flask_restx import Resource, reqparse, fields
-from flask import jsonify, request
 from errorHandlers import notBadRequestException
-
 
 api = get_namespace(NamespaceEnum.PREPARE_METADATA)
 
@@ -51,6 +49,7 @@ class SaveSubmissionFile(Resource):
         bfdataset = data.get('selected_dataset')
         filepath = data.get('filepath')
         json_str = data.get("json_str")
+
 
         if upload_boolean and filepath is None:
             api.abort(400, "Error: Please provide a destination in which to save your Submission file.")
