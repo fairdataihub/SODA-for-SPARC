@@ -831,10 +831,10 @@ def load_existing_submission_file(filepath):
             filepath, engine="openpyxl", usecols=column_check, header=0
         )
 
-    except:
+    except Exception as e:
         raise Exception(
             "SODA cannot read this submission.xlsx file. If you are trying to retrieve a submission.xlsx file from Pennsieve, please make sure you are signed in with your Pennsieve account on SODA."
-        )
+        ) from e
 
     DD_df = DD_df.dropna(axis=0, how="all")
     DD_df = DD_df.replace(np.nan, "", regex=True)
@@ -869,14 +869,10 @@ def load_existing_submission_file(filepath):
     milestones = [DD_df["Value"][1]]
 
     for i in range(3, len(DD_df.columns)):
-        value = DD_df["Value " + str(i - 1)]
+        value = DD_df[f"Value {str(i - 1)}"]
         milestones.append(value[1])
 
-    if DD_df["Value"][2]:
-        date = DD_df["Value"][2]
-
-    else:
-        date = ""
+    date = DD_df["Value"][2] or ""
 
     return {
         "SPARC Award number": awardNo,
