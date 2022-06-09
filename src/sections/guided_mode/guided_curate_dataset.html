@@ -596,6 +596,7 @@
                     <button
                       class="ui negative basic button guided--radio-button"
                       id="guided-button-no-sample-primary-data"
+                      data-next-element="guided-warning-before-deleting-primary-samples-container"
                     >
                       No
                     </button>
@@ -633,6 +634,21 @@
                     </div>
                   </div>
                 </div>
+                <div
+                  class="guided--panel hidden"
+                  id="guided-warning-before-deleting-primary-samples-container"
+                >
+                  <div class="guided--section w-100">
+                    <h1 class="guided--text-sub-step">
+                      Click Next to confirm you have no primary data for your
+                      samples.
+                    </h1>
+                    <p class="guided--help-text">
+                      Please note that clicking next will remove all primary
+                      sample data from your dataset.
+                    </p>
+                  </div>
+                </div>
               </div>
               <div
                 class="guided--panel mt-md sub-page hidden"
@@ -659,6 +675,7 @@
                     <button
                       class="ui negative basic button guided--radio-button"
                       id="guided-button-no-subject-primary-data"
+                      data-next-element="guided-warning-before-deleting-primary-pools-and-subjects-container"
                     >
                       No
                     </button>
@@ -694,6 +711,22 @@
                         class="black-arrow-lottie-container"
                       ></div>
                     </div>
+                  </div>
+                </div>
+                <div
+                  class="guided--panel hidden"
+                  id="guided-warning-before-deleting-primary-pools-and-subjects-container"
+                >
+                  <div class="guided--section w-100">
+                    <h1 class="guided--text-sub-step">
+                      Click Next to confirm you have no primary data for your
+                      subjects or samples.
+                    </h1>
+                    <p class="guided--help-text">
+                      Please note that clicking next will remove all primary
+                      sample data added in the previous step as well as any data
+                      added to your pools or subjects.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -753,6 +786,7 @@
                     <button
                       class="ui negative basic button guided--radio-button"
                       id="guided-button-no-sample-source-data"
+                      data-next-element="guided-warning-before-deleting-source-samples-container"
                     >
                       No
                     </button>
@@ -790,6 +824,21 @@
                     </div>
                   </div>
                 </div>
+                <div
+                  class="guided--panel hidden"
+                  id="guided-warning-before-deleting-source-samples-container"
+                >
+                  <div class="guided--section w-100">
+                    <h1 class="guided--text-sub-step">
+                      Click Next to confirm you have no source data for your
+                      samples.
+                    </h1>
+                    <p class="guided--help-text">
+                      Please note that clicking next will remove all source
+                      sample data from your dataset.
+                    </p>
+                  </div>
+                </div>
               </div>
               <div
                 class="guided--panel mt-md sub-page hidden"
@@ -813,6 +862,7 @@
                     <button
                       class="ui negative basic button guided--radio-button"
                       id="guided-button-no-subject-source-data"
+                      data-next-element="guided-warning-before-deleting-source-pools-and-subjects-container"
                     >
                       No
                     </button>
@@ -848,6 +898,22 @@
                         class="black-arrow-lottie-container"
                       ></div>
                     </div>
+                  </div>
+                </div>
+                <div
+                  class="guided--panel hidden"
+                  id="guided-warning-before-deleting-source-pools-and-subjects-container"
+                >
+                  <div class="guided--section w-100">
+                    <h1 class="guided--text-sub-step">
+                      Click Next to confirm you have no source data for your
+                      subjects or samples.
+                    </h1>
+                    <p class="guided--help-text">
+                      Please note that clicking next will remove all source
+                      sample data added in the previous step as well as any data
+                      added to your pools or subjects.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -910,6 +976,7 @@
                     <button
                       class="ui negative basic button guided--radio-button"
                       id="guided-button-no-sample-derivative-data"
+                      data-next-element="guided-warning-before-deleting-derivative-samples-container"
                     >
                       No
                     </button>
@@ -947,6 +1014,21 @@
                     </div>
                   </div>
                 </div>
+                <div
+                  class="guided--panel hidden"
+                  id="guided-warning-before-deleting-derivative-samples-container"
+                >
+                  <div class="guided--section w-100">
+                    <h1 class="guided--text-sub-step">
+                      Click Next to confirm you have no derivative data for your
+                      samples.
+                    </h1>
+                    <p class="guided--help-text">
+                      Please note that clicking next will remove all derivative
+                      sample data from your dataset.
+                    </p>
+                  </div>
+                </div>
               </div>
               <div
                 class="guided--panel mt-md sub-page hidden"
@@ -973,6 +1055,7 @@
                     <button
                       class="ui negative basic button guided--radio-button"
                       id="guided-button-no-subject-derivative-data"
+                      data-next-element="guided-warning-before-deleting-derivative-pools-and-subjects-container"
                     >
                       No
                     </button>
@@ -1010,46 +1093,26 @@
                     </div>
                   </div>
                 </div>
+                <div
+                  class="guided--panel hidden"
+                  id="guided-warning-before-deleting-derivative-pools-and-subjects-container"
+                >
+                  <div class="guided--section w-100">
+                    <h1 class="guided--text-sub-step">
+                      Click Next to confirm you have no derivative data for your
+                      subjects or samples.
+                    </h1>
+                    <p class="guided--help-text">
+                      Please note that clicking next will remove all derivative
+                      sample data added in the previous step as well as any data
+                      added to your pools or subjects.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          <!--<div
-            id="guided-source-folder-tab"
-            class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
-            data-skip-page="true"
-          >
-            <div class="guided--section">
-              <label class="guided--form-label centered"
-                >Does your dataset contain source data?
-              </label>
-              <p class="guided--help-text w-100 text-center">
-                <b>Optional</b> folder containing unaltered, raw files from an
-                experiment, if they are included in the data. For example, this
-                folder may include the “truly” raw k-space data for a Magnetic
-                Resonance (MR) image that has not yet been reconstructed.
-              </p>
-              <div class="guided--radio-button-container">
-                <button
-                  class="ui positive basic button guided--radio-button"
-                  id="guided-button-has-source-data"
-                  data-next-element="guided-user-has-source-data"
-                >
-                  Yes
-                </button>
-                <button
-                  class="ui negative basic button guided--radio-button"
-                  id="guided-button-no-source-data"
-                >
-                  No
-                </button>
-              </div>
-            </div>
-            <div
-              class="guided--panel hidden"
-              id="guided-user-has-source-data"
-            ></div>
-          </div>-->
           <div
             id="guided-code-folder-tab"
             class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
