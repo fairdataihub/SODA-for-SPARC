@@ -1888,7 +1888,7 @@ const guidedAddHighLevelFolderToDatasetStructureObj = (highLevelFolderName) => {
 guidedCreateSodaJSONObj = () => {
   sodaJSONObj = {
     addSubject: function (subjectName) {
-      //check if name already exists
+      //check if subject with the same name already exists
       if (
         this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
           subjectName
@@ -1904,6 +1904,17 @@ guidedCreateSodaJSONObj = () => {
       ] = {};
     },
     renameSubject: function (prevSubjectName, newSubjectName) {
+      //check if subject with the same name already exists
+      if (
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+          newSubjectName
+        ] ||
+        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+          newSubjectName
+        ]
+      ) {
+        throw new Error("Subject names must be unique.");
+      }
       const [subjectsInPools, subjectsOutsidePools] = this.getAllSubjects();
       //Check subjectsInPools for a subject matching previousSubjectName
       //if found, rename the subject
@@ -3535,17 +3546,20 @@ const openSubjectRenameInput = (subjectNameEditButton) => {
   const subjectIdCellToRename = subjectNameEditButton.closest("td");
   const prevSubjectName = subjectIdCellToRename.find(".subject-id").text();
   const subjectRenameElement = `
-    <input
-      class="guided--input"
-      type="text"
-      name="guided-subject-id"
-      placeholder="Enter new subject ID"
-      onkeyup="specifySubject(event, $(this))"
-      data-input-set="guided-subjects-folder-tab"
-      data-alert-message="Subject IDs may not contain spaces or special characters"
-      data-alert-type="danger"
-      data-prev-name="${prevSubjectName}"
-    />
+    <div class="space-between w-100" style="align-items: center">
+      <span style="margin-right: 5px;">sub-</span>
+      <input
+        class="guided--input"
+        type="text"
+        name="guided-subject-id"
+        placeholder="Enter new subject ID"
+        onkeyup="specifySubject(event, $(this))"
+        data-input-set="guided-subjects-folder-tab"
+        data-alert-message="Subject IDs may not contain spaces or special characters"
+        data-alert-type="danger"
+        data-prev-name="${prevSubjectName}"
+      />
+    </div>
   `;
   subjectIdCellToRename.html(subjectRenameElement);
 };
@@ -3553,18 +3567,21 @@ const openPoolRenameInput = (poolNameEditButton) => {
   const poolIdCellToRename = poolNameEditButton.closest("td");
   const prevPoolName = poolIdCellToRename.find(".pool-id").text();
   const poolRenameElement = `
-    <input
-      class="guided--input"
-      type="text"
-      name="guided-pool-id"
-      placeholder="Enter new pool ID"
-      onkeyup="specifyPool(event, $(this))"
-      data-input-set="guided-pools-folder-tab"
-      data-alert-message="Pool IDs may not contain spaces or special characters"
-      data-alert-type="danger"
-      data-prev-name="${prevPoolName}"
-      style="width: 250px;"
-    />
+    <div class="space-between" style="align-items: center; width: 250px;">
+      <span style="margin-right: 5px;">pool-</span>
+      <input
+        class="guided--input"
+        type="text"
+        name="guided-pool-id"
+        placeholder="Enter new pool ID"
+        onkeyup="specifyPool(event, $(this))"
+        data-input-set="guided-pools-folder-tab"
+        data-alert-message="Pool IDs may not contain spaces or special characters"
+        data-alert-type="danger"
+        data-prev-name="${prevPoolName}"
+        style="width: 250px;"
+      />
+    </div>
   `;
   poolIdCellToRename.html(poolRenameElement);
 };
@@ -4050,17 +4067,20 @@ const openSampleRenameInput = (subjectNameEditButton) => {
   const sampleIdCellToRename = subjectNameEditButton.closest("td");
   const prevSampleName = sampleIdCellToRename.find(".sample-id").text();
   const sampleRenameElement = `
-    <input
-      class="guided--input"
-      type="text"
-      name="guided-sample-id"
-      placeholder="Enter new sample ID"
-      onkeyup="specifySample(event, $(this))"
-      data-input-set="guided-samples-folder-tab"
-      data-alert-message="Sample IDs may not contain spaces or special characters"
-      data-alert-type="danger"
-      data-prev-name="${prevSampleName}"
-    />
+    <div class="space-between w-100" style="align-items: center">
+      <span style="margin-right: 5px;">sam-</span>
+      <input
+        class="guided--input"
+        type="text"
+        name="guided-sample-id"
+        placeholder="Enter new sample ID"
+        onkeyup="specifySample(event, $(this))"
+        data-input-set="guided-samples-folder-tab"
+        data-alert-message="Sample IDs may not contain spaces or special characters"
+        data-alert-type="danger"
+        data-prev-name="${prevSampleName}"
+      />
+    </div>
   `;
   sampleIdCellToRename.html(sampleRenameElement);
 };
