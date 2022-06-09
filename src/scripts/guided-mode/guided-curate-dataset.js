@@ -734,12 +734,12 @@ const cleanUpEmptyGuidedStructureFolders = async (
           },
           icon: "warning",
           title: "Continue?",
-          text: `${highLevelFolder.toUpperCase()} data was not added to all of your subjects. Continuing will delete all dataset folders for subjects that do not contain samples with data. You will be able to come back and add additional subject data at a later time.`,
+          text: `${highLevelFolder} data was not added to all of your subjects. Continuing will delete all dataset folders for subjects that do not contain samples with data. You will be able to come back and add additional subject data at a later time.`,
           reverseButtons: true,
           showCancelButton: true,
           cancelButtonColor: "#6e7881",
-          cancelButtonText: `Finish adding ${highLevelFolder.toUpperCase()} data to subjects`,
-          confirmButtonText: `Continue without adding ${highLevelFolder.toUpperCase()} data to all subjects`,
+          cancelButtonText: `Finish adding ${highLevelFolder} data to subjects`,
+          confirmButtonText: `Continue without adding ${highLevelFolder} data to all subjects`,
         });
         if (result.isConfirmed) {
           for (subject of subjectsWithEmptyFolders) {
@@ -854,13 +854,13 @@ const cleanUpEmptyGuidedStructureFolders = async (
             popup: "animate__animated animate__zoomOut animate__faster",
           },
           title: "Continue?",
-          text: `${highLevelFolder.toUpperCase()} data was not added to all of your samples.\n\nContinuing will delete all dataset folders for samples that do not contain sample data.\n\nYou will be able to come back and add additional sample data at a later time.`,
+          text: `${highLevelFolder} data was not added to all of your samples.\n\nContinuing will delete all dataset folders for samples that do not contain sample data.\n\nYou will be able to come back and add additional sample data at a later time.`,
           icon: "warning",
           reverseButtons: true,
           showCancelButton: true,
           cancelButtonColor: "#6e7881",
-          cancelButtonText: `Finish adding ${highLevelFolder.toUpperCase()} data to samples`,
-          confirmButtonText: `Continue without adding ${highLevelFolder.toUpperCase()} data to all samples`,
+          cancelButtonText: `Finish adding ${highLevelFolder} data to samples`,
+          confirmButtonText: `Continue without adding ${highLevelFolder} data to all samples`,
         });
         //If the user indicates they do not have any subjects, skip to source folder
         if (result.isConfirmed) {
@@ -1277,15 +1277,6 @@ const setActiveSubPage = (pageIdToActivate) => {
         sodaJSONObj.getAllSubjects();
       //Combine sample data from subjects in and out of pools
       let subjects = [...subjectsInPools, ...subjectsOutsidePools];
-
-      //sort subjects object by subjectName property alphabetically
-      subjects = subjects.sort((a, b) => {
-        const subjectNameA = a.subjectName.toLowerCase();
-        const subjectNameB = b.subjectName.toLowerCase();
-        if (subjectNameA < subjectNameB) return -1;
-        if (subjectNameA > subjectNameB) return 1;
-        return 0;
-      });
 
       console.log(subjects);
 
@@ -3035,7 +3026,6 @@ const renderSubjectSampleAdditionTable = (subject) => {
 
 const renderSubjectsMetadataTable = (subjects) => {
   let subjectMetadataRows = subjects
-    .sort()
     .map((subject, index) => {
       let tableIndex = index + 1;
       return `
@@ -3126,15 +3116,7 @@ const openCopySubjectMetadataPopup = async () => {
   let subjectsArray = [...subjectsInPools, ...subjectsOutsidePools];
 
   //sort subjects object by subjectName property alphabetically
-  subjectsArray = subjectsArray
-    .sort((a, b) => {
-      const subjectNameA = a.subjectName.toLowerCase();
-      const subjectNameB = b.subjectName.toLowerCase();
-      if (subjectNameA < subjectNameB) return -1;
-      if (subjectNameA > subjectNameB) return 1;
-      return 0;
-    })
-    .map((subject) => subject.subjectName);
+  subjectsArray = subjectsArray.map((subject) => subject.subjectName);
 
   const copyFromMetadata = subjectsArray
     .map((subject) => {
@@ -3234,15 +3216,7 @@ const openCopySampleMetadataPopup = async () => {
   let samples = [...samplesInPools, ...samplesOutsidePools];
 
   //sort samples object by sampleName property alphabetically
-  samples = samples
-    .sort((a, b) => {
-      const sampleNameA = a.sampleName.toLowerCase();
-      const sampleNameB = b.sampleName.toLowerCase();
-      if (sampleNameA < sampleNameB) return -1;
-      if (sampleNameA > sampleNameB) return 1;
-      return 0;
-    })
-    .map((sample) => sample.sampleName);
+  samples = samples.map((sample) => sample.sampleName);
 
   const copyFromMetadata = samples
     .map((sample) => {
@@ -4845,13 +4819,6 @@ const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
   let subjects = [...subjectsInPools, ...subjectsOutsidePools];
 
   //sort subjects object by subjectName property alphabetically
-  subjects = subjects.sort((a, b) => {
-    const subjectNameA = a.subjectName.toLowerCase();
-    const subjectNameB = b.subjectName.toLowerCase();
-    if (subjectNameA < subjectNameB) return -1;
-    if (subjectNameA > subjectNameB) return 1;
-    return 0;
-  });
 
   console.log(subjects);
 
@@ -4927,15 +4894,6 @@ const renderSubjectsMetadataAsideItems = () => {
   const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
   //Combine sample data from subjects in and out of pools
   let subjects = [...subjectsInPools, ...subjectsOutsidePools];
-
-  //sort subjects object by subjectName property alphabetically
-  subjects = subjects.sort((a, b) => {
-    const subjectNameA = a.subjectName.toLowerCase();
-    const subjectNameB = b.subjectName.toLowerCase();
-    if (subjectNameA < subjectNameB) return -1;
-    if (subjectNameA > subjectNameB) return 1;
-    return 0;
-  });
 
   console.log(subjects);
 
@@ -5013,15 +4971,6 @@ const renderSamplesMetadataAsideItems = () => {
     sodaJSONObj.getAllSamplesFromSubjects();
   //Combine sample data from samples in and out of pools
   let samples = [...samplesInPools, ...samplesOutsidePools];
-
-  //sort samples object by sampleName property alphabetically
-  samples = samples.sort((a, b) => {
-    const sampleNameA = a.sampleName.toLowerCase();
-    const sampleNameB = b.sampleName.toLowerCase();
-    if (sampleNameA < sampleNameB) return -1;
-    if (sampleNameA > sampleNameB) return 1;
-    return 0;
-  });
 
   //Create the HTML for the samples
   const sampleItems = samples
