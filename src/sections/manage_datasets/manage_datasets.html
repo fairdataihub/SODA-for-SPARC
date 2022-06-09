@@ -206,7 +206,6 @@
                   style="
                     background: #fff !important;
                     width: 100%;
-                    margin-bottom: 0.5rem;
                   "
                   id="bf-new-dataset-name"
                   placeholder="Type here"
@@ -247,7 +246,7 @@
                   class="btn_animated"
                   style="width: 140px; display: none; border: none !important"
                 >
-                  <div class="btn_animated-inside">Create dataset</div>
+                  <div class="btn_animated-inside" style="margin: 0; padding: 0;">Create dataset</div>
                 </button>
                 <div
                   id="bf-create-new-dataset-spinner"
@@ -545,7 +544,6 @@
                   style="
                     background: #fff !important;
                     /* width: 550px; */
-                    margin-bottom: 0.5rem;
                   "
                   id="bf-rename-dataset-name"
                   placeholder="Type here"
@@ -2288,7 +2286,7 @@
           id="div_add_tags"
           style="height: auto"
         >
-          <div class="ui form" style="width: 500px">
+          <div class="ui form" style="width: 550px">
             <div class="grouped fields" style="width: 500px; margin: auto">
               <label
                 style="
@@ -2338,7 +2336,7 @@
                       justify-content: center;
                       align-items: center;
                       margin: 0 auto;
-                      padding-top: 20px;
+                      padding-top: 7px;
                     "
                   >
                     <div style="margin-bottom: 1rem">
@@ -2628,6 +2626,21 @@
           id="div_add_edit_description"
           style="height: auto"
         >
+        <label
+        style="
+          margin-top: 1.5rem;
+          font-size: 17px;
+          color: var(--color-bg-plum);
+          text-align: center;
+          font-weight: 700;
+        "
+        >Enter your description in the sections below
+      </label>
+      <div
+        style="margin: 0.5rem; display: flex; justify-content: center; margin-bottom: 1.5rem;"
+      >
+        <p>Refrain from markdown.</p>
+      </div>
           <!--Adding the test section out-->
           <div
             class="ui form"
@@ -2639,20 +2652,6 @@
             "
           >
             <div class="field" style="margin: auto; width: 550px">
-              <label
-                style="
-                  margin-top: 1.5rem;
-                  font-size: 17px;
-                  color: var(--color-bg-plum);
-                  text-align: center;
-                "
-                >Enter your description in the sections below
-              </label>
-              <div
-                style="margin: 0.5rem; display: flex; justify-content: center"
-              >
-                <p>Refrain from markdown.</p>
-              </div>
               <div class="ui form" style="width: 550px !important">
                 <div
                   class="grouped fields"
@@ -3815,10 +3814,20 @@
         >
           <div class="ui form" style="width: 100%">
             <div class="grouped fields">
+              <div class="about-container">
+                <label
+                  class="about-title"
+                  style="color: var(--color-bg-plum) !important"
+                  >About</label
+                >
+                <p class="about-text">
+                  With this feature, you can upload a data from your computer on to a Pennsieve dataset (with folder structure preserved)
+                </p>
+              </div>
               <label style="font-size: 17px; color: var(--color-bg-plum)"
                 >Which Pennsieve dataset would you like to work on?
               </label>
-              <div class="field" style="margin: auto; width: 500px">
+              <div class="field" style="margin: auto; width: 550px">
                 <div
                   style="
                     display: flex;
@@ -3980,10 +3989,12 @@
           style="height: auto"
         >
           <div class="ui form" style="width: 100%">
+            
             <div
               class="grouped fields"
               style="display: flex; justify-content: center"
             >
+            
               <label style="font-size: 17px; color: var(--color-bg-plum)"
                 >What is the location of the dataset?</label
               >
@@ -3994,12 +4005,12 @@
                   display: flex;
                   justify-content: center;
                   flex-direction: column;
-                  width: 450px;
+                  width: 550px;
                 "
               >
                 <input
                   class="form-control"
-                  style="width: 450px !important"
+                  style="width: 550px !important"
                   id="selected-local-dataset-submit"
                   type="text"
                   readonly
@@ -4045,13 +4056,13 @@
           id="upload_local_dataset_final_question_div"
           style="height: auto"
         >
-          <div class="ui form" style="width: 500px">
+          <div class="ui form" style="width: 550px">
             <div class="grouped fields">
               <div
                 class="field"
                 style="
                   display: flex;
-                  width: 500px;
+                  width: 550px;
                   margin: auto;
                   justify-content: center;
                 "
