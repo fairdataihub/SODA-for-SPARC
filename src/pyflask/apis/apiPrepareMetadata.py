@@ -32,7 +32,7 @@ api = get_namespace(NamespaceEnum.PREPARE_METADATA)
 # parser_save_submission_file.add_argument('json_str', type=str, help='JSON string to be uploaded', location="json", required=True)
 
 
-@api.route('/save_submission_file')
+@api.route('/submission_file')
 class SaveSubmissionFile(Resource):
 
     # @api.expect(parser_save_submission_file)
