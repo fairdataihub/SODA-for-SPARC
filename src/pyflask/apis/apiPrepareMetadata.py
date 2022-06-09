@@ -83,13 +83,10 @@ class SetTemplatePath(Resource):
         if basepath is None and resourcesPath is None:
             return api.abort(400, "Missing required parameters: basepath, resourcesPath")
 
-            
         try:
             return set_template_path(basepath, resourcesPath)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e 
+            api.abort(500, str(e))
 
 
 
