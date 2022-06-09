@@ -140,7 +140,7 @@ def bf_dataset_size():
 
     try:
         selected_dataset_id = myds.id
-        bf_response = bf._api._get("/datasets/" + str(selected_dataset_id))
+        bf_response = bf._api._get(f"/datasets/{str(selected_dataset_id)}")
         return bf_response["storage"] if "storage" in bf_response.keys() else 0
     except Exception as e:
         raise e
@@ -234,7 +234,7 @@ def bf_add_account_api_key(keyname, key, secret):
     try:
         bf = Pennsieve(keyname)
 
-    except:
+    except Exception:
         bf_delete_account(keyname)
         abort(401, 
             "Authentication Error: please check that key name, key, and secret are entered properly"
@@ -259,7 +259,7 @@ def bf_add_account_api_key(keyname, key, secret):
         with open(configpath, "w") as configfile:
             config.write(configfile)
 
-        return {"message": "Successfully added account " + str(bf)}
+        return {"message": f"Successfully added account {str(bf)}"}
 
     except Exception as e:
         bf_delete_account(keyname)
@@ -321,7 +321,7 @@ def bf_add_account_username(keyname, key, secret):
     # Check key and secret are valid, if not delete account from config
     try:
         bf = Pennsieve(temp_keyname)
-    except:
+    except Exception:
         bf_delete_account(temp_keyname)
         abort(401, 
             "Error: please check that key name, key, and secret are entered properly"
@@ -352,7 +352,7 @@ def bf_add_account_username(keyname, key, secret):
 
         bf_delete_account(temp_keyname)
 
-        return {"message": "Successfully added account " + str(bf)}
+        return {"message": f"Successfully added account {str(bf)}"}
 
     except Exception as e:
         bf_delete_account(temp_keyname)
@@ -423,7 +423,7 @@ def bf_get_accounts():
         try:
             ps = Pennsieve(SODA_SPARC_API_KEY)
             return SODA_SPARC_API_KEY
-        except:
+        except Exception:
             pass
     elif "global" in accountname:
         if "default_profile" in config["global"]:
@@ -511,12 +511,8 @@ def bf_dataset_account(accountname):
             store = []
         for dataset in datasets_list:
             selected_dataset_id = dataset.id
-            user_role = bf._api._get("/datasets/" + str(selected_dataset_id) + "/role")[
-                "role"
-            ]
-            if user_role == "viewer" or user_role == "editor":
-                pass
-            else:
+            user_role = bf._api._get(f"/datasets/{str(selected_dataset_id)}/role")["role"]
+            if user_role not in ["viewer", "editor"]:
                 store.append(
                     {"id": selected_dataset_id, "name": dataset.name, "role": user_role}
                 )
@@ -637,9 +633,7 @@ def bf_new_dataset_folder(datasetname, accountname):
         if c > 0:
             abort(400, error)
 
-        dataset_list = []
-        for ds in bf.datasets():
-            dataset_list.append(ds.name)
+        dataset_list = [ds.name for ds in bf.datasets()]
         if datasetname in dataset_list:
             abort(400, "Error: Dataset name already exists")
         else:
@@ -701,16 +695,14 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
         abort(403, error_message)
 
 
-    dataset_list = []
-    for ds in bf.datasets():
-        dataset_list.append(ds.name)
+    dataset_list = [ds.name for ds in bf.datasets()]
     if datasetname in dataset_list:
         raise Exception("Error: Dataset name already exists")
-    else:
-        myds = bf.get_dataset(current_dataset_name)
-        selected_dataset_id = myds.id
-        jsonfile = {"name": datasetname}
-        bf._api.datasets._put("/" + str(selected_dataset_id), json=jsonfile)
+
+    myds = bf.get_dataset(current_dataset_name)
+    selected_dataset_id = myds.id
+    jsonfile = {"name": datasetname}
+    bf._api.datasets._put(f"/{str(selected_dataset_id)}", json=jsonfile)
 
 
 def clear_queue():
@@ -758,10 +750,10 @@ def check_agent_install():
     try:
         validate_agent_installation(Settings())
         return agent_version(Settings())
-    except AgentError:
+    except AgentError as e:
         raise AgentError(
             "We highly recommend installing the Pennsieve agent and restarting SODA before you upload any files. Click <a href='https://github.com/bvhpatel/SODA/wiki/Installing-the-Pennsieve-agent' target='_blank'>here</a> for installation instructions."
-        )
+        ) from e
 
 
 def agent_version(settings):
@@ -776,7 +768,7 @@ def agent_version(settings):
     except (AgentError, subprocess.CalledProcessError, EnvironmentError) as e:
         raise AgentError(
             "Agent not installed. Visit https://developer.pennsieve.io/agent for installation directions."
-        )
+        ) from e
 
 
 def bf_submit_dataset(accountname, bfdataset, pathdataset):
@@ -960,14 +952,12 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
             myds = bf.get_dataset(bfdataset)
 
-            folders = {}
-
             # create the root directory on Pennsieve and store it for later
             root_folder_name = os.path.basename(os.path.normpath(pathdataset))
             root_pennsieve_folder = myds.create_collection(root_folder_name)
             myds.update()
-            folders[root_folder_name] = root_pennsieve_folder
-
+            folders = {root_folder_name: root_pennsieve_folder}
+            
             # top down scan through dataset to upload each file/folder
             for dirpath, child_dirs, files in os.walk(pathdataset, topdown=True):
                 #  get the current root directory's name not its relative path
@@ -1207,14 +1197,12 @@ def bf_get_teams(selected_bfaccount):
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
         abort(400, f"{e}")
-    
+
     try:
         organization_id = bf.context.id
-        list_teams = bf._api._get("/organizations/" + str(organization_id) + "/teams")
-        list_teams_name = []
-        for i in range(len(list_teams)):
-            team_name = list_teams[i]["team"]["name"]
-            list_teams_name.append(team_name)
+        list_teams = bf._api._get(f"/organizations/{str(organization_id)}/teams")
+        list_teams_name = [list_teams[i]["team"]["name"] for i in range(len(list_teams))]
+
         list_teams_name.sort()  # Returning the list of teams in alphabetical order
         return {"teams": list_teams_name}
     except Exception as e:
@@ -1237,14 +1225,12 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error_message = "Error: Please select a valid Pennsieve account"
-        abort(400, error_message)
+        abort(400, "Error: Please select a valid Pennsieve account")
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error_message = "Error: Please select a valid Pennsieve dataset" + "<br>"
-        abort(400, error_message)
+        abort(400, "Error: Please select a valid Pennsieve dataset" + "<br>")
 
     try:
         # user permissions
@@ -1324,11 +1310,7 @@ def bf_get_current_user_permission(bf, myds):
 
     try:
         selected_dataset_id = myds.id
-        user_role = bf._api._get("/datasets/" + str(selected_dataset_id) + "/role")[
-            "role"
-        ]
-
-        return user_role
+        return bf._api._get(f"/datasets/{str(selected_dataset_id)}/role")["role"]
 
     except Exception as e:
         raise e
@@ -1356,8 +1338,7 @@ def bf_add_permission(
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error_message = "Error: Please select a valid Pennsieve account"
-        raise abort(400, error_message)
+        raise abort(400, "Error: Please select a valid Pennsieve account") from e
 
     c = 0
     try:
@@ -1369,7 +1350,7 @@ def bf_add_permission(
     try:
         # organization_name = bf.context.name
         organization_id = bf.context.id
-        list_users = bf._api._get("/organizations/" + str(organization_id) + "/members")
+        list_users = bf._api._get(f"/organizations/{str(organization_id)}/members")
         # dict_users = {}
         # list_users_firstlast = []
         for i in range(len(list_users)):
@@ -1384,7 +1365,6 @@ def bf_add_permission(
             c += 1
     except Exception as e:
         raise e
-
     if selected_role not in [
         "manager",
         "viewer",
@@ -1690,9 +1670,8 @@ def bf_get_description(selected_bfaccount, selected_bfdataset):
 
     try:
         selected_dataset_id = myds.id
-        dataset_readme_info = bf._api._get(
-            "/datasets/" + str(selected_dataset_id) + "/readme"
-        )
+        dataset_readme_info = bf._api._get(f"/datasets/{str(selected_dataset_id)}/readme")
+
         res = dataset_readme_info["readme"]
         return {"description": res}
     except Exception as e:
@@ -1736,7 +1715,7 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
     try:
         selected_dataset_id = myds.id
         jsonfile = {"readme": markdown_input}
-        bf._api.datasets._put("/" + str(selected_dataset_id) + "/readme", json=jsonfile)
+        bf._api.datasets._put(f"/{str(selected_dataset_id)}/readme", json=jsonfile)
         return{ "message": "Description added!"}
     except Exception as e:
         raise Exception(e)
@@ -1770,9 +1749,8 @@ def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
 
     try:
         selected_dataset_id = myds.id
-        dataset_banner_info = bf._api._get(
-            "/datasets/" + str(selected_dataset_id) + "/banner"
-        )
+        dataset_banner_info = bf._api._get(f"/datasets/{str(selected_dataset_id)}/banner")
+
         list_keys = dataset_banner_info.keys()
         if "banner" in list_keys:
             res = dataset_banner_info["banner"]
@@ -1822,10 +1800,7 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
 
         def upload_image():
             with open(banner_image_path, "rb") as f:
-                bf._api._put(
-                    "/datasets/" + str(selected_dataset_id) + "/banner",
-                    files={"banner": f},
-                )
+                bf._api._put(f"/datasets/{str(selected_dataset_id)}/banner", files={"banner": f})
 
         # delete banner image folder if it is located in SODA
         gevent.spawn(upload_image())
@@ -1865,7 +1840,7 @@ def bf_get_license(selected_bfaccount, selected_bfdataset):
 
     try:
         selected_dataset_id = myds.id
-        dataset_info = bf._api._get("/datasets/" + str(selected_dataset_id))
+        dataset_info = bf._api._get(f"/datasets/{str(selected_dataset_id)}")
         list_keys = dataset_info["content"].keys()
         if "license" in list_keys:
             res = dataset_info["content"]["license"]
@@ -1931,9 +1906,9 @@ def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
     selected_dataset_id = myds.id
     jsonfile = {"license": selected_license}
     try: 
-        bf._api.datasets._put("/" + str(selected_dataset_id), json=jsonfile)
+        bf._api.datasets._put(f"/{str(selected_dataset_id)}", json=jsonfile)
     except Exception as e:
-        raise Exception(e)
+        raise Exception(e) from e
     return {"message": "License added!"}
 
 
@@ -1968,14 +1943,12 @@ def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
     try:
         # get list of available status options
         organization_id = bf.context.id
-        list_status = bf._api._get(
-            "/organizations/" + str(organization_id) + "/dataset-status"
-        )
+        list_status = bf._api._get(f"/organizations/{str(organization_id)}/dataset-status")
+
         # get current status of select dataset
         selected_dataset_id = myds.id
-        dataset_current_status = bf._api._get("/datasets/" + str(selected_dataset_id))[
-            "content"
-        ]["status"]
+        dataset_current_status = bf._api._get(f"/datasets/{str(selected_dataset_id)}")["content"]["status"]
+
         return {"status_options": list_status, "current_status": dataset_current_status}
     except Exception as e:
         raise e
@@ -2049,13 +2022,13 @@ def get_number_of_files_and_folders_locally(filepath):
     totalDir = 0
     totalFiles = 0
     for base, dirs, files in os.walk(filepath):
-        for directories in dirs:
+        for _ in dirs:
             totalDir += 1
-        for Files in files:
+        for _ in files:
             totalFiles += 1
 
-    namespace_logger.info("Number of files: " + str(totalFiles))
-    namespace_logger.info("Number of folders: " + str(totalDir))
+    namespace_logger.info(f"Number of files: {str(totalFiles)}")
+    namespace_logger.info(f"Number of folders: {str(totalDir)}")
 
     return {"totalFiles": totalFiles, "totalDir": totalDir}
 
