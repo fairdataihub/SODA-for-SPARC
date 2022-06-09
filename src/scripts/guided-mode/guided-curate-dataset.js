@@ -5136,7 +5136,7 @@ $(document).ready(() => {
 
         guidedTransitionFromDatasetNameSubtitlePage();
 
-        $("#guided-button-guided-dataset-structuring").click();
+        /*$("#guided-button-guided-dataset-structuring").click();
         $("#guided-next-button").click();
         sodaJSONObj.addSubject("sub-1");
         sodaJSONObj.addSubject("sub-2");
@@ -5216,7 +5216,7 @@ $(document).ready(() => {
 
         sodaJSONObj.addSampleToSubject("sam-sub121", "", "sub-12");
         sodaJSONObj.addSampleToSubject("sam-sub122", "", "sub-12");
-        sodaJSONObj.addSampleToSubject("sam-sub123", "", "sub-12");
+        sodaJSONObj.addSampleToSubject("sam-sub123", "", "sub-12");*/
       } else {
         if (datasetName == "") {
           errorArray.push({
