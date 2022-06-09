@@ -405,7 +405,7 @@ const importDatasetStructure = (object) => {
   }
 };
 
-async function importGenerateDatasetStep(object) {
+const importGenerateDatasetStep = async (object) => {
   if ("generate-dataset" in sodaJSONObj) {
     // Step 1: Where to generate the dataset
     if (sodaJSONObj["generate-dataset"]["destination"] === "local") {
@@ -439,36 +439,37 @@ async function importGenerateDatasetStep(object) {
         }
         $("#current-bf-account-generate").text(bfAccountSelected);
         $("#para-account-detail-curate").html("");
-        let account = accounts[0];
-        console.log(account);
 
         try {
           dataset_request = await client.get(
-            `/manage_datasets/bf_dataset_account?selected_account=${bFAccountSelected}`
+            `/manage_datasets/bf_account_details?selected_account=${bFAccountSelected}`
           );
+          $("#para-account-detail-curate").html(
+            dataset_request.data.account_details
+          );
+          updateBfAccountList();
         } catch (error) {
           client_error(error);
           log.error(error);
           console.error(error);
-          console.log("other work here");
           showHideDropdownButtons("account", "hide");
         }
 
-        client.invoke(
-          "api_bf_account_details",
-          bfAccountSelected,
-          (error, res) => {
-            if (error) {
-              log.error(error);
-              console.error(error);
-              showHideDropdownButtons("account", "hide");
-            } else {
-              $("#para-account-detail-curate").html(res);
-              updateBfAccountList();
-              // checkPrevDivForConfirmButton("account");
-            }
-          }
-        );
+        // client.invoke(
+        //   "api_bf_account_details",
+        //   bfAccountSelected,
+        //   (error, res) => {
+        //     if (error) {
+        //       log.error(error);
+        //       console.error(error);
+        //       showHideDropdownButtons("account", "hide");
+        //     } else {
+        //       $("#para-account-detail-curate").html(res);
+        //       updateBfAccountList();
+        //       // checkPrevDivForConfirmButton("account");
+        //     }
+        //   }
+        // );
         // $("#div-bf-account-btns").css("display", "flex");
         $("#btn-bf-account").trigger("click");
         // Step 3: choose to generate on an existing or new dataset
@@ -540,7 +541,7 @@ async function importGenerateDatasetStep(object) {
       exitCurate();
     }
   }
-}
+};
 
 // check metadata files
 function populateMetadataProgress(
@@ -1053,12 +1054,13 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
           let key_name = result.value.name;
           let apiKey = result.value.key;
           let apiSecret = result.value.secret;
+          //needs to be replaced
           client.invoke(
             "api_bf_add_account_username",
             key_name,
             apiKey,
             apiSecret,
-            (error, res) => {
+            async (error, res) => {
               if (error) {
                 log.error(error);
                 console.error(error);
@@ -1068,50 +1070,95 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
                 bfAccountOptions[key_name] = key_name;
                 defaultBfAccount = key_name;
                 defaultBfDataset = "Select dataset";
-                client.invoke(
-                  "api_bf_account_details",
-                  key_name,
-                  (error, res) => {
-                    if (error) {
-                      log.error(error);
-                      console.error(error);
-                      Swal.fire({
-                        backdrop: "rgba(0,0,0, 0.4)",
-                        heightAuto: false,
-                        icon: "error",
-                        text: "Something went wrong!",
-                        footer:
-                          '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
-                      });
-                      showHideDropdownButtons("account", "hide");
-                      confirm_click_account_function();
-                    } else {
-                      $("#para-account-detail-curate").html(res);
-                      $("#current-bf-account").text(key_name);
-                      $("#current-bf-account-generate").text(key_name);
-                      $("#create_empty_dataset_BF_account_span").text(key_name);
-                      $(".bf-account-span").text(key_name);
-                      $("#current-bf-dataset").text("None");
-                      $("#current-bf-dataset-generate").text("None");
-                      $(".bf-dataset-span").html("None");
-                      $("#para-account-detail-curate-generate").html(res);
-                      $("#para_create_empty_dataset_BF_account").html(res);
-                      $(".bf-account-details-span").html(res);
-                      $("#para-continue-bf-dataset-getting-started").text("");
 
-                      $("#current_curation_team_status").text("None");
-                      $("#curation-team-share-btn").hide();
-                      $("#curation-team-unshare-btn").hide();
-                      $("#current_sparc_consortium_status").text("None");
-                      $("#sparc-consortium-share-btn").hide();
-                      $("#sparc-consortium-unshare-btn").hide();
+                try {
+                  bf_account_details_req = await client.get(
+                    `/manage_datasets/bf_account_details?selected_account=${defaultBfAccount}`
+                  );
+                  let result = bf_account_details_req.data.account_details;
+                  $("#para-account-detail-curate").html(result);
+                  $("#current-bf-account").text(key_name);
+                  $("#current-bf-account-generate").text(key_name);
+                  $("#create_empty_dataset_BF_account_span").text(key_name);
+                  $(".bf-account-span").text(key_name);
+                  $("#current-bf-dataset").text("None");
+                  $("#current-bf-dataset-generate").text("None");
+                  $(".bf-dataset-span").html("None");
+                  $("#para-account-detail-curate-generate").html(result);
+                  $("#para_create_empty_dataset_BF_account").html(result);
+                  $(".bf-account-details-span").html(result);
+                  $("#para-continue-bf-dataset-getting-started").text("");
 
-                      showHideDropdownButtons("account", "show");
-                      confirm_click_account_function();
-                      updateBfAccountList();
-                    }
-                  }
-                );
+                  $("#current_curation_team_status").text("None");
+                  $("#curation-team-share-btn").hide();
+                  $("#curation-team-unshare-btn").hide();
+                  $("#current_sparc_consortium_status").text("None");
+                  $("#sparc-consortium-share-btn").hide();
+                  $("#sparc-consortium-unshare-btn").hide();
+
+                  showHideDropdownButtons("account", "show");
+                  confirm_click_account_function();
+                  updateBfAccountList();
+                } catch (error) {
+                  client_error(error);
+                  log.error(error);
+                  console.error(error);
+                  Swal.fire({
+                    backdrop: "rgba(0,0,0, 0.4)",
+                    heightAuto: false,
+                    icon: "error",
+                    text: "Something went wrong!",
+                    footer:
+                      '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
+                  });
+                  showHideDropdownButtons("account", "hide");
+                  confirm_click_account_function();
+                }
+
+                // client.invoke(
+                //   "api_bf_account_details",
+                //   key_name,
+                //   (error, res) => {
+                //     if (error) {
+                //       log.error(error);
+                //       console.error(error);
+                //       Swal.fire({
+                //         backdrop: "rgba(0,0,0, 0.4)",
+                //         heightAuto: false,
+                //         icon: "error",
+                //         text: "Something went wrong!",
+                //         footer:
+                //           '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
+                //       });
+                //       showHideDropdownButtons("account", "hide");
+                //       confirm_click_account_function();
+                //     } else {
+                //       $("#para-account-detail-curate").html(res);
+                //       $("#current-bf-account").text(key_name);
+                //       $("#current-bf-account-generate").text(key_name);
+                //       $("#create_empty_dataset_BF_account_span").text(key_name);
+                //       $(".bf-account-span").text(key_name);
+                //       $("#current-bf-dataset").text("None");
+                //       $("#current-bf-dataset-generate").text("None");
+                //       $(".bf-dataset-span").html("None");
+                //       $("#para-account-detail-curate-generate").html(res);
+                //       $("#para_create_empty_dataset_BF_account").html(res);
+                //       $(".bf-account-details-span").html(res);
+                //       $("#para-continue-bf-dataset-getting-started").text("");
+
+                //       $("#current_curation_team_status").text("None");
+                //       $("#curation-team-share-btn").hide();
+                //       $("#curation-team-unshare-btn").hide();
+                //       $("#current_sparc_consortium_status").text("None");
+                //       $("#sparc-consortium-share-btn").hide();
+                //       $("#sparc-consortium-unshare-btn").hide();
+
+                //       showHideDropdownButtons("account", "show");
+                //       confirm_click_account_function();
+                //       updateBfAccountList();
+                //     }
+                //   }
+                // );
                 Swal.fire({
                   allowEscapeKey: false,
                   heightAuto: false,
@@ -1224,6 +1271,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             responseObject = await client.get(
               `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
             );
+            console.log("uhhhhhuhhuhuhuhuhuHUHU");
           } catch (error) {
             log.error(error);
             console.log(error);
@@ -1231,8 +1279,8 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             return;
           }
 
-          let result = responseObject.data;
-
+          let result = responseObject.data.datasets;
+          console.log(result);
           datasetList = [];
           datasetList = result;
           refreshDatasetList();
