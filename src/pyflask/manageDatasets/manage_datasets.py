@@ -1093,8 +1093,13 @@ def bf_submit_dataset_upload_details():
     Function frequently called by front end to help keep track of the amount of files that have
     been successfully uploaded to Pennsieve, and the size of the uploaded files
 
-    Return did_fail and did_upload to inform the user that the upload failed and that it failed after uploading data - important for logging upload sessions
-    correctly
+    Returns: 
+        uploaded_files - 
+        uploaded_file_size - 
+        did_fail - 
+        did_upload -  to inform the user that the upload failed and that it failed after uploading data - important for logging upload sessions
+        upload_folder_count - the number of folders that have been uploaded
+
     """
     global uploaded_file_size
     global uploaded_files
@@ -1102,13 +1107,13 @@ def bf_submit_dataset_upload_details():
     global did_upload
     global upload_folder_count
 
-    return (
-        uploaded_files,
-        uploaded_file_size,
-        did_fail,
-        did_upload,
-        upload_folder_count,
-    )
+    return {
+        "uploaded_files": uploaded_files,
+        "uploaded_file_size": uploaded_file_size,
+        "did_fail": did_fail,
+        "did_upload": did_upload,
+        "upload_folder_count": upload_folder_count,
+    }
 
 
 def submit_dataset_progress():
