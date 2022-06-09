@@ -83,6 +83,7 @@ def set_template_path(soda_base_path, soda_resources_path):
     """
     global TEMPLATE_PATH
 
+
     # once pysoda has been packaged with pyinstaller
     # it creates an archive that slef extracts to an OS-specific temp directory.
     # Due to this we can no longer use a relative path from the pysoda directory to the file_templates folder.
@@ -150,35 +151,23 @@ def extract_milestone_info(datalist):
 
 
 ### Create submission file
-def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_str):
+def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, val_arr):
 
     font_submission = Font(name="Calibri", size=14, bold=False)
 
     source = join(TEMPLATE_PATH, "submission.xlsx")
 
-    print(source)
-
-    if upload_boolean:
-        destination = join(METADATA_UPLOAD_BF_PATH, "submission.xlsx")
-
-    else:
-        destination = filepath
+    destination = join(METADATA_UPLOAD_BF_PATH, "submission.xlsx") if upload_boolean else filepath
 
     try:
         shutil.copyfile(source, destination)
     except FileNotFoundError as e:
         raise e
-    
-    # json array to python list
-    val_arr = json_str
 
     # write to excel file
     wb = load_workbook(destination)
     ws1 = wb["Sheet1"]
-    # date_obj = datetime.strptime(val_arr[2], "%Y-%m")
-    # date_new = date_obj.strftime("%m-%Y")
     for column, arr in zip(excel_columns(start_index=2), val_arr):
-        print(arr)
         ws1[column + "2"] = arr["award"]
         ws1[column + "3"] = arr["milestone"]
         ws1[column + "4"] = arr["date"]

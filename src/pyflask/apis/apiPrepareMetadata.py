@@ -16,34 +16,39 @@ from prepareMetadata import (
     set_template_path
 )
 from namespaces import NamespaceEnum, get_namespace
-from flask_restx import Resource, reqparse
+from flask_restx import Resource, reqparse, fields
 from flask import jsonify, request
 from errorHandlers import notBadRequestException
 
 
 api = get_namespace(NamespaceEnum.PREPARE_METADATA)
 
-# upload_boolean, bfaccount, bfdataset, filepath, json_str
 
 
+
+model_save_submission_file_response = api.model('saveSubmissionFileResponse', {
+    'size': fields.Integer(required=True, description='Size of the file in bytes'),
+})
 
 @api.route('/submission_file')
 class SaveSubmissionFile(Resource):
 
     parser_save_submission_file = reqparse.RequestParser(bundle_errors=True)
     parser_save_submission_file.add_argument('upload_boolean', type=bool, help='Boolean to indicate whether to upload the file to the Bionimbus server', location="json", required=True)
-    parser_save_submission_file.add_argument('bfaccount', type=str, help='Bionimbus account name', location="args", required=True)
-    parser_save_submission_file.add_argument('bfdataset', type=str, help='Bionimbus dataset name', location="args", required=True)
+    parser_save_submission_file.add_argument('selected_account', type=str, help='Pennsieve account name', location="args", required=True)
+    parser_save_submission_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset name', location="args", required=True)
     parser_save_submission_file.add_argument('filepath', type=str, help='Path to the file to be uploaded', location="json")
     parser_save_submission_file.add_argument('json_str', type=str, help='JSON string to be uploaded', location="json", required=True)
 
     @api.expect(parser_save_submission_file)
+    @api.response(200, 'OK', model_save_submission_file_response)
+    @api.doc(description='Save a submission file locally or in a dataset stored on the Pennsieve account of the current user.', responses={500: "Internal Server Error", 400: "Bad Request"})
     def post(self):
         data = self.parser_save_submission_file.parse_args()
 
         upload_boolean = data.get('upload_boolean')
-        bfaccount = data.get('bfaccount')
-        bfdataset = data.get('bfdataset')
+        bfaccount = data.get('selected_account')
+        bfdataset = data.get('selected_dataset')
         filepath = data.get('filepath')
         json_str = data.get("json_str")
 
