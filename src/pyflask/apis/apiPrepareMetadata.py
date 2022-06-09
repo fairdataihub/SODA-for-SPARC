@@ -109,7 +109,7 @@ class RCFile(Resource):
     parser_get_RC_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset name', location="args", required=True)
 
 
-    @api.marhsal_with(model_get_RC_file_response, 200, False)
+    @api.marshal_with(model_get_RC_file_response, 200, False)
     @api.expect(parser_get_RC_file)
     @api.doc(description='Get the readme or changes file from Pennsieve.', responses={500: "Internal Server Error", 400: "Bad Request"})
     def get(self):
