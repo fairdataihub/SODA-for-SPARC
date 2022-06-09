@@ -137,7 +137,7 @@ def bf_keep_only_account(keyname):
     config_sections = config.sections()
 
     for section in config_sections:
-        if section != "agent" and section != "global" and section != keyname:
+        if section not in ["agent", "global", keyname]:
             config.remove_section(section)
         with open(configpath, "w+") as configfile:
             config.write(configfile)
