@@ -1,4 +1,3 @@
-from urllib import response
 from prepareMetadata import (
     save_submission_file,
     save_ds_description_file,
@@ -19,7 +18,6 @@ from prepareMetadata import (
 from namespaces import NamespaceEnum, get_namespace
 from flask_restx import Resource, reqparse
 from flask import jsonify, request
-import json
 from errorHandlers import notBadRequestException
 
 
