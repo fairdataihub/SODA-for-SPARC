@@ -1136,14 +1136,14 @@ def submit_dataset_progress():
         elapsed_time_formatted = 0
         elapsed_time_formatted_display = "<br>" + "Initiating..." + "<br>"
     # gevent.sleep(0)
-    return (
-        submitdataprogress + elapsed_time_formatted_display,
-        submitdatastatus,
-        submitprintstatus,
-        total_file_size,
-        uploaded_file_size,
-        elapsed_time_formatted,
-    )
+    return {
+        'progress': submitdataprogress + elapsed_time_formatted_display,
+        'submit_dataset_status': submitdatastatus,
+        'submit_print_status': submitprintstatus,
+        'total_file_size': total_file_size,
+        'upload_file_size': uploaded_file_size,
+        'elapsed_time_formatted': elapsed_time_formatted,
+    }
 
 
 def bf_get_users(selected_bfaccount):

@@ -857,3 +857,28 @@ class BfCreateDatasetFolder(Resource):
         api.abort(500, str(e))
       else:
         raise e
+
+
+
+
+
+
+
+model_upload_progress_response = api.model("UploadProgressResponse", {
+  'progress': fields.Integer(required=True, description="The current progress of the upload."),
+  'submit_dataset_status': fields.String(required=True, description="The status of the upload."),
+  'submit_print_status': fields.String(required=True, description="The status of the print."),
+  'total_file_size': fields.Integer(required=True, description="The total size of the file being uploaded."),
+  'upload_file_size': fields.Integer(required=True, description="The size of the file being uploaded."),
+  'elapsed_time_formatted': fields.String(required=True, description="The elapsed time of the upload."),
+})
+
+@api.route('/datasets/upload_progress')
+class BfGetUploadProgress(Resource):
+
+  @api.doc(responses={500: 'There was an internal server error', 200: 'OK'}, description="Get the progress of the upload.")
+  def get(self):
+    try:
+      return submit_dataset_progress()
+    except Exception as e:
+      api.abort(500, str(e))
