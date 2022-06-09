@@ -7,7 +7,7 @@ from gevent import monkey
 monkey.patch_all()
 import platform
 import os
-from os import abort, listdir, stat, makedirs, mkdir, walk, remove, pardir
+from os import listdir, stat, makedirs, mkdir, walk, remove, pardir
 from os.path import (
     isdir,
     isfile,
@@ -63,6 +63,8 @@ from docx import Document
 from datetime import datetime, timezone
 
 from Bio import Entrez
+
+from flask import abort 
 
 from manageDatasets import (
     bf_get_current_user_permission,
@@ -825,7 +827,9 @@ def checkEmptyColumn(column):
 ## load/import an existing local or Pennsieve submission.xlsx file
 def load_existing_submission_file(filepath):
 
-    ## TODO: check and read csv
+    if not exists(filepath):
+        abort(400, "Submission file not found")
+
     try:
         DD_df = pd.read_excel(
             filepath, engine="openpyxl", usecols=column_check, header=0
