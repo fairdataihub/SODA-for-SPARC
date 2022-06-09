@@ -87,6 +87,52 @@ class SaveSubmissionFile(Resource):
 
 
 
+
+
+
+model_upload_RC_file_response = api.model('uploadRCFileResponse', {
+    'size': fields.Integer(required=True, description='Size of the file in bytes'),
+    'filepath': fields.String(required=True, description='Path to the file on the user\'s machine'),
+
+})
+
+model_get_RC_file_response = api.model('getRCFileResponse', {
+    'text': fields.String(required=True, description='Text of the file'),
+})
+
+@api.route('/readme_changes_file')
+class RCFile(Resource):
+
+    parser_get_RC_file = reqparse.RequestParser(bundle_errors=True)
+    parser_get_RC_file.add_argument('file_type', type=str, help="Either README or CHANGES from the user\'s Pennsieve account and dataset.", location="args", required=True)
+    parser_get_RC_file.add_argument('selected_account', type=str, help='Pennsieve account name', location="args", required=True)
+    parser_get_RC_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset name', location="args", required=True)
+
+
+    @api.marhsal_with(model_get_RC_file_response, 200, False)
+    @api.expect(parser_get_RC_file)
+    @api.doc(description='Get the readme or changes file from Pennsieve.', responses={500: "Internal Server Error", 400: "Bad Request"})
+    def get(self):
+        data = self.parser_get_RC_file.parse_args()
+
+        file_type = data.get('file_type')
+        bfaccount = data.get('selected_account')
+        bfdataset = data.get('selected_dataset')
+
+        try:
+            return import_bf_RC(bfaccount, bfdataset, file_type)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
+
+
+
+
+
+
+
+
 @api.route('/template_paths')
 class SetTemplatePath(Resource):
 

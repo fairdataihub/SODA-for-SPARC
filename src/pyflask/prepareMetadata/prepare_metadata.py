@@ -916,9 +916,17 @@ def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
 
 # import readme or changes file from Pennsieve
 def import_bf_RC(bfaccount, bfdataset, file_type):
-    bf = Pennsieve(bfaccount)
-    myds = bf.get_dataset(bfdataset)
 
+    try:
+        bf = Pennsieve(bfaccount)
+    except Exception:
+        abort(400, "Error: Please select a valid Pennsieve account.")
+
+    try:
+        myds = bf.get_dataset(bfdataset)
+    except Exception:
+        abort(400, "Error: Please select a valid Pennsieve dataset.")
+        
     for i in range(len(myds.items)):
 
         if myds.items[i].name == file_type:
@@ -927,13 +935,9 @@ def import_bf_RC(bfaccount, bfdataset, file_type):
             url = returnFileURL(bf, item_id)
 
             response = requests.get(url)
-            data = response.text
+            return {"text": response.text}
 
-            return data
-
-    raise Exception(
-        f"No {file_type} file was found at the root of the dataset provided."
-    )
+    abort (400, f"Error: no {file_type} file was found at the root of the dataset provided.")
 
 
 # obtain Pennsieve S3 URL for an existing metadata file
