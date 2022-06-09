@@ -3876,13 +3876,19 @@ const addPoolTableRow = () => {
   const poolsTableBody = document.getElementById(
     "pools-specification-table-body"
   );
-  //insert a new table row container with js as select2 breaks when adding a new row
-  //via template literals
-  const newPoolTableRow = poolsTableBody.insertRow(-1);
-  newPoolTableRow.innerHTML = generatePoolSpecificationRowElement();
+  const poolSpecificationTableInput = poolsTableBody.querySelector(
+    "input[name='guided-pool-id']"
+  );
 
-  //scroll to the last element in the table
-  //smoothScrollToElement(poolsTableBody.querySelector("tr:last-child"));
+  if (poolSpecificationTableInput) {
+    //focus on the input that already exists
+    poolSpecificationTableInput.focus();
+  } else {
+    //insert a new table row container with js as select2 breaks when adding a new row
+    //via template literals
+    const newPoolTableRow = poolsTableBody.insertRow(-1);
+    newPoolTableRow.innerHTML = generatePoolSpecificationRowElement();
+  }
 };
 
 //Deletes the entered subject folder from dsJSONObj and updates UI
