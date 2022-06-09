@@ -53,9 +53,7 @@ class SaveSubmissionFile(Resource):
         try:
             return save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_str)
         except Exception as e:
-            response = jsonify({"message": str(e)})
-            response.status_code = 500
-            return response
+            api.abort(500, str(e))
 
 
 
