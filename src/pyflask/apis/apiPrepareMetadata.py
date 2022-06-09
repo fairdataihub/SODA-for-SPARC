@@ -66,21 +66,30 @@ class SaveSubmissionFile(Resource):
 
 
 
-parser_set_template_path = reqparse.RequestParser(bundle_errors=True)
-parser_set_template_path.add_argument('basepath', type=str, help='Path to the template directory', location="json")
-parser_set_template_path.add_argument('resourcesPath', type=str, help='Path to the template directory', location="json")
-@api.route('/set_template_paths')
+
+@api.route('/template_paths')
 class SetTemplatePath(Resource):
+
+    parser_set_template_path = reqparse.RequestParser(bundle_errors=True)
+    parser_set_template_path.add_argument('basepath', type=str, help='Path to the template directory', location="json")
+    parser_set_template_path.add_argument('resourcesPath', type=str, help='Path to the template directory', location="json")
 
     @api.expect(parser_set_template_path)
     def put(self):
-        args = request.get_json()
-        basepath = args['basepath']
-        resourcesPath = args['resourcesPath']
+        data = self.parser_set_template_path.parse_args()
+        basepath = data.get('basepath')
+        resourcesPath = data.get('resourcesPath')
+
+        if basepath is None and resourcesPath is None:
+            return api.abort(400, "Missing required parameters: basepath, resourcesPath")
+
+            
         try:
             return set_template_path(basepath, resourcesPath)
         except Exception as e:
-            api.abort(500, e.args[0])
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e 
 
 
 
