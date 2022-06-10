@@ -246,7 +246,7 @@ class DatasetDescriptionFile(Resource):
 
 
 
-@api.route('/prepare_metadata/import_metadata_file')
+@api.route('/import_metadata_file')
 class ImportBFMetadataFile(Resource):
     parser_import_bf_metadata_file = reqparse.RequestParser(bundle_errors=True)
     parser_import_bf_metadata_file.add_argument('file_type', type=str, help="The type of metadata file included. Options: submission.xlsx, samples.xlsx, subjects.xlsx, and dataset_description.xlsx.", location="args", required=True)
