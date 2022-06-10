@@ -243,6 +243,44 @@ class DatasetDescriptionFile(Resource):
 
 
 
+@api.route('/subjects_file')
+class SubjectsFile(Resource):
+
+    parser_save_subjects_file = reqparse.RequestParser(bundle_errors=True)
+    parser_save_subjects_file.add_argument('filepath', type=str, help="Path to the subjects file on the user\'s machine.", location="json", required=False)
+    parser_save_subjects_file.add_argument('upload_boolean', type=boolean, help='Save subjecst on Pennsieve if True else save locally.', location="args", required=True)
+    parser_save_subjects_file.add_argument('selected_account', type=str, help='Pennsieve account to save the subjects file to.', location="json", required=False)
+    parser_save_subjects_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset to save the subjects file to.', location="json", required=False)
+    parser_save_subjects_file.add_argument('subjects_str', type=list, help='List of subjects to save.', location="json", required=True)
+
+    @api.expect(parser_save_subjects_file)
+    @api.doc(description='Save the subjects file to the user\'s machine or to Pennsieve.', responses={500: "Internal Server Error", 400: "Bad Request", 403: "Forbidden"})
+    def post(self):
+        data = self.parser_save_subjects_file.parse_args()
+
+        filepath = data.get('filepath')
+        upload_boolean = data.get('upload_boolean')
+        selected_account = data.get('selected_account')
+        selected_dataset = data.get('selected_dataset')
+        subjects_str = data.get('subjects_str')
+
+        if upload_boolean and not selected_account and not selected_dataset:
+            api.abort(400, "Error:  To save a subjects file on Pennsieve provide a dataset and pennsieve account.")
+
+        if not upload_boolean and not filepath:
+            api.abort(400, "Error:  To save a subjects file on the user\'s machine provide a filepath.")
+
+        try:
+            save_subjects_file(upload_boolean, selected_account, selected_dataset, filepath, subjects_str)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
+
+
+
+
+
 
 
 
@@ -302,14 +340,15 @@ class SetTemplatePath(Resource):
 
 
 
-parser_import_milestone = reqparse.RequestParser(bundle_errors=True)
-parser_import_milestone.add_argument('path', type=str, help='Path to the local data deliverables document', location="args")
+
 @api.route('/import_milestone')
 class ImportMilestone(Resource):
+    parser_import_milestone = reqparse.RequestParser(bundle_errors=True)
+    parser_import_milestone.add_argument('path', type=str, help='Path to the local data deliverables document', location="args")
 
     @api.expect(parser_import_milestone)
     def get(self):
-        args = parser_import_milestone.parse_args()
+        args = self.parser_import_milestone.parse_args()
         path = args['path']
         try:
             return import_milestone(path)
