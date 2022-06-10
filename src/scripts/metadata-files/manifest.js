@@ -687,7 +687,7 @@ async function initiate_generate_manifest_local(
 }
 
 var generatingBoolean = false;
-function initiate_generate_manifest_bf() {
+async function initiate_generate_manifest_bf() {
   generatingBoolean = true;
   Swal.fire({
     title: "Generating the manifest.xlsx file(s)",
@@ -738,7 +738,7 @@ function initiate_generate_manifest_bf() {
   // clear the pennsieve queue
   clearQueue();
 
-  client.invoke("api_main_curate_function", sodaJSONObj, (error, res) => {
+  client.invoke("api_main_curate_function", sodaJSONObj, async (error, res) => {
     if (error) {
       var emessage = userError(error);
       log.error(error);
@@ -746,20 +746,34 @@ function initiate_generate_manifest_bf() {
       file_counter = 0;
       folder_counter = 0;
       get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
-      client.invoke(
-        "api_bf_dataset_account",
-        defaultBfAccount,
-        (error, result) => {
-          if (error) {
-            log.error(error);
-            console.log(error);
-            var emessage = error;
-          } else {
-            datasetList = [];
-            datasetList = result;
-          }
-        }
-      );
+
+      try {
+        responseObject = await client.get(
+          `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
+        );
+        datasetList = [];
+        datasetList = responseObject.data.datasets;
+      } catch (error) {
+        client_error(error);
+        log.error(error);
+        console.error(error);
+        var emessage = error;
+      }
+
+      // client.invoke(
+      //   "api_bf_dataset_account",
+      //   defaultBfAccount,
+      //   (error, result) => {
+      //     if (error) {
+      //       log.error(error);
+      //       console.log(error);
+      //       var emessage = error;
+      //     } else {
+      //       datasetList = [];
+      //       datasetList = result;
+      //     }
+      //   }
+      // );
 
       Swal.fire({
         title: "Failed to generate manifest files!",
