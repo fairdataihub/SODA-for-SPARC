@@ -205,7 +205,7 @@ $("#button-create-bf-new-dataset").click(async () => {
           log.info(`Requesting list of datasets`);
 
           try {
-            responseObject = await client.get(
+            let responseObject = await client.get(
               `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
             );
             datasetList = [];
@@ -250,7 +250,7 @@ const addNewDatasetToList = (newDataset) => {
 };
 
 // Rename dataset on bf //
-$("#button-rename-dataset").click(() => {
+$("#button-rename-dataset").click(async () => {
   setTimeout(function () {
     var selectedbfaccount = defaultBfAccount;
     var currentDatasetName = defaultBfDataset;
@@ -292,7 +292,7 @@ $("#button-rename-dataset").click(() => {
         selectedbfaccount,
         currentDatasetName,
         renamedDatasetName,
-        (error, res) => {
+        async (error, res) => {
           if (error) {
             log.error(error);
             console.error(error);
@@ -355,7 +355,7 @@ $("#button-rename-dataset").click(() => {
             log.info("Requesting list of datasets");
 
             try {
-              responseObject = await client.get(
+              let responseObject = await client.get(
                 `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
               );
               datasetList = [];
@@ -497,7 +497,7 @@ const changeDatasetRolePI = (selectedDataset) => {
   }
 };
 
-const showCurrentPermission = () => {
+const showCurrentPermission = async () => {
   let selectedBfAccount = defaultBfAccount;
   let selectedBfDataset = defaultBfDataset;
 
@@ -512,39 +512,32 @@ const showCurrentPermission = () => {
     currentDatasetPermission.innerHTML = "None";
     currentAddEditDatasetPermission.innerHTML = "None";
   } else {
-    client.invoke(
-      "api_bf_get_permission",
-      selectedBfAccount,
-      selectedBfDataset,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-        } else {
-          let permissionList = "";
-          let datasetOwner = "";
+    try {
+      let dataset_permissions = await client.get(
+        `/manage_datasets/bf_dataset_permissions?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}`
+      );
+      let res = dataset_permissions.data.permissions;
+      let permissionList = "";
+      let datasetOwner = "";
 
-          for (let i in res) {
-            permissionList = permissionList + res[i] + "<br>";
+      for (let i in res) {
+        permissionList = permissionList + res[i] + "<br>";
 
-            if (res[i].indexOf("owner") != -1) {
-              let first_position = res[i].indexOf(":");
-              let second_position = res[i].indexOf(",");
+        if (res[i].indexOf("owner") != -1) {
+          let first_position = res[i].indexOf(":");
+          let second_position = res[i].indexOf(",");
 
-              datasetOwner = res[i].substring(
-                first_position + 2,
-                second_position
-              );
-            }
-          }
-
-          currentDatasetPermission.innerHTML = datasetOwner;
-          currentAddEditDatasetPermission.innerHTML = permissionList;
-
-          curation_consortium_check();
+          datasetOwner = res[i].substring(first_position + 2, second_position);
         }
       }
-    );
+
+      currentDatasetPermission.innerHTML = datasetOwner;
+      currentAddEditDatasetPermission.innerHTML = permissionList;
+
+      curation_consortium_check();
+    } catch (error) {
+      client_error(error);
+    }
   }
 };
 
@@ -560,7 +553,7 @@ const addPermissionUser = (
     selectedBfDataset,
     selectedUser,
     selectedRole,
-    (error, res) => {
+    async (error, res) => {
       if (error) {
         log.error(error);
         console.error(error);
@@ -603,29 +596,29 @@ const addPermissionUser = (
         showCurrentPermission();
 
         // refresh dataset lists with filter
-        client.invoke("api_get_username", selectedBfAccount, (error, res1) => {
-          if (error) {
-            log.error(error);
-            console.error(error);
-          } else {
-            if (selectedRole === "owner") {
-              for (var i = 0; i < datasetList.length; i++) {
-                if (datasetList[i].name === selectedBfDataset) {
-                  datasetList[i].role = "manager";
-                }
-              }
-            }
-
-            if (selectedUser === res1) {
-              // then change role of dataset and refresh dataset list
-              for (var i = 0; i < datasetList.length; i++) {
-                if (datasetList[i].name === selectedBfDataset) {
-                  datasetList[i].role = selectedRole.toLowerCase();
-                }
+        try {
+          let get_username = await client.get(
+            u`/manage_datasets/account/username?selected_account=${selectedBfAccount}`
+          );
+          let res1 = get_username.data.username;
+          if (selectedRole === "owner") {
+            for (var i = 0; i < datasetList.length; i++) {
+              if (datasetList[i].name === selectedBfDataset) {
+                datasetList[i].role = "manager";
               }
             }
           }
-        });
+          if (selectedUser === res1) {
+            // then change role of dataset and refresh dataset list
+            for (var i = 0; i < datasetList.length; i++) {
+              if (datasetList[i].name === selectedBfDataset) {
+                datasetList[i].role = selectedRole.toLowerCase();
+              }
+            }
+          }
+        } catch (error) {
+          client_error(error);
+        }
       }
     }
   );
@@ -839,7 +832,7 @@ $("#button-add-subtitle").click(() => {
   }, delayAnimation);
 });
 
-const showCurrentSubtitle = () => {
+const showCurrentSubtitle = async () => {
   let selectedBfAccount = defaultBfAccount;
   let selectedBfDataset = defaultBfDataset;
 
@@ -852,46 +845,40 @@ const showCurrentSubtitle = () => {
   } else {
     document.getElementById("ds-description").innerHTML = "Loading...";
     document.getElementById("ds-description").disabled = true;
-    client.invoke(
-      "api_bf_get_subtitle",
-      selectedBfAccount,
-      selectedBfDataset,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-          logGeneralOperationsForAnalytics(
-            "Error",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
-            AnalyticsGranularity.ALL_LEVELS,
-            ["Get Subtitle"]
-          );
-          $("#ds-description").val("");
-        } else {
-          logGeneralOperationsForAnalytics(
-            "Success",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
-            AnalyticsGranularity.ACTION,
-            ["Get Subtitle"]
-          );
-          $("#bf-dataset-subtitle").val(res);
-          $("#ds-description").val(res);
-          let result = countCharacters(
-            bfDatasetSubtitle,
-            bfDatasetSubtitleCharCount
-          );
-          if (result === 0) {
-            $("#button-add-subtitle > .btn_animated-inside").html(
-              "Add subtitle"
-            );
-          } else {
-            $("#button-add-subtitle > .btn_animated-inside").html(
-              "Edit subtitle"
-            );
-          }
-        }
+    try {
+      let bf_get_subtitle = await client.get(
+        `/manage_datasets/bf_dataset_subtitle?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}`
+      );
+      let res = bf_get_subtitle.data.subtitle;
+      console.log(res);
+      logGeneralOperationsForAnalytics(
+        "Success",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
+        AnalyticsGranularity.ACTION,
+        ["Get Subtitle"]
+      );
+      $("#bf-dataset-subtitle").val(res);
+      $("#ds-description").val(res);
+      let result = countCharacters(
+        bfDatasetSubtitle,
+        bfDatasetSubtitleCharCount
+      );
+      if (result === 0) {
+        $("#button-add-subtitle > .btn_animated-inside").html("Add subtitle");
+      } else {
+        $("#button-add-subtitle > .btn_animated-inside").html("Edit subtitle");
       }
-    );
+    } catch (error) {
+      client_error(error);
+      logGeneralOperationsForAnalytics(
+        "Error",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
+        AnalyticsGranularity.ALL_LEVELS,
+        ["Get Subtitle"]
+      );
+      $("#ds-description").val("");
+    }
+
     document.getElementById("ds-description").disabled = false;
   }
 };
@@ -2240,7 +2227,7 @@ $("#button-add-license").click(() => {
   }, delayAnimation);
 });
 
-const showCurrentLicense = () => {
+const showCurrentLicense = async () => {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
@@ -2253,42 +2240,38 @@ const showCurrentLicense = () => {
   if (selectedBfDataset === "Select dataset") {
     currentDatasetLicense.innerHTML = "None";
   } else {
-    client.invoke(
-      "api_bf_get_license",
-      selectedBfAccount,
-      selectedBfDataset,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-          logGeneralOperationsForAnalytics(
-            "Error",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
-            AnalyticsGranularity.ALL_LEVELS,
-            ["Get License"]
-          );
-        } else {
-          currentDatasetLicense.innerHTML = res;
-          if (res === "Creative Commons Attribution") {
-            $("#button-add-license").hide();
-            $("#assign-a-license-header").hide();
-            if ($("#add_license-section").hasClass("is-shown")) {
-              Swal.fire({
-                title:
-                  "You are all set. This dataset already has the correct license assigned.",
-                backdrop: "rgba(0,0,0, 0.4)",
-                heightAuto: false,
-                showConfirmButton: true,
-                icon: "success",
-              });
-            }
-          } else {
-            $("#button-add-license").show();
-            $("#assign-a-license-header").show();
-          }
+    try {
+      let bf_get_license = await client.get(
+        `/manage_datasets/bf_license?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}`
+      );
+      currentDatasetLicense.innerHTML = bf_get_license.data.license;
+      if (bf_get_license.data.license === "Creative Commons Attribution") {
+        $("#button-add-license").hide();
+        $("#assign-a-license-header").hide();
+        if ($("#add_license-section").hasClass("is-shown")) {
+          Swal.fire({
+            title:
+              "You are all set. This dataset already has the correct license assigned.",
+            backdrop: "rgba(0,0,0, 0.4)",
+            heightAuto: false,
+            showConfirmButton: true,
+            icon: "success",
+          });
         }
+      } else {
+        $("#button-add-license").show();
+        $("#assign-a-license-header").show();
       }
-    );
+    } catch (error) {
+      console.log("here");
+      client_error(error);
+      logGeneralOperationsForAnalytics(
+        "Error",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
+        AnalyticsGranularity.ALL_LEVELS,
+        ["Get License"]
+      );
+    }
   }
 };
 

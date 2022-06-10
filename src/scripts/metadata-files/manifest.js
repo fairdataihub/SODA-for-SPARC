@@ -748,7 +748,7 @@ async function initiate_generate_manifest_bf() {
       get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
 
       try {
-        responseObject = await client.get(
+        let responseObject = await client.get(
           `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
         );
         datasetList = [];

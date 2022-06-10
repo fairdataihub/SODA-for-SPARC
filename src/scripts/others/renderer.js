@@ -2850,7 +2850,7 @@ async function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
   let defaultBfAccount =
     bfaccountDropdown.options[bfaccountDropdown.selectedIndex].text;
   try {
-    responseObject = await client.get(
+    let responseObject = await client.get(
       `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
     );
     datasetList = [];
@@ -3776,12 +3776,16 @@ function client_error(error) {
   let error_message = error.response.data.message;
   let error_status = error.response.status;
   let error_headers = error.response.headers;
-  log.error(error);
-  console.error(error);
+
   log.error("Error caused from: " + JSON.stringify(error_message));
   log.error("Response Status: " + JSON.stringify(error_status));
   log.error("Headers: ");
   log.error(error_headers);
+
+  console.log("Error caused from: " + JSON.stringify(error_message));
+  console.log("Response Status: " + JSON.stringify(error_status));
+  console.log("Headers: ");
+  console.log(error_headers);
 }
 
 async function loadDefaultAccount() {
@@ -3806,8 +3810,8 @@ async function loadDefaultAccount() {
   console.log(account);
 
   try {
-    dataset_request = await client.get(
-      `/manage_datasets/bf_account_details?selected_account=${account}`
+    let dataset_request = await client.get(
+      `/manage_datasets/bf_dataset_permissions?selected_account=${account}&selected_dataset=${"bug-test"}`
     );
     console.log(dataset_request.data.account_details);
   } catch (error) {
@@ -4373,7 +4377,7 @@ async function retrieveBFAccounts() {
 async function showDefaultBFAccount() {
   console.log("uhhh");
   try {
-    bf_default_acc_req = await client.get(
+    let bf_default_acc_req = await client.get(
       "manage_datasets/bf_default_account_load"
     );
     let accounts = bf_default_acc_req.data.defaultAccounts;
@@ -4381,7 +4385,7 @@ async function showDefaultBFAccount() {
       var myitemselect = accounts[0];
       defaultBfAccount = myitemselect;
       try {
-        bf_account_details_req = await client.get(
+        let bf_account_details_req = await client.get(
           `/manage_datasets/bf_account_details?selected_account=${defaultBfAccount}`
         );
         let accountDetails = bf_account_details_req.data.account_details;
@@ -7126,7 +7130,7 @@ async function initiate_generate() {
       console.error(error);
 
       try {
-        responseObject = await client.get(
+        let responseObject = await client.get(
           `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
         );
         datasetList = [];
@@ -7183,7 +7187,7 @@ async function initiate_generate() {
       );
 
       try {
-        responseObject = await client.get(
+        let responseObject = await client.get(
           `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
         );
         datasetList = [];
@@ -7722,7 +7726,7 @@ const curation_consortium_check = async (mode = "") => {
   $("#sparc-consortium-share-btn").hide();
 
   try {
-    bf_account_details_req = await client.get(
+    let bf_account_details_req = await client.get(
       `/manage_datasets/bf_account_details?selected_account=${defaultBfAccount}`
     );
     let res = bf_account_details_req.data.account_details;
@@ -7935,221 +7939,6 @@ const curation_consortium_check = async (mode = "") => {
 
     $(".spinner.post-curation").hide();
   }
-
-  //client.invoke replaced with axiosInstance
-  // client.invoke("api_bf_account_details", selected_account, (error, res) => {
-  //   $(".spinner.post-curation").show();
-  //   if (error) {
-  //     log.error(error);
-  //     console.error(error);
-
-  //     if (mode != "update") {
-  //       $("#curation-team-unshare-btn").hide();
-  //       $("#sparc-consortium-unshare-btn").hide();
-  //       $("#curation-team-share-btn").hide();
-  //       $("#sparc-consortium-share-btn").hide();
-  //     }
-
-  //     $(".spinner.post-curation").hide();
-  //   } else {
-  //     // remove html tags from response
-  //     res = res.replace(/<[^>]*>?/gm, "");
-
-  //     if (res.search("SPARC Consortium") == -1) {
-  //       $("#current_curation_team_status").text("None");
-  //       $("#current_sparc_consortium_status").text("None");
-  //       Swal.fire({
-  //         title: "Failed to share with Curation team!",
-  //         text: "This account is not in the SPARC Consortium organization. Please switch accounts and try again",
-  //         icon: "error",
-  //         showConfirmButton: true,
-  //         heightAuto: false,
-  //         backdrop: "rgba(0,0,0, 0.4)",
-  //       });
-  //       Swal.fire({
-  //         title: "Failed to share with the SPARC Consortium!",
-  //         text: "This account is not in the SPARC Consortium organization. Please switch accounts and try again.",
-  //         icon: "error",
-  //         showConfirmButton: true,
-  //         heightAuto: false,
-  //         backdrop: "rgba(0,0,0, 0.4)",
-  //       });
-
-  //       if (mode != "update") {
-  //         $("#curation-team-unshare-btn").hide();
-  //         $("#sparc-consortium-unshare-btn").hide();
-  //         $("#curation-team-share-btn").hide();
-  //         $("#sparc-consortium-share-btn").hide();
-  //         $(".spinner.post-curation").hide();
-  //       }
-  //       return;
-  //     }
-
-  //     if (mode != "update") {
-  //       $("#curation-team-unshare-btn").hide();
-  //       $("#sparc-consortium-unshare-btn").hide();
-  //       $("#curation-team-share-btn").hide();
-  //       $("#sparc-consortium-share-btn").hide();
-  //     }
-
-  //     if (selected_dataset === "Select dataset") {
-  //       $("#current_curation_team_status").text("None");
-  //       $("#current_sparc_consortium_status").text("None");
-  //       $(".spinner.post-curation").hide();
-  //     } else {
-  //       client.invoke(
-  //         "api_bf_get_permission",
-  //         selected_account,
-  //         selected_dataset,
-  //         (error, res) => {
-  //           $(".spinner.post-curation").show();
-  //           if (error) {
-  //             log.error(error);
-  //             console.error(error);
-  //             if (mode != "update") {
-  //               $("#current_curation_team_status").text("None");
-  //               $("#current_sparc_consortium_status").text("None");
-  //             }
-  //             $(".spinner.post-curation").hide();
-  //           } else {
-  //             let curation_permission_satisfied = false;
-  //             let consortium_permission_satisfied = false;
-  //             let curation_return_status = false;
-  //             let consortium_return_status = false;
-
-  //             for (var i in res) {
-  //               let permission = String(res[i]);
-  //               if (permission.search("SPARC Data Curation Team") != -1) {
-  //                 if (permission.search("manager") != -1) {
-  //                   curation_permission_satisfied = true;
-  //                 }
-  //               }
-  //               if (
-  //                 permission.search("SPARC Embargoed Data Sharing Group") != -1
-  //               ) {
-  //                 if (permission.search("viewer") != -1) {
-  //                   consortium_permission_satisfied = true;
-  //                 }
-  //               }
-  //             }
-
-  //             if (!curation_permission_satisfied) {
-  //               $("#current_curation_team_status").text(
-  //                 "Not shared with the curation team"
-  //               );
-  //               curation_return_status = true;
-  //             }
-  //             if (!consortium_permission_satisfied) {
-  //               $("#current_sparc_consortium_status").text(
-  //                 "Not shared with the SPARC Consortium"
-  //               );
-  //               consortium_return_status = true;
-  //             }
-
-  //             if (curation_return_status) {
-  //               if (mode != "update") {
-  //                 $("#curation-team-share-btn").show();
-  //                 $("#curation-team-unshare-btn").hide();
-  //               }
-  //             }
-
-  //             if (consortium_return_status) {
-  //               if (mode != "update") {
-  //                 $("#sparc-consortium-unshare-btn").hide();
-  //                 $("#sparc-consortium-share-btn").show();
-  //               }
-  //             }
-
-  //             if (curation_return_status && consortium_return_status) {
-  //               $("#sparc-consortium-unshare-btn").hide();
-  //               $("#sparc-consortium-share-btn").show();
-  //               $("#curation-team-unshare-btn").hide();
-  //               $("#curation-team-share-btn").show();
-  //               $(".spinner.post-curation").hide();
-  //               return;
-  //             }
-
-  //             client.invoke(
-  //               "api_bf_get_dataset_status",
-  //               defaultBfAccount,
-  //               defaultBfDataset,
-  //               (error, res) => {
-  //                 $(".spinner.post-curation").show();
-  //                 if (error) {
-  //                   log.error(error);
-  //                   console.error(error);
-  //                   $("#current_curation_team_status").text("None");
-  //                   $("#current_sparc_consortium_status").text("None");
-  //                   $(".spinner.post-curation").hide();
-  //                 } else {
-  //                   let dataset_status_value = res[1];
-  //                   let dataset_status = parseInt(
-  //                     dataset_status_value.substring(0, 2)
-  //                   );
-  //                   let curation_status_satisfied = false;
-  //                   let consortium_status_satisfied = false;
-
-  //                   if (dataset_status > 2) {
-  //                     curation_status_satisfied = true;
-  //                   }
-  //                   if (dataset_status > 10) {
-  //                     consortium_status_satisfied = true;
-  //                   }
-
-  //                   if (!curation_status_satisfied) {
-  //                     $("#current_curation_team_status").text(
-  //                       "Not shared with the curation team"
-  //                     );
-  //                     curation_return_status = true;
-  //                   }
-  //                   if (!consortium_status_satisfied) {
-  //                     $("#current_sparc_consortium_status").text(
-  //                       "Not shared with the SPARC Consortium"
-  //                     );
-  //                     consortium_return_status = true;
-  //                   }
-
-  //                   if (curation_return_status) {
-  //                     $("#curation-team-unshare-btn").hide();
-  //                     $("#curation-team-share-btn").show();
-  //                   } else {
-  //                     $("#current_curation_team_status").text(
-  //                       "Shared with the curation team"
-  //                     );
-  //                     $("#curation-team-unshare-btn").show();
-  //                     $("#curation-team-share-btn").hide();
-  //                   }
-
-  //                   if (consortium_return_status) {
-  //                     $("#sparc-consortium-unshare-btn").hide();
-  //                     $("#sparc-consortium-share-btn").show();
-  //                   } else {
-  //                     $("#current_sparc_consortium_status").text(
-  //                       "Shared with the SPARC Consortium"
-  //                     );
-  //                     $("#sparc-consortium-unshare-btn").show();
-  //                     $("#sparc-consortium-share-btn").hide();
-  //                   }
-
-  //                   if (curation_return_status && consortium_return_status) {
-  //                     $("#sparc-consortium-unshare-btn").hide();
-  //                     $("#sparc-consortium-share-btn").show();
-  //                     $("#curation-team-unshare-btn").hide();
-  //                     $("#curation-team-share-btn").show();
-  //                     $(".spinner.post-curation").hide();
-  //                     return;
-  //                   }
-
-  //                   $(".spinner.post-curation").hide();
-  //                 }
-  //               }
-  //             );
-  //           }
-  //         }
-  //       );
-  //     }
-  //   }
-  // });
 };
 
 $("#button-generate-manifest-locally").click(() => {
@@ -8305,7 +8094,7 @@ async function addBFAccountInsideSweetalert(myBootboxDialog) {
         defaultBfDataset = "Select dataset";
 
         try {
-          bf_account_details_req = await client.get(
+          let bf_account_details_req = await client.get(
             `/manage_datasets/bf_account_details?selected_account=${name}`
           );
           let res = bf_account_details_req.data.account_details;
