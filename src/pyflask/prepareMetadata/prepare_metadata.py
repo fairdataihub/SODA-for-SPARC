@@ -205,7 +205,7 @@ def upload_RC_file(text_string, file_type, bfaccount, bfdataset):
 
     upload_metadata_file(file_type, bfaccount, bfdataset, file_path)
 
-    return { "size": size, "file_path": file_path }
+    return { "size": size, "filepath": file_path }
 
 
 def upload_metadata_file(file_type, bfaccount, bfdataset, file_path):

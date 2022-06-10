@@ -143,7 +143,7 @@ class RCFile(Resource):
         text = data.get('text')
 
         try:
-            return upload_RC_file(bfaccount, bfdataset, file_type, text)
+            return upload_RC_file(text, file_type, bfaccount, bfdataset)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
