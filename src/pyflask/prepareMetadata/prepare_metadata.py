@@ -221,7 +221,7 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path):
     try:
         myds = bf.get_dataset(bfdataset)
     except Exception:
-        abort(400, "Error: Please select a valid Pennsieve dataset")
+        abort(400, "Error: Please select a valid Pennsieve dataset.")
 
 
     # check that the user has permissions for uploading and modifying the dataset
