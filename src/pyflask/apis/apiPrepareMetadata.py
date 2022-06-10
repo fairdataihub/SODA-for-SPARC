@@ -155,6 +155,59 @@ class RCFile(Resource):
 
 
 
+save_ds_description_file_response = api.model('saveDSDescriptionFileResponse', {
+    'dataset_str': fields.String(required=True, description='Dataset information string'),
+    'filepath': fields.String(required=True, description='Path to the file on the user\'s machine'),
+    'upload_boolean': fields.Boolean(required=True, description='True if the file was uploaded, False if it was saved locally'),
+    'selected_account': fields.String(required=True, description='Pennsieve account name'),
+    'selected_dataset': fields.String(required=True, description='Pennsieve dataset name'),
+    'study_str': fields.String(required=True, description="Study information string"),
+    "con_str": fields.String(required=True, description="Contrast information string"),
+    "related_info_str": fields.String(required=True, description="Related information string")
+})
+
+model_list_of_string = api.model('basicListOfString', {
+    'list_of_string': fields.List(fields.String, required=True, description='List of strings')
+})
+
+
+model_get_ds_description_file_response = api.model('getDSDescriptionFileResponse', {
+    "Basic information": fields.List(fields.List(fields.String, required=True), required=True, description="Basic information"),
+    "Study information": fields.List(fields.List(fields.String, required=True), required=True, description="Study information"),
+    "Contributor information": fields.List(fields.List(fields.String, required=True), required=True, description="Contributor information"),
+    "Award information": fields.List(fields.List(fields.String, required=True), required=True, description="Award information"),
+    "Related information": fields.List(fields.List(fields.String, required=True), required=True, description="Related information")
+})
+
+# load_existing_DD_file
+# save_ds_description_file
+
+@api.route('/dataset_description_file')
+class DatasetDescriptionFile(Resource):
+
+    parser_get_ds_description_file = reqparse.RequestParser(bundle_errors=True)
+    parser_get_ds_description_file.add_argument('filepath', type=str, help="Path to the dataset description file on the user\'s machine or Pennsieve.", location="args", required=True)
+    parser_get_ds_description_file.add_argument('import_type', type=str, help='For this endpoint needs to be local.', location="args", required=True)
+
+    @api.expect(parser_get_ds_description_file)
+    @api.marshal_with(model_get_ds_description_file_response, 200, False)
+    @api.doc(description='Get the dataset description file from the user\'s machine. A separate route exists for grabbing from Pennsieve.', responses={500: "Internal Server Error", 400: "Bad Request"})
+    def get(self):
+        data = self.parser_get_ds_description_file.parse_args()
+
+        filepath = data.get('filepath')
+        import_type = data.get('import_type')
+
+        try:
+            return load_existing_DD_file(import_type, filepath)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
+
+
+
+
 @api.route('/template_paths')
 class SetTemplatePath(Resource):
 
