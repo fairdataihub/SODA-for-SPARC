@@ -1083,15 +1083,13 @@ def load_existing_DD_file(import_type, filepath):
         if array[0] in relatedInfoHeaders:
             relatedInfoSection.append(array)
 
-    transformedObj = {
+    return {
         "Basic information": basicInfoSection,
         "Study information": studyInfoSection,
         "Contributor information": transposeMatrix(conInfoSection),
         "Award information": awardInfoSection,
         "Related information": transposeMatrix(relatedInfoSection),
     }
-
-    return transformedObj
 
 
 def delete_manifest_dummy_folders(userpath_list):
