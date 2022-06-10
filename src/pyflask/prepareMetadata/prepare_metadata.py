@@ -696,33 +696,33 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
 
     if type == "subjects":
         if "subject id" not in list(subjects_df.columns.values):
-            raise Exception(
+            abort(
+                400, 
                 "The header 'subject id' is required to import an existing subjects file. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/subjects.xlsx'>template</a> of the subjects file."
             )
 
-        else:
-            if checkEmptyColumn(subjects_df["subject id"]):
-                raise Exception(
-                    "At least 1 'subject id' is required to import an existing subjects file"
-                )
+        elif checkEmptyColumn(subjects_df["subject id"]):
+            abort(
+                400,
+                "At least 1 'subject id' is required to import an existing subjects file"
+            )
 
         templateHeaderList = subjectsTemplateHeaderList
 
     else:
-        if "subject id" not in list(
-            subjects_df.columns.values
-        ) or "sample id" not in list(subjects_df.columns.values):
-            raise Exception(
+        if "subject id" not in list(subjects_df.columns.values) or "sample id" not in list(subjects_df.columns.values):
+            abort(
+                400,
                 "The headers 'subject id' and 'sample id' are required to import an existing samples file. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/samples.xlsx'>template</a> of the samples file."
             )
 
-        else:
-            if checkEmptyColumn(subjects_df["sample id"]) or checkEmptyColumn(
-                subjects_df["sample id"]
-            ):
-                raise Exception(
-                    "At least 1 'subject id' and 'sample id' pair is required to import an existing samples file"
-                )
+        if checkEmptyColumn(subjects_df["sample id"]) or checkEmptyColumn(
+            subjects_df["sample id"]
+        ):
+            abort(
+                400,
+                "At least 1 'subject id' and 'sample id' pair is required to import an existing samples file"
+            )
 
         templateHeaderList = samplesTemplateHeaderList
 
@@ -858,14 +858,16 @@ def load_existing_submission_file(filepath):
 
     for key in basicColumns:
         if key not in DD_df_lower:
-            raise Exception(
+            abort(
+                400,
                 "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/submission.xlsx'>template</a> of the submission."
             )
 
     for header_name in basicHeaders:
         submissionItems = [x.lower() for x in DD_df["Submission Item"]]
         if header_name not in set(submissionItems):
-            raise Exception(
+            abort(
+                400,
                 "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/submission.xlsx'>template</a> of the submission."
             )
 
@@ -887,8 +889,16 @@ def load_existing_submission_file(filepath):
 
 # import existing metadata files except Readme and Changes from Pennsieve
 def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
-    bf = Pennsieve(bfaccount)
-    myds = bf.get_dataset(bfdataset)
+    try: 
+        bf = Pennsieve(bfaccount)
+    except Exception:
+        abort(400, "Error: Please select a valid Pennsieve account.")
+
+    try: 
+        myds = bf.get_dataset(bfdataset)
+    except Exception:
+        abort(400, "Error: Please select a valid Pennsieve dataset.")
+    
 
     for i in range(len(myds.items)):
 
@@ -909,7 +919,7 @@ def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
             elif file_type == "samples.xlsx":
                 return convert_subjects_samples_file_to_df("samples", url, ui_fields)
 
-    raise Exception(
+    abort(400, 
         f"No {file_type} file was found at the root of the dataset provided."
     )
 
