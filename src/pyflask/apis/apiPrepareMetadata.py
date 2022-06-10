@@ -239,6 +239,41 @@ class DatasetDescriptionFile(Resource):
             raise e
 
 
+
+
+
+
+
+
+
+class ImportBFMetadataFile(Resource):
+    parser_import_bf_metadata_file = reqparse.RequestParser(bundle_errors=True)
+    parser_import_bf_metadata_file.add_argument('file_type', type=str, help="The type of metadata file included. Options: submission.xlsx, samples.xlsx, subjects.xlsx, and dataset_description.xlsx.", location="args", required=True)
+    parser_import_bf_metadata_file.add_argument('selected_account', type=str, help='The Pennsieve account associated with the given user.', location="args", required=True)
+    parser_import_bf_metadata_file.add_argument('selected_dataset', type=str, help='The Pennsieve dataset the given user stored their metadata file within.', location="args", required=True)
+    parser_import_bf_metadata_file.add_argument('ui_fields', type=str, help='Fields only provided for subjects.xlsx and samples.xlsx files.', location="args", required=False)
+
+    @api.expect(parser_import_bf_metadata_file)
+    @api.doc(description='Import a metadata file from Pennsieve.', responses={500: "Internal Server Error", 400: "Bad Request", 403: "Forbidden"})
+    def get(self):
+        data = self.parser_import_bf_metadata_file.parse_args()
+
+        file_type = data.get('file_type')
+        selected_account = data.get('selected_account')
+        selected_dataset = data.get('selected_dataset')
+        ui_fields = data.get('ui_fields')
+
+        try:
+            return import_bf_metadata_file(file_type, ui_fields, selected_account, selected_dataset)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
+
+
+
+
+
 @api.route('/template_paths')
 class SetTemplatePath(Resource):
 
