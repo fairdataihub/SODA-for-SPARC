@@ -2,5 +2,5 @@ def notBadRequestException(exception):
     """
     Check if the exception is a generic exception.
     """
-    return type(exception).__name__ != 'BadRequest' and type(exception).__name__ != 'Forbidden' and type(exception).__name__ != 'Unauthorized'
+    return type(exception).__name__ not in ['BadRequest', 'Forbidden', 'Unauthorized']
 

@@ -17,6 +17,7 @@ from prepareMetadata import (
 )
 from namespaces import NamespaceEnum, get_namespace
 from flask_restx import Resource, reqparse, fields
+from flask_restx.inputs import boolean
 from errorHandlers import notBadRequestException
 
 api = get_namespace(NamespaceEnum.PREPARE_METADATA)
@@ -37,7 +38,7 @@ model_get_submission_file_response = api.model('getSubmissionFileResponse', {
 class SaveSubmissionFile(Resource):
 
     parser_save_submission_file = reqparse.RequestParser(bundle_errors=True)
-    parser_save_submission_file.add_argument('upload_boolean', type=bool, help='Boolean to indicate whether to upload the file to the Bionimbus server', location="json", required=True)
+    parser_save_submission_file.add_argument('upload_boolean', type=boolean, help='Boolean to indicate whether to upload the file to the Bionimbus server', location="json", required=True)
     parser_save_submission_file.add_argument('selected_account', type=str, help='Pennsieve account name', location="args", required=True)
     parser_save_submission_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset name', location="args", required=True)
     parser_save_submission_file.add_argument('filepath', type=str, help='Path to the file to be uploaded', location="json")
@@ -155,21 +156,9 @@ class RCFile(Resource):
 
 
 
-save_ds_description_file_response = api.model('saveDSDescriptionFileResponse', {
-    'dataset_str': fields.String(required=True, description='Dataset information string'),
-    'filepath': fields.String(required=True, description='Path to the file on the user\'s machine'),
-    'upload_boolean': fields.Boolean(required=True, description='True if the file was uploaded, False if it was saved locally'),
-    'selected_account': fields.String(required=True, description='Pennsieve account name'),
-    'selected_dataset': fields.String(required=True, description='Pennsieve dataset name'),
-    'study_str': fields.String(required=True, description="Study information string"),
-    "con_str": fields.String(required=True, description="Contrast information string"),
-    "related_info_str": fields.String(required=True, description="Related information string")
-})
-
 model_list_of_string = api.model('basicListOfString', {
     'list_of_string': fields.List(fields.String, required=True, description='List of strings')
 })
-
 
 model_get_ds_description_file_response = api.model('getDSDescriptionFileResponse', {
     "Basic information": fields.List(fields.List(fields.String, required=True), required=True, description="Basic information"),
@@ -179,8 +168,9 @@ model_get_ds_description_file_response = api.model('getDSDescriptionFileResponse
     "Related information": fields.List(fields.List(fields.String, required=True), required=True, description="Related information")
 })
 
-# load_existing_DD_file
-# save_ds_description_file
+model_save_ds_description_file_response = api.model('saveDSDescriptionFileResponse', {
+    'size': fields.Integer(required=True, description='Path to the file on the user\'s machine'),
+})
 
 @api.route('/dataset_description_file')
 class DatasetDescriptionFile(Resource):
@@ -204,6 +194,83 @@ class DatasetDescriptionFile(Resource):
             if notBadRequestException(e):
                 api.abort(500, str(e))
             raise e
+
+    
+
+
+
+    parser_dataset_description_file = reqparse.RequestParser(bundle_errors=True)
+    parser_dataset_description_file.add_argument('dataset_str', type=dict, required=True, location="json")
+    parser_dataset_description_file.add_argument('filepath', type=str, location="json")
+    parser_dataset_description_file.add_argument('upload_boolean', type=boolean, required=True, location="args")
+    parser_dataset_description_file.add_argument('selected_account', type=str, location="json")
+    parser_dataset_description_file.add_argument('selected_dataset', type=str, location="json")
+    parser_dataset_description_file.add_argument('study_str', type=dict, required=True, location="json")
+    parser_dataset_description_file.add_argument('contributor_str', type=dict, required=True, location="json")
+    parser_dataset_description_file.add_argument('related_info_str', type=list, required=True, location="json")
+
+
+    @api.expect(parser_dataset_description_file)
+    @api.marshal_with(model_save_ds_description_file_response, 200, False)
+    @api.doc(description='Save the dataset description file to the user\'s machine. A separate route exists for saving to Pennsieve.', responses={500: "Internal Server Error", 400: "Bad Request", 403: "Forbidden"})
+    def post(self):
+        data = self.parser_dataset_description_file.parse_args()
+
+        dataset_str = data.get('dataset_str')
+        filepath = data.get('filepath')
+        upload_boolean = data.get('upload_boolean')
+        selected_account = data.get('selected_account')
+        selected_dataset = data.get('selected_dataset')
+        study_str = data.get('study_str')
+        contributor_str = data.get('contributor_str')
+        related_info_str = data.get('related_info_str')
+
+        if upload_boolean and not selected_account and not selected_dataset:
+            api.abort(400, "Error:  To save a dataset description file on Pennsieve provide a dataset and pennsieve account.")
+
+        if not upload_boolean and not filepath:
+            api.abort(400, "Error:  To save a dataset description file on the user\'s machine provide a filepath.")
+
+        try:
+            return save_ds_description_file(upload_boolean, selected_account, selected_dataset, filepath, dataset_str, study_str, contributor_str, related_info_str)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
+
+
+
+
+
+
+
+
+
+@api.route('/import_metadata_file')
+class ImportBFMetadataFile(Resource):
+    parser_import_bf_metadata_file = reqparse.RequestParser(bundle_errors=True)
+    parser_import_bf_metadata_file.add_argument('file_type', type=str, help="The type of metadata file included. Options: submission.xlsx, samples.xlsx, subjects.xlsx, and dataset_description.xlsx.", location="args", required=True)
+    parser_import_bf_metadata_file.add_argument('selected_account', type=str, help='The Pennsieve account associated with the given user.', location="args", required=True)
+    parser_import_bf_metadata_file.add_argument('selected_dataset', type=str, help='The Pennsieve dataset the given user stored their metadata file within.', location="args", required=True)
+    parser_import_bf_metadata_file.add_argument('ui_fields', type=str, help='Fields only provided for subjects.xlsx and samples.xlsx files.', location="args", required=False)
+
+    @api.expect(parser_import_bf_metadata_file)
+    @api.doc(description='Import a metadata file from Pennsieve.', responses={500: "Internal Server Error", 400: "Bad Request", 403: "Forbidden"})
+    def get(self):
+        data = self.parser_import_bf_metadata_file.parse_args()
+
+        file_type = data.get('file_type')
+        selected_account = data.get('selected_account')
+        selected_dataset = data.get('selected_dataset')
+        ui_fields = data.get('ui_fields')
+
+        try:
+            return import_bf_metadata_file(file_type, ui_fields, selected_account, selected_dataset)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
+
 
 
 
