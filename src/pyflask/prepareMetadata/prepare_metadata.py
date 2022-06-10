@@ -49,6 +49,7 @@ import collections
 from threading import Thread
 import pathlib
 import requests
+from errorHandlers import is_file_not_found_exception, is_invalid_file_exception
 
 from string import ascii_uppercase
 import itertools
@@ -824,11 +825,9 @@ def checkEmptyColumn(column):
     return False
 
 
+
 ## load/import an existing local or Pennsieve submission.xlsx file
 def load_existing_submission_file(filepath):
-
-    if not exists(filepath):
-        abort(400, "Submission file not found")
 
     try:
         DD_df = pd.read_excel(
@@ -836,6 +835,13 @@ def load_existing_submission_file(filepath):
         )
 
     except Exception as e:
+        if is_file_not_found_exception(e):
+            abort(400, "Error: Local submission file not found")
+
+        # TODO: TEST check if error can indicate if file is not in the correct format TEST
+        if is_invalid_file_exception(e):
+            abort(400, "Error: Local submission file is not in the correct format")
+
         raise Exception(
             "SODA cannot read this submission.xlsx file. If you are trying to retrieve a submission.xlsx file from Pennsieve, please make sure you are signed in with your Pennsieve account on SODA."
         ) from e
