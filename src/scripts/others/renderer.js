@@ -2846,23 +2846,40 @@ var displaySize = 1000;
 /// Add all BF accounts to the dropdown list, and then choose by default one option ('global' account)
 const curateDatasetDropdown = document.getElementById("curatebfdatasetlist");
 
-function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
-  client.invoke(
-    "api_bf_dataset_account",
-    bfaccountDropdown.options[bfaccountDropdown.selectedIndex].text,
-    (error, result) => {
-      if (error) {
-        log.error(error);
-        console.log(error);
-        var emessage = error;
-        curateBFAccountLoadStatus.innerHTML =
-          "<span style='color: red'>" + emessage + "</span>";
-      } else {
-        // clear and populate dataset list
-        populateDatasetDropdownCurate(datasetDropdown, result);
-      }
-    }
-  );
+async function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
+  let defaultBfAccount =
+    bfaccountDropdown.options[bfaccountDropdown.selectedIndex].text;
+  try {
+    responseObject = await client.get(
+      `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
+    );
+    datasetList = [];
+    datasetList = responseObject.data.datasets;
+    populateDatasetDropdownCurate(datasetDropdown, datasetList);
+    refreshDatasetList();
+  } catch (error) {
+    client_error(error);
+    var emessage = error;
+    curateBFAccountLoadStatus.innerHTML =
+      "<span style='color: red'>" + emessage + "</span>";
+  }
+
+  // client.invoke(
+  //   "api_bf_dataset_account",
+  //   bfaccountDropdown.options[bfaccountDropdown.selectedIndex].text,
+  //   (error, result) => {
+  //     if (error) {
+  //       log.error(error);
+  //       console.log(error);
+  //       var emessage = error;
+  //       curateBFAccountLoadStatus.innerHTML =
+  //         "<span style='color: red'>" + emessage + "</span>";
+  //     } else {
+  //       // clear and populate dataset list
+  //       populateDatasetDropdownCurate(datasetDropdown, result);
+  //     }
+  //   }
+  // );
 }
 
 //// De-populate dataset dropdowns to clear options for CURATE
@@ -3759,10 +3776,12 @@ function client_error(error) {
   let error_message = error.response.data.message;
   let error_status = error.response.status;
   let error_headers = error.response.headers;
-  console.log("Error caused from: " + JSON.stringify(error_message));
-  console.log("Response Status: " + JSON.stringify(error_status));
-  console.log("Headers: ");
-  console.log(error_headers);
+  log.error(error);
+  console.error(error);
+  log.error("Error caused from: " + JSON.stringify(error_message));
+  log.error("Response Status: " + JSON.stringify(error_status));
+  log.error("Headers: ");
+  log.error(error_headers);
 }
 
 async function loadDefaultAccount() {
@@ -3793,8 +3812,6 @@ async function loadDefaultAccount() {
     console.log(dataset_request.data.account_details);
   } catch (error) {
     client_error(error);
-    log.error(error);
-    console.log(error);
   }
 
   console.log("Default account success: ", accounts);
@@ -4383,8 +4400,6 @@ async function showDefaultBFAccount() {
         updateDatasetList();
       } catch (error) {
         client_error(error);
-        log.error(error);
-        console.error(error);
 
         $("#para-account-detail-curate").html("None");
         $("#current-bf-account").text("None");
@@ -4401,8 +4416,6 @@ async function showDefaultBFAccount() {
     }
   } catch (error) {
     client_error(error);
-    log.error(error);
-    console.error(error);
   }
 }
 
@@ -7112,20 +7125,31 @@ async function initiate_generate() {
       log.error(error);
       console.error(error);
 
-      client.invoke(
-        "api_bf_dataset_account",
-        defaultBfAccount,
-        (error, result) => {
-          if (error) {
-            log.error(error);
-            console.log(error);
-            var emessage = error;
-          } else {
-            datasetList = [];
-            datasetList = result;
-          }
-        }
-      );
+      try {
+        responseObject = await client.get(
+          `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
+        );
+        datasetList = [];
+        datasetList = responseObject.data.datasets;
+      } catch (error) {
+        client_error(error);
+        var emessage = error;
+      }
+
+      // client.invoke(
+      //   "api_bf_dataset_account",
+      //   defaultBfAccount,
+      //   (error, result) => {
+      //     if (error) {
+      //       log.error(error);
+      //       console.log(error);
+      //       var emessage = error;
+      //     } else {
+      //       datasetList = [];
+      //       datasetList = result;
+      //     }
+      //   }
+      // );
 
       // wait to see if the uploaded files or size will grow once the client has time to ask for the updated information
       // if they stay zero that means nothing was uploaded
@@ -7157,20 +7181,32 @@ async function initiate_generate() {
         dataset_destination,
         uploadedFiles
       );
-      client.invoke(
-        "api_bf_dataset_account",
-        defaultBfAccount,
-        (error, result) => {
-          if (error) {
-            log.error(error);
-            console.log(error);
-            var emessage = error;
-          } else {
-            datasetList = [];
-            datasetList = result;
-          }
-        }
-      );
+
+      try {
+        responseObject = await client.get(
+          `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
+        );
+        datasetList = [];
+        datasetList = responseObject.data.datasets;
+      } catch (error) {
+        client_error(error);
+        var emessage = error;
+      }
+
+      // client.invoke(
+      //   "api_bf_dataset_account",
+      //   defaultBfAccount,
+      //   (error, result) => {
+      //     if (error) {
+      //       log.error(error);
+      //       console.log(error);
+      //       var emessage = error;
+      //     } else {
+      //       datasetList = [];
+      //       datasetList = result;
+      //     }
+      //   }
+      // );
     }
     document.getElementById("div-generate-comeback").style.display = "flex";
   });
@@ -7889,8 +7925,6 @@ const curation_consortium_check = async (mode = "") => {
     }
   } catch (error) {
     client_error(error);
-    log.error(error);
-    console.error(error);
 
     if (mode != "update") {
       $("#curation-team-unshare-btn").hide();
@@ -8293,8 +8327,6 @@ async function addBFAccountInsideSweetalert(myBootboxDialog) {
           updateBfAccountList();
         } catch (error) {
           client_error(error);
-          log.error(error);
-          console.error(error);
 
           Swal.fire({
             icon: "error",

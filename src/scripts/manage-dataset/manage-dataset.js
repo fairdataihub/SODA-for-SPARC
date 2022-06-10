@@ -113,7 +113,7 @@ $("#bf-rename-dataset-name").on("keyup", () => {
 });
 
 // Add new dataset folder (empty) on bf //
-$("#button-create-bf-new-dataset").click(() => {
+$("#button-create-bf-new-dataset").click(async () => {
   setTimeout(() => {
     let selectedbfaccount = defaultBfAccount;
     let bfNewDatasetName = $("#bf-new-dataset-name").val();
@@ -140,7 +140,7 @@ $("#button-create-bf-new-dataset").click(() => {
       "api_bf_new_dataset_folder",
       bfNewDatasetName,
       selectedbfaccount,
-      (error, res) => {
+      async (error, res) => {
         if (error) {
           log.error(error);
           console.error(error);
@@ -204,20 +204,33 @@ $("#button-create-bf-new-dataset").click(() => {
 
           log.info(`Requesting list of datasets`);
 
-          client.invoke(
-            "api_bf_dataset_account",
-            defaultBfAccount,
-            (error, result) => {
-              if (error) {
-                log.error(error);
-                console.log(error);
-              } else {
-                log.info(`Requested list of datasets successfully`);
-                datasetList = [];
-                datasetList = result;
-              }
-            }
-          );
+          try {
+            responseObject = await client.get(
+              `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
+            );
+            datasetList = [];
+            datasetList = responseObject.data.datasets;
+            log.info(`Requested list of datasets successfully`);
+          } catch (error) {
+            client_error(error);
+            log.error(error);
+            console.error(error);
+          }
+
+          // client.invoke(
+          //   "api_bf_dataset_account",
+          //   defaultBfAccount,
+          //   (error, result) => {
+          //     if (error) {
+          //       log.error(error);
+          //       console.log(error);
+          //     } else {
+          //       log.info(`Requested list of datasets successfully`);
+          //       datasetList = [];
+          //       datasetList = result;
+          //     }
+          //   }
+          // );
           $(".bf-dataset-span").html(bfNewDatasetName);
 
           refreshDatasetList();
@@ -340,21 +353,35 @@ $("#button-rename-dataset").click(() => {
             );
 
             log.info("Requesting list of datasets");
-            client.invoke(
-              "api_bf_dataset_account",
-              defaultBfAccount,
-              (error, result) => {
-                if (error) {
-                  log.error(error);
-                  console.log(error);
-                } else {
-                  log.info("Request successful");
-                  datasetList = [];
-                  datasetList = result;
-                  refreshDatasetList();
-                }
-              }
-            );
+
+            try {
+              responseObject = await client.get(
+                `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
+              );
+              datasetList = [];
+              datasetList = responseObject.data.datasets;
+              refreshDatasetList();
+            } catch (error) {
+              client_error(error);
+              log.error(error);
+              console.error(error);
+            }
+
+            // client.invoke(
+            //   "api_bf_dataset_account",
+            //   defaultBfAccount,
+            //   (error, result) => {
+            //     if (error) {
+            //       log.error(error);
+            //       console.log(error);
+            //     } else {
+            //       log.info("Request successful");
+            //       datasetList = [];
+            //       datasetList = result;
+            //       refreshDatasetList();
+            //     }
+            //   }
+            // );
           }
         }
       );
