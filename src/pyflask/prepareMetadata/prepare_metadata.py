@@ -319,17 +319,17 @@ def fillColor(color, cell):
 ### Prepare dataset-description file
 
 
-def populate_dataset_info(workbook, val_obj):
+def populate_dataset_info(ws, val_obj):
     ## name, description, type, samples, subjects
-    workbook["D5"] = val_obj["name"]
-    workbook["D6"] = val_obj["description"]
-    workbook["D3"] = val_obj["type"]
-    workbook["D29"] = val_obj["number of subjects"]
-    workbook["D30"] = val_obj["number of samples"]
+    ws["D5"] = val_obj["name"]
+    ws["D6"] = val_obj["description"]
+    ws["D3"] = val_obj["type"]
+    ws["D29"] = val_obj["number of subjects"]
+    ws["D30"] = val_obj["number of samples"]
 
     ## keywords
     for i, column in zip(range(len(val_obj["keywords"])), excel_columns(start_index=3)):
-        workbook[column + "7"] = val_obj["keywords"][i]
+        ws[column + "7"] = val_obj["keywords"][i]
 
     return val_obj["keywords"]
 
@@ -379,7 +379,7 @@ def populate_contributor_info(workbook, val_array):
     ):
         workbook[column + "19"] = contributor["conName"]
         workbook[column + "20"] = contributor["conID"]
-        workbook[column + "21"] = contributor["conAffliation"]
+        workbook[column + "21"] = contributor["conAffiliation"]
         workbook[column + "22"] = contributor["conRole"]
 
     return [val_array["funding"], val_array["contributors"]]
@@ -421,10 +421,10 @@ def save_ds_description_file(
     shutil.copyfile(source, destination)
 
     # json array to python list
-    val_obj_study = json.loads(study_str)
-    val_obj_ds = json.loads(dataset_str)
-    val_arr_con = json.loads(con_str)
-    val_arr_related_info = json.loads(related_info_str)
+    val_obj_study = study_str
+    val_obj_ds = dataset_str
+    val_arr_con = con_str
+    val_arr_related_info = related_info_str
 
     # write to excel file
     wb = load_workbook(destination)
@@ -475,7 +475,7 @@ def save_ds_description_file(
             "dataset_description.xlsx", bfaccount, bfdataset, destination
         )
 
-    return size
+    return {"size": size}
 
 
 subjectsTemplateHeaderList = [
