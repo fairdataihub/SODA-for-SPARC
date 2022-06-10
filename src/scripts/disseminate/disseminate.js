@@ -502,99 +502,101 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
   );
 }
 
-function disseminateShowCurrentPermission(bfAcct, bfDS) {
+async function disseminateShowCurrentPermission(bfAcct, bfDS) {
   currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
   if (bfDS === "Select dataset") {
     currentDatasetPermission.innerHTML = "None";
     // bfCurrentPermissionProgress.style.display = "none";
   } else {
-    client.invoke("api_bf_get_permission", bfAcct, bfDS, (error, res) => {
-      if (error) {
-        log.error(error);
-        console.error(error);
-        // bfCurrentPermissionProgress.style.display = "none";
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Disseminate Datasets - Show current dataset permission",
-          defaultBfDatasetId
-        );
-      } else {
-        var permissionList = "";
-        let datasetOwner = "";
-        for (var i in res) {
-          permissionList = permissionList + res[i] + "<br>";
-          if (res[i].indexOf("owner") != -1) {
-            let first_position = res[i].indexOf(":");
-            let second_position = res[i].indexOf(",");
-            datasetOwner = res[i].substring(first_position, second_position);
-          }
-        }
-        currentDatasetPermission.innerHTML = datasetOwner;
-        // bfCurrentPermissionProgress.style.display = "none";
+    try {
+      let dataset_permissions = await client.get(
+        `/manage_datasets/bf_dataset_permissions?selected_account=${bfAcct}&selected_dataset=${bfDS}`
+      );
+      let res = dataset_permissions.data.permissions;
 
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Disseminate Datasets - Show current dataset permission",
-          defaultBfDatasetId
-        );
+      var permissionList = "";
+      let datasetOwner = "";
+      for (var i in res) {
+        permissionList = permissionList + res[i] + "<br>";
+        if (res[i].indexOf("owner") != -1) {
+          let first_position = res[i].indexOf(":");
+          let second_position = res[i].indexOf(",");
+          datasetOwner = res[i].substring(first_position, second_position);
+        }
       }
-    });
+      currentDatasetPermission.innerHTML = datasetOwner;
+      // bfCurrentPermissionProgress.style.display = "none";
+
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        "Disseminate Datasets - Show current dataset permission",
+        defaultBfDatasetId
+      );
+    } catch (error) {
+      client_error(error);
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Disseminate Datasets - Show current dataset permission",
+        defaultBfDatasetId
+      );
+    }
   }
 }
 
-function disseminiateShowCurrentDatasetStatus(callback, account, dataset) {
+async function disseminiateShowCurrentDatasetStatus(
+  callback,
+  account,
+  dataset
+) {
   if (dataset === "Select dataset") {
     $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
     $("#bf-dataset-status-spinner").css("display", "none");
     removeOptions(bfListDatasetStatus);
     bfListDatasetStatus.style.color = "black";
   } else {
-    client.invoke(
-      "api_bf_get_dataset_status",
-      account,
-      dataset,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-          var emessage = userError(error);
-          $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
-          $("#bf-dataset-status-spinner").css("display", "none");
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Disseminate Datasets - Show current dataset status",
-            defaultBfDatasetId
-          );
-        } else {
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Disseminate Datasets - Show current dataset status",
-            defaultBfDatasetId
-          );
-          var myitemselect = [];
-          removeOptions(bfListDatasetStatus);
-          for (var item in res[0]) {
-            var option = document.createElement("option");
-            option.textContent = res[0][item]["displayName"];
-            option.value = res[0][item]["name"];
-            option.style.color = res[0][item]["color"];
-            bfListDatasetStatus.appendChild(option);
-          }
-          bfListDatasetStatus.value = res[1];
-          selectOptionColor(bfListDatasetStatus);
-          //bfCurrentDatasetStatusProgress.style.display = "none";
-          $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
-          $("#bf-dataset-status-spinner").css("display", "none");
-          if (callback !== "") {
-            callback();
-          }
-        }
+    try {
+      let dataset_permissions = await client.get(
+        `/manage_datasets/bf_dataset_permissions?selected_account=${account}&selected_dataset=${dataset}`
+      );
+      let res = dataset_permissions.data.status_options;
+
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        "Disseminate Datasets - Show current dataset status",
+        defaultBfDatasetId
+      );
+      var myitemselect = [];
+      removeOptions(bfListDatasetStatus);
+      for (var item in res[0]) {
+        var option = document.createElement("option");
+        option.textContent = res[0][item]["displayName"];
+        option.value = res[0][item]["name"];
+        option.style.color = res[0][item]["color"];
+        bfListDatasetStatus.appendChild(option);
       }
-    );
+      bfListDatasetStatus.value = res[1];
+      selectOptionColor(bfListDatasetStatus);
+      //bfCurrentDatasetStatusProgress.style.display = "none";
+      $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
+      $("#bf-dataset-status-spinner").css("display", "none");
+      if (callback !== "") {
+        callback();
+      }
+    } catch (error) {
+      client_error(error);
+      var emessage = userError(error);
+      $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
+      $("#bf-dataset-status-spinner").css("display", "none");
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Disseminate Datasets - Show current dataset status",
+        defaultBfDatasetId
+      );
+    }
   }
 }
 

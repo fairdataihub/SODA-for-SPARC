@@ -441,7 +441,7 @@ const importGenerateDatasetStep = async (object) => {
         $("#para-account-detail-curate").html("");
 
         try {
-          dataset_request = await client.get(
+          let dataset_request = await client.get(
             `/manage_datasets/bf_account_details?selected_account=${bFAccountSelected}`
           );
           $("#para-account-detail-curate").html(
@@ -822,9 +822,9 @@ $(document).ready(async function () {
   var accountDetails = $("#para-account-detail-curate");
   //Observe the paragraph
   this.observer = new MutationObserver(
-    function (mutations) {
+    async function (mutations) {
       try {
-        responseObject = await client.get(
+        let responseObject = await client.get(
           `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
         );
         datasetList = [];
@@ -832,7 +832,7 @@ $(document).ready(async function () {
         refreshDatasetList();
       } catch (error) {
         log.error(error);
-        console.log(error);
+        console.error(error);
         var emessage = error;
       }
       // client.invoke(
@@ -953,7 +953,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
         showHideDropdownButtons("dataset", "hide");
 
         try {
-          bf_account_details_req = await client.get(
+          let bf_account_details_req = await client.get(
             `/manage_datasets/bf_account_details?selected_account=${bfacct}`
           );
           let accountDetails = bf_account_details_req.data.account_details;
@@ -965,7 +965,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
           updateBfAccountList();
 
           try {
-            responseObject = await client.get(
+            let responseObject = await client.get(
               `manage_datasets/bf_dataset_account?selected_account=${bfacct}`
             );
             datasetList = [];
@@ -1083,7 +1083,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
                 defaultBfDataset = "Select dataset";
 
                 try {
-                  bf_account_details_req = await client.get(
+                  let bf_account_details_req = await client.get(
                     `/manage_datasets/bf_account_details?selected_account=${defaultBfAccount}`
                   );
                   let result = bf_account_details_req.data.account_details;
