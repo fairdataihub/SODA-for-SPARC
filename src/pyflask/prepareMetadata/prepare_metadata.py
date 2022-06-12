@@ -41,6 +41,8 @@ from manageDatasets import (
 
 from pysodaUtils import agent_running
 
+from errorHandlers import InvalidDeliverablesDocument
+
 userpath = expanduser("~")
 METADATA_UPLOAD_BF_PATH = join(userpath, "SODA", "METADATA")
 TEMPLATE_PATH = ""
@@ -67,9 +69,7 @@ def set_template_path(soda_base_path, soda_resources_path):
         TEMPLATE_PATH = join(soda_resources_path, "file_templates")
 
 
-# custom Exception class for when a DDD file is in an invalid form
-class InvalidDeliverablesDocument(Exception):
-    pass
+
 
 
 ### Import Data Deliverables document

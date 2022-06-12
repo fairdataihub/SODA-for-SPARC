@@ -18,7 +18,7 @@ from prepareMetadata import (
 from namespaces import NamespaceEnum, get_namespace
 from flask_restx import Resource, reqparse, fields
 from flask_restx.inputs import boolean
-from errorHandlers import notBadRequestException
+from errorHandlers import notBadRequestException, InvalidDeliverablesDocument
 
 api = get_namespace(NamespaceEnum.PREPARE_METADATA)
 
@@ -303,7 +303,7 @@ class ImportBFMetadataFile(Resource):
         ui_fields = data.get('ui_fields')
 
         try:
-            return import_bf_metadata_file(file_type, ui_fields, selected_account, selected_dataset)
+            import_bf_metadata_file(file_type, ui_fields, selected_account, selected_dataset)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
@@ -352,8 +352,12 @@ class ImportMilestone(Resource):
         args = self.parser_import_milestone.parse_args()
         path = args['path']
         try:
-            return import_milestone(path)
+            data = import_milestone(path)
+            return extract_milestone_info(data)
         except Exception as e:
+            # check if invalidDataDeliverablesDocument exception
+            if type(e).__name__  == 'InvalidDataDeliverablesDocument':
+                api.abort(400, str(e))
             if notBadRequestException(e):
                 api.abort(500, e.args[0])
             raise e
