@@ -347,6 +347,7 @@ class ImportMilestone(Resource):
     parser_import_milestone.add_argument('path', type=str, help='Path to the local data deliverables document', location="args")
 
     @api.expect(parser_import_milestone)
+    @api.doc(description='Import a milestone from the user\'s machine.', responses={500: "Internal Server Error", 400: "Bad Request"})
     def get(self):
         args = self.parser_import_milestone.parse_args()
         path = args['path']
