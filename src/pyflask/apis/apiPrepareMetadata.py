@@ -283,6 +283,51 @@ class SubjectsFile(Resource):
 
 
 
+model_save_samples_result = api.model('SaveSamplesResult', {
+    'size': fields.Integer(description='The size of the sample file that was saved through SODA.'),
+})
+
+class SamplesFile(Resource):
+    
+    parser_save_samples_file = reqparse.RequestParser(bundle_errors=True)
+    parser_save_samples_file.add_argument('filepath', type=str, help="Path to the samples file on the user\'s machine.", location="json", required=False)
+    parser_save_samples_file.add_argument('upload_boolean', type=boolean, help='Save samples on Pennsieve if True else save locally.', location="args", required=True)
+    parser_save_samples_file.add_argument('selected_account', type=str, help='Pennsieve account to save the samples file to.', location="json", required=False)
+    parser_save_samples_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset to save the samples file to.', location="json", required=False)
+    parser_save_samples_file.add_argument('samples_str', type=list, help='List of samples to save.', location="json", required=True)
+
+    @api.expect(parser_save_samples_file)
+    @api.doc(description='Save the samples file to the user\'s machine or to Pennsieve.', responses={500: "Internal Server Error", 400: "Bad Request", 403: "Forbidden"})
+    @api.marhsal_with(model_save_samples_result, 200, False)
+    def post(self):
+        data = self.parser_save_samples_file.parse_args()
+
+        filepath = data.get('filepath')
+        upload_boolean = data.get('upload_boolean')
+        selected_account = data.get('selected_account')
+        selected_dataset = data.get('selected_dataset')
+        samples_str = data.get('samples_str')
+
+        if upload_boolean and not selected_account and not selected_dataset:
+            api.abort(400, "Error:  To save a samples file on Pennsieve provide a dataset and pennsieve account.")
+        
+        if not upload_boolean and not filepath:
+            api.abort(400, "Error:  To save a samples file on the user\'s machine provide a filepath.")
+
+        
+        try:
+            return save_samples_file(upload_boolean, selected_account, selected_dataset, filepath, samples_str)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
+    
+
+
+
+
+
+
 
 @api.route('/import_metadata_file')
 class ImportBFMetadataFile(Resource):

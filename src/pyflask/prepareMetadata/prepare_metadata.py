@@ -642,7 +642,7 @@ def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastruct
     if upload_boolean:
         upload_metadata_file("samples.xlsx", bfaccount, bfdataset, destination)
 
-    return size
+    return {"size": size}
 
 
 # check for non-empty fields (cells)
