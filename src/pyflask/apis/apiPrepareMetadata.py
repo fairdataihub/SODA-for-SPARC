@@ -299,7 +299,7 @@ class SamplesFile(Resource):
 
     @api.expect(parser_save_samples_file)
     @api.doc(description='Save the samples file to the user\'s machine or to Pennsieve.', responses={500: "Internal Server Error", 400: "Bad Request", 403: "Forbidden"})
-    @api.marhsal_with(model_save_samples_result, 200, False)
+    @api.marshal_with(model_save_samples_result, 200, False)
     def post(self):
         data = self.parser_save_samples_file.parse_args()
 
@@ -323,6 +323,33 @@ class SamplesFile(Resource):
                 api.abort(500, str(e))
             raise e
     
+
+
+
+
+
+
+@api.route('/data_frames')
+class DataFrames(Resource):
+    
+    parser_create_data_frames = reqparse.RequestParser(bundle_errors=True)
+    parser_create_data_frames.add_argument('type', type=str, help="Subjects or Samples are the valid types.", location="args", required=False)
+    parser_create_data_frames.add_argument('filepath', type=str, help="Path to the subjects or samples file on the user's machine.", location="json", required=False)
+    parser_create_data_frames.add_argument('ui_fields', type=str, help='The fields to include in the final data frame.', location="json", required=False)
+
+    def post(self):
+        data = self.parser_create_data_frames.parse_args()
+
+        file_type = data.get('type')
+        filepath = data.get('filepath')
+        ui_fields = data.get('ui_fields')
+
+        try:
+            return convert_subjects_samples_file_to_df(file_type, filepath, ui_fields)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
 
 
 
