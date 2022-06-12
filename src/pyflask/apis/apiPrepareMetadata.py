@@ -278,6 +278,29 @@ class SubjectsFile(Resource):
             raise e
 
 
+    parser_create_data_frames = reqparse.RequestParser(bundle_errors=True)
+    parser_create_data_frames.add_argument('type', type=str, help="Subjects or Samples are the valid types.", location="args", required=False)
+    parser_create_data_frames.add_argument('filepath', type=str, help="Path to the subjects or samples file on the user's machine.", location="json", required=False)
+    parser_create_data_frames.add_argument('ui_fields', type=str, help='The fields to include in the final data frame.', location="json", required=False)
+
+    @api.expect(parser_create_data_frames)
+    @api.doc(description='Get a local subjects file data in the form of data frames.', responses={500: "Internal Server Error", 400: "Bad Request"})
+    def get(self):
+        data = self.parser_create_data_frames.parse_args()
+
+        file_type = data.get('type')
+        filepath = data.get('filepath')
+        ui_fields = data.get('ui_fields')
+
+        if file_type != 'samples':
+            api.abort(400, "Error: The type parameter must be samples.")
+
+        try:
+            return convert_subjects_samples_file_to_df(file_type, filepath, ui_fields)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
 
 
 
@@ -323,26 +346,23 @@ class SamplesFile(Resource):
                 api.abort(500, str(e))
             raise e
     
-
-
-
-
-
-
-@api.route('/data_frames')
-class DataFrames(Resource):
     
     parser_create_data_frames = reqparse.RequestParser(bundle_errors=True)
     parser_create_data_frames.add_argument('type', type=str, help="Subjects or Samples are the valid types.", location="args", required=False)
     parser_create_data_frames.add_argument('filepath', type=str, help="Path to the subjects or samples file on the user's machine.", location="json", required=False)
     parser_create_data_frames.add_argument('ui_fields', type=str, help='The fields to include in the final data frame.', location="json", required=False)
 
-    def post(self):
+    @api.expect(parser_create_data_frames)
+    @api.doc(description='Get a local samples file data in the form of data frames.', responses={500: "Internal Server Error", 400: "Bad Request"})
+    def get(self):
         data = self.parser_create_data_frames.parse_args()
 
         file_type = data.get('type')
         filepath = data.get('filepath')
         ui_fields = data.get('ui_fields')
+
+        if file_type != 'samples':
+            api.abort(400, "Error: The type parameter must be samples.")
 
         try:
             return convert_subjects_samples_file_to_df(file_type, filepath, ui_fields)
@@ -350,6 +370,13 @@ class DataFrames(Resource):
             if notBadRequestException(e):
                 api.abort(500, str(e))
             raise e
+
+
+
+
+
+    
+
 
 
 
