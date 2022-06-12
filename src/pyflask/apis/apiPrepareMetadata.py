@@ -306,6 +306,8 @@ class SubjectsFile(Resource):
 
 
 
+
+
 model_save_samples_result = api.model('SaveSamplesResult', {
     'size': fields.Integer(description='The size of the sample file that was saved through SODA.'),
 })
@@ -371,11 +373,6 @@ class SamplesFile(Resource):
                 api.abort(500, str(e))
             raise e
 
-
-
-
-
-    
 
 
 
@@ -461,3 +458,25 @@ class ImportMilestone(Resource):
             if notBadRequestException(e):
                 api.abort(500, e.args[0])
             raise e
+
+
+
+
+
+
+@api.route('/manifest_dummy_folders')
+class DeleteManifestDummyFolders(Resource):
+
+    parser_delete_manifest_dummy_folders = reqparse.RequestParser(bundle_errors=True)
+    parser_delete_manifest_dummy_folders.add_argument('paths', type=list, help='Path to the local data deliverables document', location="json")
+
+    @api.doc(description='Delete the dummy folders created by the manifest tool.', responses={500: "Internal Server Error", 400: "Bad Request"})
+    def delete(self):
+        data = self.parser_delete_manifest_dummy_folders.parse_args()
+        
+        paths = data.get('path')
+
+        try:
+            return delete_manifest_dummy_folders(paths)
+        except Exception as e:
+            api.abort(500, str(e))
