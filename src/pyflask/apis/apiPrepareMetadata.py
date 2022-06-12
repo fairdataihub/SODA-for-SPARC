@@ -287,6 +287,7 @@ model_save_samples_result = api.model('SaveSamplesResult', {
     'size': fields.Integer(description='The size of the sample file that was saved through SODA.'),
 })
 
+@api.route('/samples_file')
 class SamplesFile(Resource):
     
     parser_save_samples_file = reqparse.RequestParser(bundle_errors=True)
@@ -328,7 +329,6 @@ class SamplesFile(Resource):
 
 
 
-
 @api.route('/import_metadata_file')
 class ImportBFMetadataFile(Resource):
     parser_import_bf_metadata_file = reqparse.RequestParser(bundle_errors=True)
@@ -358,6 +358,8 @@ class ImportBFMetadataFile(Resource):
 
 
 
+
+
 @api.route('/template_paths')
 class SetTemplatePath(Resource):
 
@@ -378,7 +380,6 @@ class SetTemplatePath(Resource):
             return set_template_path(basepath, resourcesPath)
         except Exception as e:
             api.abort(500, str(e))
-
 
 
 
