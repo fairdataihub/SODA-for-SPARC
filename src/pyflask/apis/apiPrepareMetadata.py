@@ -18,7 +18,7 @@ from prepareMetadata import (
 from namespaces import NamespaceEnum, get_namespace
 from flask_restx import Resource, reqparse, fields
 from flask_restx.inputs import boolean
-from errorHandlers import notBadRequestException
+from errorHandlers import notBadRequestException, InvalidDeliverablesDocument
 
 api = get_namespace(NamespaceEnum.PREPARE_METADATA)
 
@@ -243,6 +243,140 @@ class DatasetDescriptionFile(Resource):
 
 
 
+@api.route('/subjects_file')
+class SubjectsFile(Resource):
+
+    parser_save_subjects_file = reqparse.RequestParser(bundle_errors=True)
+    parser_save_subjects_file.add_argument('filepath', type=str, help="Path to the subjects file on the user\'s machine.", location="json", required=False)
+    parser_save_subjects_file.add_argument('upload_boolean', type=boolean, help='Save subjecst on Pennsieve if True else save locally.', location="args", required=True)
+    parser_save_subjects_file.add_argument('selected_account', type=str, help='Pennsieve account to save the subjects file to.', location="json", required=False)
+    parser_save_subjects_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset to save the subjects file to.', location="json", required=False)
+    parser_save_subjects_file.add_argument('subjects_str', type=list, help='List of subjects to save.', location="json", required=True)
+
+    @api.expect(parser_save_subjects_file)
+    @api.doc(description='Save the subjects file to the user\'s machine or to Pennsieve.', responses={500: "Internal Server Error", 400: "Bad Request", 403: "Forbidden"})
+    def post(self):
+        data = self.parser_save_subjects_file.parse_args()
+
+        filepath = data.get('filepath')
+        upload_boolean = data.get('upload_boolean')
+        selected_account = data.get('selected_account')
+        selected_dataset = data.get('selected_dataset')
+        subjects_str = data.get('subjects_str')
+
+        if upload_boolean and not selected_account and not selected_dataset:
+            api.abort(400, "Error:  To save a subjects file on Pennsieve provide a dataset and pennsieve account.")
+
+        if not upload_boolean and not filepath:
+            api.abort(400, "Error:  To save a subjects file on the user\'s machine provide a filepath.")
+
+        try:
+            save_subjects_file(upload_boolean, selected_account, selected_dataset, filepath, subjects_str)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
+
+
+    parser_create_data_frames = reqparse.RequestParser(bundle_errors=True)
+    parser_create_data_frames.add_argument('type', type=str, help="Subjects or Samples are the valid types.", location="args", required=False)
+    parser_create_data_frames.add_argument('filepath', type=str, help="Path to the subjects or samples file on the user's machine.", location="json", required=False)
+    parser_create_data_frames.add_argument('ui_fields', type=str, help='The fields to include in the final data frame.', location="json", required=False)
+
+    @api.expect(parser_create_data_frames)
+    @api.doc(description='Get a local subjects file data in the form of data frames.', responses={500: "Internal Server Error", 400: "Bad Request"})
+    def get(self):
+        data = self.parser_create_data_frames.parse_args()
+
+        file_type = data.get('type')
+        filepath = data.get('filepath')
+        ui_fields = data.get('ui_fields')
+
+        if file_type != 'samples':
+            api.abort(400, "Error: The type parameter must be samples.")
+
+        try:
+            return convert_subjects_samples_file_to_df(file_type, filepath, ui_fields)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
+
+
+
+
+
+
+
+model_save_samples_result = api.model('SaveSamplesResult', {
+    'size': fields.Integer(description='The size of the sample file that was saved through SODA.'),
+})
+
+@api.route('/samples_file')
+class SamplesFile(Resource):
+    
+    parser_save_samples_file = reqparse.RequestParser(bundle_errors=True)
+    parser_save_samples_file.add_argument('filepath', type=str, help="Path to the samples file on the user\'s machine.", location="json", required=False)
+    parser_save_samples_file.add_argument('upload_boolean', type=boolean, help='Save samples on Pennsieve if True else save locally.', location="args", required=True)
+    parser_save_samples_file.add_argument('selected_account', type=str, help='Pennsieve account to save the samples file to.', location="json", required=False)
+    parser_save_samples_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset to save the samples file to.', location="json", required=False)
+    parser_save_samples_file.add_argument('samples_str', type=list, help='List of samples to save.', location="json", required=True)
+
+    @api.expect(parser_save_samples_file)
+    @api.doc(description='Save the samples file to the user\'s machine or to Pennsieve.', responses={500: "Internal Server Error", 400: "Bad Request", 403: "Forbidden"})
+    @api.marshal_with(model_save_samples_result, 200, False)
+    def post(self):
+        data = self.parser_save_samples_file.parse_args()
+
+        filepath = data.get('filepath')
+        upload_boolean = data.get('upload_boolean')
+        selected_account = data.get('selected_account')
+        selected_dataset = data.get('selected_dataset')
+        samples_str = data.get('samples_str')
+
+        if upload_boolean and not selected_account and not selected_dataset:
+            api.abort(400, "Error:  To save a samples file on Pennsieve provide a dataset and pennsieve account.")
+        
+        if not upload_boolean and not filepath:
+            api.abort(400, "Error:  To save a samples file on the user\'s machine provide a filepath.")
+
+        
+        try:
+            return save_samples_file(upload_boolean, selected_account, selected_dataset, filepath, samples_str)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
+    
+    
+    parser_create_data_frames = reqparse.RequestParser(bundle_errors=True)
+    parser_create_data_frames.add_argument('type', type=str, help="Subjects or Samples are the valid types.", location="args", required=False)
+    parser_create_data_frames.add_argument('filepath', type=str, help="Path to the subjects or samples file on the user's machine.", location="json", required=False)
+    parser_create_data_frames.add_argument('ui_fields', type=str, help='The fields to include in the final data frame.', location="json", required=False)
+
+    @api.expect(parser_create_data_frames)
+    @api.doc(description='Get a local samples file data in the form of data frames.', responses={500: "Internal Server Error", 400: "Bad Request"})
+    def get(self):
+        data = self.parser_create_data_frames.parse_args()
+
+        file_type = data.get('type')
+        filepath = data.get('filepath')
+        ui_fields = data.get('ui_fields')
+
+        if file_type != 'samples':
+            api.abort(400, "Error: The type parameter must be samples.")
+
+        try:
+            return convert_subjects_samples_file_to_df(file_type, filepath, ui_fields)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
+
+
+
+
+
 
 
 
@@ -265,11 +399,13 @@ class ImportBFMetadataFile(Resource):
         ui_fields = data.get('ui_fields')
 
         try:
-            return import_bf_metadata_file(file_type, ui_fields, selected_account, selected_dataset)
+            import_bf_metadata_file(file_type, ui_fields, selected_account, selected_dataset)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
             raise e
+
+
 
 
 
@@ -302,18 +438,45 @@ class SetTemplatePath(Resource):
 
 
 
-parser_import_milestone = reqparse.RequestParser(bundle_errors=True)
-parser_import_milestone.add_argument('path', type=str, help='Path to the local data deliverables document', location="args")
 @api.route('/import_milestone')
 class ImportMilestone(Resource):
+    parser_import_milestone = reqparse.RequestParser(bundle_errors=True)
+    parser_import_milestone.add_argument('path', type=str, help='Path to the local data deliverables document', location="args")
 
     @api.expect(parser_import_milestone)
+    @api.doc(description='Import a milestone from the user\'s machine.', responses={500: "Internal Server Error", 400: "Bad Request"})
     def get(self):
-        args = parser_import_milestone.parse_args()
+        args = self.parser_import_milestone.parse_args()
         path = args['path']
         try:
-            return import_milestone(path)
+            data = import_milestone(path)
+            return extract_milestone_info(data)
         except Exception as e:
+            # check if invalidDataDeliverablesDocument exception
+            if type(e).__name__  == 'InvalidDataDeliverablesDocument':
+                api.abort(400, str(e))
             if notBadRequestException(e):
                 api.abort(500, e.args[0])
             raise e
+
+
+
+
+
+
+@api.route('/manifest_dummy_folders')
+class DeleteManifestDummyFolders(Resource):
+
+    parser_delete_manifest_dummy_folders = reqparse.RequestParser(bundle_errors=True)
+    parser_delete_manifest_dummy_folders.add_argument('paths', type=list, help='Path to the local data deliverables document', location="json")
+
+    @api.doc(description='Delete the dummy folders created by the manifest tool.', responses={500: "Internal Server Error", 400: "Bad Request"})
+    def delete(self):
+        data = self.parser_delete_manifest_dummy_folders.parse_args()
+        
+        paths = data.get('path')
+
+        try:
+            return delete_manifest_dummy_folders(paths)
+        except Exception as e:
+            api.abort(500, str(e))

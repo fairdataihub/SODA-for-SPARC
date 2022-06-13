@@ -7,60 +7,29 @@ from gevent import monkey
 monkey.patch_all()
 import platform
 import os
-from os import listdir, stat, makedirs, mkdir, walk, remove, pardir
 from os.path import (
     isdir,
-    isfile,
     join,
-    splitext,
-    getmtime,
-    basename,
-    normpath,
     exists,
     expanduser,
-    split,
-    dirname,
     getsize,
-    abspath,
 )
 import pandas as pd
 import csv
-import io
-import time
-from time import strftime, localtime
 import shutil
-from shutil import copy2
-from configparser import ConfigParser
 import numpy as np
 from collections import defaultdict
-import subprocess
-from websocket import create_connection
-import socket
-import errno
-import re
-import gevent
 from pennsieve import Pennsieve
-from pennsieve.log import get_logger
-from pennsieve.api.agent import agent_cmd
-from pennsieve.api.agent import AgentError, check_port, socket_address
-from urllib.request import urlopen
-import json
-import collections
-from threading import Thread
-import pathlib
 import requests
+from errorHandlers import is_file_not_found_exception, is_invalid_file_exception
 
 from string import ascii_uppercase
 import itertools
 import tempfile
 
 from openpyxl import load_workbook
-from openpyxl import Workbook
 from openpyxl.styles import PatternFill, Font
-from openpyxl.styles.colors import Color
 from docx import Document
-
-from datetime import datetime, timezone
 
 from Bio import Entrez
 
@@ -71,6 +40,8 @@ from manageDatasets import (
 )
 
 from pysodaUtils import agent_running
+
+from errorHandlers import InvalidDeliverablesDocument
 
 userpath = expanduser("~")
 METADATA_UPLOAD_BF_PATH = join(userpath, "SODA", "METADATA")
@@ -98,9 +69,7 @@ def set_template_path(soda_base_path, soda_resources_path):
         TEMPLATE_PATH = join(soda_resources_path, "file_templates")
 
 
-# custom Exception class for when a DDD file is in an invalid form
-class InvalidDeliverablesDocument(Exception):
-    pass
+
 
 
 ### Import Data Deliverables document
@@ -673,7 +642,7 @@ def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastruct
     if upload_boolean:
         upload_metadata_file("samples.xlsx", bfaccount, bfdataset, destination)
 
-    return size
+    return {"size": size}
 
 
 # check for non-empty fields (cells)
@@ -824,11 +793,9 @@ def checkEmptyColumn(column):
     return False
 
 
+
 ## load/import an existing local or Pennsieve submission.xlsx file
 def load_existing_submission_file(filepath):
-
-    if not exists(filepath):
-        abort(400, "Submission file not found")
 
     try:
         DD_df = pd.read_excel(
@@ -836,6 +803,13 @@ def load_existing_submission_file(filepath):
         )
 
     except Exception as e:
+        if is_file_not_found_exception(e):
+            abort(400, "Error: Local submission file not found")
+
+        # TODO: TEST check if error can indicate if file is not in the correct format TEST
+        if is_invalid_file_exception(e):
+            abort(400, "Error: Local submission file is not in the correct format")
+
         raise Exception(
             "SODA cannot read this submission.xlsx file. If you are trying to retrieve a submission.xlsx file from Pennsieve, please make sure you are signed in with your Pennsieve account on SODA."
         ) from e
