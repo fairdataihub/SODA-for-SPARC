@@ -449,7 +449,7 @@ const importGenerateDatasetStep = async (object) => {
           );
           updateBfAccountList();
         } catch (error) {
-          client_error(error);
+          clientError(error);
           log.error(error);
           console.error(error);
           showHideDropdownButtons("account", "hide");
@@ -842,16 +842,16 @@ $(document).ready(async function () {
 });
 
 const get_api_key = async (login, password, key_name) => {
-  return new Promise((resolve) => {
+  return new Promise(async (resolve) => {
     try {
       let bf_get_pennsieve_secret_key = await client.get(
         `/manage_datasets/pennsieve_api_key_secret?username=${login}&password=${password}&api_key=${key_name}`
-      )
+      );
       let res = bf_get_pennsieve_secret_key.data;
-      resolve(res)
-    }catch(error) {
-      client_error(error);
-      resolve(["failed", error.response.data.message])
+      resolve(res);
+    } catch (error) {
+      clientError(error);
+      resolve(["failed", error.response.data.message]);
     }
   });
 };
@@ -943,7 +943,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             return;
           }
         } catch (error) {
-          client_error(error);
+          clientError(error);
           Swal.fire({
             backdrop: "rgba(0,0,0, 0.4)",
             heightAuto: false,
@@ -1076,7 +1076,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
                   confirm_click_account_function();
                   updateBfAccountList();
                 } catch (error) {
-                  client_error(error);
+                  clientError(error);
                   log.error(error);
                   console.error(error);
                   Swal.fire({
@@ -1090,7 +1090,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
                   showHideDropdownButtons("account", "hide");
                   confirm_click_account_function();
                 }
-                
+
                 Swal.fire({
                   allowEscapeKey: false,
                   heightAuto: false,

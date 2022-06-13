@@ -212,7 +212,7 @@ $("#button-create-bf-new-dataset").click(async () => {
             datasetList = responseObject.data.datasets;
             log.info(`Requested list of datasets successfully`);
           } catch (error) {
-            client_error(error);
+            clientError(error);
             log.error(error);
             console.error(error);
           }
@@ -348,11 +348,10 @@ $("#button-rename-dataset").click(async () => {
               datasetList = responseObject.data.datasets;
               refreshDatasetList();
             } catch (error) {
-              client_error(error);
+              clientError(error);
               log.error(error);
               console.error(error);
             }
-
           }
         }
       );
@@ -507,7 +506,7 @@ const showCurrentPermission = async () => {
 
       curation_consortium_check();
     } catch (error) {
-      client_error(error);
+      clientError(error);
     }
   }
 };
@@ -588,7 +587,7 @@ const addPermissionUser = (
             }
           }
         } catch (error) {
-          client_error(error);
+          clientError(error);
         }
       }
     }
@@ -840,7 +839,7 @@ const showCurrentSubtitle = async () => {
         $("#button-add-subtitle > .btn_animated-inside").html("Edit subtitle");
       }
     } catch (error) {
-      client_error(error);
+      clientError(error);
       logGeneralOperationsForAnalytics(
         "Error",
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
@@ -1409,7 +1408,7 @@ const changeDatasetUnderDD = () => {
 };
 
 ///// grab dataset name and auto-load current description
-const showDatasetDescription = () => {
+const showDatasetDescription = async () => {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
@@ -1423,11 +1422,11 @@ const showDatasetDescription = () => {
       });
     }, 5);
   } else {
-    try{
+    try {
       let bf_get_subtitle = await client.get(
         `/manage_datasets/bf_dataset_subtitle?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}`
       );
-      let res = bf_get_subtitle.data.subtitle
+      let res = bf_get_subtitle.data.subtitle;
       ipcRenderer.send(
         "track-event",
         "Success",
@@ -1443,8 +1442,8 @@ const showDatasetDescription = () => {
           block: "center",
         });
       }, 5);
-    }catch(error) {
-      client_error(error);
+    } catch (error) {
+      clientError(error);
       ipcRenderer.send(
         "track-event",
         "Error",
@@ -1891,7 +1890,7 @@ $(document).ready(() => {
   });
 });
 
-const showCurrentBannerImage = () => {
+const showCurrentBannerImage = async () => {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
@@ -1916,10 +1915,10 @@ const showCurrentBannerImage = () => {
 
     document.getElementById("para-current-banner-img").innerHTML = "";
 
-    try{
+    try {
       let bf_get_banner_image = await client.get(
         `/manage_datasets/bf_banner_image?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}`
-      )
+      );
       let res = bf_get_banner_image.data.banner_image;
       logGeneralOperationsForAnalytics(
         "Success",
@@ -1930,8 +1929,7 @@ const showCurrentBannerImage = () => {
 
       if (res === "No banner image") {
         bfCurrentBannerImg.src = "";
-        document.getElementById("para-current-banner-img").innerHTML =
-          "None";
+        document.getElementById("para-current-banner-img").innerHTML = "None";
         bfViewImportedImage.src = "";
 
         $("#div-img-container-holder").css("display", "block");
@@ -1944,8 +1942,8 @@ const showCurrentBannerImage = () => {
         bfCurrentBannerImg.src = res;
       }
       $("#banner_image_loader").hide();
-    }catch(error) {
-      client_error(error);
+    } catch (error) {
+      clientError(error);
       $("#banner_image_loader").hide();
 
       bfCurrentBannerImg.src = "assets/img/no-banner-image.png";
@@ -2226,7 +2224,7 @@ const showCurrentLicense = async () => {
       }
     } catch (error) {
       console.log("here");
-      client_error(error);
+      clientError(error);
       logGeneralOperationsForAnalytics(
         "Error",
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
@@ -2426,7 +2424,7 @@ $("#button-submit-dataset").click(async () => {
     selectedbfaccount,
     selectedbfdataset,
     pathSubmitDataset.placeholder,
-    (error, res) => {
+    async (error, res) => {
       if (error) {
         let emessage = userError(error);
 
@@ -2490,8 +2488,8 @@ $("#button-submit-dataset").click(async () => {
         try {
           let num_files_folders = await client.get(
             `/manage_datasets/get_number_of_files_and_folders_locally?filepath=${pathSubmitDataset.placeholder}`
-          )
-          let res = []
+          );
+          let res = [];
           res = num_files_folders.data;
 
           let num_of_files = res[0];
@@ -2518,8 +2516,8 @@ $("#button-submit-dataset").click(async () => {
             num_of_files
           );
           console.log(res);
-        } catch(error) {
-          client_error(error);
+        } catch (error) {
+          clientError(error);
         }
 
         $("#upload_local_dataset_progress_div")[0].scrollIntoView({
@@ -2549,8 +2547,8 @@ $("#button-submit-dataset").click(async () => {
         try {
           let num_files_folders = await client.get(
             `/manage_datasets/get_number_of_files_and_folders_locally?filepath=${pathSubmitDataset.placeholder}`
-          )
-          let res = []
+          );
+          let res = [];
           res = num_files_folders.data;
 
           let num_of_files = res[0];
@@ -2566,8 +2564,8 @@ $("#button-submit-dataset").click(async () => {
             num_of_folders
           );
           console.log(res);
-        } catch(error) {
-          client_error(error);
+        } catch (error) {
+          clientError(error);
           ipcRenderer.send(
             "track-event",
             "Error",
@@ -2916,7 +2914,7 @@ $("#bf_list_dataset_status").on("change", () => {
   );
 });
 
-function showCurrentDatasetStatus(callback) {
+async function showCurrentDatasetStatus(callback) {
   let selectedBfAccount = defaultBfAccount;
   let selectedBfDataset = defaultBfDataset;
 
@@ -2979,8 +2977,8 @@ function showCurrentDatasetStatus(callback) {
       if (callback !== undefined) {
         callback();
       }
-    }catch(error) {
-      client_error(error);
+    } catch (error) {
+      clientError(error);
       let emessage = error.response.data.message;
 
       Swal.fire({

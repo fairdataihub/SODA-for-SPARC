@@ -2858,7 +2858,7 @@ async function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
     populateDatasetDropdownCurate(datasetDropdown, datasetList);
     refreshDatasetList();
   } catch (error) {
-    client_error(error);
+    clientError(error);
     var emessage = error;
     curateBFAccountLoadStatus.innerHTML =
       "<span style='color: red'>" + emessage + "</span>";
@@ -3755,7 +3755,7 @@ async function updateBfAccountList() {
   refreshBfTeamsList(bfListTeams);
 }
 
-function client_error(error) {
+function clientError(error) {
   let error_message = error.response.data.message;
   let error_status = error.response.status;
   let error_headers = error.response.headers;
@@ -3798,7 +3798,7 @@ async function loadDefaultAccount() {
     );
     console.log(dataset_request.data.account_details);
   } catch (error) {
-    client_error(error);
+    clientError(error);
   }
 
   console.log("Default account success: ", accounts);
@@ -4386,7 +4386,7 @@ async function showDefaultBFAccount() {
         // refreshDatasetList()
         updateDatasetList();
       } catch (error) {
-        client_error(error);
+        clientError(error);
 
         $("#para-account-detail-curate").html("None");
         $("#current-bf-account").text("None");
@@ -4402,7 +4402,7 @@ async function showDefaultBFAccount() {
       }
     }
   } catch (error) {
-    client_error(error);
+    clientError(error);
   }
 }
 
@@ -7119,7 +7119,7 @@ async function initiate_generate() {
         datasetList = [];
         datasetList = responseObject.data.datasets;
       } catch (error) {
-        client_error(error);
+        clientError(error);
         var emessage = error;
       }
 
@@ -7161,7 +7161,7 @@ async function initiate_generate() {
         datasetList = [];
         datasetList = responseObject.data.datasets;
       } catch (error) {
-        client_error(error);
+        clientError(error);
         var emessage = error;
       }
     }
@@ -7656,7 +7656,7 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
       );
     } catch (error) {
       reject(userError(error.response.data.message));
-      client_error(error);
+      clientError(error);
       ipcRenderer.send(
         "track-event",
         "Error",
@@ -7791,83 +7791,77 @@ const curation_consortium_check = async (mode = "") => {
           return;
         }
         //needs to be replaced
-        client.invoke(
-          "api_bf_get_dataset_status",
-          defaultBfAccount,
-          defaultBfDataset,
-          (error, res) => {
-            $(".spinner.post-curation").show();
-            if (error) {
-              log.error(error);
-              console.error(error);
-              $("#current_curation_team_status").text("None");
-              $("#current_sparc_consortium_status").text("None");
-              $(".spinner.post-curation").hide();
-            } else {
-              let dataset_status_value = res[1];
-              let dataset_status = parseInt(
-                dataset_status_value.substring(0, 2)
-              );
-              let curation_status_satisfied = false;
-              let consortium_status_satisfied = false;
+        try {
+          let bf_dataset_permissions = await client.get(
+            `/manage_datasets/bf_dataset_status?selected_account=${defaultBfAccount}&select_dataset=${defaultBfDataset}`
+          );
+          let res = bf_dataset_permission.data;
 
-              if (dataset_status > 2) {
-                curation_status_satisfied = true;
-              }
-              if (dataset_status > 10) {
-                consortium_status_satisfied = true;
-              }
+          let dataset_status_value = res[1];
+          let dataset_status = parseInt(dataset_status_value.substring(0, 2));
+          let curation_status_satisfied = false;
+          let consortium_status_satisfied = false;
 
-              if (!curation_status_satisfied) {
-                $("#current_curation_team_status").text(
-                  "Not shared with the curation team"
-                );
-                curation_return_status = true;
-              }
-              if (!consortium_status_satisfied) {
-                $("#current_sparc_consortium_status").text(
-                  "Not shared with the SPARC Consortium"
-                );
-                consortium_return_status = true;
-              }
-
-              if (curation_return_status) {
-                $("#curation-team-unshare-btn").hide();
-                $("#curation-team-share-btn").show();
-              } else {
-                $("#current_curation_team_status").text(
-                  "Shared with the curation team"
-                );
-                $("#curation-team-unshare-btn").show();
-                $("#curation-team-share-btn").hide();
-              }
-
-              if (consortium_return_status) {
-                $("#sparc-consortium-unshare-btn").hide();
-                $("#sparc-consortium-share-btn").show();
-              } else {
-                $("#current_sparc_consortium_status").text(
-                  "Shared with the SPARC Consortium"
-                );
-                $("#sparc-consortium-unshare-btn").show();
-                $("#sparc-consortium-share-btn").hide();
-              }
-
-              if (curation_return_status && consortium_return_status) {
-                $("#sparc-consortium-unshare-btn").hide();
-                $("#sparc-consortium-share-btn").show();
-                $("#curation-team-unshare-btn").hide();
-                $("#curation-team-share-btn").show();
-                $(".spinner.post-curation").hide();
-                return;
-              }
-
-              $(".spinner.post-curation").hide();
-            }
+          if (dataset_status > 2) {
+            curation_status_satisfied = true;
           }
-        );
+          if (dataset_status > 10) {
+            consortium_status_satisfied = true;
+          }
+
+          if (!curation_status_satisfied) {
+            $("#current_curation_team_status").text(
+              "Not shared with the curation team"
+            );
+            curation_return_status = true;
+          }
+          if (!consortium_status_satisfied) {
+            $("#current_sparc_consortium_status").text(
+              "Not shared with the SPARC Consortium"
+            );
+            consortium_return_status = true;
+          }
+
+          if (curation_return_status) {
+            $("#curation-team-unshare-btn").hide();
+            $("#curation-team-share-btn").show();
+          } else {
+            $("#current_curation_team_status").text(
+              "Shared with the curation team"
+            );
+            $("#curation-team-unshare-btn").show();
+            $("#curation-team-share-btn").hide();
+          }
+
+          if (consortium_return_status) {
+            $("#sparc-consortium-unshare-btn").hide();
+            $("#sparc-consortium-share-btn").show();
+          } else {
+            $("#current_sparc_consortium_status").text(
+              "Shared with the SPARC Consortium"
+            );
+            $("#sparc-consortium-unshare-btn").show();
+            $("#sparc-consortium-share-btn").hide();
+          }
+
+          if (curation_return_status && consortium_return_status) {
+            $("#sparc-consortium-unshare-btn").hide();
+            $("#sparc-consortium-share-btn").show();
+            $("#curation-team-unshare-btn").hide();
+            $("#curation-team-share-btn").show();
+            $(".spinner.post-curation").hide();
+            return;
+          }
+
+          $(".spinner.post-curation").hide();
+        } catch (error) {
+          clientError(error);
+          $("#current_curation_team_status").text("None");
+          $("#current_sparc_consortium_status").text("None");
+          $(".spinner.post-curation").hide();
+        }
       } catch (error) {
-        client_error(error);
+        clientError(error);
         if (mode != "update") {
           $("#current_curation_team_status").text("None");
           $("#current_sparc_consortium_status").text("None");
@@ -7876,7 +7870,7 @@ const curation_consortium_check = async (mode = "") => {
       }
     }
   } catch (error) {
-    client_error(error);
+    clientError(error);
 
     if (mode != "update") {
       $("#curation-team-unshare-btn").hide();
@@ -8063,7 +8057,7 @@ async function addBFAccountInsideSweetalert(myBootboxDialog) {
           confirm_click_account_function();
           updateBfAccountList();
         } catch (error) {
-          client_error(error);
+          clientError(error);
 
           Swal.fire({
             icon: "error",
