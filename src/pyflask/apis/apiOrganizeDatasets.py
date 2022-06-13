@@ -6,24 +6,34 @@ from organizeDatasets import (
 )
 
 from namespaces import NamespaceEnum, get_namespace
-from flask_restx import Resource
-from flask import request
-import json
+from flask_restx import Resource, fields
 from errorHandlers import notBadRequestException
 
 api = get_namespace(NamespaceEnum.ORGANIZE_DATASETS)
 
 
-parser = api.parser()
-parser.add_argument('sodajsonobject', type=str, help='The sodajsonobject filled with the bfaccount and dataset info available.', location="json")
 
-@api.route('/get_dataset_files_folders')
+model_get_dataset_files_folders_response = api.model(
+    "GetDatasetFilesFoldersResponse",
+    {
+        "soda_json_structure": fields.String( required=True, description="SODA JSON structure"),
+        "success_message": fields.String( required=True, description="Success message"),
+        "manifest_error_message": fields.String( required=True, description="Manifest error message")
+    }
+)
+
+@api.route('/dataset_files_and_folders')
 class BfGetDatasetFilesFolders(Resource):
+    parser = api.parser()
+    parser.add_argument('sodajsonobject', type=dict, required=True, help='The sodajsonobject filled with the bfaccount and dataset info available.', location="json")
+
     @api.expect(parser)
-    
+    @api.doc(responses={200: "Success", 400: "Bad Request", 500: "Internal Server Error"}, description="Import a dataset from Pennsieve and populate the local SODA JSON object.")
+    @api.marshal_with(model_get_dataset_files_folders_response)
     def get(self):
-        json_data = request.json
-        sodajsonobject = json_data["sodajsonobject"]
+        data = self.parser.parse_args()
+        sodajsonobject = data.get('sodajsonobject')
+
         try:
             return bf_get_dataset_files_folders(sodajsonobject)
         except Exception as e:
