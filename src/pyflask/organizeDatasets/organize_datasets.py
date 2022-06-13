@@ -3,6 +3,7 @@ from logging import exception
 from tabnanny import check
 from turtle import update
 from gevent import monkey
+from flask import abort
 
 monkey.patch_all()
 import platform
@@ -1109,36 +1110,30 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only=True)
     try:
         bf_account_name = soda_json_structure["bf-account-selected"]["account-name"]
     except Exception as e:
-        raise e
+        abort(400, "Error: Please provide a Pennsieve dataset account name.")
 
     try:
         bf = Pennsieve(bf_account_name)
     except Exception as e:
-        error.append("Error: Please select a valid Pennsieve account")
-        raise Exception(error)
+        abort(400, "Error: Please select a valid Pennsieve account")
 
     # check that the Pennsieve dataset is valid
     try:
         bf_dataset_name = soda_json_structure["bf-dataset-selected"]["dataset-name"]
     except Exception as e:
-        raise e
+        abort(400, "Error: Please provide a Pennsieve dataset name.")
     try:
         myds = bf.get_dataset(bf_dataset_name)
     except Exception as e:
-        error.append("Error: Please select a valid Pennsieve dataset")
-        raise Exception(error)
+        abort(400, "Error: Please select a valid Pennsieve dataset")
 
     # check that the user has permission to edit this dataset
-    try:
-        role = bf_get_current_user_permission(bf, myds)
-        if role not in ["owner", "manager", "editor"]:
-            curatestatus = "Done"
-            error.append(
-                "Error: You don't have permissions for uploading to this Pennsieve dataset"
-            )
-            raise Exception(error)
-    except Exception as e:
-        raise e
+
+    role = bf_get_current_user_permission(bf, myds)
+    if role not in ["owner", "manager", "editor"]:
+        curatestatus = "Done"
+        abort(403, "Error: You don't have permissions for uploading to this Pennsieve dataset")
+
 
     try:
         # import files and folders in the soda json structure
