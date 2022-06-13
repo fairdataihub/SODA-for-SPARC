@@ -49,8 +49,13 @@ import pathlib
 
 from datetime import datetime, timezone
 from manageDatasets import bf_get_current_user_permission
+from flask import abort 
 
-"""
+
+
+
+def bf_get_doi(selected_bfaccount, selected_bfdataset):
+    """
     Function to get current doi for a selected dataset
 
     Args:
@@ -60,41 +65,39 @@ from manageDatasets import bf_get_current_user_permission
         Current doi or "None"
     """
 
-
-def bf_get_doi(selected_bfaccount, selected_bfdataset):
+    print(selected_bfaccount)
 
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        abort(400, "Error: Please select a valid Pennsieve account")
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        abort(400, "Error: Please select a valid Pennsieve dataset")
 
-    try:
-        role = bf_get_current_user_permission(bf, myds)
-        if role not in ["owner", "manager"]:
-            error = "Error: You don't have permissions to view/edit DOI for this Pennsieve dataset"
-            raise Exception(error)
-    except Exception as e:
-        raise e
+
+    role = bf_get_current_user_permission(bf, myds)
+    if role not in ["owner", "manager"]:
+        abort(403, "Error: You don't have permissions to view/edit DOI for this Pennsieve dataset")
 
     try:
         selected_dataset_id = myds.id
-        doi_status = bf._api._get("/datasets/" + str(selected_dataset_id) + "/doi")
-        return doi_status["doi"]
+        doi_status = bf._api._get(f"/datasets/{str(selected_dataset_id)}/doi")
+        return {"doi": doi_status["doi"]}
     except Exception as e:
         if "doi" in str(e) and "not found" in str(e):
-            return "None"
+            return {"doi": "None"}
         else:
             raise e
 
 
-"""
+
+
+
+def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
+    """
     Function to reserve doi for a selected dataset
 
     Args:
@@ -102,36 +105,28 @@ def bf_get_doi(selected_bfaccount, selected_bfdataset):
         selected_bfdataset: name of selected Pennsieve dataset (string)
     Return:
         Success or error message
-"""
-
-
-def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
+    """
 
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        abort(400, "Error: Please select a valid Pennsieve account")
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        abort(400, "Error: Please select a valid Pennsieve dataset")
 
-    try:
-        role = bf_get_current_user_permission(bf, myds)
-        if role not in ["owner", "manager"]:
-            error = "Error: You don't have permissions to view/edit DOI for this Pennsieve dataset"
-            raise Exception(error)
-    except Exception as e:
-        raise e
+    
+    role = bf_get_current_user_permission(bf, myds)
+    if role not in ["owner", "manager"]:
+        abort(403, "Error: You don't have permissions to view/edit DOI for this Pennsieve dataset")
+
 
     try:
         res = bf_get_doi(selected_bfaccount, selected_bfdataset)
         if res != "None":
-            error = "Error: A DOI has already been reserved for this dataset"
-            raise Exception(error)
+            abort(400, "Error: A DOI has already been reserved for this dataset")
     except Exception as e:
         raise e
 
@@ -148,12 +143,15 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
             "creators": creators_list,
         }
         bf._api.datasets._post("/" + str(selected_dataset_id) + "/doi", json=jsonfile)
-        return "Done!"
+        return {"message": "Done!"}
     except Exception as e:
         raise e
 
 
-"""
+
+
+def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
+    """
     Function to get the review request status and publishing status of a dataset
 
     Args:
@@ -163,32 +161,28 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
         Current reqpusblishing status
     """
 
-
-def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
-
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        abort(400, "Error: Please select a valid Pennsieve account")
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        abort(400, "Error: Please select a valid Pennsieve dataset")
 
     try:
         selected_dataset_id = myds.id
 
-        review_request_status = bf._api._get("/datasets/" + str(selected_dataset_id))[
-            "publication"
-        ]["status"]
-        publishing_status = bf._api._get(
-            "/datasets/" + str(selected_dataset_id) + "/published"
-        )["status"]
+        review_request_status = bf._api._get(f"/datasets/{str(selected_dataset_id)}")["publication"]["status"]
 
-        return [review_request_status, publishing_status]
+        publishing_status = bf._api._get(f"/datasets/{str(selected_dataset_id)}/published")["status"]
+
+
+        return { 
+            "publishing_status": review_request_status, 
+            "review_request_status": publishing_status
+        }
     except Exception as e:
         raise e
 
