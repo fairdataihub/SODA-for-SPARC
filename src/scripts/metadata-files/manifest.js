@@ -754,26 +754,11 @@ async function initiate_generate_manifest_bf() {
         datasetList = [];
         datasetList = responseObject.data.datasets;
       } catch (error) {
-        client_error(error);
+        clientError(error);
         log.error(error);
         console.error(error);
         var emessage = error;
       }
-
-      // client.invoke(
-      //   "api_bf_dataset_account",
-      //   defaultBfAccount,
-      //   (error, result) => {
-      //     if (error) {
-      //       log.error(error);
-      //       console.log(error);
-      //       var emessage = error;
-      //     } else {
-      //       datasetList = [];
-      //       datasetList = result;
-      //     }
-      //   }
-      // );
 
       Swal.fire({
         title: "Failed to generate manifest files!",

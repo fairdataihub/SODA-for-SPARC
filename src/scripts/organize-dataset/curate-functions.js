@@ -449,27 +449,12 @@ const importGenerateDatasetStep = async (object) => {
           );
           updateBfAccountList();
         } catch (error) {
-          client_error(error);
+          clientError(error);
           log.error(error);
           console.error(error);
           showHideDropdownButtons("account", "hide");
         }
 
-        // client.invoke(
-        //   "api_bf_account_details",
-        //   bfAccountSelected,
-        //   (error, res) => {
-        //     if (error) {
-        //       log.error(error);
-        //       console.error(error);
-        //       showHideDropdownButtons("account", "hide");
-        //     } else {
-        //       $("#para-account-detail-curate").html(res);
-        //       updateBfAccountList();
-        //       // checkPrevDivForConfirmButton("account");
-        //     }
-        //   }
-        // );
         // $("#div-bf-account-btns").css("display", "flex");
         $("#btn-bf-account").trigger("click");
         // Step 3: choose to generate on an existing or new dataset
@@ -835,21 +820,6 @@ $(document).ready(async function () {
         console.error(error);
         var emessage = error;
       }
-      // client.invoke(
-      //   "api_bf_dataset_account",
-      //   defaultBfAccount,
-      //   (error, result) => {
-      //     if (error) {
-      //       log.error(error);
-      //       console.log(error);
-      //       var emessage = error;
-      //     } else {
-      //       datasetList = [];
-      //       datasetList = result;
-      //       refreshDatasetList();
-      //     }
-      //   }
-      // );
     }.bind(this)
   );
   this.observer.observe(accountDetails.get(0), {
@@ -872,22 +842,17 @@ $(document).ready(async function () {
 });
 
 const get_api_key = async (login, password, key_name) => {
-  return new Promise((resolve) => {
-    client.invoke(
-      "api_get_pennsieve_api_key_secret",
-      login,
-      password,
-      key_name,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-          resolve(["failed", error]);
-        } else {
-          resolve(res);
-        }
-      }
-    );
+  return new Promise(async (resolve) => {
+    try {
+      let bf_get_pennsieve_secret_key = await client.get(
+        `/manage_datasets/pennsieve_api_key_secret?username=${login}&password=${password}&api_key=${key_name}`
+      );
+      let res = bf_get_pennsieve_secret_key.data;
+      resolve(res);
+    } catch (error) {
+      clientError(error);
+      resolve(["failed", error.response.data.message]);
+    }
   });
 };
 
@@ -978,7 +943,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             return;
           }
         } catch (error) {
-          client_error(error);
+          clientError(error);
           Swal.fire({
             backdrop: "rgba(0,0,0, 0.4)",
             heightAuto: false,
@@ -1111,7 +1076,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
                   confirm_click_account_function();
                   updateBfAccountList();
                 } catch (error) {
-                  client_error(error);
+                  clientError(error);
                   log.error(error);
                   console.error(error);
                   Swal.fire({
@@ -1126,50 +1091,6 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
                   confirm_click_account_function();
                 }
 
-                // client.invoke(
-                //   "api_bf_account_details",
-                //   key_name,
-                //   (error, res) => {
-                //     if (error) {
-                //       log.error(error);
-                //       console.error(error);
-                //       Swal.fire({
-                //         backdrop: "rgba(0,0,0, 0.4)",
-                //         heightAuto: false,
-                //         icon: "error",
-                //         text: "Something went wrong!",
-                //         footer:
-                //           '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
-                //       });
-                //       showHideDropdownButtons("account", "hide");
-                //       confirm_click_account_function();
-                //     } else {
-                //       $("#para-account-detail-curate").html(res);
-                //       $("#current-bf-account").text(key_name);
-                //       $("#current-bf-account-generate").text(key_name);
-                //       $("#create_empty_dataset_BF_account_span").text(key_name);
-                //       $(".bf-account-span").text(key_name);
-                //       $("#current-bf-dataset").text("None");
-                //       $("#current-bf-dataset-generate").text("None");
-                //       $(".bf-dataset-span").html("None");
-                //       $("#para-account-detail-curate-generate").html(res);
-                //       $("#para_create_empty_dataset_BF_account").html(res);
-                //       $(".bf-account-details-span").html(res);
-                //       $("#para-continue-bf-dataset-getting-started").text("");
-
-                //       $("#current_curation_team_status").text("None");
-                //       $("#curation-team-share-btn").hide();
-                //       $("#curation-team-unshare-btn").hide();
-                //       $("#current_sparc_consortium_status").text("None");
-                //       $("#sparc-consortium-share-btn").hide();
-                //       $("#sparc-consortium-unshare-btn").hide();
-
-                //       showHideDropdownButtons("account", "show");
-                //       confirm_click_account_function();
-                //       updateBfAccountList();
-                //     }
-                //   }
-                // );
                 Swal.fire({
                   allowEscapeKey: false,
                   heightAuto: false,

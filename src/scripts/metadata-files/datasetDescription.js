@@ -2281,6 +2281,41 @@ function checkBFImportDD() {
       Swal.showLoading();
     },
   }).then((result) => {});
+  let bf_dataset = $("#bf_dataset_load_dd").text().trim();
+  try {
+    let metadata_import = client.get(
+      `/prepare_metadata/import_metadata_file?file_type=dataset_description.xlsx&selected_account=${defaultBfAccount}&selected_dataset=${bf_dataset}`
+    );
+
+    loadDDFileToUI(res, "bf");
+
+    // log the import action success to analytics
+    logMetadataForAnalytics(
+      "Success",
+      MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      "Existing",
+      Destinations.PENNSIEVE
+    );
+  } catch (error) {
+    clientError(error);
+    var emessage = userError(error.response.data.message);
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      html: emessage,
+    });
+
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.PENNSIEVE
+    );
+  }
+  //check response on this
   client.invoke(
     "api_import_bf_metadata_file",
     "dataset_description.xlsx",

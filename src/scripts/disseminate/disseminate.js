@@ -534,7 +534,7 @@ async function disseminateShowCurrentPermission(bfAcct, bfDS) {
         defaultBfDatasetId
       );
     } catch (error) {
-      client_error(error);
+      clientError(error);
       ipcRenderer.send(
         "track-event",
         "Error",
@@ -586,7 +586,7 @@ async function disseminiateShowCurrentDatasetStatus(
         callback();
       }
     } catch (error) {
-      client_error(error);
+      clientError(error);
       var emessage = userError(error);
       $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
       $("#bf-dataset-status-spinner").css("display", "none");
