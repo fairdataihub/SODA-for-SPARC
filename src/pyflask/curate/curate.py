@@ -47,6 +47,7 @@ from threading import Thread
 import pathlib
 import io
 from contextlib import redirect_stdout
+from flask import abort
 
 from datetime import datetime, timezone
 
@@ -1376,7 +1377,7 @@ def generate_dataset_locally(soda_json_structure):
 
             if "files" in my_folder.keys():
                 for file_key, file in my_folder["files"].items():
-                    if not "deleted" in file["action"]:
+                    if "deleted" not in file["action"]:
                         file_type = file["type"]
                         if file_type == "local":
                             file_path = file["path"]
@@ -1491,16 +1492,6 @@ def generate_dataset_locally(soda_json_structure):
     except Exception as e:
         raise e
 
-    # gev = []
-    # gev.append(gevent.spawn(generate, soda_json_structure))
-    # gevent.sleep(0)
-    # gevent.joinall(gev)
-
-    # try:
-    #     return gev[0].get()
-    # except Exception as e:
-    #      raise e
-
 
 def mymovefile_with_metadata(src, dst):
     shutil.move(src, dst)
@@ -1529,7 +1520,7 @@ def bf_create_new_dataset(datasetname, bf):
             c += 1
 
         if not datasetname:
-            error = error + "Error: Please enter valid dataset name" + "<br>"
+            error = f"{error}Error: Please enter valid dataset name<br>"
             c += 1
 
         if datasetname.isspace():
@@ -1537,13 +1528,13 @@ def bf_create_new_dataset(datasetname, bf):
             c += 1
 
         if c > 0:
-            raise Exception(error)
+            abort(400, error)
 
         dataset_list = []
         for ds in bf.datasets():
             dataset_list.append(ds.name)
         if datasetname in dataset_list:
-            raise Exception("Error: Dataset name already exists")
+            abort(400, "Error: Dataset name already exists")
         else:
             ds = bf.create_dataset(datasetname)
 
@@ -2556,9 +2547,8 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                 for folder_key, folder in my_folder["folders"].items():
                     relative_path = generate_relative_path(my_relative_path, folder_key)
 
-                    if existing_folder_option == "skip":
-                        if folder_key not in my_tracking_folder["folders"].keys():
-                            continue
+                    if existing_folder_option == "skip" and folder_key not in my_tracking_folder["folders"].keys():
+                        continue
 
                     tracking_folder = my_tracking_folder["folders"][folder_key]
                     list_upload_files = recursive_dataset_scan_for_bf(
@@ -2580,17 +2570,15 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                 for file_key, file in my_folder["files"].items():
                     if file["type"] == "local":
                         file_path = file["path"]
-                        if isfile(file_path):
-                            if existing_file_option == "replace":
-                                if file_key in my_bf_existing_files_name_with_extension:
-                                    index_file = (
-                                        my_bf_existing_files_name_with_extension.index(
-                                            file_key
-                                        )
-                                    )
-                                    my_file = my_bf_existing_files[index_file]
-                                    my_file.delete()
-                                    my_bf_folder.update()
+                        if isfile(file_path) and existing_file_option == "replace" and file_key in my_bf_existing_files_name_with_extension:
+                            index_file = (
+                                my_bf_existing_files_name_with_extension.index(
+                                    file_key
+                                )
+                            )
+                            my_file = my_bf_existing_files[index_file]
+                            my_file.delete()
+                            my_bf_folder.update()
 
                 # create list of files to be uploaded with projected and desired names saved
                 (
@@ -2617,11 +2605,8 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                             desired_name = splitext(file_key)[0]
                             desired_name_extension = splitext(file_key)[1]
                             desired_name_with_extension = file_key
-                            # desired_name = file_key
-
-                            if existing_file_option == "skip":
-                                if file_key in my_bf_existing_files_name_with_extension:
-                                    continue
+                            if existing_file_option == "skip" and desired_name_with_extension in my_bf_existing_files_name_with_extension:
+                                continue
 
                             # check if initial filename exists on Pennsieve dataset and get the projected name of the file after upload
                             count_done = 0
@@ -2646,8 +2631,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                             # expected final name
                             count_done = 0
                             final_name = desired_name_with_extension
-                            output = get_base_file_name(desired_name)
-                            if output:
+                            if output := get_base_file_name(desired_name):
                                 base_name = output[0]
                                 count_exist = output[1]
                                 while count_done == 0:
@@ -3024,11 +3008,10 @@ def bf_check_dataset_files_validity(soda_json_structure, bf):
                 if folder_type == "bf":
                     package_id = folder["path"]
                     try:
-                        details = bf._api._get("/packages/" + str(package_id) + "/view")
+                        details = bf._api._get(f"/packages/{str(package_id)}/view")
                     except Exception as e:
                         error_message = relative_path + " (id: " + package_id + ")"
                         error.append(error_message)
-                        pass
                 error = recursive_bf_dataset_check(folder, relative_path, error)
         if "files" in my_folder.keys():
             for file_key, file in my_folder["files"].items():
@@ -3036,13 +3019,11 @@ def bf_check_dataset_files_validity(soda_json_structure, bf):
                 if file_type == "bf":
                     package_id = file["path"]
                     try:
-                        details = bf._api._get("/packages/" + str(package_id) + "/view")
+                        details = bf._api._get(f"/packages/{str(package_id)}/view")
                     except Exception as e:
                         relative_path = my_relative_path + "/" + file_key
                         error_message = relative_path + " (id: " + package_id + ")"
                         error.append(error_message)
-                        pass
-
         return error
 
     error = []
@@ -3141,22 +3122,21 @@ def main_curate_function(soda_json_structure):
     # 1] Check for potential errors
 
     # 1.1. Check that the local destination is valid if generate dataset locally is requested
-    if "generate-dataset" in main_keys:
-        if soda_json_structure["generate-dataset"]["destination"] == "local":
-            main_curate_progress_message = "Checking that the local destination selected for generating your dataset is valid"
-            generate_dataset = soda_json_structure["generate-dataset"]
-            local_dataset_path = generate_dataset["path"]
-            # if generate_dataset["if-existing"] == "merge":
-            #     local_dataset_path = join(local_dataset_path, generate_dataset["dataset-name"])
-            if not isdir(local_dataset_path):
-                error_message = (
-                    "Error: The Path "
-                    + local_dataset_path
-                    + " is not found. Please select a valid destination folder for the new dataset"
-                )
-                main_curate_status = "Done"
-                error = error_message
-                raise Exception(error)
+    if "generate-dataset" in main_keys and soda_json_structure["generate-dataset"]["destination"] == "local":
+        main_curate_progress_message = "Checking that the local destination selected for generating your dataset is valid"
+        generate_dataset = soda_json_structure["generate-dataset"]
+        local_dataset_path = generate_dataset["path"]
+        # if generate_dataset["if-existing"] == "merge":
+        #     local_dataset_path = join(local_dataset_path, generate_dataset["dataset-name"])
+        if not isdir(local_dataset_path):
+            error_message = (
+                "Error: The Path "
+                + local_dataset_path
+                + " is not found. Please select a valid destination folder for the new dataset"
+            )
+            main_curate_status = "Done"
+            error = error_message
+            abort(400, error)
 
     # 1.2. Check that the bf destination is valid if generate on bf, or any other bf actions are requested
     if "bf-account-selected" in soda_json_structure:
@@ -3169,8 +3149,7 @@ def main_curate_function(soda_json_structure):
             bf = Pennsieve(accountname)
         except Exception as e:
             main_curate_status = "Done"
-            error = "Error: Please select a valid Pennsieve account"
-            raise Exception(error)
+            abort(400, "Error: Please select a valid Pennsieve account")
 
     # if uploading on an existing bf dataset
     if "bf-dataset-selected" in soda_json_structure:
@@ -3183,19 +3162,15 @@ def main_curate_function(soda_json_structure):
             myds = bf.get_dataset(bfdataset)
         except Exception as e:
             main_curate_status = "Done"
-            error = "Error: Please select a valid Pennsieve dataset"
-            raise Exception(error)
+            abort(400, "Error: Please select a valid Pennsieve dataset")
 
         # check that the user has permissions for uploading and modifying the dataset
-        try:
-            main_curate_progress_message = "Checking that you have required permissions for modifying the selected dataset"
-            role = bf_get_current_user_permission(bf, myds)
-            if role not in ["owner", "manager", "editor"]:
-                main_curate_status = "Done"
-                error = "Error: You don't have permissions for uploading to this Pennsieve dataset"
-                raise Exception(error)
-        except Exception as e:
-            raise e
+        main_curate_progress_message = "Checking that you have required permissions for modifying the selected dataset"
+        role = bf_get_current_user_permission(bf, myds)
+        if role not in ["owner", "manager", "editor"]:
+            main_curate_status = "Done"
+            abort(403, "Error: You don't have permissions for uploading to this Pennsieve dataset")
+
 
     # 1.3. Check that specified dataset files and folders are valid (existing path) if generate dataset is requested
     # Note: Empty folders and 0 kb files will be removed without warning (a warning will be provided on the front end before starting the curate process)
@@ -3208,34 +3183,26 @@ def main_curate_function(soda_json_structure):
                 "dataset-structure" not in soda_json_structure
                 and "metadata-files" not in soda_json_structure
             ):
-                main_curate_status = "Done"
-                error = "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset."
-                raise Exception(error)
-        except Exception as e:
-            main_curate_status = "Done"
-            raise Exception(e)
-
-        # Check that local files/folders exist
-        try:
-
-            error = check_local_dataset_files_validity(soda_json_structure)
-            if error:
-                main_curate_status = "Done"
-                raise Exception(error)
-
-            # check that dataset is not empty after removing all the empty files and folders
-            if (
-                not soda_json_structure["dataset-structure"]["folders"]
-                and not "metadata-files" in soda_json_structure
-            ):
-                main_curate_status = "Done"
-                error = "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset."
-                raise Exception(error)
-
+                main_curate_status = "Done" 
+                abort(400, "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
         except Exception as e:
             main_curate_status = "Done"
             raise e
 
+        # Check that local files/folders exist
+        try:
+            if error := check_local_dataset_files_validity(soda_json_structure):
+                main_curate_status = "Done"
+                abort(400, error)
+
+            # check that dataset is not empty after removing all the empty files and folders
+            if not soda_json_structure["dataset-structure"]["folders"] and "metadata-files" not in soda_json_structure:
+                main_curate_status = "Done"
+                abort(400, "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
+
+        except Exception as e:
+            main_curate_status = "Done"
+            raise e
         # Check that bf files/folders exist
         generate_option = soda_json_structure["generate-dataset"]["generate-option"]
         if generate_option == "existing-bf":
@@ -3244,10 +3211,9 @@ def main_curate_function(soda_json_structure):
                     "Checking that the Pennsieve files and folders are valid"
                 )
                 if soda_json_structure["generate-dataset"]["destination"] == "bf":
-                    error = bf_check_dataset_files_validity(soda_json_structure, bf)
-                    if error:
+                    if error := bf_check_dataset_files_validity(soda_json_structure, bf):
                         main_curate_status = "Done"
-                        raise Exception(error)
+                        abort(400, error)
             except Exception as e:
                 main_curate_status = "Done"
                 raise e
@@ -3263,9 +3229,6 @@ def main_curate_function(soda_json_structure):
                 _, main_total_generate_dataset_size = generate_dataset_locally(
                     soda_json_structure
                 )
-                # if "manifest-files" in main_keys:
-                #     main_curate_progress_message = "Generating manifest files"
-                #     add_local_manifest_files(manifest_files_structure, datasetpath)
 
             if soda_json_structure["generate-dataset"]["destination"] == "bf":
                 main_generate_destination = soda_json_structure["generate-dataset"][
@@ -3279,9 +3242,6 @@ def main_curate_function(soda_json_structure):
                         myds = bf_create_new_dataset(dataset_name, bf)
                         generated_dataset_id = myds.id
                     bf_generate_new_dataset(soda_json_structure, bf, myds)
-                    # if "manifest-files" in main_keys:
-                    #     main_curate_progress_message = "Generating manifest files"
-                    #     bf_add_manifest_files(manifest_files_structure, myds)
                 if generate_option == "existing-bf":
                     myds = bf.get_dataset(bfdataset)
                     bf_update_existing_dataset(soda_json_structure, bf, myds)
@@ -3293,11 +3253,11 @@ def main_curate_function(soda_json_structure):
     main_curate_status = "Done"
     main_curate_progress_message = "Success: COMPLETED!"
 
-    return (
-        main_curate_progress_message,
-        main_total_generate_dataset_size,
-        main_curation_uploaded_files,
-    )
+    return {
+        "main_curate_progress_message": main_curate_progress_message,
+        "main_total_generate_dataset_size": main_total_generate_dataset_size,
+        "main_curation_uploaded_files": main_curation_uploaded_files,
+    }
 
 
 def main_curate_function_progress():
