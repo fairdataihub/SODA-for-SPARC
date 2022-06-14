@@ -2414,6 +2414,7 @@ $("#button-submit-dataset").click(async () => {
 
   // clear the queue before uploading
   clearQueue();
+  console.log(pathSubmitDataset.placeholder);
 
   client.invoke(
     "api_bf_submit_dataset",
