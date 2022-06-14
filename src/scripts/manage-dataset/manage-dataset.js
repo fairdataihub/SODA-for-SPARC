@@ -276,88 +276,89 @@ $("#button-rename-dataset").click(async () => {
     } else {
       $("#button-rename-dataset").prop("disabled", true);
 
-      client.invoke(
-        "api_bf_rename_dataset",
-        selectedbfaccount,
-        currentDatasetName,
-        renamedDatasetName,
-        async (error, res) => {
-          if (error) {
-            log.error(error);
-            console.error(error);
-            var emessage = userError(error);
-            Swal.fire({
-              title: "Failed to rename dataset",
-              text: emessage,
-              icon: "error",
-              showConfirmButton: true,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
-            $("#button-rename-dataset").prop("disabled", false);
-
-            ipcRenderer.send(
-              "track-event",
-              "Error",
-              ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_RENAME_DATASET,
-              `${defaultBfDatasetId}: ` +
-                currentDatasetName +
-                " to " +
-                renamedDatasetName
-            );
-          } else {
-            log.info("Dataset rename success");
-            defaultBfDataset = renamedDatasetName;
-            $(".bf-dataset-span").html(renamedDatasetName);
-            refreshDatasetList();
-            $("#bf-rename-dataset-name").val(renamedDatasetName);
-            Swal.fire({
-              title: `Renamed dataset ${currentDatasetName} to ${renamedDatasetName}`,
-              icon: "success",
-              showConfirmButton: true,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              didOpen: () => {
-                Swal.hideLoading();
-              },
-            });
-            $("#button-rename-dataset").prop("disabled", false);
-
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_RENAME_DATASET,
-              `${defaultBfDatasetId}: ` +
-                currentDatasetName +
-                " to " +
-                renamedDatasetName
-            );
-
-            // in case the user does not select a dataset after changing the name add the new datasetID to name mapping
-            ipcRenderer.send(
-              "track-event",
-              "Dataset ID to Dataset Name Map",
-              defaultBfDatasetId,
-              renamedDatasetName
-            );
-
-            log.info("Requesting list of datasets");
-
-            try {
-              let responseObject = await client.get(
-                `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
-              );
-              datasetList = [];
-              datasetList = responseObject.data.datasets;
-              refreshDatasetList();
-            } catch (error) {
-              clientError(error);
-              log.error(error);
-              console.error(error);
-            }
+      try {
+        let bf_rename_dataset = client.put(
+          `/manage_datasets/bf_rename_dataset?selected_account=${selectedbfaccount}&selected_dataset=${currentDatasetName}`,
+          {
+            input_new_name: renamedDatasetName
           }
+        );
+        let res = bf_rename_dataset;
+
+        log.info("Dataset rename success");
+        defaultBfDataset = renamedDatasetName;
+        $(".bf-dataset-span").html(renamedDatasetName);
+        refreshDatasetList();
+        $("#bf-rename-dataset-name").val(renamedDatasetName);
+        Swal.fire({
+          title: `Renamed dataset ${currentDatasetName} to ${renamedDatasetName}`,
+          icon: "success",
+          showConfirmButton: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          didOpen: () => {
+            Swal.hideLoading();
+          },
+        });
+        $("#button-rename-dataset").prop("disabled", false);
+
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_RENAME_DATASET,
+          `${defaultBfDatasetId}: ` +
+            currentDatasetName +
+            " to " +
+            renamedDatasetName
+        );
+
+        // in case the user does not select a dataset after changing the name add the new datasetID to name mapping
+        ipcRenderer.send(
+          "track-event",
+          "Dataset ID to Dataset Name Map",
+          defaultBfDatasetId,
+          renamedDatasetName
+        );
+
+        log.info("Requesting list of datasets");
+
+        try {
+          let responseObject = await client.get(
+            `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
+          );
+          datasetList = [];
+          datasetList = responseObject.data.datasets;
+          refreshDatasetList();
+        } catch (error) {
+          clientError(error);
+          log.error(error);
+          console.error(error);
         }
-      );
+      } catch(error) {
+        clientError(error);
+        var emessage = userError(error.response.data.message);
+        Swal.fire({
+          title: "Failed to rename dataset",
+          text: emessage,
+          icon: "error",
+          showConfirmButton: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+        $("#button-rename-dataset").prop("disabled", false);
+
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_RENAME_DATASET,
+          `${defaultBfDatasetId}: ` +
+            currentDatasetName +
+            " to " +
+            renamedDatasetName
+        );
+
+      }
+
     }
   }, delayAnimation);
 });
