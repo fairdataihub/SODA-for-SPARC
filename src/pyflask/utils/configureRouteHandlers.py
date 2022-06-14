@@ -5,7 +5,8 @@ from apis import (
     disseminate_datasets_resource, 
     prepare_metadata_resource, 
     organize_datasets_resource,
-    startup_resource
+    startup_resource,
+    taxonomy_resource
 )
 
 def configureRouteHandlers(api):
@@ -20,3 +21,4 @@ def configureRouteHandlers(api):
     api.add_namespace(prepare_metadata_resource)
     api.add_namespace(organize_datasets_resource)
     api.add_namespace(startup_resource)
+    api.add_namespace(taxonomy_resource)

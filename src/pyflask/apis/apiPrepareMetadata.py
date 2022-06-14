@@ -6,7 +6,6 @@ from prepareMetadata import (
     save_subjects_file,
     convert_subjects_samples_file_to_df,
     save_samples_file,
-    load_taxonomy_species,
     load_existing_DD_file,
     load_existing_submission_file,
     import_bf_metadata_file,
