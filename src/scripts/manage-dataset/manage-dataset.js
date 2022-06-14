@@ -402,16 +402,7 @@ $("#button-add-permission-pi").click(() => {
       let selectedUser = $("#bf_list_users_pi").val();
       let selectedRole = "owner";
 
-      // try {
-      //   let api_bf_add_permission = await client.put(
-      //     `/manage_datasets/bf`
-      //   )
-
-      // } catch(error) {
-      //   clientError(error);
-      // }
       //needs to be replaced
-
       client.invoke(
         "api_bf_add_permission",
         selectedBfAccount,
@@ -639,8 +630,8 @@ $("#button-add-permission-user").click(() => {
 });
 
 // Add permission for team
-$("#button-add-permission-team").click(() => {
-  setTimeout(() => {
+$("#button-add-permission-team").click(async () => {
+  setTimeout(async () => {
     log.info("Adding a permission for a team on a dataset");
 
     Swal.fire({
@@ -662,55 +653,53 @@ $("#button-add-permission-team").click(() => {
     let selectedTeam = $("#bf_list_teams").val();
     let selectedRole = $("#bf_list_roles_team").val();
 
-    client.invoke(
-      "api_bf_add_permission_team",
-      selectedBfAccount,
-      selectedBfDataset,
-      selectedTeam,
-      selectedRole,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-          let emessage = userError(error);
-
-          Swal.fire({
-            title: "Failed to change permission",
-            text: emessage,
-            icon: "error",
-            showConfirmButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-
-          logGeneralOperationsForAnalytics(
-            "Error",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
-            AnalyticsGranularity.ALL_LEVELS,
-            ["Add Team Permissions"]
-          );
-        } else {
-          log.info("Added permission for the team");
-          logGeneralOperationsForAnalytics(
-            "Success",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
-            AnalyticsGranularity.ALL_LEVELS,
-            ["Add Team Permissions"]
-          );
-
-          Swal.fire({
-            title: "Successfully changed permission",
-            text: res,
-            icon: "success",
-            showConfirmButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-
-          showCurrentPermission();
+    try {
+      let bf_add_team_permission = await client.patch(
+        `/manage_datasets/bf_dataset_permissions?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}&scope=team&name=${selectedTeam}`,
+        {
+          input_role: selectedRole,
         }
-      }
-    );
+      );
+
+      let res = bf_add_team_permission.data.message;
+      log.info("Added permission for the team");
+      logGeneralOperationsForAnalytics(
+        "Success",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
+        AnalyticsGranularity.ALL_LEVELS,
+        ["Add Team Permissions"]
+      );
+
+      Swal.fire({
+        title: "Successfully changed permission",
+        text: res,
+        icon: "success",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+
+      showCurrentPermission();
+    } catch (error) {
+      clientError(error);
+
+      let emessage = error.response.data.message;
+      Swal.fire({
+        title: "Failed to change permission",
+        text: emessage,
+        icon: "error",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+
+      logGeneralOperationsForAnalytics(
+        "Error",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
+        AnalyticsGranularity.ALL_LEVELS,
+        ["Add Team Permissions"]
+      );
+    }
   }, delayAnimation);
 });
 
@@ -729,8 +718,8 @@ $(document).ready(() => {
 });
 
 // Add subtitle //
-$("#button-add-subtitle").click(() => {
-  setTimeout(function () {
+$("#button-add-subtitle").click(async () => {
+  setTimeout(async function () {
     Swal.fire({
       title: determineSwalLoadingMessage($("#button-add-subtitle")),
       html: "Please wait...",
@@ -752,64 +741,63 @@ $("#button-add-subtitle").click(() => {
     log.info("Adding subtitle to dataset");
     log.info(inputSubtitle);
 
-    client.invoke(
-      "api_bf_add_subtitle",
-      selectedBfAccount,
-      selectedBfDataset,
-      inputSubtitle,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-          let emessage = userError(error);
-
-          Swal.fire({
-            title: "Failed to add subtitle!",
-            text: emessage,
-            icon: "error",
-            showConfirmButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-
-          $("#ds-description").val("");
-
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
-            defaultBfDatasetId
-          );
-        } else {
-          log.info("Added subtitle to dataset");
-
-          $("#ds-description").val(inputSubtitle);
-
-          Swal.fire({
-            title: determineSwalSuccessMessage($("#button-add-subtitle")),
-            icon: "success",
-            showConfirmButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          }).then(
-            //check if subtitle text is empty and set Add/Edit button appropriately
-            !$("#bf-dataset-subtitle").val()
-              ? $("#button-add-subtitle").html("Add subtitle")
-              : $("#button-add-subtitle").html("Edit subtitle")
-          );
-
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
-            defaultBfDatasetId
-          );
-
-          // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
-          showPrePublishingStatus();
+    try {
+      let bf_add_subtitle = await client.put(
+        `/manage_datasets/bf_dataset_subtitle?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}`,
+        {
+          input_subtitle: inputSubtitle,
         }
-      }
-    );
+      );
+      let res = bf_add_subtitle.data.message;
+      console.log(res);
+      log.info("Added subtitle to dataset");
+
+      $("#ds-description").val(inputSubtitle);
+
+      Swal.fire({
+        title: determineSwalSuccessMessage($("#button-add-subtitle")),
+        icon: "success",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      }).then(
+        //check if subtitle text is empty and set Add/Edit button appropriately
+        !$("#bf-dataset-subtitle").val()
+          ? $("#button-add-subtitle").html("Add subtitle")
+          : $("#button-add-subtitle").html("Edit subtitle")
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
+        defaultBfDatasetId
+      );
+
+      // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
+      showPrePublishingStatus();
+    } catch (error) {
+      clientError(error);
+
+      let emessage = error.response.data.message;
+      Swal.fire({
+        title: "Failed to add subtitle!",
+        text: emessage,
+        icon: "error",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+
+      $("#ds-description").val("");
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
+        defaultBfDatasetId
+      );
+    }
   }, delayAnimation);
 });
 
@@ -1592,7 +1580,7 @@ $("#button-import-banner-image").click(() => {
   ipcRenderer.send("open-file-dialog-import-banner-image");
 });
 
-const uploadBannerImage = () => {
+const uploadBannerImage = async () => {
   $("#para-dataset-banner-image-status").html("Please wait...");
   //Save cropped image locally and check size
   let imageFolder = path.join(homeDirectory, "SODA", "banner-image");
@@ -1611,73 +1599,71 @@ const uploadBannerImage = () => {
   let imagePath = path.join(imageFolder, "banner-image-SODA." + imageExtension);
   let croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType);
 
-  imageDataURI.outputFile(croppedImageDataURI, imagePath).then(() => {
+  imageDataURI.outputFile(croppedImageDataURI, imagePath).then(async () => {
     let image_file_size = fs.statSync(imagePath)["size"];
 
     if (image_file_size < 5 * 1024 * 1024) {
       let selectedBfAccount = defaultBfAccount;
       let selectedBfDataset = defaultBfDataset;
 
-      client.invoke(
-        "api_bf_add_banner_image",
-        selectedBfAccount,
-        selectedBfDataset,
-        imagePath,
-        (error, res) => {
-          if (error) {
-            log.error(error);
-            console.error(error);
-            let emessage = userError(error);
-
-            $("#para-dataset-banner-image-status").html(
-              "<span style='color: red;'> " + emessage + "</span>"
-            );
-
-            ipcRenderer.send(
-              "track-event",
-              "Error",
-              ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
-              defaultBfDatasetId
-            );
-          } else {
-            $("#para-dataset-banner-image-status").html(res);
-
-            showCurrentBannerImage();
-
-            $("#edit_banner_image_modal").modal("hide");
-
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
-              defaultBfDatasetId
-            );
-
-            // track the size for all dataset banner uploads
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
-                " - Size",
-              "Size",
-              image_file_size
-            );
-
-            // track the size for the given dataset
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
-                " - Size",
-              defaultBfDatasetId,
-              image_file_size
-            );
-
-            // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
-            showPrePublishingStatus();
+      try {
+        let bf_add_banner = await client.put(
+          `/manage_datasets/bf_banner_image?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}`,
+          {
+            input_banner_image_path: imagePath,
           }
-        }
-      );
+        );
+        let res = bf_add_banner.data.message;
+        $("#para-dataset-banner-image-status").html(res);
+
+        showCurrentBannerImage();
+
+        $("#edit_banner_image_modal").modal("hide");
+
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+          defaultBfDatasetId
+        );
+
+        // track the size for all dataset banner uploads
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
+            " - Size",
+          "Size",
+          image_file_size
+        );
+
+        // track the size for the given dataset
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
+            " - Size",
+          defaultBfDatasetId,
+          image_file_size
+        );
+
+        // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
+        showPrePublishingStatus();
+      } catch (error) {
+        clientError(error);
+
+        let emessage = userError(error.response.data.message);
+        $("#para-dataset-banner-image-status").html(
+          "<span style='color: red;'> " + emessage + "</span>"
+        );
+
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+          defaultBfDatasetId
+        );
+      }
     } else {
       $("#para-dataset-banner-image-status").html(
         "<span style='color: red;'> " +
@@ -2125,8 +2111,8 @@ const showCurrentTags = async () => {
 };
 
 // Add license //
-$("#button-add-license").click(() => {
-  setTimeout(function () {
+$("#button-add-license").click(async () => {
+  setTimeout(async function () {
     Swal.fire({
       title: "Adding license to dataset",
       html: "Please wait...",
@@ -2145,56 +2131,53 @@ $("#button-add-license").click(() => {
     let selectedBfDataset = defaultBfDataset;
     let selectedLicense = "Creative Commons Attribution";
 
-    client.invoke(
-      "api_bf_add_license",
-      selectedBfAccount,
-      selectedBfDataset,
-      selectedLicense,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-
-          let emessage = userError(error);
-
-          Swal.fire({
-            title: "Failed to add the license to your dataset!",
-            text: emessage,
-            icon: "error",
-            showConfirmButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
-            defaultBfDatasetId
-          );
-        } else {
-          Swal.fire({
-            title: "Successfully added license to dataset!",
-            icon: "success",
-            showConfirmButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-
-          showCurrentLicense();
-
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
-            defaultBfDatasetId
-          );
-
-          // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
-          showPrePublishingStatus();
+    try {
+      let bf_add_license = await client.put(
+        `/manage_datasets/bf_license?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}`,
+        {
+          input_license: selectedLicense,
         }
-      }
-    );
+      );
+
+      Swal.fire({
+        title: "Successfully added license to dataset!",
+        icon: "success",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+
+      showCurrentLicense();
+
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
+        defaultBfDatasetId
+      );
+
+      // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
+      showPrePublishingStatus();
+    } catch (error) {
+      clientError(error);
+      let emessage = userError(error.response.data.message);
+
+      Swal.fire({
+        title: "Failed to add the license to your dataset!",
+        text: emessage,
+        icon: "error",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
+        defaultBfDatasetId
+      );
+    }
   }, delayAnimation);
 });
 
