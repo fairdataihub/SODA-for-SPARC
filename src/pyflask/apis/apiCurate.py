@@ -93,3 +93,28 @@ class CurationProgress(Resource):
             return main_curate_function_progress()
         except Exception as e:
             api.abort(500, str(e))
+
+
+
+
+
+
+
+
+model_curation_file_details_response = api.model( "CurationFileDetailsResponse", {
+    "main_curation_uploaded_files": fields.Integer(description="Number of files that have been uploaded thus far. "),
+    "current_size_of_uploaded_files": fields.Integer(description="Size of the files that have been uploaded thus far. "),
+    "uploaded_folder_counter": fields.Integer(description="Number of folders that have been uploaded thus far. "),
+    "generated_dataset_id": fields.String(description="ID of the dataset that has been generated. ")
+})
+
+@api.route("curation/upload_details")
+class CurationFileDetails(Resource):
+    
+        @api.marshal_with(model_curation_file_details_response, False, 200)
+        @api.doc(responses={500: 'There was an internal server error'}, description="Function frequently called by front end to help keep track of the amount of files that have been successfully uploaded to Pennsieve, and the size of the uploaded files. Also tells us how many files have been copied (double usage of both variables) to a destination folder for local dataset generation.")
+        def get(self):
+            try:
+                return main_curate_function_upload_details()
+            except Exception as e:
+                api.abort(500, str(e))

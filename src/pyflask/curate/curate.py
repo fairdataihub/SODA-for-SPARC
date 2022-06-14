@@ -3308,12 +3308,12 @@ def main_curate_function_upload_details():
     # when the user creates a new Pennsieve dataset return back their new dataset id
     global generated_dataset_id
 
-    return (
-        main_curation_uploaded_files,
-        current_size_of_uploaded_files,
-        uploaded_folder_counter,
-        generated_dataset_id,
-    )
+    return {
+        "main_curation_uploaded_files": main_curation_uploaded_files,
+        "current_size_of_uploaded_files": current_size_of_uploaded_files,
+        "uploaded_folder_counter": uploaded_folder_counter,
+        "generated_dataset_id": generated_dataset_id,
+    }
 
 
 def preview_dataset(soda_json_structure):
