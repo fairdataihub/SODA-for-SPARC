@@ -72,3 +72,34 @@ class GenerateDatasetLocally(Resource):
             if notBadRequestException(e):
                 api.abort(500, str(e))
             raise e
+
+
+
+
+
+
+
+@api.route('/datasets/import')
+class ImportDataset(Resource):
+    
+    parser_import_dataset = reqparse.RequestParser(bundle_errors=True)
+    parser_import_dataset.add_argument('sodajsonobject', type=dict, required=True, help='The sodajsonobject filled with the bfaccount and dataset info available.', location="json")
+    parser_import_dataset.add_argument('root_folder_path', type=str, required=True, help='The local path to import the dataset.', location="json")
+    parser_import_dataset.add_argument('irregular_folders', type=list, required=True, help='The name of the dataset being imported.', location="json")    
+    parser_import_dataset.add_argument('replaced', type=list, required=True, help='The name of the dataset being imported.', location="json")
+    
+    @api.expect(parser_import_dataset)
+    @api.doc(responses={200: "Success", 500: "Internal Server Error"}, description="Import files from local machine into the soda json object.")
+    def post(self):
+        
+        data = self.parser_import_dataset.parse_args()
+
+        sodajsonobject = data.get('sodajsonobject')
+        root_folder_path = data.get('root_folder_path')
+        irregular_folders = data.get('irregular_folders')
+        replaced = data.get('replaced')
+
+        try:
+            return create_soda_json_object_backend(sodajsonobject, root_folder_path, irregular_folders, replaced)
+        except Exception as e:
+            api.abort(500, str(e))
