@@ -665,6 +665,7 @@ $("#ORCID-btn").on("click", async () => {
     });
 
     try {
+      // TODO: Replace with Flask
       await integrateORCIDWithPennsieve(accessCode);
     } catch (error) {
       var emessage = userError(error);
@@ -992,6 +993,7 @@ $(".pre-publishing-continue").on("click", async function () {
   let excludedFileObjects;
   try {
     // read in the excluded files
+    // TODO: Replace with Flask call
     excludedFileObjects = await getFilesExcludedFromPublishing(
       defaultBfDataset
     );
@@ -1032,6 +1034,7 @@ $(".pre-publishing-continue").on("click", async function () {
   let metadataFiles;
   try {
     // read in all of the metadata files for the dataset
+    // TODO: Replace with Flask call
     metadataFiles = await getDatasetMetadataFiles(defaultBfDataset);
   } catch (error) {
     // tell the user something went wrong getting access to their datasets ignored files

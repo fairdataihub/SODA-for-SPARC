@@ -3275,6 +3275,7 @@ async function submitReviewDataset(embargoReleaseDate) {
     let files = getExcludedFilesFromPublicationFlow();
     try {
       // exclude the user's selected files from publication
+      // TODO: Replace with Flask calls
       await updateDatasetExcludedFiles(selectedBfDataset, files);
     } catch (error) {
       // log the error
@@ -3312,6 +3313,7 @@ async function submitReviewDataset(embargoReleaseDate) {
   }
 
   try {
+    // TODO: Replace with Flask Call
     await submitDatasetForPublication(
       selectedBfAccount,
       selectedBfDataset,
@@ -3506,6 +3508,7 @@ async function withdrawReviewDataset() {
     .replace(/^\s+|\s+$/g, "");
 
   try {
+    // TODO: Replace with Flask Call
     await withdrawDatasetReviewSubmission(selectedBfDataset);
 
     logGeneralOperationsForAnalytics(
@@ -8987,6 +8990,7 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   statuses.subtitle = description && description.length ? true : false;
 
   // get the readme
+  // TODO: Replace with FLASK call
   const readme = await getDatasetReadme(datasetIdOrName);
 
   // set the readme's status
@@ -8996,6 +9000,7 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   statuses.tags = tags && tags.length ? true : false;
 
   // get the banner url
+  // TODO: REPLACE WITH FLASK CALL
   const bannerPresignedUrl = await getDatasetBannerImageURL(datasetIdOrName);
 
   // set the banner image's url status
@@ -9014,6 +9019,7 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // check if the user is the owner
   if (owner) {
     // get the user's information
+    // TODO: Replace with Flask call
     let user = await getUserInformation();
 
     // get the orcid object out of the user information
@@ -9406,6 +9412,7 @@ const userIsDatasetOwner = async (datasetIdOrName) => {
   }
 
   // get the dataset the user wants to edit
+  // TODO: Replace with Flask call
   let role = await getCurrentUserPermissions(datasetIdOrName);
 
   return userIsOwner(role);
