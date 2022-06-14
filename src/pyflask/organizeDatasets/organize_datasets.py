@@ -854,13 +854,12 @@ def monitor_local_json_progress():
         create_soda_json_progress / create_soda_json_total_items
     ) * 100
 
-    res = [
-        create_soda_json_progress,
-        create_soda_json_total_items,
-        progress_percentage,
-        create_soda_json_completed,
-    ]
-    return res
+    return {
+        "create_soda_json_progress": create_soda_json_progress,
+        "create_soda_json_total_items": create_soda_json_total_items,
+        "progress_percentage": progress_percentage,
+        "create_soda_json_completed": create_soda_json_completed
+    }
 
 
 def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only=True):
