@@ -114,7 +114,7 @@ $("#bf-rename-dataset-name").on("keyup", () => {
 
 // Add new dataset folder (empty) on bf //
 $("#button-create-bf-new-dataset").click(async () => {
-  setTimeout(() => {
+  setTimeout(async () => {
     let selectedbfaccount = defaultBfAccount;
     let bfNewDatasetName = $("#bf-new-dataset-name").val();
 
@@ -135,98 +135,101 @@ $("#button-create-bf-new-dataset").click(async () => {
         Swal.showLoading();
       },
     });
+    console.log(bfNewDatasetName);
 
-    client.invoke(
-      "api_bf_new_dataset_folder",
-      bfNewDatasetName,
-      selectedbfaccount,
-      async (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-          let emessage = userError(error);
-
-          Swal.fire({
-            title: `Failed to create a new dataset.`,
-            text: emessage,
-            showCancelButton: false,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            icon: "error",
-          });
-
-          $("#button-create-bf-new-dataset").prop("disabled", false);
-
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CREATE_DATASET,
-            bfNewDatasetName
-          );
-        } else {
-          Swal.fire({
-            title: `Dataset ${bfNewDatasetName} was created successfully`,
-            icon: "success",
-            showConfirmButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            didOpen: () => {
-              Swal.hideLoading();
-            },
-          });
-
-          log.info(`Created dataset successfully`);
-
-          $("#button-create-bf-new-dataset").hide();
-
-          defaultBfDataset = bfNewDatasetName;
-          defaultBfDatasetId = res;
-          // log a map of datasetId to dataset name to analytics
-          // this will be used to help us track private datasets which are not trackable using a datasetId alone
-          ipcRenderer.send(
-            "track-event",
-            "Dataset ID to Dataset Name Map",
-            defaultBfDatasetId,
-            defaultBfDataset
-          );
-          refreshDatasetList();
-          currentDatasetPermission.innerHTML = "";
-          currentAddEditDatasetPermission.innerHTML = "";
-          $("#button-create-bf-new-dataset").prop("disabled", false);
-
-          addNewDatasetToList(bfNewDatasetName);
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CREATE_DATASET,
-            bfNewDatasetName
-          );
-
-          log.info(`Requesting list of datasets`);
-
-          try {
-            let responseObject = await client.get(
-              `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
-            );
-            datasetList = [];
-            datasetList = responseObject.data.datasets;
-            log.info(`Requested list of datasets successfully`);
-          } catch (error) {
-            clientError(error);
-            log.error(error);
-            console.error(error);
-          }
-
-          $(".bf-dataset-span").html(bfNewDatasetName);
-
-          refreshDatasetList();
-          updateDatasetList();
-
-          $(".confirm-button").click();
-          $("#bf-new-dataset-name").val("");
+    try {
+      let bf_new_dataset = await client.post(
+        `/manage_datasets/datasets?selected_account=${selectedbfaccount}`,
+        {
+          input_dataset_name: bfNewDatasetName,
         }
+      );
+      let res = bf_new_dataset.data.id;
+      //check response
+      console.log(res);
+
+      Swal.fire({
+        title: `Dataset ${bfNewDatasetName} was created successfully`,
+        icon: "success",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        didOpen: () => {
+          Swal.hideLoading();
+        },
+      });
+
+      log.info(`Created dataset successfully`);
+
+      $("#button-create-bf-new-dataset").hide();
+
+      defaultBfDataset = bfNewDatasetName;
+      defaultBfDatasetId = res;
+      // log a map of datasetId to dataset name to analytics
+      // this will be used to help us track private datasets which are not trackable using a datasetId alone
+      ipcRenderer.send(
+        "track-event",
+        "Dataset ID to Dataset Name Map",
+        defaultBfDatasetId,
+        defaultBfDataset
+      );
+      refreshDatasetList();
+      currentDatasetPermission.innerHTML = "";
+      currentAddEditDatasetPermission.innerHTML = "";
+      $("#button-create-bf-new-dataset").prop("disabled", false);
+
+      addNewDatasetToList(bfNewDatasetName);
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CREATE_DATASET,
+        bfNewDatasetName
+      );
+
+      log.info(`Requesting list of datasets`);
+
+      try {
+        let responseObject = await client.get(
+          `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
+        );
+        datasetList = [];
+        datasetList = responseObject.data.datasets;
+        log.info(`Requested list of datasets successfully`);
+      } catch (error) {
+        clientError(error);
+        log.error(error);
+        console.error(error);
       }
-    );
+
+      $(".bf-dataset-span").html(bfNewDatasetName);
+
+      refreshDatasetList();
+      updateDatasetList();
+
+      $(".confirm-button").click();
+      $("#bf-new-dataset-name").val("");
+    } catch (error) {
+      clientError(error);
+      let emessage = userError(error.response.data.message);
+
+      Swal.fire({
+        title: `Failed to create a new dataset.`,
+        text: emessage,
+        showCancelButton: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        icon: "error",
+      });
+
+      $("#button-create-bf-new-dataset").prop("disabled", false);
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CREATE_DATASET,
+        bfNewDatasetName
+      );
+    }
   }, delayAnimation);
 });
 
@@ -237,7 +240,7 @@ const addNewDatasetToList = (newDataset) => {
 
 // Rename dataset on bf //
 $("#button-rename-dataset").click(async () => {
-  setTimeout(function () {
+  setTimeout(async function () {
     var selectedbfaccount = defaultBfAccount;
     var currentDatasetName = defaultBfDataset;
     var renamedDatasetName = $("#bf-rename-dataset-name").val();
@@ -273,88 +276,87 @@ $("#button-rename-dataset").click(async () => {
     } else {
       $("#button-rename-dataset").prop("disabled", true);
 
-      client.invoke(
-        "api_bf_rename_dataset",
-        selectedbfaccount,
-        currentDatasetName,
-        renamedDatasetName,
-        async (error, res) => {
-          if (error) {
-            log.error(error);
-            console.error(error);
-            var emessage = userError(error);
-            Swal.fire({
-              title: "Failed to rename dataset",
-              text: emessage,
-              icon: "error",
-              showConfirmButton: true,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
-            $("#button-rename-dataset").prop("disabled", false);
-
-            ipcRenderer.send(
-              "track-event",
-              "Error",
-              ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_RENAME_DATASET,
-              `${defaultBfDatasetId}: ` +
-                currentDatasetName +
-                " to " +
-                renamedDatasetName
-            );
-          } else {
-            log.info("Dataset rename success");
-            defaultBfDataset = renamedDatasetName;
-            $(".bf-dataset-span").html(renamedDatasetName);
-            refreshDatasetList();
-            $("#bf-rename-dataset-name").val(renamedDatasetName);
-            Swal.fire({
-              title: `Renamed dataset ${currentDatasetName} to ${renamedDatasetName}`,
-              icon: "success",
-              showConfirmButton: true,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              didOpen: () => {
-                Swal.hideLoading();
-              },
-            });
-            $("#button-rename-dataset").prop("disabled", false);
-
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_RENAME_DATASET,
-              `${defaultBfDatasetId}: ` +
-                currentDatasetName +
-                " to " +
-                renamedDatasetName
-            );
-
-            // in case the user does not select a dataset after changing the name add the new datasetID to name mapping
-            ipcRenderer.send(
-              "track-event",
-              "Dataset ID to Dataset Name Map",
-              defaultBfDatasetId,
-              renamedDatasetName
-            );
-
-            log.info("Requesting list of datasets");
-
-            try {
-              let responseObject = await client.get(
-                `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
-              );
-              datasetList = [];
-              datasetList = responseObject.data.datasets;
-              refreshDatasetList();
-            } catch (error) {
-              clientError(error);
-              log.error(error);
-              console.error(error);
-            }
+      try {
+        let bf_rename_dataset = await client.put(
+          `/manage_datasets/bf_rename_dataset?selected_account=${selectedbfaccount}&selected_dataset=${currentDatasetName}`,
+          {
+            input_new_name: renamedDatasetName,
           }
+        );
+        let res = bf_rename_dataset;
+
+        log.info("Dataset rename success");
+        defaultBfDataset = renamedDatasetName;
+        $(".bf-dataset-span").html(renamedDatasetName);
+        refreshDatasetList();
+        $("#bf-rename-dataset-name").val(renamedDatasetName);
+        Swal.fire({
+          title: `Renamed dataset ${currentDatasetName} to ${renamedDatasetName}`,
+          icon: "success",
+          showConfirmButton: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          didOpen: () => {
+            Swal.hideLoading();
+          },
+        });
+        $("#button-rename-dataset").prop("disabled", false);
+
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_RENAME_DATASET,
+          `${defaultBfDatasetId}: ` +
+            currentDatasetName +
+            " to " +
+            renamedDatasetName
+        );
+
+        // in case the user does not select a dataset after changing the name add the new datasetID to name mapping
+        ipcRenderer.send(
+          "track-event",
+          "Dataset ID to Dataset Name Map",
+          defaultBfDatasetId,
+          renamedDatasetName
+        );
+
+        log.info("Requesting list of datasets");
+
+        try {
+          let responseObject = await client.get(
+            `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
+          );
+          datasetList = [];
+          datasetList = responseObject.data.datasets;
+          refreshDatasetList();
+        } catch (error) {
+          clientError(error);
+          log.error(error);
+          console.error(error);
         }
-      );
+      } catch (error) {
+        clientError(error);
+        var emessage = userError(error.response.data.message);
+        Swal.fire({
+          title: "Failed to rename dataset",
+          text: emessage,
+          icon: "error",
+          showConfirmButton: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+        $("#button-rename-dataset").prop("disabled", false);
+
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_RENAME_DATASET,
+          `${defaultBfDatasetId}: ` +
+            currentDatasetName +
+            " to " +
+            renamedDatasetName
+        );
+      }
     }
   }, delayAnimation);
 });
@@ -399,6 +401,16 @@ $("#button-add-permission-pi").click(() => {
       let selectedBfDataset = defaultBfDataset;
       let selectedUser = $("#bf_list_users_pi").val();
       let selectedRole = "owner";
+
+      // try {
+      //   let api_bf_add_permission = await client.put(
+      //     `/manage_datasets/bf`
+      //   )
+
+      // } catch(error) {
+      //   clientError(error);
+      // }
+      //needs to be replaced
 
       client.invoke(
         "api_bf_add_permission",
@@ -511,87 +523,86 @@ const showCurrentPermission = async () => {
   }
 };
 
-const addPermissionUser = (
+const addPermissionUser = async (
   selectedBfAccount,
   selectedBfDataset,
   selectedUser,
   selectedRole
 ) => {
-  client.invoke(
-    "api_bf_add_permission",
-    selectedBfAccount,
-    selectedBfDataset,
-    selectedUser,
-    selectedRole,
-    async (error, res) => {
-      if (error) {
-        log.error(error);
-        console.error(error);
-        let emessage = userError(error);
+  try {
+    let bf_add_permission = await client.patch(
+      `/manage_datasets/bf_dataset_permissions?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}&scope=user&name=${selectedUser}`,
+      {
+        input_role: selectedRole,
+      }
+    );
+    let res = bf_add_permission.data.message;
+    console.log(res);
 
-        Swal.fire({
-          title: "Failed to change permission!",
-          text: emessage,
-          icon: "error",
-          showConfirmButton: true,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
+    log.info("Dataset permission added");
 
-        logGeneralOperationsForAnalytics(
-          "Error",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
-          AnalyticsGranularity.ALL_LEVELS,
-          ["Add User Permissions"]
-        );
-      } else {
-        log.info("Dataset permission added");
+    logGeneralOperationsForAnalytics(
+      "Success",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
+      AnalyticsGranularity.ALL_LEVELS,
+      ["Add User Permissions"]
+    );
 
-        logGeneralOperationsForAnalytics(
-          "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
-          AnalyticsGranularity.ALL_LEVELS,
-          ["Add User Permissions"]
-        );
+    Swal.fire({
+      title: "Successfully changed permission!",
+      text: res,
+      icon: "success",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
 
-        Swal.fire({
-          title: "Successfully changed permission!",
-          text: res,
-          icon: "success",
-          showConfirmButton: true,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
+    showCurrentPermission();
 
-        showCurrentPermission();
-
-        // refresh dataset lists with filter
-        try {
-          let get_username = await client.get(
-            u`/manage_datasets/account/username?selected_account=${selectedBfAccount}`
-          );
-          let res1 = get_username.data.username;
-          if (selectedRole === "owner") {
-            for (var i = 0; i < datasetList.length; i++) {
-              if (datasetList[i].name === selectedBfDataset) {
-                datasetList[i].role = "manager";
-              }
-            }
+    // refresh dataset lists with filter
+    try {
+      let get_username = await client.get(
+        `/manage_datasets/account/username?selected_account=${selectedBfAccount}`
+      );
+      let res1 = get_username.data.username;
+      if (selectedRole === "owner") {
+        for (var i = 0; i < datasetList.length; i++) {
+          if (datasetList[i].name === selectedBfDataset) {
+            datasetList[i].role = "manager";
           }
-          if (selectedUser === res1) {
-            // then change role of dataset and refresh dataset list
-            for (var i = 0; i < datasetList.length; i++) {
-              if (datasetList[i].name === selectedBfDataset) {
-                datasetList[i].role = selectedRole.toLowerCase();
-              }
-            }
-          }
-        } catch (error) {
-          clientError(error);
         }
       }
+      if (selectedUser === res1) {
+        // then change role of dataset and refresh dataset list
+        for (var i = 0; i < datasetList.length; i++) {
+          if (datasetList[i].name === selectedBfDataset) {
+            datasetList[i].role = selectedRole.toLowerCase();
+          }
+        }
+      }
+    } catch (error) {
+      clientError(error);
     }
-  );
+  } catch (error) {
+    clientError(error);
+
+    let emessage = error.response.data.message;
+    Swal.fire({
+      title: "Failed to change permission!",
+      text: emessage,
+      icon: "error",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    logGeneralOperationsForAnalytics(
+      "Error",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
+      AnalyticsGranularity.ALL_LEVELS,
+      ["Add User Permissions"]
+    );
+  }
 };
 
 // Add permission for user //
@@ -2947,27 +2958,26 @@ async function showCurrentDatasetStatus(callback) {
       removeOptions(bfListDatasetStatus);
       removeRadioOptions("dataset_status_ul");
 
-      for (let item in res[0]) {
+      for (let item in res["status_options"]) {
         let option = document.createElement("option");
 
-        option.textContent = res[0][item]["displayName"];
-        option.value = res[0][item]["name"];
-        option.style.color = res[0][item]["color"];
+        option.textContent = res["status_options"][item]["name"];
+        option.value = res["status_options"][item]["name"];
+        option.style.color = res["status_options"][item]["color"];
 
         bfListDatasetStatus.appendChild(option);
 
         addRadioOption(
           "dataset_status_ul",
-          res[0][item]["displayName"],
-          res[0][item]["name"]
+          res["status_options"][item]["name"],
+          res["status_options"][item]["name"]
         );
       }
-      bfListDatasetStatus.value = res[1];
+      bfListDatasetStatus.value = res["current_status"];
 
-      $(`input[name=dataset_status_radio][value=${res[1]}]`).prop(
-        "checked",
-        true
-      );
+      $(
+        `input[name=dataset_status_radio][value=${res["current_status"]}]`
+      ).prop("checked", true);
 
       selectOptionColor(bfListDatasetStatus);
 

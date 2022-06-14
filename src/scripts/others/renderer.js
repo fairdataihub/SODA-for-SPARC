@@ -3756,6 +3756,8 @@ async function updateBfAccountList() {
 }
 
 function clientError(error) {
+  console.log(error.response);
+  console.error(error);
   let error_message = error.response.data.message;
   let error_status = error.response.status;
   let error_headers = error.response.headers;
@@ -3778,7 +3780,7 @@ async function loadDefaultAccount() {
     responseObject = await client.get(
       "/manage_datasets/bf_default_account_load"
     );
-    console.log(responseObject);
+    console.log(responseObject.data);
   } catch (e) {
     console.log("Default account load error");
     log.error(error);
@@ -3796,7 +3798,7 @@ async function loadDefaultAccount() {
     let dataset_request = await client.get(
       `/manage_datasets/bf_dataset_permissions?selected_account=${account}&selected_dataset=${"bug-test"}`
     );
-    console.log(dataset_request.data.account_details);
+    console.log(dataset_request.data);
   } catch (error) {
     clientError(error);
   }
@@ -4358,7 +4360,6 @@ async function retrieveBFAccounts() {
 }
 
 async function showDefaultBFAccount() {
-  console.log("uhhh");
   try {
     let bf_default_acc_req = await client.get(
       "manage_datasets/bf_default_account_load"
@@ -7638,10 +7639,13 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
 
 var bf_request_and_populate_dataset = async (sodaJSONObj) => {
   return new Promise(async (resolve, reject) => {
+    console.log(sodaJSONObj);
     try {
       let bf_get_files_folders = await client.get(
         `/organize_datasets/get_dataset_files_folders`,
-        sodaJSONObj
+        {
+          sodajsonobject: JSON.stringify(sodaJSONObj),
+        }
       );
       //check return value
       let res = bf_get_files_folders.data.sodajsonobject;
