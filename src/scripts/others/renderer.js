@@ -8015,114 +8015,78 @@ async function addBFAccountInsideSweetalert(myBootboxDialog) {
   var name = $("#bootbox-key-name").val();
   var apiKey = $("#bootbox-api-key").val();
   var apiSecret = $("#bootbox-api-secret").val();
-  client.invoke(
-    "api_bf_add_account_api_key",
-    name,
-    apiKey,
-    apiSecret,
-    async (error, res) => {
-      if (error) {
-        Swal.fire({
-          icon: "error",
-          html: "<span>" + error + "</span>",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0,0.4)",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            showBFAddAccountSweetalert();
-          }
-        });
-        log.error(error);
-        console.error(error);
-      } else {
-        $("#bootbox-key-name").val("");
-        $("#bootbox-api-key").val("");
-        $("#bootbox-api-secret").val("");
-        bfAccountOptions[name] = name;
-        defaultBfAccount = name;
-        defaultBfDataset = "Select dataset";
+  try {
+    let add_api_key = await client.put(`/manage_datasets/account/api_key`, {
+      keyname: name,
+      key: apiKey,
+      secret: apiSecret,
+    });
+    $("#bootbox-key-name").val("");
+    $("#bootbox-api-key").val("");
+    $("#bootbox-api-secret").val("");
+    bfAccountOptions[name] = name;
+    defaultBfAccount = name;
+    defaultBfDataset = "Select dataset";
 
-        try {
-          let bf_account_details_req = await client.get(
-            `/manage_datasets/bf_account_details?selected_account=${name}`
-          );
-          let res = bf_account_details_req.data.account_details;
+    try {
+      let bf_account_details_req = await client.get(
+        `/manage_datasets/bf_account_details?selected_account=${name}`
+      );
+      let res = bf_account_details_req.data.account_details;
 
-          $("#para-account-detail-curate").html(res);
-          $("#current-bf-account").text(name);
-          $("#current-bf-account-generate").text(name);
-          $("#create_empty_dataset_BF_account_span").text(name);
-          $(".bf-account-span").text(name);
-          $("#current-bf-dataset").text("None");
-          $("#current-bf-dataset-generate").text("None");
-          $(".bf-dataset-span").html("None");
-          $("#para-account-detail-curate-generate").html(res);
-          $("#para_create_empty_dataset_BF_account").html(res);
-          $(".bf-account-details-span").html(res);
-          $("#para-continue-bf-dataset-getting-started").text("");
-          showHideDropdownButtons("account", "show");
-          confirm_click_account_function();
-          updateBfAccountList();
-        } catch (error) {
-          clientError(error);
+      $("#para-account-detail-curate").html(res);
+      $("#current-bf-account").text(name);
+      $("#current-bf-account-generate").text(name);
+      $("#create_empty_dataset_BF_account_span").text(name);
+      $(".bf-account-span").text(name);
+      $("#current-bf-dataset").text("None");
+      $("#current-bf-dataset-generate").text("None");
+      $(".bf-dataset-span").html("None");
+      $("#para-account-detail-curate-generate").html(res);
+      $("#para_create_empty_dataset_BF_account").html(res);
+      $(".bf-account-details-span").html(res);
+      $("#para-continue-bf-dataset-getting-started").text("");
+      showHideDropdownButtons("account", "show");
+      confirm_click_account_function();
+      updateBfAccountList();
+    } catch (error) {
+      clientError(error);
 
-          Swal.fire({
-            icon: "error",
-            text: "Something went wrong!",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            footer:
-              '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
-          });
-          showHideDropdownButtons("account", "hide");
-          confirm_click_account_function();
-        }
-
-        // client.invoke("api_bf_account_details", name, (error, res) => {
-        //   if (error) {
-        //     log.error(error);
-        //     console.error(error);
-        //     Swal.fire({
-        //       icon: "error",
-        //       text: "Something went wrong!",
-        //       heightAuto: false,
-        //       backdrop: "rgba(0,0,0, 0.4)",
-        //       footer:
-        //         '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
-        //     });
-        //     showHideDropdownButtons("account", "hide");
-        //     confirm_click_account_function();
-        //   } else {
-        //     $("#para-account-detail-curate").html(res);
-        //     $("#current-bf-account").text(name);
-        //     $("#current-bf-account-generate").text(name);
-        //     $("#create_empty_dataset_BF_account_span").text(name);
-        //     $(".bf-account-span").text(name);
-        //     $("#current-bf-dataset").text("None");
-        //     $("#current-bf-dataset-generate").text("None");
-        //     $(".bf-dataset-span").html("None");
-        //     $("#para-account-detail-curate-generate").html(res);
-        //     $("#para_create_empty_dataset_BF_account").html(res);
-        //     $(".bf-account-details-span").html(res);
-        //     $("#para-continue-bf-dataset-getting-started").text("");
-        //     showHideDropdownButtons("account", "show");
-        //     confirm_click_account_function();
-        //     updateBfAccountList();
-        //   }
-        // });
-        Swal.fire({
-          icon: "success",
-          title: "Successfully added! <br/>Loading your account details...",
-          timer: 3000,
-          timerProgressBar: true,
-          allowEscapeKey: false,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          showConfirmButton: false,
-        });
-      }
+      Swal.fire({
+        icon: "error",
+        text: "Something went wrong!",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        footer:
+          '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
+      });
+      showHideDropdownButtons("account", "hide");
+      confirm_click_account_function();
     }
-  );
+
+    Swal.fire({
+      icon: "success",
+      title: "Successfully added! <br/>Loading your account details...",
+      timer: 3000,
+      timerProgressBar: true,
+      allowEscapeKey: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: false,
+    });
+  } catch (error) {
+    clientError(error);
+    Swal.fire({
+      icon: "error",
+      html: "<span>" + error.response.data.message + "</span>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0,0.4)",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        showBFAddAccountSweetalert();
+      }
+    });
+  }
 }
 
 /*
