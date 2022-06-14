@@ -240,7 +240,7 @@ const addNewDatasetToList = (newDataset) => {
 
 // Rename dataset on bf //
 $("#button-rename-dataset").click(async () => {
-  setTimeout(function () {
+  setTimeout(async function () {
     var selectedbfaccount = defaultBfAccount;
     var currentDatasetName = defaultBfDataset;
     var renamedDatasetName = $("#bf-rename-dataset-name").val();
@@ -277,10 +277,10 @@ $("#button-rename-dataset").click(async () => {
       $("#button-rename-dataset").prop("disabled", true);
 
       try {
-        let bf_rename_dataset = client.put(
+        let bf_rename_dataset = await client.put(
           `/manage_datasets/bf_rename_dataset?selected_account=${selectedbfaccount}&selected_dataset=${currentDatasetName}`,
           {
-            input_new_name: renamedDatasetName
+            input_new_name: renamedDatasetName,
           }
         );
         let res = bf_rename_dataset;
@@ -334,7 +334,7 @@ $("#button-rename-dataset").click(async () => {
           log.error(error);
           console.error(error);
         }
-      } catch(error) {
+      } catch (error) {
         clientError(error);
         var emessage = userError(error.response.data.message);
         Swal.fire({
@@ -356,9 +356,7 @@ $("#button-rename-dataset").click(async () => {
             " to " +
             renamedDatasetName
         );
-
       }
-
     }
   }, delayAnimation);
 });
@@ -403,6 +401,16 @@ $("#button-add-permission-pi").click(() => {
       let selectedBfDataset = defaultBfDataset;
       let selectedUser = $("#bf_list_users_pi").val();
       let selectedRole = "owner";
+
+      // try {
+      //   let api_bf_add_permission = await client.put(
+      //     `/manage_datasets/bf`
+      //   )
+
+      // } catch(error) {
+      //   clientError(error);
+      // }
+      //needs to be replaced
 
       client.invoke(
         "api_bf_add_permission",
@@ -515,87 +523,86 @@ const showCurrentPermission = async () => {
   }
 };
 
-const addPermissionUser = (
+const addPermissionUser = async (
   selectedBfAccount,
   selectedBfDataset,
   selectedUser,
   selectedRole
 ) => {
-  client.invoke(
-    "api_bf_add_permission",
-    selectedBfAccount,
-    selectedBfDataset,
-    selectedUser,
-    selectedRole,
-    async (error, res) => {
-      if (error) {
-        log.error(error);
-        console.error(error);
-        let emessage = userError(error);
+  try {
+    let bf_add_permission = await client.patch(
+      `/manage_datasets/bf_dataset_permissions?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}&scope=user&name=${selectedUser}`,
+      {
+        input_role: selectedRole,
+      }
+    );
+    let res = bf_add_permission.data.message;
+    console.log(res);
 
-        Swal.fire({
-          title: "Failed to change permission!",
-          text: emessage,
-          icon: "error",
-          showConfirmButton: true,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
+    log.info("Dataset permission added");
 
-        logGeneralOperationsForAnalytics(
-          "Error",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
-          AnalyticsGranularity.ALL_LEVELS,
-          ["Add User Permissions"]
-        );
-      } else {
-        log.info("Dataset permission added");
+    logGeneralOperationsForAnalytics(
+      "Success",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
+      AnalyticsGranularity.ALL_LEVELS,
+      ["Add User Permissions"]
+    );
 
-        logGeneralOperationsForAnalytics(
-          "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
-          AnalyticsGranularity.ALL_LEVELS,
-          ["Add User Permissions"]
-        );
+    Swal.fire({
+      title: "Successfully changed permission!",
+      text: res,
+      icon: "success",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
 
-        Swal.fire({
-          title: "Successfully changed permission!",
-          text: res,
-          icon: "success",
-          showConfirmButton: true,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
+    showCurrentPermission();
 
-        showCurrentPermission();
-
-        // refresh dataset lists with filter
-        try {
-          let get_username = await client.get(
-            u`/manage_datasets/account/username?selected_account=${selectedBfAccount}`
-          );
-          let res1 = get_username.data.username;
-          if (selectedRole === "owner") {
-            for (var i = 0; i < datasetList.length; i++) {
-              if (datasetList[i].name === selectedBfDataset) {
-                datasetList[i].role = "manager";
-              }
-            }
+    // refresh dataset lists with filter
+    try {
+      let get_username = await client.get(
+        `/manage_datasets/account/username?selected_account=${selectedBfAccount}`
+      );
+      let res1 = get_username.data.username;
+      if (selectedRole === "owner") {
+        for (var i = 0; i < datasetList.length; i++) {
+          if (datasetList[i].name === selectedBfDataset) {
+            datasetList[i].role = "manager";
           }
-          if (selectedUser === res1) {
-            // then change role of dataset and refresh dataset list
-            for (var i = 0; i < datasetList.length; i++) {
-              if (datasetList[i].name === selectedBfDataset) {
-                datasetList[i].role = selectedRole.toLowerCase();
-              }
-            }
-          }
-        } catch (error) {
-          clientError(error);
         }
       }
+      if (selectedUser === res1) {
+        // then change role of dataset and refresh dataset list
+        for (var i = 0; i < datasetList.length; i++) {
+          if (datasetList[i].name === selectedBfDataset) {
+            datasetList[i].role = selectedRole.toLowerCase();
+          }
+        }
+      }
+    } catch (error) {
+      clientError(error);
     }
-  );
+  } catch (error) {
+    clientError(error);
+
+    let emessage = error.response.data.message;
+    Swal.fire({
+      title: "Failed to change permission!",
+      text: emessage,
+      icon: "error",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    logGeneralOperationsForAnalytics(
+      "Error",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
+      AnalyticsGranularity.ALL_LEVELS,
+      ["Add User Permissions"]
+    );
+  }
 };
 
 // Add permission for user //
