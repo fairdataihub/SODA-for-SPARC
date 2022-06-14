@@ -402,16 +402,7 @@ $("#button-add-permission-pi").click(() => {
       let selectedUser = $("#bf_list_users_pi").val();
       let selectedRole = "owner";
 
-      // try {
-      //   let api_bf_add_permission = await client.put(
-      //     `/manage_datasets/bf`
-      //   )
-
-      // } catch(error) {
-      //   clientError(error);
-      // }
       //needs to be replaced
-
       client.invoke(
         "api_bf_add_permission",
         selectedBfAccount,
@@ -727,8 +718,8 @@ $(document).ready(() => {
 });
 
 // Add subtitle //
-$("#button-add-subtitle").click(() => {
-  setTimeout(function () {
+$("#button-add-subtitle").click(async () => {
+  setTimeout(async function () {
     Swal.fire({
       title: determineSwalLoadingMessage($("#button-add-subtitle")),
       html: "Please wait...",
@@ -750,64 +741,63 @@ $("#button-add-subtitle").click(() => {
     log.info("Adding subtitle to dataset");
     log.info(inputSubtitle);
 
-    client.invoke(
-      "api_bf_add_subtitle",
-      selectedBfAccount,
-      selectedBfDataset,
-      inputSubtitle,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-          let emessage = userError(error);
-
-          Swal.fire({
-            title: "Failed to add subtitle!",
-            text: emessage,
-            icon: "error",
-            showConfirmButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-
-          $("#ds-description").val("");
-
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
-            defaultBfDatasetId
-          );
-        } else {
-          log.info("Added subtitle to dataset");
-
-          $("#ds-description").val(inputSubtitle);
-
-          Swal.fire({
-            title: determineSwalSuccessMessage($("#button-add-subtitle")),
-            icon: "success",
-            showConfirmButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          }).then(
-            //check if subtitle text is empty and set Add/Edit button appropriately
-            !$("#bf-dataset-subtitle").val()
-              ? $("#button-add-subtitle").html("Add subtitle")
-              : $("#button-add-subtitle").html("Edit subtitle")
-          );
-
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
-            defaultBfDatasetId
-          );
-
-          // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
-          showPrePublishingStatus();
+    try {
+      let bf_add_subtitle = await client.put(
+        `/manage_datasets/bf_dataset_subtitle?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}`,
+        {
+          input_subtitle: inputSubtitle,
         }
-      }
-    );
+      );
+      let res = bf_add_subtitle.data.message;
+      console.log(res);
+      log.info("Added subtitle to dataset");
+
+      $("#ds-description").val(inputSubtitle);
+
+      Swal.fire({
+        title: determineSwalSuccessMessage($("#button-add-subtitle")),
+        icon: "success",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      }).then(
+        //check if subtitle text is empty and set Add/Edit button appropriately
+        !$("#bf-dataset-subtitle").val()
+          ? $("#button-add-subtitle").html("Add subtitle")
+          : $("#button-add-subtitle").html("Edit subtitle")
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
+        defaultBfDatasetId
+      );
+
+      // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
+      showPrePublishingStatus();
+    } catch (error) {
+      clientError(error);
+
+      let emessage = error.response.data.message;
+      Swal.fire({
+        title: "Failed to add subtitle!",
+        text: emessage,
+        icon: "error",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+
+      $("#ds-description").val("");
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
+        defaultBfDatasetId
+      );
+    }
   }, delayAnimation);
 });
 
