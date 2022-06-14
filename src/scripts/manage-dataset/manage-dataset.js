@@ -639,8 +639,8 @@ $("#button-add-permission-user").click(() => {
 });
 
 // Add permission for team
-$("#button-add-permission-team").click(() => {
-  setTimeout(() => {
+$("#button-add-permission-team").click(async () => {
+  setTimeout(async () => {
     log.info("Adding a permission for a team on a dataset");
 
     Swal.fire({
@@ -662,55 +662,53 @@ $("#button-add-permission-team").click(() => {
     let selectedTeam = $("#bf_list_teams").val();
     let selectedRole = $("#bf_list_roles_team").val();
 
-    client.invoke(
-      "api_bf_add_permission_team",
-      selectedBfAccount,
-      selectedBfDataset,
-      selectedTeam,
-      selectedRole,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-          let emessage = userError(error);
-
-          Swal.fire({
-            title: "Failed to change permission",
-            text: emessage,
-            icon: "error",
-            showConfirmButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-
-          logGeneralOperationsForAnalytics(
-            "Error",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
-            AnalyticsGranularity.ALL_LEVELS,
-            ["Add Team Permissions"]
-          );
-        } else {
-          log.info("Added permission for the team");
-          logGeneralOperationsForAnalytics(
-            "Success",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
-            AnalyticsGranularity.ALL_LEVELS,
-            ["Add Team Permissions"]
-          );
-
-          Swal.fire({
-            title: "Successfully changed permission",
-            text: res,
-            icon: "success",
-            showConfirmButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-
-          showCurrentPermission();
+    try {
+      let bf_add_team_permission = await client.patch(
+        `/manage_datasets/bf_dataset_permissions?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}&scope=team&name=${selectedTeam}`,
+        {
+          input_role: selectedRole,
         }
-      }
-    );
+      );
+
+      let res = bf_add_team_permission.data.message;
+      log.info("Added permission for the team");
+      logGeneralOperationsForAnalytics(
+        "Success",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
+        AnalyticsGranularity.ALL_LEVELS,
+        ["Add Team Permissions"]
+      );
+
+      Swal.fire({
+        title: "Successfully changed permission",
+        text: res,
+        icon: "success",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+
+      showCurrentPermission();
+    } catch (error) {
+      clientError(error);
+
+      let emessage = error.response.data.message;
+      Swal.fire({
+        title: "Failed to change permission",
+        text: emessage,
+        icon: "error",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+
+      logGeneralOperationsForAnalytics(
+        "Error",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
+        AnalyticsGranularity.ALL_LEVELS,
+        ["Add Team Permissions"]
+      );
+    }
   }, delayAnimation);
 });
 
