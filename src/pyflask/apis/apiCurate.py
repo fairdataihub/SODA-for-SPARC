@@ -1,5 +1,4 @@
 from flask_restx import Resource, fields, reqparse
-from flask_restx.inputs import boolean
 from namespaces import NamespaceEnum, get_namespace
 
 from curate import (
