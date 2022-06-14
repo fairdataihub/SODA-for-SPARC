@@ -952,7 +952,11 @@ def check_empty_files_folders(soda_json_structure):
             ]
             error_folders = error_message + [] + error_folders
 
-        return [error_files, error_folders, soda_json_structure]
+        return {
+            "empty_files": error_files, 
+            "empty_folders": error_folders, 
+            "soda_json_structure": soda_json_structure
+        }
 
     except Exception as e:
         raise e
