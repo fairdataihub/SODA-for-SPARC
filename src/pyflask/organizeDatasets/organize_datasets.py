@@ -122,15 +122,12 @@ def checkLeafValue(leafName, leafNodeValue):
         error = error + leafName + " is empty <br>"
 
     if c > 0:
-        error = (
-            error
-            + "<br>Please remove invalid files/folders from your dataset and try again"
-        )
+        error += "<br>Please remove invalid files/folders from your dataset and try again"
         curatestatus = "Done"
-        raise Exception(error)
+        abort(400, error)
 
-    else:
-        return [True, total_dataset_size - 1]
+
+    return [True, total_dataset_size - 1]
 
 
 def traverseForLeafNodes(jsonStructure):
@@ -220,16 +217,13 @@ def generate_dataset_locally(destinationdataset, pathdataset, newdatasetname, js
     if destinationdataset == "create new":
         if not isdir(pathdataset):
             curatestatus = "Done"
-            raise Exception("Error: Please select a valid folder for new dataset")
+            abort(400, "Error: Please select a valid folder for new dataset")
         if not newdatasetname:
             curatestatus = "Done"
-            raise Exception("Error: Please enter a valid name for new dataset folder")
+            abort(400, "Error: Please enter a valid name for new dataset folder")
         if check_forbidden_characters(newdatasetname):
             curatestatus = "Done"
-            raise Exception(
-                "Error: A folder name cannot contain any of the following characters "
-                + forbidden_characters
-            )
+            abort(400,  "Error: A folder name cannot contain any of the following characters " + forbidden_characters)
 
     total_dataset_size = 1
 

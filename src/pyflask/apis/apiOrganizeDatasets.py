@@ -6,7 +6,7 @@ from organizeDatasets import (
 )
 
 from namespaces import NamespaceEnum, get_namespace
-from flask_restx import Resource, fields
+from flask_restx import Resource, fields, reqparse
 from errorHandlers import notBadRequestException
 
 api = get_namespace(NamespaceEnum.ORGANIZE_DATASETS)
@@ -36,6 +36,39 @@ class BfGetDatasetFilesFolders(Resource):
 
         try:
             return bf_get_dataset_files_folders(sodajsonobject)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, e.args[0])
+            raise e
+
+
+
+
+
+
+generate_dataset_locally
+@api.route('/datasets')
+class GeberateDatasetLocally(Resource):
+
+    parser_change_dataset_status = reqparse.RequestParser(bundle_errors=True)
+    parser_change_dataset_status.add_argument('generation_type', type=str, required=True, help='The final destination to generate the dataset in. Valid option is create new.', location="json")
+    parser_change_dataset_status.add_argument('generation_destination_path', type=str, required=True, help='The local path to generate the dataset.', location="json")
+    parser_change_dataset_status.add_argument('dataset_name', type=str, required=True, help='The name of the dataset being generated.', location="json")
+    parser_change_dataset_status.add_argument('soda_json_directory_structure', type=dict, required=True, help='The sodajsonobject dataset directory structure.', location="json")
+
+    @api.expect(parser_change_dataset_status)
+    @api.doc(responses={200: "Success", 400: "Bad Request", 500: "Internal Server Error"}, description="Generate a dataset at the given local directory using the sodajsonobject dataset directory structure.")
+    @api.marshal_with(model_get_dataset_files_folders_response)
+    def post(self):
+        data = self.parser_change_dataset_status.parse_args()
+
+        generation_type = data.get('generation_type')
+        generation_destination_path = data.get('generation_destination_path')
+        dataset_name = data.get('dataset_name')
+        soda_json_directory_structure = data.get('soda_json_directory_structure')
+        
+        try:
+            return generate_dataset_locally(generation_type, generation_destination_path, dataset_name, soda_json_directory_structure)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, e.args[0])
