@@ -31,8 +31,6 @@ from openpyxl import load_workbook
 from openpyxl.styles import PatternFill, Font
 from docx import Document
 
-from Bio import Entrez
-
 from flask import abort 
 
 from manageDatasets import (
@@ -764,24 +762,6 @@ def processMetadataCustomFields(matrix):
             refined_matrix.append(column)
 
     return refined_matrix
-
-
-# use Entrez library to load the scientific name for a species
-def load_taxonomy_species(animalList):
-    animalDict = {}
-    for animal in animalList:
-        handle = Entrez.esearch(db="Taxonomy", term=animal)
-        record = Entrez.read(handle)
-        if len(record["IdList"]) > 0:
-            id = record["IdList"][0]
-            handle = Entrez.efetch(db="Taxonomy", id=id)
-            result = Entrez.read(handle)
-            animalDict[animal] = {
-                "ScientificName": result[0]["ScientificName"],
-                "OtherNames": result[0]["OtherNames"],
-            }
-
-    return animalDict
 
 
 ## check if any whole column from Excel sheet is empty

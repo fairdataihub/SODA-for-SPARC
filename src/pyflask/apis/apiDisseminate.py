@@ -1,4 +1,3 @@
-from email.policy import strict
 from disseminate import (
     bf_get_doi,
     bf_reserve_doi,
