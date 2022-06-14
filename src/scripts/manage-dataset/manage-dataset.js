@@ -1580,7 +1580,7 @@ $("#button-import-banner-image").click(() => {
   ipcRenderer.send("open-file-dialog-import-banner-image");
 });
 
-const uploadBannerImage = () => {
+const uploadBannerImage = async () => {
   $("#para-dataset-banner-image-status").html("Please wait...");
   //Save cropped image locally and check size
   let imageFolder = path.join(homeDirectory, "SODA", "banner-image");
@@ -1599,73 +1599,71 @@ const uploadBannerImage = () => {
   let imagePath = path.join(imageFolder, "banner-image-SODA." + imageExtension);
   let croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType);
 
-  imageDataURI.outputFile(croppedImageDataURI, imagePath).then(() => {
+  imageDataURI.outputFile(croppedImageDataURI, imagePath).then(async () => {
     let image_file_size = fs.statSync(imagePath)["size"];
 
     if (image_file_size < 5 * 1024 * 1024) {
       let selectedBfAccount = defaultBfAccount;
       let selectedBfDataset = defaultBfDataset;
 
-      client.invoke(
-        "api_bf_add_banner_image",
-        selectedBfAccount,
-        selectedBfDataset,
-        imagePath,
-        (error, res) => {
-          if (error) {
-            log.error(error);
-            console.error(error);
-            let emessage = userError(error);
-
-            $("#para-dataset-banner-image-status").html(
-              "<span style='color: red;'> " + emessage + "</span>"
-            );
-
-            ipcRenderer.send(
-              "track-event",
-              "Error",
-              ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
-              defaultBfDatasetId
-            );
-          } else {
-            $("#para-dataset-banner-image-status").html(res);
-
-            showCurrentBannerImage();
-
-            $("#edit_banner_image_modal").modal("hide");
-
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
-              defaultBfDatasetId
-            );
-
-            // track the size for all dataset banner uploads
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
-                " - Size",
-              "Size",
-              image_file_size
-            );
-
-            // track the size for the given dataset
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
-                " - Size",
-              defaultBfDatasetId,
-              image_file_size
-            );
-
-            // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
-            showPrePublishingStatus();
+      try {
+        let bf_add_banner = await client.put(
+          `/manage_datasets/bf_banner_image?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}`,
+          {
+            input_banner_image_path: imagePath,
           }
-        }
-      );
+        );
+        let res = bf_add_banner.data.message;
+        $("#para-dataset-banner-image-status").html(res);
+
+        showCurrentBannerImage();
+
+        $("#edit_banner_image_modal").modal("hide");
+
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+          defaultBfDatasetId
+        );
+
+        // track the size for all dataset banner uploads
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
+            " - Size",
+          "Size",
+          image_file_size
+        );
+
+        // track the size for the given dataset
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
+            " - Size",
+          defaultBfDatasetId,
+          image_file_size
+        );
+
+        // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
+        showPrePublishingStatus();
+      } catch (error) {
+        clientError(error);
+
+        let emessage = userError(error.response.data.message);
+        $("#para-dataset-banner-image-status").html(
+          "<span style='color: red;'> " + emessage + "</span>"
+        );
+
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+          defaultBfDatasetId
+        );
+      }
     } else {
       $("#para-dataset-banner-image-status").html(
         "<span style='color: red;'> " +
