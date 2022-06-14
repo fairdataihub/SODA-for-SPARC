@@ -398,7 +398,7 @@ class ImportBFMetadataFile(Resource):
         ui_fields = data.get('ui_fields')
 
         try:
-            import_bf_metadata_file(file_type, ui_fields, selected_account, selected_dataset)
+            return import_bf_metadata_file(file_type, ui_fields, selected_account, selected_dataset)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
