@@ -1015,7 +1015,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             }
           }
         },
-      }).then((result) => {
+      }).then(async (result) => {
         if (result.isConfirmed) {
           Swal.fire({
             allowEscapeKey: false,
@@ -1096,14 +1096,12 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
               showConfirmButton: false,
               timer: 3000,
               timerProgressBar: true,
-              title:
-                "Successfully added! <br/>Loading your account details...",
+              title: "Successfully added! <br/>Loading your account details...",
               didOpen: () => {
                 Swal.showLoading();
               },
             });
-
-          } catch(error) {
+          } catch (error) {
             clientError(error);
             Swal.showValidationMessage(userError(error));
             Swal.close();
