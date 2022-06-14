@@ -2414,6 +2414,7 @@ $("#button-submit-dataset").click(async () => {
 
   // clear the queue before uploading
   clearQueue();
+  console.log(pathSubmitDataset.placeholder);
 
   client.invoke(
     "api_bf_submit_dataset",
@@ -2842,7 +2843,7 @@ $("body").on(
 );
 
 // Change dataset status option change
-$("#bf_list_dataset_status").on("change", () => {
+$("#bf_list_dataset_status").on("change", async () => {
   $(bfCurrentDatasetStatusProgress).css("visibility", "visible");
   $("#bf-dataset-status-spinner").css("display", "block");
 
@@ -2853,61 +2854,65 @@ $("#bf_list_dataset_status").on("change", () => {
   let selectedStatusOption =
     bfListDatasetStatus.options[bfListDatasetStatus.selectedIndex].text;
 
-  client.invoke(
-    "api_bf_change_dataset_status",
-    selectedBfAccount,
-    selectedBfDataset,
-    selectedStatusOption,
-    (error, res) => {
-      if (error) {
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS,
-          defaultBfDatasetId
-        );
-
-        log.error(error);
-        console.error(error);
-
-        var emessage = userError(error);
-
-        function showErrorDatasetStatus() {
-          Swal.fire({
-            title: "Failed to change dataset status!",
-            text: emessage,
-            icon: "error",
-            showConfirmButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-
-          $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
-          $("#bf-dataset-status-spinner").css("display", "none");
-        }
-
-        showCurrentDatasetStatus(showErrorDatasetStatus);
-      } else {
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS,
-          defaultBfDatasetId
-        );
-
-        $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
-        $("#bf-dataset-status-spinner").css("display", "none");
-
-        Swal.fire({
-          title: res,
-          icon: "success",
-          showConfirmButton: true,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
+  try {
+    let bf_change_dataset_status = await client.put(
+      `/manage_datasets/bf_dataset_status`,
+      {
+        selected_bfaccount: selectedBfAccount,
+        selected_bfdataset: selectedBfDataset,
+        selected_status: selectedStatusOption,
       }
+    );
+    let res = bf_change_dataset_status.data.message;
+    console.log(res);
+
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS,
+      defaultBfDatasetId
+    );
+
+    $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
+    $("#bf-dataset-status-spinner").css("display", "none");
+
+    Swal.fire({
+      title: res,
+      icon: "success",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+  } catch (error) {
+    clientError(error);
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS,
+      defaultBfDatasetId
+    );
+
+    log.error(error);
+    console.error(error);
+
+    var emessage = userError(error.response.data.message);
+
+    function showErrorDatasetStatus() {
+      Swal.fire({
+        title: "Failed to change dataset status!",
+        text: emessage,
+        icon: "error",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+
+      $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
+      $("#bf-dataset-status-spinner").css("display", "none");
     }
-  );
+
+    showCurrentDatasetStatus(showErrorDatasetStatus);
+  }
 });
 
 async function showCurrentDatasetStatus(callback) {

@@ -936,7 +936,7 @@ function loadSubmissionFileToUI(data, type) {
 }
 
 // function to check for existing submission file on Penn
-function checkBFImportSubmission() {
+async function checkBFImportSubmission() {
   Swal.fire({
     title: "Importing the submission.xlsx file",
     html: "Please wait...",
@@ -951,33 +951,31 @@ function checkBFImportSubmission() {
       Swal.showLoading();
     },
   }).then((result) => {});
-  client.invoke(
-    "api_import_bf_metadata_file",
-    "submission.xlsx",
-    "",
-    defaultBfAccount,
-    $("#bf_dataset_load_submission").text().trim(),
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          icon: "error",
-          html: emessage,
-        });
-        logMetadataForAnalytics(
-          "Error",
-          MetadataAnalyticsPrefix.SUBMISSION,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Existing",
-          Destinations.PENNSIEVE
-        );
-      } else {
-        loadSubmissionFileToUI(res, "bf");
-      }
-    }
-  );
+  let bfDataset = $("#bf_dataset_load_submission").text().trim();
+  try {
+    let import_metadata = await client.get(
+      `/prepare_metadata/import_metadata_file?file_type=submission.xlsx&selected_account=${defaultBfAccount}&selected_dataset=${bfDataset}`
+    );
+    let res = import_metadata.data;
+    console.log("submissions file");
+    console.log(res);
+    loadSubmissionFileToUI(res, "bf");
+  } catch (error) {
+    clientError(error);
+    var emessage = userError(error.response.data.message);
+
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      html: emessage,
+    });
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.SUBMISSION,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.PENNSIEVE
+    );
+  }
 }
