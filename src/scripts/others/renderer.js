@@ -2096,6 +2096,50 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
       Swal.showLoading();
     },
   }).then((result) => {});
+  try {
+    let load_taxonomy_species = await client.get(`/taxonomy/species`, {
+      animal_list: [commonName],
+    });
+    console.log(load_taxonomy_species);
+    let res = load_taxonomy_species.data;
+    console.log(res);
+
+    if (Object.keys(res).length === 0) {
+      Swal.fire({
+        title: "Cannot find a scientific name for '" + commonName + "'",
+        text: "Make sure you enter a correct species name.",
+        icon: "error",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+      if (!$("#btn-confirm-species").hasClass("confirm-disabled")) {
+        $("#btn-confirm-species").addClass("confirm-disabled");
+      }
+      if (destinationInput.includes("subject")) {
+        if ($("#bootbox-subject-species").val() === "") {
+          $("#bootbox-subject-species").css("display", "none");
+        }
+        // set the Edit species button back to "+ Add species"
+        $("#button-add-species-subject").html(
+          `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
+        );
+      }
+      if (destinationInput.includes("sample")) {
+        if ($("#bootbox-sample-species").val() === "") {
+          $("#bootbox-sample-species").css("display", "none");
+        }
+        // set the Edit species button back to "+ Add species"
+        $("#button-add-species-sample").html(
+          `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
+        );
+      }
+    } else {
+      $("#" + destinationInput).val(res[commonName]["ScientificName"]);
+      $("#btn-confirm-species").removeClass("confirm-disabled");
+    }
+  } catch (error) {
+    clientError(error);
+  }
   await client.invoke(
     "api_load_taxonomy_species",
     [commonName],
@@ -2104,39 +2148,6 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
         log.error(error);
         console.error(error);
       } else {
-        if (Object.keys(res).length === 0) {
-          Swal.fire({
-            title: "Cannot find a scientific name for '" + commonName + "'",
-            text: "Make sure you enter a correct species name.",
-            icon: "error",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-          if (!$("#btn-confirm-species").hasClass("confirm-disabled")) {
-            $("#btn-confirm-species").addClass("confirm-disabled");
-          }
-          if (destinationInput.includes("subject")) {
-            if ($("#bootbox-subject-species").val() === "") {
-              $("#bootbox-subject-species").css("display", "none");
-            }
-            // set the Edit species button back to "+ Add species"
-            $("#button-add-species-subject").html(
-              `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
-            );
-          }
-          if (destinationInput.includes("sample")) {
-            if ($("#bootbox-sample-species").val() === "") {
-              $("#bootbox-sample-species").css("display", "none");
-            }
-            // set the Edit species button back to "+ Add species"
-            $("#button-add-species-sample").html(
-              `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
-            );
-          }
-        } else {
-          $("#" + destinationInput).val(res[commonName]["ScientificName"]);
-          $("#btn-confirm-species").removeClass("confirm-disabled");
-        }
       }
     }
   );

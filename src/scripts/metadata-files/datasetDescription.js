@@ -2266,7 +2266,7 @@ function importExistingDDFile() {
   }
 }
 
-function checkBFImportDD() {
+async function checkBFImportDD() {
   Swal.fire({
     title: "Importing the dataset_description.xlsx file",
     html: "Please wait...",
@@ -2281,12 +2281,12 @@ function checkBFImportDD() {
       Swal.showLoading();
     },
   }).then((result) => {});
-  let bf_dataset = $("#bf_dataset_load_dd").text().trim();
+  let bf_dataset = document.getElementById("bf_dataset_load_dd").innerText;
   try {
-    let metadata_import = client.get(
+    let metadata_import = await client.get(
       `/prepare_metadata/import_metadata_file?file_type=dataset_description.xlsx&selected_account=${defaultBfAccount}&selected_dataset=${bf_dataset}`
     );
-
+    let res = metadata_import.data;
     loadDDFileToUI(res, "bf");
 
     // log the import action success to analytics
@@ -2315,47 +2315,6 @@ function checkBFImportDD() {
       Destinations.PENNSIEVE
     );
   }
-  //check response on this
-  client.invoke(
-    "api_import_bf_metadata_file",
-    "dataset_description.xlsx",
-    "",
-    defaultBfAccount,
-    $("#bf_dataset_load_dd").text().trim(),
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          icon: "error",
-          html: emessage,
-        });
-
-        // log the error to analytics at all levels of granularity
-        logMetadataForAnalytics(
-          "Error",
-          MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Existing",
-          Destinations.PENNSIEVE
-        );
-      } else {
-        loadDDFileToUI(res, "bf");
-
-        // log the import action success to analytics
-        logMetadataForAnalytics(
-          "Success",
-          MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
-          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-          "Existing",
-          Destinations.PENNSIEVE
-        );
-      }
-    }
-  );
 }
 
 function loadDDfileDataframe(filePath) {
