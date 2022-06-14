@@ -2451,46 +2451,45 @@ function checkBFImportSamples() {
     .find(".samples-form-entry")) {
     fieldEntries.push(field.name.toLowerCase());
   }
-  client.invoke(
-    "api_import_bf_metadata_file",
-    "samples.xlsx",
-    fieldEntries,
-    defaultBfAccount,
-    $("#bf_dataset_load_samples").text().trim(),
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          icon: "error",
-          html: emessage,
-        });
+  let bfDataset = $("#bf_dataset_load_samples").text().trim()
+  try {
+    let import_metadata = await client.get(
+      `/prepare_metadata/import_metadata_file?file_type=samples.xlsx&selected_account=${defaultBfAccount}&selected_dataset=${bfDataset}`
+    );
+    let res = import_metadata.data;
+    console.log("above is samples.xlsx");
+    console.log(res);
 
-        // log the error to analytics
-        logMetadataForAnalytics(
-          "Error",
-          MetadataAnalyticsPrefix.SAMPLES,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Existing",
-          Destinations.PENNSIEVE
-        );
-      } else {
-        // log the success to analytics
-        logMetadataForAnalytics(
-          "Success",
-          MetadataAnalyticsPrefix.SAMPLES,
-          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-          "Existing",
-          Destinations.PENNSIEVE
-        );
-        samplesTableData = res;
-        loadDataFrametoUISamples("bf");
-      }
-    }
-  );
+    // log the success to analytics
+    logMetadataForAnalytics(
+      "Success",
+      MetadataAnalyticsPrefix.SAMPLES,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      "Existing",
+      Destinations.PENNSIEVE
+    );
+    samplesTableData = res;
+    loadDataFrametoUISamples("bf");
+  }catch(error) {
+    clientError(error);
+    var emessage = error.response.data.message;
+
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      html: emessage,
+    });
+
+    // log the error to analytics
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.SAMPLES,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.PENNSIEVE
+    );
+  }
 }
 
 function loadDataFrametoUI(type) {
