@@ -150,3 +150,34 @@ class GenerateManifestFiles(Resource):
             return create_high_level_manifest_files_existing_local_starting_point(filepath)
         except Exception as e:
             api.abort(500, str(e))
+
+
+
+
+
+
+
+model_generate_manifest_locally_response = api.model( "GenerateManifestLocallyResponse", {
+    "success_message_or_manifest_destination": fields.String(description="Success message or path to the manifest file"),
+})
+
+@api.route('/manifest_files')
+class GenerateManifestLocally(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('generate_purpose', type=str, required=True, help='Can be edit-manifest or otherwise. Use edit-manifest when a user wants to edit their manifest files in the standalone manifest file generation feature.', location='json')
+    parser.add_argument('soda_json_object', type=dict, required=True, help='SODA dataset structure', location='json')
+
+    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request'}, description="Generate manifest files locally. Used in the standalone manifest file generation feature. Can take edit-manifest keyword that stores the manifest file in a separate directory. Allows ease of editing manifest information for the client.")
+    @api.marshal_with(model_generate_manifest_locally_response, False, 200)
+    @api.expect(parser)
+    def post(self):
+        # get the generate_purpose from the request object
+        data = self.parser.parse_args()
+
+        generate_purpose = data.get("generate_purpose")
+        soda_json_object = data.get("soda_json_object")
+
+        try:
+            return generate_manifest_file_locally(generate_purpose, soda_json_object)
+        except Exception as e:
+            api.abort(500, str(e))
