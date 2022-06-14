@@ -1821,6 +1821,7 @@ async function transitionSubQuestionsButton(
   */
 
   if (currentDiv === "Question-getting-started-BF-dataset") {
+    console.log("here");
     $("#nextBtn").prop("disabled", true);
     // $("#button-confirm-bf-dataset-getting-started").prop("disabled", true);
     sodaJSONObj = {
@@ -1853,7 +1854,9 @@ async function transitionSubQuestionsButton(
     $("#bf-dataset-spinner").css("visibility", "visible");
     var result;
     try {
+      console.log("trying here");
       var res = await bf_request_and_populate_dataset(sodaJSONObj);
+      console.log(res);
       result = [true, res];
     } catch (err) {
       result = [false, err];

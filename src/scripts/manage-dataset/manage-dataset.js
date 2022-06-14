@@ -136,97 +136,101 @@ $("#button-create-bf-new-dataset").click(async () => {
       },
     });
 
-    client.invoke(
-      "api_bf_new_dataset_folder",
-      bfNewDatasetName,
-      selectedbfaccount,
-      async (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-          let emessage = userError(error);
-
-          Swal.fire({
-            title: `Failed to create a new dataset.`,
-            text: emessage,
-            showCancelButton: false,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            icon: "error",
-          });
-
-          $("#button-create-bf-new-dataset").prop("disabled", false);
-
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CREATE_DATASET,
-            bfNewDatasetName
-          );
-        } else {
-          Swal.fire({
-            title: `Dataset ${bfNewDatasetName} was created successfully`,
-            icon: "success",
-            showConfirmButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            didOpen: () => {
-              Swal.hideLoading();
-            },
-          });
-
-          log.info(`Created dataset successfully`);
-
-          $("#button-create-bf-new-dataset").hide();
-
-          defaultBfDataset = bfNewDatasetName;
-          defaultBfDatasetId = res;
-          // log a map of datasetId to dataset name to analytics
-          // this will be used to help us track private datasets which are not trackable using a datasetId alone
-          ipcRenderer.send(
-            "track-event",
-            "Dataset ID to Dataset Name Map",
-            defaultBfDatasetId,
-            defaultBfDataset
-          );
-          refreshDatasetList();
-          currentDatasetPermission.innerHTML = "";
-          currentAddEditDatasetPermission.innerHTML = "";
-          $("#button-create-bf-new-dataset").prop("disabled", false);
-
-          addNewDatasetToList(bfNewDatasetName);
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CREATE_DATASET,
-            bfNewDatasetName
-          );
-
-          log.info(`Requesting list of datasets`);
-
-          try {
-            let responseObject = await client.get(
-              `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
-            );
-            datasetList = [];
-            datasetList = responseObject.data.datasets;
-            log.info(`Requested list of datasets successfully`);
-          } catch (error) {
-            clientError(error);
-            log.error(error);
-            console.error(error);
-          }
-
-          $(".bf-dataset-span").html(bfNewDatasetName);
-
-          refreshDatasetList();
-          updateDatasetList();
-
-          $(".confirm-button").click();
-          $("#bf-new-dataset-name").val("");
+    try {
+      let bf_new_dataset = client.get(
+        `/manage_datasets/datasets?selected_account=${selectedbfaccount}`,
+        {
+          input_dataset_name: bfNewDatasetName,
         }
+      );
+      let res = bf_new_dataset.data;
+      //check response
+      console.log(res);
+
+      Swal.fire({
+        title: `Dataset ${bfNewDatasetName} was created successfully`,
+        icon: "success",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        didOpen: () => {
+          Swal.hideLoading();
+        },
+      });
+
+      log.info(`Created dataset successfully`);
+
+      $("#button-create-bf-new-dataset").hide();
+
+      defaultBfDataset = bfNewDatasetName;
+      defaultBfDatasetId = res;
+      // log a map of datasetId to dataset name to analytics
+      // this will be used to help us track private datasets which are not trackable using a datasetId alone
+      ipcRenderer.send(
+        "track-event",
+        "Dataset ID to Dataset Name Map",
+        defaultBfDatasetId,
+        defaultBfDataset
+      );
+      refreshDatasetList();
+      currentDatasetPermission.innerHTML = "";
+      currentAddEditDatasetPermission.innerHTML = "";
+      $("#button-create-bf-new-dataset").prop("disabled", false);
+
+      addNewDatasetToList(bfNewDatasetName);
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CREATE_DATASET,
+        bfNewDatasetName
+      );
+
+      log.info(`Requesting list of datasets`);
+
+      try {
+        let responseObject = await client.get(
+          `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
+        );
+        datasetList = [];
+        datasetList = responseObject.data.datasets;
+        log.info(`Requested list of datasets successfully`);
+      } catch (error) {
+        clientError(error);
+        log.error(error);
+        console.error(error);
       }
-    );
+
+      $(".bf-dataset-span").html(bfNewDatasetName);
+
+      refreshDatasetList();
+      updateDatasetList();
+
+      $(".confirm-button").click();
+      $("#bf-new-dataset-name").val("");
+
+
+    } catch (error) {
+      clientError(error);
+      let emessage = userError(error.response.data.message);
+
+      Swal.fire({
+        title: `Failed to create a new dataset.`,
+        text: emessage,
+        showCancelButton: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        icon: "error",
+      });
+
+      $("#button-create-bf-new-dataset").prop("disabled", false);
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CREATE_DATASET,
+        bfNewDatasetName
+      );
+    }
   }, delayAnimation);
 });
 
@@ -2947,27 +2951,26 @@ async function showCurrentDatasetStatus(callback) {
       removeOptions(bfListDatasetStatus);
       removeRadioOptions("dataset_status_ul");
 
-      for (let item in res[0]) {
+      for (let item in res["status_options"]) {
         let option = document.createElement("option");
 
-        option.textContent = res[0][item]["displayName"];
-        option.value = res[0][item]["name"];
-        option.style.color = res[0][item]["color"];
+        option.textContent = res["status_options"][item]["name"];
+        option.value = res["status_options"][item]["name"];
+        option.style.color = res["status_options"][item]["color"];
 
         bfListDatasetStatus.appendChild(option);
 
         addRadioOption(
           "dataset_status_ul",
-          res[0][item]["displayName"],
-          res[0][item]["name"]
+          res["status_options"][item]["name"],
+          res["status_options"][item]["name"]
         );
       }
-      bfListDatasetStatus.value = res[1];
+      bfListDatasetStatus.value = res["current_status"];
 
-      $(`input[name=dataset_status_radio][value=${res[1]}]`).prop(
-        "checked",
-        true
-      );
+      $(
+        `input[name=dataset_status_radio][value=${res["current_status"]}]`
+      ).prop("checked", true);
 
       selectOptionColor(bfListDatasetStatus);
 
