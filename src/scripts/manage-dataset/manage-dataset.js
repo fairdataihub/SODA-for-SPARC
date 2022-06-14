@@ -114,7 +114,7 @@ $("#bf-rename-dataset-name").on("keyup", () => {
 
 // Add new dataset folder (empty) on bf //
 $("#button-create-bf-new-dataset").click(async () => {
-  setTimeout(() => {
+  setTimeout(async () => {
     let selectedbfaccount = defaultBfAccount;
     let bfNewDatasetName = $("#bf-new-dataset-name").val();
 
@@ -135,15 +135,16 @@ $("#button-create-bf-new-dataset").click(async () => {
         Swal.showLoading();
       },
     });
+    console.log(bfNewDatasetName);
 
     try {
-      let bf_new_dataset = client.get(
+      let bf_new_dataset = await client.post(
         `/manage_datasets/datasets?selected_account=${selectedbfaccount}`,
         {
           input_dataset_name: bfNewDatasetName,
         }
       );
-      let res = bf_new_dataset.data;
+      let res = bf_new_dataset.data.id;
       //check response
       console.log(res);
 
@@ -207,8 +208,6 @@ $("#button-create-bf-new-dataset").click(async () => {
 
       $(".confirm-button").click();
       $("#bf-new-dataset-name").val("");
-
-
     } catch (error) {
       clientError(error);
       let emessage = userError(error.response.data.message);
