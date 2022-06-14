@@ -2111,8 +2111,8 @@ const showCurrentTags = async () => {
 };
 
 // Add license //
-$("#button-add-license").click(() => {
-  setTimeout(function () {
+$("#button-add-license").click(async () => {
+  setTimeout(async function () {
     Swal.fire({
       title: "Adding license to dataset",
       html: "Please wait...",
@@ -2131,56 +2131,53 @@ $("#button-add-license").click(() => {
     let selectedBfDataset = defaultBfDataset;
     let selectedLicense = "Creative Commons Attribution";
 
-    client.invoke(
-      "api_bf_add_license",
-      selectedBfAccount,
-      selectedBfDataset,
-      selectedLicense,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-
-          let emessage = userError(error);
-
-          Swal.fire({
-            title: "Failed to add the license to your dataset!",
-            text: emessage,
-            icon: "error",
-            showConfirmButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
-            defaultBfDatasetId
-          );
-        } else {
-          Swal.fire({
-            title: "Successfully added license to dataset!",
-            icon: "success",
-            showConfirmButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-
-          showCurrentLicense();
-
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
-            defaultBfDatasetId
-          );
-
-          // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
-          showPrePublishingStatus();
+    try {
+      let bf_add_license = await client.put(
+        `/manage_datasets/bf_license?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}`,
+        {
+          input_license: selectedLicense,
         }
-      }
-    );
+      );
+
+      Swal.fire({
+        title: "Successfully added license to dataset!",
+        icon: "success",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+
+      showCurrentLicense();
+
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
+        defaultBfDatasetId
+      );
+
+      // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
+      showPrePublishingStatus();
+    } catch (error) {
+      clientError(error);
+      let emessage = userError(error.response.data.message);
+
+      Swal.fire({
+        title: "Failed to add the license to your dataset!",
+        text: emessage,
+        icon: "error",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
+        defaultBfDatasetId
+      );
+    }
   }, delayAnimation);
 });
 
