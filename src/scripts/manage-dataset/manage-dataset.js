@@ -1134,6 +1134,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
 
   // update the readme file
   try {
+    // TODO: Replace with FLASK call
     await updateDatasetReadme(selectedBfDataset, completeReadme);
   } catch (error) {
     log.error(error);
@@ -1991,6 +1992,7 @@ $("#button-add-tags").click(async () => {
 
   // Add tags to dataset
   try {
+    // TODO: Replace with FLASK api call
     await update_dataset_tags(selectedBfDataset, tags);
   } catch (e) {
     // log the error

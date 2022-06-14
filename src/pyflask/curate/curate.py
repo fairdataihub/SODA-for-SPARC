@@ -6,47 +6,26 @@ from gevent import monkey
 monkey.patch_all()
 import platform
 import os
-from os import listdir, stat, makedirs, mkdir, walk, remove, pardir, rename
+from os import listdir, makedirs, mkdir, walk, rename
 from os.path import (
     isdir,
     isfile,
     join,
     splitext,
-    getmtime,
     basename,
-    normpath,
     exists,
     expanduser,
-    split,
     dirname,
     getsize,
     abspath,
 )
 import pandas as pd
 import time
-from time import strftime, localtime
 import shutil
-from shutil import copy2
-from configparser import ConfigParser
-import numpy as np
-from collections import defaultdict
 import subprocess
-from websocket import create_connection
-import socket
-import errno
-import re
 import gevent
 from pennsieve import Pennsieve
-from pennsieve.log import get_logger
-from pennsieve.api.agent import agent_cmd
-from pennsieve.api.agent import AgentError, check_port, socket_address
-from urllib.request import urlopen
-import json
-import collections
-from threading import Thread
 import pathlib
-import io
-from contextlib import redirect_stdout
 from flask import abort
 
 from datetime import datetime, timezone
@@ -547,189 +526,6 @@ def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
     return dst
 
 
-### Prepare dataset
-# def save_file_organization(jsonpath, jsondescription, jsonpathmetadata, pathsavefileorganization):
-#     """
-#     Associated with 'Save' button in the SODA interface
-#     Saves the paths and associated descriptions from the interface table to a CSV file for future use
-#     Each json key (SPARC foler name) becomes a header in the CSV
-
-#     Args:
-#         jsonpath: paths of all files (dictionary)
-#         jsondescription: description associated with each file (dictionary)
-#         pathsavefileorganization: destination path for CSV file to be saved (string)
-#     Action:
-#         Creates CSV file with path and description for files in SPARC folders
-#     """
-#     try:
-#         mydict = jsonpath
-#         mydict2 = jsondescription
-#         mydict3 = jsonpathmetadata
-#         mydict.update(mydict2)
-#         mydict.update(mydict3)
-#         dictkeys = list(mydict.keys())
-#         dictkeys.sort()
-#         df = pd.DataFrame(columns=[dictkeys[0]])
-#         df[dictkeys[0]] = mydict[dictkeys[0]]
-#         for i in range(1,len(dictkeys)):
-#             dfnew = pd.DataFrame(columns=[dictkeys[i]])
-#             dfnew[dictkeys[i]] = mydict[dictkeys[i]]
-#             df = pd.concat([df, dfnew], axis=1)
-#         df = df.replace(np.nan, '', regex=True)
-#         csvsavepath = join(pathsavefileorganization)
-#         df.to_csv(csvsavepath, index = None, header=True)
-#         return 'Saved!'
-#     except Exception as e:
-#         raise e
-
-
-# def import_file_organization(pathuploadfileorganization, headernames):
-#     """
-#     Associated with 'Import' button in the SODA interface
-#     Import previously saved progress (CSV file) for viewing in the SODA interface
-
-#     Args:
-#         pathuploadfileorganization: path of previously saved CSV file (string)
-#         headernames: names of SPARC folder (list of strings)
-#     Returns:
-#         mydict: dictionary with headers of CSV file as keys and cell contents as list of strings for each key
-#     """
-#     try:
-#         csvsavepath = join(pathuploadfileorganization)
-#         df = pd.read_csv(csvsavepath)
-#         dfnan = df.isnull()
-#         mydict = {}
-#         mydictmetadata ={}
-#         dictkeys = df.columns
-#         compare = lambda x, y: collections.Counter(x) == collections.Counter(y)
-#         if not compare(dictkeys, headernames):
-#             raise Exception("Error: Please select a valid file")
-#         rowcount = len(df.index)
-#         for i in range(len(dictkeys)):
-#             pathvect = []
-#             for j in range(rowcount):
-#                 pathval = df.at[j, dictkeys[i]]
-#                 if not dfnan.at[j, dictkeys[i]]:
-#                     pathvect.append(pathval)
-#                 else:
-#                     pathvect.append("")
-#             if dictkeys[i] == 'metadata':
-#                 mydictmetadata[dictkeys[i]] = pathvect
-#             else:
-#                 mydict[dictkeys[i]] = pathvect
-#         return [mydict, mydictmetadata]
-#     except Exception as e:
-#         raise e
-
-
-# def create_preview_files(paths, folder_path):
-#     """
-#     Creates folders and empty files from original 'paths' to the destination 'folder_path'
-
-#     Args:
-#         paths: paths of all the files that need to be copied (list of strings)
-#         folder_path: Destination to which the files / folders need to be copied (string)
-#     Action:
-#         Creates folders and empty files at the given 'folder_path'
-#     """
-#     try:
-#         for p in paths:
-#             gevent.sleep(0)
-#             if isfile(p):
-#                 file = basename(p)
-#                 open(join(folder_path, file), 'a').close()
-#             else:
-#                 all_files = listdir(p)
-#                 all_files_path = []
-#                 for f in all_files:
-#                     all_files_path.append(join(p, f))
-
-#                 pname = basename(p)
-#                 new_folder_path = join(folder_path, pname)
-#                 makedirs(new_folder_path)
-#                 create_preview_files(all_files_path, new_folder_path)
-#         return
-#     except Exception as e:
-#         raise e
-
-
-# def preview_file_organization(jsonpath):
-#     """
-#     Associated with 'Preview' button in the SODA interface
-#     Creates a folder for preview and adds mock files from SODA table (same name as origin but 0 kb in size)
-#     Opens the dialog box to showcase the files / folders added
-
-#     Args:
-#         jsonpath: dictionary containing all paths (keys are SPARC folder names)
-#     Action:
-#         Opens the dialog box at preview_path
-#     Returns:
-#         preview_path: path of the folder where the preview files are located
-#     """
-#     mydict = jsonpath
-#     preview_path = join(userpath, "SODA", "Preview")
-#     try:
-#         if isdir(preview_path):
-#             delete_preview_file_organization()
-#             makedirs(preview_path)
-#         else:
-#             makedirs(preview_path)
-#     except Exception as e:
-#         raise e
-
-#     try:
-
-#         folderrequired = []
-#         for i in mydict.keys():
-#             if mydict[i] != []:
-#                 folderrequired.append(i)
-#                 if i != 'main':
-#                     makedirs(join(preview_path, i))
-
-#         def preview_func(folderrequired, preview_path):
-#             for i in folderrequired:
-#                 paths = mydict[i]
-#                 if (i == 'main'):
-#                     create_preview_files(paths, join(preview_path))
-#                 else:
-#                     create_preview_files(paths, join(preview_path, i))
-#         output = []
-#         output.append(gevent.spawn(preview_func, folderrequired, preview_path))
-#         gevent.sleep(0)
-#         gevent.joinall(output)
-
-#         if len(listdir(preview_path)) > 0:
-#             folder_in_preview = listdir(preview_path)[0]
-
-#             open_file(join(preview_path, folder_in_preview))
-
-#         else:
-#             open_file(preview_path)
-
-#         return preview_path
-
-#     except Exception as e:
-#         raise e
-
-
-# def delete_preview_file_organization():
-#     """
-#     Associated with 'Delete Preview Folder' button of the SODA interface
-
-#     Action:
-#         Deletes the 'Preview' folder from the disk
-#     """
-#     try:
-#         userpath = expanduser("~")
-#         preview_path = join(userpath, "SODA", "Preview")
-#         if isdir(preview_path):
-#             shutil.rmtree(preview_path, ignore_errors=True)
-#         else:
-#             raise Exception("Error: Preview folder not present or already deleted!")
-#     except Exception as e:
-#         raise e
-
-
 def create_dataset(jsonpath, pathdataset):
     """
     Associated with 'Create new dataset locally' option of SODA interface
@@ -1205,103 +1001,15 @@ def create_high_level_manifest_files(soda_json_structure):
         raise e
 
 
-# def add_local_manifest_files(manifest_files_structure, datasetpath):
-#     try:
-#         for key in manifest_files_structure.keys():
-#             manifestpath = manifest_files_structure[key]
-#             destination_folder = join(datasetpath, key)
-#             if isdir(destination_folder):
-#                 dst = join(destination_folder, "manifest.xlsx")
-#                 mycopyfile_with_metadata(manifestpath, dst)
 
-#         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
-
-#     except Exception as e:
-#         raise e
-
-# def bf_add_manifest_files(manifest_files_structure, ds):
-#     try:
-#         for key in manifest_files_structure.keys():
-#             manifestpath = manifest_files_structure[key]
-#             for item in ds:
-#                 if item.name == key and item.type == "Collection":
-#                     destination_folder_id = item.id
-#                     #delete existing manifest files
-#                     for subitem in item:
-#                         if subitem.name == "manifest":
-#                             subitem.delete()
-#                     #upload new manifest files
-#                     bf_upload_file(item, manifestpath)
-#                     break
-#         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
-
-#     except Exception as e:
-#         raise e
-
-# def bf_upload_file(item, path):
-#     item.upload(path)
-
-
-# def get_generate_dataset_size(soda_json_structure):
-#     """
-#     Function to get the size of the data to be generated (not existing at the local or Pennsieve destination)
-
-#     Args:
-#         soda_json_structure: soda dict with information about all specified files and folders
-#         manifest_files_structure: soda dict with information about the manifest files (if requested)
-#     Output:
-#         generate_dataset_size: total size of data to be generated (in bytes)
-#     """
-
-#     def recursive_dataset_size(my_folder):
-#         total_size = 0
-
-#         if "folders" in my_folder.keys():
-#             for folder_key, folder in my_folder["folders"].items():
-#                 total_size += recursive_dataset_size(folder)
-#         if "files" in my_folder.keys():
-#             for file_key, file in my_folder["files"].items():
-#                 file_type = file["type"]
-#                 if file_type == "local":
-#                     if "new" in file["action"]:
-#                         file_path = file["path"]
-#                         if isfile(file_path):
-#                             total_size += getsize(file_path)
-#         return total_size
-
-#     try:
-#         dataset_structure = soda_json_structure["dataset-structure"]
-
-#         generate_dataset_size = 0
-#         for folder_key, folder in dataset_structure["folders"].items():
-#             generate_dataset_size += recursive_dataset_size(folder)
-
-#         if manifest_files_structure:
-#             for key in manifest_files_structure.keys():
-#                 manifest_path = manifest_files_structure[key]
-#                 generate_dataset_size += getsize(manifest_path)
-
-#         if "metadata-files" in soda_json_structure.keys():
-#             metadata_files = soda_json_structure["metadata-files"]
-#             for file_key, file in metadata_files.items():
-#                 if file["type"] == "local":
-#                     if "new" in file["action"]:
-#                         metadata_path = file["path"]
-#                         generate_dataset_size += getsize(metadata_path)
-
-#         return generate_dataset_size
-
-#     except Exception as e:
-#         raise e
-
-# This function is called to check size of files
-# that will be created locally on a user's device
 def check_JSON_size(jsonStructure):
+    """
+        This function is called to check size of files that will be created locally on a user's device.
+    """
     global total_dataset_size
     total_dataset_size = 0
 
     try:
-
         def recursive_dataset_scan(folder):
             global total_dataset_size
 
@@ -1343,7 +1051,7 @@ def check_JSON_size(jsonStructure):
 
         # total_dataset_size = total_dataset_size/(1024**2)
         # returns in bytes
-        return total_dataset_size
+        return {"dataset_size": total_dataset_size}
     except Exception as e:
         raise e
 
@@ -3441,7 +3149,7 @@ def generate_manifest_file_locally(generate_purpose, soda_json_structure):
     copytree(manifest_folder_path, manifest_destination)
 
     if generate_purpose == "edit-manifest":
-        return manifest_destination
+        return {"success_message_or_manifest_destination": manifest_destination}
 
     open_file(manifest_destination)
-    return "success"
+    return {"success_message_or_manifest_destination": "success"}

@@ -1,5 +1,4 @@
 from flask_restx import Resource, fields, reqparse
-from flask_restx.inputs import boolean
 from namespaces import NamespaceEnum, get_namespace
 
 from curate import (
@@ -126,10 +125,6 @@ class CurationFileDetails(Resource):
 
 
 
-model_generate_manifest_files_response = api.model( "GenerateManifestFilesResponse", {
-    "soda_json_object": fields.String(description="JSON structure of the SODA dataset"),
-})
-
 @api.route("/manifest_files/local")
 class GenerateManifestFiles(Resource):
     parser = reqparse.RequestParser()
@@ -137,7 +132,6 @@ class GenerateManifestFiles(Resource):
     
 
     @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request'}, description="Generate manifest files in a local temporary directory or in the user's dataset directory. Allows users to edit their manifest files in the standalone manifest file generator feature.")
-    @api.marshal_with(model_generate_manifest_files_response)
     @api.expect(parser)
     def post(self):   # sourcery skip: use-named-expression
 
@@ -179,5 +173,34 @@ class GenerateManifestLocally(Resource):
 
         try:
             return generate_manifest_file_locally(generate_purpose, soda_json_object)
+        except Exception as e:
+            api.abort(500, str(e))
+
+
+
+
+
+
+
+model_dataset_size_response = api.model( "DatasetSizeResponse", {
+    "dataset_size": fields.Integer(description="Size of the dataset"),
+})
+
+@api.route('/dataset_size')
+class DatasetSize(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('soda_json_object', type=dict, required=True, help='SODA dataset structure', location='json')
+
+    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request'}, description="Estimate the size of a dataset that will be generated on a user's device.")
+    @api.marshal_with(model_dataset_size_response, False, 200)
+    @api.expect(parser)
+    def get(self):
+        # get the soda_json_object from the request object
+        data = self.parser.parse_args()
+
+        soda_json_object = data.get("soda_json_object")
+
+        try:
+            return check_JSON_size(soda_json_object)
         except Exception as e:
             api.abort(500, str(e))
