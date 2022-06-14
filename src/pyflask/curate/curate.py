@@ -1294,14 +1294,15 @@ def create_high_level_manifest_files(soda_json_structure):
 #     except Exception as e:
 #         raise e
 
-# This function is called to check size of files
-# that will be created locally on a user's device
+
 def check_JSON_size(jsonStructure):
+    """
+        This function is called to check size of files that will be created locally on a user's device.
+    """
     global total_dataset_size
     total_dataset_size = 0
 
     try:
-
         def recursive_dataset_scan(folder):
             global total_dataset_size
 
@@ -1343,7 +1344,7 @@ def check_JSON_size(jsonStructure):
 
         # total_dataset_size = total_dataset_size/(1024**2)
         # returns in bytes
-        return total_dataset_size
+        return {"dataset_size": total_dataset_size}
     except Exception as e:
         raise e
 
@@ -3441,7 +3442,7 @@ def generate_manifest_file_locally(generate_purpose, soda_json_structure):
     copytree(manifest_folder_path, manifest_destination)
 
     if generate_purpose == "edit-manifest":
-        return manifest_destination
+        return {"success_message_or_manifest_destination": manifest_destination}
 
     open_file(manifest_destination)
-    return "success"
+    return {"success_message_or_manifest_destination": "success"}
