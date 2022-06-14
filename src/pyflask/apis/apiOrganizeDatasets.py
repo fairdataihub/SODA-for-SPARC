@@ -48,7 +48,7 @@ class BfGetDatasetFilesFolders(Resource):
 
 generate_dataset_locally
 @api.route('/datasets')
-class GeberateDatasetLocally(Resource):
+class GenerateDatasetLocally(Resource):
 
     parser_change_dataset_status = reqparse.RequestParser(bundle_errors=True)
     parser_change_dataset_status.add_argument('generation_type', type=str, required=True, help='The final destination to generate the dataset in. Valid option is create new.', location="json")
@@ -70,5 +70,5 @@ class GeberateDatasetLocally(Resource):
             return generate_dataset_locally(generation_type, generation_destination_path, dataset_name, soda_json_directory_structure)
         except Exception as e:
             if notBadRequestException(e):
-                api.abort(500, e.args[0])
+                api.abort(500, str(e))
             raise e
