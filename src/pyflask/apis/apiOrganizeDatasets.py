@@ -58,7 +58,6 @@ class GeberateDatasetLocally(Resource):
 
     @api.expect(parser_change_dataset_status)
     @api.doc(responses={200: "Success", 400: "Bad Request", 500: "Internal Server Error"}, description="Generate a dataset at the given local directory using the sodajsonobject dataset directory structure.")
-    @api.marshal_with(model_get_dataset_files_folders_response)
     def post(self):
         data = self.parser_change_dataset_status.parse_args()
 
