@@ -68,3 +68,28 @@ class Curation(Resource):
             if notBadRequestException(e):
                 api.abort(500, str(e))
             raise e
+
+
+
+
+
+
+model_curation_progress_response = api.model( "CurationProgressResponse", {
+    "main_curate_status": fields.String(description="Status of the main curation function"),
+    "start_generate": fields.Boolean(description="True if the main curation function is running"),
+    "main_curate_progress_message": fields.String(description="Progress message from the main curation function"),
+    "main_total_generate_dataset_size": fields.Integer(description="Total size of the dataset"),
+    "main_generated_dataset_size": fields.Integer(description="Size of the dataset that has been generated thus far"),
+    "elapsed_time_formatted": fields.String(description="Elapsed time of the main curation function"),
+})
+
+@api.route("curation/progress")
+class CurationProgress(Resource):
+
+    @api.marshal_with(model_curation_progress_response, False, 200)
+    @api.doc(responses={500: 'There was an internal server error'}, description="Return important details to the client about the state of the currently running curation function.")
+    def get(self):
+        try:
+            return main_curate_function_progress()
+        except Exception as e:
+            api.abort(500, str(e))

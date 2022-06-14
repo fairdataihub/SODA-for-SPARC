@@ -3279,20 +3279,19 @@ def main_curate_function_progress():
     elapsed_time = time.time() - generate_start_time
     elapsed_time_formatted = time_format(elapsed_time)
 
-    if start_generate == 1:
-        if main_generate_destination == "bf":
-            main_generated_dataset_size = (
-                bf_dataset_size() - main_initial_bfdataset_size
-            )
+    if start_generate == 1 and main_generate_destination == "bf":
+        main_generated_dataset_size = (
+            bf_dataset_size() - main_initial_bfdataset_size
+        )
 
-    return (
-        main_curate_status,
-        start_generate,
-        main_curate_progress_message,
-        main_total_generate_dataset_size,
-        main_generated_dataset_size,
-        elapsed_time_formatted,
-    )
+    return {
+        "main_curate_status": main_curate_status,
+        "start_generate": start_generate,
+        "main_curate_progress_message": main_curate_progress_message,
+        "main_total_generate_dataset_size": main_total_generate_dataset_size,
+        "main_generated_dataset_size": main_generated_dataset_size,
+        "elapsed_time_formatted": elapsed_time_formatted,
+    }
 
 
 def main_curate_function_upload_details():
