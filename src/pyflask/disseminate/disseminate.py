@@ -117,7 +117,7 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
     except Exception as e:
         abort(400, "Error: Please select a valid Pennsieve dataset")
 
-    
+
     role = bf_get_current_user_permission(bf, myds)
     if role not in ["owner", "manager"]:
         abort(403, "Error: You don't have permissions to view/edit DOI for this Pennsieve dataset")
@@ -133,16 +133,19 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
     try:
         selected_dataset_id = myds.id
         contributors_list = bf._api._get(
-            "/datasets/" + str(selected_dataset_id) + "/contributors"
+            f"/datasets/{str(selected_dataset_id)}/contributors"
         )
-        creators_list = []
-        for item in contributors_list:
-            creators_list.append(item["firstName"] + " " + item["lastName"])
+
+        creators_list = [
+            item["firstName"] + " " + item["lastName"]
+            for item in contributors_list
+        ]
+
         jsonfile = {
             "title": selected_bfdataset,
             "creators": creators_list,
         }
-        bf._api.datasets._post("/" + str(selected_dataset_id) + "/doi", json=jsonfile)
+        bf._api.datasets._post(f"/{str(selected_dataset_id)}/doi", json=jsonfile)
         return {"message": "Done!"}
     except Exception as e:
         raise e
@@ -222,13 +225,13 @@ def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset):
 
     try:
         selected_dataset_id = myds.id
-        request_publish = bf._api._post(
+        return bf._api._post(
             "/datasets/"
             + str(selected_dataset_id)
             + "/publication/request?publicationType="
             + "publication"
         )
-        return request_publish
+
     except Exception as e:
         raise e
 
@@ -257,13 +260,13 @@ def bf_withdraw_review_dataset(selected_bfaccount, selected_bfdataset):
 
     try:
         selected_dataset_id = myds.id
-        withdraw_review = bf._api._post(
+        return bf._api._post(
             "/datasets/"
             + str(selected_dataset_id)
             + "/publication/cancel?publicationType="
             + "publication"
         )
-        return withdraw_review
+
     except Exception as e:
         raise e
 
@@ -306,8 +309,9 @@ def bf_publish_dataset(selected_bfaccount, selected_bfdataset):
     try:
         selected_dataset_id = myds.id
         request_publish = bf._api._post(
-            "/datasets/" + str(selected_dataset_id) + "/publish"
+            f"/datasets/{str(selected_dataset_id)}/publish"
         )
+
         return request_publish["status"]
     except Exception as e:
         raise e
