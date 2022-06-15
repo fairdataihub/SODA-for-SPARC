@@ -7918,7 +7918,7 @@ const recursive_remove_deleted_files = (dataset_folder) => {
   }
 };
 
-ipcRenderer.on("selected-manifest-folder", (event, result) => {
+ipcRenderer.on("selected-manifest-folder", async (event, result) => {
   if (!result["canceled"]) {
     $("body").addClass("waiting");
     let manifest_destination = result["filePaths"][0];
@@ -7946,37 +7946,37 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
       }
     }
 
-    client.invoke(
-      "api_generate_manifest_file_locally",
-      "",
-      temp_sodaJSONObj,
-      (error, res) => {
-        if (error) {
-          var emessage = userError(error);
-          log.error(error);
-          console.error(error);
-          $("body").removeClass("waiting");
-
-          // log the error to analytics
-          logCurationForAnalytics(
-            "Error",
-            PrepareDatasetsAnalyticsPrefix.CURATE,
-            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-            ["Step 5", "Generate", "Manifest"],
-            determineDatasetLocation()
-          );
-        } else {
-          $("body").removeClass("waiting");
-          logCurationForAnalytics(
-            "Success",
-            PrepareDatasetsAnalyticsPrefix.CURATE,
-            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-            ["Step 5", "Generate", "Manifest"],
-            determineDatasetLocation()
-          );
+    try {
+      let generate_manifest_locally = await client.post(
+        `/curate_datasets/manifest_files`,
+        {
+          generate_purpose: "",
+          soda_json_object: temp_sodaJSONObj
         }
-      }
-    );
+      );
+      let res = generate_manifest_locally.data;
+
+      $("body").removeClass("waiting");
+      logCurationForAnalytics(
+        "Success",
+        PrepareDatasetsAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        ["Step 5", "Generate", "Manifest"],
+        determineDatasetLocation()
+      );
+    } catch(error) {
+      clientError(error);
+      $("body").removeClass("waiting");
+
+      // log the error to analytics
+      logCurationForAnalytics(
+        "Error",
+        PrepareDatasetsAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        ["Step 5", "Generate", "Manifest"],
+        determineDatasetLocation()
+      );
+    }
   }
 });
 
