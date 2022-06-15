@@ -2525,37 +2525,43 @@ async function switchMetadataManifestQuestion() {
     });
     if (continueProgressManifest) {
       // deleting manifest file folders in user/SODA path that were generated half-way before users switch.
-      client.invoke(
-        "api_delete_manifest_dummy_folders",
-        [userpath1, userpath2],
-        (error, res) => {
-          if (error) {
-            return true;
-          } else {
-            sodaJSONObj = {
-              "starting-point": { type: "" },
-              "dataset-structure": {},
-              "metadata-files": {},
-            };
-            datasetStructureJSONObj = {
-              folders: {},
-              files: {},
-              type: "",
-            };
-            $("#bf_dataset_create_manifest").text("None");
-            defaultBfDataset = "Select dataset";
-            $("#input-manifest-local-folder-dataset").val("");
-            $("#input-manifest-local-folder-dataset").attr(
-              "placeholder",
-              "Browse here"
-            );
-            $("#div-confirm-manifest-local-folder-dataset").css(
-              "display",
-              "none"
-            );
+      try{
+        let delete_dummy_folders = await client.delete(
+          `prepare_metadata/manifest_dummy_folders`,
+          {
+            paths: [userpath1, userpath2]
           }
-        }
-      );
+        );
+
+        let res = delete_dummy_folders.data;
+        console.log(res);
+
+        sodaJSONObj = {
+          "starting-point": { type: "" },
+          "dataset-structure": {},
+          "metadata-files": {},
+        };
+        datasetStructureJSONObj = {
+          folders: {},
+          files: {},
+          type: "",
+        };
+        $("#bf_dataset_create_manifest").text("None");
+        defaultBfDataset = "Select dataset";
+        $("#input-manifest-local-folder-dataset").val("");
+        $("#input-manifest-local-folder-dataset").attr(
+          "placeholder",
+          "Browse here"
+        );
+        $("#div-confirm-manifest-local-folder-dataset").css(
+          "display",
+          "none"
+        );
+      }catch(error) {
+        clientError(error);
+        return true;
+      }
+      
       return continueProgressManifest;
     }
   } else {
