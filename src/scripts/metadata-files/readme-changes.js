@@ -60,7 +60,65 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
     },
   }).then((result) => {});
   var textValue = $(`#textarea-create-${fileType}`).val().trim();
+  let bfDataset = document.getElementById(`bf_dataset_load_${fileType}`).innerText.trim();
   if (uploadBFBoolean) {
+    console.log(fileType);
+    try {
+      let upload_rc_file = await client.post(
+        `/prepare_metadata/readme_changes_file?file_type=${upperCaseLetters}&selected_account=${defaultBfAccount}&selected_dataset=${bfDataset}`,
+        {
+          text: textValue
+        }
+      )
+      let res = upload_rc_file.data;
+      console.log(res);
+
+      Swal.fire({
+        title: `Successfully generated the ${upperCaseLetters} file on your Pennsieve dataset.`,
+        icon: "success",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+
+      logMetadataForAnalytics(
+        "Success",
+        upperCaseLetters === "CHANGES.txt"
+          ? MetadataAnalyticsPrefix.CHANGES
+          : MetadataAnalyticsPrefix.README,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Generate",
+        Destinations.PENNSIEVE
+      );
+
+      const size = res[0];
+
+      logMetadataSizeForAnalytics(
+        true,
+        upperCaseLetters === "CHANGES.txt" ? "CHANGES.txt" : "README.txt",
+        size
+      );
+    } catch(error) {
+      clientError(error);
+      let emessage = error.response.data.message;
+      
+      Swal.fire({
+        title: `Failed to generate the ${upperCaseLetters} file`,
+        html: emessage,
+        icon: "warning",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+
+      logMetadataForAnalytics(
+        "Error",
+        upperCaseLetters === "CHANGES.txt"
+          ? MetadataAnalyticsPrefix.CHANGES
+          : MetadataAnalyticsPrefix.README,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Generate",
+        Destinations.PENNSIEVE
+      );
+    }
     client.invoke(
       "api_upload_RC_file",
       textValue,

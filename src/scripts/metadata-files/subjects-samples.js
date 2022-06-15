@@ -2451,10 +2451,15 @@ async function checkBFImportSamples() {
     .find(".samples-form-entry")) {
     fieldEntries.push(field.name.toLowerCase());
   }
+  console.log(fieldEntries);
+  console.log(typeof fieldEntries);
   let bfDataset = document.getElementById("bf_dataset_load_samples").innerText;
   try {
     let import_metadata = await client.get(
-      `/prepare_metadata/import_metadata_file?file_type=samples.xlsx&selected_account=${defaultBfAccount}&selected_dataset=${bfDataset}`
+      `/prepare_metadata/import_metadata_file?file_type=samples.xlsx&selected_account=${defaultBfAccount}&selected_dataset=${bfDataset}`,
+      {
+        ui_fields: fieldEntries
+      }
     );
     let res = import_metadata.data;
     console.log("above is samples.xlsx");

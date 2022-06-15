@@ -1,3 +1,5 @@
+const { ipcRenderer } = require("electron");
+
 var forbidden_characters_bf = '/:*?"<>';
 
 const check_forbidden_characters_bf = (my_string) => {
@@ -403,60 +405,57 @@ $("#button-add-permission-pi").click(() => {
       let selectedRole = "owner";
 
       //needs to be replaced
-      client.invoke(
-        "api_bf_add_permission",
-        selectedBfAccount,
-        selectedBfDataset,
-        selectedUser,
-        selectedRole,
-        (error, res) => {
-          if (error) {
-            ipcRenderer.send(
-              "track-event",
-              "Error",
-              ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_MAKE_PI_OWNER,
-              defaultBfDatasetId
-            );
-
-            log.error(error);
-            console.error(error);
-            let emessage = userError(error);
-
-            Swal.fire({
-              title: "Failed to change PI permission!",
-              text: emessage,
-              icon: "error",
-              showConfirmButton: true,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
-          } else {
-            log.info("Changed PI Owner of datset");
-
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_MAKE_PI_OWNER,
-              defaultBfDatasetId
-            );
-
-            let nodeStorage = new JSONStorage(app.getPath("userData"));
-            nodeStorage.setItem("previously_selected_PI", selectedUser);
-
-            showCurrentPermission();
-            changeDatasetRolePI(selectedBfDataset);
-
-            Swal.fire({
-              title: "Successfully changed PI Owner of dataset",
-              text: res,
-              icon: "success",
-              showConfirmButton: true,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
+      try {
+        let bf_change_owner = await client.patch(
+          `/manage_datasets/bf_dataset_permissions?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}&scope=user&name=${selectedUser}`,
+          {
+            input_role: selectedRole
           }
-        }
-      );
+        );
+
+        let res = bf_change_owner.data;
+        log.info("Change PI Owner of dataset");
+        
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_MAKE_PI_OWNER,
+          defaultBfDatasetId
+        );
+
+        let nodeStorage = new JSONStorage(app.getPath("userData"));
+        nodeStorage.setItem("previously_selected_PI", selectedUser);
+
+        showCurrentPermission();
+        changeDatasetRolePI(selectedBfDataset);
+
+        Swal.fire({
+          title: "Successfully changed PI Owner of dataset",
+          text: res,
+          icon: "success",
+          showConfirmButton: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+      } catch(error) {
+        clientError(error);
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_MAKE_PI_OWNER,
+          defaultBfDatasetId
+        );
+
+        let emessage = error.response.data.message;
+        Swal.fire({
+          title: "Failed to change PI permission!",
+          text: emessage,
+          icon: "error",
+          showConfirmButton: true,
+          heightAuto: false,
+          backdrop: "rgba(0, 0, 0, 0.4)",
+        });
+      }
     }
   });
 });
