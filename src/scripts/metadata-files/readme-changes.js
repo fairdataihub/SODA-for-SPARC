@@ -60,16 +60,18 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
     },
   }).then((result) => {});
   var textValue = $(`#textarea-create-${fileType}`).val().trim();
-  let bfDataset = document.getElementById(`bf_dataset_load_${fileType}`).innerText.trim();
+  let bfDataset = document
+    .getElementById(`bf_dataset_load_${fileType}`)
+    .innerText.trim();
   if (uploadBFBoolean) {
     console.log(fileType);
     try {
       let upload_rc_file = await client.post(
         `/prepare_metadata/readme_changes_file?file_type=${upperCaseLetters}&selected_account=${defaultBfAccount}&selected_dataset=${bfDataset}`,
         {
-          text: textValue
+          text: textValue,
         }
-      )
+      );
       let res = upload_rc_file.data;
       console.log(res);
 
@@ -97,10 +99,10 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
         upperCaseLetters === "CHANGES.txt" ? "CHANGES.txt" : "README.txt",
         size
       );
-    } catch(error) {
+    } catch (error) {
       clientError(error);
       let emessage = error.response.data.message;
-      
+
       Swal.fire({
         title: `Failed to generate the ${upperCaseLetters} file`,
         html: emessage,
@@ -528,11 +530,13 @@ const getRC = async (type) => {
   let datasetName = $(`#bf_dataset_load_${shortName}`).text().trim();
   try {
     let import_rc_file = await client.get(
-      `/prepare_metadata/readme_changes_file?file_type=${path.parse(type).name}&selected_account=${defaultBfAccount}&selected_dataset=${datasetName}`
+      `/prepare_metadata/readme_changes_file?file_type=${
+        path.parse(type).name
+      }&selected_account=${defaultBfAccount}&selected_dataset=${datasetName}`
     );
     let res = import_rc_file.data.text;
     console.log(res);
-    
+
     logMetadataForAnalytics(
       "Success",
       shortName === "changes"
@@ -563,12 +567,10 @@ const getRC = async (type) => {
       });
     }
     $(
-      $(
-        `#button-fake-confirm-existing-bf-${shortName}-file-load`
-      ).siblings()[0]
+      $(`#button-fake-confirm-existing-bf-${shortName}-file-load`).siblings()[0]
     ).hide();
     $(`#button-fake-confirm-existing-bf-${shortName}-file-load`).click();
-  } catch(error) {
+  } catch (error) {
     clientError(error);
     let emessage = error.response.data.message;
 

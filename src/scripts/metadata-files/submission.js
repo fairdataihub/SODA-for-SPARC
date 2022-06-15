@@ -956,7 +956,7 @@ async function checkBFImportSubmission() {
     let import_metadata = await client.get(
       `/prepare_metadata/import_metadata_file?file_type=submission.xlsx&selected_account=${defaultBfAccount}&selected_dataset=${bfDataset}`,
       {
-        ui_fields: []
+        ui_fields: [],
       }
     );
     let res = import_metadata.data;

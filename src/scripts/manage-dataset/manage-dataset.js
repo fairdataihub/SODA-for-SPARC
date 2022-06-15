@@ -407,13 +407,13 @@ $("#button-add-permission-pi").click(async () => {
         let bf_change_owner = await client.patch(
           `/manage_datasets/bf_dataset_permissions?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}&scope=user&name=${selectedUser}`,
           {
-            input_role: selectedRole
+            input_role: selectedRole,
           }
         );
 
         let res = bf_change_owner.data;
         log.info("Change PI Owner of dataset");
-        
+
         ipcRenderer.send(
           "track-event",
           "Success",
@@ -435,7 +435,7 @@ $("#button-add-permission-pi").click(async () => {
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
-      } catch(error) {
+      } catch (error) {
         clientError(error);
         ipcRenderer.send(
           "track-event",
