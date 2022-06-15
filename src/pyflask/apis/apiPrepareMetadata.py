@@ -372,8 +372,6 @@ class SamplesFile(Resource):
         filepath = data.get('filepath')
         ui_fields = data.get('ui_fields')
 
-        print("Fields are: ", ui_fields)
-
         if file_type != 'samples.xlsx':
             api.abort(400, "Error: The type parameter must be samples.")
 
