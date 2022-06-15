@@ -2388,7 +2388,9 @@ async function checkBFImportSubjects() {
     .find(".subjects-form-entry")) {
     fieldEntries.push(field.name.toLowerCase());
   }
-  let bfDataset = document.getElementById("bf_dataset_load_subjects").innerText.trim();
+  let bfDataset = document
+    .getElementById("bf_dataset_load_subjects")
+    .innerText.trim();
   try {
     let import_metadata_file = await client.get(
       `/prepare_metadata/readme_changes_file?file_type=subjects.xlsx&selected_account=${defaultBfAccount}&selected_dataset=${bfDataset}`
@@ -2405,7 +2407,7 @@ async function checkBFImportSubjects() {
     );
     subjectsTableData = res;
     loadDataFrametoUI("bf");
-  }catch(error) {
+  } catch (error) {
     clientError(error);
     let emessage = userError(error.response.data.message);
     Swal.fire({

@@ -2615,20 +2615,14 @@ $("#button-submit-dataset").click(async () => {
           } else if (totalFileSize < displaySize * displaySize) {
             var totalSizePrint =
               (totalFileSize / displaySize).toFixed(2) + " KB";
-          } else if (
-            totalFileSize <
-            displaySize * displaySize * displaySize
-          ) {
+          } else if (totalFileSize < displaySize * displaySize * displaySize) {
             var totalSizePrint =
               (totalFileSize / displaySize / displaySize).toFixed(2) + " MB";
           } else {
             var totalSizePrint =
-              (
-                totalFileSize /
-                displaySize /
-                displaySize /
-                displaySize
-              ).toFixed(2) + " GB";
+              (totalFileSize / displaySize / displaySize / displaySize).toFixed(
+                2
+              ) + " GB";
           }
 
           $("#para-please-wait-manage-dataset").html("");
@@ -2644,13 +2638,14 @@ $("#button-submit-dataset").click(async () => {
           );
         }
       }
-    } catch(error) {
+    } catch (error) {
       clientError(error);
       ipcRenderer.send(
         "track-event",
         "Error",
-        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + ` - Progress Track`,
-        defaultBfDatasetId,
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+          ` - Progress Track`,
+        defaultBfDatasetId
       );
       organizeDatasetButton.disabled = false;
       organizeDatasetButton.className = "btn_animated generate-btn";
