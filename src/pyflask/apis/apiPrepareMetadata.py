@@ -505,10 +505,11 @@ class DeleteManifestDummyFolders(Resource):
     parser_delete_manifest_dummy_folders.add_argument('paths', type=list, help='Path to the local data deliverables document', location="json")
 
     @api.doc(description='Delete the dummy folders created by the manifest tool.', responses={500: "Internal Server Error", 400: "Bad Request"})
+    @api.expect(parser_delete_manifest_dummy_folders)
     def delete(self):
         data = self.parser_delete_manifest_dummy_folders.parse_args()
         
-        paths = data.get('path')
+        paths = data.get('paths')
 
         try:
             return delete_manifest_dummy_folders(paths)
