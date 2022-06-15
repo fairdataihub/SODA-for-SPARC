@@ -2411,7 +2411,6 @@ $("#button-submit-dataset").click(async () => {
 
   // clear the queue before uploading
   clearQueue();
-  console.log(pathSubmitDataset.placeholder);
   try {
     let bf_submit_dataset = await client.put(
       `/manage_datasets/datasets?selected_account=${selectedbfaccount}&selected_dataset=${selectedbfdataset}`,
@@ -2572,277 +2571,116 @@ $("#button-submit-dataset").click(async () => {
     $("#selected-local-dataset-submit").prop("disabled", false);
   }
 
-  client.invoke(
-    "api_bf_submit_dataset",
-    selectedbfaccount,
-    selectedbfdataset,
-    pathSubmitDataset.placeholder,
-    async (error, res) => {
-      if (error) {
-        let emessage = userError(error);
-
-        $("#para-please-wait-manage-dataset").html("");
-        $("#para-progress-bar-status").html("");
-        cloneStatus.innerHTML = "";
-        $("#div-progress-submit").css("display", "none");
-        //progressClone.remove();
-        /*$("#para-progress-bar-error-status").html(
-          "<span style='color: red;'>" + emessage + sadCan + "</span>"
-        );*/
-        document.getElementById("para-progress-bar-error-status").style =
-          "color: red";
-        document.getElementById("para-progress-bar-error-status").innerHTML =
-          emessage;
-        success_upload = false;
-        organizeDatasetButton.disabled = false;
-        organizeDatasetButton.className = "btn_animated generate-btn";
-        organizeDatasetButton.style =
-          "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
-        organzieDatasetButtonDiv.className = "btn_animated-inside";
-        Swal.fire({
-          icon: "error",
-          title: "There was an issue uploading your dataset",
-          html: emessage,
-          allowOutsideClick: false,
-        }).then((result) => {
-          progressClone.remove();
-          sparc_logo.style.display = "inline";
-          if (result.isConfirmed) {
-            returnPage.click();
-          }
-        });
-
-        //progressClone.remove();
-        progressBarUploadBf.value = 0;
-        cloneMeter.value = 0;
-
-        err = true;
-        log.error(error);
-        console.error(error);
-
-        // while sessions are used for tracking file count and file size for an upload
-        // we still want to know what dataset didn't upload by its pennsieve ID
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Manage Datasets - Upload Local Dataset",
-          defaultBfDatasetId
-        );
-
-        // get total size of the dataset that failed to upload
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-            " - size",
-          "Size",
-          totalFileSize
-        );
-        try {
-          let num_files_folders = await client.get(
-            `/manage_datasets/get_number_of_files_and_folders_locally?filepath=${pathSubmitDataset.placeholder}`
-          );
-          let res = [];
-          res = num_files_folders.data;
-
-          let num_of_files = res[0];
-          let num_of_folders = res[1];
-
-          // log amount of folders uploaded in the given session
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-              ` - Number of Folders`,
-            "Number of folders local dataset",
-            num_of_folders
-          );
-
-          // track total amount of files being uploaded
-          // makes it easy to see aggregate amount of files we failed to upload in Local Dataset
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-              ` - Number of Files`,
-            "Number of files local dataset",
-            num_of_files
-          );
-          console.log(res);
-        } catch (error) {
-          clientError(error);
-        }
-
-        $("#upload_local_dataset_progress_div")[0].scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-
-        $("#button-submit-dataset").prop("disabled", false);
-        $("#selected-local-dataset-submit").prop("disabled", false);
-      } else {
-        $("#upload_local_dataset_progress_div")[0].scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-
-        log.info("Completed submit function");
-        console.log("Completed submit function");
-
-        // can tell us how many successful upload sessions a dataset ID had (the value is implicitly set to 1 via Total Events query in Analytics) within a given timeframe
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET,
-          defaultBfDatasetId
-        );
-
-        try {
-          let num_files_folders = await client.get(
-            `/manage_datasets/get_number_of_files_and_folders_locally?filepath=${pathSubmitDataset.placeholder}`
-          );
-          let res = [];
-          res = num_files_folders.data;
-
-          let num_of_files = res[0];
-          let num_of_folders = res[1];
-
-          // log amount of folders uploaded in the given session
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-              ` - Number of Folders`,
-            `${datasetUploadSession.id}`,
-            num_of_folders
-          );
-          console.log(res);
-        } catch (error) {
-          clientError(error);
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-              ` - Number of Folders`,
-            `${datasetUploadSession.id}`
-          );
-        }
-      }
-    }
-  );
-
   var countDone = 0;
   var timerProgress = setInterval(progressfunction, 1000);
   let statusMessage = "Error";
 
-  function progressfunction() {
+  async function progressfunction() {
     $("#upload_local_dataset_progress_div")[0].scrollIntoView({
       behavior: "smooth",
       block: "start",
     });
 
-    client.invoke("api_submit_dataset_progress", (error, res) => {
-      if (error) {
-        let emessage = userError(error);
+    try {
+      let dataset_progress = await client.get(
+        `/manage_datasets/datasets/upload_progress`
+      );
+      let res = dataset_progress.data;
 
-        log.error(error);
-        console.error(error);
+      statusMessage = res[0];
 
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-            ` - Progress track`,
-          defaultBfDatasetId
-        );
-        organizeDatasetButton.disabled = false;
-        organizeDatasetButton.className = "btn_animated generate-btn";
-        organizeDatasetButton.style =
-          "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
-        organzieDatasetButtonDiv.className = "btn_animated-inside";
+      completionStatus = res[1];
+      let submitprintstatus = res[2];
+      totalFileSize = res[3];
+      let uploadedFileSize = res[4];
 
-        $("#para-progress-bar-error-status").html(
-          "<span style='color: red;'>" + emessage + sadCan + "</span>"
-        );
-        Swal.fire({
-          icon: "error",
-          title: "An Error Occurred While Uploading Your Dataset",
-          html: "Check the error text in the Upload Local Dataset's upload page to see what went wrong.",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
-        }).then((result) => {
-          progressClone.remove();
-          sparc_logo.style.display = "inline";
-          if (result.isConfirmed) {
-            returnPage.click();
-          }
-        });
-      } else {
-        statusMessage = res[0];
+      if (submitprintstatus === "Uploading") {
+        $("#div-progress-submit").css("display", "block");
 
-        completionStatus = res[1];
-        let submitprintstatus = res[2];
-        totalFileSize = res[3];
-        let uploadedFileSize = res[4];
+        if (res[0].includes("Success: COMPLETED!")) {
+          progressBarUploadBf.value = 100;
+          cloneMeter.value = 100;
 
-        if (submitprintstatus === "Uploading") {
-          $("#div-progress-submit").css("display", "block");
+          $("#para-please-wait-manage-dataset").html("");
+          $("#para-progress-bar-status").html(res[0] + smileyCan);
+          cloneStatus.innerHTML = res[0] + smileyCan;
+        } else {
+          var value = (uploadedFileSize / totalFileSize) * 100;
 
-          if (res[0].includes("Success: COMPLETED!")) {
-            progressBarUploadBf.value = 100;
-            cloneMeter.value = 100;
+          progressBarUploadBf.value = value;
+          cloneMeter.value = value;
 
-            $("#para-please-wait-manage-dataset").html("");
-            $("#para-progress-bar-status").html(res[0] + smileyCan);
-            cloneStatus.innerHTML = res[0] + smileyCan;
+          if (totalFileSize < displaySize) {
+            var totalSizePrint = totalFileSize.toFixed(2) + " B";
+          } else if (totalFileSize < displaySize * displaySize) {
+            var totalSizePrint =
+              (totalFileSize / displaySize).toFixed(2) + " KB";
+          } else if (
+            totalFileSize <
+            displaySize * displaySize * displaySize
+          ) {
+            var totalSizePrint =
+              (totalFileSize / displaySize / displaySize).toFixed(2) + " MB";
           } else {
-            var value = (uploadedFileSize / totalFileSize) * 100;
-
-            progressBarUploadBf.value = value;
-            cloneMeter.value = value;
-
-            if (totalFileSize < displaySize) {
-              var totalSizePrint = totalFileSize.toFixed(2) + " B";
-            } else if (totalFileSize < displaySize * displaySize) {
-              var totalSizePrint =
-                (totalFileSize / displaySize).toFixed(2) + " KB";
-            } else if (
-              totalFileSize <
-              displaySize * displaySize * displaySize
-            ) {
-              var totalSizePrint =
-                (totalFileSize / displaySize / displaySize).toFixed(2) + " MB";
-            } else {
-              var totalSizePrint =
-                (
-                  totalFileSize /
-                  displaySize /
-                  displaySize /
-                  displaySize
-                ).toFixed(2) + " GB";
-            }
-
-            $("#para-please-wait-manage-dataset").html("");
-            cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%";
-            $("#para-progress-bar-status").html(
-              res[0] +
-                "Progress: " +
-                value.toFixed(2) +
-                "%" +
-                " (total size: " +
-                totalSizePrint +
-                ")"
-            );
+            var totalSizePrint =
+              (
+                totalFileSize /
+                displaySize /
+                displaySize /
+                displaySize
+              ).toFixed(2) + " GB";
           }
+
+          $("#para-please-wait-manage-dataset").html("");
+          cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%";
+          $("#para-progress-bar-status").html(
+            res[0] +
+              "Progress: " +
+              value.toFixed(2) +
+              "%" +
+              " (total size: " +
+              totalSizePrint +
+              ")"
+          );
         }
       }
-    });
+    } catch(error) {
+      clientError(error);
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + ` - Progress Track`,
+        defaultBfDatasetId,
+      );
+      organizeDatasetButton.disabled = false;
+      organizeDatasetButton.className = "btn_animated generate-btn";
+      organizeDatasetButton.style =
+        "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
+      organzieDatasetButtonDiv.className = "btn_animated-inside";
+
+      $("#para-progress-bar-error-status").html(
+        "<span style='color: red;'>" + emessage + sadCan + "</span>"
+      );
+      Swal.fire({
+        icon: "error",
+        title: "An Error Occurred While Uploading Your Dataset",
+        html: "Check the error text in the Upload Local Dataset's upload page to see what went wrong.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      }).then((result) => {
+        progressClone.remove();
+        sparc_logo.style.display = "inline";
+        if (result.isConfirmed) {
+          returnPage.click();
+        }
+      });
+    }
 
     if (completionStatus === "Done") {
       countDone++;

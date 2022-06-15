@@ -2367,7 +2367,7 @@ function importExistingSamplesFile() {
   }
 }
 
-function checkBFImportSubjects() {
+async function checkBFImportSubjects() {
   Swal.fire({
     title: "Importing the subjects.xlsx file",
     html: "Please wait...",
