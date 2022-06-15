@@ -2318,7 +2318,7 @@ const logFilesForUpload = (upload_folder_path) => {
   });
 };
 
-// Submit dataset to bf //
+// Submit local dataset to bf //
 $("#button-submit-dataset").click(async () => {
   $("#para-please-wait-manage-dataset").html(
     "Please wait while we verify a few things..."
@@ -2412,6 +2412,165 @@ $("#button-submit-dataset").click(async () => {
   // clear the queue before uploading
   clearQueue();
   console.log(pathSubmitDataset.placeholder);
+  try {
+    let bf_submit_dataset = await client.put(
+      `/manage_datasets/datasets?selected_account=${selectedbfaccount}&selected_dataset=${selectedbfdataset}`,
+      {
+        filepath: pathSubmitDataset.placeholder
+      }
+    );
+    let res = bf_submit_dataset.data;
+    console.log(res);
+
+    $("#upload_local_dataset_progress_div")[0].scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+
+    log.info("Completed submit function");
+    console.log("Completed submit function");
+
+    // can tell us how many successful upload sessions a dataset ID had (the value is implicitly set to 1 via Total Events query in Analytics) within a given timeframe
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET,
+      defaultBfDatasetId
+    );
+
+    try {
+      let num_files_folders = await client.get(
+        `/manage_datasets/get_number_of_files_and_folders_locally?filepath=${pathSubmitDataset.placeholder}`
+      );
+      let res = [];
+      res = num_files_folders.data;
+
+      let num_of_files = res[0];
+      let num_of_folders = res[1];
+
+      // log amount of folders uploaded in the given session
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+          ` - Number of Folders`,
+        `${datasetUploadSession.id}`,
+        num_of_folders
+      );
+      console.log(res);
+    } catch (error) {
+      clientError(error);
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+          ` - Number of Folders`,
+        `${datasetUploadSession.id}`
+      );
+    }
+  } catch(error) {
+    clientError(error);
+    let emessage = userError(error.response.data.message);
+    $("#para-please-wait-manage-dataset").html("");
+    $("#para-progress-bar-status").html("");
+    cloneStatus.innerHTML = "";
+    $("#div-progress-submit").css("display", "none");
+    //progressClone.remove();
+    /*$("#para-progress-bar-error-status").html(
+      "<span style='color: red;'>" + emessage + sadCan + "</span>"
+    );*/
+    document.getElementById("para-progress-bar-error-status").style =
+      "color: red";
+    document.getElementById("para-progress-bar-error-status").innerHTML =
+      emessage;
+    success_upload = false;
+    organizeDatasetButton.disabled = false;
+    organizeDatasetButton.className = "btn_animated generate-btn";
+    organizeDatasetButton.style =
+      "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
+    organzieDatasetButtonDiv.className = "btn_animated-inside";
+    Swal.fire({
+      icon: "error",
+      title: "There was an issue uploading your dataset",
+      html: emessage,
+      allowOutsideClick: false,
+    }).then((result) => {
+      progressClone.remove();
+      sparc_logo.style.display = "inline";
+      if (result.isConfirmed) {
+        returnPage.click();
+      }
+    });
+
+    //progressClone.remove();
+    progressBarUploadBf.value = 0;
+    cloneMeter.value = 0;
+
+    err = true;
+    log.error(error);
+    console.error(error);
+
+    // while sessions are used for tracking file count and file size for an upload
+    // we still want to know what dataset didn't upload by its pennsieve ID
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Manage Datasets - Upload Local Dataset",
+      defaultBfDatasetId
+    );
+
+    // get total size of the dataset that failed to upload
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+        " - size",
+      "Size",
+      totalFileSize
+    );
+    try {
+      let num_files_folders = await client.get(
+        `/manage_datasets/get_number_of_files_and_folders_locally?filepath=${pathSubmitDataset.placeholder}`
+      );
+      let res = [];
+      res = num_files_folders.data;
+
+      let num_of_files = res[0];
+      let num_of_folders = res[1];
+
+      // log amount of folders uploaded in the given session
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+          ` - Number of Folders`,
+        "Number of folders local dataset",
+        num_of_folders
+      );
+
+      // track total amount of files being uploaded
+      // makes it easy to see aggregate amount of files we failed to upload in Local Dataset
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+          ` - Number of Files`,
+        "Number of files local dataset",
+        num_of_files
+      );
+      console.log(res);
+    } catch (error) {
+      clientError(error);
+    }
+
+    $("#upload_local_dataset_progress_div")[0].scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+
+    $("#button-submit-dataset").prop("disabled", false);
+    $("#selected-local-dataset-submit").prop("disabled", false);
+  }
 
   client.invoke(
     "api_bf_submit_dataset",
