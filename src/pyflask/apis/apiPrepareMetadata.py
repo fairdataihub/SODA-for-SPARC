@@ -17,7 +17,7 @@ from prepareMetadata import (
 from namespaces import NamespaceEnum, get_namespace
 from flask_restx import Resource, reqparse, fields
 from flask_restx.inputs import boolean
-from errorHandlers import notBadRequestException, InvalidDeliverablesDocument
+from errorHandlers import notBadRequestException
 from flask import request
 
 api = get_namespace(NamespaceEnum.PREPARE_METADATA)
@@ -312,6 +312,14 @@ model_save_samples_result = api.model('SaveSamplesResult', {
     'size': fields.Integer(description='The size of the sample file that was saved through SODA.'),
 })
 
+model_field_sub_sam_list = api.model('FieldSubSamList', {
+    'field': fields.List(fields.String, description='Subject or samples field values'),
+})
+
+model_get_samples_result = api.model('GetSamplesResult', {
+    'sample_file_rows': fields.List(fields.List(fields.String, description="A sample file field."), description='A row of sample file fields.'),
+})
+
 @api.route('/samples_file')
 class SamplesFile(Resource):
     
@@ -350,12 +358,13 @@ class SamplesFile(Resource):
     
     
     parser_create_data_frames = reqparse.RequestParser(bundle_errors=True)
-    parser_create_data_frames.add_argument('type', type=str, help="Subjects or Samples are the valid types.", location="args", required=False)
-    parser_create_data_frames.add_argument('filepath', type=str, help="Path to the subjects or samples file on the user's machine.", location="json", required=False)
-    parser_create_data_frames.add_argument('ui_fields', type=list, help='The fields to include in the final data frame.', location="json", required=False)
+    parser_create_data_frames.add_argument('type', type=str, help="samples.xlsx is the valid metadata type.", location="args", required=True)
+    parser_create_data_frames.add_argument('filepath', type=str, help="Path to the subjects or samples file on the user's machine.", location="json", required=True)
+    parser_create_data_frames.add_argument('ui_fields', type=list, help='The fields to include in the final data frame.', location="json", required=True)
 
     @api.expect(parser_create_data_frames)
     @api.doc(description='Get a local samples file data in the form of data frames.', responses={500: "Internal Server Error", 400: "Bad Request"})
+    @api.marshal_with(model_get_samples_result, 200, False)
     def get(self):
         data = self.parser_create_data_frames.parse_args()
 
@@ -365,7 +374,7 @@ class SamplesFile(Resource):
 
         print("Fields are: ", ui_fields)
 
-        if file_type not in ['samples', 'subjects']:
+        if file_type != 'samples.xlsx':
             api.abort(400, "Error: The type parameter must be samples.")
 
         try:
@@ -481,7 +490,7 @@ class ImportMilestone(Resource):
             if type(e).__name__  == 'InvalidDataDeliverablesDocument':
                 api.abort(400, str(e))
             if notBadRequestException(e):
-                api.abort(500, e.args[0])
+                api.abort(500, str(e))
             raise e
 
 

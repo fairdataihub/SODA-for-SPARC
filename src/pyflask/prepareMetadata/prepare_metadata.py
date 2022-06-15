@@ -716,7 +716,7 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
 
     sortMatrix = sortedSubjectsTableData(transpose, ui_fields)
 
-    return transposeMatrix(sortMatrix)
+    return {"sample_file_rows": transposeMatrix(sortMatrix)}
 
 
 def checkEmptyColumn(column):
