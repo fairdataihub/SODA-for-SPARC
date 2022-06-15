@@ -389,8 +389,8 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
   // set the templates path
   try {
     await client.put("prepare_metadata/set_template_paths", {
-        basepath: basepath,
-        resourcesPath: resourcesPath,
+      basepath: basepath,
+      resourcesPath: resourcesPath,
     });
   } catch (error) {
     console.log(error);
@@ -1414,7 +1414,9 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     },
   }).then((result) => {});
 
-  let bfdataset = document.getElementById("bf_dataset_load_subjects").innerText.trim();
+  let bfdataset = document
+    .getElementById("bf_dataset_load_subjects")
+    .innerText.trim();
   try {
     let save_locally = await client.post(
       `/prepare_metadata/subjects_file?upload_boolean=${uploadBFBoolean}`,
@@ -1449,7 +1451,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     // log the size of the metadata file that was generated at varying levels of granularity
     const size = res;
     logMetadataSizeForAnalytics(uploadBFBoolean, "subjects.xlsx", size);
-  } catch(error) {
+  } catch (error) {
     clientError(error);
     let emessage = error.response.data.message;
 
@@ -3875,8 +3877,7 @@ async function showPublishingStatus(callback) {
           // if the executor function is not ready before an exception is found it is uncaught without the try catch
           reject(error);
         }
-
-      } catch(error) {
+      } catch (error) {
         clientError(error);
         let emessage = userError(error.response.data.message);
 
@@ -4491,34 +4492,30 @@ ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
       document.getElementById("para-organize-datasets-loading").innerHTML =
         "<span>Please wait...</span>";
       try {
-        let local_dataset = await client.post(
-          `/organize_datasets/dataset`,
-          {
-            generation_type: "create-new",
-            generation_destination_path: filepath[0],
-            dataset_name: newDSName,
-            soda_json_directory_structure: JSON.stringify(datasetStructureJSONObj),
-          }
-        );
+        let local_dataset = await client.post(`/organize_datasets/dataset`, {
+          generation_type: "create-new",
+          generation_destination_path: filepath[0],
+          dataset_name: newDSName,
+          soda_json_directory_structure: JSON.stringify(
+            datasetStructureJSONObj
+          ),
+        });
 
-        document.getElementById(
-          "para-organize-datasets-error"
-        ).style.display = "none";
+        document.getElementById("para-organize-datasets-error").style.display =
+          "none";
         document.getElementById(
           "para-organize-datasets-success"
         ).style.display = "block";
-        document.getElementById(
-          "para-organize-datasets-success"
-        ).innerHTML = "<span>Generated successfully!</span>";
-      } catch(error) {
+        document.getElementById("para-organize-datasets-success").innerHTML =
+          "<span>Generated successfully!</span>";
+      } catch (error) {
         clientError(error);
 
         document.getElementById(
           "para-organize-datasets-success"
         ).style.display = "none";
-        document.getElementById(
-          "para-organize-datasets-error"
-        ).style.display = "block";
+        document.getElementById("para-organize-datasets-error").style.display =
+          "block";
         document.getElementById("para-organize-datasets-error").innerHTML =
           "<span> " + error + "</span>";
       }
@@ -6848,14 +6845,14 @@ document
       let empty_files_folders_check = await client.get(
         `/curate_datasets/empty_files_and_folders`,
         {
-          sodajsonobject: sodaJSONObj
+          sodajsonobject: sodaJSONObj,
         }
       );
       //check response here
       let res = empty_files_folders_check.data;
 
       document.getElementById("para-please-wait-new-curate").innerHTML =
-      "Please wait...";
+        "Please wait...";
       log.info("Continue with curate");
       var message = "";
       error_files = res[0];
@@ -6898,9 +6895,8 @@ document
             initiate_generate();
           } else {
             $("#sidebarCollapse").prop("disabled", false);
-            document.getElementById(
-              "para-please-wait-new-curate"
-            ).innerHTML = "Return to make changes";
+            document.getElementById("para-please-wait-new-curate").innerHTML =
+              "Return to make changes";
             document.getElementById("div-generate-comeback").style.display =
               "flex";
           }
@@ -6908,14 +6904,13 @@ document
       } else {
         initiate_generate();
       }
-    } catch(error) {
+    } catch (error) {
       clientError(error);
       let emessage = userError(error.response.data.message);
 
       document.getElementById(
         "para-new-curate-progress-bar-error-status"
-      ).innerHTML =
-        "<span style='color: red;'> Error: " + emessage + "</span>";
+      ).innerHTML = "<span style='color: red;'> Error: " + emessage + "</span>";
       document.getElementById("para-please-wait-new-curate").innerHTML = "";
       console.error(error);
       $("#sidebarCollapse").prop("disabled", false);
@@ -7951,7 +7946,7 @@ ipcRenderer.on("selected-manifest-folder", async (event, result) => {
         `/curate_datasets/manifest_files`,
         {
           generate_purpose: "",
-          soda_json_object: temp_sodaJSONObj
+          soda_json_object: temp_sodaJSONObj,
         }
       );
       let res = generate_manifest_locally.data;
@@ -7964,7 +7959,7 @@ ipcRenderer.on("selected-manifest-folder", async (event, result) => {
         ["Step 5", "Generate", "Manifest"],
         determineDatasetLocation()
       );
-    } catch(error) {
+    } catch (error) {
       clientError(error);
       $("body").removeClass("waiting");
 
