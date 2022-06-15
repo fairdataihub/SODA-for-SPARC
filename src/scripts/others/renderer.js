@@ -3903,61 +3903,6 @@ function showPublishingStatus(callback) {
 
         resolve();
       }
-      client.invoke(
-        "api_bf_get_publishing_status",
-        selectedBfAccount,
-        selectedBfDataset,
-        (error, res) => {
-          if (error) {
-            log.error(error);
-            console.error(error);
-            var emessage = userError(error);
-            Swal.fire({
-              title: "Could not get your publishing status!",
-              text: `${emessage}`,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              confirmButtonText: "Ok",
-              reverseButtons: reverseSwalButtons,
-              showClass: {
-                popup: "animate__animated animate__fadeInDown animate__faster",
-              },
-              hideClass: {
-                popup: "animate__animated animate__fadeOutUp animate__faster",
-              },
-            });
-
-            logGeneralOperationsForAnalytics(
-              "Error",
-              DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
-              AnalyticsGranularity.ALL_LEVELS,
-              ["Show publishing status"]
-            );
-
-            resolve();
-          } else {
-            try {
-              // update the dataset's publication status and display it onscreen for the user under their dataset name
-              $("#para-review-dataset-info-disseminate").text(
-                publishStatusOutputConversion(res)
-              );
-
-              if (
-                callback === submitReviewDatasetCheck ||
-                callback === withdrawDatasetCheck
-              ) {
-                return resolve(callback(res));
-              }
-
-              resolve();
-            } catch (error) {
-              // an exception will be caught and rejected
-              // if the executor function is not ready before an exception is found it is uncaught without the try catch
-              reject(error);
-            }
-          }
-        }
-      );
     }
   });
 }
