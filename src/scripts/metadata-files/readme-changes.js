@@ -535,8 +535,12 @@ const getRC = async (type) => {
       }&selected_account=${defaultBfAccount}&selected_dataset=${datasetName}`
     );
     let res = import_rc_file.data.text;
+<<<<<<< HEAD
+    
+=======
     console.log(res);
 
+>>>>>>> bbb0b0ea7c4723476f44f51c6dcbc3b417ea9ba4
     logMetadataForAnalytics(
       "Success",
       shortName === "changes"
@@ -592,72 +596,6 @@ const getRC = async (type) => {
       Destinations.PENNSIEVE
     );
   }
-  client.invoke(
-    "api_import_bf_RC",
-    defaultBfAccount,
-    datasetName,
-    type,
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        Swal.fire({
-          title: `Failed to load existing ${type} file`,
-          text: emessage,
-          icon: "warning",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-
-        logMetadataForAnalytics(
-          "Error",
-          shortName === "changes"
-            ? MetadataAnalyticsPrefix.CHANGES
-            : MetadataAnalyticsPrefix.README,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Existing",
-          Destinations.PENNSIEVE
-        );
-      } else {
-        logMetadataForAnalytics(
-          "Success",
-          shortName === "changes"
-            ? MetadataAnalyticsPrefix.CHANGES
-            : MetadataAnalyticsPrefix.README,
-          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-          "Existing",
-          Destinations.PENNSIEVE
-        );
-        if (res.trim() !== "") {
-          $(`#textarea-create-${shortName}`).val(res.trim());
-          Swal.fire({
-            title: "Loaded successfully!",
-            icon: "success",
-            showConfirmButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            didOpen: () => {
-              Swal.hideLoading();
-            },
-          });
-        } else {
-          Swal.fire({
-            icon: "warning",
-            text: `The current ${type} file is empty. Please edit it in the following textarea.`,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0,0.4)",
-          });
-        }
-        $(
-          $(
-            `#button-fake-confirm-existing-bf-${shortName}-file-load`
-          ).siblings()[0]
-        ).hide();
-        $(`#button-fake-confirm-existing-bf-${shortName}-file-load`).click();
-      }
-    }
-  );
 };
 
 // helper function to import a local readme/changes file
