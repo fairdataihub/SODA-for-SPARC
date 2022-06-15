@@ -351,7 +351,7 @@ class SamplesFile(Resource):
     parser_create_data_frames = reqparse.RequestParser(bundle_errors=True)
     parser_create_data_frames.add_argument('type', type=str, help="Subjects or Samples are the valid types.", location="args", required=False)
     parser_create_data_frames.add_argument('filepath', type=str, help="Path to the subjects or samples file on the user's machine.", location="json", required=False)
-    parser_create_data_frames.add_argument('ui_fields', type=str, help='The fields to include in the final data frame.', location="json", required=False)
+    parser_create_data_frames.add_argument('ui_fields', type=list, help='The fields to include in the final data frame.', location="json", required=False)
 
     @api.expect(parser_create_data_frames)
     @api.doc(description='Get a local samples file data in the form of data frames.', responses={500: "Internal Server Error", 400: "Bad Request"})
@@ -362,7 +362,9 @@ class SamplesFile(Resource):
         filepath = data.get('filepath')
         ui_fields = data.get('ui_fields')
 
-        if file_type != 'samples':
+        print("Fields are: ", ui_fields)
+
+        if file_type not in ['samples', 'subjects']:
             api.abort(400, "Error: The type parameter must be samples.")
 
         try:
@@ -385,7 +387,7 @@ class ImportBFMetadataFile(Resource):
     parser_import_bf_metadata_file.add_argument('file_type', type=str, help="The type of metadata file included. Options: submission.xlsx, samples.xlsx, subjects.xlsx, and dataset_description.xlsx.", location="args", required=True)
     parser_import_bf_metadata_file.add_argument('selected_account', type=str, help='The Pennsieve account associated with the given user.', location="args", required=True)
     parser_import_bf_metadata_file.add_argument('selected_dataset', type=str, help='The Pennsieve dataset the given user stored their metadata file within.', location="args", required=True)
-    parser_import_bf_metadata_file.add_argument('ui_fields', type=str, help='Fields only provided for subjects.xlsx and samples.xlsx files.', location="args", required=False)
+    parser_import_bf_metadata_file.add_argument('ui_fields', type=list, help='Fields only provided for subjects.xlsx and samples.xlsx files.', location="json", required=False)
 
     @api.expect(parser_import_bf_metadata_file)
     @api.doc(description='Import a metadata file from Pennsieve.', responses={500: "Internal Server Error", 400: "Bad Request", 403: "Forbidden"})
