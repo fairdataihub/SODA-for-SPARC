@@ -438,10 +438,12 @@ class ImportBFMetadataFile(Resource):
 class SetTemplatePath(Resource):
 
     parser_set_template_path = reqparse.RequestParser(bundle_errors=True)
-    parser_set_template_path.add_argument('basepath', type=str, help='Path to the template directory', location="json")
-    parser_set_template_path.add_argument('resourcesPath', type=str, help='Path to the template directory', location="json")
+    parser_set_template_path.add_argument('basepath', type=str, help='Path to the template directory', location="json", required=True)
+    parser_set_template_path.add_argument('resourcesPath', type=str, help='Path to the template directory', location="json", required=True)
 
     @api.expect(parser_set_template_path)
+    @api.doc(responses={500: "Internal Server Error", 400: "Bad Request"}, 
+            description="The prepare metadata section of the application requires knowledge of the location of the application once it has been built and executed. This sets that path for the server no matter the OS.")
     def put(self):
         data = self.parser_set_template_path.parse_args()
         basepath = data.get('basepath')
