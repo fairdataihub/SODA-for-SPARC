@@ -6845,77 +6845,82 @@ document
       }
     }
 
-    client.invoke(
-      "api_check_empty_files_folders",
-      sodaJSONObj,
-      (error, res) => {
-        if (error) {
-          var emessage = userError(error);
-          document.getElementById(
-            "para-new-curate-progress-bar-error-status"
-          ).innerHTML =
-            "<span style='color: red;'> Error: " + emessage + "</span>";
-          document.getElementById("para-please-wait-new-curate").innerHTML = "";
-          console.error(error);
-          $("#sidebarCollapse").prop("disabled", false);
-        } else {
-          document.getElementById("para-please-wait-new-curate").innerHTML =
-            "Please wait...";
-          log.info("Continue with curate");
-          var message = "";
-          error_files = res[0];
-          //bring duplicate outside
-          error_folders = res[1];
-
-          if (error_files.length > 0) {
-            var error_message_files =
-              backend_to_frontend_warning_message(error_files);
-            message += error_message_files;
-          }
-
-          if (error_folders.length > 0) {
-            var error_message_folders =
-              backend_to_frontend_warning_message(error_folders);
-            message += error_message_folders;
-          }
-
-          if (message) {
-            message += "Would you like to continue?";
-            message = "<div style='text-align: left'>" + message + "</div>";
-            Swal.fire({
-              icon: "warning",
-              html: message,
-              showCancelButton: true,
-              cancelButtonText: "No, I want to review my files",
-              focusCancel: true,
-              confirmButtonText: "Yes, Continue",
-              backdrop: "rgba(0,0,0, 0.4)",
-              reverseButtons: reverseSwalButtons,
-              heightAuto: false,
-              showClass: {
-                popup: "animate__animated animate__zoomIn animate__faster",
-              },
-              hideClass: {
-                popup: "animate__animated animate__zoomOut animate__faster",
-              },
-            }).then((result) => {
-              if (result.isConfirmed) {
-                initiate_generate();
-              } else {
-                $("#sidebarCollapse").prop("disabled", false);
-                document.getElementById(
-                  "para-please-wait-new-curate"
-                ).innerHTML = "Return to make changes";
-                document.getElementById("div-generate-comeback").style.display =
-                  "flex";
-              }
-            });
-          } else {
-            initiate_generate();
-          }
+    try {
+      let empty_files_folders_check = await client.get(
+        `/curate_datasets/empty_files_and_folders`,
+        {
+          sodajsonobject: sodaJSONObj
         }
+      );
+      //check response here
+      let res = empty_files_folders_check.data;
+
+      document.getElementById("para-please-wait-new-curate").innerHTML =
+      "Please wait...";
+      log.info("Continue with curate");
+      var message = "";
+      error_files = res[0];
+      //bring duplicate outside
+      error_folders = res[1];
+
+      if (error_files.length > 0) {
+        var error_message_files =
+          backend_to_frontend_warning_message(error_files);
+        message += error_message_files;
       }
-    );
+
+      if (error_folders.length > 0) {
+        var error_message_folders =
+          backend_to_frontend_warning_message(error_folders);
+        message += error_message_folders;
+      }
+
+      if (message) {
+        message += "Would you like to continue?";
+        message = "<div style='text-align: left'>" + message + "</div>";
+        Swal.fire({
+          icon: "warning",
+          html: message,
+          showCancelButton: true,
+          cancelButtonText: "No, I want to review my files",
+          focusCancel: true,
+          confirmButtonText: "Yes, Continue",
+          backdrop: "rgba(0,0,0, 0.4)",
+          reverseButtons: reverseSwalButtons,
+          heightAuto: false,
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            initiate_generate();
+          } else {
+            $("#sidebarCollapse").prop("disabled", false);
+            document.getElementById(
+              "para-please-wait-new-curate"
+            ).innerHTML = "Return to make changes";
+            document.getElementById("div-generate-comeback").style.display =
+              "flex";
+          }
+        });
+      } else {
+        initiate_generate();
+      }
+    } catch(error) {
+      clientError(error);
+      let emessage = userError(error.response.data.message);
+
+      document.getElementById(
+        "para-new-curate-progress-bar-error-status"
+      ).innerHTML =
+        "<span style='color: red;'> Error: " + emessage + "</span>";
+      document.getElementById("para-please-wait-new-curate").innerHTML = "";
+      console.error(error);
+      $("#sidebarCollapse").prop("disabled", false);
+    }
   });
 
 const delete_imported_manifest = () => {
