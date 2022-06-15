@@ -535,7 +535,7 @@ const getRC = async (type) => {
       }&selected_account=${defaultBfAccount}&selected_dataset=${datasetName}`
     );
     let res = import_rc_file.data.text;
-    
+
     logMetadataForAnalytics(
       "Success",
       shortName === "changes"
