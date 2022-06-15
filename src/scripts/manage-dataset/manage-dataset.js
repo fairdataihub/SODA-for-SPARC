@@ -2735,7 +2735,7 @@ $("#button-submit-dataset").click(async () => {
       let res = upload_detail.data;
 
       //check if the amount of successfully uploaded files has increased
-      if(res[0] > 0 && res[4] > uploadedFolders) {
+      if (res[0] > 0 && res[4] > uploadedFolders) {
         uploadedFiles = res[0];
         previousUploadedFileSize = uploadedFileSize;
         uploadedFileSize = res[1];
@@ -2744,14 +2744,14 @@ $("#button-submit-dataset").click(async () => {
         uploadedFolders = res[4];
 
         //failed to upload a bucket, but did upload some files
-        if(didFail && didUpload) {
+        if (didFail && didUpload) {
           //even when the upload fails we want to know how many files
           //were uploaded and their size of the current upload session
           ipcRenderer.send(
             "track-event",
             "Success",
             ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-            ` - Number of Files`,
+              ` - Number of Files`,
             `${datasetUploadSession.id}`,
             250
           );
@@ -2759,14 +2759,14 @@ $("#button-submit-dataset").click(async () => {
           ipcRenderer.send(
             "track-event",
             "Success",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + 
-            " - size",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+              " - size",
             `${datasetUploadSession.id}`,
             incrementInFileSize
           );
 
           return;
-        } else if(didFail && !didUpload) {
+        } else if (didFail && !didUpload) {
           //there is no session information to log outside
           //of the general information logged in the error for api_bf_submit
           return;
@@ -2776,7 +2776,7 @@ $("#button-submit-dataset").click(async () => {
             "track-event",
             "Success",
             ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-            " - Number of Files",
+              " - Number of Files",
             `${datasetUploadSession.id}`,
             uploadedFiles
           );
@@ -2791,7 +2791,7 @@ $("#button-submit-dataset").click(async () => {
           );
         }
       }
-    } catch(error) {
+    } catch (error) {
       clientError(error);
       //Clear the interval to stop the generation of new sweet alerts after intitial error
       clearInterval(uploadDetailsTimer);
