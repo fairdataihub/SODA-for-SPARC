@@ -388,12 +388,9 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
 
   // set the templates path
   try {
-    await client("prepare_metadata/set_template_paths", {
-      method: "PUT",
-      data: {
+    await client.put("prepare_metadata/set_template_paths", {
         basepath: basepath,
         resourcesPath: resourcesPath,
-      },
     });
   } catch (error) {
     console.log(error);
@@ -1417,58 +1414,62 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     },
   }).then((result) => {});
 
-  client.invoke(
-    "api_save_subjects_file",
-    uploadBFBoolean,
-    defaultBfAccount,
-    $("#bf_dataset_load_subjects").text().trim(),
-    subjectsDestinationPath,
-    subjectsTableData,
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        Swal.fire({
-          title: "Failed to generate the subjects.xlsx file.",
-          html: emessage,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          icon: "error",
-        });
-
-        // log the error to analytics
-        logMetadataForAnalytics(
-          "Error",
-          MetadataAnalyticsPrefix.SUBJECTS,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Generate",
-          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
-        );
-      } else {
-        Swal.fire({
-          title:
-            "The subjects.xlsx file has been successfully generated at the specified location.",
-          icon: "success",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-
-        // log the success to Pennsieve
-        logMetadataForAnalytics(
-          "Success",
-          MetadataAnalyticsPrefix.SUBJECTS,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Generate",
-          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
-        );
-
-        // log the size of the metadata file that was generated at varying levels of granularity
-        const size = res;
-        logMetadataSizeForAnalytics(uploadBFBoolean, "subjects.xlsx", size);
+  let bfdataset = document.getElementById("bf_dataset_load_subjects").innerText.trim();
+  try {
+    let save_locally = await client.post(
+      `/prepare_metadata/subjects_file?upload_boolean=${uploadBFBoolean}`,
+      {
+        filepath: subjectsDestinationPath,
+        selected_account: defaultBfAccount,
+        selected_dataset: bfdataset,
+        subjects_str: subjectsTableData,
       }
-    }
-  );
+    );
+
+    let res = save_locally.data;
+    console.log(res);
+
+    Swal.fire({
+      title:
+        "The subjects.xlsx file has been successfully generated at the specified location.",
+      icon: "success",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    // log the success to Pennsieve
+    logMetadataForAnalytics(
+      "Success",
+      MetadataAnalyticsPrefix.SUBJECTS,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Generate",
+      uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+    );
+
+    // log the size of the metadata file that was generated at varying levels of granularity
+    const size = res;
+    logMetadataSizeForAnalytics(uploadBFBoolean, "subjects.xlsx", size);
+  } catch(error) {
+    clientError(error);
+    let emessage = error.response.data.message;
+
+    Swal.fire({
+      title: "Failed to generate the subjects.xlsx file.",
+      html: emessage,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      icon: "error",
+    });
+
+    // log the error to analytics
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.SUBJECTS,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Generate",
+      uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+    );
+  }
 }
 
 // generate samples file
@@ -3835,8 +3836,8 @@ const showPrePublishingPageElements = () => {
   }
 };
 
-function showPublishingStatus(callback) {
-  return new Promise(function (resolve, reject) {
+async function showPublishingStatus(callback) {
+  return new Promise(async function (resolve, reject) {
     if (callback == "noClear") {
       var nothing;
     }
@@ -4489,40 +4490,38 @@ ipcRenderer.on("selected-new-dataset", (event, filepath) => {
         "block";
       document.getElementById("para-organize-datasets-loading").innerHTML =
         "<span>Please wait...</span>";
-      client.invoke(
-        "api_generate_dataset_locally",
-        "create new",
-        filepath[0],
-        newDSName,
-        datasetStructureJSONObj,
-        (error, res) => {
-          document.getElementById(
-            "para-organize-datasets-loading"
-          ).style.display = "none";
-          if (error) {
-            log.error(error);
-            console.error(error);
-            document.getElementById(
-              "para-organize-datasets-success"
-            ).style.display = "none";
-            document.getElementById(
-              "para-organize-datasets-error"
-            ).style.display = "block";
-            document.getElementById("para-organize-datasets-error").innerHTML =
-              "<span> " + error + "</span>";
-          } else {
-            document.getElementById(
-              "para-organize-datasets-error"
-            ).style.display = "none";
-            document.getElementById(
-              "para-organize-datasets-success"
-            ).style.display = "block";
-            document.getElementById(
-              "para-organize-datasets-success"
-            ).innerHTML = "<span>Generated successfully!</span>";
+      try {
+        let local_dataset = await client.post(
+          `/organize_datasets/dataset`,
+          {
+            generation_type: "create-new",
+            generation_destination_path: filepath[0],
+            dataset_name: newDSName,
+            soda_json_directory_structure: JSON.stringify(datasetStructureJSONObj),
           }
-        }
-      );
+        );
+
+        document.getElementById(
+          "para-organize-datasets-error"
+        ).style.display = "none";
+        document.getElementById(
+          "para-organize-datasets-success"
+        ).style.display = "block";
+        document.getElementById(
+          "para-organize-datasets-success"
+        ).innerHTML = "<span>Generated successfully!</span>";
+      } catch(error) {
+        clientError(error);
+
+        document.getElementById(
+          "para-organize-datasets-success"
+        ).style.display = "none";
+        document.getElementById(
+          "para-organize-datasets-error"
+        ).style.display = "block";
+        document.getElementById("para-organize-datasets-error").innerHTML =
+          "<span> " + error + "</span>";
+      }
     }
   }
 });
@@ -7650,7 +7649,7 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
     console.log(sodaJSONObj);
     try {
       let bf_get_files_folders = await client.get(
-        `/organize_datasets/get_dataset_files_folders`,
+        `/organize_datasets/dataset_files_and_folders`,
         {
           sodajsonobject: JSON.stringify(sodaJSONObj),
         }
@@ -7669,6 +7668,7 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
     } catch (error) {
       reject(userError(error.response.data.message));
       clientError(error);
+      console.log(error);
       ipcRenderer.send(
         "track-event",
         "Error",
