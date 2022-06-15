@@ -18,6 +18,7 @@ from namespaces import NamespaceEnum, get_namespace
 from flask_restx import Resource, reqparse, fields
 from flask_restx.inputs import boolean
 from errorHandlers import notBadRequestException, InvalidDeliverablesDocument
+from flask import request
 
 api = get_namespace(NamespaceEnum.PREPARE_METADATA)
 
@@ -378,26 +379,47 @@ class SamplesFile(Resource):
 
 
 
+def none_type_validation(*args):
+    return all(arg is not None for arg in args)
 
-
+model_ui_fields = api.model('UIFields', {
+    'ui_fields': fields.List(fields.String, description='For samples and subjects only. Every header from the respective file in list formatting.', required=False),
+})
 
 @api.route('/import_metadata_file')
 class ImportBFMetadataFile(Resource):
-    parser_import_bf_metadata_file = reqparse.RequestParser(bundle_errors=True)
-    parser_import_bf_metadata_file.add_argument('file_type', type=str, help="The type of metadata file included. Options: submission.xlsx, samples.xlsx, subjects.xlsx, and dataset_description.xlsx.", location="args", required=True)
-    parser_import_bf_metadata_file.add_argument('selected_account', type=str, help='The Pennsieve account associated with the given user.', location="args", required=True)
-    parser_import_bf_metadata_file.add_argument('selected_dataset', type=str, help='The Pennsieve dataset the given user stored their metadata file within.', location="args", required=True)
-    parser_import_bf_metadata_file.add_argument('ui_fields', type=list, help='Fields only provided for subjects.xlsx and samples.xlsx files.', location="json", required=False)
 
-    @api.expect(parser_import_bf_metadata_file)
-    @api.doc(description='Import a metadata file from Pennsieve.', responses={500: "Internal Server Error", 400: "Bad Request", 403: "Forbidden"})
+    parser_import_metadata_file = reqparse.RequestParser(bundle_errors=True)
+    parser_import_metadata_file.add_argument('selected_account', type=str, help='Pennsieve account to save the metadata file to.', location="args", required=True)
+    parser_import_metadata_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset to save the metadata file to.', location="args", required=True)
+    parser_import_metadata_file.add_argument('file_type', type=str, help="The type of metadata file that we can import from Pennsieve. Must be [subjects.xlsx, samples.xlsx, dataset_description.xlsx, and submission.xlsx]", location="args", required=True)
+    parser_import_metadata_file.add_argument('ui_fields', type=list, help="Path to the metadata file on the user's machine.", location="json", required=False)
+    
+
+    # @api.expect(parser_import_bf_metadata_file)
+    @api.doc(description='Import a metadata file from Pennsieve. NOTE: CONTRARY TO THE SWAGGER UI THE PAYLOAD IS ONLY REQUIRED FOR SUBJECTS AND SAMPLES FILES.', 
+            responses={500: "Internal Server Error", 400: "Bad Request"},
+            parser=parser_import_metadata_file,  
+            body=model_ui_fields
+            )
     def get(self):
-        data = self.parser_import_bf_metadata_file.parse_args()
+        args = request.args.to_dict()
+        file_type = args.get('file_type')
+        selected_account = args.get('selected_account')
+        selected_dataset = args.get('selected_dataset')
+        ui_fields = request.json.get('ui_fields') if request.data else None
 
-        file_type = data.get('file_type')
-        selected_account = data.get('selected_account')
-        selected_dataset = data.get('selected_dataset')
-        ui_fields = data.get('ui_fields')
+
+        valid = none_type_validation(file_type, selected_account, selected_dataset)
+        if not valid:
+            api.abort(400, "Error: To import a metadata file from Pennsieve provide a file_type, selected_account, and selected_dataset.")
+        
+        if file_type not in ['submission.xlsx', 'samples.xlsx', 'subjects.xlsx', 'dataset_description.xlsx']:
+            api.abort(400, "Error: The file_type parameter must be submission.xlsx, samples.xlsx, subjects.xlsx, or dataset_description.xlsx.")
+        
+        if file_type in ['samples.xlsx', 'subjects.xlsx'] and not ui_fields:
+            api.abort(400, "Error: To import a subjects or samples file from Pennsieve provide a ui_fields.")
+
 
         try:
             return import_bf_metadata_file(file_type, ui_fields, selected_account, selected_dataset)
