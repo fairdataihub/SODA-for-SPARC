@@ -2416,7 +2416,7 @@ $("#button-submit-dataset").click(async () => {
     let bf_submit_dataset = await client.put(
       `/manage_datasets/datasets?selected_account=${selectedbfaccount}&selected_dataset=${selectedbfdataset}`,
       {
-        filepath: pathSubmitDataset.placeholder
+        filepath: pathSubmitDataset.placeholder,
       }
     );
     let res = bf_submit_dataset.data;
@@ -2468,7 +2468,7 @@ $("#button-submit-dataset").click(async () => {
         `${datasetUploadSession.id}`
       );
     }
-  } catch(error) {
+  } catch (error) {
     clientError(error);
     let emessage = userError(error.response.data.message);
     $("#para-please-wait-manage-dataset").html("");
