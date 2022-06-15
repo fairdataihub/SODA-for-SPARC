@@ -2525,11 +2525,11 @@ async function switchMetadataManifestQuestion() {
     });
     if (continueProgressManifest) {
       // deleting manifest file folders in user/SODA path that were generated half-way before users switch.
-      try{
+      try {
         let delete_dummy_folders = await client.delete(
           `prepare_metadata/manifest_dummy_folders`,
           {
-            paths: [userpath1, userpath2]
+            paths: [userpath1, userpath2],
           }
         );
 
@@ -2553,15 +2553,12 @@ async function switchMetadataManifestQuestion() {
           "placeholder",
           "Browse here"
         );
-        $("#div-confirm-manifest-local-folder-dataset").css(
-          "display",
-          "none"
-        );
-      }catch(error) {
+        $("#div-confirm-manifest-local-folder-dataset").css("display", "none");
+      } catch (error) {
         clientError(error);
         return true;
       }
-      
+
       return continueProgressManifest;
     }
   } else {
