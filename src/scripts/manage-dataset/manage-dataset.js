@@ -2474,10 +2474,7 @@ $("#button-submit-dataset").click(async () => {
     $("#para-progress-bar-status").html("");
     cloneStatus.innerHTML = "";
     $("#div-progress-submit").css("display", "none");
-    //progressClone.remove();
-    /*$("#para-progress-bar-error-status").html(
-      "<span style='color: red;'>" + emessage + sadCan + "</span>"
-    );*/
+
     document.getElementById("para-progress-bar-error-status").style =
       "color: red";
     document.getElementById("para-progress-bar-error-status").innerHTML =
@@ -2734,16 +2731,16 @@ $("#button-submit-dataset").click(async () => {
     "#para-progress-bar-error-status"
   ).childNodes;
 
-  const monitorBucketUpload = () => {
+  const monitorBucketUpload = async () => {
     // ask the server for the amount of files uploaded in the current session
-    client.invoke("api_bf_submit_dataset_upload_details", (err, res) => {
-      if (err) {
-        console.log(err);
-        //Clear the interval to stop the generation of new sweet alerts after intitial error
-        clearInterval(uploadDetailsTimer);
-      }
-      // check if the amount of successfully uploaded files has increased
-      if (res[0] > 0 && res[4] > uploadedFolders) {
+    try {
+      let upload_details = client.get(
+        `/manage_datasets/datasets/upload_details`
+      );
+      let res = upload_detail.data;
+
+      //check if the amount of successfully uploaded files has increased
+      if(res[0] > 0 && res[4] > uploadedFolders) {
         uploadedFiles = res[0];
         previousUploadedFileSize = uploadedFileSize;
         uploadedFileSize = res[1];
@@ -2751,15 +2748,15 @@ $("#button-submit-dataset").click(async () => {
         let didUpload = res[3];
         uploadedFolders = res[4];
 
-        // failed to upload a bucket, but did upload some files
-        if (didFail && didUpload) {
-          // even when the upload fails we want to know how many files were uploaded and their size
-          // for the current upload session
+        //failed to upload a bucket, but did upload some files
+        if(didFail && didUpload) {
+          //even when the upload fails we want to know how many files
+          //were uploaded and their size of the current upload session
           ipcRenderer.send(
             "track-event",
             "Success",
             ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-              ` - Number of Files`,
+            ` - Number of Files`,
             `${datasetUploadSession.id}`,
             250
           );
@@ -2767,24 +2764,24 @@ $("#button-submit-dataset").click(async () => {
           ipcRenderer.send(
             "track-event",
             "Success",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-              " - size",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + 
+            " - size",
             `${datasetUploadSession.id}`,
             incrementInFileSize
           );
 
           return;
-        } else if (didFail && !didUpload) {
-          // there is no session information to log outside of the general information logged in the
-          // error for api_bf_submit
+        } else if(didFail && !didUpload) {
+          //there is no session information to log outside
+          //of the general information logged in the error for api_bf_submit
           return;
         } else {
-          // track the amount of files uploaded for the current bucket
+          //track the amount of files uploaded for the current bucket
           ipcRenderer.send(
             "track-event",
             "Success",
             ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-              ` - Number of Files`,
+            " - Number of Files",
             `${datasetUploadSession.id}`,
             uploadedFiles
           );
@@ -2799,7 +2796,11 @@ $("#button-submit-dataset").click(async () => {
           );
         }
       }
-    });
+    } catch(error) {
+      clientError(error);
+      //Clear the interval to stop the generation of new sweet alerts after intitial error
+      clearInterval(uploadDetailsTimer);
+    }
 
     // if completion status was not set to done clear interval when the error span gets an error message
     if (completionStatus === "Done" || uploadErrorChildren.length > 0) {
