@@ -4483,7 +4483,7 @@ function generateDataset(button) {
   }
 }
 
-ipcRenderer.on("selected-new-dataset", (event, filepath) => {
+ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
   if (filepath.length > 0) {
     if (filepath != null) {
       document.getElementById("para-organize-datasets-loading").style.display =

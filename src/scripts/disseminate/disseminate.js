@@ -587,7 +587,6 @@ async function disseminiateShowCurrentDatasetStatus(
       }
     } catch (error) {
       clientError(error);
-      var emessage = userError(error);
       $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
       $("#bf-dataset-status-spinner").css("display", "none");
       ipcRenderer.send(
@@ -668,7 +667,7 @@ $("#ORCID-btn").on("click", async () => {
       // TODO: Replace with Flask
       await integrateORCIDWithPennsieve(accessCode);
     } catch (error) {
-      var emessage = userError(error);
+      var emessage = error.response.data.message;
       Swal.fire({
         title: "Unable to integrate your ORCID iD with Pennsieve",
         text: emessage,

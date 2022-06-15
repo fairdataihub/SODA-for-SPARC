@@ -2302,12 +2302,13 @@ async function checkBFImportDD() {
     );
   } catch (error) {
     clientError(error);
-    var emessage = userError(error.response.data.message);
+    var emessage = error.response.data.message;
+    console.log(emessage);
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       icon: "error",
-      html: emessage,
+      text: emessage,
     });
 
     logMetadataForAnalytics(

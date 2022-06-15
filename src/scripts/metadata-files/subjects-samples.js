@@ -2409,12 +2409,12 @@ async function checkBFImportSubjects() {
     loadDataFrametoUI("bf");
   } catch (error) {
     clientError(error);
-    let emessage = userError(error.response.data.message);
+    let emessage = error.response.data.message;
     Swal.fire({
       backdrop: "rgba(0, 0, 0, 0.4)",
       heightAuto: false,
       icon: "error",
-      html: emessage,
+      text: emessage,
     });
 
     // log the error to analytics
@@ -2481,7 +2481,7 @@ async function checkBFImportSamples() {
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       icon: "error",
-      html: emessage,
+      text: emessage,
     });
 
     // log the error to analytics

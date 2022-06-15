@@ -210,7 +210,7 @@ $("#button-create-bf-new-dataset").click(async () => {
       $("#bf-new-dataset-name").val("");
     } catch (error) {
       clientError(error);
-      let emessage = userError(error.response.data.message);
+      let emessage = error.response.data.message;
 
       Swal.fire({
         title: `Failed to create a new dataset.`,
@@ -336,7 +336,7 @@ $("#button-rename-dataset").click(async () => {
         }
       } catch (error) {
         clientError(error);
-        var emessage = userError(error.response.data.message);
+        var emessage = error.response.data.message;
         Swal.fire({
           title: "Failed to rename dataset",
           text: emessage,
@@ -411,7 +411,8 @@ $("#button-add-permission-pi").click(async () => {
           }
         );
 
-        let res = bf_change_owner.data;
+        let res = bf_change_owner.data.message;
+        console.log(res);
         log.info("Change PI Owner of dataset");
 
         ipcRenderer.send(
@@ -1644,13 +1645,19 @@ const uploadBannerImage = async () => {
           defaultBfDatasetId,
           image_file_size
         );
+        //add success toast here
+        // create a success notyf for api version check
+        notyf.open({
+          message: "Banner image uploaded",
+          type: "success",
+        });
 
         // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
         showPrePublishingStatus();
       } catch (error) {
         clientError(error);
 
-        let emessage = userError(error.response.data.message);
+        let emessage = error.response.data.message;
         $("#para-dataset-banner-image-status").html(
           "<span style='color: red;'> " + emessage + "</span>"
         );
