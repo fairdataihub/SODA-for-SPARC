@@ -2140,17 +2140,6 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
   } catch (error) {
     clientError(error);
   }
-  await client.invoke(
-    "api_load_taxonomy_species",
-    [commonName],
-    (error, res) => {
-      if (error) {
-        log.error(error);
-        console.error(error);
-      } else {
-      }
-    }
-  );
 }
 
 // Function to add options to dropdown list
@@ -3859,6 +3848,61 @@ function showPublishingStatus(callback) {
     if (selectedBfDataset === "None") {
       resolve();
     } else {
+      try {
+        let get_publishing_status = await client.get(
+          `/disseminate_datasets/datasets/${selectedBfDataset}/publishing_status?selected_account=${selectedBfAccount}`
+        );
+        let res = get_publishing_status.data;
+
+        try {
+          //update the dataset's publication status and display
+          //onscreen for the user under their dataset name
+          $("#para-review-dataset-info-disseminate").text(
+            publishStatusOutputConversion(res)
+          );
+
+          if (
+            callback === submitReviewDatasetCheck ||
+            callback === withdrawDatasetCheck
+          ) {
+            return resolve(callback(res));
+          }
+
+          resolve();
+        } catch (error) {
+          // an exception will be caught and rejected
+          // if the executor function is not ready before an exception is found it is uncaught without the try catch
+          reject(error);
+        }
+
+      } catch(error) {
+        clientError(error);
+        let emessage = userError(error.response.data.message);
+
+        Swal.fire({
+          title: "Could not get your publishing status!",
+          text: `${emessage}`,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "Ok",
+          reverseButtons: reverseSwalButtons,
+          showClass: {
+            popup: "animate__animated animate__fadeInDown animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp animate__faster",
+          },
+        });
+
+        logGeneralOperationsForAnalytics(
+          "Error",
+          DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
+          AnalyticsGranularity.ALL_LEVELS,
+          ["Show publishing status"]
+        );
+
+        resolve();
+      }
       client.invoke(
         "api_bf_get_publishing_status",
         selectedBfAccount,
