@@ -1,5 +1,3 @@
-const { ipcRenderer } = require("electron");
-
 var forbidden_characters_bf = '/:*?"<>';
 
 const check_forbidden_characters_bf = (my_string) => {
@@ -364,7 +362,7 @@ $("#button-rename-dataset").click(async () => {
 });
 
 // Make PI owner //
-$("#button-add-permission-pi").click(() => {
+$("#button-add-permission-pi").click(async () => {
   Swal.fire({
     icon: "warning",
     text: "This will give owner access to another user (and set you as 'manager'), are you sure you want to continue?",
@@ -381,7 +379,7 @@ $("#button-add-permission-pi").click(() => {
     hideClass: {
       popup: "animate__animated animate__zoomOut animate__faster",
     },
-  }).then((result) => {
+  }).then(async (result) => {
     if (result.isConfirmed) {
       log.info("Changing PI Owner of datset");
 

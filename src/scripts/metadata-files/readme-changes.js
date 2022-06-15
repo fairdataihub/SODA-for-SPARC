@@ -119,61 +119,6 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
         Destinations.PENNSIEVE
       );
     }
-    client.invoke(
-      "api_upload_RC_file",
-      textValue,
-      upperCaseLetters,
-      defaultBfAccount,
-      $(`#bf_dataset_load_${fileType}`).text().trim(),
-      (error, res) => {
-        if (error) {
-          var emessage = userError(error);
-          log.error(error);
-          console.error(error);
-          Swal.fire({
-            title: `Failed to generate the ${upperCaseLetters} file`,
-            html: emessage,
-            icon: "warning",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-
-          logMetadataForAnalytics(
-            "Error",
-            upperCaseLetters === "CHANGES.txt"
-              ? MetadataAnalyticsPrefix.CHANGES
-              : MetadataAnalyticsPrefix.README,
-            AnalyticsGranularity.ALL_LEVELS,
-            "Generate",
-            Destinations.PENNSIEVE
-          );
-        } else {
-          Swal.fire({
-            title: `Successfully generated the ${upperCaseLetters} file on your Pennsieve dataset.`,
-            icon: "success",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-
-          logMetadataForAnalytics(
-            "Success",
-            upperCaseLetters === "CHANGES.txt"
-              ? MetadataAnalyticsPrefix.CHANGES
-              : MetadataAnalyticsPrefix.README,
-            AnalyticsGranularity.ALL_LEVELS,
-            "Generate",
-            Destinations.PENNSIEVE
-          );
-
-          const size = res[0];
-          logMetadataSizeForAnalytics(
-            true,
-            upperCaseLetters === "CHANGES.txt" ? "CHANGES.txt" : "README.txt",
-            size
-          );
-        }
-      }
-    );
   } else {
     ipcRenderer.send(`open-destination-generate-${fileType}-locally`);
   }
@@ -581,6 +526,70 @@ const getRC = async (type) => {
     var shortName = "readme";
   }
   let datasetName = $(`#bf_dataset_load_${shortName}`).text().trim();
+  try {
+    let import_rc_file = await client.get(
+      `/prepare_metadata/readme_changes_file?file_type=${path.parse(type).name}&selected_account=${defaultBfAccount}&selected_dataset=${datasetName}`
+    );
+    let res = import_rc_file.data.text;
+    console.log(res);
+    
+    logMetadataForAnalytics(
+      "Success",
+      shortName === "changes"
+        ? MetadataAnalyticsPrefix.CHANGES
+        : MetadataAnalyticsPrefix.README,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      "Existing",
+      Destinations.PENNSIEVE
+    );
+    if (res.trim() !== "") {
+      $(`#textarea-create-${shortName}`).val(res.trim());
+      Swal.fire({
+        title: "Loaded successfully!",
+        icon: "success",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        didOpen: () => {
+          Swal.hideLoading();
+        },
+      });
+    } else {
+      Swal.fire({
+        icon: "warning",
+        text: `The current ${type} file is empty. Please edit it in the following textarea.`,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0,0.4)",
+      });
+    }
+    $(
+      $(
+        `#button-fake-confirm-existing-bf-${shortName}-file-load`
+      ).siblings()[0]
+    ).hide();
+    $(`#button-fake-confirm-existing-bf-${shortName}-file-load`).click();
+  } catch(error) {
+    clientError(error);
+    let emessage = error.response.data.message;
+
+    Swal.fire({
+      title: `Failed to load existing ${type} file`,
+      text: emessage,
+      icon: "warning",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    logMetadataForAnalytics(
+      "Error",
+      shortName === "changes"
+        ? MetadataAnalyticsPrefix.CHANGES
+        : MetadataAnalyticsPrefix.README,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.PENNSIEVE
+    );
+  }
   client.invoke(
     "api_import_bf_RC",
     defaultBfAccount,
