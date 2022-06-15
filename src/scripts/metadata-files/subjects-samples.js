@@ -2451,7 +2451,7 @@ async function checkBFImportSamples() {
     .find(".samples-form-entry")) {
     fieldEntries.push(field.name.toLowerCase());
   }
-  let bfDataset = $("#bf_dataset_load_samples").text().trim();
+  let bfDataset = document.getElementById("bf_dataset_load_samples").innerText;
   try {
     let import_metadata = await client.get(
       `/prepare_metadata/import_metadata_file?file_type=samples.xlsx&selected_account=${defaultBfAccount}&selected_dataset=${bfDataset}`
