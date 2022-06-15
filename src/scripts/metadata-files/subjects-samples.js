@@ -2388,46 +2388,42 @@ function checkBFImportSubjects() {
     .find(".subjects-form-entry")) {
     fieldEntries.push(field.name.toLowerCase());
   }
-  client.invoke(
-    "api_import_bf_metadata_file",
-    "subjects.xlsx",
-    fieldEntries,
-    defaultBfAccount,
-    $("#bf_dataset_load_subjects").text().trim(),
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          icon: "error",
-          html: emessage,
-        });
+  let bfDataset = document.getElementById("bf_dataset_load_subjects").innerText.trim();
+  try {
+    let import_metadata_file = await client.get(
+      `/prepare_metadata/readme_changes_file?file_type=subjects.xlsx&selected_account=${defaultBfAccount}&selected_dataset=${bfDataset}`
+    );
+    let res = import_metadata_file.data;
 
-        // log the error to analytics
-        logMetadataForAnalytics(
-          "Error",
-          MetadataAnalyticsPrefix.SUBJECTS,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Existing",
-          Destinations.PENNSIEVE
-        );
-      } else {
-        // log the success to analytics
-        logMetadataForAnalytics(
-          "Success",
-          MetadataAnalyticsPrefix.SUBJECTS,
-          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-          "Existing",
-          Destinations.PENNSIEVE
-        );
-        subjectsTableData = res;
-        loadDataFrametoUI("bf");
-      }
-    }
-  );
+    // log the success to analytics
+    logMetadataForAnalytics(
+      "Success",
+      MetadataAnalyticsPrefix.SUBJECTS,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      "Existing",
+      Destinations.PENNSIEVE
+    );
+    subjectsTableData = res;
+    loadDataFrametoUI("bf");
+  }catch(error) {
+    clientError(error);
+    let emessage = userError(error.response.data.message);
+    Swal.fire({
+      backdrop: "rgba(0, 0, 0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      html: emessage,
+    });
+
+    // log the error to analytics
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.SUBJECTS,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.PENNSIEVE
+    );
+  }
 }
 
 async function checkBFImportSamples() {
