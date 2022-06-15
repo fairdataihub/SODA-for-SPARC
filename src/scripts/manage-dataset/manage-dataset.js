@@ -2729,7 +2729,7 @@ $("#button-submit-dataset").click(async () => {
   const monitorBucketUpload = async () => {
     // ask the server for the amount of files uploaded in the current session
     try {
-      let upload_details = client.get(
+      let upload_details = await client.get(
         `/manage_datasets/datasets/upload_details`
       );
       let res = upload_detail.data;
