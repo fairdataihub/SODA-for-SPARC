@@ -1295,17 +1295,53 @@ function createManifestLocally(type, editBoolean, originalDataset) {
   } else {
     generatePath = path.join(homeDirectory, "SODA", "manifest_files");
   }
-  client.invoke(
-    "api_generate_manifest_file_locally",
-    "edit-manifest",
-    sodaJSONObj,
-    async (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
+  try {
+    let generate_local_manifest = await client.post(
+      `/curate_datasets/manifest_files`,
+      {
+        payload: {
+          generate_purpose: "edit-manifest",
+          soda_json_object: JSON.stringify(sodaJSONObj),
+        },
+      }
+    );
+    let res = generate_local_manifest.data.success_message_or_manifest_destination;
+    console.log(res);
+    if (editBoolean) {
+      //// else: create locally for the purpose of generating of manifest files locally
+      try {
+        let create_manifest = await client.post(
+          `/curate_datasets/manifest_files/local`,
+          {
+            payload: {
+              filepath:generatePath,
+            },
+          }
+        );
+
+        let res = create_manifest.data;
+        console.log(res);
         Swal.fire({
-          title: "Failed to generate the manifest files.",
+          title: "Successfully generated!",
+          heightAuto: false,
+          showConfirmButton: false,
+          timer: 800,
+          icon: "success",
+          backdrop: "rgba(0,0,0, 0.4)",
+          didOpen: () => {
+            Swal.hideLoading();
+          },
+        }).then((result) => {});
+        $("#preview-manifest-fake-confirm").click();
+        $("#Question-prepare-manifest-4").removeClass("show");
+        $("#Question-prepare-manifest-4").removeClass("prev");
+        loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
+      } catch(error) {
+        clientError(error);
+        let emessage = error.response.data.message;
+
+        Swal.fire({
+          title: "Failed to load the manifest files for edits.",
           html: emessage,
           heightAuto: false,
           showConfirmButton: true,
@@ -1315,109 +1351,82 @@ function createManifestLocally(type, editBoolean, originalDataset) {
             Swal.hideLoading();
           },
         }).then((result) => {});
-        $("#Question-prepare-manifest-4").removeClass("show");
-        $("#Question-prepare-manifest-4").removeClass("prev");
-        $("#Question-prepare-manifest-3").removeClass("prev");
-        $("#bf_dataset_create_manifest").text("None");
-      } else {
-        if (editBoolean) {
-          //// else: create locally for the purpose of generating of manifest files locally
-          client.invoke(
-            "api_create_high_level_manifest_files_existing_local_starting_point",
-            generatePath,
-            async (error, res) => {
-              if (error) {
-                var emessage = userError(error);
-                log.error(error);
-                console.error(error);
-                Swal.fire({
-                  title: "Failed to load the manifest files for edits.",
-                  html: emessage,
-                  heightAuto: false,
-                  showConfirmButton: true,
-                  icon: "error",
-                  backdrop: "rgba(0,0,0, 0.4)",
-                  didOpen: () => {
-                    Swal.hideLoading();
-                  },
-                }).then((result) => {});
-              } else {
-                Swal.fire({
-                  title: "Successfully generated!",
-                  heightAuto: false,
-                  showConfirmButton: false,
-                  timer: 800,
-                  icon: "success",
-                  backdrop: "rgba(0,0,0, 0.4)",
-                  didOpen: () => {
-                    Swal.hideLoading();
-                  },
-                }).then((result) => {});
-                $("#preview-manifest-fake-confirm").click();
-                $("#Question-prepare-manifest-4").removeClass("show");
-                $("#Question-prepare-manifest-4").removeClass("prev");
-                loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
-              }
-            }
-          );
+      }
 
-          Swal.fire({
-            title: "Successfully generated!",
-            heightAuto: false,
-            showConfirmButton: false,
-            timer: 800,
-            icon: "success",
-            backdrop: "rgba(0,0,0, 0.4)",
-            didOpen: () => {
-              Swal.hideLoading();
-            },
-          }).then((result) => {});
-          localDatasetFolderPath = "";
-        } else {
-          // SODA Manifest Files folder
-          let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files");
-          // Move manifest files to the local dataset
-          let moveFinishedBool = await moveManifestFiles(dir, originalDataset);
-          if (moveFinishedBool) {
-            resetManifest(true);
-            // reset sodaJSONObj
-            sodaJSONObj = {
-              "starting-point": { type: "" },
-              "dataset-structure": {},
-              "metadata-files": {},
-            };
-            datasetStructureJSONObj = {
-              folders: {},
-              files: {},
-              type: "",
-            };
+      Swal.fire({
+        title: "Successfully generated!",
+        heightAuto: false,
+        showConfirmButton: false,
+        timer: 800,
+        icon: "success",
+        backdrop: "rgba(0,0,0, 0.4)",
+        didOpen: () => {
+          Swal.hideLoading();
+        },
+      }).then((result) => {});
+      localDatasetFolderPath = "";
+    } else {
+      // SODA Manifest Files folder
+      let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files");
+      // Move manifest files to the local dataset
+      let moveFinishedBool = await moveManifestFiles(dir, originalDataset);
+      if (moveFinishedBool) {
+        resetManifest(true);
+        // reset sodaJSONObj
+        sodaJSONObj = {
+          "starting-point": { type: "" },
+          "dataset-structure": {},
+          "metadata-files": {},
+        };
+        datasetStructureJSONObj = {
+          folders: {},
+          files: {},
+          type: "",
+        };
 
-            Swal.fire({
-              title:
-                "Successfully generated manifest files at the specified location!",
-              icon: "success",
-              showConfirmButton: true,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              didOpen: () => {
-                Swal.hideLoading();
-              },
-            });
-            localDatasetFolderPath = "";
-            //////////// Tracking analytics /////////////
-            // log the manifest file creation to analytics
-            logMetadataForAnalytics(
-              "Success",
-              MetadataAnalyticsPrefix.MANIFEST,
-              AnalyticsGranularity.ALL_LEVELS,
-              "Generate",
-              Destinations.LOCAL
-            );
-          }
-        }
+        Swal.fire({
+          title:
+            "Successfully generated manifest files at the specified location!",
+          icon: "success",
+          showConfirmButton: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          didOpen: () => {
+            Swal.hideLoading();
+          },
+        });
+        localDatasetFolderPath = "";
+        //////////// Tracking analytics /////////////
+        // log the manifest file creation to analytics
+        logMetadataForAnalytics(
+          "Success",
+          MetadataAnalyticsPrefix.MANIFEST,
+          AnalyticsGranularity.ALL_LEVELS,
+          "Generate",
+          Destinations.LOCAL
+        );
       }
     }
-  );
+  } catch(error) {
+    clientError(error);
+    let emessage = error.response.data.message;
+
+    Swal.fire({
+      title: "Failed to generate the manifest files.",
+      html: emessage,
+      heightAuto: false,
+      showConfirmButton: true,
+      icon: "error",
+      backdrop: "rgba(0,0,0, 0.4)",
+      didOpen: () => {
+        Swal.hideLoading();
+      },
+    }).then((result) => {});
+    $("#Question-prepare-manifest-4").removeClass("show");
+    $("#Question-prepare-manifest-4").removeClass("prev");
+    $("#Question-prepare-manifest-3").removeClass("prev");
+    $("#bf_dataset_create_manifest").text("None");
+  }
 }
 
 // helper function 2: Second, load dataset structure as preview tree
