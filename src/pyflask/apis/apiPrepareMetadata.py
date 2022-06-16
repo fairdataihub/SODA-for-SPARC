@@ -57,13 +57,15 @@ class SaveSubmissionFile(Resource):
         json_str = data.get("submission_file_rows")
 
 
-        if upload_boolean and filepath is None:
-            api.abort(400, "Error: Please provide a destination in which to save your Submission file.")
+        if not upload_boolean and filepath is None:
+            api.abort(400, "Please provide a destination in which to save your Submission file.")
 
         try:
             return save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_str)
         except Exception as e:
-            api.abort(500, str(e))
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
 
 
 
