@@ -2284,7 +2284,7 @@ async function checkBFImportDD() {
   let bf_dataset = document.getElementById("bf_dataset_load_dd").innerText;
   try {
     let metadata_import = await client.get(
-      `/prepare_metadata/import_metadata_file?file_type=dataset_description.xlsx&selected_account=${defaultBfAccount}&selected_dataset=${bf_dataset}`,
+      `/prepare_metadata/import_metadata_file`,
       {
         params: {
           selected_account: defaultBfAccount,
