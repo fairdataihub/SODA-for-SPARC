@@ -716,7 +716,7 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
 
     sortMatrix = sortedSubjectsTableData(transpose, ui_fields)
 
-    return {"sample_file_rows": transposeMatrix(sortMatrix)}
+    return {"sample_file_rows": transposeMatrix(sortMatrix)} if type == "samples" else {"subject_file_rows": transposeMatrix(sortMatrix)}
 
 
 def checkEmptyColumn(column):
@@ -732,9 +732,15 @@ def sortedSubjectsTableData(matrix, fields):
     sortedMatrix = []
     customHeaderMatrix = []
 
+    # print(f"transpose -> matrix: {matrix}")
+    # print(f"ui_fields -> fields: {fields}")
+
     for field in fields:
         for column in matrix:
+            #if field == 'sample id' or column[0] == 'sample id':
+                # print(f"field: {field} and column: {column[0]}")
             if column[0].lower() == field:
+                print("Match found")
                 sortedMatrix.append(column)
                 break
 

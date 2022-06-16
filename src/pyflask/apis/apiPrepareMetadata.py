@@ -400,22 +400,23 @@ class ImportBFMetadataFile(Resource):
     parser_import_metadata_file.add_argument('selected_account', type=str, help='Pennsieve account to save the metadata file to.', location="args", required=True)
     parser_import_metadata_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset to save the metadata file to.', location="args", required=True)
     parser_import_metadata_file.add_argument('file_type', type=str, help="The type of metadata file that we can import from Pennsieve. Must be [subjects.xlsx, samples.xlsx, dataset_description.xlsx, and submission.xlsx]", location="args", required=True)
-    parser_import_metadata_file.add_argument('ui_fields', type=list, help="Path to the metadata file on the user's machine.", location="json", required=False)
+    parser_import_metadata_file.add_argument('ui_fields', type=str, help="Path to the metadata file on the user's machine.", location="args", required=False)
     
 
     # @api.expect(parser_import_bf_metadata_file)
     @api.doc(description='Import a metadata file from Pennsieve. NOTE: CONTRARY TO THE SWAGGER UI THE PAYLOAD IS ONLY REQUIRED FOR SUBJECTS AND SAMPLES FILES.', 
             responses={500: "Internal Server Error", 400: "Bad Request"},
-            parser=parser_import_metadata_file,  
-            body=model_ui_fields
+            parser=parser_import_metadata_file
             )
     def get(self):
-        args = request.args.to_dict()
+        args = self.parser_import_metadata_file.parse_args()
+
         file_type = args.get('file_type')
         selected_account = args.get('selected_account')
         selected_dataset = args.get('selected_dataset')
-        ui_fields = request.json.get('ui_fields') if request.data else None
+        ui_fields = args.get('ui_fields')
 
+        print(ui_fields)
 
         valid = none_type_validation(file_type, selected_account, selected_dataset)
         if not valid:
@@ -425,8 +426,15 @@ class ImportBFMetadataFile(Resource):
             api.abort(400, "Error: The file_type parameter must be submission.xlsx, samples.xlsx, subjects.xlsx, or dataset_description.xlsx.")
         
         if file_type in ['samples.xlsx', 'subjects.xlsx'] and not ui_fields:
-            api.abort(400, "Error: To import a subjects or samples file from Pennsieve provide a ui_fields.")
+            api.abort(400, "Valid file types are samples.xlsx and subjects.xlsx. ui_fields are required for these file types.")
 
+        if ui_fields:
+            # a bug in the reqparser library makes any input with location=args and type=list to be parsed character by character.
+            # to fix this it would be necessary to join into a string, remove quotes and [] chars and then split on commas.
+            # more than that the type in Swagger docs is not recognized as a list even when explicitly called one.
+            # Rather than deal with that I will just set type=str and use the below workaround
+            # that converts the string representation of the list to an actual list.
+            ui_fields = list(map(str.strip, ui_fields.strip('][').replace("'", '').replace('"', '').split(',')))
 
         try:
             return import_bf_metadata_file(file_type, ui_fields, selected_account, selected_dataset)
