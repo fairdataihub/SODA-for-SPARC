@@ -6388,7 +6388,7 @@ ipcRenderer.on(
                   $(".swal-popover").popover();
                 },
                 footer: footer,
-              }).then((result) => {
+              }).then(async (result) => {
                 // var replaced = [];
                 /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {
@@ -6439,12 +6439,12 @@ ipcRenderer.on(
                 ).attr("placeholder");
 
                 let local_progress = setInterval(progressReport, 500);
-                function progressReport() {
+                async function progressReport() {
                   try {
                     let monitor_progress = await client.get(
                       `/organize_datasets/datasets/import/progress`
                     );
-                    
+
                     let res = monitor_progress.data;
                     percentage_amount = res[2].toFixed(2);
                     finished = res[3];
@@ -6474,14 +6474,12 @@ ipcRenderer.on(
                       progressBar_leftSide.style.transform = `rotate(180deg)`;
                       numb.innerText = "100%";
                       clearInterval(local_progress);
-                      progressBar_rightSide.classList.remove(
-                        "notransition"
-                      );
+                      progressBar_rightSide.classList.remove("notransition");
                       populate_existing_folders(datasetStructureJSONObj);
                       populate_existing_metadata(sodaJSONObj);
-                      $(
-                        "#para-continue-location-dataset-getting-started"
-                      ).text("Please continue below.");
+                      $("#para-continue-location-dataset-getting-started").text(
+                        "Please continue below."
+                      );
                       $("#nextBtn").prop("disabled", false);
                       // log the success to analytics
                       logMetadataForAnalytics(
@@ -6497,7 +6495,7 @@ ipcRenderer.on(
                         ).style.display = "none";
                       }, 1000);
                     }
-                  } catch(error) {
+                  } catch (error) {
                     clientError(error);
                   }
                 }
@@ -6525,12 +6523,12 @@ ipcRenderer.on(
 
               let percentage_amount = 0;
               let local_progress = setInterval(progressReport, 500);
-              function progressReport() {
+              async function progressReport() {
                 try {
                   let monitor_progress = await client.get(
                     `/organize_datasets/datasets/import/progress`
                   );
-                  
+
                   let res = monitor_progress.data;
                   percentage_amount = res[2].toFixed(2);
                   finished = res[3];
@@ -6562,9 +6560,9 @@ ipcRenderer.on(
                     progressBar_rightSide.classList.remove("notransition");
                     populate_existing_folders(datasetStructureJSONObj);
                     populate_existing_metadata(sodaJSONObj);
-                    $(
-                      "#para-continue-location-dataset-getting-started"
-                    ).text("Please continue below.");
+                    $("#para-continue-location-dataset-getting-started").text(
+                      "Please continue below."
+                    );
                     $("#nextBtn").prop("disabled", false);
                     // log the success to analytics
                     logMetadataForAnalytics(
@@ -6580,7 +6578,7 @@ ipcRenderer.on(
                       ).style.display = "none";
                     }, 1000);
                   }
-                } catch(error) {
+                } catch (error) {
                   clientError(error);
                   clearInterval(local_progress);
                 }
@@ -7052,14 +7050,11 @@ async function initiate_generate() {
   clearQueue();
 
   try {
-    let main_curate = await client.post(
-      `/curate_datasets/curation`,
-      {
-        payload: {
-          soda_json_object: JSON.stringify(sodaJSONObj),
-        },
-      }
-    );
+    let main_curate = await client.post(`/curate_datasets/curation`, {
+      payload: {
+        soda_json_object: JSON.stringify(sodaJSONObj),
+      },
+    });
 
     let res = main_curate.data;
     main_total_generate_dataset_size = res[1];
@@ -7092,7 +7087,7 @@ async function initiate_generate() {
       clientError(error);
       var emessage = error;
     }
-  } catch(error) {
+  } catch (error) {
     clientError(error);
     let emessage = error.response.data.message;
     organizeDataset_option_buttons.style.display = "flex";
@@ -7129,11 +7124,9 @@ async function initiate_generate() {
         document.getElementById("start-over-btn").style.display = "none";
         document.getElementById("div-vertical-progress-bar").style.display =
           "none";
-        document.getElementById("div-generate-comeback").style.display =
-          "none";
-        document.getElementById(
-          "generate-dataset-progress-tab"
-        ).style.display = "flex";
+        document.getElementById("div-generate-comeback").style.display = "none";
+        document.getElementById("generate-dataset-progress-tab").style.display =
+          "flex";
       }
     });
     progressStatus.innerHTML = "";
@@ -7156,7 +7149,7 @@ async function initiate_generate() {
       datasetList = responseObject.data.datasets;
     } catch (error) {
       clientError(error);
-      var emessage = error;
+      emessage = error.response.data.message;
     }
 
     // wait to see if the uploaded files or size will grow once the client has time to ask for the updated information
@@ -7180,12 +7173,12 @@ async function initiate_generate() {
   var countDone = 0;
   var timerProgress = setInterval(main_progressfunction, 1000);
   var successful = false;
-  function main_progressfunction() {
+  async function main_progressfunction() {
     try {
       let main_curate_progress = await client.get(
         `/curate_datasetscuration/progress`
       );
-      
+
       let res = main_curate_progress.data;
       main_curate_status = res[0];
       var start_generate = res[1];
@@ -7251,8 +7244,7 @@ async function initiate_generate() {
             totalSizePrint +
             ") " +
             "<br>";
-          progressMessage +=
-            "Elapsed time: " + elapsed_time_formatted + "<br>";
+          progressMessage += "Elapsed time: " + elapsed_time_formatted + "<br>";
           progressStatus.innerHTML = progressMessage;
           statusText.innerHTML = statusProgressMessage;
         }
@@ -7270,7 +7262,7 @@ async function initiate_generate() {
           elapsed_time_formatted +
           "<br>";
       }
-    } catch(error) {
+    } catch (error) {
       clientError(error);
       let emessage = error.response.data.message;
 
@@ -7378,7 +7370,12 @@ async function initiate_generate() {
   const checkForBucketUpload = async () => {
     // ask the server for the amount of files uploaded in the current session
     // nothing to log for uploads where a user is solely deleting files in this section
-    client.invoke("api_main_curate_function_upload_details", (err, res) => {
+    try {
+      let main_curate_details = await client.get(
+        `/curate_datasetscuration/upload_details`
+      );
+
+      let res = main_curate_details.data;
       // check if the amount of successfully uploaded files has increased
       if (res[0] > 0 && res[2] > foldersUploaded) {
         previousUploadedFileSize = uploadedFilesSize;
@@ -7433,7 +7430,9 @@ async function initiate_generate() {
         // don't log this again for the current upload session
         loggedDatasetNameToIdMapping = true;
       }
-    });
+    } catch (error) {
+      clientError(error);
+    }
 
     //stop the inteval when the upload is complete
     if (main_curate_status === "Done") {
