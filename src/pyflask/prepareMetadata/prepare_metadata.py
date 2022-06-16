@@ -21,7 +21,7 @@ import numpy as np
 from collections import defaultdict
 from pennsieve import Pennsieve
 import requests
-from errorHandlers import is_file_not_found_exception, is_invalid_file_exception
+from errorHandlers import is_file_not_found_exception, is_invalid_file_exception, InvalidDeliverablesDocument
 
 from string import ascii_uppercase
 import itertools
@@ -38,8 +38,6 @@ from manageDatasets import (
 )
 
 from pysodaUtils import agent_running
-
-from errorHandlers import InvalidDeliverablesDocument
 
 userpath = expanduser("~")
 METADATA_UPLOAD_BF_PATH = join(userpath, "SODA", "METADATA")
