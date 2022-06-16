@@ -405,9 +405,9 @@ class ImportBFMetadataFile(Resource):
 
     # @api.expect(parser_import_bf_metadata_file)
     @api.doc(description='Import a metadata file from Pennsieve. NOTE: CONTRARY TO THE SWAGGER UI THE PAYLOAD IS ONLY REQUIRED FOR SUBJECTS AND SAMPLES FILES.', 
-            responses={500: "Internal Server Error", 400: "Bad Request"},
-            parser=parser_import_metadata_file
+            responses={500: "Internal Server Error", 400: "Bad Request"}
             )
+    @api.expect(parser_import_metadata_file)
     def get(self):
         args = self.parser_import_metadata_file.parse_args()
 
@@ -416,7 +416,6 @@ class ImportBFMetadataFile(Resource):
         selected_dataset = args.get('selected_dataset')
         ui_fields = args.get('ui_fields')
 
-        print(ui_fields)
 
         valid = none_type_validation(file_type, selected_account, selected_dataset)
         if not valid:
@@ -426,7 +425,7 @@ class ImportBFMetadataFile(Resource):
             api.abort(400, "Error: The file_type parameter must be submission.xlsx, samples.xlsx, subjects.xlsx, or dataset_description.xlsx.")
         
         if file_type in ['samples.xlsx', 'subjects.xlsx'] and not ui_fields:
-            api.abort(400, "Valid file types are samples.xlsx and subjects.xlsx. ui_fields are required for these file types.")
+            api.abort(400, "An ui_fields property is required for fetching samples or subjects file types.")
 
         if ui_fields:
             # a bug in the reqparser library makes any input with location=args and type=list to be parsed character by character.
