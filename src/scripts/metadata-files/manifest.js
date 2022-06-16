@@ -832,7 +832,7 @@ async function initiate_generate_manifest_bf() {
       clientError(error);
       log.error(error);
       console.error(error);
-      var emessage = error;
+      emessage = error.response.data.message;
     }
 
     Swal.fire({
@@ -1283,7 +1283,7 @@ async function generateManifestFolderLocallyForEdit() {
   }
 }
 
-function createManifestLocally(type, editBoolean, originalDataset) {
+async function createManifestLocally(type, editBoolean, originalDataset) {
   // generateManifestHelper();
   var generatePath = "";
   sodaJSONObj["manifest-files"]["local-destination"] = path.join(
@@ -1305,7 +1305,8 @@ function createManifestLocally(type, editBoolean, originalDataset) {
         },
       }
     );
-    let res = generate_local_manifest.data.success_message_or_manifest_destination;
+    let res =
+      generate_local_manifest.data.success_message_or_manifest_destination;
     console.log(res);
     if (editBoolean) {
       //// else: create locally for the purpose of generating of manifest files locally
@@ -1314,7 +1315,7 @@ function createManifestLocally(type, editBoolean, originalDataset) {
           `/curate_datasets/manifest_files/local`,
           {
             payload: {
-              filepath:generatePath,
+              filepath: generatePath,
             },
           }
         );
@@ -1336,7 +1337,7 @@ function createManifestLocally(type, editBoolean, originalDataset) {
         $("#Question-prepare-manifest-4").removeClass("show");
         $("#Question-prepare-manifest-4").removeClass("prev");
         loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
-      } catch(error) {
+      } catch (error) {
         clientError(error);
         let emessage = error.response.data.message;
 
@@ -1407,7 +1408,7 @@ function createManifestLocally(type, editBoolean, originalDataset) {
         );
       }
     }
-  } catch(error) {
+  } catch (error) {
     clientError(error);
     let emessage = error.response.data.message;
 

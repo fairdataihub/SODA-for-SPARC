@@ -110,7 +110,7 @@ function resetSubmissionFields() {
   checkAirtableStatus("");
 }
 
-function helpMilestoneSubmission() {
+async function helpMilestoneSubmission() {
   var filepath = "";
   var informationJson = {};
   Swal.fire({
@@ -121,7 +121,7 @@ function helpMilestoneSubmission() {
     cancelButtonText: "No",
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
-  }).then((result) => {
+  }).then(async (result) => {
     if (result.isConfirmed) {
       Swal.fire({
         title: "Importing the Data Deliverables document",
@@ -140,7 +140,7 @@ function helpMilestoneSubmission() {
             };
           }
         },
-      }).then((result) => {
+      }).then(async (result) => {
         Swal.close();
 
         const filepath = result.value.filepath;
@@ -154,7 +154,7 @@ function helpMilestoneSubmission() {
               },
             }
           );
-          
+
           let res = extract_milestone.data;
           console.log(res);
           milestoneObj = res;
@@ -175,7 +175,7 @@ function helpMilestoneSubmission() {
           milestoneTagify1.removeAllTags();
           milestoneTagify1.settings.whitelist = [];
           changeAwardInput();
-        } catch(error) {
+        } catch (error) {
           clientError(error);
           let emessage = error.response.data.message;
           Swal.fire({

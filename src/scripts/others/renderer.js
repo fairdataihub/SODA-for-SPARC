@@ -6346,7 +6346,7 @@ document
 
 ipcRenderer.on(
   "selected-local-destination-datasetCurate",
-  (event, filepath) => {
+  async (event, filepath) => {
     if (filepath.length > 0) {
       if (filepath != null) {
         sodaJSONObj["starting-point"]["local-path"] = "";
@@ -6388,7 +6388,7 @@ ipcRenderer.on(
                   $(".swal-popover").popover();
                 },
                 footer: footer,
-              }).then((result) => {
+              }).then(async (result) => {
                 // var replaced = [];
                 /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {
@@ -6439,85 +6439,66 @@ ipcRenderer.on(
                 ).attr("placeholder");
 
                 let local_progress = setInterval(progressReport, 500);
-                function progressReport() {
-                  client.invoke(
-                    "api_monitor_local_json_progress",
-                    (error, res) => {
-                      if (error) {
-                        console.log(error);
-                      } else {
-                        percentage_amount = res[2].toFixed(2);
-                        finished = res[3];
+                async function progressReport() {
+                  try {
+                    let monitor_progress = await client.get(
+                      `/organize_datasets/datasets/import/progress`
+                    );
 
-                        progressBar_rightSide = document.getElementById(
-                          "left-side_less_than_50"
-                        );
-                        progressBar_leftSide = document.getElementById(
-                          "right-side_greater_than_50"
-                        );
+                    let res = monitor_progress.data;
+                    percentage_amount = res[2].toFixed(2);
+                    finished = res[3];
 
-                        numb.innerText = percentage_amount + "%";
-                        if (percentage_amount <= 50) {
-                          progressBar_rightSide.style.transform = `rotate(${
-                            percentage_amount * 0.01 * 360
-                          }deg)`;
-                        } else {
-                          progressBar_rightSide.style.transition = "";
-                          progressBar_rightSide.classList.add("notransition");
-                          progressBar_rightSide.style.transform = `rotate(180deg)`;
-                          progressBar_leftSide.style.transform = `rotate(${
-                            percentage_amount * 0.01 * 180
-                          }deg)`;
-                        }
+                    progressBar_rightSide = document.getElementById(
+                      "left-side_less_than_50"
+                    );
+                    progressBar_leftSide = document.getElementById(
+                      "right-side_greater_than_50"
+                    );
 
-                        if (finished === 1) {
-                          progressBar_leftSide.style.transform = `rotate(180deg)`;
-                          numb.innerText = "100%";
-                          clearInterval(local_progress);
-                          progressBar_rightSide.classList.remove(
-                            "notransition"
-                          );
-                          populate_existing_folders(datasetStructureJSONObj);
-                          populate_existing_metadata(sodaJSONObj);
-                          $(
-                            "#para-continue-location-dataset-getting-started"
-                          ).text("Please continue below.");
-                          $("#nextBtn").prop("disabled", false);
-                          // log the success to analytics
-                          logMetadataForAnalytics(
-                            "Success",
-                            PrepareDatasetsAnalyticsPrefix.CURATE,
-                            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-                            Actions.EXISTING,
-                            Destinations.LOCAL
-                          );
-                          setTimeout(() => {
-                            document.getElementById(
-                              "loading_local_dataset"
-                            ).style.display = "none";
-                          }, 1000);
-                        }
-                      }
-                    }
-                  );
-                }
-                client.invoke(
-                  "api_create_soda_json_object_backend",
-                  sodaJSONObj,
-                  root_folder_path,
-                  irregularFolderArray,
-                  replaced,
-                  (error, res) => {
-                    if (error) {
-                      console.log(error);
-                      clearInterval(local_progress);
+                    numb.innerText = percentage_amount + "%";
+                    if (percentage_amount <= 50) {
+                      progressBar_rightSide.style.transform = `rotate(${
+                        percentage_amount * 0.01 * 360
+                      }deg)`;
                     } else {
-                      sodaJSONObj = res;
-                      datasetStructureJSONObj =
-                        sodaJSONObj["dataset-structure"];
+                      progressBar_rightSide.style.transition = "";
+                      progressBar_rightSide.classList.add("notransition");
+                      progressBar_rightSide.style.transform = `rotate(180deg)`;
+                      progressBar_leftSide.style.transform = `rotate(${
+                        percentage_amount * 0.01 * 180
+                      }deg)`;
                     }
+
+                    if (finished === 1) {
+                      progressBar_leftSide.style.transform = `rotate(180deg)`;
+                      numb.innerText = "100%";
+                      clearInterval(local_progress);
+                      progressBar_rightSide.classList.remove("notransition");
+                      populate_existing_folders(datasetStructureJSONObj);
+                      populate_existing_metadata(sodaJSONObj);
+                      $("#para-continue-location-dataset-getting-started").text(
+                        "Please continue below."
+                      );
+                      $("#nextBtn").prop("disabled", false);
+                      // log the success to analytics
+                      logMetadataForAnalytics(
+                        "Success",
+                        PrepareDatasetsAnalyticsPrefix.CURATE,
+                        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+                        Actions.EXISTING,
+                        Destinations.LOCAL
+                      );
+                      setTimeout(() => {
+                        document.getElementById(
+                          "loading_local_dataset"
+                        ).style.display = "none";
+                      }, 1000);
+                    }
+                  } catch (error) {
+                    clientError(error);
                   }
-                );
+                }
                 //create setInterval variable that will keep track of the iterated items
               });
             } else {
@@ -6542,82 +6523,85 @@ ipcRenderer.on(
 
               let percentage_amount = 0;
               let local_progress = setInterval(progressReport, 500);
-              function progressReport() {
-                client.invoke(
-                  "api_monitor_local_json_progress",
-                  (error, res) => {
-                    if (error) {
-                      console.log(error);
-                      clearInterval(local_progress);
-                    } else {
-                      percentage_amount = res[2].toFixed(2);
-                      finished = res[3];
-                      progressBar_rightSide = document.getElementById(
-                        "left-side_less_than_50"
-                      );
-                      progressBar_leftSide = document.getElementById(
-                        "right-side_greater_than_50"
-                      );
+              async function progressReport() {
+                try {
+                  let monitor_progress = await client.get(
+                    `/organize_datasets/datasets/import/progress`
+                  );
 
-                      numb.innerText = percentage_amount + "%";
-                      if (percentage_amount <= 50) {
-                        progressBar_rightSide.style.transform = `rotate(${
-                          percentage_amount * 0.01 * 360
-                        }deg)`;
-                      } else {
-                        progressBar_rightSide.style.transition = "";
-                        progressBar_rightSide.classList.add("notransition");
-                        progressBar_rightSide.style.transform = `rotate(180deg)`;
-                        progressBar_leftSide.style.transform = `rotate(${
-                          percentage_amount * 0.01 * 180
-                        }deg)`;
-                      }
-                      if (finished === 1) {
-                        progressBar_leftSide.style.transform = `rotate(180deg)`;
-                        numb.innerText = "100%";
+                  let res = monitor_progress.data;
+                  percentage_amount = res[2].toFixed(2);
+                  finished = res[3];
+                  progressBar_rightSide = document.getElementById(
+                    "left-side_less_than_50"
+                  );
+                  progressBar_leftSide = document.getElementById(
+                    "right-side_greater_than_50"
+                  );
 
-                        clearInterval(local_progress);
-                        progressBar_rightSide.classList.remove("notransition");
-                        populate_existing_folders(datasetStructureJSONObj);
-                        populate_existing_metadata(sodaJSONObj);
-                        $(
-                          "#para-continue-location-dataset-getting-started"
-                        ).text("Please continue below.");
-                        $("#nextBtn").prop("disabled", false);
-                        // log the success to analytics
-                        logMetadataForAnalytics(
-                          "Success",
-                          PrepareDatasetsAnalyticsPrefix.CURATE,
-                          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-                          Actions.EXISTING,
-                          Destinations.LOCAL
-                        );
-                        setTimeout(() => {
-                          document.getElementById(
-                            "loading_local_dataset"
-                          ).style.display = "none";
-                        }, 1000);
-                      }
-                    }
+                  numb.innerText = percentage_amount + "%";
+                  if (percentage_amount <= 50) {
+                    progressBar_rightSide.style.transform = `rotate(${
+                      percentage_amount * 0.01 * 360
+                    }deg)`;
+                  } else {
+                    progressBar_rightSide.style.transition = "";
+                    progressBar_rightSide.classList.add("notransition");
+                    progressBar_rightSide.style.transform = `rotate(180deg)`;
+                    progressBar_leftSide.style.transform = `rotate(${
+                      percentage_amount * 0.01 * 180
+                    }deg)`;
+                  }
+                  if (finished === 1) {
+                    progressBar_leftSide.style.transform = `rotate(180deg)`;
+                    numb.innerText = "100%";
+
+                    clearInterval(local_progress);
+                    progressBar_rightSide.classList.remove("notransition");
+                    populate_existing_folders(datasetStructureJSONObj);
+                    populate_existing_metadata(sodaJSONObj);
+                    $("#para-continue-location-dataset-getting-started").text(
+                      "Please continue below."
+                    );
+                    $("#nextBtn").prop("disabled", false);
+                    // log the success to analytics
+                    logMetadataForAnalytics(
+                      "Success",
+                      PrepareDatasetsAnalyticsPrefix.CURATE,
+                      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+                      Actions.EXISTING,
+                      Destinations.LOCAL
+                    );
+                    setTimeout(() => {
+                      document.getElementById(
+                        "loading_local_dataset"
+                      ).style.display = "none";
+                    }, 1000);
+                  }
+                } catch (error) {
+                  clientError(error);
+                  clearInterval(local_progress);
+                }
+              }
+              try {
+                let create_sodajson_local = await client.post(
+                  `/organize_datasets/datasets/import`,
+                  {
+                    payload: {
+                      sodajsonobject: JSON.stringify(sodaJSONObj),
+                      root_folder_path: root_folder_path,
+                      irregular_folders: irregularFolderArray,
+                      replaced: replaced,
+                    },
                   }
                 );
+                let res = create_sodajson_local.data;
+                sodajsonobject = res;
+                datasetStructureJSONObj = sodaIsConnected["dataset-structure"];
+              } catch (error) {
+                clientError(error);
+                clearInterval(local_progress);
               }
-              client.invoke(
-                "api_create_soda_json_object_backend",
-                sodaJSONObj,
-                root_folder_path,
-                irregularFolderArray,
-                replaced,
-                (error, res) => {
-                  if (error) {
-                    console.log(error);
-                    clearInterval(local_progress);
-                  } else {
-                    sodaJSONObj = res;
-                    datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-                  }
-                }
-              );
             }
           } else {
             Swal.fire({
@@ -7065,17 +7049,231 @@ async function initiate_generate() {
   // clear the Pennsieve Queue (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
   clearQueue();
 
-  client.invoke("api_main_curate_function", sodaJSONObj, async (error, res) => {
-    if (error) {
+  try {
+    let main_curate = await client.post(`/curate_datasets/curation`, {
+      payload: {
+        soda_json_object: JSON.stringify(sodaJSONObj),
+      },
+    });
+
+    let res = main_curate.data;
+    main_total_generate_dataset_size = res[1];
+    uploadedFiles = res[2];
+
+    $("#sidebarCollapse").prop("disabled", false);
+    log.info("Completed curate function");
+
+    // log relevant curation details about the dataset generation/Upload to Google Analytics
+    logCurationSuccessToAnalytics(
+      manifest_files_requested,
+      main_total_generate_dataset_size,
+      dataset_name,
+      dataset_destination,
+      uploadedFiles
+    );
+
+    try {
+      let responseObject = await client.get(
+        `manage_datasets/bf_dataset_account`,
+        {
+          params: {
+            selected_account: defaultBfAccount,
+          },
+        }
+      );
+      datasetList = [];
+      datasetList = responseObject.data.datasets;
+    } catch (error) {
+      clientError(error);
+      var emessage = error;
+    }
+  } catch (error) {
+    clientError(error);
+    let emessage = error.response.data.message;
+    organizeDataset_option_buttons.style.display = "flex";
+    organizeDataset.disabled = false;
+    organizeDataset.className = "content-button is-selected";
+    organizeDataset.style = "background-color: #fff";
+    $("#sidebarCollapse").prop("disabled", false);
+    document.getElementById(
+      "para-new-curate-progress-bar-error-status"
+    ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
+    uploadLocally.disabled = false;
+    uploadLocally.className = "content-button is-selected";
+    uploadLocally.style = "background-color: #fff";
+    Swal.fire({
+      icon: "error",
+      title: "An Error Occurred While Uploading Your Dataset",
+      html: "Check the error text in the Organize Dataset's upload page to see what went wrong.",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    }).then((result) => {
+      statusBarClone.remove();
+      sparc_container.style.display = "inline";
+      if (result.isConfirmed) {
+        organizeDataset.click();
+        let button = document.getElementById("button-generate");
+        $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
+        document.getElementById("prevBtn").style.display = "none";
+        document.getElementById("start-over-btn").style.display = "none";
+        document.getElementById("div-vertical-progress-bar").style.display =
+          "none";
+        document.getElementById("div-generate-comeback").style.display = "none";
+        document.getElementById("generate-dataset-progress-tab").style.display =
+          "flex";
+      }
+    });
+    progressStatus.innerHTML = "";
+    statusText.innerHTML = "";
+    document.getElementById("div-new-curate-progress").style.display = "none";
+    generateProgressBar.value = 0;
+    log.error(error);
+    console.error(error);
+
+    try {
+      let responseObject = await client.get(
+        `manage_datasets/bf_dataset_account`,
+        {
+          params: {
+            selected_account: defaultBfAccount,
+          },
+        }
+      );
+      datasetList = [];
+      datasetList = responseObject.data.datasets;
+    } catch (error) {
+      clientError(error);
+      emessage = error.response.data.message;
+    }
+
+    // wait to see if the uploaded files or size will grow once the client has time to ask for the updated information
+    // if they stay zero that means nothing was uploaded
+    if (uploadedFiles === 0 || uploadedFilesSize === 0) {
+      await wait(2000);
+    }
+
+    // log the curation errors to Google Analytics
+    logCurationErrorsToAnalytics(
+      uploadedFiles,
+      uploadedFilesSize,
+      dataset_destination,
+      main_total_generate_dataset_size,
+      increaseInFileSize,
+      datasetUploadSession
+    );
+  }
+
+  // Progress tracking function for main curate
+  var countDone = 0;
+  var timerProgress = setInterval(main_progressfunction, 1000);
+  var successful = false;
+  async function main_progressfunction() {
+    try {
+      let main_curate_progress = await client.get(
+        `/curate_datasetscuration/progress`
+      );
+
+      let res = main_curate_progress.data;
+      main_curate_status = res[0];
+      var start_generate = res[1];
+      var main_curate_progress_message = res[2];
+      main_total_generate_dataset_size = res[3];
+      var main_generated_dataset_size = res[4];
+      var elapsed_time_formatted = res[5];
+
+      if (start_generate === 1) {
+        divGenerateProgressBar.style.display = "block";
+        if (main_curate_progress_message.includes("Success: COMPLETED!")) {
+          generateProgressBar.value = 100;
+          statusMeter.value = 100;
+          progressStatus.innerHTML = main_curate_status + smileyCan;
+          statusText.innerHTML = main_curate_status + smileyCan;
+          successful = true;
+        } else {
+          var value =
+            (main_generated_dataset_size / main_total_generate_dataset_size) *
+            100;
+          generateProgressBar.value = value;
+          statusMeter.value = value;
+          if (main_total_generate_dataset_size < displaySize) {
+            var totalSizePrint =
+              main_total_generate_dataset_size.toFixed(2) + " B";
+          } else if (
+            main_total_generate_dataset_size <
+            displaySize * displaySize
+          ) {
+            var totalSizePrint =
+              (main_total_generate_dataset_size / displaySize).toFixed(2) +
+              " KB";
+          } else if (
+            main_total_generate_dataset_size <
+            displaySize * displaySize * displaySize
+          ) {
+            var totalSizePrint =
+              (
+                main_total_generate_dataset_size /
+                displaySize /
+                displaySize
+              ).toFixed(2) + " MB";
+          } else {
+            var totalSizePrint =
+              (
+                main_total_generate_dataset_size /
+                displaySize /
+                displaySize /
+                displaySize
+              ).toFixed(2) + " GB";
+          }
+          var progressMessage = "";
+          var statusProgressMessage = "";
+          progressMessage += main_curate_progress_message + "<br>";
+          statusProgressMessage += main_curate_progress_message + "<br>";
+          statusProgressMessage +=
+            "Progress: " + value.toFixed(2) + "%" + "<br>";
+          progressMessage +=
+            "Progress: " +
+            value.toFixed(2) +
+            "%" +
+            " (total size: " +
+            totalSizePrint +
+            ") " +
+            "<br>";
+          progressMessage += "Elapsed time: " + elapsed_time_formatted + "<br>";
+          progressStatus.innerHTML = progressMessage;
+          statusText.innerHTML = statusProgressMessage;
+        }
+      } else {
+        statusText.innerHTML =
+          main_curate_progress_message +
+          "<br>" +
+          "Elapsed time: " +
+          elapsed_time_formatted +
+          "<br>";
+        progressStatus.innerHTML =
+          main_curate_progress_message +
+          "<br>" +
+          "Elapsed time: " +
+          elapsed_time_formatted +
+          "<br>";
+      }
+    } catch (error) {
+      clientError(error);
+      let emessage = error.response.data.message;
+
+      document.getElementById(
+        "para-new-curate-progress-bar-error-status"
+      ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
+      log.error(error);
       organizeDataset_option_buttons.style.display = "flex";
       organizeDataset.disabled = false;
       organizeDataset.className = "content-button is-selected";
       organizeDataset.style = "background-color: #fff";
-      $("#sidebarCollapse").prop("disabled", false);
-      var emessage = userError(error);
-      document.getElementById(
-        "para-new-curate-progress-bar-error-status"
-      ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
       uploadLocally.disabled = false;
       uploadLocally.className = "content-button is-selected";
       uploadLocally.style = "background-color: #fff";
@@ -7092,8 +7290,7 @@ async function initiate_generate() {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
       }).then((result) => {
-        statusBarClone.remove();
-        sparc_container.style.display = "inline";
+        //statusBarClone.remove();
         if (result.isConfirmed) {
           organizeDataset.click();
           let button = document.getElementById("button-generate");
@@ -7109,223 +7306,17 @@ async function initiate_generate() {
           ).style.display = "flex";
         }
       });
-      progressStatus.innerHTML = "";
-      statusText.innerHTML = "";
-      document.getElementById("div-new-curate-progress").style.display = "none";
-      generateProgressBar.value = 0;
-      log.error(error);
+      organizeDataset_option_buttons.style.display = "flex";
+      organizeDataset.disabled = false;
+      organizeDataset.className = "content-button is-selected";
+      organizeDataset.style = "background-color: #fff";
+      uploadLocally.disabled = false;
+      uploadLocally.className = "content-button is-selected";
+      uploadLocally.style = "background-color: #fff";
       console.error(error);
-
-      try {
-        let responseObject = await client.get(
-          `manage_datasets/bf_dataset_account`,
-          {
-            params: {
-              selected_account: defaultBfAccount,
-            },
-          }
-        );
-        datasetList = [];
-        datasetList = responseObject.data.datasets;
-      } catch (error) {
-        clientError(error);
-        var emessage = error;
-      }
-
-      // wait to see if the uploaded files or size will grow once the client has time to ask for the updated information
-      // if they stay zero that means nothing was uploaded
-      if (uploadedFiles === 0 || uploadedFilesSize === 0) {
-        await wait(2000);
-      }
-
-      // log the curation errors to Google Analytics
-      logCurationErrorsToAnalytics(
-        uploadedFiles,
-        uploadedFilesSize,
-        dataset_destination,
-        main_total_generate_dataset_size,
-        increaseInFileSize,
-        datasetUploadSession
-      );
-    } else {
-      main_total_generate_dataset_size = res[1];
-      uploadedFiles = res[2];
-
-      $("#sidebarCollapse").prop("disabled", false);
-      log.info("Completed curate function");
-
-      // log relevant curation details about the dataset generation/Upload to Google Analytics
-      logCurationSuccessToAnalytics(
-        manifest_files_requested,
-        main_total_generate_dataset_size,
-        dataset_name,
-        dataset_destination,
-        uploadedFiles
-      );
-
-      try {
-        let responseObject = await client.get(
-          `manage_datasets/bf_dataset_account`,
-          {
-            params: {
-              selected_account: defaultBfAccount,
-            },
-          }
-        );
-        datasetList = [];
-        datasetList = responseObject.data.datasets;
-      } catch (error) {
-        clientError(error);
-        var emessage = error;
-      }
+      //Clear the interval to stop the generation of new sweet alerts after intitial error
+      clearInterval(timerProgress);
     }
-    document.getElementById("div-generate-comeback").style.display = "flex";
-  });
-
-  // Progress tracking function for main curate
-  var countDone = 0;
-  var timerProgress = setInterval(main_progressfunction, 1000);
-  var successful = false;
-  function main_progressfunction() {
-    client.invoke("api_main_curate_function_progress", (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        document.getElementById(
-          "para-new-curate-progress-bar-error-status"
-        ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
-        log.error(error);
-        organizeDataset_option_buttons.style.display = "flex";
-        organizeDataset.disabled = false;
-        organizeDataset.className = "content-button is-selected";
-        organizeDataset.style = "background-color: #fff";
-        uploadLocally.disabled = false;
-        uploadLocally.className = "content-button is-selected";
-        uploadLocally.style = "background-color: #fff";
-        Swal.fire({
-          icon: "error",
-          title: "An Error Occurred While Uploading Your Dataset",
-          html: "Check the error text in the Organize Dataset's upload page to see what went wrong.",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
-        }).then((result) => {
-          //statusBarClone.remove();
-          if (result.isConfirmed) {
-            organizeDataset.click();
-            let button = document.getElementById("button-generate");
-            $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
-            document.getElementById("prevBtn").style.display = "none";
-            document.getElementById("start-over-btn").style.display = "none";
-            document.getElementById("div-vertical-progress-bar").style.display =
-              "none";
-            document.getElementById("div-generate-comeback").style.display =
-              "none";
-            document.getElementById(
-              "generate-dataset-progress-tab"
-            ).style.display = "flex";
-          }
-        });
-        organizeDataset_option_buttons.style.display = "flex";
-        organizeDataset.disabled = false;
-        organizeDataset.className = "content-button is-selected";
-        organizeDataset.style = "background-color: #fff";
-        uploadLocally.disabled = false;
-        uploadLocally.className = "content-button is-selected";
-        uploadLocally.style = "background-color: #fff";
-        console.error(error);
-        //Clear the interval to stop the generation of new sweet alerts after intitial error
-        clearInterval(timerProgress);
-      } else {
-        main_curate_status = res[0];
-        var start_generate = res[1];
-        var main_curate_progress_message = res[2];
-        main_total_generate_dataset_size = res[3];
-        var main_generated_dataset_size = res[4];
-        var elapsed_time_formatted = res[5];
-
-        if (start_generate === 1) {
-          divGenerateProgressBar.style.display = "block";
-          if (main_curate_progress_message.includes("Success: COMPLETED!")) {
-            generateProgressBar.value = 100;
-            statusMeter.value = 100;
-            progressStatus.innerHTML = main_curate_status + smileyCan;
-            statusText.innerHTML = main_curate_status + smileyCan;
-            successful = true;
-          } else {
-            var value =
-              (main_generated_dataset_size / main_total_generate_dataset_size) *
-              100;
-            generateProgressBar.value = value;
-            statusMeter.value = value;
-            if (main_total_generate_dataset_size < displaySize) {
-              var totalSizePrint =
-                main_total_generate_dataset_size.toFixed(2) + " B";
-            } else if (
-              main_total_generate_dataset_size <
-              displaySize * displaySize
-            ) {
-              var totalSizePrint =
-                (main_total_generate_dataset_size / displaySize).toFixed(2) +
-                " KB";
-            } else if (
-              main_total_generate_dataset_size <
-              displaySize * displaySize * displaySize
-            ) {
-              var totalSizePrint =
-                (
-                  main_total_generate_dataset_size /
-                  displaySize /
-                  displaySize
-                ).toFixed(2) + " MB";
-            } else {
-              var totalSizePrint =
-                (
-                  main_total_generate_dataset_size /
-                  displaySize /
-                  displaySize /
-                  displaySize
-                ).toFixed(2) + " GB";
-            }
-            var progressMessage = "";
-            var statusProgressMessage = "";
-            progressMessage += main_curate_progress_message + "<br>";
-            statusProgressMessage += main_curate_progress_message + "<br>";
-            statusProgressMessage +=
-              "Progress: " + value.toFixed(2) + "%" + "<br>";
-            progressMessage +=
-              "Progress: " +
-              value.toFixed(2) +
-              "%" +
-              " (total size: " +
-              totalSizePrint +
-              ") " +
-              "<br>";
-            progressMessage +=
-              "Elapsed time: " + elapsed_time_formatted + "<br>";
-            progressStatus.innerHTML = progressMessage;
-            statusText.innerHTML = statusProgressMessage;
-          }
-        } else {
-          statusText.innerHTML =
-            main_curate_progress_message +
-            "<br>" +
-            "Elapsed time: " +
-            elapsed_time_formatted +
-            "<br>";
-          progressStatus.innerHTML =
-            main_curate_progress_message +
-            "<br>" +
-            "Elapsed time: " +
-            elapsed_time_formatted +
-            "<br>";
-        }
-      }
-    });
 
     if (main_curate_status === "Done") {
       $("#sidebarCollapse").prop("disabled", false);
@@ -7379,7 +7370,12 @@ async function initiate_generate() {
   const checkForBucketUpload = async () => {
     // ask the server for the amount of files uploaded in the current session
     // nothing to log for uploads where a user is solely deleting files in this section
-    client.invoke("api_main_curate_function_upload_details", (err, res) => {
+    try {
+      let main_curate_details = await client.get(
+        `/curate_datasetscuration/upload_details`
+      );
+
+      let res = main_curate_details.data;
       // check if the amount of successfully uploaded files has increased
       if (res[0] > 0 && res[2] > foldersUploaded) {
         previousUploadedFileSize = uploadedFilesSize;
@@ -7434,7 +7430,9 @@ async function initiate_generate() {
         // don't log this again for the current upload session
         loggedDatasetNameToIdMapping = true;
       }
-    });
+    } catch (error) {
+      clientError(error);
+    }
 
     //stop the inteval when the upload is complete
     if (main_curate_status === "Done") {

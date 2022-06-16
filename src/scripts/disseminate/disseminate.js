@@ -192,7 +192,7 @@ const unshareDataset = (option) => {
   });
 };
 
-const disseminateCurationTeam = (account, dataset, share_status = "") => {
+const disseminateCurationTeam = async (account, dataset, share_status = "") => {
   var selectedTeam = "SPARC Data Curation Team";
   var selectedRole = "manager";
 
@@ -204,7 +204,8 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
   }
   try {
     let share_sparc_team = await client.patch(
-      `/manage_datasets/bf_dataset_permissions`, {
+      `/manage_datasets/bf_dataset_permissions`,
+      {
         params: {
           selected_account: account,
           selected_dataset: dataset,
@@ -212,8 +213,8 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
           name: selectedTeam,
         },
         payload: {
-          input_role: selectedRole
-        }
+          input_role: selectedRole,
+        },
       }
     );
 
@@ -243,8 +244,8 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
           payload: {
             selected_bfaccount: account,
             selected_bfdataset: dataset,
-            selected_status: selectedStatusOption
-          }
+            selected_status: selectedStatusOption,
+          },
         }
       );
       let res = change_dataset_status.data.message;
@@ -296,7 +297,7 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
       $(".spinner.post-curation").hide();
       $("#curation-team-share-btn").prop("disabled", false);
       $("#curation-team-unshare-btn").prop("disabled", false);
-    }catch(error) {
+    } catch (error) {
       clientError(error);
       let emessage = error.response.data.message;
 
@@ -324,7 +325,6 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
       );
       $(".spinner.post-curation").hide();
     }
-
   } catch (error) {
     clientError(error);
     let emessage = error.response.data.message;
@@ -355,7 +355,7 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
   }
 };
 
-function disseminateConsortium(bfAcct, bfDS, share_status = "") {
+async function disseminateConsortium(bfAcct, bfDS, share_status = "") {
   var selectedTeam = "SPARC Embargoed Data Sharing Group";
   var selectedRole = "viewer";
 
@@ -373,14 +373,14 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
           selected_account: bfAcct,
           selected_dataset: bfDS,
           scope: "team",
-          name: selectedTeam
+          name: selectedTeam,
         },
         payload: {
-          input_role: selectedRole
-        }
+          input_role: selectedRole,
+        },
       }
     );
-    
+
     let res = share_with_sparc.data.message;
 
     // log the success to SPARC
@@ -394,12 +394,11 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
           : "Add Team Permissions SPARC Consortium",
       ]
     );
-      
+
     disseminateShowCurrentPermission(bfAcct, bfDS);
     var selectedStatusOption = "11. Complete, Under Embargo (Investigator)";
     if (share_status === "unshare") {
-      selectedStatusOption =
-        "10. Curated & Awaiting PI Approval (Curators)";
+      selectedStatusOption = "10. Curated & Awaiting PI Approval (Curators)";
     }
     try {
       let change_dataset_status = await client.put(
@@ -408,9 +407,9 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
           selected_bfaccount: bfAcct,
           selected_bfdataset: bfDS,
           selected_status: selectedStatusOption,
-        },
+        }
       );
-      
+
       let res = change_dataset_status.data.message;
 
       if (share_status === "unshare") {
@@ -464,7 +463,7 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
       $("#sparc-consortium-unshare-btn").prop("disabled", false);
       $("#share-with-sparc-consortium-spinner").hide();
       $(".spinner.post-curation").hide();
-    } catch(error) {
+    } catch (error) {
       clientError(error);
       let emessage = error.response.data.message;
 
@@ -476,7 +475,7 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
       });
-  
+
       logGeneralOperationsForAnalytics(
         "Error",
         DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_SPARC_CONSORTIUM,
@@ -487,13 +486,13 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
             : "Change Dataset Status to Under Embargo",
         ]
       );
-  
+
       $("#share-with-sparc-consortium-spinner").hide();
       $("#sparc-consortium-share-btn").prop("disabled", false);
       $("#sparc-consortium-unshare-btn").prop("disabled", false);
       $(".spinner.post-curation").hide();
     }
-  } catch(error) {
+  } catch (error) {
     clientError(error);
     let emessage = error.response.data.message;
 
