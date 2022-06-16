@@ -18,7 +18,8 @@ from namespaces import NamespaceEnum, get_namespace
 from flask_restx import Resource, reqparse, fields
 from flask_restx.inputs import boolean
 from errorHandlers import notBadRequestException
-from flask import request
+from utils import metadata_string_to_list
+
 
 api = get_namespace(NamespaceEnum.PREPARE_METADATA)
 
@@ -281,9 +282,9 @@ class SubjectsFile(Resource):
 
 
     parser_create_data_frames = reqparse.RequestParser(bundle_errors=True)
-    parser_create_data_frames.add_argument('type', type=str, help="Subjects or Samples are the valid types.", location="args", required=False)
-    parser_create_data_frames.add_argument('filepath', type=str, help="Path to the subjects or samples file on the user's machine.", location="json", required=False)
-    parser_create_data_frames.add_argument('ui_fields', type=str, help='The fields to include in the final data frame.', location="json", required=False)
+    parser_create_data_frames.add_argument('type', type=str, help="Subjects or Samples are the valid types.", location="args", required=True)
+    parser_create_data_frames.add_argument('filepath', type=str, help="Path to the subjects or samples file on the user's machine.", location="args", required=True)
+    parser_create_data_frames.add_argument('ui_fields', type=str, help='The fields to include in the final data frame.', location="args", required=True)
 
     @api.expect(parser_create_data_frames)
     @api.doc(description='Get a local subjects file data in the form of data frames.', responses={500: "Internal Server Error", 400: "Bad Request"})
@@ -294,8 +295,10 @@ class SubjectsFile(Resource):
         filepath = data.get('filepath')
         ui_fields = data.get('ui_fields')
 
-        if file_type != 'samples':
-            api.abort(400, "Error: The type parameter must be samples.")
+        if file_type != 'subjects':
+            api.abort(400, "Error: The type parameter must be subjects.")
+
+        ui_fields = metadata_string_to_list(ui_fields)
 
         try:
             return convert_subjects_samples_file_to_df(file_type, filepath, ui_fields)
