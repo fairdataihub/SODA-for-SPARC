@@ -730,15 +730,10 @@ def sortedSubjectsTableData(matrix, fields):
     sortedMatrix = []
     customHeaderMatrix = []
 
-    # print(f"transpose -> matrix: {matrix}")
-    # print(f"ui_fields -> fields: {fields}")
 
     for field in fields:
         for column in matrix:
-            #if field == 'sample id' or column[0] == 'sample id':
-                # print(f"field: {field} and column: {column[0]}")
             if column[0].lower() == field:
-                print("Match found")
                 sortedMatrix.append(column)
                 break
 
