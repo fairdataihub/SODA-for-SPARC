@@ -737,135 +737,136 @@ async function initiate_generate_manifest_bf() {
 
   // clear the pennsieve queue
   clearQueue();
+  try {
+    let main_curate = await client.post(`/curate_datasets/curation`, {
+      soda_json_object: JSON.stringify(sodaJSONObj),
+    });
+    let res = main_curate.data;
 
-  client.invoke("api_main_curate_function", sodaJSONObj, async (error, res) => {
-    if (error) {
-      var emessage = userError(error);
+    let high_level_folder_num = 0;
+    if (manifest_files_requested) {
+      if ("dataset-structure" in sodaJSONObj) {
+        if ("folders" in sodaJSONObj["dataset-structure"]) {
+          for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
+            high_level_folder_num += 1;
+          }
+        }
+      }
+    }
+    // determine if working with a Local dataset or Pennsieve
+    if ("bf-dataset-selected" in sodaJSONObj) {
+      destination = "Pennsieve";
+    } else if ("generate-dataset" in sodaJSONObj) {
+      if ("destination" in sodaJSONObj["generate-dataset"]) {
+        destination = sodaJSONObj["generate-dataset"]["destination"];
+      }
+    }
+
+    // log the manifest file creation to analytics
+    logMetadataForAnalytics(
+      "Success",
+      MetadataAnalyticsPrefix.MANIFEST,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Generate",
+      Destinations.PENNSIEVE
+    );
+
+    // log the amount of high level manifest files that were created
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      MetadataAnalyticsPrefix.MANIFEST + " - Generate - Number of Files ",
+      "Number of Files",
+      high_level_folder_num
+    );
+
+    logMetadataSizeForAnalytics(
+      destination === "Pennsieve" ? true : false,
+      "manifest.xlsx",
+      res[1]
+    );
+
+    sodaJSONObj = {
+      "starting-point": { type: "" },
+      "dataset-structure": {},
+      "metadata-files": {},
+    };
+    datasetStructureJSONObj = {
+      folders: {},
+      files: {},
+      type: "",
+    };
+
+    Swal.fire({
+      title: "Successfully generated manifest files at the specified location!",
+      icon: "success",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      didOpen: () => {
+        Swal.hideLoading();
+      },
+    });
+    generatingBoolean = false;
+    resetManifest(true);
+  } catch (error) {
+    clientError(error);
+    let emessage = error.response.data.message;
+
+    file_counter = 0;
+    folder_counter = 0;
+    get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
+
+    try {
+      let responseObject = await client.get(
+        `manage_datasets/bf_dataset_account`,
+        {
+          params: {
+            selected_account: defaultBfAccount,
+          },
+        }
+      );
+      datasetList = [];
+      datasetList = responseObject.data.datasets;
+    } catch (error) {
+      clientError(error);
       log.error(error);
       console.error(error);
-      file_counter = 0;
-      folder_counter = 0;
-      get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
-
-      try {
-        let responseObject = await client.get(
-          `manage_datasets/bf_dataset_account`,
-          {
-            params: {
-              selected_account: defaultBfAccount,
-            },
-          }
-        );
-        datasetList = [];
-        datasetList = responseObject.data.datasets;
-      } catch (error) {
-        clientError(error);
-        log.error(error);
-        console.error(error);
-        var emessage = error;
-      }
-
-      Swal.fire({
-        title: "Failed to generate manifest files!",
-        text: emessage,
-        icon: "error",
-        showConfirmButton: true,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        didOpen: () => {
-          Swal.hideLoading();
-        },
-      });
-      generatingBoolean = false;
-      let destination = "";
-
-      // determine if working with a Local dataset or Pennsieve
-      if ("bf-dataset-selected" in sodaJSONObj) {
-        destination = "Pennsieve";
-      } else if ("generate-dataset" in sodaJSONObj) {
-        if ("destination" in sodaJSONObj["generate-dataset"]) {
-          destination = sodaJSONObj["generate-dataset"]["destination"];
-        }
-      }
-
-      // log the error to analytics
-      logMetadataForAnalytics(
-        "Error",
-        MetadataAnalyticsPrefix.MANIFEST,
-        AnalyticsGranularity.ALL_LEVELS,
-        "Generate",
-        Destinations.PENNSIEVE
-      );
-    } else {
-      let high_level_folder_num = 0;
-      if (manifest_files_requested) {
-        if ("dataset-structure" in sodaJSONObj) {
-          if ("folders" in sodaJSONObj["dataset-structure"]) {
-            for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
-              high_level_folder_num += 1;
-            }
-          }
-        }
-      }
-      // determine if working with a Local dataset or Pennsieve
-      if ("bf-dataset-selected" in sodaJSONObj) {
-        destination = "Pennsieve";
-      } else if ("generate-dataset" in sodaJSONObj) {
-        if ("destination" in sodaJSONObj["generate-dataset"]) {
-          destination = sodaJSONObj["generate-dataset"]["destination"];
-        }
-      }
-
-      // log the manifest file creation to analytics
-      logMetadataForAnalytics(
-        "Success",
-        MetadataAnalyticsPrefix.MANIFEST,
-        AnalyticsGranularity.ALL_LEVELS,
-        "Generate",
-        Destinations.PENNSIEVE
-      );
-
-      // log the amount of high level manifest files that were created
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        MetadataAnalyticsPrefix.MANIFEST + " - Generate - Number of Files ",
-        "Number of Files",
-        high_level_folder_num
-      );
-
-      logMetadataSizeForAnalytics(
-        destination === "Pennsieve" ? true : false,
-        "manifest.xlsx",
-        res[1]
-      );
-
-      sodaJSONObj = {
-        "starting-point": { type: "" },
-        "dataset-structure": {},
-        "metadata-files": {},
-      };
-      datasetStructureJSONObj = {
-        folders: {},
-        files: {},
-        type: "",
-      };
-
-      Swal.fire({
-        title:
-          "Successfully generated manifest files at the specified location!",
-        icon: "success",
-        showConfirmButton: true,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        didOpen: () => {
-          Swal.hideLoading();
-        },
-      });
-      generatingBoolean = false;
-      resetManifest(true);
+      var emessage = error;
     }
-  });
+
+    Swal.fire({
+      title: "Failed to generate manifest files!",
+      text: emessage,
+      icon: "error",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      didOpen: () => {
+        Swal.hideLoading();
+      },
+    });
+    generatingBoolean = false;
+    let destination = "";
+
+    // determine if working with a Local dataset or Pennsieve
+    if ("bf-dataset-selected" in sodaJSONObj) {
+      destination = "Pennsieve";
+    } else if ("generate-dataset" in sodaJSONObj) {
+      if ("destination" in sodaJSONObj["generate-dataset"]) {
+        destination = sodaJSONObj["generate-dataset"]["destination"];
+      }
+    }
+
+    // log the error to analytics
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.MANIFEST,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Generate",
+      Destinations.PENNSIEVE
+    );
+  }
 }
 
 /// creating manifest files locally by generating them to a local SODA folder, then move them to original dataset folder

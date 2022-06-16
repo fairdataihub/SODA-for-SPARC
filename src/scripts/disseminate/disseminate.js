@@ -493,22 +493,6 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
       $("#sparc-consortium-unshare-btn").prop("disabled", false);
       $(".spinner.post-curation").hide();
     }
-    client.invoke(
-      "api_bf_change_dataset_status",
-      bfAcct,
-      bfDS,
-      selectedStatusOption,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-          var emessage = userError(error);
-
-        } else {
-
-        }
-      }
-    );
   } catch(error) {
     clientError(error);
     let emessage = error.response.data.message;
@@ -538,55 +522,6 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
       ]
     );
   }
-  client.invoke(
-    "api_bf_add_permission_team",
-    bfAcct,
-    bfDS,
-    selectedTeam,
-    selectedRole,
-    (error, res) => {
-      if (error) {
-        log.error(error);
-        console.error(error);
-        var emessage = userError(error);
-
-      } else {
-        try {
-
-  
-    } catch(error) {
-      clientError(error);
-      let emessage = error.response.data.message;
-  
-      Swal.fire({
-        title: "Failed to share with SPARC Consortium!",
-        text: emessage,
-        icon: "error",
-        showConfirmButton: true,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-      });
-      $("#share-with-sparc-consortium-spinner").hide();
-      $(".spinner.post-curation").hide();
-      $("#sparc-consortium-share-btn").prop("disabled", false);
-      $("#sparc-consortium-unshare-btn").prop("disabled", false);
-  
-      // log the error to SPARC
-      logGeneralOperationsForAnalytics(
-        "Error",
-        DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_SPARC_CONSORTIUM,
-        AnalyticsGranularity.ALL_LEVELS,
-        [
-          share_status === "unshare"
-            ? "Removed Team Permissions SPARC Consortium"
-            : "Add Team Permissions SPARC Consortium",
-        ]
-      );
-    }
-
-      }
-    }
-  );
 }
 
 async function disseminateShowCurrentPermission(bfAcct, bfDS) {
