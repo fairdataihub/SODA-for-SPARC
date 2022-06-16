@@ -1680,7 +1680,7 @@ function loadSamplesDataToTable() {
   } else {
     Swal.fire({
       title: "Loaded successfully!",
-      html: 'Add or edit your sample_id(s) in the following table. <br><br><b>Note</b>:: Any value that does not follow SPARC standards (For example: Values for the fields: "Sample type", "Laterality", and "Plane of section") will be not be imported by SODA.',
+      html: 'Add or edit your sample_id(s) in the following table. <br><br><b>Note</b>: Any value that does not follow SPARC standards (For example: Values for the fields: "Sample type", "Laterality", and "Plane of section") will be not be imported by SODA.',
       icon: "success",
       showConfirmButton: true,
       heightAuto: false,
@@ -2449,19 +2449,21 @@ async function checkBFImportSamples() {
     .find(".samples-form-entry")) {
     fieldEntries.push(field.name.toLowerCase());
   }
-  console.log(fieldEntries);
-  console.log(typeof fieldEntries);
+
   let bfDataset = document.getElementById("bf_dataset_load_samples").innerText;
   try {
     let import_metadata = await client.get(
-      `/prepare_metadata/import_metadata_file?file_type=samples.xlsx&selected_account=${defaultBfAccount}&selected_dataset=${bfDataset}`,
+      `/prepare_metadata/import_metadata_file`,
       {
-        ui_fields: fieldEntries,
+        params: {
+          file_type: "samples.xlsx",
+          selected_account: defaultBfAccount,
+          selected_dataset: bfDataset,
+          ui_fields: fieldEntries.toString(),
+        },
       }
     );
-    let res = import_metadata.data;
-    console.log("above is samples.xlsx");
-    console.log(res);
+    let res = import_metadata.data.sample_file_rows;
 
     // log the success to analytics
     logMetadataForAnalytics(
@@ -2535,6 +2537,7 @@ function loadDataFrametoUI(type) {
 
 function loadDataFrametoUISamples(type) {
   // separate regular headers and custom headers
+  // console.log(samplesTableData[0]);
   const lowercasedHeaders = samplesTableData[0].map((header) =>
     header.toLowerCase()
   );
