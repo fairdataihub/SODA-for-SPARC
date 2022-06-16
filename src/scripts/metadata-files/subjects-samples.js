@@ -2393,9 +2393,17 @@ async function checkBFImportSubjects() {
     .innerText.trim();
   try {
     let import_metadata_file = await client.get(
-      `/prepare_metadata/readme_changes_file?file_type=subjects.xlsx&selected_account=${defaultBfAccount}&selected_dataset=${bfDataset}`
+      `/prepare_metadata/import_metadata_file`,
+      {
+        params: {
+          selected_account: defaultBfAccount,
+          selected_dataset: bfDataset,
+          file_type: "subjects.xlsx",
+          ui_fields: fieldEntries.toString(),
+        },
+      }
     );
-    let res = import_metadata_file.data;
+    let res = import_metadata_file.data.subject_file_rows;
 
     // log the success to analytics
     logMetadataForAnalytics(
