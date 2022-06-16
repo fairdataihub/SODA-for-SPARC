@@ -145,38 +145,46 @@ function helpMilestoneSubmission() {
 
         const filepath = result.value.filepath;
         var award = $("#submission-sparc-award");
-        client.invoke("api_extract_milestone_info", filepath, (error, res) => {
-          if (error) {
-            var emessage = userError(error);
-            log.error(error);
-            console.error(error);
-            Swal.fire({
-              backdrop: "rgba(0,0,0, 0.4)",
-              heightAuto: false,
-              icon: "error",
-              text: `${emessage}`,
-            });
-          } else {
-            milestoneObj = res;
-            createMetadataDir();
-            var informationJson = {};
-            informationJson = parseJson(milestonePath);
-            informationJson[award] = milestoneObj;
-            fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
-            Swal.fire({
-              backdrop: "rgba(0,0,0, 0.4)",
-              heightAuto: false,
-              timer: 3000,
-              timerProgressBar: true,
-              icon: "success",
-              text: `Successfully loaded your DataDeliverables.docx document`,
-            });
-            removeOptions(descriptionDateInput);
-            milestoneTagify1.removeAllTags();
-            milestoneTagify1.settings.whitelist = [];
-            changeAwardInput();
-          }
-        });
+        try {
+          let extract_milestone = await client.get(
+            `/prepare_metadata/import_milestone`,
+            {
+              params: {
+                path: filepath,
+              },
+            }
+          );
+          
+          let res = extract_milestone.data;
+          console.log(res);
+          milestoneObj = res;
+          createMetadataDir();
+          var informationJson = {};
+          informationJson = parseJson(milestonePath);
+          informationJson[award] = milestoneObj;
+          fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
+          Swal.fire({
+            backdrop: "rgba(0,0,0, 0.4)",
+            heightAuto: false,
+            timer: 3000,
+            timerProgressBar: true,
+            icon: "success",
+            text: `Successfully loaded your DataDeliverables.docx document`,
+          });
+          removeOptions(descriptionDateInput);
+          milestoneTagify1.removeAllTags();
+          milestoneTagify1.settings.whitelist = [];
+          changeAwardInput();
+        } catch(error) {
+          clientError(error);
+          let emessage = error.response.data.message;
+          Swal.fire({
+            backdrop: "rgba(0,0,0, 0.4)",
+            heightAuto: false,
+            icon: "error",
+            text: `${emessage}`,
+          });
+        }
       });
     }
   });
