@@ -1692,7 +1692,7 @@ function getAllIndexes(arr, val) {
 }
 
 // import existing subjects.xlsx info (calling python to load info to a dataframe)
-function loadSubjectsFileToDataframe(filePath) {
+async function loadSubjectsFileToDataframe(filePath) {
   var fieldSubjectEntries = [];
   for (var field of $("#form-add-a-subject")
     .children()
@@ -1711,7 +1711,7 @@ function loadSubjectsFileToDataframe(filePath) {
         },
       }
     );
-    
+
     let res = import_subjects_file.data;
     // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
     if (res.length > 1) {
@@ -1726,24 +1726,24 @@ function loadSubjectsFileToDataframe(filePath) {
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
-    
-       logMetadataForAnalytics(
-         "Error",
-         MetadataAnalyticsPrefix.SUBJECTS,
-         AnalyticsGranularity.ALL_LEVELS,
-         "Existing",
-         Destinations.LOCAL
-       );
-       return;
-     }
-     logMetadataForAnalytics(
-       "Success",
-       MetadataAnalyticsPrefix.SUBJECTS,
-       AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-       "Existing",
-       Destinations.LOCAL
-     );
-     loadDataFrametoUI("local");
+
+        logMetadataForAnalytics(
+          "Error",
+          MetadataAnalyticsPrefix.SUBJECTS,
+          AnalyticsGranularity.ALL_LEVELS,
+          "Existing",
+          Destinations.LOCAL
+        );
+        return;
+      }
+      logMetadataForAnalytics(
+        "Success",
+        MetadataAnalyticsPrefix.SUBJECTS,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        "Existing",
+        Destinations.LOCAL
+      );
+      loadDataFrametoUI("local");
     } else {
       logMetadataForAnalytics(
         "Error",
@@ -1783,26 +1783,38 @@ function loadSubjectsFileToDataframe(filePath) {
 }
 
 // import existing subjects.xlsx info (calling python to load info to a dataframe)
-function loadSamplesFileToDataframe(filePath) {
+async function loadSamplesFileToDataframe(filePath) {
   var fieldSampleEntries = [];
   for (var field of $("#form-add-a-sample")
     .children()
     .find(".samples-form-entry")) {
     fieldSampleEntries.push(field.name.toLowerCase());
   }
-  client.invoke(
-    "api_convert_subjects_samples_file_to_df",
-    "samples",
-    filePath,
-    fieldSampleEntries,
-    (error, res) => {
-      if (error) {
-        log.error(error);
-        console.error(error);
-        var emessage = userError(error);
+  try {
+    let import_samples_file = await client.get(
+      `/prepare_metadata/samples_file`,
+      {
+        params: {
+          type: "samples.xlsx",
+        },
+        payload: {
+          filepath: filePath,
+          ui_fields: fieldSampleEntries,
+        },
+      }
+    );
+
+    let res = import_samples_file.data.sample_file_rows;
+    console.log(res);
+    // res is a dataframe, now we load it into our samplesTableData in order to populate the UI
+    if (res.length > 1) {
+      result = transformImportedExcelFile("samples", res);
+      if (result !== false) {
+        samplesTableData = result;
+      } else {
         Swal.fire({
           title: "Couldn't load existing samples.xlsx file",
-          html: emessage,
+          text: "Please make sure the imported file follows the latest SPARC Dataset Structure 2.0.0 and try again.",
           icon: "error",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
@@ -1815,59 +1827,54 @@ function loadSamplesFileToDataframe(filePath) {
           "Existing",
           Destinations.LOCAL
         );
-      } else {
-        // res is a dataframe, now we load it into our samplesTableData in order to populate the UI
-        if (res.length > 1) {
-          result = transformImportedExcelFile("samples", res);
-          if (result !== false) {
-            samplesTableData = result;
-          } else {
-            Swal.fire({
-              title: "Couldn't load existing samples.xlsx file",
-              text: "Please make sure the imported file follows the latest SPARC Dataset Structure 2.0.0 and try again.",
-              icon: "error",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
 
-            logMetadataForAnalytics(
-              "Error",
-              MetadataAnalyticsPrefix.SAMPLES,
-              AnalyticsGranularity.ALL_LEVELS,
-              "Existing",
-              Destinations.LOCAL
-            );
-
-            return;
-          }
-          logMetadataForAnalytics(
-            "Success",
-            MetadataAnalyticsPrefix.SAMPLES,
-            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-            "Existing",
-            Destinations.LOCAL
-          );
-
-          loadDataFrametoUISamples("local");
-        } else {
-          logMetadataForAnalytics(
-            "Error",
-            MetadataAnalyticsPrefix.SAMPLES,
-            AnalyticsGranularity.ALL_LEVELS,
-            "Existing",
-            Destinations.LOCAL
-          );
-          Swal.fire({
-            title: "Couldn't load existing samples.xlsx file",
-            text: "Please make sure there is at least one sample in the samples.xlsx file.",
-            icon: "error",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-        }
+        return;
       }
+      logMetadataForAnalytics(
+        "Success",
+        MetadataAnalyticsPrefix.SAMPLES,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        "Existing",
+        Destinations.LOCAL
+      );
+
+      loadDataFrametoUISamples("local");
+    } else {
+      logMetadataForAnalytics(
+        "Error",
+        MetadataAnalyticsPrefix.SAMPLES,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Existing",
+        Destinations.LOCAL
+      );
+      Swal.fire({
+        title: "Couldn't load existing samples.xlsx file",
+        text: "Please make sure there is at least one sample in the samples.xlsx file.",
+        icon: "error",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
     }
-  );
+  } catch (error) {
+    clientError(error);
+    let emessage = error.response.data.message;
+
+    Swal.fire({
+      title: "Couldn't load existing samples.xlsx file",
+      html: emessage,
+      icon: "error",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.SAMPLES,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.LOCAL
+    );
+  }
 }
 
 // load and parse json file
