@@ -254,7 +254,7 @@ class SubjectsFile(Resource):
     parser_save_subjects_file.add_argument('upload_boolean', type=boolean, help='Save subjecst on Pennsieve if True else save locally.', location="args", required=True)
     parser_save_subjects_file.add_argument('selected_account', type=str, help='Pennsieve account to save the subjects file to.', location="json", required=False)
     parser_save_subjects_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset to save the subjects file to.', location="json", required=False)
-    parser_save_subjects_file.add_argument('subjects_str', type=list, help='List of subjects to save.', location="json", required=True)
+    parser_save_subjects_file.add_argument('subjects_header_row', type=list, help='List of subjects to save.', location="json", required=True)
 
     @api.expect(parser_save_subjects_file)
     @api.doc(description='Save the subjects file to the user\'s machine or to Pennsieve.', responses={500: "Internal Server Error", 400: "Bad Request", 403: "Forbidden"})
@@ -268,10 +268,11 @@ class SubjectsFile(Resource):
         subjects_str = data.get('subjects_str')
 
         if upload_boolean and not selected_account and not selected_dataset:
-            api.abort(400, "Error:  To save a subjects file on Pennsieve provide a dataset and pennsieve account.")
+            api.abort(400, "To save a subjects file on Pennsieve provide a dataset and pennsieve account.")
 
         if not upload_boolean and not filepath:
-            api.abort(400, "Error:  To save a subjects file on the user\'s machine provide a filepath.")
+            api.abort(400, "To save a subjects file on the user\'s machine provide a filepath.")
+
 
         try:
             save_subjects_file(upload_boolean, selected_account, selected_dataset, filepath, subjects_str)
