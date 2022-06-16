@@ -42,7 +42,7 @@ class SaveSubmissionFile(Resource):
     parser_save_submission_file.add_argument('selected_account', type=str, help='Pennsieve account name', location="args", required=True)
     parser_save_submission_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset name', location="args", required=True)
     parser_save_submission_file.add_argument('filepath', type=str, help='Path to the file to be uploaded', location="json")
-    parser_save_submission_file.add_argument('json_str', type=str, help='JSON string to be uploaded', location="json", required=True)
+    parser_save_submission_file.add_argument('json_str', type=list, help='JSON string to be uploaded', location="json", required=True)
 
     @api.expect(parser_save_submission_file)
     @api.response(200, 'OK', model_save_submission_file_response)
