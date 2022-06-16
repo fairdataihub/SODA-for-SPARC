@@ -202,146 +202,157 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
   if (share_status === "unshare") {
     selectedRole = "remove current permissions";
   }
-  client.invoke(
-    "api_bf_add_permission_team",
-    account,
-    dataset,
-    selectedTeam,
-    selectedRole,
-    (error, res) => {
-      if (error) {
-        log.error(error);
-        console.error(error);
-        var emessage = userError(error);
+  try {
+    let share_sparc_team = await client.patch(
+      `/manage_datasets/bf_dataset_permissions`, {
+        params: {
+          selected_account: account,
+          selected_dataset: dataset,
+          scope: "team",
+          name: selectedTeam,
+        },
+        payload: {
+          input_role: selectedRole
+        }
+      }
+    );
+
+    let res = share_sparc_team.data.message;
+
+    logGeneralOperationsForAnalytics(
+      "Success",
+      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
+      AnalyticsGranularity.ACTION,
+      [
+        share_status === "unshare"
+          ? "Remove Consortium's Team Permissions"
+          : "Give Consortium Team Permissions",
+      ]
+    );
+
+    disseminateShowCurrentPermission(account, dataset);
+    var selectedStatusOption = "03. Ready for Curation (Investigator)";
+
+    if (share_status === "unshare") {
+      selectedStatusOption = "02. Work In Progress (Investigator)";
+    }
+    try {
+      let change_dataset_status = await client.put(
+        `/manage_datasets/bf_dataset_status`,
+        {
+          payload: {
+            selected_bfaccount: account,
+            selected_bfdataset: dataset,
+            selected_status: selectedStatusOption
+          }
+        }
+      );
+      let res = change_dataset_status.data.message;
+
+      $("#share-curation-team-spinner").hide();
+
+      if (share_status === "unshare") {
         Swal.fire({
-          title: "Failed to share with Curation team!",
-          text: emessage,
-          icon: "error",
+          title: "Successfully shared with Curation team!",
+          text: `Removed the Curation Team's manager permissions and set dataset status to "Work In Progress"`,
+          icon: "success",
           showConfirmButton: true,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
-        $("#share-curation-team-spinner").hide();
-        $(".spinner.post-curation").hide();
-        $("#curation-team-share-btn").prop("disabled", false);
-        $("#curation-team-unshare-btn").prop("disabled", false);
-
-        logGeneralOperationsForAnalytics(
-          "Error",
-          DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
-          AnalyticsGranularity.ALL_LEVELS,
-          [
-            share_status === "unshare"
-              ? "Remove Consortium's Team Permissions"
-              : "Give Consortium Team Permissions",
-          ]
-        );
-      } else {
+        $("#curation-team-unshare-btn").hide();
+        $("#curation-team-share-btn").show();
         logGeneralOperationsForAnalytics(
           "Success",
           DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
-          AnalyticsGranularity.ACTION,
-          [
-            share_status === "unshare"
-              ? "Remove Consortium's Team Permissions"
-              : "Give Consortium Team Permissions",
-          ]
+          AnalyticsGranularity.ALL_LEVELS,
+          ["Change Dataset Status to Work In Progress"]
         );
+      } else {
+        Swal.fire({
+          title: "Successfully shared with Curation team!",
+          text: 'This provided the Curation Team manager permissions and set your dataset status to "Ready for Curation"',
+          icon: "success",
+          showConfirmButton: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+        $("#curation-team-unshare-btn").show();
+        $("#curation-team-share-btn").hide();
 
-        disseminateShowCurrentPermission(account, dataset);
-        var selectedStatusOption = "03. Ready for Curation (Investigator)";
-
-        if (share_status === "unshare") {
-          selectedStatusOption = "02. Work In Progress (Investigator)";
-        }
-
-        client.invoke(
-          "api_bf_change_dataset_status",
-          account,
-          dataset,
-          selectedStatusOption,
-          (error, res) => {
-            if (error) {
-              log.error(error);
-              console.error(error);
-              var emessage = userError(error);
-              Swal.fire({
-                title: "Failed to share with Curation team!",
-                text: emessage,
-                icon: "error",
-                showConfirmButton: true,
-                heightAuto: false,
-                backdrop: "rgba(0,0,0, 0.4)",
-              });
-              $("#share-curation-team-spinner").hide();
-              $("#curation-team-share-btn").prop("disabled", false);
-              $("#curation-team-unshare-btn").prop("disabled", false);
-
-              logGeneralOperationsForAnalytics(
-                "Error",
-                DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
-                AnalyticsGranularity.ALL_LEVELS,
-                [
-                  share_status === "unshare"
-                    ? "Change Dataset Status to Work In Progress"
-                    : "Change Dataset Status to Ready for Curation",
-                ]
-              );
-              $(".spinner.post-curation").hide();
-            } else {
-              $("#share-curation-team-spinner").hide();
-
-              if (share_status === "unshare") {
-                Swal.fire({
-                  title: "Successfully shared with Curation team!",
-                  text: `Removed the Curation Team's manager permissions and set dataset status to "Work In Progress"`,
-                  icon: "success",
-                  showConfirmButton: true,
-                  heightAuto: false,
-                  backdrop: "rgba(0,0,0, 0.4)",
-                });
-                $("#curation-team-unshare-btn").hide();
-                $("#curation-team-share-btn").show();
-                logGeneralOperationsForAnalytics(
-                  "Success",
-                  DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
-                  AnalyticsGranularity.ALL_LEVELS,
-                  ["Change Dataset Status to Work In Progress"]
-                );
-              } else {
-                Swal.fire({
-                  title: "Successfully shared with Curation team!",
-                  text: 'This provided the Curation Team manager permissions and set your dataset status to "Ready for Curation"',
-                  icon: "success",
-                  showConfirmButton: true,
-                  heightAuto: false,
-                  backdrop: "rgba(0,0,0, 0.4)",
-                });
-                $("#curation-team-unshare-btn").show();
-                $("#curation-team-share-btn").hide();
-
-                logGeneralOperationsForAnalytics(
-                  "Success",
-                  DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
-                  AnalyticsGranularity.ALL_LEVELS,
-                  ["Change Dataset Status to Ready for Curation"]
-                );
-              }
-
-              curation_consortium_check("update");
-              showCurrentPermission();
-              showCurrentDatasetStatus();
-
-              disseminiateShowCurrentDatasetStatus("", account, dataset);
-              $(".spinner.post-curation").hide();
-              $("#curation-team-share-btn").prop("disabled", false);
-              $("#curation-team-unshare-btn").prop("disabled", false);
-            }
-          }
+        logGeneralOperationsForAnalytics(
+          "Success",
+          DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
+          AnalyticsGranularity.ALL_LEVELS,
+          ["Change Dataset Status to Ready for Curation"]
         );
       }
+
+      curation_consortium_check("update");
+      showCurrentPermission();
+      showCurrentDatasetStatus();
+
+      disseminiateShowCurrentDatasetStatus("", account, dataset);
+      $(".spinner.post-curation").hide();
+      $("#curation-team-share-btn").prop("disabled", false);
+      $("#curation-team-unshare-btn").prop("disabled", false);
+    }catch(error) {
+      clientError(error);
+      let emessage = error.response.data.message;
+
+      Swal.fire({
+        title: "Failed to share with Curation team!",
+        text: emessage,
+        icon: "error",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+      $("#share-curation-team-spinner").hide();
+      $("#curation-team-share-btn").prop("disabled", false);
+      $("#curation-team-unshare-btn").prop("disabled", false);
+
+      logGeneralOperationsForAnalytics(
+        "Error",
+        DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
+        AnalyticsGranularity.ALL_LEVELS,
+        [
+          share_status === "unshare"
+            ? "Change Dataset Status to Work In Progress"
+            : "Change Dataset Status to Ready for Curation",
+        ]
+      );
+      $(".spinner.post-curation").hide();
     }
-  );
+
+  } catch (error) {
+    clientError(error);
+    let emessage = error.response.data.message;
+
+    Swal.fire({
+      title: "Failed to share with Curation team!",
+      text: emessage,
+      icon: "error",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+    $("#share-curation-team-spinner").hide();
+    $(".spinner.post-curation").hide();
+    $("#curation-team-share-btn").prop("disabled", false);
+    $("#curation-team-unshare-btn").prop("disabled", false);
+
+    logGeneralOperationsForAnalytics(
+      "Error",
+      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
+      AnalyticsGranularity.ALL_LEVELS,
+      [
+        share_status === "unshare"
+          ? "Remove Consortium's Team Permissions"
+          : "Give Consortium Team Permissions",
+      ]
+    );
+  }
 };
 
 function disseminateConsortium(bfAcct, bfDS, share_status = "") {
