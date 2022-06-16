@@ -860,28 +860,35 @@ function importExistingSubmissionFile(type) {
 
 // function to load existing submission files
 function loadExistingSubmissionFile(filepath) {
-  client.invoke("api_load_existing_submission_file", filepath, (error, res) => {
-    if (error) {
-      var emessage = userError(error);
-      console.log(error);
-      Swal.fire({
-        title: "Failed to load the existing submission.xlsx file.",
-        html: emessage,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        icon: "error",
-      });
-      logMetadataForAnalytics(
-        "Error",
-        MetadataAnalyticsPrefix.SUBMISSION,
-        AnalyticsGranularity.ALL_LEVELS,
-        "Existing",
-        Destinations.LOCAL
-      );
-    } else {
-      loadSubmissionFileToUI(res, "local");
-    }
-  });
+  try {
+    let load_submission_file = await client.get(
+      `/prepare_metadata/submission_file`,
+      {
+        filepath: filepath,
+      }
+    );
+    
+    let res = load_submission_file.data;
+    loadSubmissionFileToUI(res, "local");
+  } catch(error) {
+    clientError(error);
+    let emessage = error.response.data.message;
+
+    Swal.fire({
+      title: "Failed to load the existing submission.xlsx file.",
+      html: emessage,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      icon: "error",
+    });
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.SUBMISSION,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.LOCAL
+    );
+  }
 }
 
 function loadSubmissionFileToUI(data, type) {
