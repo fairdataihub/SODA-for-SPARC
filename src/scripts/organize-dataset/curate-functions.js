@@ -442,7 +442,12 @@ const importGenerateDatasetStep = async (object) => {
 
         try {
           let dataset_request = await client.get(
-            `/manage_datasets/bf_account_details?selected_account=${bFAccountSelected}`
+            `/manage_datasets/bf_account_details`,
+            {
+              params: {
+                selected_account: bfAccountSelected,
+              },
+            }
           );
           $("#para-account-detail-curate").html(
             dataset_request.data.account_details
@@ -810,7 +815,12 @@ $(document).ready(async function () {
     async function (mutations) {
       try {
         let responseObject = await client.get(
-          `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
+          `manage_datasets/bf_dataset_account`,
+          {
+            params: {
+              selected_account: defaultBfAccount,
+            },
+          }
         );
         datasetList = [];
         datasetList = responseObject.data.datasets;
@@ -845,7 +855,14 @@ const get_api_key = async (login, password, key_name) => {
   return new Promise(async (resolve) => {
     try {
       let bf_get_pennsieve_secret_key = await client.get(
-        `/manage_datasets/pennsieve_api_key_secret?username=${login}&password=${password}&api_key=${key_name}`
+        `/manage_datasets/pennsieve_api_key_secret`,
+        {
+          params: {
+            username: login,
+            password: password,
+            api_key: key_name,
+          },
+        }
       );
       let res = bf_get_pennsieve_secret_key.data;
       resolve(res);
@@ -919,7 +936,12 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
 
         try {
           let bf_account_details_req = await client.get(
-            `/manage_datasets/bf_account_details?selected_account=${bfacct}`
+            `/manage_datasets/bf_account_details`,
+            {
+              params: {
+                selected_account: bfacct,
+              },
+            }
           );
           let accountDetails = bf_account_details_req.data.account_details;
           $("#para-account-detail-curate").html(accountDetails);
@@ -931,7 +953,12 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
 
           try {
             let responseObject = await client.get(
-              `manage_datasets/bf_dataset_account?selected_account=${bfacct}`
+              `manage_datasets/bf_dataset_account`,
+              {
+                params: {
+                  selected_account: bfacct,
+                },
+              }
             );
             datasetList = [];
             datasetList = responseObject.data.datasets;
@@ -1046,7 +1073,12 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
 
             try {
               let bf_account_details_req = await client.get(
-                `/manage_datasets/bf_account_details?selected_account=${defaultBfAccount}`
+                `/manage_datasets/bf_account_details?selected_account=${defaultBfAccount}`,
+                {
+                  params: {
+                    selected_account: defaultBfAccount,
+                  },
+                }
               );
               let result = bf_account_details_req.data.account_details;
               $("#para-account-detail-curate").html(result);
@@ -1199,7 +1231,12 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
           let responseObject;
           try {
             responseObject = await client.get(
-              `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
+              `manage_datasets/bf_dataset_account`,
+              {
+                params: {
+                  selected_account: defaultBfAccount,
+                },
+              }
             );
           } catch (error) {
             log.error(error);

@@ -749,7 +749,12 @@ async function initiate_generate_manifest_bf() {
 
       try {
         let responseObject = await client.get(
-          `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
+          `manage_datasets/bf_dataset_account`,
+          {
+            params: {
+              selected_account: defaultBfAccount,
+            },
+          }
         );
         datasetList = [];
         datasetList = responseObject.data.datasets;

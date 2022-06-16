@@ -2854,7 +2854,12 @@ async function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
     bfaccountDropdown.options[bfaccountDropdown.selectedIndex].text;
   try {
     let responseObject = await client.get(
-      `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
+      `manage_datasets/bf_dataset_account`,
+      {
+        params: {
+          selected_account: defaultBfAccount,
+        },
+      }
     );
     datasetList = [];
     datasetList = responseObject.data.datasets;
@@ -3800,15 +3805,6 @@ async function loadDefaultAccount() {
   let account = accounts[0];
   console.log(account);
 
-  try {
-    let dataset_request = await client.get(
-      `/manage_datasets/bf_dataset_permissions?selected_account=${account}&selected_dataset=${"bug-test"}`
-    );
-    console.log(dataset_request.data);
-  } catch (error) {
-    clientError(error);
-  }
-
   console.log("Default account success: ", accounts);
   if (accounts.length > 0) {
     var myitemselect = accounts[0];
@@ -4375,7 +4371,12 @@ async function showDefaultBFAccount() {
       defaultBfAccount = myitemselect;
       try {
         let bf_account_details_req = await client.get(
-          `/manage_datasets/bf_account_details?selected_account=${defaultBfAccount}`
+          `/manage_datasets/bf_account_details`,
+          {
+            params: {
+              selected_account: defaultBfAccount,
+            },
+          }
         );
         let accountDetails = bf_account_details_req.data.account_details;
         $("#para-account-detail-curate").html(accountDetails);
@@ -7117,7 +7118,12 @@ async function initiate_generate() {
 
       try {
         let responseObject = await client.get(
-          `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
+          `manage_datasets/bf_dataset_account`,
+          {
+            params: {
+              selected_account: defaultBfAccount,
+            },
+          }
         );
         datasetList = [];
         datasetList = responseObject.data.datasets;
@@ -7159,7 +7165,12 @@ async function initiate_generate() {
 
       try {
         let responseObject = await client.get(
-          `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
+          `manage_datasets/bf_dataset_account`,
+          {
+            params: {
+              selected_account: defaultBfAccount,
+            },
+          }
         );
         datasetList = [];
         datasetList = responseObject.data.datasets;
@@ -7688,7 +7699,12 @@ const curation_consortium_check = async (mode = "") => {
 
   try {
     let bf_account_details_req = await client.get(
-      `/manage_datasets/bf_account_details?selected_account=${defaultBfAccount}`
+      `/manage_datasets/bf_account_details`,
+      {
+        params: {
+          selected_account: defaultBfAccount,
+        },
+      }
     );
     let res = bf_account_details_req.data.account_details;
     // remove html tags from response
@@ -7739,7 +7755,13 @@ const curation_consortium_check = async (mode = "") => {
       //needs to be replaced
       try {
         let bf_get_permissions = await client.get(
-          `/manage_datasets/bf_dataset_permissions?selected_account=${selected_account}&selected_dataset=${selected_dataset}`
+          `/manage_datasets/bf_dataset_permissions`,
+          {
+            params: {
+              selected_account: selected_account,
+              selected_dataset: selected_dataset,
+            },
+          }
         );
         let res = bf_get_permissions.data.permissions;
 
@@ -7800,7 +7822,13 @@ const curation_consortium_check = async (mode = "") => {
         //needs to be replaced
         try {
           let bf_dataset_permissions = await client.get(
-            `/manage_datasets/bf_dataset_status?selected_account=${defaultBfAccount}&select_dataset=${defaultBfDataset}`
+            `/manage_datasets/bf_dataset_status`,
+            {
+              params: {
+                selected_account: defaultBfAccount,
+                selected_dataset: defaultBfDataset,
+              },
+            }
           );
           let res = bf_dataset_permission.data;
 
@@ -8030,7 +8058,12 @@ async function addBFAccountInsideSweetalert(myBootboxDialog) {
 
     try {
       let bf_account_details_req = await client.get(
-        `/manage_datasets/bf_account_details?selected_account=${name}`
+        `/manage_datasets/bf_account_details`,
+        {
+          params: {
+            selected_account: name,
+          },
+        }
       );
       let res = bf_account_details_req.data.account_details;
 

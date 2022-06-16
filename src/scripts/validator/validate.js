@@ -58,9 +58,11 @@ const validateLocalDataset = async () => {
   let validationResponse;
   try {
     // send the dataset path to the validator endpoint
-    validationResponse = await client.get(
-      `validate_dataset/local_dataset?path=${datasetPath}`
-    );
+    validationResponse = await client.get(`validate_dataset/local_dataset`, {
+      params: {
+        path: datasetPath,
+      },
+    });
 
     // track that a local validation succeeded
     ipcRenderer.send(

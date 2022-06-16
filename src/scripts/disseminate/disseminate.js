@@ -510,7 +510,13 @@ async function disseminateShowCurrentPermission(bfAcct, bfDS) {
   } else {
     try {
       let dataset_permissions = await client.get(
-        `/manage_datasets/bf_dataset_permissions?selected_account=${bfAcct}&selected_dataset=${bfDS}`
+        `/manage_datasets/bf_dataset_permissions`,
+        {
+          params: {
+            selected_account: bfAcct,
+            selected_dataset: bfDS,
+          },
+        }
       );
       let res = dataset_permissions.data.permissions;
 
@@ -558,7 +564,13 @@ async function disseminiateShowCurrentDatasetStatus(
   } else {
     try {
       let dataset_permissions = await client.get(
-        `/manage_datasets/bf_dataset_permissions?selected_account=${account}&selected_dataset=${dataset}`
+        `/manage_datasets/bf_dataset_permissions`,
+        {
+          params: {
+            selected_account: account,
+            selected_dataset: dataset,
+          },
+        }
       );
       let res = dataset_permissions.data.status_options;
 

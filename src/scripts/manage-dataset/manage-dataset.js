@@ -190,7 +190,12 @@ $("#button-create-bf-new-dataset").click(async () => {
 
       try {
         let responseObject = await client.get(
-          `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
+          `manage_datasets/bf_dataset_account`,
+          {
+            params: {
+              selected_account: defaultBfAccount,
+            },
+          }
         );
         datasetList = [];
         datasetList = responseObject.data.datasets;
@@ -324,7 +329,12 @@ $("#button-rename-dataset").click(async () => {
 
         try {
           let responseObject = await client.get(
-            `manage_datasets/bf_dataset_account?selected_account=${defaultBfAccount}`
+            `manage_datasets/bf_dataset_account`,
+            {
+              params: {
+                selected_account: defaultBfAccount,
+              },
+            }
           );
           datasetList = [];
           datasetList = responseObject.data.datasets;
@@ -485,7 +495,13 @@ const showCurrentPermission = async () => {
   } else {
     try {
       let dataset_permissions = await client.get(
-        `/manage_datasets/bf_dataset_permissions?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}`
+        `/manage_datasets/bf_dataset_permissions`,
+        {
+          params: {
+            selected_account: selectedBfAccount,
+            selected_dataset: selectedBfDataset,
+          },
+        }
       );
       let res = dataset_permissions.data.permissions;
       let permissionList = "";
@@ -550,9 +566,11 @@ const addPermissionUser = async (
 
     // refresh dataset lists with filter
     try {
-      let get_username = await client.get(
-        `/manage_datasets/account/username?selected_account=${selectedBfAccount}`
-      );
+      let get_username = await client.get(`/manage_datasets/account/username`, {
+        params: {
+          selected_account: selectedBfAccount,
+        },
+      });
       let res1 = get_username.data.username;
       if (selectedRole === "owner") {
         for (var i = 0; i < datasetList.length; i++) {
@@ -814,7 +832,13 @@ const showCurrentSubtitle = async () => {
     document.getElementById("ds-description").disabled = true;
     try {
       let bf_get_subtitle = await client.get(
-        `/manage_datasets/bf_dataset_subtitle?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}`
+        `/manage_datasets/bf_dataset_subtitle`,
+        {
+          params: {
+            selected_account: selectedBfAccount,
+            selected_dataset: selectedBfDataset,
+          },
+        }
       );
       let res = bf_get_subtitle.data.subtitle;
       console.log(res);
@@ -1422,7 +1446,13 @@ const showDatasetDescription = async () => {
   } else {
     try {
       let bf_get_subtitle = await client.get(
-        `/manage_datasets/bf_dataset_subtitle?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}`
+        `/manage_datasets/bf_dataset_subtitle`,
+        {
+          params: {
+            selected_account: selectedBfAccount,
+            selected_dataset: selectedBfDataset,
+          },
+        }
       );
       let res = bf_get_subtitle.data.subtitle;
       ipcRenderer.send(
@@ -1919,7 +1949,13 @@ const showCurrentBannerImage = async () => {
 
     try {
       let bf_get_banner_image = await client.get(
-        `/manage_datasets/bf_banner_image?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}`
+        `/manage_datasets/bf_banner_image`,
+        {
+          params: {
+            selected_account: selectedBfAccount,
+            selected_dataset: selectedBfDataset,
+          },
+        }
       );
       let res = bf_get_banner_image.data.banner_image;
       logGeneralOperationsForAnalytics(
@@ -2201,9 +2237,12 @@ const showCurrentLicense = async () => {
     currentDatasetLicense.innerHTML = "None";
   } else {
     try {
-      let bf_get_license = await client.get(
-        `/manage_datasets/bf_license?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}`
-      );
+      let bf_get_license = await client.get(`/manage_datasets/bf_license`, {
+        params: {
+          selected_account: selectedBfAccount,
+          selected_dataset: selectedBfDataset,
+        },
+      });
       currentDatasetLicense.innerHTML = bf_get_license.data.license;
       if (bf_get_license.data.license === "Creative Commons Attribution") {
         $("#button-add-license").hide();
@@ -2446,7 +2485,12 @@ $("#button-submit-dataset").click(async () => {
 
     try {
       let num_files_folders = await client.get(
-        `/manage_datasets/get_number_of_files_and_folders_locally?filepath=${pathSubmitDataset.placeholder}`
+        `/manage_datasets/get_number_of_files_and_folders_locally`,
+        {
+          params: {
+            filepath: pathSubmitDataset.placeholder,
+          },
+        }
       );
       let res = [];
       res = num_files_folders.data;
@@ -2533,7 +2577,12 @@ $("#button-submit-dataset").click(async () => {
     );
     try {
       let num_files_folders = await client.get(
-        `/manage_datasets/get_number_of_files_and_folders_locally?filepath=${pathSubmitDataset.placeholder}`
+        `/manage_datasets/get_number_of_files_and_folders_locally`,
+        {
+          params: {
+            filepath: pathSubmitDataset.placeholder,
+          },
+        }
       );
       let res = [];
       res = num_files_folders.data;
@@ -2931,7 +2980,13 @@ async function showCurrentDatasetStatus(callback) {
   } else {
     try {
       let bf_dataset_status = await client.get(
-        `/manage_datasets/bf_dataset_status?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}`
+        `/manage_datasets/bf_dataset_status`,
+        {
+          params: {
+            selected_dataset: selectedBfDataset,
+            selected_account: selectedBfAccount,
+          },
+        }
       );
       let res = bf_dataset_status.data;
       ipcRenderer.send(

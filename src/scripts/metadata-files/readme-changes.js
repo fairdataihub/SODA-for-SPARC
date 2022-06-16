@@ -530,9 +530,14 @@ const getRC = async (type) => {
   let datasetName = $(`#bf_dataset_load_${shortName}`).text().trim();
   try {
     let import_rc_file = await client.get(
-      `/prepare_metadata/readme_changes_file?file_type=${
-        path.parse(type).name
-      }&selected_account=${defaultBfAccount}&selected_dataset=${datasetName}`
+      `/prepare_metadata/readme_changes_file`,
+      {
+        params: {
+          file_type: path.parse(type).name,
+          selected_account: defaultBfAccount,
+          selected_dataset: datasetName,
+        },
+      }
     );
     let res = import_rc_file.data.text;
 
