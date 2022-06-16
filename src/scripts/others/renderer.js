@@ -6346,7 +6346,7 @@ document
 
 ipcRenderer.on(
   "selected-local-destination-datasetCurate",
-  (event, filepath) => {
+  async (event, filepath) => {
     if (filepath.length > 0) {
       if (filepath != null) {
         sodaJSONObj["starting-point"]["local-path"] = "";
@@ -6440,84 +6440,67 @@ ipcRenderer.on(
 
                 let local_progress = setInterval(progressReport, 500);
                 function progressReport() {
-                  client.invoke(
-                    "api_monitor_local_json_progress",
-                    (error, res) => {
-                      if (error) {
-                        console.log(error);
-                      } else {
-                        percentage_amount = res[2].toFixed(2);
-                        finished = res[3];
+                  try {
+                    let monitor_progress = await client.get(
+                      `/organize_datasets/datasets/import/progress`
+                    );
+                    
+                    let res = monitor_progress.data;
+                    percentage_amount = res[2].toFixed(2);
+                    finished = res[3];
 
-                        progressBar_rightSide = document.getElementById(
-                          "left-side_less_than_50"
-                        );
-                        progressBar_leftSide = document.getElementById(
-                          "right-side_greater_than_50"
-                        );
+                    progressBar_rightSide = document.getElementById(
+                      "left-side_less_than_50"
+                    );
+                    progressBar_leftSide = document.getElementById(
+                      "right-side_greater_than_50"
+                    );
 
-                        numb.innerText = percentage_amount + "%";
-                        if (percentage_amount <= 50) {
-                          progressBar_rightSide.style.transform = `rotate(${
-                            percentage_amount * 0.01 * 360
-                          }deg)`;
-                        } else {
-                          progressBar_rightSide.style.transition = "";
-                          progressBar_rightSide.classList.add("notransition");
-                          progressBar_rightSide.style.transform = `rotate(180deg)`;
-                          progressBar_leftSide.style.transform = `rotate(${
-                            percentage_amount * 0.01 * 180
-                          }deg)`;
-                        }
-
-                        if (finished === 1) {
-                          progressBar_leftSide.style.transform = `rotate(180deg)`;
-                          numb.innerText = "100%";
-                          clearInterval(local_progress);
-                          progressBar_rightSide.classList.remove(
-                            "notransition"
-                          );
-                          populate_existing_folders(datasetStructureJSONObj);
-                          populate_existing_metadata(sodaJSONObj);
-                          $(
-                            "#para-continue-location-dataset-getting-started"
-                          ).text("Please continue below.");
-                          $("#nextBtn").prop("disabled", false);
-                          // log the success to analytics
-                          logMetadataForAnalytics(
-                            "Success",
-                            PrepareDatasetsAnalyticsPrefix.CURATE,
-                            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-                            Actions.EXISTING,
-                            Destinations.LOCAL
-                          );
-                          setTimeout(() => {
-                            document.getElementById(
-                              "loading_local_dataset"
-                            ).style.display = "none";
-                          }, 1000);
-                        }
-                      }
-                    }
-                  );
-                }
-                client.invoke(
-                  "api_create_soda_json_object_backend",
-                  sodaJSONObj,
-                  root_folder_path,
-                  irregularFolderArray,
-                  replaced,
-                  (error, res) => {
-                    if (error) {
-                      console.log(error);
-                      clearInterval(local_progress);
+                    numb.innerText = percentage_amount + "%";
+                    if (percentage_amount <= 50) {
+                      progressBar_rightSide.style.transform = `rotate(${
+                        percentage_amount * 0.01 * 360
+                      }deg)`;
                     } else {
-                      sodaJSONObj = res;
-                      datasetStructureJSONObj =
-                        sodaJSONObj["dataset-structure"];
+                      progressBar_rightSide.style.transition = "";
+                      progressBar_rightSide.classList.add("notransition");
+                      progressBar_rightSide.style.transform = `rotate(180deg)`;
+                      progressBar_leftSide.style.transform = `rotate(${
+                        percentage_amount * 0.01 * 180
+                      }deg)`;
                     }
+
+                    if (finished === 1) {
+                      progressBar_leftSide.style.transform = `rotate(180deg)`;
+                      numb.innerText = "100%";
+                      clearInterval(local_progress);
+                      progressBar_rightSide.classList.remove(
+                        "notransition"
+                      );
+                      populate_existing_folders(datasetStructureJSONObj);
+                      populate_existing_metadata(sodaJSONObj);
+                      $(
+                        "#para-continue-location-dataset-getting-started"
+                      ).text("Please continue below.");
+                      $("#nextBtn").prop("disabled", false);
+                      // log the success to analytics
+                      logMetadataForAnalytics(
+                        "Success",
+                        PrepareDatasetsAnalyticsPrefix.CURATE,
+                        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+                        Actions.EXISTING,
+                        Destinations.LOCAL
+                      );
+                      setTimeout(() => {
+                        document.getElementById(
+                          "loading_local_dataset"
+                        ).style.display = "none";
+                      }, 1000);
+                    }
+                  } catch(error) {
+                    clientError(error);
                   }
-                );
+                }
                 //create setInterval variable that will keep track of the iterated items
               });
             } else {
@@ -6543,81 +6526,84 @@ ipcRenderer.on(
               let percentage_amount = 0;
               let local_progress = setInterval(progressReport, 500);
               function progressReport() {
-                client.invoke(
-                  "api_monitor_local_json_progress",
-                  (error, res) => {
-                    if (error) {
-                      console.log(error);
-                      clearInterval(local_progress);
-                    } else {
-                      percentage_amount = res[2].toFixed(2);
-                      finished = res[3];
-                      progressBar_rightSide = document.getElementById(
-                        "left-side_less_than_50"
-                      );
-                      progressBar_leftSide = document.getElementById(
-                        "right-side_greater_than_50"
-                      );
+                try {
+                  let monitor_progress = await client.get(
+                    `/organize_datasets/datasets/import/progress`
+                  );
+                  
+                  let res = monitor_progress.data;
+                  percentage_amount = res[2].toFixed(2);
+                  finished = res[3];
+                  progressBar_rightSide = document.getElementById(
+                    "left-side_less_than_50"
+                  );
+                  progressBar_leftSide = document.getElementById(
+                    "right-side_greater_than_50"
+                  );
 
-                      numb.innerText = percentage_amount + "%";
-                      if (percentage_amount <= 50) {
-                        progressBar_rightSide.style.transform = `rotate(${
-                          percentage_amount * 0.01 * 360
-                        }deg)`;
-                      } else {
-                        progressBar_rightSide.style.transition = "";
-                        progressBar_rightSide.classList.add("notransition");
-                        progressBar_rightSide.style.transform = `rotate(180deg)`;
-                        progressBar_leftSide.style.transform = `rotate(${
-                          percentage_amount * 0.01 * 180
-                        }deg)`;
-                      }
-                      if (finished === 1) {
-                        progressBar_leftSide.style.transform = `rotate(180deg)`;
-                        numb.innerText = "100%";
+                  numb.innerText = percentage_amount + "%";
+                  if (percentage_amount <= 50) {
+                    progressBar_rightSide.style.transform = `rotate(${
+                      percentage_amount * 0.01 * 360
+                    }deg)`;
+                  } else {
+                    progressBar_rightSide.style.transition = "";
+                    progressBar_rightSide.classList.add("notransition");
+                    progressBar_rightSide.style.transform = `rotate(180deg)`;
+                    progressBar_leftSide.style.transform = `rotate(${
+                      percentage_amount * 0.01 * 180
+                    }deg)`;
+                  }
+                  if (finished === 1) {
+                    progressBar_leftSide.style.transform = `rotate(180deg)`;
+                    numb.innerText = "100%";
 
-                        clearInterval(local_progress);
-                        progressBar_rightSide.classList.remove("notransition");
-                        populate_existing_folders(datasetStructureJSONObj);
-                        populate_existing_metadata(sodaJSONObj);
-                        $(
-                          "#para-continue-location-dataset-getting-started"
-                        ).text("Please continue below.");
-                        $("#nextBtn").prop("disabled", false);
-                        // log the success to analytics
-                        logMetadataForAnalytics(
-                          "Success",
-                          PrepareDatasetsAnalyticsPrefix.CURATE,
-                          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-                          Actions.EXISTING,
-                          Destinations.LOCAL
-                        );
-                        setTimeout(() => {
-                          document.getElementById(
-                            "loading_local_dataset"
-                          ).style.display = "none";
-                        }, 1000);
-                      }
-                    }
+                    clearInterval(local_progress);
+                    progressBar_rightSide.classList.remove("notransition");
+                    populate_existing_folders(datasetStructureJSONObj);
+                    populate_existing_metadata(sodaJSONObj);
+                    $(
+                      "#para-continue-location-dataset-getting-started"
+                    ).text("Please continue below.");
+                    $("#nextBtn").prop("disabled", false);
+                    // log the success to analytics
+                    logMetadataForAnalytics(
+                      "Success",
+                      PrepareDatasetsAnalyticsPrefix.CURATE,
+                      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+                      Actions.EXISTING,
+                      Destinations.LOCAL
+                    );
+                    setTimeout(() => {
+                      document.getElementById(
+                        "loading_local_dataset"
+                      ).style.display = "none";
+                    }, 1000);
+                  }
+                } catch(error) {
+                  clientError(error);
+                  clearInterval(local_progress);
+                }
+              }
+              try {
+                let create_sodajson_local = await client.post(
+                  `/organize_datasets/datasets/import`,
+                  {
+                    payload: {
+                      sodajsonobject: JSON.stringify(sodaJSONObj),
+                      root_folder_path: root_folder_path,
+                      irregular_folders: irregularFolderArray,
+                      replaced: replaced,
+                    },
                   }
                 );
+                let res = create_sodajson_local.data;
+                sodajsonobject = res;
+                datasetStructureJSONObj = sodaIsConnected["dataset-structure"];
+              } catch (error) {
+                clientError(error);
+                clearInterval(local_progress);
               }
-              client.invoke(
-                "api_create_soda_json_object_backend",
-                sodaJSONObj,
-                root_folder_path,
-                irregularFolderArray,
-                replaced,
-                (error, res) => {
-                  if (error) {
-                    console.log(error);
-                    clearInterval(local_progress);
-                  } else {
-                    sodaJSONObj = res;
-                    datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-                  }
-                }
-              );
             }
           } else {
             Swal.fire({
