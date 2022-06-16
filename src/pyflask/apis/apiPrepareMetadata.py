@@ -42,7 +42,7 @@ class SaveSubmissionFile(Resource):
     parser_save_submission_file.add_argument('selected_account', type=str, help='Pennsieve account name', location="args", required=True)
     parser_save_submission_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset name', location="args", required=True)
     parser_save_submission_file.add_argument('filepath', type=str, help='Path to the file to be uploaded', location="json")
-    parser_save_submission_file.add_argument('json_str', type=list, help='JSON string to be uploaded', location="json", required=True)
+    parser_save_submission_file.add_argument('submission_file_rows', type=list, help='List of objects that contain award, milestone, and date properties with appropriate values.', location="json", required=True)
 
     @api.expect(parser_save_submission_file)
     @api.response(200, 'OK', model_save_submission_file_response)
@@ -54,7 +54,7 @@ class SaveSubmissionFile(Resource):
         bfaccount = data.get('selected_account')
         bfdataset = data.get('selected_dataset')
         filepath = data.get('filepath')
-        json_str = data.get("json_str")
+        json_str = data.get("submission_file_rows")
 
 
         if upload_boolean and filepath is None:
