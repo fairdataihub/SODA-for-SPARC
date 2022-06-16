@@ -1699,82 +1699,87 @@ function loadSubjectsFileToDataframe(filePath) {
     .find(".subjects-form-entry")) {
     fieldSubjectEntries.push(field.name.toLowerCase());
   }
-  client.invoke(
-    "api_convert_subjects_samples_file_to_df",
-    "subjects",
-    filePath,
-    fieldSubjectEntries,
-    (error, res) => {
-      if (error) {
-        log.error(error);
-        console.error(error);
-        var emessage = userError(error);
+
+  try {
+    let import_subjects_file = await client.get(
+      `/prepare_metadata/subjects_file`,
+      {
+        params: {
+          type: "subjects",
+          filepath: filePath,
+          ui_fields: fieldSubjectEntries,
+        },
+      }
+    );
+    
+    let res = import_subjects_file.data;
+    // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
+    if (res.length > 1) {
+      result = transformImportedExcelFile("subjects", res);
+      if (result !== false) {
+        subjectsTableData = result;
+      } else {
         Swal.fire({
           title: "Couldn't load existing subjects.xlsx file",
-          html: emessage,
+          text: "Please make sure the imported file follows the latest SPARC Dataset Structure 2.0.0 and try again.",
           icon: "error",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
-
-        logMetadataForAnalytics(
-          "Error",
-          MetadataAnalyticsPrefix.SUBJECTS,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Existing",
-          Destinations.LOCAL
-        );
-      } else {
-        // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
-        if (res.length > 1) {
-          result = transformImportedExcelFile("subjects", res);
-          if (result !== false) {
-            subjectsTableData = result;
-          } else {
-            Swal.fire({
-              title: "Couldn't load existing subjects.xlsx file",
-              text: "Please make sure the imported file follows the latest SPARC Dataset Structure 2.0.0 and try again.",
-              icon: "error",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
-
-            logMetadataForAnalytics(
-              "Error",
-              MetadataAnalyticsPrefix.SUBJECTS,
-              AnalyticsGranularity.ALL_LEVELS,
-              "Existing",
-              Destinations.LOCAL
-            );
-            return;
-          }
-          logMetadataForAnalytics(
-            "Success",
-            MetadataAnalyticsPrefix.SUBJECTS,
-            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-            "Existing",
-            Destinations.LOCAL
-          );
-          loadDataFrametoUI("local");
-        } else {
-          logMetadataForAnalytics(
-            "Error",
-            MetadataAnalyticsPrefix.SUBJECTS,
-            AnalyticsGranularity.ALL_LEVELS,
-            "Existing",
-            Destinations.LOCAL
-          );
-          Swal.fire({
-            title: "Couldn't load existing subjects.xlsx file",
-            text: "Please make sure there is at least one subject in the subjects.xlsx file.",
-            icon: "error",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-        }
-      }
+    
+       logMetadataForAnalytics(
+         "Error",
+         MetadataAnalyticsPrefix.SUBJECTS,
+         AnalyticsGranularity.ALL_LEVELS,
+         "Existing",
+         Destinations.LOCAL
+       );
+       return;
+     }
+     logMetadataForAnalytics(
+       "Success",
+       MetadataAnalyticsPrefix.SUBJECTS,
+       AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+       "Existing",
+       Destinations.LOCAL
+     );
+     loadDataFrametoUI("local");
+    } else {
+      logMetadataForAnalytics(
+        "Error",
+        MetadataAnalyticsPrefix.SUBJECTS,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Existing",
+        Destinations.LOCAL
+      );
+      Swal.fire({
+        title: "Couldn't load existing subjects.xlsx file",
+        text: "Please make sure there is at least one subject in the subjects.xlsx file.",
+        icon: "error",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
     }
-  );
+  } catch (error) {
+    clientError(error);
+    let emessage = error.response.data.message;
+
+    Swal.fire({
+      title: "Couldn't load existing subjects.xlsx file",
+      html: emessage,
+      icon: "error",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.SUBJECTS,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.LOCAL
+    );
+  }
 }
 
 // import existing subjects.xlsx info (calling python to load info to a dataframe)
