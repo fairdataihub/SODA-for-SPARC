@@ -667,7 +667,8 @@ $("#ORCID-btn").on("click", async () => {
       // TODO: Replace with Flask
       await integrateORCIDWithPennsieve(accessCode);
     } catch (error) {
-      var emessage = error.response.data.message;
+      clientError(error);
+      let emessage = error.response.data.message;
       Swal.fire({
         title: "Unable to integrate your ORCID iD with Pennsieve",
         text: emessage,
