@@ -46,7 +46,7 @@ class SaveSubmissionFile(Resource):
 
     @api.expect(parser_save_submission_file)
     @api.response(200, 'OK', model_save_submission_file_response)
-    @api.doc(description='Save a submission file locally or in a dataset stored on the Pennsieve account of the current user.', responses={500: "Internal Server Error", 400: "Bad Request"})
+    @api.doc(description='Save a submission file locally or in a dataset stored on the Pennsieve account of the current user.', responses={500: "Internal Server Error", 400: "Bad Request", 403: "Forbidden"})
     def post(self):
         data = self.parser_save_submission_file.parse_args()
 
@@ -68,7 +68,7 @@ class SaveSubmissionFile(Resource):
 
 
     parser_get_submission_file = reqparse.RequestParser(bundle_errors=True)
-    parser_get_submission_file.add_argument('filepath', type=str, help="Path to the submission file on the user's machine", location="json", required=True)
+    parser_get_submission_file.add_argument('filepath', type=str, help="Path to the submission file on the user's machine", location="args", required=True)
 
 
     @api.expect(parser_get_submission_file)
