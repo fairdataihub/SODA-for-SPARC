@@ -156,7 +156,7 @@ def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, val_arr
     if upload_boolean:
         upload_metadata_file("submission.xlsx", bfaccount, bfdataset, destination)
 
-    return size
+    return {"size": size}
 
 
 # this function saves and uploads the README/CHANGES to Pennsieve, just when users choose to generate onto Pennsieve
