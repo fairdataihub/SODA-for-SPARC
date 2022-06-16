@@ -797,75 +797,84 @@ async function generateDDFile(uploadBFBoolean) {
 
   /// get current, selected Pennsieve account
   var bfaccountname = $("#current-bf-account").text();
-
+  let bf_dataset = document
+    .getElementById("bf_dataset_load_dd")
+    .innerText.trim();
   /// call python function to save file
-
-  client.invoke(
-    "api_save_ds_description_file",
-    uploadBFBoolean,
-    defaultBfAccount,
-    $("#bf_dataset_load_dd").text().trim(),
-    ddDestinationPath,
-    json_str_ds,
-    json_str_study,
-    json_str_con,
-    json_str_related_info,
-    async (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        Swal.fire({
-          title: "Failed to generate the dataset_description file",
-          html: emessage,
-          icon: "warning",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-
-        // log the failure to generate the description file to analytics at this step in the Generation process
-        logMetadataForAnalytics(
-          "Error",
-          MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Generate",
-          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
-        );
-      } else {
-        if (uploadBFBoolean) {
-          var successMessage =
-            "Successfully generated the dataset_description.xlsx file on your Pennsieve dataset.";
-        } else {
-          var successMessage =
-            "Successfully generated the dataset_description.xlsx file at the specified location.";
-        }
-
-        Swal.fire({
-          title: successMessage,
-          icon: "success",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-
-        // log the successful attempt to generate the description file in analytics at this step in the Generation process
-        logMetadataForAnalytics(
-          "Success",
-          MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Generate",
-          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
-        );
-
-        // log the size of the metadata file that was generated at varying levels of granularity
-        const size = res;
-        logMetadataSizeForAnalytics(
-          uploadBFBoolean,
-          "dataset_description.xlsx",
-          size
-        );
+  try {
+    let save_ds_desc_file = await client.post(
+      `/prepare_metadata/dataset_description_file`,
+      {
+        params: {
+          upload_boolean: uploadBFBoolean,
+        },
+        payload: {
+          selected_account: defaultBfAccount,
+          selected_dataset: bf_dataset,
+          filepath: ddDestinationPath,
+          dataset_str: json_str_ds,
+          study_str: json_str_study,
+          contributor_str: json_str_con,
+          related_info_str: json_str_related_info,
+        },
       }
+    );
+
+    let res = save_ds_desc_file.data.size;
+    console.log(size);
+
+    if (uploadBFBoolean) {
+      var successMessage =
+        "Successfully generated the dataset_description.xlsx file on your Pennsieve dataset.";
+    } else {
+      var successMessage =
+        "Successfully generated the dataset_description.xlsx file at the specified location.";
     }
-  );
+
+    Swal.fire({
+      title: successMessage,
+      icon: "success",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    // log the successful attempt to generate the description file in analytics at this step in the Generation process
+    logMetadataForAnalytics(
+      "Success",
+      MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Generate",
+      uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+    );
+
+    // log the size of the metadata file that was generated at varying levels of granularity
+    const size = res;
+    logMetadataSizeForAnalytics(
+      uploadBFBoolean,
+      "dataset_description.xlsx",
+      size
+    );
+  } catch (error) {
+    clientError(error);
+    let emessage = error.response.data.message;
+
+    Swal.fire({
+      title: "Failed to generate the dataset_description file",
+      html: emessage,
+      icon: "warning",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    // log the failure to generate the description file to analytics at this step in the Generation process
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Generate",
+      uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+    );
+  }
 }
 
 ///// Functions to grab each piece of info to generate the dd file
