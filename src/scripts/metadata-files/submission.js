@@ -964,13 +964,13 @@ async function checkBFImportSubmission() {
     loadSubmissionFileToUI(res, "bf");
   } catch (error) {
     clientError(error);
-    var emessage = userError(error.response.data.message);
+    var emessage = error.response.data.message;
 
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       icon: "error",
-      html: emessage,
+      text: emessage,
     });
     logMetadataForAnalytics(
       "Error",
