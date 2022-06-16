@@ -182,19 +182,19 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path):
     try:
         bf = Pennsieve(bfaccount)
     except Exception:
-        abort(400, "Error: Please select a valid Pennsieve account.")
+        abort(400, "Please select a valid Pennsieve account.")
     
     # check that the Pennsieve dataset is valid
     try:
         myds = bf.get_dataset(bfdataset)
     except Exception:
-        abort(400, "Error: Please select a valid Pennsieve dataset.")
+        abort(400, "Please select a valid Pennsieve dataset.")
 
 
     # check that the user has permissions for uploading and modifying the dataset
     role = bf_get_current_user_permission(bf, myds)
     if role not in ["owner", "manager", "editor"]:
-        abort(403, "Error: You don't have permissions for uploading to this Pennsieve dataset.")
+        abort(403, "You don't have permissions for uploading to this Pennsieve dataset.")
 
     # handle duplicates on Pennsieve: first, obtain the existing file ID
     for i in range(len(myds.items)):
