@@ -148,50 +148,34 @@ def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
         raise e
 
 
-"""
-    Function to publish for a selected dataset
-
-    Args:
-        selected_bfaccount: name of selected Pennsieve acccount (string)
-        selected_bfdataset: name of selected Pennsieve dataset (string)
-    Return:
-        Success or error message
-"""
 
 
-def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset):
 
-    try:
-        bf = Pennsieve(selected_bfaccount)
-    except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset,publication_type, embargo_release_date):
+    """
+        Function to publish for a selected dataset
 
-    try:
-        myds = bf.get_dataset(selected_bfdataset)
-    except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        Args:
+            selected_bfaccount: name of selected Pennsieve acccount (string)
+            selected_bfdataset: name of selected Pennsieve dataset (string)
+            publication_type: type of publication (string)
+            embargo_release_date: (optional) date at which embargo lifts from dataset after publication
+        Return:
+            Success or error message
+    """
 
-    try:
-        role = bf_get_current_user_permission(bf, myds)
-        if role not in ["owner"]:
-            error = "Error: You must be dataset owner to send a dataset for review"
-            raise Exception(error)
-    except Exception as e:
-        raise e
+    ps = get_authenticated_ps(selected_bfaccount)
 
-    try:
-        selected_dataset_id = myds.id
-        request_publish = bf._api._post(
-            "/datasets/"
-            + str(selected_dataset_id)
-            + "/publication/request?publicationType="
-            + "publication"
-        )
-        return request_publish
-    except Exception as e:
-        raise e
+    myds = get_dataset(ps, selected_bfdataset)
+
+    role = bf_get_current_user_permission(ps, myds)
+
+    if role not in ["owner"]:
+        abort(403, "You must be dataset owner to send a dataset for review.")
+
+    qs = f"?publicationType={publication_type}&embargoReleaseDate={embargo_release_date}" if embargo_release_date else f"?publicationType={publication_type}"
+
+    return ps._api._post(f"/datasets/{myds.id}/publication/request{qs}")
 
 
 def bf_withdraw_review_dataset(selected_bfaccount, selected_bfdataset):
@@ -320,13 +304,8 @@ def update_files_excluded_from_publishing(pennsieve_account, selected_dataset, f
 
     myds = get_dataset(ps, selected_dataset)
 
-    # make binary string
-    d = [('fileName', 'README.txt'), ('fileName', 'CHANGES.txt')]
-
     # for file in files_excluded_from_publishing:
     resp = ps._api._put(f"/datasets/{myds.id}/ignore-files", json={"fileName": {"fileName": "README.txt"}})
-
-    print(resp)
 
 
 
@@ -370,5 +349,3 @@ def get_metadata_files(selected_dataset, pennsieve_account):
     return {
         "metadata_files": [child["content"]["name"] for child in children if "content" in child and "name" in child["content"] and child["content"]["name"] in METADATA_FILES]
     }
-
-

@@ -180,3 +180,35 @@ class PublishingStatus(Resource):
             if notBadRequestException(e):
                 api.abort(500, str(e))
             raise e
+
+
+
+
+
+
+
+@api.route("/datasets/<string:dataset_name_or_id>/publication/request")
+class PublicationRequest(Resource):
+
+    publication_parser_post = reqparse.RequestParser()
+    publication_parser_post.add_argument("selected_account", type=str, help="Pennsieve account name", location="args", required=True)
+    publication_parser_post.add_argument("publication_type", type=str, help="Type of publication (string).", location="json", required=True)
+    publication_parser_post.add_argument("embargo_release_date", type=str, help="(optional) Date at which embargo lifts from dataset after publication", location="json", required=False)
+
+
+    @api.expect(publication_parser_post)
+    @api.doc(responses={200: "Success", 400: "Validation Error", 500: "Internal Server Error", 403: "Forbidden"}, description="Request publication of a dataset.")
+    def post(self, dataset_name_or_id):
+        # get the arguments
+        data = self.publication_parser_post.parse_args()
+        selected_account = data.get("selected_account")
+        publication_type = data.get("publication_type")
+        embargo_release_date = data.get("embargo_release_date")
+
+
+        try:
+            return bf_submit_review_dataset(selected_account, dataset_name_or_id, publication_type, embargo_release_date)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
