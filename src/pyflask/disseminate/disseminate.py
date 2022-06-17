@@ -10,8 +10,6 @@ from pennsieve import Pennsieve
 from manageDatasets import bf_get_current_user_permission
 from utils import get_dataset, get_authenticated_ps
 from flask import abort 
-import json
-from collections import defaultdict
 
 
 
@@ -183,84 +181,44 @@ def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset,publication_
     return ps._api._post(f"/datasets/{myds.id}/publication/request{qs}")
 
 
+def get_publication_type(ps, myds):
+
+    """
+    Function to get the publication type of a dataset
+    """
+
+     # get the dataset using the id 
+    ds = ps._api._get(f"/datasets/{myds.id}")
+
+    publication_type = ds["publication"]["type"] if "publication" in ds and "type" in ds["publication"] else None
+
+    if not publication_type:
+        abort(400, "Cannot cancel publication of a dataset that is not published.")
+
+    return publication_type
+
+
 def bf_withdraw_review_dataset(selected_bfaccount, selected_bfdataset):
 
+    ps = get_authenticated_ps(selected_bfaccount)
+
+    myds = get_dataset(ps, selected_bfdataset)
+
+    role = bf_get_current_user_permission(ps, myds)
+
+    if role not in ["owner"]:
+        abort(403, "You must be dataset owner to cancel publication.")
+
+    publication_type = get_publication_type(ps, myds)
+   
     try:
-        bf = Pennsieve(selected_bfaccount)
+        ps._api._post(f"/datasets/{myds.id}/publication/cancel?publicationType={publication_type}")
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        if type(e).__name__ == "HTTPError":
+            abort(400, e.response.json()["message"])
+        abort(500, "An internal server error prevented the request from being fulfilled. Please try again later.")
 
-    try:
-        myds = bf.get_dataset(selected_bfdataset)
-    except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
-
-    try:
-        role = bf_get_current_user_permission(bf, myds)
-        if role not in ["owner"]:
-            error = "Error: You must be dataset owner to withdraw a dataset from review"
-            raise Exception(error)
-    except Exception as e:
-        raise e
-
-    try:
-        selected_dataset_id = myds.id
-        withdraw_review = bf._api._post(
-            "/datasets/"
-            + str(selected_dataset_id)
-            + "/publication/cancel?publicationType="
-            + "publication"
-        )
-        return withdraw_review
-    except Exception as e:
-        raise e
-
-
-"""
-    DEPRECATED
-
-    Function to publish for a selected dataset
-
-    Args:
-        selected_bfaccount: name of selected Pennsieve acccount (string)
-        selected_bfdataset: name of selected Pennsieve dataset (string)
-    Return:
-        Success or error message
-"""
-
-
-def bf_publish_dataset(selected_bfaccount, selected_bfdataset):
-
-    try:
-        bf = Pennsieve(selected_bfaccount)
-    except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
-
-    try:
-        myds = bf.get_dataset(selected_bfdataset)
-    except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
-
-    try:
-        role = bf_get_current_user_permission(bf, myds)
-        if role not in ["owner"]:
-            error = "Error: You must be dataset owner to publish a dataset"
-            raise Exception(error)
-    except Exception as e:
-        raise e
-
-    try:
-        selected_dataset_id = myds.id
-        request_publish = bf._api._post(
-            "/datasets/" + str(selected_dataset_id) + "/publish"
-        )
-        return request_publish["status"]
-    except Exception as e:
-        raise e
+    return {"message": "Your dataset publication has been cancelled."}
 
 
 

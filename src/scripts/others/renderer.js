@@ -3333,7 +3333,7 @@ async function submitReviewDataset(embargoReleaseDate) {
   }
 
   try {
-    // TODO: Replace with Flask Call -- WIP
+    // TODO: Replace with Flask Call -- READY
     await submitDatasetForPublication(
       selectedBfAccount,
       selectedBfDataset,

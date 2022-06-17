@@ -2,7 +2,6 @@ from disseminate import (
     bf_get_doi,
     bf_reserve_doi,
     bf_get_publishing_status,
-    bf_publish_dataset,
     bf_submit_review_dataset,
     bf_withdraw_review_dataset,
     get_files_excluded_from_publishing,
@@ -11,7 +10,7 @@ from disseminate import (
 )
 from flask_restx import Resource, fields, reqparse
 from namespaces import NamespaceEnum, get_namespace
-from errorHandlers import notBadRequestException
+from errorHandlers import notBadRequestException, handle_http_error
 
 api = get_namespace(NamespaceEnum.DISSEMINATE_DATASETS)
 
@@ -212,3 +211,29 @@ class PublicationRequest(Resource):
             if notBadRequestException(e):
                 api.abort(500, str(e))
             raise e
+
+
+
+
+
+
+
+@api.route("/datasets/<string:dataset_name_or_id>/publication/cancel")
+class PublicationCancel(Resource):
+    
+        publication_cancel_parser_post = reqparse.RequestParser()
+        publication_cancel_parser_post.add_argument("selected_account", type=str, help="Pennsieve account name", location="args", required=True)
+
+        def post(self, dataset_name_or_id):
+
+            # get the arguments
+            data = self.publication_cancel_parser_post.parse_args()
+            selected_account = data.get("selected_account")
+
+            try:
+                return bf_withdraw_review_dataset(selected_account, dataset_name_or_id)
+            except Exception as e:
+                if notBadRequestException(e):
+                    api.abort(500, str(e))
+                raise e
+
