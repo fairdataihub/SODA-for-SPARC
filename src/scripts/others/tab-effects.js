@@ -655,6 +655,11 @@ const nextPrev = (n) => {
     if (!("metadata-files" in sodaJSONObj)) {
       sodaJSONObj["metadata-files"] = {};
     }
+    if (
+      Object.keys(sodaJSONObj["dataset-structure"]["folders"]).includes("code")
+    ) {
+      requiredFiles.push("code_description");
+    }
 
     if (Object.keys(sodaJSONObj["metadata-files"]).length > 0) {
       Object.keys(sodaJSONObj["metadata-files"]).forEach((element) => {
@@ -666,12 +671,12 @@ const nextPrev = (n) => {
           let element_index = requiredFiles.indexOf(file_name);
           requiredFiles.splice(element_index, 1);
           missingFiles = [];
-          for (element in requiredFiles) {
-            let swal_element = `<li>${requiredFiles[element]}</li>`;
-            missingFiles.push(swal_element);
-          }
         }
       });
+      for (element in requiredFiles) {
+        let swal_element = `<li>${requiredFiles[element]}</li>`;
+        missingFiles.push(swal_element);
+      }
     } else {
       for (let element in requiredFiles) {
         let swal_element = `<li>${requiredFiles[element]}</li>`;
@@ -680,7 +685,7 @@ const nextPrev = (n) => {
     }
 
     if (missingFiles.length > 0) {
-      var notIncludedMessage = `<div style='text-align: left'>You did not include some of the following metadata files that are typically expected for all SPARC datasets: <br><ol style='text-align: left'>${missingFiles.join(
+      var notIncludedMessage = `<div style='text-align: left'>This dataset seems to have non SPARC folders and/or high-level metadata files: <br><ol style='text-align: left'>${missingFiles.join(
         ""
       )} </ol>Are you sure you want to continue?</div>`;
       Swal.fire({
