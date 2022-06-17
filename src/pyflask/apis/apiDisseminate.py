@@ -6,9 +6,10 @@ from disseminate import (
     bf_submit_review_dataset,
     bf_withdraw_review_dataset,
     get_files_excluded_from_publishing,
-    get_metadata_files
+    get_metadata_files,
+    update_files_excluded_from_publishing
 )
-from flask_restx import Resource, fields
+from flask_restx import Resource, fields, reqparse
 from namespaces import NamespaceEnum, get_namespace
 from errorHandlers import notBadRequestException
 
@@ -78,7 +79,7 @@ model_ignore_files_response = api.model('IgnoreFilesResponse', {
 
 @api.route('/datasets/<string:dataset_name_or_id>/ignore-files')
 class BfIgnoreFiles(Resource):
-    parser = api.parser()
+    parser = reqparse.RequestParser()
     parser.add_argument("selected_account", type=str, help="Pennsieve account name", location="args", required=True)
 
     @api.doc(responses={200: "Success", 400: "Validation Error", 500: "Internal Server Error"})
@@ -91,6 +92,27 @@ class BfIgnoreFiles(Resource):
 
         try:
             return get_files_excluded_from_publishing(dataset_name_or_id,  selected_bfaccount)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
+    
+
+    parser_ignore_files_put = parser.copy()
+    parser_ignore_files_put.add_argument("ignore_files", type=str, help="Files excluded from publishing", location="json", required=True)
+
+    @api.expect(parser_ignore_files_put)
+    @api.marshal_with(model_success_message_response, 200, False)
+    @api.doc(responses={400: "Validation Error", 500: "Internal Server Error"}, description="Ignore files from publishing")
+    def put(self, dataset_name_or_id):
+        # get the arguments
+        data = self.parser_ignore_files_put.parse_args()
+
+        ignore_files = data.get("ignore_files")
+        selected_bfaccount = data.get("selected_account")
+
+        try:
+            return update_files_excluded_from_publishing(selected_bfaccount, dataset_name_or_id, ignore_files)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))

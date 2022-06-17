@@ -10,7 +10,8 @@ from pennsieve import Pennsieve
 from manageDatasets import bf_get_current_user_permission
 from utils import get_dataset, get_authenticated_ps
 from flask import abort 
-
+import json
+from collections import defaultdict
 
 
 
@@ -299,6 +300,33 @@ def get_files_excluded_from_publishing(selected_dataset, pennsieve_account):
         return {"ignore_files": resp["ignoreFiles"]}
     
     return {"ignore_files": []}
+
+
+
+
+def update_files_excluded_from_publishing(pennsieve_account, selected_dataset, files_excluded_from_publishing):
+    """
+    Function to update the files excluded from publishing
+
+    Args:
+        selected_dataset: name of selected Pennsieve dataset (string)
+        pennsieve_account: name of selected Pennsieve account (string)
+        files_excluded_from_publishing: list of files excluded from publishing (list)
+    Return:
+        Success or error message
+    """
+
+    ps = get_authenticated_ps(pennsieve_account)
+
+    myds = get_dataset(ps, selected_dataset)
+
+    # make binary string
+    d = [('fileName', 'README.txt'), ('fileName', 'CHANGES.txt')]
+
+    # for file in files_excluded_from_publishing:
+    resp = ps._api._put(f"/datasets/{myds.id}/ignore-files", json={"fileName": {"fileName": "README.txt"}})
+
+    print(resp)
 
 
 
