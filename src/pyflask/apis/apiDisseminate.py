@@ -5,6 +5,7 @@ from disseminate import (
     bf_publish_dataset,
     bf_submit_review_dataset,
     bf_withdraw_review_dataset,
+    get_files_excluded_from_publishing
 )
 from flask_restx import Resource, fields
 from namespaces import NamespaceEnum, get_namespace
@@ -58,6 +59,31 @@ class BfGetDoi(Resource):
                 api.abort(500, str(e))
             raise e
 
+
+
+
+
+
+
+@api.route('/datasets/<string:dataset_name_or_id>/ignore-files')
+class BfIgnoreFiles(Resource):
+    parser = api.parser()
+    parser.add_argument("selected_account", type=str, help="Pennsieve account name", location="args", required=True)
+
+    @api.doc(responses={200: "Success", 400: "Validation Error", 500: "Internal Server Error"})
+    @api.expect(parser)
+    @api.marshal_with(model_success_message_response)
+    def get(self, dataset_name_or_id):
+        # get the arguments
+        data = self.parser.parse_args()
+        selected_bfaccount = data.get("selected_account")
+
+        try:
+            return get_files_excluded_from_publishing(dataset_name_or_id,  selected_bfaccount)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
 
 
 

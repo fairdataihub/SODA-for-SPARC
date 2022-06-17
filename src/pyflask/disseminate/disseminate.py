@@ -270,3 +270,34 @@ def bf_publish_dataset(selected_bfaccount, selected_bfdataset):
         return request_publish["status"]
     except Exception as e:
         raise e
+
+
+
+
+def get_files_excluded_from_publishing(selected_dataset, pennsieve_account):
+    """
+    Function to get the files excluded from publishing
+
+    Args:
+        selected_dataset: name of selected Pennsieve dataset (string)
+        pennsieve_account: name of selected Pennsieve account (string)
+    Return:
+        List of files excluded from publishing
+    """
+
+    try:
+        bf = Pennsieve(pennsieve_account)
+    except Exception as e:
+        abort(400, "Please select a valid Pennsieve account")
+
+    try:
+        myds = bf.get_dataset(selected_dataset)
+    except Exception as e:
+        abort(400, "Please select a valid Pennsieve dataset")
+
+    try:
+        selected_dataset_id = myds.id
+        return bf._api._get(f"/datasets/{selected_dataset_id}/ignore-files")
+
+    except Exception as e:
+        raise e
