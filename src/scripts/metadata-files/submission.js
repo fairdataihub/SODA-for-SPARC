@@ -859,7 +859,7 @@ function importExistingSubmissionFile(type) {
 }
 
 // function to load existing submission files
-function loadExistingSubmissionFile(filepath) {
+async function loadExistingSubmissionFile(filepath) {
   try {
     let load_submission_file = await client.get(
       `/prepare_metadata/submission_file`,
@@ -867,10 +867,10 @@ function loadExistingSubmissionFile(filepath) {
         filepath: filepath,
       }
     );
-    
+
     let res = load_submission_file.data;
     loadSubmissionFileToUI(res, "local");
-  } catch(error) {
+  } catch (error) {
     clientError(error);
     let emessage = error.response.data.message;
 
