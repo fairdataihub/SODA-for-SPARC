@@ -151,7 +151,7 @@ def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
 
 def construct_publication_qs(publication_type, embargo_release_date):
     """
-    Function to construct the publication query string
+    Function to construct the publication query string. Used in bf_submit_review_dataset.
     """
     return f"?publicationType={publication_type}&embargoReleaseDate={embargo_release_date}" if embargo_release_date else f"?publicationType={publication_type}"
 
