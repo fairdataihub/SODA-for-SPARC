@@ -3528,7 +3528,7 @@ async function withdrawReviewDataset() {
     .replace(/^\s+|\s+$/g, "");
 
   try {
-    // TODO: Replace with Flask Call -- WIP
+    // TODO: Replace with Flask Call -- READY
     await withdrawDatasetReviewSubmission(selectedBfDataset);
 
     logGeneralOperationsForAnalytics(
