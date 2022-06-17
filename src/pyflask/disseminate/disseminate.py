@@ -299,3 +299,48 @@ def get_files_excluded_from_publishing(selected_dataset, pennsieve_account):
         return {"ignore_files": resp["ignoreFiles"]}
     
     return {"ignore_files": []}
+
+
+
+
+METADATA_FILES = [
+                  "submission.xlsx", 
+                  "code_description.xlsx", 
+                  "dataset_description.xlsx", 
+                  "outputs_metadata.xlsx", 
+                  "inputs_metadata.xlsx", 
+                  "CHANGES.txt", 
+                  "README.txt", 
+                  "samples.xlsx", 
+                  "subjects.xlsx"
+                  ]
+
+
+def get_metadata_files(selected_dataset, pennsieve_account):
+    """
+    Function to get the metadata files
+
+    Args:
+        selected_dataset: name of selected Pennsieve dataset (string)
+        pennsieve_account: name of selected Pennsieve account (string)
+    Return:
+        List of metadata files
+    """
+
+    ps = get_authenticated_ps(pennsieve_account)
+
+    myds = get_dataset(ps, selected_dataset)
+
+    resp = ps._api._get(f"/datasets/{myds.id}")
+
+    if "children" not in resp:
+        return {"metadata_files": []}
+
+    children = resp["children"]
+
+    # iterate through children check if content property has name property that equals one of the valid metadata file names and return it if so
+    return {
+        "metadata_files": [child["content"]["name"] for child in children if "content" in child and "name" in child["content"] and child["content"]["name"] in METADATA_FILES]
+    }
+
+
