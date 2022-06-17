@@ -8,6 +8,7 @@ monkey.patch_all()
 
 from pennsieve import Pennsieve
 from manageDatasets import bf_get_current_user_permission
+from utils import get_dataset, get_authenticated_ps
 from flask import abort 
 
 
@@ -285,19 +286,16 @@ def get_files_excluded_from_publishing(selected_dataset, pennsieve_account):
         List of files excluded from publishing
     """
 
-    try:
-        bf = Pennsieve(pennsieve_account)
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve account")
+    
+    ps = get_authenticated_ps(pennsieve_account)
 
-    try:
-        myds = bf.get_dataset(selected_dataset)
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve dataset")
+    myds = get_dataset(ps, selected_dataset)
 
-    try:
-        selected_dataset_id = myds.id
-        return bf._api._get(f"/datasets/{selected_dataset_id}/ignore-files")
+    ds_id = myds.id
 
-    except Exception as e:
-        raise e
+    resp = ps._api._get(f"/datasets/{ds_id}/ignore-files")
+
+    if "ignoreFiles" in resp:
+        return {"ignore_files": resp["ignoreFiles"]}
+    
+    return {"ignore_files": []}

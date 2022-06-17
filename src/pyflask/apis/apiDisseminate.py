@@ -63,6 +63,16 @@ class BfGetDoi(Resource):
 
 
 
+model_ignore_files_object = api.model('IgnoreFilesObject', {
+    "datasetId": fields.String(required=True, description="Dataset ID"),
+    "fileName": fields.String(required=True, description="File name"),
+    "id": fields.String(required=True, description="File ID")
+})
+
+
+model_ignore_files_response = api.model('IgnoreFilesResponse', {
+    "ignore_files": fields.List(fields.Nested(model_ignore_files_object), required=True, description="Files excluded from publishing")
+})
 
 
 @api.route('/datasets/<string:dataset_name_or_id>/ignore-files')
@@ -72,7 +82,7 @@ class BfIgnoreFiles(Resource):
 
     @api.doc(responses={200: "Success", 400: "Validation Error", 500: "Internal Server Error"})
     @api.expect(parser)
-    @api.marshal_with(model_success_message_response)
+    @api.marshal_with(model_ignore_files_response)
     def get(self, dataset_name_or_id):
         # get the arguments
         data = self.parser.parse_args()
