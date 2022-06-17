@@ -4220,6 +4220,8 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
 function populateJSONObjFolder(action, jsonObject, folderPath) {
   var myitems = fs.readdirSync(folderPath);
   myitems.forEach((element) => {
+    // console.log(element);
+    //prevented here
     var statsObj = fs.statSync(path.join(folderPath, element));
     var addedElement = path.join(folderPath, element);
     if (statsObj.isDirectory() && !/(^|\/)\.[^\/\.]/g.test(element)) {
@@ -4856,6 +4858,7 @@ async function addFoldersfunction(
   folderArray,
   currentLocation
 ) {
+  console.log(folderArray);
   let importToast = new Notyf({
     position: { x: "right", y: "bottom" },
     ripple: true,
