@@ -697,8 +697,14 @@ $("#ORCID-btn").on("click", async () => {
     });
 
     try {
-      // TODO: Replace with Flask
-      await integrateORCIDWithPennsieve(accessCode);
+      await client.post(`/user/orcid`, {
+        params: {
+          pennsieve_account: defaultBfAccount,
+        },
+        data: {
+          access_code: accessCode,
+        },
+      });
     } catch (error) {
       clientError(error);
       let emessage = error.response.data.message;
