@@ -7661,40 +7661,40 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
 });
 
 var bf_request_and_populate_dataset = async (sodaJSONObj) => {
-    try {
-      let bf_get_files_folders = await client.get(
-        `/organize_datasets/dataset_files_and_folders`,
-        {
-          params: {
-            sodajsonobject: JSON.stringify(sodaJSONObj)
-          }
-        }
-      );
-      //check return value
-      // TODO: This returns two messages along with the soda_json_structure as it originally did. 
-      //       Gonna have to replace just grabbing soda_json_structure with the whole res object
-      //       and make sure it works given the introduction of keys all the way down.
-      let res = bf_get_files_folders.data.soda_json_structure;
+  try {
+    let bf_get_files_folders = await client.get(
+      `/organize_datasets/dataset_files_and_folders`,
+      {
+        params: {
+          sodajsonobject: JSON.stringify(sodaJSONObj),
+        },
+      }
+    );
+    //check return value
+    // TODO: This returns two messages along with the soda_json_structure as it originally did.
+    //       Gonna have to replace just grabbing soda_json_structure with the whole res object
+    //       and make sure it works given the introduction of keys all the way down.
+    let res = bf_get_files_folders.data.soda_json_structure;
 
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        "Retrieve Dataset - Pennsieve",
-        defaultBfDatasetId
-      );
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Retrieve Dataset - Pennsieve",
+      defaultBfDatasetId
+    );
 
-      return res
-    } catch (error) {
-      clientError(error);
-      console.log(error);
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        "Retrieve Dataset - Pennsieve",
-        defaultBfDatasetId
-      );
-      throw(error.response.data.message);
-    }
+    return res;
+  } catch (error) {
+    clientError(error);
+    console.log(error);
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Retrieve Dataset - Pennsieve",
+      defaultBfDatasetId
+    );
+    throw error.response.data.message;
+  }
 };
 
 // When mode = "update", the buttons won't be hidden or shown to prevent button flickering effect
