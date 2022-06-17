@@ -149,6 +149,11 @@ def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
 
 
 
+def construct_publication_qs(publication_type, embargo_release_date):
+    """
+    Function to construct the publication query string
+    """
+    return f"?publicationType={publication_type}&embargoReleaseDate={embargo_release_date}" if embargo_release_date else f"?publicationType={publication_type}"
 
 
 def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset,publication_type, embargo_release_date):
@@ -173,7 +178,7 @@ def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset,publication_
     if role not in ["owner"]:
         abort(403, "You must be dataset owner to send a dataset for review.")
 
-    qs = f"?publicationType={publication_type}&embargoReleaseDate={embargo_release_date}" if embargo_release_date else f"?publicationType={publication_type}"
+    qs = construct_publication_qs(publication_type, embargo_release_date)
 
     return ps._api._post(f"/datasets/{myds.id}/publication/request{qs}")
 
