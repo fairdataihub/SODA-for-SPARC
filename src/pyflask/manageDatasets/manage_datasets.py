@@ -2135,3 +2135,27 @@ def update_dataset_readme(selected_account, selected_dataset, updated_readme):
     ps._api._put(f"/datasets/{myds.id}/readme", json={"readme": updated_readme})
 
     return {"message": "Readme updated"}
+
+
+def get_dataset_tags(selected_account, selected_dataset):
+    """
+    Function to get tags for a dataset
+    
+        Args:
+            selected_account: account name
+            selected_dataset: dataset name
+        Return:
+            Tags for the dataset
+    """
+
+    ps = get_authenticated_ps(selected_account)
+
+    myds = get_dataset(ps, selected_dataset)
+
+    resp = ps._api._get(f"/datasets/{myds.id}")
+
+    tags = resp["content"]["tags"] if "tags" in resp["content"] else []
+
+    return {"tags": tags} 
+
+    

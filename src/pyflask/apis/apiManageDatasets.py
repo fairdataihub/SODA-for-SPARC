@@ -32,7 +32,8 @@ from manageDatasets import (
     SODA_SPARC_API_KEY,
     bf_submit_dataset_upload_details,
     update_dataset_readme,
-    get_dataset_readme
+    get_dataset_readme,
+    get_dataset_tags
 )
 
 from namespaces import get_namespace, NamespaceEnum
@@ -954,3 +955,35 @@ class BfGetDatasetReadme(Resource):
       if notBadRequestException(e):
         api.abort(500, str(e))
       raise e
+
+
+
+
+
+
+
+model_get_ds_tags = api.model("GetDsTagsResponse", {
+  'tags': fields.List(fields.String, required=True, description="The tags for the dataset."),
+})
+
+@api.route('/datasets/<string:dataset_name_or_id>/tags')
+class BfGetDatasetTags(Resource):
+  
+    parser_tags = reqparse.RequestParser(bundle_errors=True)
+    parser_tags.add_argument('selected_account', type=str, required=True, location='args', help='The account to get dataset tags for.')
+
+    @api.expect(parser_tags)
+    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Get the tags for a dataset.")
+    @api.marshal_with(model_get_ds_tags, False, 200)
+    def get(self, dataset_name_or_id):
+      data = self.parser_tags.parse_args()
+
+      selected_account = data.get('selected_account')
+
+      try:
+        return get_dataset_tags(selected_account, dataset_name_or_id)
+      except Exception as e:
+        if notBadRequestException(e):
+          api.abort(500, str(e))
+        raise e
+
