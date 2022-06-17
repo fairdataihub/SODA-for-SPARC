@@ -30,7 +30,8 @@ from manageDatasets import (
     get_username,
     check_agent_install,
     SODA_SPARC_API_KEY,
-    bf_submit_dataset_upload_details
+    bf_submit_dataset_upload_details,
+    update_dataset_readme
 )
 
 from namespaces import get_namespace, NamespaceEnum
@@ -899,3 +900,33 @@ class BfSubmitDatasetUploadDetails(Resource):
       return bf_submit_dataset_upload_details()
     except Exception as e:
       api.abort(500, str(e))
+
+
+
+
+
+
+
+@api.route('/datasets/<string:dataset_name_or_id>/readme')
+class BfGetDatasetReadme(Resource):
+
+
+  parser_readme = reqparse.RequestParser(bundle_errors=True)
+  parser_readme.add_argument('selected_account', type=str, required=True, location='args', help='The target account to rename the dataset for.')
+  parser_readme.add_argument('updated_readme', type=str, required=True, location='json', help='The updated readme content to save.')
+
+  @api.expect(parser_readme)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 200: 'OK'}, description="Update the readme for a dataset.")
+  @api.marshal_with(successMessage, 200, False)
+  def put(self, dataset_name_or_id):
+    data = self.parser_readme.parse_args()
+
+    selected_account = data.get('selected_account')
+    updated_readme = data.get('updated_readme')
+
+    try:
+      return update_dataset_readme(selected_account, dataset_name_or_id , updated_readme)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e

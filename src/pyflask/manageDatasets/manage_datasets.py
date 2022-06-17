@@ -41,6 +41,7 @@ import requests
 
 from flask import abort 
 from namespaces import NamespaceEnum, get_namespace_logger
+from utils import get_dataset, get_authenticated_ps
 
 
 ### Global variables
@@ -2100,3 +2101,18 @@ def get_pennsieve_api_key_secret(email, password, keyname):
         return ("success", response["key"], response["secret"], response["name"])
     except Exception as e:
         raise e
+
+
+
+def update_dataset_readme(selected_account, selected_dataset, updated_readme):
+    """
+    Update the readme of a dataset on Pennsieve with the given readme string.
+    """
+
+    ps = get_authenticated_ps(selected_account)
+
+    myds = get_dataset(ps, selected_dataset)
+
+    ps._api._put(f"/datasets/{myds.id}/readme", json={"readme": updated_readme})
+
+    return {"message": "Readme updated"}
