@@ -1032,7 +1032,7 @@ $(".pre-publishing-continue").on("click", async function () {
   let excludedFileObjects;
   try {
     // read in the excluded files
-    // TODO: Replace with Flask call
+    // TODO: Replace with Flask call -- READY
     excludedFileObjects = await getFilesExcludedFromPublishing(
       defaultBfDataset
     );
