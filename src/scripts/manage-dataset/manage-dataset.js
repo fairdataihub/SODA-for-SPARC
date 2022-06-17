@@ -2032,7 +2032,7 @@ $("#button-add-tags").click(async () => {
 
   // Add tags to dataset
   try {
-    // TODO: Replace with FLASK api call -- WIP
+    // TODO: Replace with FLASK api call -- READY
     await update_dataset_tags(selectedBfDataset, tags);
   } catch (e) {
     // log the error
@@ -2108,6 +2108,7 @@ const showCurrentTags = async () => {
     // get the tags from the Pennsieve API
     let tags;
     try {
+      // TODO: Replace with FLASK api call -- READY
       tags = await get_dataset_tags(selectedBfDataset);
       if (tags === undefined || tags.length == 0) {
         //if so make the button say add tags
