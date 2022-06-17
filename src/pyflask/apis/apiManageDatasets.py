@@ -917,7 +917,7 @@ class BfGetDatasetReadme(Resource):
 
   @api.expect(parser_readme)
   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 200: 'OK'}, description="Update the readme for a dataset.")
-  @api.marshal_with(successMessage, 200, False)
+  @api.marshal_with(successMessage, False, 200)
   def put(self, dataset_name_or_id):
     data = self.parser_readme.parse_args()
 
