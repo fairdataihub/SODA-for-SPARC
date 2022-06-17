@@ -1310,6 +1310,20 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             $("#bf-dataset-select-div").show();
 
             bfDataset = $("#curatebfdatasetlist").val();
+            let sweet_al = document.getElementsByClassName("swal2-content")[0];
+            let sweet_alrt =
+              document.getElementsByClassName("swal2-actions")[0];
+            sweet_alrt.style.marginTop = "1rem";
+
+            let tip_container = document.createElement("div");
+            let tip_content = document.createElement("p");
+            tip_content.innerText =
+              "Only datasets where you have owner or manager permissions will be shown in the list";
+            tip_content.classList.add("tip-content");
+            tip_content.style.textAlign = "left";
+            tip_container.style.marginTop = ".5rem";
+            tip_container.appendChild(tip_content);
+            sweet_al.appendChild(tip_container);
           },
           preConfirm: () => {
             bfDataset = $("#curatebfdatasetlist").val();
