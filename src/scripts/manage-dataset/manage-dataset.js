@@ -380,6 +380,12 @@ $("#button-add-permission-pi").click(() => {
     hideClass: {
       popup: "animate__animated animate__zoomOut animate__faster",
     },
+    preConfirm: () => {
+      let userVal = document.getElementById("bf_list_users_pi").value;
+      if (userVal === "Select PI") {
+        Swal.showValidationMessage("Please choose a valid user");
+      }
+    },
   }).then((result) => {
     if (result.isConfirmed) {
       log.info("Changing PI Owner of datset");

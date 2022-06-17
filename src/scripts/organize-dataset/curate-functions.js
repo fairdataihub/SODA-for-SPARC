@@ -970,14 +970,14 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       Swal.fire({
         allowOutsideClick: false,
         backdrop: "rgba(0,0,0, 0.4)",
-        cancelButtonText: "Use my API key instead",
+        cancelButtonText: "Cancel",
         confirmButtonText: "Connect to Pennsieve",
-        showCloseButton: true,
-        focusConfirm: true,
+        showCloseButton: false,
+        focusConfirm: false,
         heightAuto: false,
         reverseButtons: reverseSwalButtons,
-        showCancelButton: false,
-        title: `<span style="text-align:center">Connect your Pennsieve account using your email and password <i class="fas fa-info-circle swal-popover" data-content="Your email and password will not be saved and not seen by anyone." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></span>`,
+        showCancelButton: true,
+        title: `<span style="text-align:center">Connect your Pennsieve account using your email and password</span><p class="tip-content" style="margin-top: .5rem">Your email and password will not be saved and not seen by anyone.</p>`,
         html: `<input type="text" id="ps_login" class="swal2-input" placeholder="Email Address for Pennsieve">
         <input type="password" id="ps_password" class="swal2-input" placeholder="Password">`,
         showClass: {
@@ -1399,6 +1399,8 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
         } else {
           showHideDropdownButtons("dataset", "show");
         }
+        //currently changing it but not visually in the UI
+        $("#bf_list_users_pi").val("Select PI");
 
         defaultBfDataset = bfDataset;
 
