@@ -1156,7 +1156,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
 
   // update the readme file
   try {
-    // TODO: Replace with FLASK call -- WIP
+    // TODO: Replace with FLASK call -- READY
     await updateDatasetReadme(selectedBfDataset, completeReadme);
   } catch (error) {
     log.error(error);

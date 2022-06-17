@@ -8997,7 +8997,7 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   statuses.subtitle = description && description.length ? true : false;
 
   // get the readme
-  // TODO: Replace with FLASK call -- WIP
+  // TODO: Replace with FLASK call -- Ready
   const readme = await getDatasetReadme(datasetIdOrName);
 
   // set the readme's status
