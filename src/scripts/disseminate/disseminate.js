@@ -1073,7 +1073,7 @@ $(".pre-publishing-continue").on("click", async function () {
   let metadataFiles;
   try {
     // read in all of the metadata files for the dataset
-    // TODO: Replace with Flask call
+    // TODO: Replace with Flask call -- Ready
     metadataFiles = await getDatasetMetadataFiles(defaultBfDataset);
   } catch (error) {
     // tell the user something went wrong getting access to their datasets ignored files
