@@ -5,40 +5,52 @@ from organizeDatasets import (
     monitor_local_json_progress,
 )
 
+from flask import request
+
 from namespaces import NamespaceEnum, get_namespace
 from flask_restx import Resource, fields, reqparse
 from errorHandlers import notBadRequestException
+import json
 
 api = get_namespace(NamespaceEnum.ORGANIZE_DATASETS)
 
 
 
-model_get_dataset_files_folders_response = api.model(
-    "GetDatasetFilesFoldersResponse",
-    {
-        "soda_json_structure": fields.String( required=True, description="SODA JSON structure"),
-        "success_message": fields.String( required=True, description="Success message"),
-        "manifest_error_message": fields.String( required=True, description="Manifest error message")
-    }
-)
+
+
+
+# model_get_dataset_files_folders_response = api.model(
+#     "GetDatasetFilesFoldersResponse",
+#     {
+#         "soda_json_structure": fields.String( required=True, description="SODA JSON structure"),
+#         "success_message": fields.String( required=True, description="Success message"),
+#         "manifest_error_message": fields.String( required=True, description="Manifest error message")
+#     }
+# )
 
 @api.route('/dataset_files_and_folders')
 class BfGetDatasetFilesFolders(Resource):
-    parser = api.parser()
-    parser.add_argument('sodajsonobject', type=dict, required=True, help='The sodajsonobject filled with the bfaccount and dataset info available.', location="json")
+    parser_file_folders = reqparse.RequestParser(bundle_errors=True)
+    parser_file_folders.add_argument('sodajsonobject', type=str, required=True, help='The sodajsonobject filled with the bfaccount and dataset info available.', location="args")
 
-    @api.expect(parser)
+    @api.expect(parser_file_folders)
     @api.doc(responses={200: "Success", 400: "Bad Request", 500: "Internal Server Error"}, description="Import a dataset from Pennsieve and populate the local SODA JSON object.")
-    @api.marshal_with(model_get_dataset_files_folders_response)
+    # @api.marshal_with(model_get_dataset_files_folders_response)
     def get(self):
-        data = self.parser.parse_args()
-        sodajsonobject = data.get('sodajsonobject')
+        args = self.parser_file_folders.parse_args()
+
+        sodajsonobject = args.get("sodajsonobject")
+
+        # convert sodajsonobject to object
+        sodajsonobject = json.loads(sodajsonobject)
 
         try:
-            return bf_get_dataset_files_folders(sodajsonobject)
+            obj = bf_get_dataset_files_folders(sodajsonobject)
+            print(obj)
+            return obj
         except Exception as e:
             if notBadRequestException(e):
-                api.abort(500, e.args[0])
+                api.abort(500, str(e))
             raise e
 
 

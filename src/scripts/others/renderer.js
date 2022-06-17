@@ -7661,28 +7661,30 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
 });
 
 var bf_request_and_populate_dataset = async (sodaJSONObj) => {
-  return new Promise(async (resolve, reject) => {
-    console.log(sodaJSONObj);
     try {
       let bf_get_files_folders = await client.get(
         `/organize_datasets/dataset_files_and_folders`,
         {
-          sodajsonobject: JSON.stringify(sodaJSONObj),
+          params: {
+            sodajsonobject: JSON.stringify(sodaJSONObj)
+          }
         }
       );
       //check return value
-      let res = bf_get_files_folders.data.sodajsonobject;
+      // TODO: This returns two messages along with the soda_json_structure as it originally did. 
+      //       Gonna have to replace just grabbing soda_json_structure with the whole res object
+      //       and make sure it works given the introduction of keys all the way down.
+      let res = bf_get_files_folders.data.soda_json_structure;
 
-      console.log(res);
-      resolve(res);
       ipcRenderer.send(
         "track-event",
         "Success",
         "Retrieve Dataset - Pennsieve",
         defaultBfDatasetId
       );
+
+      return res
     } catch (error) {
-      reject(userError(error.response.data.message));
       clientError(error);
       console.log(error);
       ipcRenderer.send(
@@ -7691,8 +7693,8 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
         "Retrieve Dataset - Pennsieve",
         defaultBfDatasetId
       );
+      throw(error.response.data.message);
     }
-  });
 };
 
 // When mode = "update", the buttons won't be hidden or shown to prevent button flickering effect
