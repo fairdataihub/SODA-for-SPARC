@@ -33,7 +33,8 @@ from manageDatasets import (
     bf_submit_dataset_upload_details,
     update_dataset_readme,
     get_dataset_readme,
-    get_dataset_tags
+    get_dataset_tags,
+    update_dataset_tags
 )
 
 from namespaces import get_namespace, NamespaceEnum
@@ -986,4 +987,26 @@ class BfGetDatasetTags(Resource):
         if notBadRequestException(e):
           api.abort(500, str(e))
         raise e
+
+    
+
+    parser_tags_put = parser_tags.copy()
+    parser_tags_put.add_argument('tags', type=list, required=True, location='json', help='The tags to add to the dataset.')
+
+    @api.expect(parser_tags_put)
+    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 403: 'Forbidden'}, description="Add tags to a dataset.")
+    @api.marshal_with(successMessage, False, 200)
+    def put(self, dataset_name_or_id):
+      data = self.parser_tags_put.parse_args()
+
+      selected_account = data.get('selected_account')
+      tags = data.get('tags')
+
+      try:
+        return update_dataset_tags(selected_account, dataset_name_or_id, tags)
+      except Exception as e:
+        if notBadRequestException(e):
+          api.abort(500, str(e))
+        raise e
+
 

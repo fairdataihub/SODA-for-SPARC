@@ -33,5 +33,6 @@ from .manage_datasets import (
     bf_get_current_user_permission,
     update_dataset_readme,
     get_dataset_readme,
-    get_dataset_tags
+    get_dataset_tags,
+    update_dataset_tags
 )

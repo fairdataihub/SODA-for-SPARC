@@ -2132,6 +2132,11 @@ def update_dataset_readme(selected_account, selected_dataset, updated_readme):
 
     myds = get_dataset(ps, selected_dataset)
 
+    role = bf_get_current_user_permission(ps, myds)
+    if role not in ["owner", "manager"]:
+        abort(403, "You don't have permissions to modify this dataset.")
+
+
     ps._api._put(f"/datasets/{myds.id}/readme", json={"readme": updated_readme})
 
     return {"message": "Readme updated"}
@@ -2156,6 +2161,28 @@ def get_dataset_tags(selected_account, selected_dataset):
 
     tags = resp["content"]["tags"] if "tags" in resp["content"] else []
 
-    return {"tags": tags} 
+    return {"tags": tags}
+
+
+
+
+def update_dataset_tags(selected_account, selected_dataset, updated_tags):
+    """
+    Update the tags of a dataset on Pennsieve with the given tags list.
+    """
+
+    ps = get_authenticated_ps(selected_account)
+
+    myds = get_dataset(ps, selected_dataset)
+
+    # check user permissions
+    role = bf_get_current_user_permission(ps, myds)
+    if role not in ["owner", "manager"]:
+        abort(403, "You don't have permissions to modify this dataset.")
+
+
+    ps._api._put(f"/datasets/{myds.id}", json={"tags": updated_tags})
+
+    return {"message": "Tags updated"}
 
     
