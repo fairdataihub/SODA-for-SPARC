@@ -2104,6 +2104,25 @@ def get_pennsieve_api_key_secret(email, password, keyname):
 
 
 
+def get_dataset_readme(selected_account, selected_dataset):
+    """
+    Function to get readme for a dataset
+    
+        Args:
+            selected_account: account name
+            selected_dataset: dataset name
+        Return:
+            Readme for the dataset
+    """
+
+    ps = get_authenticated_ps(selected_account)
+
+    myds = get_dataset(ps, selected_dataset)
+
+    return ps._api._get(f"/datasets/{myds.id}/readme")
+
+
+
 def update_dataset_readme(selected_account, selected_dataset, updated_readme):
     """
     Update the readme of a dataset on Pennsieve with the given readme string.
