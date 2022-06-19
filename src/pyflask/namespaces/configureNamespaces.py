@@ -13,6 +13,7 @@ class NamespaceEnum(Enum):
     STARTUP = "startup"
     TAXONOMY = "taxonomy"
     USER = "user"
+    DATASETS = "datasets"
 
 # namespaces dictionary that is given a namespace name as a key and returns the corresponding namespace object as a value
 namespaces = { }
@@ -48,6 +49,9 @@ def configure_namespaces():
 
     user_namespace = Namespace(NamespaceEnum.USER.value, description='Routes for handling user functionality')
     namespaces[NamespaceEnum.USER] = user_namespace
+
+    datasets_namespace = Namespace(NamespaceEnum.DATASETS.value, description='Routes for handling dataset functionality')
+    namespaces[NamespaceEnum.DATASETS] = datasets_namespace
 
 
 
