@@ -9421,7 +9421,7 @@ const userIsDatasetOwner = async (datasetIdOrName) => {
   }
 
   // get the dataset the user wants to edit
-  // TODO: Replace with Flask call -- WIP
+  // TODO: Replace with Flask call -- READY
   let role = await getCurrentUserPermissions(datasetIdOrName);
 
   return userIsOwner(role);
