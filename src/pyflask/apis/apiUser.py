@@ -1,7 +1,7 @@
 from flask_restx import Resource, reqparse
 from namespaces import get_namespace, NamespaceEnum
 
-from users import integrate_orcid_with_pennsieve
+from users import integrate_orcid_with_pennsieve, get_user
 
 api = get_namespace(NamespaceEnum.USER)
 
@@ -29,4 +29,22 @@ class Orcid(Resource):
               api.abort(500, str(e))
 
 
+
+
+
+@api.route('/')
+class User(Resource):
+    parser = reqparse.RequestParser(bundle_errors=True)
+    parser.add_argument("pennsieve_account", type=str, required=True, help="Pennsieve account", location="args")
+
+    @api.expect(parser)
+    @api.doc(response={200: "Success", 400: "Bad Request", 500: "Internal Server Error"}, description="Get a user's information.")
+    def get(self):
+        data = self.parser.parse_args()
+        pennsieve_account = data.get("pennsieve_account")
+
+        try:
+            return get_user(pennsieve_account)
+        except Exception as e:
+            api.abort(500, str(e))
 

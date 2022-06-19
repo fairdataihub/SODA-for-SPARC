@@ -1,5 +1,6 @@
 from pennsieve import Pennsieve
 from flask import abort 
+from utils import get_authenticated_ps
 
 
 
@@ -27,3 +28,19 @@ def integrate_orcid_with_pennsieve(access_code, pennsieve_account):
     abort(400, "Invalid access code")
 
   
+
+
+
+
+
+def get_user(selected_account):
+  """
+  Get a user's information.
+  """
+
+  ps = get_authenticated_ps(selected_account)
+
+  try:
+    return ps._api._get("/user")
+  except Exception as e:
+    abort(500, e.response.json()["message"])

@@ -9009,7 +9009,7 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   statuses.tags = tags && tags.length ? true : false;
 
   // get the banner url
-  // TODO: REPLACE WITH FLASK CALL -- WIP
+  // TODO: REPLACE WITH FLASK CALL -- READY
   const bannerPresignedUrl = await getDatasetBannerImageURL(datasetIdOrName);
 
   // set the banner image's url status
@@ -9028,7 +9028,7 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // check if the user is the owner
   if (owner) {
     // get the user's information
-    // TODO: Replace with Flask call -- WIP
+    // TODO: Replace with Flask call -- READY
     let user = await getUserInformation();
 
     // get the orcid object out of the user information
