@@ -745,11 +745,14 @@ const cleanUpEmptyGuidedStructureFolders = async (
           icon: "warning",
           title: "Continue?",
           html: `${highLevelFolder} data was not added to the following subjects:<br /><br />
-          <ul>${subjectsWithEmptyFolders
-            .map(
-              (subject) => `<li class="text-left">${subject.subjectName}</li>`
-            )
-            .join("")}</ul><br />
+            <ul>
+              ${subjectsWithEmptyFolders
+                .map(
+                  (subject) =>
+                    `<li class="text-left">${subject.subjectName}</li>`
+                )
+                .join("")}
+            </ul><br />
           Continuing will delete all dataset folders for subjects that do not contain samples with data. You will be able to come back and add additional subject data at a later time.`,
           reverseButtons: true,
           showCancelButton: true,
@@ -871,9 +874,13 @@ const cleanUpEmptyGuidedStructureFolders = async (
           },
           title: "Continue?",
           html: `${highLevelFolder} data was not added to the following samples:<br /><br />
-          <ul>${samplesWithEmptyFolders
-            .map((sample) => `<li class="text-left">${sample.sampleName}</li>`)
-            .join("")}</ul><br />
+            <ul>
+              ${samplesWithEmptyFolders
+                .map(
+                  (sample) => `<li class="text-left">${sample.sampleName}</li>`
+                )
+                .join("")}
+            </ul><br />
             Continuing will delete all dataset folders for samples that do not contain sample data.\n\nYou will be able to come back and add additional sample data at a later time.`,
           icon: "warning",
           reverseButtons: true,
@@ -1238,7 +1245,6 @@ const setActiveSubPage = (pageIdToActivate) => {
   //depending on page being opened
   switch (pageIdToActivate) {
     case "guided-specify-subjects-page": {
-      console.log("foo");
       const [subjectsInPools, subjectsOutsidePools] =
         sodaJSONObj.getAllSubjects();
       //Combine sample data from subjects in and out of pools
@@ -1319,6 +1325,16 @@ const setActiveSubPage = (pageIdToActivate) => {
     }
 
     case "guided-primary-samples-organization-page": {
+      //If the user indicated they have no samples, skip this page
+      //and go to primary subject data organization page
+      if (
+        document.getElementById("guided-primary-samples-organization-page")
+          .dataset.skipSubPage === "true"
+      ) {
+        setActiveSubPage("guided-primary-subjects-organization-page");
+        return;
+      }
+
       renderSamplesHighLevelFolderAsideItems("primary");
       guidedUpdateFolderStructure("primary", "samples");
 
@@ -1381,6 +1397,16 @@ const setActiveSubPage = (pageIdToActivate) => {
     }
 
     case "guided-source-samples-organization-page": {
+      //If the user indicated they have no samples, skip this page
+      //and go to source subject data organization page
+      if (
+        document.getElementById("guided-source-samples-organization-page")
+          .dataset.skipSubPage === "true"
+      ) {
+        setActiveSubPage("guided-source-subjects-organization-page");
+        return;
+      }
+
       renderSamplesHighLevelFolderAsideItems("source");
       guidedUpdateFolderStructure("source", "samples");
       $("#guided-file-explorer-elements").appendTo(
@@ -1442,6 +1468,16 @@ const setActiveSubPage = (pageIdToActivate) => {
     }
 
     case "guided-derivative-samples-organization-page": {
+      //If the user indicated they have no samples, skip this page
+      //and go to derivative subject data organization page
+      if (
+        document.getElementById("guided-derivative-samples-organization-page")
+          .dataset.skipSubPage === "true"
+      ) {
+        setActiveSubPage("guided-derivative-subjects-organization-page");
+        return;
+      }
+
       renderSamplesHighLevelFolderAsideItems("derivative");
       guidedUpdateFolderStructure("derivative", "samples");
       $("#guided-file-explorer-elements").appendTo(
@@ -3498,7 +3534,6 @@ const specifyPool = (event, poolNameInput) => {
           setActiveSubPage("guided-organize-subjects-into-pools-page");
           return;
         } else {
-          console.log(poolSubjectsDropdownCell);
           //Add left border back to subject dropdown cell to seperate pool name and subject dropdown
           poolSubjectsDropdownCell.removeClass("remove-left-border");
 
@@ -8796,17 +8831,180 @@ $(document).ready(() => {
       case "guided-subjects-folder-tab": {
         switch (openSubPageID) {
           case "guided-specify-subjects-page": {
-            setActiveSubPage("guided-organize-subjects-into-pools-page");
+            const buttonYesSubjects = document.getElementById(
+              "guided-button-add-subjects-table"
+            );
+            const buttonNoSubjects = document.getElementById(
+              "guided-button-no-subjects"
+            );
+            if (
+              !buttonYesSubjects.classList.contains("selected") &&
+              !buttonNoSubjects.classList.contains("selected")
+            ) {
+              notyf.open({
+                duration: "5000",
+                type: "error",
+                message: "Please indicate if your dataset contains subjects.",
+              });
+              return;
+            }
+            if (buttonYesSubjects.classList.contains("selected")) {
+              const subjects =
+                sodaJSONObj["dataset-metadata"][
+                  "pool-subject-sample-structure"
+                ]["subjects"];
+
+              //Check to see if any subjects were added, and if not, disallow the user
+              //from progressing until they add at least one subject or select that they do not
+              if (Object.keys(subjects).length === 0) {
+                notyf.open({
+                  duration: "5000",
+                  type: "error",
+                  message:
+                    "Please add at least one subject or indicate that your dataset does not contain subjects.",
+                });
+                return;
+              }
+
+              $(".guided-subject-sample-data-addition-page").attr(
+                "data-skip-page",
+                "false"
+              );
+              setActiveSubPage("guided-organize-subjects-into-pools-page");
+            }
+            if (buttonNoSubjects.classList.contains("selected")) {
+              $(".guided-subject-sample-data-addition-page").attr(
+                "data-skip-page",
+                "true"
+              );
+              hideSubNavAndShowMainNav("next");
+            }
+
             break;
           }
 
           case "guided-organize-subjects-into-pools-page": {
+            const buttonYesPools = document.getElementById(
+              "guided-button-organize-subjects-into-pools"
+            );
+            const buttonNoPools = document.getElementById(
+              "guided-button-no-pools"
+            );
+            if (
+              !buttonYesPools.classList.contains("selected") &&
+              !buttonNoPools.classList.contains("selected")
+            ) {
+              notyf.open({
+                duration: "5000",
+                type: "error",
+                message:
+                  "Please indicate if you would like to organize your subjects into pools.",
+              });
+              return;
+            }
+
+            if (buttonYesPools.classList.contains("selected")) {
+              const pools =
+                sodaJSONObj["dataset-metadata"][
+                  "pool-subject-sample-structure"
+                ]["pools"];
+
+              //Check to see if any pools were added, and if not, disallow the user
+              //from progressing until they add at least one pool or select that they do not
+              //have any pools
+              if (Object.keys(pools).length === 0) {
+                notyf.open({
+                  duration: "5000",
+                  type: "error",
+                  message:
+                    "Please add at least one pool or indicate that your dataset does not contain pools.",
+                });
+                return;
+              }
+              //delete empty pools
+              for (const pool of Object.keys(pools)) {
+                if (
+                  Object.keys(
+                    sodaJSONObj["dataset-metadata"][
+                      "pool-subject-sample-structure"
+                    ]["pools"][pool]
+                  ).length === 0
+                ) {
+                  delete sodaJSONObj["dataset-metadata"][
+                    "pool-subject-sample-structure"
+                  ]["pools"][pool];
+                }
+              }
+            }
+
             setActiveSubPage("guided-specify-samples-page");
             break;
           }
 
           case "guided-specify-samples-page": {
-            hideSubNavAndShowMainNav("next");
+            const buttonYesSamples = document.getElementById(
+              "guided-button-add-samples-tables"
+            );
+            const buttonNoSamples = document.getElementById(
+              "guided-button-no-samples"
+            );
+            if (
+              !buttonYesSamples.classList.contains("selected") &&
+              !buttonNoSamples.classList.contains("selected")
+            ) {
+              notyf.open({
+                duration: "5000",
+                type: "error",
+                message:
+                  "Please indicate if your dataset's subjects have samples.",
+              });
+              return;
+            }
+            if (buttonYesSamples.classList.contains("selected")) {
+              const [samplesInPools, samplesOutsidePools] =
+                sodaJSONObj.getAllSamplesFromSubjects();
+              //Combine sample data from samples in and out of pools
+              let samples = [...samplesInPools, ...samplesOutsidePools];
+              //Check to see if any samples were added, and if not, disallow the user
+              //from progressing until they add at least one sample or select that they do not
+              //have any samples
+              if (samples.length === 0) {
+                notyf.open({
+                  duration: "5000",
+                  type: "error",
+                  message:
+                    "Please add at least one sample or indicate that your dataset does not contain samples.",
+                });
+                return;
+              }
+
+              document
+                .getElementById("guided-primary-samples-organization-page")
+                .setAttribute("data-skip-sub-page", "false");
+              document
+                .getElementById("guided-source-samples-organization-page")
+                .setAttribute("data-skip-sub-page", "false");
+              document
+                .getElementById("guided-derivative-samples-organization-page")
+                .setAttribute("data-skip-sub-page", "false");
+              hideSubNavAndShowMainNav("next");
+            }
+
+            if (buttonNoSamples.classList.contains("selected")) {
+              //add skip-sub-page attribute to element
+              document
+                .getElementById("guided-primary-samples-organization-page")
+                .setAttribute("data-skip-sub-page", "true");
+              document
+                .getElementById("guided-source-samples-organization-page")
+                .setAttribute("data-skip-sub-page", "true");
+              document
+                .getElementById("guided-derivative-samples-organization-page")
+                .setAttribute("data-skip-sub-page", "true");
+
+              hideSubNavAndShowMainNav("next");
+            }
+
             break;
           }
         }
@@ -9123,17 +9321,23 @@ $(document).ready(() => {
           }
         }
       }
-
+      //back
       case "guided-primary-data-organization-tab": {
         switch (openSubPageID) {
           case "guided-primary-samples-organization-page": {
-            $("#guided-sub-page-navigation-footer-div").hide();
-            $("#guided-footer-div").css("display", "flex");
-            $("#guided-back-button").click();
+            hideSubNavAndShowMainNav("back");
             break;
           }
 
           case "guided-primary-subjects-organization-page": {
+            if (
+              document.getElementById(
+                "guided-primary-samples-organization-page"
+              ).dataset.skipSubPage === "true"
+            ) {
+              hideSubNavAndShowMainNav("back");
+              break;
+            }
             setActiveSubPage("guided-primary-samples-organization-page");
             break;
           }

@@ -529,7 +529,10 @@
                   >
                     Yes
                   </button>
-                  <button class="ui negative basic button guided--radio-button">
+                  <button
+                    class="ui negative basic button guided--radio-button"
+                    id="guided-button-no-samples"
+                  >
                     No
                   </button>
                 </div>
@@ -542,7 +545,7 @@
           </div>
           <div
             id="guided-primary-data-organization-tab"
-            class="guided--panel hidden guided-curate-new-dataset-branch-page"
+            class="guided--panel hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
           >
             <div class="guided--section w-100">
               <h1 class="guided--text-sub-step">
@@ -577,6 +580,7 @@
               <div
                 class="guided--panel mt-md sub-page"
                 id="guided-primary-samples-organization-page"
+                data-skip-sub-page="false"
               >
                 <div class="guided--section" id="guided-primary-samples-prompt">
                   <label class="guided--form-label centered">
@@ -742,7 +746,7 @@
           </div>
           <div
             id="guided-source-data-organization-tab"
-            class="guided--panel hidden guided-curate-new-dataset-branch-page"
+            class="guided--panel hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
           >
             <div class="guided--section w-100">
               <h1 class="guided--text-sub-step">Source data for samples</h1>
@@ -775,6 +779,7 @@
               <div
                 class="guided--panel mt-md sub-page"
                 id="guided-source-samples-organization-page"
+                data-skip-sub-page="false"
               >
                 <div class="guided--section" id="guided-source-samples-prompt">
                   <label class="guided--form-label centered">
@@ -935,10 +940,9 @@
               </div>
             </div>
           </div>
-
           <div
             id="guided-derivative-data-organization-tab"
-            class="guided--panel hidden guided-curate-new-dataset-branch-page"
+            class="guided--panel hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
           >
             <div class="guided--section w-100">
               <h1 class="guided--text-sub-step">Derivative data for samples</h1>
@@ -970,6 +974,7 @@
               <div
                 class="guided--panel mt-md sub-page"
                 id="guided-derivative-samples-organization-page"
+                data-skip-sub-page="false"
               >
                 <div
                   class="guided--section"
