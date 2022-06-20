@@ -4349,12 +4349,7 @@ const pasteFromClipboard = (event, target_element) => {
       "i"
     );
     // "/^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i";
-    if (regex.test(key)) {
-      $(`#${target_element}`).val(key);
-    } else {
-      console.log("Invalid API Key");
-      log.error("Invalid API Key");
-    }
+    $(`#${target_element}`).val(key);
   }
 };
 
@@ -4364,7 +4359,7 @@ var bfAddAccountBootboxMessage = `<form>
         Key name:
       </label>
       <div class="col-sm-9">
-        <input type="text" id="bootbox-key-name" class="form-control" />
+        <input type="text" style="width: 80%;" id="bootbox-key-name" class="form-control" />
       </div>
     </div>
     <div class="form-group row">

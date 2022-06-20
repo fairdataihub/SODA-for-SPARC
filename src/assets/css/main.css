@@ -1691,6 +1691,7 @@ details[open] > summary::before {
 
 .about-text {
   color: dimgray;
+  text-align: justify;
 }
 
 .tip-content {
@@ -1772,13 +1773,19 @@ details[open] > summary::before {
   line-height: 1rem;
 }
 
+@media (min-height: 1200px) {
+  .getting-started-buttons {
+    margin-top: -17rem !important;
+  }
+}
+
 @media (min-height: 900px) {
   .getting-started-header {
     margin-top: 8rem;
   }
 
   .getting-started-buttons {
-    margin-top: -18rem;
+    margin-top: -7rem;
   }
 
   .getting-started-overview {

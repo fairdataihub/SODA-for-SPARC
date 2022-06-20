@@ -1010,6 +1010,14 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
               ) {
                 error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">It seems that you do not have access to the SPARC Consortium organization on Pennsieve. Email <a href="mailto:support@pennsieve.net">support@pennsieve.net</a> to get access to the SPARC Consortium organization then try again.</div>`;
               }
+              console.log(response[1]["message"]);
+              if (
+                response[1]["message"] ===
+                "Error: Username or password was incorrect."
+              ) {
+                error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">Error: Username or password was incorrect</div>`;
+              }
+              console.log(error_message);
               Swal.hideLoading();
               Swal.showValidationMessage(error_message);
               document.getElementById(
