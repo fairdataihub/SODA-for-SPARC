@@ -109,12 +109,12 @@ class BfIgnoreFiles(Resource):
 
         ignore_files = data.get("ignore_files")
 
-        for file in ignore_files:
-            print(file)
-
         try:
             return update_files_excluded_from_publishing(dataset_name_or_id, ignore_files)
         except Exception as e:
+            # if exception is an HTTPError then check if 400 or 500 
+            if type(e).__name__ == "HTTPError":
+                handle_http_error(e)
             if notBadRequestException(e):
                 api.abort(500, str(e))
             raise e
