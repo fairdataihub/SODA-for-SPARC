@@ -7,10 +7,16 @@ from gevent import monkey
 monkey.patch_all()
 
 from pennsieve import Pennsieve
+from flask import abort 
+import requests
+import urllib 
+
 from manageDatasets import bf_get_current_user_permission
 from utils import get_dataset, get_authenticated_ps
-from flask import abort 
+from authentication import get_access_token
 
+
+PENNSIEVE_URL = "https://api.pennsieve.io"
 
 
 def bf_get_doi(selected_bfaccount, selected_bfdataset):
@@ -251,7 +257,7 @@ def get_files_excluded_from_publishing(selected_dataset, pennsieve_account):
 
 
 
-def update_files_excluded_from_publishing(pennsieve_account, selected_dataset, files_excluded_from_publishing):
+def update_files_excluded_from_publishing(selected_dataset_id, files_excluded_from_publishing):
     """
     Function to update the files excluded from publishing
 
@@ -263,12 +269,20 @@ def update_files_excluded_from_publishing(pennsieve_account, selected_dataset, f
         Success or error message
     """
 
-    ps = get_authenticated_ps(pennsieve_account)
 
-    myds = get_dataset(ps, selected_dataset)
+    token = get_access_token()
 
-    # for file in files_excluded_from_publishing:
-    resp = ps._api._put(f"/datasets/{myds.id}/ignore-files", json={"fileName": {"fileName": "README.txt"}})
+    headers = {
+        "Accept": "*/*",
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {token}"
+    }
+
+    r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/ignore-files", json=files_excluded_from_publishing, headers=headers)
+    r.raise_for_status()
+
+    return {"message": "Files excluded from publishing."}
+
 
 
 

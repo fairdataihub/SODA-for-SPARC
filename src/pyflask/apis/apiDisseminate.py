@@ -97,8 +97,8 @@ class BfIgnoreFiles(Resource):
             raise e
     
 
-    parser_ignore_files_put = parser.copy()
-    parser_ignore_files_put.add_argument("ignore_files", type=str, help="Files excluded from publishing", location="json", required=True)
+    parser_ignore_files_put = reqparse.RequestParser()
+    parser_ignore_files_put.add_argument("ignore_files", type=list, help="Files excluded from publishing", location="json", required=True)
 
     @api.expect(parser_ignore_files_put)
     @api.marshal_with(model_success_message_response, 200, False)
@@ -108,10 +108,12 @@ class BfIgnoreFiles(Resource):
         data = self.parser_ignore_files_put.parse_args()
 
         ignore_files = data.get("ignore_files")
-        selected_bfaccount = data.get("selected_account")
+
+        for file in ignore_files:
+            print(file)
 
         try:
-            return update_files_excluded_from_publishing(selected_bfaccount, dataset_name_or_id, ignore_files)
+            return update_files_excluded_from_publishing(dataset_name_or_id, ignore_files)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
