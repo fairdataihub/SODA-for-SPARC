@@ -689,6 +689,16 @@ const cleanUpEmptyGuidedStructureFolders = async (
         }
       }
 
+      //Delete the high level folder if no folders or files were added
+      const highLevelFolderContents =
+        datasetStructureJSONObj["folders"][highLevelFolder];
+      if (
+        Object.keys(highLevelFolderContents.folders).length === 0 &&
+        Object.keys(highLevelFolderContents.files).length === 0
+      ) {
+        delete datasetStructureJSONObj["folders"][highLevelFolder];
+      }
+
       return true;
     } else {
       const subjectsWithEmptyFolders = [];
@@ -734,7 +744,13 @@ const cleanUpEmptyGuidedStructureFolders = async (
           },
           icon: "warning",
           title: "Continue?",
-          text: `${highLevelFolder} data was not added to all of your subjects. Continuing will delete all dataset folders for subjects that do not contain samples with data. You will be able to come back and add additional subject data at a later time.`,
+          html: `${highLevelFolder} data was not added to the following subjects:<br /><br />
+          <ul>${subjectsWithEmptyFolders
+            .map(
+              (subject) => `<li class="text-left">${subject.subjectName}</li>`
+            )
+            .join("")}</ul><br />
+          Continuing will delete all dataset folders for subjects that do not contain samples with data. You will be able to come back and add additional subject data at a later time.`,
           reverseButtons: true,
           showCancelButton: true,
           cancelButtonColor: "#6e7881",
@@ -854,7 +870,11 @@ const cleanUpEmptyGuidedStructureFolders = async (
             popup: "animate__animated animate__zoomOut animate__faster",
           },
           title: "Continue?",
-          text: `${highLevelFolder} data was not added to all of your samples.\n\nContinuing will delete all dataset folders for samples that do not contain sample data.\n\nYou will be able to come back and add additional sample data at a later time.`,
+          html: `${highLevelFolder} data was not added to the following samples:<br /><br />
+          <ul>${samplesWithEmptyFolders
+            .map((sample) => `<li class="text-left">${sample.sampleName}</li>`)
+            .join("")}</ul><br />
+            Continuing will delete all dataset folders for samples that do not contain sample data.\n\nYou will be able to come back and add additional sample data at a later time.`,
           icon: "warning",
           reverseButtons: true,
           showCancelButton: true,
@@ -1783,7 +1803,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   const datasetResumeJsonObj = await getProgressFileData(datasetNameToResume);
   sodaJSONObj = datasetResumeJsonObj;
   datasetStructureJSONObj = sodaJSONObj["saved-datset-structure-json-obj"];
-  populateGuidedModePages(sodaJSONObj);
+  guidedTransitionFromHome();
 };
 
 //Add  spinner to element
