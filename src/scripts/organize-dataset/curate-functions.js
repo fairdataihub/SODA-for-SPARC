@@ -990,6 +990,9 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
           '<a onclick="showBFAddAccountSweetalert()">I want to connect with an API key instead</a>',
         didOpen: () => {
           $(".swal-popover").popover();
+          let div_footer = document.getElementsByClassName("swal2-footer")[0];
+          div_footer.style.flexDirection = "column";
+          div_footer.style.alignItems = "center";
         },
         preConfirm: async () => {
           Swal.resetValidationMessage();
@@ -1420,6 +1423,10 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             defaultBfDatasetId = id;
           }
         }
+
+        let PI_users = document.getElementById("bf_list_users_pi");
+        PI_users.value = "Select PI";
+        $("#bf_list_users_pi").selectpicker("refresh");
 
         // log a map of datasetId to dataset name to analytics
         // this will be used to help us track private datasets which are not trackable using a datasetId alone
