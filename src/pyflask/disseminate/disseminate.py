@@ -269,7 +269,6 @@ def update_files_excluded_from_publishing(selected_dataset_id, files_excluded_fr
         Success or error message
     """
 
-
     token = get_access_token()
 
     headers = {
@@ -279,6 +278,9 @@ def update_files_excluded_from_publishing(selected_dataset_id, files_excluded_fr
     }
 
     r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/ignore-files", json=files_excluded_from_publishing, headers=headers)
+
+    # TODO: log r.text and r.status_code
+
     r.raise_for_status()
 
     return {"message": "Files excluded from publishing."}
