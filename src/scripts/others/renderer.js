@@ -8765,7 +8765,7 @@ const get_dataset_tags = async (dataset_id_or_name) => {
 
   // fetch the tags for their dataset using the Pennsieve API
   let dataset = await get_dataset_by_name_id(dataset_id_or_name, jwt);
-  let dataset_tags = client.get(
+  let dataset_tags = await client.get(
     `/manage_datasets/datasets/${dataset_id_or_name}/tags`,
     {
       params: {
@@ -8806,14 +8806,17 @@ const update_dataset_tags = async (datasetIdOrName, tags) => {
   const id = dataset["content"]["id"];
 
   // setup the request options
-  let updateDatasetTags = client.put(`/manage_datasets/datasets/${id}/tags`, {
-    params: {
-      selected_account: defaultBfAccount,
-    },
-    payload: {
-      tags: JSON.stringify(tags),
-    },
-  });
+  let updateDatasetTags = await client.put(
+    `/manage_datasets/datasets/${id}/tags`,
+    {
+      params: {
+        selected_account: defaultBfAccount,
+      },
+      payload: {
+        tags: JSON.stringify(tags),
+      },
+    }
+  );
 
   let res = updateDatasetTags;
 
@@ -8932,22 +8935,23 @@ const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
   let id = dataset.content.id;
 
   // put the new readme data in the readme on Pennsieve
-  options = {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`,
-    },
-    body: JSON.stringify({ readme: updatedReadme.trim() }),
-  };
 
-  let readmeResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/readme`,
-    options
+  let updateReadme = await client.put(
+    `/manage_datasets/datasets/${id}/readme`,
+    {
+      params: {
+        selected_account: defaultBfAccount,
+      },
+      payload: {
+        updated_readme: JSON.stringify({ readme: updatedReadme.trim() }),
+      },
+    }
   );
 
+  let res = updateReadme;
+  console.log(res);
   // get the status code out of the response
-  let statusCode = readmeResponse.status;
+  let statusCode = res.status;
 
   // check the status code of the response
   switch (statusCode) {
@@ -8960,7 +8964,7 @@ const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
       );
     case 401:
       throw new Error(
-        `${statusCode} - You cannot update the dataset description while unauthenticated. Please reauthenticate and try again.`
+        `${statusCode} - You cannot update the dataset  description while unauthenticated. Please reauthenticate and try again.`
       );
     case 403:
       throw new Error(
@@ -8969,7 +8973,7 @@ const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
 
     default:
       // something unexpected happened
-      let statusText = await readmeResponse.json().statusText;
+      let statusText = await res.json().statusText;
       throw new Error(`${statusCode} - ${statusText}`);
   }
 };
@@ -9685,13 +9689,15 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
   let { id } = dataset.content;
 
   // get the metadata files for the dataset
-  let datasetWithChildrenRes = axios.create({
-    baseURL: `https://api.pennsieve.io/datasets/${id}`,
-    headers: {
-      Authorization: `Bearer ${jwt}`,
-    },
-  });
-  let res = datasetWithChildrenRes.get();
+  let datasetwithChildrenResponse = client.get(
+    `/disseminate_datasets/datasets/${id}/metadata-files`,
+    {
+      params: {
+        selected_account: defaultBfAccount,
+      },
+    }
+  );
+  let res = datasetwithChildrenResponse;
   console.log(res);
 
   // check the status code
@@ -9721,7 +9727,8 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
   }
 
   // get the metadata files from the dataset
-  let datasetWithChildren = await datasetWithChildrenResponse.json();
+  let datasetWithChildren =
+    datasetWithChildrenResponse.data.metadata_files.json();
 
   // get the metadata packages
   let topLevelMetadataPackages = datasetWithChildren.children;
