@@ -1,5 +1,7 @@
 from flask_restx import Resource, fields, reqparse
 from namespaces import NamespaceEnum, get_namespace
+from flask import request
+import json
 
 from curate import (
     create_folder_level_manifest,
@@ -24,15 +26,15 @@ model_check_empty_files_folders_response = api.model( "CheckEmptyFilesFoldersRes
 @api.route("/empty_files_and_folders")
 class CheckEmptyFilesFolders(Resource):
     # response types/codes
-    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request'}, description="Given a sodajsonobject return a list of empty files and folders should they exist, as well as the sodajsonobject.")
+    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request'}, description="Given a sodajsonobject return a list of empty files and folders should they exist, as well as the sodajsonobject.", params={'soda_json_structure': 'JSON structure of the SODA dataset'})
     def get(self):
+        soda_json_structure = request.args.get("soda_json_structure")
 
-        # get the soda_json_structure from the request object
-        args = reqparse.RequestParser()
-        args.add_argument("soda_json_structure", type=dict, required=True, help="SODA's Dataset structure", location="json")
+        if soda_json_structure is None:
+            api.abort(400, "Missing parameter: soda_json_structure")
 
-        # get the dataset_structure from the request object
-        soda_json_structure = args.parse_args().get("soda_json_structure")
+        # parse soda json as dictionary
+        soda_json_structure = json.loads(soda_json_structure)
 
         try:
             return check_empty_files_folders(soda_json_structure)
@@ -51,19 +53,18 @@ model_main_curation_function_response = api.model( "MainCurationFunctionResponse
 
 @api.route("/curation")
 class Curation(Resource):
-
-    parser = reqparse.RequestParser()
-    parser.add_argument("soda_json_object", type=dict, required=True, help="SODA's Dataset structure", location="json")
-
-    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request', 403: 'Forbidden'}, description="Given a sodajsonobject generate a dataset. Used in the final step of Organize Datasets.")
+    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request', 403: 'Forbidden'}, 
+    description="Given a sodajsonobject generate a dataset. Used in the final step of Organize Datasets.",
+    params={'soda_json_structure': 'JSON structure of the SODA dataset'})
     @api.marshal_with(model_main_curation_function_response)
-    @api.expect(parser)
     def post(self):
-        # get the soda_json_structure from the request object
-        soda_json_object = self.parser.parse_args().get("soda_json_object")
+        soda_json_structure = request.args.get("soda_json_structure")
+
+        if soda_json_structure is None:
+            api.abort(400, "Missing parameter: soda_json_structure")
 
         try:
-            return main_curate_function(soda_json_object)
+            return main_curate_function(soda_json_structure)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
@@ -188,19 +189,20 @@ model_dataset_size_response = api.model( "DatasetSizeResponse", {
 
 @api.route('/dataset_size')
 class DatasetSize(Resource):
-    parser = reqparse.RequestParser()
-    parser.add_argument('soda_json_object', type=dict, required=True, help='SODA dataset structure', location='json')
 
-    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request'}, description="Estimate the size of a dataset that will be generated on a user's device.")
+    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request'}, 
+    description="Estimate the size of a dataset that will be generated on a user's device.", 
+    params={'soda_json_structure': "SODA dataset structure"})
     @api.marshal_with(model_dataset_size_response, False, 200)
-    @api.expect(parser)
     def get(self):
-        # get the soda_json_object from the request object
-        data = self.parser.parse_args()
 
-        soda_json_object = data.get("soda_json_object")
+        # get the soda_json_structure from the request object
+        soda_json_structure = request.args.get("soda_json_structure")
+
+        if soda_json_structure is None:
+            api.abort(400, "No SODA dataset structure provided.")
 
         try:
-            return check_JSON_size(soda_json_object)
+            return check_JSON_size(soda_json_structure)
         except Exception as e:
             api.abort(500, str(e))
