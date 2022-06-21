@@ -2203,6 +2203,7 @@ $("#button-add-license").click(() => {
           });
 
           showCurrentLicense();
+          console.log("once");
 
           ipcRenderer.send(
             "track-event",
@@ -2219,7 +2220,8 @@ $("#button-add-license").click(() => {
   }, delayAnimation);
 });
 
-const showCurrentLicense = () => {
+const showCurrentLicense = async () => {
+  console.log("uhh");
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
@@ -2236,7 +2238,7 @@ const showCurrentLicense = () => {
       "api_bf_get_license",
       selectedBfAccount,
       selectedBfDataset,
-      (error, res) => {
+      async (error, res) => {
         if (error) {
           log.error(error);
           console.error(error);
@@ -2249,42 +2251,33 @@ const showCurrentLicense = () => {
         } else {
           let licenseContainer = document.getElementById("license-lottie-div");
           console.log(licenseContainer.children.length);
+          var lottie_container;
           if (licenseContainer.children.length < 1) {
             // licenseContainer.removeChild(licenseContainer.children[1]);
-            var lottie_container = lottie.loadAnimation({
+            lottie_container = lottie.loadAnimation({
               container: licenseContainer,
               animationData: licenseLottie,
               renderer: "svg",
               loop: true,
               autoplay: true,
             });
+            count++;
           }
           currentDatasetLicense.innerHTML = res;
           if (res === "Creative Commons Attribution") {
             $("#button-add-license").hide();
             $("#assign-a-license-header").hide();
-            if ($("#add_license-section").hasClass("is-shown")) {
-              Swal.fire({
-                title:
-                  "You are all set. This dataset already has the correct license assigned.",
-                backdrop: "rgba(0,0,0, 0.4)",
-                heightAuto: false,
-                showConfirmButton: true,
-                icon: "success",
-              });
-            }
-            document.getElementById("license-assigned").style.display = "block";
+            if ($("#add_license-section").hasClass("is-shown"))
+              document.getElementById("license-assigned").style.display =
+                "block";
 
             licenseContainer.style.display = "block";
-            lottie_container.play();
             console.log("creating here");
           } else {
             $("#button-add-license").show();
             $("#assign-a-license-header").show();
             document.getElementById("license-assigned").style.display = "none";
             licenseContainer.style.display = "none";
-            lottie_container.stop();
-            lottie_container.destroy();
             console.log("destroying");
           }
         }
