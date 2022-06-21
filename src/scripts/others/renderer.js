@@ -2939,6 +2939,7 @@ const { waitForDebugger } = require("inspector");
 const { resolve } = require("path");
 const { background } = require("jimp");
 const { rename } = require("fs");
+const { resolveSoa } = require("dns");
 var cropOptions = {
   aspectRatio: 1,
   movable: false,
@@ -3296,6 +3297,7 @@ async function submitReviewDataset(embargoReleaseDate) {
     try {
       // exclude the user's selected files from publication
       // TODO: Replace with Flask calls -- WIP
+      //check res
       await updateDatasetExcludedFiles(selectedBfDataset, files);
     } catch (error) {
       // log the error
@@ -8790,24 +8792,24 @@ const update_dataset_tags = async (datasetIdOrName, tags) => {
   const id = dataset["content"]["id"];
 
   // setup the request options
-  let options = {
-    method: "PUT",
+  let update_response = axios.create({
+    baseURL: `https://api.pennsieve.io/datasets/${id}`,
     headers: {
       Accept: "*/*",
       Authorization: `Bearer ${jwt}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ tags: tags }),
-  };
+    params: {
+      body: JSON.stringify({ tags: tags }),
+    },
+  });
+
+  let res = update_response.put();
 
   // update the the user's tags
-  let updateResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}`,
-    options
-  );
 
   // Check status codes and respond accordingly
-  let statusCode = updateResponse.status;
+  let statusCode = res.status;
   if (statusCode === 404) {
     throw new Error(
       `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset.`
@@ -8820,7 +8822,7 @@ const update_dataset_tags = async (datasetIdOrName, tags) => {
     throw new Error(`${statusCode} - You do not have access to this dataset.`);
   } else if (statusCode !== 200) {
     // something unexpected happened
-    let statusText = await updateResponse.json().statusText;
+    let statusText = await res.json().statusText;
     throw new Error(`${statusCode} - ${statusText}`);
   }
 };
@@ -9568,15 +9570,25 @@ const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
   let { id } = dataset.content;
 
   // get the excluded files
-  let excludedFilesResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/ignore-files`,
-    {
-      headers: { Authorization: `Bearer ${jwt}` },
-    }
-  );
+
+  let excludedFilesResponse = axios.create({
+    baseURL: `https://api.pennsieve.io/datasets/${id}/ignore-files`,
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
+  });
+
+  let res = excludedFilesResponse.get();
+  console.log(res);
+  // let excludedFilesResponse = await fetch(
+  //   `https://api.pennsieve.io/datasets/${id}/ignore-files`,
+  //   {
+  //     headers: { Authorization: `Bearer ${jwt}` },
+  //   }
+  // );
 
   // get the status code
-  let statusCode = excludedFilesResponse.status;
+  let statusCode = res.status;
 
   // check the status code and respond appropriately
   switch (statusCode) {
@@ -9594,13 +9606,13 @@ const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
       throw new Error(`${statusCode} - Dataset could not be found. `);
     default:
       // something unexpected happened
-      let pennsieveErrorObject = await excludedFilesResponse.json();
+      let pennsieveErrorObject = await res.json();
       let { message } = pennsieveErrorObject;
       throw new Error(`${statusCode} - ${message}`);
   }
 
   // get the ignored files array
-  let { ignoreFiles } = await excludedFilesResponse.json();
+  let { ignoreFiles } = await res.data.json();
 
   // return the ignored files
   return ignoreFiles;
@@ -9630,11 +9642,11 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
     headers: {
       Accept: "*/*",
       "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`
+      Authorization: `Bearer ${jwt}`,
     },
     params: {
-      body: JSON.stringify(files);
-    }
+      body: JSON.stringify(files),
+    },
   });
 
   let res = excludeFilesResponse.put();
@@ -9650,9 +9662,8 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
   //   body: JSON.stringify(files),
   // };
 
-
   // check the status code
-  let { status } = res;
+  let { status } = res.statusCode;
   switch (status) {
     //  200 is success do nothing
     case 200:
