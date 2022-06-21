@@ -1342,7 +1342,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => { });
+            }).then((result) => {});
             generateSubjectsFileHelper(false);
           }
         });
@@ -1358,7 +1358,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => { });
+        }).then((result) => {});
         generateSubjectsFileHelper(false);
       }
     }
@@ -1412,7 +1412,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   let bfdataset = document
     .getElementById("bf_dataset_load_subjects")
@@ -1510,7 +1510,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => { });
+            }).then((result) => {});
             generateSamplesFileHelper(uploadBFBoolean);
           }
         });
@@ -1526,7 +1526,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => { });
+        }).then((result) => {});
         generateSamplesFileHelper(uploadBFBoolean);
       }
     }
@@ -1580,7 +1580,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   // new client that has a longer timeout
   let clientLongTimeout = new zerorpc.Client({
@@ -2110,7 +2110,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   try {
     let load_taxonomy_species = await client.get(`/taxonomy/species`, {
       animal_list: [commonName],
@@ -2827,9 +2827,9 @@ function detectEmptyRequiredFields(funding) {
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
   var emptyMessageArray = [
     "- Missing required fields under Dataset Info section: " +
-    dsEmptyField.join(", "),
+      dsEmptyField.join(", "),
     "- Missing required fields under Contributor Info section: " +
-    conEmptyField.join(", "),
+      conEmptyField.join(", "),
     "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
   ];
   var allFieldsSatisfied = true;
@@ -6470,14 +6470,16 @@ ipcRenderer.on(
 
                     numb.innerText = percentage_amount + "%";
                     if (percentage_amount <= 50) {
-                      progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
-                        }deg)`;
+                      progressBar_rightSide.style.transform = `rotate(${
+                        percentage_amount * 0.01 * 360
+                      }deg)`;
                     } else {
                       progressBar_rightSide.style.transition = "";
                       progressBar_rightSide.classList.add("notransition");
                       progressBar_rightSide.style.transform = `rotate(180deg)`;
-                      progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
-                        }deg)`;
+                      progressBar_leftSide.style.transform = `rotate(${
+                        percentage_amount * 0.01 * 180
+                      }deg)`;
                     }
 
                     if (finished === 1) {
@@ -6551,14 +6553,16 @@ ipcRenderer.on(
 
                   numb.innerText = percentage_amount + "%";
                   if (percentage_amount <= 50) {
-                    progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
-                      }deg)`;
+                    progressBar_rightSide.style.transform = `rotate(${
+                      percentage_amount * 0.01 * 360
+                    }deg)`;
                   } else {
                     progressBar_rightSide.style.transition = "";
                     progressBar_rightSide.classList.add("notransition");
                     progressBar_rightSide.style.transform = `rotate(180deg)`;
-                    progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
-                      }deg)`;
+                    progressBar_leftSide.style.transform = `rotate(${
+                      percentage_amount * 0.01 * 180
+                    }deg)`;
                   }
                   if (finished === 1) {
                     progressBar_leftSide.style.transform = `rotate(180deg)`;
@@ -6823,9 +6827,9 @@ document
     for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
       if (
         "manifest.xlsx" in
-        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
         sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-        "manifest.xlsx"
+          "manifest.xlsx"
         ]["forTreeview"]
       ) {
         delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
@@ -6841,8 +6845,8 @@ document
         `/curate_datasets/empty_files_and_folders`,
         {
           params: {
-            soda_json_structure: sodaJSONObj
-          }
+            soda_json_structure: sodaJSONObj,
+          },
         }
       );
     } catch (error) {
@@ -6855,7 +6859,6 @@ document
       console.error(error);
       $("#sidebarCollapse").prop("disabled", false);
     }
-
 
     let { data } = emptyFilesFoldersResponse;
 
@@ -8771,10 +8774,15 @@ const get_dataset_tags = async (dataset_id_or_name) => {
 
   // fetch the tags for their dataset using the Pennsieve API
   let dataset = await get_dataset_by_name_id(dataset_id_or_name, jwt);
-
-  // get the tags out of the dataset
-  const { tags } = dataset["content"];
-
+  let dataset_tags = await client.get(
+    `/manage_datasets/datasets/${dataset_id_or_name}/tags`,
+    {
+      params: {
+        selected_account: defaultBfAccount,
+      },
+    }
+  );
+  let tags = dataset_tags.data.tags;
   // return the tags
   return tags;
 };
@@ -8807,19 +8815,19 @@ const update_dataset_tags = async (datasetIdOrName, tags) => {
   const id = dataset["content"]["id"];
 
   // setup the request options
-  let update_response = axios.create({
-    baseURL: `https://api.pennsieve.io/datasets/${id}`,
-    headers: {
-      Accept: "*/*",
-      Authorization: `Bearer ${jwt}`,
-      "Content-Type": "application/json",
-    },
-    params: {
-      body: JSON.stringify({ tags: tags }),
-    },
-  });
+  let updateDatasetTags = await client.put(
+    `/manage_datasets/datasets/${id}/tags`,
+    {
+      params: {
+        selected_account: defaultBfAccount,
+      },
+      payload: {
+        tags: JSON.stringify(tags),
+      },
+    }
+  );
 
-  let res = update_response.put();
+  let res = updateDatasetTags;
 
   // update the the user's tags
 
@@ -8936,22 +8944,23 @@ const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
   let id = dataset.content.id;
 
   // put the new readme data in the readme on Pennsieve
-  options = {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`,
-    },
-    body: JSON.stringify({ readme: updatedReadme.trim() }),
-  };
 
-  let readmeResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/readme`,
-    options
+  let updateReadme = await client.put(
+    `/manage_datasets/datasets/${id}/readme`,
+    {
+      params: {
+        selected_account: defaultBfAccount,
+      },
+      payload: {
+        updated_readme: JSON.stringify({ readme: updatedReadme.trim() }),
+      },
+    }
   );
 
+  let res = updateReadme;
+  console.log(res);
   // get the status code out of the response
-  let statusCode = readmeResponse.status;
+  let statusCode = res.status;
 
   // check the status code of the response
   switch (statusCode) {
@@ -8964,7 +8973,7 @@ const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
       );
     case 401:
       throw new Error(
-        `${statusCode} - You cannot update the dataset description while unauthenticated. Please reauthenticate and try again.`
+        `${statusCode} - You cannot update the dataset  description while unauthenticated. Please reauthenticate and try again.`
       );
     case 403:
       throw new Error(
@@ -8973,7 +8982,7 @@ const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
 
     default:
       // something unexpected happened
-      let statusText = await readmeResponse.json().statusText;
+      let statusText = await res.json().statusText;
       throw new Error(`${statusCode} - ${statusText}`);
   }
 };
@@ -9689,13 +9698,15 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
   let { id } = dataset.content;
 
   // get the metadata files for the dataset
-  let datasetWithChildrenRes = axios.create({
-    baseURL: `https://api.pennsieve.io/datasets/${id}`,
-    headers: {
-      Authorization: `Bearer ${jwt}`,
-    },
-  });
-  let res = datasetWithChildrenRes.get();
+  let datasetwithChildrenResponse = client.get(
+    `/disseminate_datasets/datasets/${id}/metadata-files`,
+    {
+      params: {
+        selected_account: defaultBfAccount,
+      },
+    }
+  );
+  let res = datasetwithChildrenResponse;
   console.log(res);
 
   // check the status code
@@ -9725,7 +9736,8 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
   }
 
   // get the metadata files from the dataset
-  let datasetWithChildren = await datasetWithChildrenResponse.json();
+  let datasetWithChildren =
+    datasetWithChildrenResponse.data.metadata_files.json();
 
   // get the metadata packages
   let topLevelMetadataPackages = datasetWithChildren.children;
