@@ -1856,17 +1856,15 @@ async function transitionSubQuestionsButton(
     let sodaObject = {}
     let manifestErrorMessage = []
     try {
-      // TODO: Fix error handling for this call don't log twice
       let data = await bf_request_and_populate_dataset(sodaJSONObj);
       sodaObject = data.soda_object;
       manifestErrorMessage = data.manifest_error_message
     } catch (err) {
-      // TODO: What are we supposed to log here? It shouldn't be sodaObject. 
       Swal.fire({
         icon: "error",
         html:
           "<p style='color:red'>" +
-          sodaObject +
+          "Could not retrieve this Pennsieve dataset" +
           ".<br>Please choose another dataset!</p>",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",

@@ -3781,8 +3781,6 @@ async function updateBfAccountList() {
 }
 
 function clientError(error) {
-  console.log(error.response);
-  console.error(error);
   let error_message = error.response.data.message;
   let error_status = error.response.status;
   let error_headers = error.response.headers;
@@ -7698,7 +7696,6 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
     return data
   } catch (error) {
     clientError(error);
-    console.log(error);
     ipcRenderer.send(
       "track-event",
       "Error",
