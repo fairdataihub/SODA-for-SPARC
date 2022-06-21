@@ -3661,14 +3661,22 @@
                   text-align: center;
                 "
                 >Assign license using the button below:
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="As per SPARC rules, you must assign the Creative Commons Attribution (CC-BY) license to all your SPARC datasets."
-                  rel="popover"
-                  data-html="true"
-                  data-placement="right"
-                  data-trigger="hover"
-                ></i>
+              </label>
+              <div
+                id="license-lottie-div"
+                style="display: none; width: 25%; align-self: center"
+              ></div>
+              <label
+                id="license-assigned"
+                style="
+                  font-size: 17px;
+                  color: var(--color-light-green) !important;
+                  width: 100%;
+                  text-align: center;
+                  display: none;
+                "
+                >This dataset already has the CC-BY license assigned so you are
+                all set!
               </label>
               <div
                 class="field"

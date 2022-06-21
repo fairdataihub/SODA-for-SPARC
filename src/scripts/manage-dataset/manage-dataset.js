@@ -2247,6 +2247,18 @@ const showCurrentLicense = () => {
             ["Get License"]
           );
         } else {
+          let licenseContainer = document.getElementById("license-lottie-div");
+          console.log(licenseContainer.children.length);
+          if (licenseContainer.children.length < 1) {
+            // licenseContainer.removeChild(licenseContainer.children[1]);
+            var lottie_container = lottie.loadAnimation({
+              container: licenseContainer,
+              animationData: licenseLottie,
+              renderer: "svg",
+              loop: true,
+              autoplay: true,
+            });
+          }
           currentDatasetLicense.innerHTML = res;
           if (res === "Creative Commons Attribution") {
             $("#button-add-license").hide();
@@ -2261,9 +2273,19 @@ const showCurrentLicense = () => {
                 icon: "success",
               });
             }
+            document.getElementById("license-assigned").style.display = "block";
+
+            licenseContainer.style.display = "block";
+            lottie_container.play();
+            console.log("creating here");
           } else {
             $("#button-add-license").show();
             $("#assign-a-license-header").show();
+            document.getElementById("license-assigned").style.display = "none";
+            licenseContainer.style.display = "none";
+            lottie_container.stop();
+            lottie_container.destroy();
+            console.log("destroying");
           }
         }
       }
