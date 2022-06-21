@@ -42,13 +42,14 @@ class BfGetDatasetFilesFolders(Resource):
 
         sodajsonobject = args.get("sodajsonobject")
 
+        if sodajsonobject is None:
+            api.abort(400, "Missing parameter: sodajsonobject")
+
         # convert sodajsonobject to object
         sodajsonobject = json.loads(sodajsonobject)
 
         try:
-            obj = bf_get_dataset_files_folders(sodajsonobject)
-            print(obj)
-            return obj
+            return bf_get_dataset_files_folders(sodajsonobject)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))

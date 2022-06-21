@@ -1103,29 +1103,29 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only=True)
     try:
         bf_account_name = soda_json_structure["bf-account-selected"]["account-name"]
     except Exception as e:
-        abort(400, "Error: Please provide a Pennsieve dataset account name.")
+        abort(400, "Please provide a Pennsieve account name.")
 
     try:
         bf = Pennsieve(bf_account_name)
     except Exception as e:
-        abort(400, "Error: Please select a valid Pennsieve account")
+        abort(400, "Please select a valid Pennsieve account")
 
     # check that the Pennsieve dataset is valid
     try:
         bf_dataset_name = soda_json_structure["bf-dataset-selected"]["dataset-name"]
     except Exception as e:
-        abort(400, "Error: Please provide a Pennsieve dataset name.")
+        abort(400, "Please provide a Pennsieve dataset name.")
     try:
         myds = bf.get_dataset(bf_dataset_name)
     except Exception as e:
-        abort(400, "Error: Please select a valid Pennsieve dataset")
+        abort(400, "Please select a valid Pennsieve dataset")
 
     # check that the user has permission to edit this dataset
 
     role = bf_get_current_user_permission(bf, myds)
     if role not in ["owner", "manager", "editor"]:
         curatestatus = "Done"
-        abort(403, "Error: You don't have permissions for uploading to this Pennsieve dataset")
+        abort(403, "You don't have permissions for uploading to this Pennsieve dataset")
 
 
     try:
