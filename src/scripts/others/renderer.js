@@ -9086,16 +9086,6 @@ const submitDatasetForPublication = async (
   // get the dataset id
   const { id } = dataset.content;
 
-  // create the publication request options
-  const options = {
-    method: "POST",
-    headers: {
-      Accept: "*/*",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`,
-    },
-  };
-
   // construct the appropriate query string
   let queryString = "";
 
@@ -9107,21 +9097,21 @@ const submitDatasetForPublication = async (
     queryString = `?publicationType=${publicationType}`;
   }
   // request that the dataset be sent in for publication/publication review
-  let publication_response = axios.create({
-    baseUrl:
-      `https://api.pennsieve.io/datasets/${id}/publication/request` +
-      queryString,
-    headers: {
-      Accept: "*/*",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`,
-    },
-  });
-  let res = publication_response.post();
-  console.log(res);
+  let publicationPost = client.post(
+    `/disseminate_datasets/datasets/${id}/publication/request`,
+    {
+      params: {
+        selected_account: defaultBfAccount,
+      },
+      payload: {
+        publication_type: publicationType,
+        embargo_release_date: embargoReleaseDate,
+      },
+    }
+  );
 
   // get the status code out of the response
-  let statusCode = res.status;
+  let statusCode = publicationPost.status;
 
   // check the status code of the response
   switch (statusCode) {
@@ -9147,7 +9137,7 @@ const submitDatasetForPublication = async (
 
     default:
       // something unexpected happened
-      let statusText = await res.json().statusText;
+      let statusText = await publicationPost.json().statusText;
       throw new Error(`${statusCode} - ${statusText}`);
   }
 };
@@ -9197,13 +9187,9 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
   }
 
   let withdrawResponse = client.get(
-    `/disseminate_datasets/datasets/${id}/publication/cancel`,
-    {
-      params: {
-        dataset_name_or_id: id,
-      },
-    }
+    `/disseminate_datasets/datasets/${id}/publication/cancel`
   );
+  console.log(withdrawResponse);
 
   let res = withdrawResponse.data;
 
@@ -9623,20 +9609,15 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
   let { id } = dataset.content;
 
   // create the request options
-  let excludeFilesResponse = axios.create({
-    baseURL: `https://api.pennsieve.io/datasets/${id}/ignore-files`,
-    headers: {
-      Accept: "*/*",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`,
-    },
-    params: {
-      body: JSON.stringify(files),
-    },
-  });
-
-  let res = excludeFilesResponse.put();
-  console.log(res);
+  let excludeFilesRes = client.put(
+    `/disseminate_datasets/datasets/${id}/ignore-files`,
+    {
+      payload: {
+        ignore_files: JSON.stringify(files),
+      },
+    }
+  );
+  console.log(excludeFilesRes);
 
   // const options = {
   //   method: "PUT",
@@ -9649,7 +9630,7 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
   // };
 
   // check the status code
-  let { status } = res.statusCode;
+  let { status } = excludeFilesRes.statusCode;
   switch (status) {
     //  200 is success do nothing
     case 200:
@@ -9669,7 +9650,7 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
 
     // else a 400 of some kind or a 500 as default
     default:
-      let pennsieveErrorObject = await res.json();
+      let pennsieveErrorObject = await excludeFilesRes.json();
       let { message } = pennsieveErrorObject;
       throw new Error(`${status} - ${message}`);
   }
