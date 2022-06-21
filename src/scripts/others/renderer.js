@@ -9489,20 +9489,17 @@ const integrateORCIDWithPennsieve = async (accessCode) => {
 
   // integrate the ORCID to Pennsieve using the access code
   let jwt = await get_access_token();
-  let connectOrcidResponse = await fetch(
-    "https://api.pennsieve.io/user/orcid",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${jwt}`,
-      },
-      body: JSON.stringify({ authorizationCode: accessCode }),
-    }
-  );
+  let orcidResponse = client.post(`/user/orcid`, {
+    params: {
+      pennsieve_account: defaultBfAccount,
+    },
+    payload: {
+      access_code: JSON.stringify({ authorizationCode: accessCode }),
+    },
+  });
 
   // get the status code
-  let statusCode = connectOrcidResponse.status;
+  let statusCode = orcidResponse.status;
 
   // check for any http errors and statuses
   switch (statusCode) {
@@ -9519,7 +9516,7 @@ const integrateORCIDWithPennsieve = async (accessCode) => {
       );
     default:
       // something unexpected happened -- likely a 400 or something in the 500s
-      let pennsieveErrorObject = await connectOrcidResponse.json();
+      let pennsieveErrorObject = await orcidResponse.json();
       let { message } = pennsieveErrorObject;
       throw new Error(`${statusCode} - ${message}`);
   }
