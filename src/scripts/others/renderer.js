@@ -9109,13 +9109,21 @@ const submitDatasetForPublication = async (
     queryString = `?publicationType=${publicationType}`;
   }
   // request that the dataset be sent in for publication/publication review
-  let publicationResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/publication/request` + queryString,
-    options
-  );
+  let publication_response = axios.create({
+    baseUrl:
+      `https://api.pennsieve.io/datasets/${id}/publication/request` +
+      queryString,
+    headers: {
+      Accept: "*/*",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+    },
+  });
+  let res = publication_response.post();
+  console.log(res);
 
   // get the status code out of the response
-  let statusCode = publicationResponse.status;
+  let statusCode = res.status;
 
   // check the status code of the response
   switch (statusCode) {
@@ -9141,7 +9149,7 @@ const submitDatasetForPublication = async (
 
     default:
       // something unexpected happened
-      let statusText = await publicationResponse.json().statusText;
+      let statusText = await res.json().statusText;
       throw new Error(`${statusCode} - ${statusText}`);
   }
 };
@@ -9175,14 +9183,6 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
   let { id } = dataset.content;
 
   // create the api call options
-  const options = {
-    method: "POST",
-    headers: {
-      Accept: "*/*",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`,
-    },
-  };
 
   // construct the appropriate query string
   let queryString = "";
@@ -9198,13 +9198,19 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
     queryString = `?publicationType=publication`;
   }
 
-  let withdrawResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/publication/cancel${queryString}`,
-    options
-  );
+  let widthdraw_response = axios.create({
+    baseURL: `https://api.pennsieve.io/datasets/${id}/publication/cancel${queryString}`,
+    headers: {
+      Accept: "*/*",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+    },
+  });
+  let res = widthdraw_response.post();
+  console.log(res);
 
   // get the status code out of the response
-  let statusCode = withdrawResponse.status;
+  let statusCode = res.status;
 
   // check the status code of the response
   switch (statusCode) {
@@ -9225,7 +9231,7 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
       );
     default:
       // something unexpected happened
-      let statusText = await withdrawResponse.json().statusText;
+      let statusText = await res.json().statusText;
       throw new Error(`${statusCode} - ${statusText}`);
   }
 };
