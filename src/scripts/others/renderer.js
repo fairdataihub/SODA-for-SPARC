@@ -7660,13 +7660,23 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
   }
 });
 
+
+/**
+ * 
+ * @param {object} sodaJSONObj - The SODA json object used for tracking files, folders, and basic dataset curation information such as providence (local or Pennsieve).
+ * @returns {
+ *    "soda_json_structure": {} 
+ *    "success_message": "" 
+ *    "manifest_error_message": ""
+ * }
+ */
 var bf_request_and_populate_dataset = async (sodaJSONObj) => {
   try {
-    let bf_get_files_folders = await client.get(
+    let filesFoldersResponse = await client.get(
       `/organize_datasets/dataset_files_and_folders`,
       {
         params: {
-          sodajsonobject: JSON.stringify(sodaJSONObj),
+          sodajsonobject: sodaJSONObj,
         },
       }
     );
@@ -7674,7 +7684,7 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
     // TODO: This returns two messages along with the soda_json_structure as it originally did.
     //       Gonna have to replace just grabbing soda_json_structure with the whole res object
     //       and make sure it works given the introduction of keys all the way down.
-    let res = bf_get_files_folders.data.soda_json_structure;
+    let data = filesFoldersResponse.data;
 
     ipcRenderer.send(
       "track-event",
@@ -7683,7 +7693,7 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
       defaultBfDatasetId
     );
 
-    return res;
+    return data
   } catch (error) {
     clientError(error);
     console.log(error);
