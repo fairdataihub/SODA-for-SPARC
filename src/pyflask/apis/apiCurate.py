@@ -53,15 +53,17 @@ model_main_curation_function_response = api.model( "MainCurationFunctionResponse
 
 @api.route("/curation")
 class Curation(Resource):
+
     @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request', 403: 'Forbidden'}, 
-    description="Given a sodajsonobject generate a dataset. Used in the final step of Organize Datasets.",
-    params={'soda_json_structure': 'JSON structure of the SODA dataset'})
+    description="Given a sodajsonobject generate a dataset. Used in the final step of Organize Datasets.")
     @api.marshal_with(model_main_curation_function_response)
     def post(self):
-        soda_json_structure = request.args.get("soda_json_structure")
+        data = request.get_json()
 
-        if soda_json_structure is None:
+        if "soda_json_structure" not in data:
             api.abort(400, "Missing parameter: soda_json_structure")
+
+        soda_json_structure = data["soda_json_structure"]
 
         try:
             return main_curate_function(soda_json_structure)
@@ -201,6 +203,8 @@ class DatasetSize(Resource):
 
         if soda_json_structure is None:
             api.abort(400, "No SODA dataset structure provided.")
+
+        soda_json_structure = json.loads(soda_json_structure)
 
         try:
             return check_JSON_size(soda_json_structure)
