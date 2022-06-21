@@ -7072,7 +7072,9 @@ async function initiate_generate() {
   let mainCurateResponse;
   try {
     // TODO: Test Error handling
-    mainCurateResponse = await client.post(`/curate_datasets/curation`, { soda_json_structure: sodaJSONObj });
+    mainCurateResponse = await client.post(`/curate_datasets/curation`, {
+      soda_json_structure: sodaJSONObj,
+    });
   } catch (error) {
     clientError(error);
     let emessage = error.response.data.message;
@@ -7158,7 +7160,7 @@ async function initiate_generate() {
 
   let { data } = mainCurateResponse;
 
-  main_total_generate_dataset_size = data["main_total_generate_dataset_size"]
+  main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
   uploadedFiles = data["main_curation_uploaded_files"];
 
   $("#sidebarCollapse").prop("disabled", false);
@@ -7195,7 +7197,6 @@ async function initiate_generate() {
   var successful = false;
 
   async function main_progressfunction() {
-
     let mainCurationProgressResponse;
     try {
       // TODO: Test error handling
@@ -7288,8 +7289,7 @@ async function initiate_generate() {
           displaySize * displaySize
         ) {
           var totalSizePrint =
-            (main_total_generate_dataset_size / displaySize).toFixed(2) +
-            " KB";
+            (main_total_generate_dataset_size / displaySize).toFixed(2) + " KB";
         } else if (
           main_total_generate_dataset_size <
           displaySize * displaySize * displaySize
@@ -7313,8 +7313,7 @@ async function initiate_generate() {
         var statusProgressMessage = "";
         progressMessage += main_curate_progress_message + "<br>";
         statusProgressMessage += main_curate_progress_message + "<br>";
-        statusProgressMessage +=
-          "Progress: " + value.toFixed(2) + "%" + "<br>";
+        statusProgressMessage += "Progress: " + value.toFixed(2) + "%" + "<br>";
         progressMessage +=
           "Progress: " +
           value.toFixed(2) +
@@ -7408,7 +7407,10 @@ async function initiate_generate() {
     let { data } = mainCurationDetailsResponse;
 
     // check if the amount of successfully uploaded files has increased
-    if (data["main_curation_uploaded_files"] > 0 && data["uploaded_folder_counter"] > foldersUploaded) {
+    if (
+      data["main_curation_uploaded_files"] > 0 &&
+      data["uploaded_folder_counter"] > foldersUploaded
+    ) {
       previousUploadedFileSize = uploadedFilesSize;
       uploadedFiles = data["main_curation_uploaded_files"];
       uploadedFilesSize = data["current_size_of_uploaded_files"];
@@ -7418,16 +7420,13 @@ async function initiate_generate() {
       increaseInFileSize = uploadedFilesSize - previousUploadedFileSize;
 
       // log the aggregate file count and size values when uploading to Pennsieve
-      if (
-        dataset_destination === "bf" ||
-        dataset_destination === "Pennsieve"
-      ) {
+      if (dataset_destination === "bf" || dataset_destination === "Pennsieve") {
         // use the session id as the label -- this will help with aggregating the number of files uploaded per session
         ipcRenderer.send(
           "track-event",
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE +
-          " - Step 7 - Generate - Dataset - Number of Files",
+            " - Step 7 - Generate - Dataset - Number of Files",
           `${datasetUploadSession.id}`,
           uploadedFiles
         );
@@ -7437,7 +7436,7 @@ async function initiate_generate() {
           "track-event",
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE +
-          " - Step 7 - Generate - Dataset - Size",
+            " - Step 7 - Generate - Dataset - Size",
           `${datasetUploadSession.id}`,
           increaseInFileSize
         );
@@ -7461,7 +7460,6 @@ async function initiate_generate() {
       // don't log this again for the current upload session
       loggedDatasetNameToIdMapping = true;
     }
-
 
     //stop the inteval when the upload is complete
     if (main_curate_status === "Done") {
@@ -8707,53 +8705,64 @@ const get_dataset_by_name_id = async (dataset_id_or_Name, jwt = undefined) => {
   }
 
   // get the all of datasets from Pennsieve that the user has access to in their organization
-  let datasets_response;
-
   try {
-    datasets_response = await fetch("https://api.pennsieve.io/datasets", {
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${jwt}`,
+    let datasetsRes = await client.get(`/manage_datasets/bf_dataset_account`, {
+      params: {
+        selected_account: defaultBfAccount,
       },
     });
-  } catch (e) {
-    // network error
-    throw e;
+
+    let statusCode = datasetsRes.status;
+    if (statusCode == 401) {
+      throw new Error(
+        `${statusCode} - Please authenticate before accessing this resource by connecting your Pennsieve account to SODA.`
+      );
+    } else if (statusCode === 403) {
+      throw new Error(
+        `${statusCode} - You do not have access to this dataset.`
+      );
+    } else if (statusCode !== 200) {
+      // something unexpected
+      let statusText = datasetsRes.statusText;
+      throw new Error(`${statusCode} - ${statusText}`);
+    }
+
+    // valid datasets result
+    let datasets = datasetsRes.data;
+
+    // search through the datasets for a match
+    let matches = [];
+    for (const dataset of datasets) {
+      if (is_match(dataset["content"])) matches.push(dataset);
+    }
+
+    // check if there is no matching dataset
+    if (!matches.length) {
+      // could not find the dataset that matches the user's requested id/name
+      throw new Error(
+        `The dataset identified as ${dataset_id_or_Name} does not exist.`
+      );
+    }
+
+    // return the first match
+    return matches[0];
+  } catch (error) {
+    clientError(error);
   }
+
+  // try {
+  //   datasets_response = await fetch("https://api.pennsieve.io/datasets", {
+  //     headers: {
+  //       Accept: "application/json",
+  //       Authorization: `Bearer ${jwt}`,
+  //     },
+  //   });
+  // } catch (e) {
+  //   // network error
+  //   throw e;
+  // }
 
   // check the status codes
-  let statusCode = datasets_response.status;
-  if (statusCode == 401) {
-    throw new Error(
-      `${statusCode} - Please authenticate before accessing this resource by connecting your Pennsieve account to SODA.`
-    );
-  } else if (statusCode === 403) {
-    throw new Error(`${statusCode} - You do not have access to this dataset.`);
-  } else if (statusCode !== 200) {
-    // something unexpected
-    let statusText = await datasets_response.json().statusText;
-    throw new Error(`${statusCode} - ${statusText}`);
-  }
-
-  // valid datasets result
-  let datasets = await datasets_response.json();
-
-  // search through the datasets for a match
-  let matches = [];
-  for (const dataset of datasets) {
-    if (is_match(dataset["content"])) matches.push(dataset);
-  }
-
-  // check if there is no matching dataset
-  if (!matches.length) {
-    // could not find the dataset that matches the user's requested id/name
-    throw new Error(
-      `The dataset identified as ${dataset_id_or_Name} does not exist.`
-    );
-  }
-
-  // return the first match
-  return matches[0];
 };
 
 /*
@@ -8832,12 +8841,10 @@ const update_dataset_tags = async (datasetIdOrName, tags) => {
     }
   );
 
-  let res = updateDatasetTags;
-
   // update the the user's tags
 
   // Check status codes and respond accordingly
-  let statusCode = res.status;
+  let statusCode = updateDatasetTags.status;
   if (statusCode === 404) {
     throw new Error(
       `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset.`
@@ -8850,7 +8857,7 @@ const update_dataset_tags = async (datasetIdOrName, tags) => {
     throw new Error(`${statusCode} - You do not have access to this dataset.`);
   } else if (statusCode !== 200) {
     // something unexpected happened
-    let statusText = await res.json().statusText;
+    let statusText = updateDatasetTags.statusText;
     throw new Error(`${statusCode} - ${statusText}`);
   }
 };
@@ -8881,7 +8888,7 @@ const getDatasetReadme = async (datasetIdOrName) => {
   const id = dataset["content"]["id"];
 
   // fetch the readme file from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
-  let readmeRes = client.get(`/manage_datasets/datasets/${id}/readme`, {
+  let readmeRes = await client.get(`/manage_datasets/datasets/${id}/readme`, {
     params: {
       selected_account: defaultBfAccount,
     },
@@ -8911,12 +8918,12 @@ const getDatasetReadme = async (datasetIdOrName) => {
 
     default:
       // something unexpected happened
-      let statusText = await readmeRes.json().statusText;
+      let statusText = await readmeRes.statusText;
       throw new Error(`${statusCode} - ${statusText}`);
   }
 
   // grab the readme out of the response
-  let { readme } = await readmeRes.data.json();
+  let { readme } = await readmeRes.data;
 
   return readme;
 };
@@ -8987,7 +8994,7 @@ const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
 
     default:
       // something unexpected happened
-      let statusText = await res.json().statusText;
+      let statusText = res.statusText;
       throw new Error(`${statusCode} - ${statusText}`);
   }
 };
@@ -9126,7 +9133,7 @@ const submitDatasetForPublication = async (
     queryString = `?publicationType=${publicationType}`;
   }
   // request that the dataset be sent in for publication/publication review
-  let publicationPost = client.post(
+  let publicationPost = await client.post(
     `/disseminate_datasets/datasets/${id}/publication/request`,
     {
       params: {
@@ -9166,7 +9173,7 @@ const submitDatasetForPublication = async (
 
     default:
       // something unexpected happened
-      let statusText = await publicationPost.json().statusText;
+      let statusText = publicationPost.statusText;
       throw new Error(`${statusCode} - ${statusText}`);
   }
 };
@@ -9200,10 +9207,6 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
   let { id } = dataset.content;
 
   // create the api call options
-
-  // construct the appropriate query string
-  let queryString = "";
-
   // get the publication type
   let publicationType = dataset.publication.type;
 
@@ -9215,12 +9218,10 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
     queryString = `?publicationType=publication`;
   }
 
-  let withdrawResponse = client.get(
+  let withdrawResponse = await client.get(
     `/disseminate_datasets/datasets/${id}/publication/cancel`
   );
   console.log(withdrawResponse);
-
-  let res = withdrawResponse.data;
 
   // get the status code out of the response
   let statusCode = withdrawResponse.status;
@@ -9244,7 +9245,7 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
       );
     default:
       // something unexpected happened
-      let statusText = await withdrawResponse.json().statusText;
+      let statusText = withdrawResponse.statusText;
       throw new Error(`${statusCode} - ${statusText}`);
   }
 };
@@ -9300,7 +9301,7 @@ const getDatasetBannerImageURL = async (datasetIdOrName) => {
   let { id } = dataset["content"];
 
   // fetch the banner url from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
-  let bannerResponse = client.get(`/manage_datasets/bf_banner_image`, {
+  let bannerResponse = await client.get(`/manage_datasets/bf_banner_image`, {
     params: {
       selected_account: defaultBfAccount,
     },
@@ -9330,11 +9331,11 @@ const getDatasetBannerImageURL = async (datasetIdOrName) => {
 
     default:
       // something unexpected happened
-      let statusText = await bannerResponse.json().statusText;
+      let statusText = bannerResponse.statusText;
       throw new Error(`${statusCode} - ${statusText}`);
   }
 
-  let { banner } = await bannerResponse.data.json();
+  let { banner } = bannerResponse.data;
 
   return banner;
 };
@@ -9366,7 +9367,7 @@ const getCurrentUserPermissions = async (datasetIdOrName) => {
   let id = dataset.content.id;
 
   // get the user's permissions
-  let dataset_roles = client.get(`/datasets/${id}/role`, {
+  let dataset_roles = await client.get(`/datasets/${id}/role`, {
     params: {
       pennsieve_account: defaultBfAccount,
     },
@@ -9396,12 +9397,12 @@ const getCurrentUserPermissions = async (datasetIdOrName) => {
 
     default:
       // something unexpected happened
-      let statusText = await dataset_roles.json().statusText;
+      let statusText = dataset_roles.statusText;
       throw new Error(`${statusCode} - ${statusText}`);
   }
 
   // get the permissions object
-  const { role } = await dataset_roles.data.json();
+  const { role } = dataset_roles.data;
 
   // return the permissions
   return role;
@@ -9458,7 +9459,7 @@ const getUserInformation = async () => {
   let jwt = await get_access_token();
 
   // get the user information
-  let userResponse = client.get(`/user/`, {
+  let userResponse = await client.get(`/user/`, {
     params: {
       pennsieve_account: defaultBfAccount,
     },
@@ -9481,12 +9482,12 @@ const getUserInformation = async () => {
       throw new Error(`${statusCode} - Resource could not be found. `);
     default:
       // something unexpected happened
-      let pennsieveErrorObject = await userResponse.json();
+      let pennsieveErrorObject = userResponse;
       let { message } = pennsieveErrorObject;
       throw new Error(`${statusCode} - ${message}`);
   }
 
-  let user = await userResponse.data.json();
+  let user = userResponse.data;
 
   return user;
 };
@@ -9536,7 +9537,7 @@ const integrateORCIDWithPennsieve = async (accessCode) => {
       );
     default:
       // something unexpected happened -- likely a 400 or something in the 500s
-      let pennsieveErrorObject = await orcidResponse.json();
+      let pennsieveErrorObject = orcidResponse.response.data.message;
       let { message } = pennsieveErrorObject;
       throw new Error(`${statusCode} - ${message}`);
   }
@@ -9568,22 +9569,17 @@ const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
   let { id } = dataset.content;
 
   // get the excluded files
+  let excludedFilesRes = await client.get(
+    `/disseminate_datasets/datasets/${id}/ignore-files`,
+    {
+      params: {
+        defaultBfAccount,
+      },
+    }
+  );
 
-  let excludedFilesResponse = axios.create({
-    baseURL: `https://api.pennsieve.io/datasets/${id}/ignore-files`,
-    headers: {
-      Authorization: `Bearer ${jwt}`,
-    },
-  });
-
-  let res = excludedFilesResponse.get();
+  let res = excludedFilesRes;
   console.log(res);
-  // let excludedFilesResponse = await fetch(
-  //   `https://api.pennsieve.io/datasets/${id}/ignore-files`,
-  //   {
-  //     headers: { Authorization: `Bearer ${jwt}` },
-  //   }
-  // );
 
   // get the status code
   let statusCode = res.status;
@@ -9604,13 +9600,13 @@ const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
       throw new Error(`${statusCode} - Dataset could not be found. `);
     default:
       // something unexpected happened
-      let pennsieveErrorObject = await res.json();
+      let pennsieveErrorObject = res;
       let { message } = pennsieveErrorObject;
       throw new Error(`${statusCode} - ${message}`);
   }
 
   // get the ignored files array
-  let { ignoreFiles } = await res.data.json();
+  let { ignoreFiles } = res.data.ignore_files;
 
   // return the ignored files
   return ignoreFiles;
@@ -9635,7 +9631,7 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
   let { id } = dataset.content;
 
   // create the request options
-  let excludeFilesRes = client.put(
+  let excludeFilesRes = await client.put(
     `/disseminate_datasets/datasets/${id}/ignore-files`,
     {
       payload: {
@@ -9644,16 +9640,6 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
     }
   );
   console.log(excludeFilesRes);
-
-  // const options = {
-  //   method: "PUT",
-  //   headers: {
-  //     Accept: "*/*",
-  //     "Content-Type": "application/json",
-  //     Authorization: `Bearer ${jwt}`,
-  //   },
-  //   body: JSON.stringify(files),
-  // };
 
   // check the status code
   let { status } = excludeFilesRes.statusCode;
@@ -9676,7 +9662,7 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
 
     // else a 400 of some kind or a 500 as default
     default:
-      let pennsieveErrorObject = await excludeFilesRes.json();
+      let pennsieveErrorObject = excludeFilesRes;
       let { message } = pennsieveErrorObject;
       throw new Error(`${status} - ${message}`);
   }
@@ -9735,14 +9721,13 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
 
     // else a 400 of some kind or a 500 as default
     default:
-      let pennsieveErrorObject = await res.json();
+      let pennsieveErrorObject = await res;
       let { message } = pennsieveErrorObject;
       throw new Error(`${status} - ${message}`);
   }
 
   // get the metadata files from the dataset
-  let datasetWithChildren =
-    datasetWithChildrenResponse.data.metadata_files.json();
+  let datasetWithChildren = datasetWithChildrenResponse.data.metadata_files;
 
   // get the metadata packages
   let topLevelMetadataPackages = datasetWithChildren.children;
