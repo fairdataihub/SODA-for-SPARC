@@ -8700,50 +8700,44 @@ const get_dataset_by_name_id = async (dataset_id_or_Name, jwt = undefined) => {
   }
 
   // get the all of datasets from Pennsieve that the user has access to in their organization
-  try {
-    let datasetsRes = await client.get(`/manage_datasets/bf_dataset_account`, {
-      params: {
-        selected_account: defaultBfAccount,
-      },
-    });
+  let datasetsRes = await client.get(`/manage_datasets/bf_dataset_account`, {
+    params: {
+      selected_account: defaultBfAccount,
+    },
+  });
 
-    let statusCode = datasetsRes.status;
-    if (statusCode == 401) {
-      throw new Error(
-        `${statusCode} - Please authenticate before accessing this resource by connecting your Pennsieve account to SODA.`
-      );
-    } else if (statusCode === 403) {
-      throw new Error(
-        `${statusCode} - You do not have access to this dataset.`
-      );
-    } else if (statusCode !== 200) {
-      // something unexpected
-      let statusText = datasetsRes.statusText;
-      throw new Error(`${statusCode} - ${statusText}`);
-    }
-
-    // valid datasets result
-    let datasets = datasetsRes.data;
-
-    // search through the datasets for a match
-    let matches = [];
-    for (const dataset of datasets) {
-      if (is_match(dataset["content"])) matches.push(dataset);
-    }
-
-    // check if there is no matching dataset
-    if (!matches.length) {
-      // could not find the dataset that matches the user's requested id/name
-      throw new Error(
-        `The dataset identified as ${dataset_id_or_Name} does not exist.`
-      );
-    }
-
-    // return the first match
-    return matches[0];
-  } catch (error) {
-    clientError(error);
+  let statusCode = datasetsRes.status;
+  if (statusCode == 401) {
+    throw new Error(
+      `${statusCode} - Please authenticate before accessing this resource by connecting your Pennsieve account to SODA.`
+    );
+  } else if (statusCode === 403) {
+    throw new Error(`${statusCode} - You do not have access to this dataset.`);
+  } else if (statusCode !== 200) {
+    // something unexpected
+    let statusText = datasetsRes.statusText;
+    throw new Error(`${statusCode} - ${statusText}`);
   }
+
+  // valid datasets result
+  let datasets = datasetsRes.data;
+
+  // search through the datasets for a match
+  let matches = [];
+  for (const dataset of datasets) {
+    if (is_match(dataset["content"])) matches.push(dataset);
+  }
+
+  // check if there is no matching dataset
+  if (!matches.length) {
+    // could not find the dataset that matches the user's requested id/name
+    throw new Error(
+      `The dataset identified as ${dataset_id_or_Name} does not exist.`
+    );
+  }
+
+  // return the first match
+  return matches[0];
 
   // try {
   //   datasets_response = await fetch("https://api.pennsieve.io/datasets", {
