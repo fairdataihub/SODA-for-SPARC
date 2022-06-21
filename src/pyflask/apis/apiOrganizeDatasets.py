@@ -60,7 +60,7 @@ class BfGetDatasetFilesFolders(Resource):
 
 
 
-generate_dataset_locally
+
 @api.route('/datasets')
 class GenerateDatasetLocally(Resource):
 
