@@ -9196,19 +9196,19 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
     queryString = `?publicationType=publication`;
   }
 
-  let widthdraw_response = axios.create({
-    baseURL: `https://api.pennsieve.io/datasets/${id}/publication/cancel${queryString}`,
-    headers: {
-      Accept: "*/*",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`,
-    },
-  });
-  let res = widthdraw_response.post();
-  console.log(res);
+  let withdrawResponse = client.get(
+    `/disseminate_datasets/datasets/${id}/publication/cancel`,
+    {
+      params: {
+        dataset_name_or_id: id,
+      },
+    }
+  );
+
+  let res = withdrawResponse.data;
 
   // get the status code out of the response
-  let statusCode = res.status;
+  let statusCode = withdrawResponse.status;
 
   // check the status code of the response
   switch (statusCode) {
@@ -9229,7 +9229,7 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
       );
     default:
       // something unexpected happened
-      let statusText = await res.json().statusText;
+      let statusText = await withdrawResponse.json().statusText;
       throw new Error(`${statusCode} - ${statusText}`);
   }
 };
