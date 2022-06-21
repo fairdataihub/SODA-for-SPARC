@@ -9190,12 +9190,16 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
     queryString = `?publicationType=publication`;
   }
 
+  let widthdraw_response = axios.create({
+    baseURL: `https://api.pennsieve.io/datasets/${id}/publication/cancel${queryString}`,
+    headers: {
+      Accept: "*/*",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+    },
+  });
   let res = widthdraw_response.post();
   console.log(res);
-  let withdrawResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/publication/cancel${queryString}`,
-    options
-  );
 
   // get the status code out of the response
   let statusCode = res.status;
