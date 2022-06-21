@@ -8765,10 +8765,15 @@ const get_dataset_tags = async (dataset_id_or_name) => {
 
   // fetch the tags for their dataset using the Pennsieve API
   let dataset = await get_dataset_by_name_id(dataset_id_or_name, jwt);
-
-  // get the tags out of the dataset
-  const { tags } = dataset["content"];
-
+  let dataset_tags = client.get(
+    `/manage_datasets/datasets/${dataset_id_or_name}/tags`,
+    {
+      params: {
+        selected_account: defaultBfAccount,
+      },
+    }
+  );
+  let tags = dataset_tags.data.tags;
   // return the tags
   return tags;
 };
