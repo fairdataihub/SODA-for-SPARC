@@ -1168,7 +1168,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only=True)
             "Data files under a valid high-level SPARC folders have been imported"
         )
         return {
-            "soda_json_structure": soda_json_structure, 
+            "soda_object": soda_json_structure, 
             "success_message": success_message, 
             "manifest_error_message": manifest_error_message
         }

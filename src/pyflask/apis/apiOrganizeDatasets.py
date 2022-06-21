@@ -19,12 +19,13 @@ api = get_namespace(NamespaceEnum.ORGANIZE_DATASETS)
 
 
 
+# TODO: Return SODA JSON object in model without setting type as string. This causes the client to parse the object as a string.
 # model_get_dataset_files_folders_response = api.model(
 #     "GetDatasetFilesFoldersResponse",
 #     {
-#         "soda_json_structure": fields.String( required=True, description="SODA JSON structure"),
+#         "soda_object": fields.Dict( required=True, description="SODA JSON structure"),
 #         "success_message": fields.String( required=True, description="Success message"),
-#         "manifest_error_message": fields.String( required=True, description="Manifest error message")
+#         "manifest_error_message": fields.List(fields.String,  required=True, description="Manifest error message")
 #     }
 # )
 
@@ -35,7 +36,7 @@ class BfGetDatasetFilesFolders(Resource):
 
     @api.expect(parser_file_folders)
     @api.doc(responses={200: "Success", 400: "Bad Request", 500: "Internal Server Error"}, description="Import a dataset from Pennsieve and populate the local SODA JSON object.")
-    # @api.marshal_with(model_get_dataset_files_folders_response)
+    #@api.marshal_with(model_get_dataset_files_folders_response)
     def get(self):
         args = self.parser_file_folders.parse_args()
 
