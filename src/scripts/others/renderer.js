@@ -9291,23 +9291,13 @@ const getDatasetBannerImageURL = async (datasetIdOrName) => {
   // fetch the banner url from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
   let bannerResponse = client.get(`/manage_datasets/bf_banner_image`, {
     params: {
-      selected_account,
+      selected_account: defaultBfAccount,
     },
   });
-  let basdfannerResponse = axios.create({
-    baseURL: `https://api.pennsieve.io/datasets/${id}/banner`,
-    headers: {
-      Accept: "*/*",
-      Authorization: `Bearer ${jwt}`,
-      "Content-Type": "application/json",
-    },
-  });
-
-  let res = bannerResponse.get();
-  console.log(res);
+  console.log(bannerResponse);
 
   // get the status code out of the response
-  let statusCode = res.status;
+  let statusCode = bannerResponse.status;
 
   // check the status code of the response
   switch (statusCode) {
@@ -9329,11 +9319,11 @@ const getDatasetBannerImageURL = async (datasetIdOrName) => {
 
     default:
       // something unexpected happened
-      let statusText = await res.json().statusText;
+      let statusText = await bannerResponse.json().statusText;
       throw new Error(`${statusCode} - ${statusText}`);
   }
 
-  let { banner } = await res.data.json();
+  let { banner } = await bannerResponse.data.json();
 
   return banner;
 };
