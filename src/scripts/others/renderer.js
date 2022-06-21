@@ -9289,7 +9289,12 @@ const getDatasetBannerImageURL = async (datasetIdOrName) => {
   let { id } = dataset["content"];
 
   // fetch the banner url from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
-  let bannerResponse = axios.create({
+  let bannerResponse = client.get(`/manage_datasets/bf_banner_image`, {
+    params: {
+      selected_account,
+    },
+  });
+  let basdfannerResponse = axios.create({
     baseURL: `https://api.pennsieve.io/datasets/${id}/banner`,
     headers: {
       Accept: "*/*",
@@ -9360,17 +9365,14 @@ const getCurrentUserPermissions = async (datasetIdOrName) => {
   let id = dataset.content.id;
 
   // get the user's permissions
-  let instance = axios.create({
-    baseURL: `https://api.pennsieve.io/datasets/${id}/role`,
-    headers: {
-      Authorization: `Bearer ${jwt}`,
+  let dataset_roles = client.get(`/datasets/${id}/role`, {
+    params: {
+      pennsieve_account: defaultBfAccount,
     },
   });
 
-  let res = await instance.get();
-
   // get the status code out of the response
-  let statusCode = res.status;
+  let statusCode = dataset_roles.status;
 
   // check the status code of the response
   switch (statusCode) {
@@ -9392,12 +9394,12 @@ const getCurrentUserPermissions = async (datasetIdOrName) => {
 
     default:
       // something unexpected happened
-      let statusText = await res.json().statusText;
+      let statusText = await dataset_roles.json().statusText;
       throw new Error(`${statusCode} - ${statusText}`);
   }
 
   // get the permissions object
-  const { role } = await res.data.json();
+  const { role } = await dataset_roles.data.json();
 
   // return the permissions
   return role;
@@ -9710,15 +9712,17 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
   let { id } = dataset.content;
 
   // get the metadata files for the dataset
-  let datasetWithChildrenResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}`,
-    {
-      headers: { Authorization: `Bearer ${jwt}` },
-    }
-  );
+  let datasetWithChildrenRes = axios.create({
+    baseURL: `https://api.pennsieve.io/datasets/${id}`,
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
+  });
+  let res = datasetWithChildrenRes.get();
+  console.log(res);
 
   // check the status code
-  let { status } = datasetWithChildrenResponse;
+  let { status } = res.status;
   switch (status) {
     //  200 is success do nothing
     case 200:
@@ -9738,7 +9742,7 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
 
     // else a 400 of some kind or a 500 as default
     default:
-      let pennsieveErrorObject = await datasetWithChildrenResponse.json();
+      let pennsieveErrorObject = await res.json();
       let { message } = pennsieveErrorObject;
       throw new Error(`${status} - ${message}`);
   }
