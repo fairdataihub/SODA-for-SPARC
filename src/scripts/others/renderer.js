@@ -6458,7 +6458,7 @@ ipcRenderer.on(
                       `/organize_datasets/datasets/import/progress`
                     );
 
-                    let {data} = monitorProgressResponse;
+                    let { data } = monitorProgressResponse;
                     percentage_amount = data["progress_percentage"].toFixed(2);
                     finished = data["create_soda_json_completed"];
 
@@ -6543,7 +6543,7 @@ ipcRenderer.on(
                     `/organize_datasets/datasets/import/progress`
                   );
 
-                  let {data} = monitorProgressResponse;
+                  let { data } = monitorProgressResponse;
                   percentage_amount = data["progress_percentage"].toFixed(2);
                   finished = data["create_soda_json_completed"];
                   progressBar_rightSide = document.getElementById(
@@ -6599,9 +6599,9 @@ ipcRenderer.on(
               }
               try {
                 console.log("sodaJSONObj", sodaJSONObj);
-                console.log("Root folder path:", root_folder_path)
-                console.log("Irregular folders: ", irregularFolderArray)
-                console.log("Replaced folders: ", replaced)
+                console.log("Root folder path:", root_folder_path);
+                console.log("Irregular folders: ", irregularFolderArray);
+                console.log("Replaced folders: ", replaced);
                 // TODO: Test Error handling
                 let importLocalDatasetResponse = await client.post(
                   `/organize_datasets/datasets/import`,
@@ -6612,7 +6612,7 @@ ipcRenderer.on(
                     replaced: replaced,
                   }
                 );
-                let {data} = importLocalDatasetResponse;
+                let { data } = importLocalDatasetResponse;
                 sodajsonobject = data;
                 datasetStructureJSONObj = sodaIsConnected["dataset-structure"];
               } catch (error) {
