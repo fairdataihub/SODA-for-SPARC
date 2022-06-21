@@ -9370,6 +9370,7 @@ const getCurrentUserPermissions = async (datasetIdOrName) => {
       pennsieve_account: defaultBfAccount,
     },
   });
+  console.log(dataset_roles);
 
   // get the status code out of the response
   let statusCode = dataset_roles.status;
@@ -9456,16 +9457,13 @@ const getUserInformation = async () => {
   let jwt = await get_access_token();
 
   // get the user information
-  let userResponse = axios.create({
-    baseURL: "https://api.pennsieve.io/user/",
-    headers: {
-      Authorization: `Bearer ${jwt}`,
+  let userResponse = client.get(`/user/`, {
+    params: {
+      pennsieve_account: defaultBfAccount,
     },
   });
 
-  let res = userResponse.get();
-  console.log(res);
-  let statusCode = res.status;
+  let statusCode = userResponse.status;
 
   switch (statusCode) {
     case 200:
@@ -9482,12 +9480,12 @@ const getUserInformation = async () => {
       throw new Error(`${statusCode} - Resource could not be found. `);
     default:
       // something unexpected happened
-      let pennsieveErrorObject = await res.json();
+      let pennsieveErrorObject = await userResponse.json();
       let { message } = pennsieveErrorObject;
       throw new Error(`${statusCode} - ${message}`);
   }
 
-  let user = await res.data.json();
+  let user = await userResponse.data.json();
 
   return user;
 };
