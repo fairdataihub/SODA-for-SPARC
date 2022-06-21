@@ -135,6 +135,23 @@ const guidedTransitionFromDatasetNameSubtitlePage = () => {
   $("#prepare-dataset-parent-tab").css("display", "flex");
   $("#guided-header-div").css("display", "flex");
   $("#guided-footer-div").css("display", "flex");
+
+  //Manually click the proper dataset structure button since the radio button is not controlled
+  //by the next button/traverseToTab function
+  if (sodaJSONObj["button-config"]["dataset-already-structured"]) {
+    if (sodaJSONObj["button-config"]["dataset-already-structured"] === "yes") {
+      //click element with id guided-button-import-existing-dataset-structure
+      document
+        .getElementById("guided-button-import-existing-dataset-structure")
+        .click();
+    }
+    if (sodaJSONObj["button-config"]["dataset-already-structured"] === "no") {
+      //click element with id guided-button-create-new-dataset-structure
+      document
+        .getElementById("guided-button-guided-dataset-structuring")
+        .click();
+    }
+  }
 };
 
 const saveGuidedProgress = (guidedProgressFileName) => {
@@ -913,41 +930,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
     }
   }
 };
-/*const selectedButton = $(this);
-    const notSelectedButton = $(this).siblings(".guided--radio-button");
 
-    notSelectedButton.removeClass("selected");
-    notSelectedButton.addClass("not-selected basic");
-    selectedButton.removeClass("not-selected basic");
-    selectedButton.addClass("selected");
-
-    //Display and scroll to selected element container if data-next-element exists
-    if (selectedButton.data("next-element")) {
-      nextQuestionID = selectedButton.data("next-element");
-      console.log(nextQuestionID);
-      nextQuestionElement = $(`#${nextQuestionID}`);
-      nextQuestionElement.removeClass("hidden");
-      //slow scroll to the next question
-      //temp fix to prevent scrolling error
-      const elementsToNotScrollTo = [
-        "guided-add-samples-table",
-        "guided-add-pools-table",
-        "guided-div-add-subjects-table",
-      ];
-      if (!elementsToNotScrollTo.includes(nextQuestionID)) {
-        nextQuestionElement[0].scrollIntoView({
-          behavior: "smooth",
-        });
-      }
-    }
-    //Hide all child containers of non-selected buttons
-    notSelectedButton.each(function () {
-      console.log($(this));
-      if ($(this).data("next-element")) {
-        nextQuestionID = $(this).data("next-element");
-        $(`#${nextQuestionID}`).addClass("hidden");
-      }
-    });*/
 const resetGuidedRadioButtons = (parentPageID) => {
   const parentPage = document.getElementById(parentPageID);
   const guidedRadioButtons = parentPage.querySelectorAll(
@@ -967,9 +950,42 @@ const resetGuidedRadioButtons = (parentPageID) => {
     }
   }
 };
+const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
+  const parentPage = document.getElementById(parentPageID);
+  const guidedRadioButtons = parentPage.querySelectorAll(
+    ".guided--radio-button"
+  );
+  for (const guidedRadioButton of guidedRadioButtons) {
+    /*
+    if (selectedButton.data("button-config-value")) {
+      buttonConfigValue = selectedButton.data("button-config-value");
+      buttonConfigValueState = selectedButton.data("button-config-value-state");
+      sodaJSONObj["button-config"][buttonConfigValue] = buttonConfigValueState;
+    }*/
+    //get the data-next-element attribute
+    const buttonConfigValue = guidedRadioButton.getAttribute(
+      "data-button-config-value"
+    );
+    if (buttonConfigValue) {
+      const buttonConfigValueState = guidedRadioButton.getAttribute(
+        "data-button-config-value-state"
+      );
+      if (
+        sodaJSONObj["button-config"][buttonConfigValue] ===
+        buttonConfigValueState
+      ) {
+        //click the button
+        console.log("click");
+        guidedRadioButton.click();
+      }
+    }
+  }
+};
 const traverseToTab = (targetPageID) => {
+  console.log(targetPageID);
   try {
     resetGuidedRadioButtons(targetPageID);
+    updateGuidedRadioButtonsFromJSON(targetPageID);
     //refresh selectPickers if page has them
     if (
       targetPageID === "guided-designate-pi-owner-tab" ||
@@ -2037,6 +2053,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["digital-metadata"]["team-permissions"] = [];
   sodaJSONObj["completed-tabs"] = [];
   sodaJSONObj["last-modified"] = "";
+  sodaJSONObj["button-config"] = {};
   datasetStructureJSONObj = { folders: {}, files: {} };
 };
 const attachGuidedMethodsToSodaJSONObj = () => {
@@ -5660,6 +5677,12 @@ $(document).ready(() => {
           behavior: "smooth",
         });
       }
+    }
+    //Store the button's config value in sodaJSONObj
+    if (selectedButton.data("button-config-value")) {
+      buttonConfigValue = selectedButton.data("button-config-value");
+      buttonConfigValueState = selectedButton.data("button-config-value-state");
+      sodaJSONObj["button-config"][buttonConfigValue] = buttonConfigValueState;
     }
     //Hide all child containers of non-selected buttons
     notSelectedButton.each(function () {

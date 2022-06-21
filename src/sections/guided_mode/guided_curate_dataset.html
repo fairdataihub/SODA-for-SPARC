@@ -311,6 +311,8 @@
                   class="ui positive basic button guided--radio-button"
                   id="guided-button-import-existing-dataset-structure"
                   data-next-element="guided-import-existing-dataset-panel"
+                  data-button-config-value="dataset-already-structured"
+                  data-button-config-value-state="yes"
                 >
                   Yes
                 </button>
@@ -318,6 +320,8 @@
                   class="ui negative basic button guided--radio-button"
                   id="guided-button-guided-dataset-structuring"
                   data-next-element="guided-structure-new-dataset-panel"
+                  data-button-config-value="dataset-already-structured"
+                  data-button-config-value-state="no"
                 >
                   No
                 </button>
@@ -394,12 +398,16 @@
                     class="ui positive basic button guided--radio-button"
                     id="guided-button-add-subjects-table"
                     data-next-element="guided-div-add-subjects-table"
+                    data-button-config-value="dataset-contains-subjects"
+                    data-button-config-value-state="yes"
                   >
                     Yes
                   </button>
                   <button
                     class="ui negative basic button guided--radio-button"
                     id="guided-button-no-subjects"
+                    data-button-config-value="dataset-contains-subjects"
+                    data-button-config-value-state="no"
                   >
                     No
                   </button>
@@ -458,12 +466,16 @@
                     class="ui positive basic button guided--radio-button"
                     id="guided-button-organize-subjects-into-pools"
                     data-next-element="guided-div-organize-subjects-into-pools"
+                    data-button-config-value="dataset-contains-pools"
+                    data-button-config-value-state="yes"
                   >
                     Yes
                   </button>
                   <button
                     class="ui negative basic button guided--radio-button"
                     id="guided-button-no-pools"
+                    data-button-config-value="dataset-contains-pools"
+                    data-button-config-value-state="no"
                   >
                     No
                   </button>
@@ -526,12 +538,16 @@
                     class="ui positive basic button guided--radio-button"
                     id="guided-button-add-samples-tables"
                     data-next-element="guided-div-add-samples-tables"
+                    data-button-config-value="dataset-contains-samples"
+                    data-button-config-value-state="yes"
                   >
                     Yes
                   </button>
                   <button
                     class="ui negative basic button guided--radio-button"
                     id="guided-button-no-samples"
+                    data-button-config-value="dataset-contains-samples"
+                    data-button-config-value-state="no"
                   >
                     No
                   </button>
@@ -594,6 +610,8 @@
                       class="ui positive basic button guided--radio-button"
                       id="guided-button-add-sample-primary-data"
                       data-next-element="guided-primary-samples-file-explorer-container"
+                      data-button-config-value="dataset-contains-primary-sample-data"
+                      data-button-config-value-state="yes"
                     >
                       Yes
                     </button>
@@ -601,6 +619,8 @@
                       class="ui negative basic button guided--radio-button"
                       id="guided-button-no-sample-primary-data"
                       data-next-element="guided-warning-before-deleting-primary-samples-container"
+                      data-button-config-value="dataset-contains-primary-sample-data"
+                      data-button-config-value-state="no"
                     >
                       No
                     </button>
@@ -677,6 +697,8 @@
                       class="ui positive basic button guided--radio-button"
                       id="guided-button-add-subject-primary-data"
                       data-next-element="guided-primary-subjects-file-explorer-container"
+                      data-button-config-value="dataset-contains-primary-subject-data"
+                      data-button-config-value-state="yes"
                     >
                       Yes
                     </button>
@@ -684,6 +706,8 @@
                       class="ui negative basic button guided--radio-button"
                       id="guided-button-no-subject-primary-data"
                       data-next-element="guided-warning-before-deleting-primary-pools-and-subjects-container"
+                      data-button-config-value="dataset-contains-primary-subject-data"
+                      data-button-config-value-state="no"
                     >
                       No
                     </button>
@@ -793,6 +817,8 @@
                       class="ui positive basic button guided--radio-button"
                       id="guided-button-add-sample-source-data"
                       data-next-element="guided-source-samples-file-explorer-container"
+                      data-button-config-value="dataset-contains-source-sample-data"
+                      data-button-config-value-state="yes"
                     >
                       Yes
                     </button>
@@ -800,6 +826,8 @@
                       class="ui negative basic button guided--radio-button"
                       id="guided-button-no-sample-source-data"
                       data-next-element="guided-warning-before-deleting-source-samples-container"
+                      data-button-config-value="dataset-contains-source-sample-data"
+                      data-button-config-value-state="no"
                     >
                       No
                     </button>
@@ -873,6 +901,8 @@
                       class="ui positive basic button guided--radio-button"
                       id="guided-button-add-subject-source-data"
                       data-next-element="guided-source-subjects-file-explorer-container"
+                      data-button-config-value="dataset-contains-source-subject-data"
+                      data-button-config-value-state="yes"
                     >
                       Yes
                     </button>
@@ -880,6 +910,8 @@
                       class="ui negative basic button guided--radio-button"
                       id="guided-button-no-subject-source-data"
                       data-next-element="guided-warning-before-deleting-source-pools-and-subjects-container"
+                      data-button-config-value="dataset-contains-source-subject-data"
+                      data-button-config-value-state="no"
                     >
                       No
                     </button>
@@ -991,6 +1023,8 @@
                       class="ui positive basic button guided--radio-button"
                       id="guided-button-add-sample-derivative-data"
                       data-next-element="guided-derivative-samples-file-explorer-container"
+                      data-button-config-value="dataset-contains-derivative-sample-data"
+                      data-button-config-value-state="yes"
                     >
                       Yes
                     </button>
@@ -998,6 +1032,8 @@
                       class="ui negative basic button guided--radio-button"
                       id="guided-button-no-sample-derivative-data"
                       data-next-element="guided-warning-before-deleting-derivative-samples-container"
+                      data-button-config-value="dataset-contains-derivative-sample-data"
+                      data-button-config-value-state="no"
                     >
                       No
                     </button>
@@ -1074,6 +1110,8 @@
                       class="ui positive basic button guided--radio-button"
                       id="guided-button-add-subject-derivative-data"
                       data-next-element="guided-derivative-subjects-file-explorer-container"
+                      data-button-config-value="dataset-contains-derivative-subject-data"
+                      data-button-config-value-state="yes"
                     >
                       Yes
                     </button>
@@ -1081,6 +1119,8 @@
                       class="ui negative basic button guided--radio-button"
                       id="guided-button-no-subject-derivative-data"
                       data-next-element="guided-warning-before-deleting-derivative-pools-and-subjects-container"
+                      data-button-config-value="dataset-contains-derivative-subject-data"
+                      data-button-config-value-state="no"
                     >
                       No
                     </button>
@@ -4522,6 +4562,8 @@
                 class="ui positive basic button guided--radio-button"
                 id="guided-button-add-permissions"
                 data-next-element="guided-add-permissions"
+                data-button-config-value="dataset-contains-additional-permissions"
+                data-button-config-value-state="yes"
               >
                 Yes
               </button>
@@ -4529,6 +4571,8 @@
                 class="ui negative basic button guided--radio-button"
                 id="guided-button-no-permissions"
                 data-next-element="guided-no-permissions"
+                data-button-config-value="dataset-contains-additional-permissions"
+                data-button-config-value-state="no"
               >
                 No
               </button>
