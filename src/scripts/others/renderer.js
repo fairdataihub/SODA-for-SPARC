@@ -9625,24 +9625,34 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
   let { id } = dataset.content;
 
   // create the request options
-  const options = {
-    method: "PUT",
+  let excludeFilesResponse = axios.create({
+    baseURL: `https://api.pennsieve.io/datasets/${id}/ignore-files`,
     headers: {
       Accept: "*/*",
       "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`,
+      Authorization: `Bearer ${jwt}`
     },
-    body: JSON.stringify(files),
-  };
+    params: {
+      body: JSON.stringify(files);
+    }
+  });
 
-  // create the request
-  let excludeFilesResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/ignore-files`,
-    options
-  );
+  let res = excludeFilesResponse.put();
+  console.log(res);
+
+  // const options = {
+  //   method: "PUT",
+  //   headers: {
+  //     Accept: "*/*",
+  //     "Content-Type": "application/json",
+  //     Authorization: `Bearer ${jwt}`,
+  //   },
+  //   body: JSON.stringify(files),
+  // };
+
 
   // check the status code
-  let { status } = excludeFilesResponse;
+  let { status } = res;
   switch (status) {
     //  200 is success do nothing
     case 200:
@@ -9662,7 +9672,7 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
 
     // else a 400 of some kind or a 500 as default
     default:
-      let pennsieveErrorObject = await excludeFilesResponse.json();
+      let pennsieveErrorObject = await res.json();
       let { message } = pennsieveErrorObject;
       throw new Error(`${status} - ${message}`);
   }
