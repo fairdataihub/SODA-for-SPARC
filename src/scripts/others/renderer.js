@@ -7662,13 +7662,12 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
   }
 });
 
-
 /**
- * 
+ *
  * @param {object} sodaJSONObj - The SODA json object used for tracking files, folders, and basic dataset curation information such as providence (local or Pennsieve).
  * @returns {
- *    "soda_json_structure": {} 
- *    "success_message": "" 
+ *    "soda_json_structure": {}
+ *    "success_message": ""
  *    "manifest_error_message": ""
  * }
  */
@@ -7695,7 +7694,7 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
       defaultBfDatasetId
     );
 
-    return data
+    return data;
   } catch (error) {
     clientError(error);
     console.log(error);
