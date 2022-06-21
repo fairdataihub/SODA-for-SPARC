@@ -30,22 +30,20 @@ def bf_get_doi(selected_bfaccount, selected_bfdataset):
         Current doi or "None"
     """
 
-    print(selected_bfaccount)
-
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        abort(400, "Error: Please select a valid Pennsieve account")
+        abort(400, "Please select a valid Pennsieve account")
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        abort(400, "Error: Please select a valid Pennsieve dataset")
+        abort(400, "Please select a valid Pennsieve dataset")
 
 
     role = bf_get_current_user_permission(bf, myds)
     if role not in ["owner", "manager"]:
-        abort(403, "Error: You don't have permissions to view/edit DOI for this Pennsieve dataset")
+        abort(403, "You don't have permissions to view/edit DOI for this Pennsieve dataset")
 
     try:
         selected_dataset_id = myds.id
@@ -75,22 +73,22 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        abort(400, "Error: Please select a valid Pennsieve account")
+        abort(400, "Please select a valid Pennsieve account")
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        abort(400, "Error: Please select a valid Pennsieve dataset")
+        abort(400, "Please select a valid Pennsieve dataset")
 
     
     role = bf_get_current_user_permission(bf, myds)
     if role not in ["owner", "manager"]:
-        abort(403, "Error: You don't have permissions to view/edit DOI for this Pennsieve dataset")
+        abort(403, "You don't have permissions to view/edit DOI for this Pennsieve dataset")
 
 
     try:
         res = bf_get_doi(selected_bfaccount, selected_bfdataset)
-        if res != "None":
+        if res["doi"] != "None":
             abort(400, "Error: A DOI has already been reserved for this dataset")
     except Exception as e:
         raise e
@@ -129,12 +127,12 @@ def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        abort(400, "Error: Please select a valid Pennsieve account")
+        abort(400, "Please select a valid Pennsieve account")
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        abort(400, "Error: Please select a valid Pennsieve dataset")
+        abort(400, "Please select a valid Pennsieve dataset")
 
     try:
         selected_dataset_id = myds.id
