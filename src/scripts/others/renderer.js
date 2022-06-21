@@ -388,7 +388,7 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
 
   // set the templates path
   try {
-    await client.put("prepare_metadata/set_template_paths", {
+    await client.put("prepare_metadata/template_paths", {
       basepath: basepath,
       resourcesPath: resourcesPath,
     });
