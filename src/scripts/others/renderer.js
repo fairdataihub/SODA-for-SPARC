@@ -7067,7 +7067,9 @@ async function initiate_generate() {
   let mainCurateResponse;
   try {
     // TODO: Test Error handling
-    mainCurateResponse = await client.post(`/curate_datasets/curation`, { soda_json_structure: sodaJSONObj });
+    mainCurateResponse = await client.post(`/curate_datasets/curation`, {
+      soda_json_structure: sodaJSONObj,
+    });
   } catch (error) {
     clientError(error);
     let emessage = error.response.data.message;
@@ -7153,7 +7155,7 @@ async function initiate_generate() {
 
   let { data } = mainCurateResponse;
 
-  main_total_generate_dataset_size = data["main_total_generate_dataset_size"]
+  main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
   uploadedFiles = data["main_curation_uploaded_files"];
 
   $("#sidebarCollapse").prop("disabled", false);
@@ -7190,7 +7192,6 @@ async function initiate_generate() {
   var successful = false;
 
   async function main_progressfunction() {
-
     let mainCurationProgressResponse;
     try {
       // TODO: Test error handling
@@ -7283,8 +7284,7 @@ async function initiate_generate() {
           displaySize * displaySize
         ) {
           var totalSizePrint =
-            (main_total_generate_dataset_size / displaySize).toFixed(2) +
-            " KB";
+            (main_total_generate_dataset_size / displaySize).toFixed(2) + " KB";
         } else if (
           main_total_generate_dataset_size <
           displaySize * displaySize * displaySize
@@ -7308,8 +7308,7 @@ async function initiate_generate() {
         var statusProgressMessage = "";
         progressMessage += main_curate_progress_message + "<br>";
         statusProgressMessage += main_curate_progress_message + "<br>";
-        statusProgressMessage +=
-          "Progress: " + value.toFixed(2) + "%" + "<br>";
+        statusProgressMessage += "Progress: " + value.toFixed(2) + "%" + "<br>";
         progressMessage +=
           "Progress: " +
           value.toFixed(2) +
@@ -7403,7 +7402,10 @@ async function initiate_generate() {
     let { data } = mainCurationDetailsResponse;
 
     // check if the amount of successfully uploaded files has increased
-    if (data["main_curation_uploaded_files"] > 0 && data["uploaded_folder_counter"] > foldersUploaded) {
+    if (
+      data["main_curation_uploaded_files"] > 0 &&
+      data["uploaded_folder_counter"] > foldersUploaded
+    ) {
       previousUploadedFileSize = uploadedFilesSize;
       uploadedFiles = data["main_curation_uploaded_files"];
       uploadedFilesSize = data["current_size_of_uploaded_files"];
@@ -7413,16 +7415,13 @@ async function initiate_generate() {
       increaseInFileSize = uploadedFilesSize - previousUploadedFileSize;
 
       // log the aggregate file count and size values when uploading to Pennsieve
-      if (
-        dataset_destination === "bf" ||
-        dataset_destination === "Pennsieve"
-      ) {
+      if (dataset_destination === "bf" || dataset_destination === "Pennsieve") {
         // use the session id as the label -- this will help with aggregating the number of files uploaded per session
         ipcRenderer.send(
           "track-event",
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE +
-          " - Step 7 - Generate - Dataset - Number of Files",
+            " - Step 7 - Generate - Dataset - Number of Files",
           `${datasetUploadSession.id}`,
           uploadedFiles
         );
@@ -7432,7 +7431,7 @@ async function initiate_generate() {
           "track-event",
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE +
-          " - Step 7 - Generate - Dataset - Size",
+            " - Step 7 - Generate - Dataset - Size",
           `${datasetUploadSession.id}`,
           increaseInFileSize
         );
@@ -7456,7 +7455,6 @@ async function initiate_generate() {
       // don't log this again for the current upload session
       loggedDatasetNameToIdMapping = true;
     }
-
 
     //stop the inteval when the upload is complete
     if (main_curate_status === "Done") {

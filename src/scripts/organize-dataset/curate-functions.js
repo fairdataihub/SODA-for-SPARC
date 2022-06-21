@@ -232,15 +232,15 @@ const checkAvailableSpace = () => {
       // TODO: Test error response
       datasetSizeResponse = await client.get("/curate_datasets/dataset_size", {
         params: {
-          soda_json_structure: sodaJSONObj
-        }
-      })
+          soda_json_structure: sodaJSONObj,
+        },
+      });
     } catch (error) {
-      clientError(error)
+      clientError(error);
     }
 
-    console.log(datasetSizeResponse)
-    console.log(datasetSizeResponse.data)
+    console.log(datasetSizeResponse);
+    console.log(datasetSizeResponse.data);
 
     let tempFolderSize = datasetSizeResponse.data.dataset_size;
     let folderSizeMB = roundToHundredth(tempFolderSize / 1024 ** 2);
@@ -1965,9 +1965,9 @@ async function moveItems(ev, category) {
   for (var highLevelFol in datasetStructureJSONObj["folders"]) {
     if (
       "manifest.xlsx" in
-      datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
+        datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
       datasetStructureJSONObj["folders"][highLevelFol]["files"][
-      "manifest.xlsx"
+        "manifest.xlsx"
       ]["forTreeview"] === true
     ) {
       delete datasetStructureJSONObj["folders"][highLevelFol]["files"][
