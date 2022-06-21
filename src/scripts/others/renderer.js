@@ -7064,44 +7064,12 @@ async function initiate_generate() {
   // clear the Pennsieve Queue (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
   clearQueue();
 
+  let mainCurateResponse;
   try {
-    let main_curate = await client.post(`/curate_datasets/curation`, {
-      payload: {
-        soda_json_object: JSON.stringify(sodaJSONObj),
-      },
+    // TODO: Test Error handling
+    mainCurateResponse = await client.post(`/curate_datasets/curation`, {
+      soda_json_structure: sodaJSONObj,
     });
-
-    let res = main_curate.data;
-    main_total_generate_dataset_size = res[1];
-    uploadedFiles = res[2];
-
-    $("#sidebarCollapse").prop("disabled", false);
-    log.info("Completed curate function");
-
-    // log relevant curation details about the dataset generation/Upload to Google Analytics
-    logCurationSuccessToAnalytics(
-      manifest_files_requested,
-      main_total_generate_dataset_size,
-      dataset_name,
-      dataset_destination,
-      uploadedFiles
-    );
-
-    try {
-      let responseObject = await client.get(
-        `manage_datasets/bf_dataset_account`,
-        {
-          params: {
-            selected_account: defaultBfAccount,
-          },
-        }
-      );
-      datasetList = [];
-      datasetList = responseObject.data.datasets;
-    } catch (error) {
-      clientError(error);
-      var emessage = error;
-    }
   } catch (error) {
     clientError(error);
     let emessage = error.response.data.message;
@@ -7152,6 +7120,7 @@ async function initiate_generate() {
     console.error(error);
 
     try {
+      // TODO: Test error handling
       let responseObject = await client.get(
         `manage_datasets/bf_dataset_account`,
         {
@@ -7184,99 +7153,51 @@ async function initiate_generate() {
     );
   }
 
+  let { data } = mainCurateResponse;
+
+  main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
+  uploadedFiles = data["main_curation_uploaded_files"];
+
+  $("#sidebarCollapse").prop("disabled", false);
+  log.info("Completed curate function");
+
+  // log relevant curation details about the dataset generation/Upload to Google Analytics
+  logCurationSuccessToAnalytics(
+    manifest_files_requested,
+    main_total_generate_dataset_size,
+    dataset_name,
+    dataset_destination,
+    uploadedFiles
+  );
+
+  try {
+    // TODO: Test error handling
+    let responseObject = await client.get(
+      `manage_datasets/bf_dataset_account`,
+      {
+        params: {
+          selected_account: defaultBfAccount,
+        },
+      }
+    );
+    datasetList = [];
+    datasetList = responseObject.data.datasets;
+  } catch (error) {
+    clientError(error);
+  }
+
   // Progress tracking function for main curate
   var countDone = 0;
   var timerProgress = setInterval(main_progressfunction, 1000);
   var successful = false;
+
   async function main_progressfunction() {
+    let mainCurationProgressResponse;
     try {
-      let main_curate_progress = await client.get(
+      // TODO: Test error handling
+      mainCurationProgressResponse = await client.get(
         `/curate_datasetscuration/progress`
       );
-
-      let res = main_curate_progress.data;
-      main_curate_status = res[0];
-      var start_generate = res[1];
-      var main_curate_progress_message = res[2];
-      main_total_generate_dataset_size = res[3];
-      var main_generated_dataset_size = res[4];
-      var elapsed_time_formatted = res[5];
-
-      if (start_generate === 1) {
-        divGenerateProgressBar.style.display = "block";
-        if (main_curate_progress_message.includes("Success: COMPLETED!")) {
-          generateProgressBar.value = 100;
-          statusMeter.value = 100;
-          progressStatus.innerHTML = main_curate_status + smileyCan;
-          statusText.innerHTML = main_curate_status + smileyCan;
-          successful = true;
-        } else {
-          var value =
-            (main_generated_dataset_size / main_total_generate_dataset_size) *
-            100;
-          generateProgressBar.value = value;
-          statusMeter.value = value;
-          if (main_total_generate_dataset_size < displaySize) {
-            var totalSizePrint =
-              main_total_generate_dataset_size.toFixed(2) + " B";
-          } else if (
-            main_total_generate_dataset_size <
-            displaySize * displaySize
-          ) {
-            var totalSizePrint =
-              (main_total_generate_dataset_size / displaySize).toFixed(2) +
-              " KB";
-          } else if (
-            main_total_generate_dataset_size <
-            displaySize * displaySize * displaySize
-          ) {
-            var totalSizePrint =
-              (
-                main_total_generate_dataset_size /
-                displaySize /
-                displaySize
-              ).toFixed(2) + " MB";
-          } else {
-            var totalSizePrint =
-              (
-                main_total_generate_dataset_size /
-                displaySize /
-                displaySize /
-                displaySize
-              ).toFixed(2) + " GB";
-          }
-          var progressMessage = "";
-          var statusProgressMessage = "";
-          progressMessage += main_curate_progress_message + "<br>";
-          statusProgressMessage += main_curate_progress_message + "<br>";
-          statusProgressMessage +=
-            "Progress: " + value.toFixed(2) + "%" + "<br>";
-          progressMessage +=
-            "Progress: " +
-            value.toFixed(2) +
-            "%" +
-            " (total size: " +
-            totalSizePrint +
-            ") " +
-            "<br>";
-          progressMessage += "Elapsed time: " + elapsed_time_formatted + "<br>";
-          progressStatus.innerHTML = progressMessage;
-          statusText.innerHTML = statusProgressMessage;
-        }
-      } else {
-        statusText.innerHTML =
-          main_curate_progress_message +
-          "<br>" +
-          "Elapsed time: " +
-          elapsed_time_formatted +
-          "<br>";
-        progressStatus.innerHTML =
-          main_curate_progress_message +
-          "<br>" +
-          "Elapsed time: " +
-          elapsed_time_formatted +
-          "<br>";
-      }
     } catch (error) {
       clientError(error);
       let emessage = error.response.data.message;
@@ -7333,6 +7254,88 @@ async function initiate_generate() {
       clearInterval(timerProgress);
     }
 
+    let { data } = mainCurationProgressResponse;
+    main_curate_status = data["main_curate_status"];
+    var start_generate = data["start_generate"];
+    var main_curate_progress_message = data["main_curate_progress_message"];
+    main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
+    var main_generated_dataset_size = data["main_generated_dataset_size"];
+    var elapsed_time_formatted = data["elapsed_time_formatted"];
+
+    if (start_generate === 1) {
+      divGenerateProgressBar.style.display = "block";
+      if (main_curate_progress_message.includes("Success: COMPLETED!")) {
+        generateProgressBar.value = 100;
+        statusMeter.value = 100;
+        progressStatus.innerHTML = main_curate_status + smileyCan;
+        statusText.innerHTML = main_curate_status + smileyCan;
+        successful = true;
+      } else {
+        var value =
+          (main_generated_dataset_size / main_total_generate_dataset_size) *
+          100;
+        generateProgressBar.value = value;
+        statusMeter.value = value;
+        if (main_total_generate_dataset_size < displaySize) {
+          var totalSizePrint =
+            main_total_generate_dataset_size.toFixed(2) + " B";
+        } else if (
+          main_total_generate_dataset_size <
+          displaySize * displaySize
+        ) {
+          var totalSizePrint =
+            (main_total_generate_dataset_size / displaySize).toFixed(2) + " KB";
+        } else if (
+          main_total_generate_dataset_size <
+          displaySize * displaySize * displaySize
+        ) {
+          var totalSizePrint =
+            (
+              main_total_generate_dataset_size /
+              displaySize /
+              displaySize
+            ).toFixed(2) + " MB";
+        } else {
+          var totalSizePrint =
+            (
+              main_total_generate_dataset_size /
+              displaySize /
+              displaySize /
+              displaySize
+            ).toFixed(2) + " GB";
+        }
+        var progressMessage = "";
+        var statusProgressMessage = "";
+        progressMessage += main_curate_progress_message + "<br>";
+        statusProgressMessage += main_curate_progress_message + "<br>";
+        statusProgressMessage += "Progress: " + value.toFixed(2) + "%" + "<br>";
+        progressMessage +=
+          "Progress: " +
+          value.toFixed(2) +
+          "%" +
+          " (total size: " +
+          totalSizePrint +
+          ") " +
+          "<br>";
+        progressMessage += "Elapsed time: " + elapsed_time_formatted + "<br>";
+        progressStatus.innerHTML = progressMessage;
+        statusText.innerHTML = statusProgressMessage;
+      }
+    } else {
+      statusText.innerHTML =
+        main_curate_progress_message +
+        "<br>" +
+        "Elapsed time: " +
+        elapsed_time_formatted +
+        "<br>";
+      progressStatus.innerHTML =
+        main_curate_progress_message +
+        "<br>" +
+        "Elapsed time: " +
+        elapsed_time_formatted +
+        "<br>";
+    }
+
     if (main_curate_status === "Done") {
       $("#sidebarCollapse").prop("disabled", false);
       countDone++;
@@ -7385,68 +7388,72 @@ async function initiate_generate() {
   const checkForBucketUpload = async () => {
     // ask the server for the amount of files uploaded in the current session
     // nothing to log for uploads where a user is solely deleting files in this section
+
+    let mainCurationDetailsResponse;
     try {
-      let main_curate_details = await client.get(
+      // TODO: Test error handling
+      mainCurationDetailsResponse = await client.get(
         `/curate_datasetscuration/upload_details`
       );
-
-      let res = main_curate_details.data;
-      // check if the amount of successfully uploaded files has increased
-      if (res[0] > 0 && res[2] > foldersUploaded) {
-        previousUploadedFileSize = uploadedFilesSize;
-        uploadedFiles = res[0];
-        uploadedFilesSize = res[1];
-        foldersUploaded = res[2];
-
-        // log the increase in the file size
-        increaseInFileSize = uploadedFilesSize - previousUploadedFileSize;
-
-        // log the aggregate file count and size values when uploading to Pennsieve
-        if (
-          dataset_destination === "bf" ||
-          dataset_destination === "Pennsieve"
-        ) {
-          // use the session id as the label -- this will help with aggregating the number of files uploaded per session
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            PrepareDatasetsAnalyticsPrefix.CURATE +
-              " - Step 7 - Generate - Dataset - Number of Files",
-            `${datasetUploadSession.id}`,
-            uploadedFiles
-          );
-
-          // use the session id as the label -- this will help with aggregating the size of the given upload session
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            PrepareDatasetsAnalyticsPrefix.CURATE +
-              " - Step 7 - Generate - Dataset - Size",
-            `${datasetUploadSession.id}`,
-            increaseInFileSize
-          );
-        }
-      }
-
-      generated_dataset_id = res[3];
-      // if a new Pennsieve dataset was generated log it once to the dataset id to name mapping
-      if (
-        !loggedDatasetNameToIdMapping &&
-        generated_dataset_id !== null &&
-        generated_dataset_id !== undefined
-      ) {
-        ipcRenderer.send(
-          "track-event",
-          "Dataset ID to Dataset Name Map",
-          generated_dataset_id,
-          dataset_name
-        );
-
-        // don't log this again for the current upload session
-        loggedDatasetNameToIdMapping = true;
-      }
     } catch (error) {
       clientError(error);
+    }
+
+    let { data } = mainCurationDetailsResponse;
+
+    // check if the amount of successfully uploaded files has increased
+    if (
+      data["main_curation_uploaded_files"] > 0 &&
+      data["uploaded_folder_counter"] > foldersUploaded
+    ) {
+      previousUploadedFileSize = uploadedFilesSize;
+      uploadedFiles = data["main_curation_uploaded_files"];
+      uploadedFilesSize = data["current_size_of_uploaded_files"];
+      foldersUploaded = data["uploaded_folder_counter"];
+
+      // log the increase in the file size
+      increaseInFileSize = uploadedFilesSize - previousUploadedFileSize;
+
+      // log the aggregate file count and size values when uploading to Pennsieve
+      if (dataset_destination === "bf" || dataset_destination === "Pennsieve") {
+        // use the session id as the label -- this will help with aggregating the number of files uploaded per session
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE +
+            " - Step 7 - Generate - Dataset - Number of Files",
+          `${datasetUploadSession.id}`,
+          uploadedFiles
+        );
+
+        // use the session id as the label -- this will help with aggregating the size of the given upload session
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE +
+            " - Step 7 - Generate - Dataset - Size",
+          `${datasetUploadSession.id}`,
+          increaseInFileSize
+        );
+      }
+    }
+
+    generated_dataset_id = data["generated_dataset_id"];
+    // if a new Pennsieve dataset was generated log it once to the dataset id to name mapping
+    if (
+      !loggedDatasetNameToIdMapping &&
+      generated_dataset_id !== null &&
+      generated_dataset_id !== undefined
+    ) {
+      ipcRenderer.send(
+        "track-event",
+        "Dataset ID to Dataset Name Map",
+        generated_dataset_id,
+        dataset_name
+      );
+
+      // don't log this again for the current upload session
+      loggedDatasetNameToIdMapping = true;
     }
 
     //stop the inteval when the upload is complete
