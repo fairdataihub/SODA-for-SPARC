@@ -8851,16 +8851,16 @@ const getDatasetReadme = async (datasetIdOrName) => {
   const id = dataset["content"]["id"];
 
   // fetch the readme file from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
-  let readmeResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/readme`,
-    {
-      headers: {
-        Accept: "*/*",
-        Authorization: `Bearer ${jwt}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  let readmeRes = axios.create({
+    baseUrl: `https://api.pennsieve.io/datasets/${id}/readme`,
+    headers: {
+      Accept: "*/*",
+      Authorization: `Bearer ${jwt}`,
+      "Content-Type": "application/json",
+    },
+  });
+  let readmeResponse = readmeRes.get();
+  console.log(readmeResponse);
 
   // get the status code out of the response
   let statusCode = readmeResponse.status;
@@ -8890,7 +8890,7 @@ const getDatasetReadme = async (datasetIdOrName) => {
   }
 
   // grab the readme out of the response
-  let { readme } = await readmeResponse.json();
+  let { readme } = await readmeResponse.data.json();
 
   return readme;
 };
@@ -9281,19 +9281,20 @@ const getDatasetBannerImageURL = async (datasetIdOrName) => {
   let { id } = dataset["content"];
 
   // fetch the banner url from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
-  let bannerResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/banner`,
-    {
-      headers: {
-        Accept: "*/*",
-        Authorization: `Bearer ${jwt}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  let bannerResponse = axios.create({
+    baseURL: `https://api.pennsieve.io/datasets/${id}/banner`,
+    headers: {
+      Accept: "*/*",
+      Authorization: `Bearer ${jwt}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  let res = bannerResponse.get();
+  console.log(res);
 
   // get the status code out of the response
-  let statusCode = bannerResponse.status;
+  let statusCode = res.status;
 
   // check the status code of the response
   switch (statusCode) {
@@ -9315,11 +9316,11 @@ const getDatasetBannerImageURL = async (datasetIdOrName) => {
 
     default:
       // something unexpected happened
-      let statusText = await bannerResponse.json().statusText;
+      let statusText = await res.json().statusText;
       throw new Error(`${statusCode} - ${statusText}`);
   }
 
-  let { banner } = await bannerResponse.json();
+  let { banner } = await res.data.json();
 
   return banner;
 };
@@ -9351,13 +9352,17 @@ const getCurrentUserPermissions = async (datasetIdOrName) => {
   let id = dataset.content.id;
 
   // get the user's permissions
-  let permissionsResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/role`,
-    { headers: { Authorization: `Bearer ${jwt}` } }
-  );
+  let instance = axios.create({
+    baseURL: `https://api.pennsieve.io/datasets/${id}/role`,
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
+  });
+
+  let res = await instance.get();
 
   // get the status code out of the response
-  let statusCode = permissionsResponse.status;
+  let statusCode = res.status;
 
   // check the status code of the response
   switch (statusCode) {
@@ -9379,12 +9384,12 @@ const getCurrentUserPermissions = async (datasetIdOrName) => {
 
     default:
       // something unexpected happened
-      let statusText = await permissionsResponse.json().statusText;
+      let statusText = await res.json().statusText;
       throw new Error(`${statusCode} - ${statusText}`);
   }
 
   // get the permissions object
-  const { role } = await permissionsResponse.json();
+  const { role } = await res.data.json();
 
   // return the permissions
   return role;
@@ -9422,6 +9427,7 @@ const userIsDatasetOwner = async (datasetIdOrName) => {
 
   // get the dataset the user wants to edit
   // TODO: Replace with Flask call -- READY
+  console.log("something here");
   let role = await getCurrentUserPermissions(datasetIdOrName);
 
   return userIsOwner(role);
@@ -9440,11 +9446,16 @@ const getUserInformation = async () => {
   let jwt = await get_access_token();
 
   // get the user information
-  let userResponse = await fetch("https://api.pennsieve.io/user/", {
-    headers: { Authorization: `Bearer ${jwt}` },
+  let userResponse = axios.create({
+    baseURL: "https://api.pennsieve.io/user/",
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
   });
 
-  let statusCode = userResponse.status;
+  let res = userResponse.get();
+  console.log(res);
+  let statusCode = res.status;
 
   switch (statusCode) {
     case 200:
@@ -9461,12 +9472,12 @@ const getUserInformation = async () => {
       throw new Error(`${statusCode} - Resource could not be found. `);
     default:
       // something unexpected happened
-      let pennsieveErrorObject = await userResponse.json();
+      let pennsieveErrorObject = await res.json();
       let { message } = pennsieveErrorObject;
       throw new Error(`${statusCode} - ${message}`);
   }
 
-  let user = await userResponse.json();
+  let user = await res.data.json();
 
   return user;
 };
