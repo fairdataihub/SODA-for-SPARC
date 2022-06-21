@@ -913,9 +913,63 @@ const cleanUpEmptyGuidedStructureFolders = async (
     }
   }
 };
+/*const selectedButton = $(this);
+    const notSelectedButton = $(this).siblings(".guided--radio-button");
 
+    notSelectedButton.removeClass("selected");
+    notSelectedButton.addClass("not-selected basic");
+    selectedButton.removeClass("not-selected basic");
+    selectedButton.addClass("selected");
+
+    //Display and scroll to selected element container if data-next-element exists
+    if (selectedButton.data("next-element")) {
+      nextQuestionID = selectedButton.data("next-element");
+      console.log(nextQuestionID);
+      nextQuestionElement = $(`#${nextQuestionID}`);
+      nextQuestionElement.removeClass("hidden");
+      //slow scroll to the next question
+      //temp fix to prevent scrolling error
+      const elementsToNotScrollTo = [
+        "guided-add-samples-table",
+        "guided-add-pools-table",
+        "guided-div-add-subjects-table",
+      ];
+      if (!elementsToNotScrollTo.includes(nextQuestionID)) {
+        nextQuestionElement[0].scrollIntoView({
+          behavior: "smooth",
+        });
+      }
+    }
+    //Hide all child containers of non-selected buttons
+    notSelectedButton.each(function () {
+      console.log($(this));
+      if ($(this).data("next-element")) {
+        nextQuestionID = $(this).data("next-element");
+        $(`#${nextQuestionID}`).addClass("hidden");
+      }
+    });*/
+const resetGuidedRadioButtons = (parentPageID) => {
+  const parentPage = document.getElementById(parentPageID);
+  const guidedRadioButtons = parentPage.querySelectorAll(
+    ".guided--radio-button"
+  );
+  for (const guidedRadioButton of guidedRadioButtons) {
+    guidedRadioButton.classList.remove("selected");
+    guidedRadioButton.classList.remove("not-selected");
+    guidedRadioButton.classList.add("basic");
+
+    //get the data-next-element attribute
+    const elementButtonControls =
+      guidedRadioButton.getAttribute("data-next-element");
+    if (elementButtonControls) {
+      const elementToHide = document.getElementById(elementButtonControls);
+      elementToHide.classList.add("hidden");
+    }
+  }
+};
 const traverseToTab = (targetPageID) => {
   try {
+    resetGuidedRadioButtons(targetPageID);
     //refresh selectPickers if page has them
     if (
       targetPageID === "guided-designate-pi-owner-tab" ||
