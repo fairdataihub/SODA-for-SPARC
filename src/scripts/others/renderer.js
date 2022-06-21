@@ -9109,13 +9109,21 @@ const submitDatasetForPublication = async (
     queryString = `?publicationType=${publicationType}`;
   }
   // request that the dataset be sent in for publication/publication review
-  let publicationResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/publication/request` + queryString,
-    options
-  );
+  let publication_response = axios.create({
+    baseUrl:
+      `https://api.pennsieve.io/datasets/${id}/publication/request` +
+      queryString,
+    headers: {
+      Accept: "*/*",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+    },
+  });
+  let res = publication_response.post();
+  console.log(res);
 
   // get the status code out of the response
-  let statusCode = publicationResponse.status;
+  let statusCode = res.status;
 
   // check the status code of the response
   switch (statusCode) {
@@ -9141,7 +9149,7 @@ const submitDatasetForPublication = async (
 
     default:
       // something unexpected happened
-      let statusText = await publicationResponse.json().statusText;
+      let statusText = await res.json().statusText;
       throw new Error(`${statusCode} - ${statusText}`);
   }
 };
