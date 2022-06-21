@@ -8806,19 +8806,16 @@ const update_dataset_tags = async (datasetIdOrName, tags) => {
   const id = dataset["content"]["id"];
 
   // setup the request options
-  let update_response = axios.create({
-    baseURL: `https://api.pennsieve.io/datasets/${id}`,
-    headers: {
-      Accept: "*/*",
-      Authorization: `Bearer ${jwt}`,
-      "Content-Type": "application/json",
-    },
+  let updateDatasetTags = client.put(`/manage_datasets/datasets/${id}/tags`, {
     params: {
-      body: JSON.stringify({ tags: tags }),
+      selected_account: defaultBfAccount,
+    },
+    payload: {
+      tags: JSON.stringify(tags),
     },
   });
 
-  let res = update_response.put();
+  let res = updateDatasetTags;
 
   // update the the user's tags
 
