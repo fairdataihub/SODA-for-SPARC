@@ -8853,19 +8853,15 @@ const getDatasetReadme = async (datasetIdOrName) => {
   const id = dataset["content"]["id"];
 
   // fetch the readme file from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
-  let readmeRes = axios.create({
-    baseUrl: `https://api.pennsieve.io/datasets/${id}/readme`,
-    headers: {
-      Accept: "*/*",
-      Authorization: `Bearer ${jwt}`,
-      "Content-Type": "application/json",
+  let readmeRes = client.get(`/manage_datasets/datasets/${id}/readme`, {
+    params: {
+      selected_account: defaultBfAccount,
     },
   });
-  let readmeResponse = readmeRes.get();
-  console.log(readmeResponse);
+  console.log(readmeRes);
 
   // get the status code out of the response
-  let statusCode = readmeResponse.status;
+  let statusCode = readmeRes.status;
 
   // check the status code of the response
   switch (statusCode) {
@@ -8887,12 +8883,12 @@ const getDatasetReadme = async (datasetIdOrName) => {
 
     default:
       // something unexpected happened
-      let statusText = await readmeResponse.json().statusText;
+      let statusText = await readmeRes.json().statusText;
       throw new Error(`${statusCode} - ${statusText}`);
   }
 
   // grab the readme out of the response
-  let { readme } = await readmeResponse.data.json();
+  let { readme } = await readmeRes.data.json();
 
   return readme;
 };
