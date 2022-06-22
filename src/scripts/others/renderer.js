@@ -8495,9 +8495,8 @@ function logGeneralOperationsForAnalytics(
   }
 }
 
-
 /**
- * 
+ *
  * @param {string} datasetIdOrName - The currently selected dataset - name or its ID
  * @returns statuses - A status object that details the state of each pre-publishing checklist item for the given dataset and user
  */
