@@ -8838,7 +8838,6 @@ const integrateORCIDWithPennsieve = async (accessCode) => {
   }
 };
 
-
 const create_validation_report = (error_report) => {
   // let accordion_elements = ` <div class="title active"> `;
   let accordion_elements = "";
