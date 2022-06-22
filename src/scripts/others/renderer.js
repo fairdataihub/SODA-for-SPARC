@@ -8514,9 +8514,8 @@ function logGeneralOperationsForAnalytics(
   }
 }
 
-
 /**
- * 
+ *
  * @param {string} datasetIdOrName - The currently selected dataset - name or its ID
  * @returns statuses - A status object that details the state of each pre-publishing checklist item for the given dataset and user
  */
@@ -8529,12 +8528,12 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   }
 
   // TODO: get a pennsieve dataset content
-  let datasetResponse
+  let datasetResponse;
   try {
-    datasetResponse = await client.get(`/datasets/${defaultBfDatasetId}`)
+    datasetResponse = await client.get(`/datasets/${defaultBfDatasetId}`);
   } catch (e) {
-    clientError(e)
-    throw e
+    clientError(e);
+    throw e;
   }
   let dataset = datasetResponse.data;
 
@@ -8573,41 +8572,42 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
     bannerResponse = await client.get(`/manage_datasets/bf_banner_image`, {
       params: {
         selected_account: defaultBfAccount,
-        selected_dataset: defaultBfDataset
+        selected_dataset: defaultBfDataset,
       },
     });
   } catch (e) {
-    clientError(e)
-    throw e
+    clientError(e);
+    throw e;
   }
 
   let { banner_image } = bannerResponse.data;
 
   // set the banner image's url status
-  statuses.bannerImageURL =
-    banner_image && banner_image.length ? true : false;
+  statuses.bannerImageURL = banner_image && banner_image.length ? true : false;
 
   // set the license's status
   statuses.license = license && license.length ? true : false;
 
-
   let datasetRoleResponse;
   try {
-    datasetRoleResponse = await client.get(`/datasets/${defaultBfDataset}/role`, {
-      params: {
-        pennsieve_account: defaultBfAccount
-      },
-    });
+    datasetRoleResponse = await client.get(
+      `/datasets/${defaultBfDataset}/role`,
+      {
+        params: {
+          pennsieve_account: defaultBfAccount,
+        },
+      }
+    );
   } catch (e) {
-    clientError(e)
-    throw e
+    clientError(e);
+    throw e;
   }
 
   let { role } = datasetRoleResponse.data;
 
-  if(!role === "owner") {
-    return 
-  } 
+  if (!role === "owner") {
+    return;
+  }
 
   // declare the orcidId
   let orcidId;
@@ -8958,17 +8958,19 @@ Get User Information With Nodejs
 const getUserInformation = async () => {
   // get the user information
 
-  let userResponse; 
+  let userResponse;
   try {
     userResponse = await client.get(`/user`, {
-    params: {
-      pennsieve_account: defaultBfAccount,
-    },
-  });
-  } catch(e) {
-    clientError(e)
+      params: {
+        pennsieve_account: defaultBfAccount,
+      },
+    });
+  } catch (e) {
+    clientError(e);
     // TODO: Add details here in a function that can be used everywhere
-    throw Error("Updated message that the client can understand and display to the user at the top level if need be.")
+    throw Error(
+      "Updated message that the client can understand and display to the user at the top level if need be."
+    );
   }
 
   let user = userResponse.data;
