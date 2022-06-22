@@ -177,7 +177,6 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
   }
 };
 
-
 const getDatasetPermissions = async (selected_account, selected_dataset) => {
   try {
     let getDatasetPermissionsResponse = await client.get(
@@ -197,7 +196,7 @@ const getDatasetPermissions = async (selected_account, selected_dataset) => {
     clientError(error);
     throw new Error(getAxiosErrorMessage(error));
   }
-}
+};
 
 const api = {
   getUserInformation,
@@ -209,7 +208,7 @@ const api = {
   getFilesExcludedFromPublishing,
   updateDatasetExcludedFiles,
   getDatasetMetadataFiles,
-  getDatasetPermissions
+  getDatasetPermissions,
 };
 
 module.exports = api;

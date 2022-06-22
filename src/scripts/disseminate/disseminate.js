@@ -527,7 +527,7 @@ async function disseminateShowCurrentPermission(bfAcct, bfDS) {
   currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
   if (bfDS === "Select dataset") {
     currentDatasetPermission.innerHTML = "None";
-    return
+    return;
   }
 
   let permissions;
@@ -540,7 +540,7 @@ async function disseminateShowCurrentPermission(bfAcct, bfDS) {
       "Disseminate Datasets - Show current dataset permission",
       defaultBfDatasetId
     );
-    return
+    return;
   }
 
   var permissionList = "";
@@ -562,7 +562,6 @@ async function disseminateShowCurrentPermission(bfAcct, bfDS) {
     "Disseminate Datasets - Show current dataset permission",
     defaultBfDatasetId
   );
-
 }
 
 // TODO: Figure out: Permissions has these properties used in the below function?
@@ -734,7 +733,7 @@ $("#ORCID-btn").on("click", async () => {
       "track-event",
       "Success",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Integrate ORCID iD",
+        " - Integrate ORCID iD",
       defaultBfDatasetId
     );
 
@@ -1039,7 +1038,7 @@ $(".pre-publishing-continue").on("click", async function () {
       "track-event",
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Get Excluded Files",
+        " - Get Excluded Files",
       defaultBfDatasetId
     );
 
@@ -1050,7 +1049,7 @@ $(".pre-publishing-continue").on("click", async function () {
     "track-event",
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-    " - Get Excluded Files",
+      " - Get Excluded Files",
     defaultBfDatasetId
   );
 
@@ -1077,7 +1076,7 @@ $(".pre-publishing-continue").on("click", async function () {
       "track-event",
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Get Metadata Files",
+        " - Get Metadata Files",
       defaultBfDatasetId
     );
   }
@@ -1086,7 +1085,7 @@ $(".pre-publishing-continue").on("click", async function () {
     "track-event",
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-    " - Get Metadata Files",
+      " - Get Metadata Files",
     defaultBfDatasetId
   );
 
