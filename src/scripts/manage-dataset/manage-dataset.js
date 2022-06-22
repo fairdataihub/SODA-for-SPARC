@@ -2060,11 +2060,10 @@ $("#button-add-tags").click(async () => {
   } catch (e) {
     clientError(e);
     // alert the user of the error
-    // TODO: SWAL error message update
     Swal.fire({
       title: "Failed to edit your dataset tags!",
       icon: "error",
-      text: e.message,
+      text: getAxiosErrorMessage(e),
       showConfirmButton: true,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
@@ -2130,7 +2129,6 @@ const showCurrentTags = async () => {
     // get the tags from the Pennsieve API
     let tagsResponse;
     try {
-      // TODO: Replace with FLASK api call -- READY
       tagsResponse = await client.get(
         `/manage_datasets/datasets/${selectedBfDataset}/tags`,
         {
@@ -2140,11 +2138,10 @@ const showCurrentTags = async () => {
     } catch (e) {
       clientError(e);
       // alert the user of the error
-      // TODO: SWAL update to correct error message
       Swal.fire({
         title: "Failed to retrieve your selected dataset!",
         icon: "error",
-        text: e.message,
+        text: getAxiosErrorMessage(e),
         showConfirmButton: true,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
