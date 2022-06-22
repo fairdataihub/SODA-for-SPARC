@@ -1,3 +1,4 @@
+
 var jstreePreviewManifest = document.getElementById(
   "div-dataset-tree-preview-manifest"
 );
@@ -764,22 +765,21 @@ async function initiate_generate_manifest_bf() {
       datasetList = responseObject.data.datasets;
     } catch (error) {
       clientError(error);
-      log.error(error);
-      console.error(error);
-      emessage = error.response.data.message;
+
+      Swal.fire({
+        title: "Failed to generate manifest files!",
+        text: getAxiosErrorMessage(error),
+        icon: "error",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        didOpen: () => {
+          Swal.hideLoading();
+        },
+      });
     }
 
-    Swal.fire({
-      title: "Failed to generate manifest files!",
-      text: emessage,
-      icon: "error",
-      showConfirmButton: true,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      didOpen: () => {
-        Swal.hideLoading();
-      },
-    });
+
     generatingBoolean = false;
     let destination = "";
 

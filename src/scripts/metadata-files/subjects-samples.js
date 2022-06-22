@@ -2417,12 +2417,11 @@ async function checkBFImportSubjects() {
     loadDataFrametoUI("bf");
   } catch (error) {
     clientError(error);
-    let emessage = error.response.data.message;
     Swal.fire({
       backdrop: "rgba(0, 0, 0, 0.4)",
       heightAuto: false,
       icon: "error",
-      text: emessage,
+      text: getAxiosErrorMessage(error),
     });
 
     // log the error to analytics
@@ -2485,13 +2484,11 @@ async function checkBFImportSamples() {
     loadDataFrametoUISamples("bf");
   } catch (error) {
     clientError(error);
-    var emessage = error.response.data.message;
-
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       icon: "error",
-      text: emessage,
+      text: getAxiosErrorMessage(error),
     });
 
     // log the error to analytics

@@ -1,3 +1,4 @@
+
 // Prepare Dataset Description File
 const dsAwardArray = document.getElementById("ds-description-award-list");
 const dsContributorArrayLast1 = document.getElementById(
@@ -2316,13 +2317,11 @@ async function checkBFImportDD() {
     );
   } catch (error) {
     clientError(error);
-    var emessage = error.response.data.message;
-    console.log(emessage);
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       icon: "error",
-      text: emessage,
+      text: getAxiosErrorMessage(error),
     });
 
     logMetadataForAnalytics(

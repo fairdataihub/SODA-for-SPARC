@@ -463,8 +463,6 @@ const importGenerateDatasetStep = async (object) => {
           updateBfAccountList();
         } catch (error) {
           clientError(error);
-          log.error(error);
-          console.error(error);
           showHideDropdownButtons("account", "hide");
         }
 
@@ -821,8 +819,9 @@ $(document).ready(async function () {
   //Observe the paragraph
   this.observer = new MutationObserver(
     async function (mutations) {
+      let responseObject;
       try {
-        let responseObject = await client.get(
+        responseObject = await client.get(
           `manage_datasets/bf_dataset_account`,
           {
             params: {
@@ -830,14 +829,15 @@ $(document).ready(async function () {
             },
           }
         );
-        datasetList = [];
-        datasetList = responseObject.data.datasets;
-        refreshDatasetList();
       } catch (error) {
-        log.error(error);
-        console.error(error);
-        var emessage = error;
+        clientError(error)
+        return 
       }
+
+      datasetList = [];
+      datasetList = responseObject.data.datasets;
+      refreshDatasetList();
+
     }.bind(this)
   );
   this.observer.observe(accountDetails.get(0), {
@@ -859,6 +859,8 @@ $(document).ready(async function () {
   $("#bf_list_roles_team").selectpicker("refresh");
 });
 
+
+// TODO: Test this function. Likely too many promises nested for no reason.
 const get_api_key = async (login, password, key_name) => {
   return new Promise(async (resolve) => {
     try {
@@ -876,7 +878,7 @@ const get_api_key = async (login, password, key_name) => {
       resolve(res);
     } catch (error) {
       clientError(error);
-      resolve(["failed", error.response.data.message]);
+      resolve(["failed", getAxiosErrorMessage(error)]);
     }
   });
 };
@@ -972,9 +974,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             datasetList = responseObject.data.datasets;
             refreshDatasetList();
           } catch (error) {
-            log.error(error);
-            console.log(error);
-            var emessage = error;
+            clientError(error)
             return;
           }
         } catch (error) {
@@ -983,7 +983,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             backdrop: "rgba(0,0,0, 0.4)",
             heightAuto: false,
             icon: "error",
-            text: error.response.data.message,
+            text: getAxiosErrorMessage(error),
             footer:
               "<a href='https://docs.pennsieve.io/docs/configuring-the-client-credentials'>Why do I have this issue?</a>",
           });
@@ -1114,8 +1114,6 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
               updateBfAccountList();
             } catch (error) {
               clientError(error);
-              log.error(error);
-              console.error(error);
               Swal.fire({
                 backdrop: "rgba(0,0,0, 0.4)",
                 heightAuto: false,
@@ -1247,9 +1245,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
               }
             );
           } catch (error) {
-            log.error(error);
-            console.log(error);
-            var emessage = error;
+            clientError(error)
             return;
           }
 
@@ -1964,9 +1960,9 @@ async function moveItems(ev, category) {
   for (var highLevelFol in datasetStructureJSONObj["folders"]) {
     if (
       "manifest.xlsx" in
-        datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
+      datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
       datasetStructureJSONObj["folders"][highLevelFol]["files"][
-        "manifest.xlsx"
+      "manifest.xlsx"
       ]["forTreeview"] === true
     ) {
       delete datasetStructureJSONObj["folders"][highLevelFol]["files"][

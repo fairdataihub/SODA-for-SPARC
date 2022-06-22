@@ -576,11 +576,10 @@ const getRC = async (type) => {
     $(`#button-fake-confirm-existing-bf-${shortName}-file-load`).click();
   } catch (error) {
     clientError(error);
-    let emessage = error.response.data.message;
 
     Swal.fire({
       title: `Failed to load existing ${type} file`,
-      text: emessage,
+      text: getAxiosErrorMessage(error),
       icon: "warning",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",

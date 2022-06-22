@@ -202,8 +202,6 @@ $("#button-create-bf-new-dataset").click(async () => {
         log.info(`Requested list of datasets successfully`);
       } catch (error) {
         clientError(error);
-        log.error(error);
-        console.error(error);
       }
 
       $(".bf-dataset-span").html(bfNewDatasetName);
@@ -341,8 +339,6 @@ $("#button-rename-dataset").click(async () => {
           refreshDatasetList();
         } catch (error) {
           clientError(error);
-          log.error(error);
-          console.error(error);
         }
       } catch (error) {
         clientError(error);
@@ -913,7 +909,6 @@ const showCurrentDescription = async () => {
     );
   } catch (error) {
     clientError(error);
-
     logGeneralOperationsForAnalytics(
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
@@ -1118,10 +1113,9 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
     );
   } catch (err) {
     clientError(err);
-    let emessage = userError(err);
     Swal.fire({
       title: "Failed to get description!",
-      text: emessage,
+      text: getAxiosErrorMessage(err),
       icon: "error",
       showConfirmButton: true,
       heightAuto: false,
@@ -2289,7 +2283,6 @@ const showCurrentLicense = async () => {
         $("#assign-a-license-header").show();
       }
     } catch (error) {
-      console.log("here");
       clientError(error);
       logGeneralOperationsForAnalytics(
         "Error",
@@ -2547,7 +2540,7 @@ $("#button-submit-dataset").click(async () => {
     }
   } catch (error) {
     clientError(error);
-    let emessage = userError(error.response.data.message);
+    let emessage = getAxiosErrorMessage(error)
     $("#para-please-wait-manage-dataset").html("");
     $("#para-progress-bar-status").html("");
     cloneStatus.innerHTML = "";
@@ -2581,8 +2574,6 @@ $("#button-submit-dataset").click(async () => {
     cloneMeter.value = 0;
 
     err = true;
-    log.error(error);
-    console.error(error);
 
     // while sessions are used for tracking file count and file size for an upload
     // we still want to know what dataset didn't upload by its pennsieve ID
@@ -3058,11 +3049,9 @@ async function showCurrentDatasetStatus(callback) {
       }
     } catch (error) {
       clientError(error);
-      let emessage = error.response.data.message;
-
       Swal.fire({
         title: "Failed to change dataset status!",
-        text: emessage,
+        text: getAxiosErrorMessage(error),
         icon: "error",
         showConfirmButton: true,
         heightAuto: false,

@@ -1,7 +1,6 @@
 /*
 This file contains all of the functions related to the submission.xlsx file
 */
-
 /// save airtable api key
 const addAirtableKeyBtn = document.getElementById("button-add-airtable-key");
 
@@ -177,12 +176,11 @@ async function helpMilestoneSubmission() {
           changeAwardInput();
         } catch (error) {
           clientError(error);
-          let emessage = error.response.data.message;
           Swal.fire({
             backdrop: "rgba(0,0,0, 0.4)",
             heightAuto: false,
             icon: "error",
-            text: `${emessage}`,
+            text: getAxiosErrorMessage(error),
           });
         }
       });
@@ -872,11 +870,10 @@ async function loadExistingSubmissionFile(filepath) {
     loadSubmissionFileToUI(res, "local");
   } catch (error) {
     clientError(error);
-    let emessage = error.response.data.message;
 
     Swal.fire({
       title: "Failed to load the existing submission.xlsx file.",
-      html: emessage,
+      html: getAxiosErrorMessage(error),
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       icon: "error",
@@ -983,13 +980,12 @@ async function checkBFImportSubmission() {
     loadSubmissionFileToUI(res, "bf");
   } catch (error) {
     clientError(error);
-    var emessage = error.response.data.message;
 
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       icon: "error",
-      text: emessage,
+      text: getAxiosErrorMessage(error),
     });
     logMetadataForAnalytics(
       "Error",

@@ -565,14 +565,12 @@ const serverIsLiveStartup = async () => {
 
   try {
     echoResponseObject = await client.get("/startup/echo?arg=server ready");
-  } catch {
-    throw new Error("Server did not connect");
+  } catch(error) {
+    clientError(error)
+    throw error
   }
 
   let echoResponse = echoResponseObject.data;
-
-  console.log(`Echo response is: ${echoResponse}`);
-  log.info(`Echo response is: ${echoResponse}`);
 
   return echoResponse === "server ready" ? true : false;
 };
@@ -590,9 +588,8 @@ const apiVersionsMatch = async () => {
   try {
     responseObject = await client.get("/startup/minimum_api_version");
   } catch (e) {
-    log.error(error);
-    console.error(error);
-    ipcRenderer.send("track-event", "Error", "Verifying App Version", error);
+    clientError(e)
+    ipcRenderer.send("track-event", "Error", "Verifying App Version", getAxiosErrorMessage(e));
 
     await Swal.fire({
       icon: "error",
@@ -706,8 +703,7 @@ const check_api_key = async () => {
       type: "error",
       message: "No account was found",
     });
-    log.error(error);
-    console.error(error);
+    clientError(e)
     return false;
   }
 
@@ -751,10 +747,8 @@ const check_agent_installed = async () => {
       type: "error",
       message: "Pennsieve agent not found",
     });
-    console.log(error);
     log.warn("Pennsieve agent not found");
-    var emessage = userError(error);
-    return [false, emessage];
+    return [false, getAxiosErrorMessage(error)];
   }
 
   let { agent_version } = responseObject.data;
@@ -1766,11 +1760,9 @@ async function loadSubjectsFileToDataframe(filePath) {
     }
   } catch (error) {
     clientError(error);
-    let emessage = error.response.data.message;
-
     Swal.fire({
       title: "Couldn't load existing subjects.xlsx file",
-      html: emessage,
+      html: getAxiosErrorMessage(error),
       icon: "error",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
@@ -1861,11 +1853,10 @@ async function loadSamplesFileToDataframe(filePath) {
     }
   } catch (error) {
     clientError(error);
-    let emessage = error.response.data.message;
 
     Swal.fire({
       title: "Couldn't load existing samples.xlsx file",
-      html: emessage,
+      html: getAxiosErrorMessage(error),
       icon: "error",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
@@ -2883,9 +2874,8 @@ async function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
     refreshDatasetList();
   } catch (error) {
     clientError(error);
-    var emessage = error;
     curateBFAccountLoadStatus.innerHTML =
-      "<span style='color: red'>" + emessage + "</span>";
+      "<span style='color: red'>" + getAxiosErrorMessage(error) + "</span>";
   }
 }
 
@@ -3758,9 +3748,7 @@ async function updateBfAccountList() {
   try {
     responseObject = await client.get("manage_datasets/bf_account_list");
   } catch (error) {
-    log.error(error);
-    console.error(error);
-    var emessage = userError(error);
+    clientError(error)
     confirm_click_account_function();
     refreshBfUsersList();
     refreshBfTeamsList(bfListTeams);
@@ -3791,21 +3779,15 @@ async function loadDefaultAccount() {
     responseObject = await client.get(
       "/manage_datasets/bf_default_account_load"
     );
-    console.log(responseObject.data);
   } catch (e) {
-    console.log("Default account load error");
-    log.error(error);
-    console.error(error);
+    clientError(e)
     confirm_click_account_function();
     console.log("Could not get default account");
+    return 
   }
 
   let accounts = responseObject.data["defaultAccounts"];
 
-  let account = accounts[0];
-  console.log(account);
-
-  console.log("Default account success: ", accounts);
   if (accounts.length > 0) {
     var myitemselect = accounts[0];
     defaultBfAccount = myitemselect;
@@ -3875,11 +3857,10 @@ async function showPublishingStatus(callback) {
         }
       } catch (error) {
         clientError(error);
-        let emessage = userError(error.response.data.message);
 
         Swal.fire({
           title: "Could not get your publishing status!",
-          text: `${emessage}`,
+          text: getAxiosErrorMessage(error),
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           confirmButtonText: "Ok",
@@ -6844,12 +6825,11 @@ document
       );
     } catch (error) {
       clientError(error);
-      let emessage = userError(error.response.data.message);
+      let emessage = getAxiosErrorMessage(error)
       document.getElementById(
         "para-new-curate-progress-bar-error-status"
       ).innerHTML = "<span style='color: red;'> Error: " + emessage + "</span>";
       document.getElementById("para-please-wait-new-curate").innerHTML = "";
-      console.error(error);
       $("#sidebarCollapse").prop("disabled", false);
     }
 
@@ -7065,7 +7045,7 @@ async function initiate_generate() {
     });
   } catch (error) {
     clientError(error);
-    let emessage = error.response.data.message;
+    let emessage = getAxiosErrorMessage(error);
     organizeDataset_option_buttons.style.display = "flex";
     organizeDataset.disabled = false;
     organizeDataset.className = "content-button is-selected";
@@ -7193,7 +7173,7 @@ async function initiate_generate() {
       );
     } catch (error) {
       clientError(error);
-      let emessage = error.response.data.message;
+      let emessage = getAxiosErrorMessage(error);
 
       document.getElementById(
         "para-new-curate-progress-bar-error-status"
@@ -7704,7 +7684,7 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
       "Retrieve Dataset - Pennsieve",
       defaultBfDatasetId
     );
-    throw error.response.data.message;
+    throw Error(getAxiosErrorMessage(error));
   }
 };
 
@@ -8708,7 +8688,6 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
   let withdrawResponse = await client.get(
     `/disseminate_datasets/datasets/${id}/publication/cancel`
   );
-  console.log(withdrawResponse);
 
   // get the status code out of the response
   let statusCode = withdrawResponse.status;
