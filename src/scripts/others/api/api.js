@@ -143,9 +143,36 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
     await client.put(
       `/disseminate_datasets/datasets/${datasetIdOrName}/ignore-files`,
       {
-          ignore_files: files,
+        ignore_files: files,
       }
     );
+  } catch (error) {
+    clientError(error);
+    throw new Error(getAxiosErrorMessage(error));
+  }
+};
+
+
+
+// retrieves the currently selected dataset's metadata files
+// I:
+//  datasetIdOrName: string - A dataset id or name
+const getDatasetMetadataFiles = async (datasetIdOrName) => {
+  try {
+    // get the metadata files for the dataset
+    let datasetwithChildrenResponse = client.get(
+      `/disseminate_datasets/datasets/${datasetIdOrName}/metadata-files`,
+      {
+        params: {
+          selected_account: defaultBfAccount,
+        },
+      }
+    );
+
+    let { metadata_files } = datasetwithChildrenResponse.data;
+
+    // return the metdata files to the client
+    return metadata_files;
   } catch (error) {
     clientError(error);
     throw new Error(getAxiosErrorMessage(error));
@@ -160,7 +187,8 @@ const api = {
   getDatasetRole,
   withdrawDatasetReviewSubmission,
   getFilesExcludedFromPublishing,
-  updateDatasetExcludedFiles
+  updateDatasetExcludedFiles,
+  getDatasetMetadataFiles
 };
 
 module.exports = api;
