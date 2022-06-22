@@ -2047,13 +2047,18 @@ $("#button-add-tags").click(async () => {
 
   // Add tags to dataset
   try {
-    // TODO: Replace with FLASK api call -- READY
-    await update_dataset_tags(selectedBfDataset, tags);
+    // TODO: Test endpoint error handling
+    await client.put(`/manage_datasets/datasets/${selectedBfDataset}/tags`, 
+    {tags},
+    {
+      params: {
+        selected_account: defaultBfAccount,
+      }
+    })
   } catch (e) {
-    // log the error
-    log.error(e);
-    console.error(e);
+    clientError(e)
     // alert the user of the error
+    // TODO: SWAL error message update
     Swal.fire({
       title: "Failed to edit your dataset tags!",
       icon: "error",
@@ -2121,22 +2126,16 @@ const showCurrentTags = async () => {
     datasetTagsTagify.loading(true);
 
     // get the tags from the Pennsieve API
-    let tags;
+    let tagsResponse;
     try {
       // TODO: Replace with FLASK api call -- READY
-      tags = await get_dataset_tags(selectedBfDataset);
-      if (tags === undefined || tags.length == 0) {
-        //if so make the button say add tags
-        $("#button-add-tags").html("Add tags");
-      } else {
-        //make the button say edit tags
-        $("#button-add-tags").html("Edit tags");
-      }
+      tagsResponse = await client.get(`/manage_datasets/datasets/${selectedBfDataset}/tags`, { 
+        params: { selected_account: selectedBfAccount }
+      });
     } catch (e) {
-      // log the error
-      log.error(e);
-      console.error(e);
+      clientError(e)
       // alert the user of the error
+      // TODO: SWAL update to correct error message
       Swal.fire({
         title: "Failed to retrieve your selected dataset!",
         icon: "error",
@@ -2158,6 +2157,16 @@ const showCurrentTags = async () => {
 
       // halt execution
       return;
+    }
+
+    let {tags} = tagsResponse.data;
+
+    if (tags === undefined || tags.length == 0) {
+      //if so make the button say add tags
+      $("#button-add-tags").html("Add tags");
+    } else {
+      //make the button say edit tags
+      $("#button-add-tags").html("Edit tags");
     }
 
     // stop displaying the tag loading spinner
