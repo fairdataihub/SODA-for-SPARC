@@ -1072,8 +1072,7 @@ $(".pre-publishing-continue").on("click", async function () {
   let metadataFiles;
   try {
     // read in all of the metadata files for the dataset
-    // TODO: Replace with Flask call -- Ready
-    metadataFiles = await getDatasetMetadataFiles(defaultBfDataset);
+    metadataFiles = await api.getDatasetMetadataFiles(defaultBfDataset);
   } catch (error) {
     // tell the user something went wrong getting access to their datasets ignored files
     await Swal.fire({
@@ -1089,8 +1088,6 @@ $(".pre-publishing-continue").on("click", async function () {
     });
 
     // log the error information then continue execution -- this is because they may not want to ignore files when they publish
-    log.error(error);
-    console.error(error);
     ipcRenderer.send(
       "track-event",
       "Error",
