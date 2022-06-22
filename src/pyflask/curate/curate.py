@@ -2119,7 +2119,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     main_curate_progress_message = "Fetching files and folders from Pennsieve"
     current_bf_dataset_files_folders = bf_get_dataset_files_folders(
         soda_json_structure.copy()
-    )[0]
+    )["soda_object"]
     bfsd = current_bf_dataset_files_folders["dataset-structure"]
     main_curate_progress_message = "Creating file paths for all files on Pennsieve"
     recursive_item_path_create(dataset_structure, [])
