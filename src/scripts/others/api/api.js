@@ -152,8 +152,6 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
   }
 };
 
-
-
 // retrieves the currently selected dataset's metadata files
 // I:
 //  datasetIdOrName: string - A dataset id or name
@@ -188,7 +186,7 @@ const api = {
   withdrawDatasetReviewSubmission,
   getFilesExcludedFromPublishing,
   updateDatasetExcludedFiles,
-  getDatasetMetadataFiles
+  getDatasetMetadataFiles,
 };
 
 module.exports = api;
