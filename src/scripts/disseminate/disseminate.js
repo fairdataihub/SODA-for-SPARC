@@ -1033,7 +1033,7 @@ $(".pre-publishing-continue").on("click", async function () {
   try {
     // read in the excluded files
     // TODO: Replace with Flask call -- READY
-    excludedFileObjects = await getFilesExcludedFromPublishing(
+    excludedFileObjects = await api.getFilesExcludedFromPublishing(
       defaultBfDataset
     );
   } catch (error) {
@@ -1050,9 +1050,6 @@ $(".pre-publishing-continue").on("click", async function () {
       timerProgressBar: false,
     });
 
-    // log the error information then continue execution -- this is because they may not want to ignore files when they publish
-    log.error(error);
-    console.error(error);
     ipcRenderer.send(
       "track-event",
       "Error",
@@ -1060,6 +1057,8 @@ $(".pre-publishing-continue").on("click", async function () {
         " - Get Excluded Files",
       defaultBfDatasetId
     );
+
+    // continue as they may not want to set any "ignore files" anyways
   }
 
   ipcRenderer.send(
