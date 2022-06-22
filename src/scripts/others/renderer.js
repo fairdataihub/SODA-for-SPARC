@@ -8866,64 +8866,6 @@ Manage Datasets Add/Edit Description Section With Nodejs
 ******************************************************
 */
 
-// returns the readme of a dataset.
-// I: dataset_name_or_id : string
-// O: a dataset description as a string
-const getDatasetReadme = async (datasetIdOrName) => {
-  // check that a dataset name or id is provided
-  if (!datasetIdOrName || datasetIdOrName === "") {
-    throw new Error("Error: Must provide a valid dataset to pull tags from.");
-  }
-  // get the user's access token
-  let jwt = await get_access_token();
-
-  // get the dataset
-  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
-
-  // pull out the id from the result
-  const id = dataset["content"]["id"];
-
-  // fetch the readme file from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
-  let readmeRes = await client.get(`/manage_datasets/datasets/${id}/readme`, {
-    params: {
-      selected_account: defaultBfAccount,
-    },
-  });
-  console.log(readmeRes);
-
-  // get the status code out of the response
-  let statusCode = readmeRes.status;
-
-  // check the status code of the response
-  switch (statusCode) {
-    case 200:
-      // success do nothing
-      break;
-    case 404:
-      throw new Error(
-        `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset.`
-      );
-    case 401:
-      throw new Error(
-        `${statusCode} - You cannot get the dataset readme while unauthenticated. Please reauthenticate and try again.`
-      );
-    case 403:
-      throw new Error(
-        `${statusCode} - You do not have access to this dataset. `
-      );
-
-    default:
-      // something unexpected happened
-      let statusText = await readmeRes.statusText;
-      throw new Error(`${statusCode} - ${statusText}`);
-  }
-
-  // grab the readme out of the response
-  let { readme } = await readmeRes.data;
-
-  return readme;
-};
-
 const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
   if (datasetIdOrName === "" || datasetIdOrName === undefined) {
     throw new Error(
@@ -9028,9 +8970,17 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // set the subtitle's status
   statuses.subtitle = description && description.length ? true : false;
 
-  // get the readme
-  // TODO: Replace with FLASK call -- Ready
-  const readme = await getDatasetReadme(datasetIdOrName);
+  let readme;
+  try {
+    // TODO: Error handling testing
+    readme = await client.get(
+      `/manage_datasets/datasets/${selectedBfDataset}/readme`,
+      { params: { selected_account: selectedBfAccount } }
+    ).data.readme;
+  } catch (e) {
+    clientError(e);
+    throw e;
+  }
 
   // set the readme's status
   statuses.readme = readme && readme.length >= 1 ? true : false;

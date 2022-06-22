@@ -904,12 +904,15 @@ const showCurrentDescription = async () => {
   }
 
   // get the dataset readme
-  let readme;
+  let readmeResponse;
   try {
-    readme = await getDatasetReadme(selectedBfDataset);
+    // TODO: Error handling testing
+    readmeResponse = await client.get(
+      `/manage_datasets/datasets/${selectedBfDataset}/readme`,
+      { params: { selected_account: selectedBfAccount } }
+    );
   } catch (error) {
-    log.error(error);
-    console.error(error);
+    clientError(error);
 
     logGeneralOperationsForAnalytics(
       "Error",
@@ -919,6 +922,8 @@ const showCurrentDescription = async () => {
     );
     return;
   }
+
+  let { readme } = readmeResponse.data;
   logGeneralOperationsForAnalytics(
     "Success",
     ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
@@ -1089,28 +1094,31 @@ $("#ds-close-btn").click(() => {
 // I: user_markdown_input: A string that holds the user's markdown text.
 // Merges user readme file changes with the original readme file.
 const addDescription = async (selectedBfDataset, userMarkdownInput) => {
+  Swal.fire({
+    title: determineSwalLoadingMessage($("#button-add-description")),
+    html: "Please wait...",
+    // timer: 5000,
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+
   // get the dataset readme
   let readme;
   try {
-    Swal.fire({
-      title: determineSwalLoadingMessage($("#button-add-description")),
-      html: "Please wait...",
-      // timer: 5000,
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
-    readme = await getDatasetReadme(selectedBfDataset);
+    // TODO: Test error handling
+    readme = await client.get(
+      `/manage_datasets/datasets/${selectedBfDataset}/readme`,
+      { params: { selected_account: defaultBfAccount } }
+    );
   } catch (err) {
-    log.error(err);
-    console.error(err);
+    clientError(err);
     let emessage = userError(err);
-
     Swal.fire({
       title: "Failed to get description!",
       text: emessage,
