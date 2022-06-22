@@ -1121,6 +1121,20 @@ const traverseToTab = (targetPageID) => {
       );
     }
 
+    if (targetPageID === "guided-airtable-award-tab") {
+      const airTableAward =
+        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+      if (airTableAward) {
+        guidedSetImportedSPARCAward(airTableAward);
+      } else {
+        guidedUnSetImportedSparcAward();
+      }
+    }
+
+    if (targetPageID === "guided-create-submission-metadata-tab") {
+      openSubPageNavigation(targetPageID);
+    }
+
     if (targetPageID === "guided-samples-folder-tab") {
       renderSamplesTables();
     }
@@ -1605,6 +1619,51 @@ const setActiveSubPage = (pageIdToActivate) => {
         loop: true,
         autoplay: true,
       });
+      break;
+    }
+
+    case "guided-data-derivative-import-page": {
+      break;
+    }
+
+    case "guided-completion-date-selection-page": {
+      const milestoneData =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
+      // get a unique set of completionDates from checkedMilestoneData
+      const uniqueCompletionDates = Array.from(
+        new Set(milestoneData.map((milestone) => milestone.completionDate))
+      );
+      console.log(uniqueCompletionDates);
+
+      if (uniqueCompletionDates.length === 1) {
+        //save the completion date into sodaJSONObj
+        const uniqueCompletionDate = uniqueCompletionDates[0];
+        sodaJSONObj["dataset-metadata"]["submission-metadata"][
+          "completion-dates"
+        ] = uniqueCompletionDate;
+        //click past this sub-page since the user doesn't need to select
+        //a completion date if there is only one
+        document.getElementById("guided-button-sub-page-continue").click();
+      }
+
+      if (uniqueCompletionDates.length > 1) {
+        //filter value 'NA' from uniqueCompletionDates
+        const filteredUniqueCompletionDates = uniqueCompletionDates.filter(
+          (date) => date !== "NA"
+        );
+
+        //create a radio button for each unique date
+        const completionDateCheckMarks = filteredUniqueCompletionDates
+          .map((completionDate) => {
+            return createCompletionDateRadioElement(
+              "completion-date",
+              completionDate
+            );
+          })
+          .join("\n");
+        document.getElementById("guided-completion-date-container").innerHTML =
+          completionDateCheckMarks;
+      }
       break;
     }
   }
@@ -5659,6 +5718,15 @@ $(document).ready(() => {
     selectedButton.removeClass("not-selected basic");
     selectedButton.addClass("selected");
 
+    //Hide all child containers of non-selected buttons
+    notSelectedButton.each(function () {
+      console.log($(this));
+      if ($(this).data("next-element")) {
+        nextQuestionID = $(this).data("next-element");
+        $(`#${nextQuestionID}`).addClass("hidden");
+      }
+    });
+
     //Display and scroll to selected element container if data-next-element exists
     if (selectedButton.data("next-element")) {
       nextQuestionID = selectedButton.data("next-element");
@@ -5684,14 +5752,6 @@ $(document).ready(() => {
       buttonConfigValueState = selectedButton.data("button-config-value-state");
       sodaJSONObj["button-config"][buttonConfigValue] = buttonConfigValueState;
     }
-    //Hide all child containers of non-selected buttons
-    notSelectedButton.each(function () {
-      console.log($(this));
-      if ($(this).data("next-element")) {
-        nextQuestionID = $(this).data("next-element");
-        $(`#${nextQuestionID}`).addClass("hidden");
-      }
-    });
   });
 
   $("#guided-button-samples-not-same").on("click", () => {
@@ -7303,14 +7363,16 @@ $(document).ready(() => {
   });
 
   $("#guided-button-save-checked-completion-date").on("click", () => {
-    const guidedCompletionDateInput = document.getElementById(
-      "guided-submission-completion-date"
-    );
     //function that checks is the input is a valid date yyyy-mm-dd
     const isValidDate = (date) => {
       const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
       return dateRegex.test(date);
     };
+
+    const guidedCompletionDateInput = document.getElementById(
+      "guided-submission-completion-date"
+    );
+
     const customCompletionDateInput = document.getElementById(
       "guided-input-custom-completion-date"
     );
@@ -8907,9 +8969,10 @@ $(document).ready(() => {
   //sub page next button click handler
   $("#guided-button-sub-page-continue").on("click", async () => {
     //Get the id of the parent page that's currently open
-    currentParentPageID = CURRENT_PAGE.attr("id");
+    const currentParentPageID = CURRENT_PAGE.attr("id");
     //Get the id of the sub-page that's currently open
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
+    console.log(currentParentPageID);
     console.log(openSubPageID);
 
     switch (currentParentPageID) {
@@ -9371,6 +9434,44 @@ $(document).ready(() => {
                 hideSubNavAndShowMainNav("next");
               }
             }
+            break;
+          }
+        }
+      }
+
+      case "guided-create-submission-metadata-tab": {
+        switch (openSubPageID) {
+          case "guided-data-derivative-import-page": {
+            const checkedMilestoneData = getCheckedMilestones();
+            //if user does not select any milestones, show error message
+            if (checkedMilestoneData.length === 0) {
+              notyf.error("Please select at least one milestone");
+              return;
+            }
+
+            sodaJSONObj["dataset-metadata"]["submission-metadata"][
+              "milestones"
+            ] = checkedMilestoneData;
+            setActiveSubPage("guided-completion-date-selection-page");
+            break;
+          }
+          case "guided-completion-date-selection-page": {
+            const selectedCompletionDate = document.querySelector(
+              "input[name='completion-date']:checked"
+            );
+            if (selectedCompletionDate) {
+              const completionDate = selectedCompletionDate.value;
+              sodaJSONObj["dataset-metadata"]["submission-metadata"][
+                "completion-date"
+              ] = completionDate;
+              setActiveSubPage("guided-submission-metadata-page");
+            } else {
+              notyf.error("Please select a completion date");
+              return;
+            }
+            break;
+          }
+          case "guided-submission-metadata-page": {
             break;
           }
         }

@@ -1205,12 +1205,16 @@
                   class="ui positive basic button guided--radio-button"
                   id="guided-button-has-code-data"
                   data-next-element="guided-user-has-code-data"
+                  data-button-config-value="dataset-contains-code-data"
+                  data-button-config-value-state="yes"
                 >
                   Yes
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button"
                   id="guided-button-no-code-data"
+                  data-button-config-value="dataset-contains-code-data"
+                  data-button-config-value-state="no"
                 >
                   No
                 </button>
@@ -1244,12 +1248,16 @@
                   class="ui positive basic button guided--radio-button"
                   id="guided-button-has-docs-data"
                   data-next-element="guided-user-has-docs-data"
+                  data-button-config-value="dataset-contains-docs-data"
+                  data-button-config-value-state="yes"
                 >
                   Yes
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button"
                   id="guided-button-no-docs-data"
+                  data-button-config-value="dataset-contains-docs-data"
+                  data-button-config-value-state="no"
                 >
                   No
                 </button>
@@ -1283,12 +1291,16 @@
                   class="ui positive basic button guided--radio-button"
                   id="guided-button-has-protocol-data"
                   data-next-element="guided-user-has-protocol-data"
+                  data-button-config-value="dataset-contains-protocol-data"
+                  data-button-config-value-state="yes"
                 >
                   Yes
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button"
                   id="guided-button-no-protocol-data"
+                  data-button-config-value="dataset-contains-protocol-data"
+                  data-button-config-value-state="no"
                 >
                   No
                 </button>
@@ -1518,10 +1530,16 @@
                 <button
                   class="ui positive basic button guided--radio-button"
                   data-next-element="guided-div-SPARC-award-import"
+                  data-button-config-value="SPARC-award-imported"
+                  data-button-config-value-state="yes"
                 >
                   Yes
                 </button>
-                <button class="ui negative basic button guided--radio-button">
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  data-button-config-value="SPARC-award-imported"
+                  data-button-config-value-state="no"
+                >
                   No
                 </button>
               </div>
@@ -1560,6 +1578,17 @@
             class="guided--panel hidden"
             id="guided-create-submission-metadata-tab"
           >
+            <div class="guided--section">
+              <h1 class="guided--text-sub-step" style="margin-bottom: 0px">
+                Submission metadata
+              </h1>
+            </div>
+            <p class="guided--help-text w-100 text-left">
+              The dataset_description file is a <b>required</b> file where
+              investigators provide basic metadata for their dataset. The
+              structure of the dataset description is broken into five clearly
+              seperated sections:
+            </p>
             <div
               class="guided--section"
               id="guided-section-div-data-deliverables"
@@ -1579,85 +1608,211 @@
               <div class="guided--radio-button-container">
                 <button
                   class="ui positive basic button guided--radio-button"
-                  data-next-element="guided-div-import-data-deliverables"
+                  id="guided-button-import-data-deliverables"
+                  data-next-element="guided-div-complete-submission-metadata"
+                  data-button-config-value="data-deliverables-imported"
+                  data-button-config-value-state="yes"
                 >
                   Yes
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button"
-                  data-next-element="guided-div-submission-accordion"
+                  id="guided-button-enter-submission-metadata-manually"
+                  data-next-element="guided-div-import-data-deliverables"
+                  data-button-config-value="data-deliverables-imported"
+                  data-button-config-value-state="no"
                 >
                   No
                 </button>
               </div>
             </div>
             <div
-              class="guided--section hidden"
-              id="guided-div-import-data-deliverables"
+              class="guided--section"
+              id="guided-div-complete-submission-metadata"
             >
-              <button
-                class="ui primary button"
-                style="background-color: var(--color-light-green) !important"
-                onclick="guidedHelpMilestoneSubmission()"
-              >
-                Import data deliverables
-              </button>
+              <div class="guided--capsule-container-sub-page">
+                <div
+                  class="guided--capsule-sub-page"
+                  id="guided-data-derivative-import-page-capsule"
+                ></div>
+                <div
+                  class="guided--capsule-sub-page"
+                  id="guided-completion-date-selection-page-capsule"
+                ></div>
+                <div
+                  class="guided--capsule-sub-page"
+                  id="guided-submission-metadata-page-capsule"
+                ></div>
+              </div>
               <div
-                class="guided--panel hidden mt-xl"
-                id="guided-div-data-deliverables-import"
+                class="guided--panel mt-md sub-page"
+                id="guided-data-derivative-import-page"
+                data-skip-sub-page="false"
               >
-                <h2 class="guided--text-sub-step mb-0">
-                  Select the milestones to be supplied to the NIH
-                </h2>
-                <table
-                  class="ui celled striped table"
-                  id="milestones-table"
-                  style="margin-bottom: 25px; width: 900px"
-                >
-                  <thead>
-                    <tr>
-                      <th></th>
-                      <th>Description</th>
-                      <th>Milestone</th>
-                      <th class="center aligned">Completion date</th>
-                    </tr>
-                  </thead>
-                  <tbody id="milestones-table-container"></tbody>
-                </table>
                 <button
                   class="ui primary button"
-                  id="guided-button-save-checked-milestones"
                   style="background-color: var(--color-light-green) !important"
+                  onclick="guidedHelpMilestoneSubmission()"
                 >
-                  Continue
-                </button>
-                <button
-                  class="ui primary button hidden"
-                  id="guided-button-edit-checked-milestones"
-                  style="
-                    background-color: var(--color-light-green) !important;
-                    display: none;
-                  "
-                >
-                  Edit milestones
+                  Import data deliverables
                 </button>
                 <div
                   class="guided--panel hidden mt-xl"
-                  id="guided-div-completion-date-selection"
+                  id="guided-div-data-deliverables-import"
                 >
-                  <h2
-                    class="guided--text-sub-step"
-                    id="guided-completion-date-instructional-text"
-                  ></h2>
-                  <div class="justify-center">
-                    <div class="ui form">
-                      <div
-                        class="grouped fields"
-                        id="guided-completion-date-container"
-                        style="align-items: center"
-                      ></div>
-                    </div>
+                  <h2 class="guided--text-sub-step mb-0">
+                    Select the milestones to be supplied to the NIH
+                  </h2>
+                  <table
+                    class="ui celled striped table"
+                    id="milestones-table"
+                    style="margin-bottom: 25px; width: 900px"
+                  >
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th>Description</th>
+                        <th>Milestone</th>
+                        <th class="center aligned">Completion date</th>
+                      </tr>
+                    </thead>
+                    <tbody id="milestones-table-container"></tbody>
+                  </table>
+                </div>
+              </div>
+              <div
+                class="guided--panel mt-md sub-page hidden"
+                id="guided-completion-date-selection-page"
+                data-skip-sub-page="false"
+              >
+                <h2
+                  class="guided--text-sub-step"
+                  id="guided-completion-date-instructional-text"
+                >
+                  Select the completion date for your submission
+                </h2>
+                <div class="justify-center">
+                  <div class="ui form">
+                    <div
+                      class="grouped fields"
+                      id="guided-completion-date-container"
+                      style="align-items: center"
+                    ></div>
                   </div>
+                </div>
+                <div
+                  class="guided--panel mt-md sub-page hidden"
+                  id="guided-submission-metadata-page"
+                  data-skip-sub-page="false"
+                >
+                  <div class="guided--section neumorphic mt-xl">
+                    <h2 class="guided--text-sub-step mt-0">
+                      Award and milestone information
+                    </h2>
+                    <label class="guided--form-label mt-xl"
+                      >SPARC award number:</label
+                    >
+                    <input
+                      class="guided--input"
+                      id="guided-submission-sparc-award"
+                      type="text"
+                      placeholder="Enter SPARC award here"
+                      onkeyup="validateInput($(this))"
+                    />
+                    <p class="guided--text-input-instructions mb-0">
+                      SPARC award associated with the dataset.
+                    </p>
+                    <label class="guided--form-label mt-xl"
+                      >Milestone(s):</label
+                    >
+                    <div class="demo-controls-body" style="width: 100%">
+                      <div class="ui input modified">
+                        <input
+                          class="guided-award-and-milestone-information"
+                          id="guided-tagify-submission-milestone-tags"
+                          name="milestone-tags"
+                          value=""
+                        />
+                      </div>
+                    </div>
+                    <p class="guided--text-input-instructions mb-0">
+                      The major organ systems related to this study, for
+                      example, spinal cord.<br />
+                      <b
+                        >Hit enter after inserting an organ system to save your
+                        input.</b
+                      >
+                    </p>
+                    <label class="guided--form-label mt-xl"
+                      >Completion date:</label
+                    >
+                    <input
+                      class="guided--input"
+                      id="guided-submission-completion-date"
+                      type="text"
+                      placeholder="Enter the completion date for your milestone(s) specified above."
+                      onkeyup="validateInput($(this))"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="guided--section hidden"
+                id="guided-div-import-data-deliverables"
+              >
+                <button
+                  class="ui primary button"
+                  style="background-color: var(--color-light-green) !important"
+                  onclick="guidedHelpMilestoneSubmission()"
+                >
+                  Import data deliverables
+                </button>
+                <div
+                  class="guided--panel hidden mt-xl"
+                  id="guided-div-data-deliverables-import"
+                >
+                  <h2 class="guided--text-sub-step mb-0">
+                    Select the milestones to be supplied to the NIH
+                  </h2>
+                  <table
+                    class="ui celled striped table"
+                    id="milestones-table"
+                    style="margin-bottom: 25px; width: 900px"
+                  >
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th>Description</th>
+                        <th>Milestone</th>
+                        <th class="center aligned">Completion date</th>
+                      </tr>
+                    </thead>
+                    <tbody id="milestones-table-container"></tbody>
+                  </table>
+                  <button
+                    class="ui primary button"
+                    id="guided-button-save-checked-milestones"
+                    style="
+                      background-color: var(--color-light-green) !important;
+                    "
+                  >
+                    Continue
+                  </button>
+                  <button
+                    class="ui primary button hidden"
+                    id="guided-button-edit-checked-milestones"
+                    style="
+                      background-color: var(--color-light-green) !important;
+                      display: none;
+                    "
+                  >
+                    Edit milestones
+                  </button>
+                  <div
+                    class="guided--panel hidden mt-xl"
+                    id="guided-div-completion-date-selection"
+                  ></div>
                   <button
                     class="ui primary button mt-md"
                     id="guided-button-save-checked-completion-date"
@@ -1683,53 +1838,7 @@
             <div
               class="guided--panel hidden"
               id="guided-div-submission-accordion"
-            >
-              <div class="guided--section neumorphic mt-xl">
-                <h2 class="guided--text-sub-step mt-0">
-                  Award and milestone information
-                </h2>
-                <label class="guided--form-label mt-xl"
-                  >SPARC award number:</label
-                >
-                <input
-                  class="guided--input"
-                  id="guided-submission-sparc-award"
-                  type="text"
-                  placeholder="Enter SPARC award here"
-                  onkeyup="validateInput($(this))"
-                />
-                <p class="guided--text-input-instructions mb-0">
-                  SPARC award associated with the dataset.
-                </p>
-                <label class="guided--form-label mt-xl">Milestone(s):</label>
-                <div class="demo-controls-body" style="width: 100%">
-                  <div class="ui input modified">
-                    <input
-                      class="guided-award-and-milestone-information"
-                      id="guided-tagify-submission-milestone-tags"
-                      name="milestone-tags"
-                      value=""
-                    />
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  The major organ systems related to this study, for example,
-                  spinal cord.<br />
-                  <b
-                    >Hit enter after inserting an organ system to save your
-                    input.</b
-                  >
-                </p>
-                <label class="guided--form-label mt-xl">Completion date:</label>
-                <input
-                  class="guided--input"
-                  id="guided-submission-completion-date"
-                  type="text"
-                  placeholder="Enter the completion date for your milestone(s) specified above."
-                  onkeyup="validateInput($(this))"
-                />
-              </div>
-            </div>
+            ></div>
           </div>
           <div id="guided-contributors-tab" class="guided--panel hidden">
             <div
@@ -1840,12 +1949,16 @@
                 <button
                   class="ui positive basic button guided--radio-button"
                   data-next-element="guided-div-protocols-import"
+                  data-button-config-value="protocols-imported"
+                  data-button-config-value-state="yes"
                 >
                   Yes
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button"
                   data-next-element="guided-div-protocol-container"
+                  data-button-config-value="protocols-imported"
+                  data-button-config-value-state="no"
                 >
                   No
                 </button>
