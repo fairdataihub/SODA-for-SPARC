@@ -179,6 +179,28 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
   }
 };
 
+
+const getDatasetPermissions = async (selected_account, selected_dataset) => {
+  try {
+    let getDatasetPermissionsResponse = await client.get(
+      `/manage_datasets/bf_dataset_permissions`,
+      {
+        params: {
+          selected_account,
+          selected_dataset,
+        },
+      }
+    );
+
+    let { permissions } = getDatasetPermissionsResponse.data;
+
+    return permissions;
+  } catch (error) {
+    clientError(error);
+    throw new Error(getAxiosErrorMessage(error));
+  }
+}
+
 const api = {
   getUserInformation,
   getDataset,
@@ -188,7 +210,8 @@ const api = {
   withdrawDatasetReviewSubmission,
   getFilesExcludedFromPublishing,
   updateDatasetExcludedFiles,
-  getDatasetMetadataFiles
+  getDatasetMetadataFiles,
+  getDatasetPermissions
 };
 
 module.exports = api;

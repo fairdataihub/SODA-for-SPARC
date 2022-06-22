@@ -527,51 +527,45 @@ async function disseminateShowCurrentPermission(bfAcct, bfDS) {
   currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
   if (bfDS === "Select dataset") {
     currentDatasetPermission.innerHTML = "None";
-    // bfCurrentPermissionProgress.style.display = "none";
-  } else {
-    try {
-      let dataset_permissions = await client.get(
-        `/manage_datasets/bf_dataset_permissions`,
-        {
-          params: {
-            selected_account: bfAcct,
-            selected_dataset: bfDS,
-          },
-        }
-      );
-      let res = dataset_permissions.data.permissions;
+    return
+  }
 
-      var permissionList = "";
-      let datasetOwner = "";
-      for (var i in res) {
-        permissionList = permissionList + res[i] + "<br>";
-        if (res[i].indexOf("owner") != -1) {
-          let first_position = res[i].indexOf(":");
-          let second_position = res[i].indexOf(",");
-          datasetOwner = res[i].substring(first_position, second_position);
-        }
-      }
-      currentDatasetPermission.innerHTML = datasetOwner;
-      // bfCurrentPermissionProgress.style.display = "none";
+  let permissions;
+  try {
+    permissions = await api.getDatasetPermissions(bfAcct, bfDS);
+  } catch (error) {
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Disseminate Datasets - Show current dataset permission",
+      defaultBfDatasetId
+    );
+    return
+  }
 
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        "Disseminate Datasets - Show current dataset permission",
-        defaultBfDatasetId
-      );
-    } catch (error) {
-      clientError(error);
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        "Disseminate Datasets - Show current dataset permission",
-        defaultBfDatasetId
-      );
+  var permissionList = "";
+  let datasetOwner = "";
+  for (var i in permissions) {
+    permissionList = permissionList + permissions[i] + "<br>";
+    if (permissions[i].indexOf("owner") != -1) {
+      let first_position = permissions[i].indexOf(":");
+      let second_position = permissions[i].indexOf(",");
+      datasetOwner = permissions[i].substring(first_position, second_position);
     }
   }
+
+  currentDatasetPermission.innerHTML = datasetOwner;
+
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Disseminate Datasets - Show current dataset permission",
+    defaultBfDatasetId
+  );
+
 }
 
+// TODO: Figure out: Permissions has these properties used in the below function?
 async function disseminiateShowCurrentDatasetStatus(
   callback,
   account,
@@ -584,16 +578,7 @@ async function disseminiateShowCurrentDatasetStatus(
     bfListDatasetStatus.style.color = "black";
   } else {
     try {
-      let dataset_permissions = await client.get(
-        `/manage_datasets/bf_dataset_permissions`,
-        {
-          params: {
-            selected_account: account,
-            selected_dataset: dataset,
-          },
-        }
-      );
-      let res = dataset_permissions.data.status_options;
+      let permissions = await api.getDatasetPermissions(account, dataset);
 
       ipcRenderer.send(
         "track-event",
@@ -603,14 +588,14 @@ async function disseminiateShowCurrentDatasetStatus(
       );
       var myitemselect = [];
       removeOptions(bfListDatasetStatus);
-      for (var item in res[0]) {
+      for (var item in permissions[0]) {
         var option = document.createElement("option");
-        option.textContent = res[0][item]["displayName"];
-        option.value = res[0][item]["name"];
-        option.style.color = res[0][item]["color"];
+        option.textContent = permissions[0][item]["displayName"];
+        option.value = permissions[0][item]["name"];
+        option.style.color = permissions[0][item]["color"];
         bfListDatasetStatus.appendChild(option);
       }
-      bfListDatasetStatus.value = res[1];
+      bfListDatasetStatus.value = permissions[1];
       selectOptionColor(bfListDatasetStatus);
       //bfCurrentDatasetStatusProgress.style.display = "none";
       $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
@@ -749,7 +734,7 @@ $("#ORCID-btn").on("click", async () => {
       "track-event",
       "Success",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-        " - Integrate ORCID iD",
+      " - Integrate ORCID iD",
       defaultBfDatasetId
     );
 
@@ -1054,7 +1039,7 @@ $(".pre-publishing-continue").on("click", async function () {
       "track-event",
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-        " - Get Excluded Files",
+      " - Get Excluded Files",
       defaultBfDatasetId
     );
 
@@ -1065,7 +1050,7 @@ $(".pre-publishing-continue").on("click", async function () {
     "track-event",
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Get Excluded Files",
+    " - Get Excluded Files",
     defaultBfDatasetId
   );
 
@@ -1092,7 +1077,7 @@ $(".pre-publishing-continue").on("click", async function () {
       "track-event",
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-        " - Get Metadata Files",
+      " - Get Metadata Files",
       defaultBfDatasetId
     );
   }
@@ -1101,7 +1086,7 @@ $(".pre-publishing-continue").on("click", async function () {
     "track-event",
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Get Metadata Files",
+    " - Get Metadata Files",
     defaultBfDatasetId
   );
 
