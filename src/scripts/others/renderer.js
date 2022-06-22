@@ -6850,7 +6850,7 @@ document
         `/curate_datasets/empty_files_and_folders`,
         {
           params: {
-            soda_json_structure: sodaJSONObj,
+            soda_json_structure: JSON.stringify(sodaJSONObj),
           },
         }
       );

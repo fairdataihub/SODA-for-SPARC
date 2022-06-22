@@ -235,86 +235,85 @@ const checkAvailableSpace = () => {
           soda_json_structure: sodaJSONObj,
         },
       });
-    } catch (error) {
-      clientError(error);
-    }
 
-    console.log(datasetSizeResponse);
-    console.log(datasetSizeResponse.data);
-
-    let tempFolderSize = datasetSizeResponse.data.dataset_size;
-    let folderSizeMB = roundToHundredth(tempFolderSize / 1024 ** 2);
-    let warningText =
-      "Please free up " +
-      roundToHundredth(folderSizeMB) +
-      "MB " +
-      "or consider uploading directly to Pennsieve.";
-
-    //converted to MB/GB/TB for user readability
-    if (folderSizeMB > 1000) {
-      //if bigger than a gb then convert to that
-      folderSizeMB = roundToHundredth(folderSizeMB / 1024);
-      freeMemoryMB = roundToHundredth(freeMemoryMB / 1024);
-      warningText =
+      let tempFolderSize = datasetSizeResponse.data.dataset_size;
+      let folderSizeMB = roundToHundredth(tempFolderSize / 1024 ** 2);
+      let warningText =
         "Please free up " +
         roundToHundredth(folderSizeMB) +
-        "GB " +
+        "MB " +
         "or consider uploading directly to Pennsieve.";
-      //if bigger than a tb then convert to that
+
+      //converted to MB/GB/TB for user readability
       if (folderSizeMB > 1000) {
+        //if bigger than a gb then convert to that
         folderSizeMB = roundToHundredth(folderSizeMB / 1024);
         freeMemoryMB = roundToHundredth(freeMemoryMB / 1024);
         warningText =
           "Please free up " +
           roundToHundredth(folderSizeMB) +
-          "TB " +
+          "GB " +
           "or consider uploading directly to Pennsieve.";
+        //if bigger than a tb then convert to that
+        if (folderSizeMB > 1000) {
+          folderSizeMB = roundToHundredth(folderSizeMB / 1024);
+          freeMemoryMB = roundToHundredth(freeMemoryMB / 1024);
+          warningText =
+            "Please free up " +
+            roundToHundredth(folderSizeMB) +
+            "TB " +
+            "or consider uploading directly to Pennsieve.";
+        }
       }
-    }
 
-    //comparison is done in bytes
-    if (freeMemory < tempFolderSize) {
-      $("#div-confirm-destination-locally button").hide();
-      $("#Question-generate-dataset-choose-ds-name").css("display", "none");
-      document.getElementById(
-        "input-destination-generate-dataset-locally"
-      ).placeholder = "Browse here";
+      //comparison is done in bytes
+      if (freeMemory < tempFolderSize) {
+        $("#div-confirm-destination-locally button").hide();
+        $("#Question-generate-dataset-choose-ds-name").css("display", "none");
+        document.getElementById(
+          "input-destination-generate-dataset-locally"
+        ).placeholder = "Browse here";
 
-      Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "OK",
-        heightAuto: false,
-        icon: "warning",
-        showCancelButton: false,
-        title: "Not enough space in storage device",
-        text: warningText,
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      });
+        Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "OK",
+          heightAuto: false,
+          icon: "warning",
+          showCancelButton: false,
+          title: "Not enough space in storage device",
+          text: warningText,
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        });
+
+        logCurationForAnalytics(
+          "Error",
+          PrepareDatasetsAnalyticsPrefix.CURATE,
+          AnalyticsGranularity.ACTION_WITH_DESTINATION,
+          ["Step 6", "Check Storage Space", determineDatasetLocation()],
+          determineDatasetLocation()
+        );
+
+        // return to avoid logging that the user passed the storage space check
+        return;
+      }
 
       logCurationForAnalytics(
-        "Error",
+        "Success",
         PrepareDatasetsAnalyticsPrefix.CURATE,
         AnalyticsGranularity.ACTION_WITH_DESTINATION,
         ["Step 6", "Check Storage Space", determineDatasetLocation()],
         determineDatasetLocation()
       );
-
-      // return to avoid logging that the user passed the storage space check
-      return;
+    } catch (error) {
+      if (error.message != "Request aborted") {
+        clientError(error);
+      }
     }
-
-    logCurationForAnalytics(
-      "Success",
-      PrepareDatasetsAnalyticsPrefix.CURATE,
-      AnalyticsGranularity.ACTION_WITH_DESTINATION,
-      ["Step 6", "Check Storage Space", determineDatasetLocation()],
-      determineDatasetLocation()
-    );
   });
 };
 const btnConfirmLocalDatasetGeneration = document.getElementById(
