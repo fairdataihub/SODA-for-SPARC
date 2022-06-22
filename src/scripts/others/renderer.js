@@ -740,8 +740,10 @@ const check_agent_installed = async () => {
   let responseObject;
 
   try {
+    // TODO: Test errors
     responseObject = await client.get("/manage_datasets/check_agent_install");
   } catch (error) {
+    clientError(error);
     notyf.dismiss(notification);
     notyf.open({
       type: "error",
@@ -753,7 +755,7 @@ const check_agent_installed = async () => {
     return [false, emessage];
   }
 
-  let res = responseObject.data;
+  let { agent_version } = responseObject.data;
 
   notyf.dismiss(notification);
   notyf.open({
@@ -761,7 +763,7 @@ const check_agent_installed = async () => {
     message: "Pennsieve agent found",
   });
   log.info("Pennsieve agent found");
-  return [true, res];
+  return [true, agent_version];
 };
 
 const check_agent_installed_version = async (agent_version) => {
