@@ -2048,15 +2048,17 @@ $("#button-add-tags").click(async () => {
   // Add tags to dataset
   try {
     // TODO: Test endpoint error handling
-    await client.put(`/manage_datasets/datasets/${selectedBfDataset}/tags`, 
-    {tags},
-    {
-      params: {
-        selected_account: defaultBfAccount,
+    await client.put(
+      `/manage_datasets/datasets/${selectedBfDataset}/tags`,
+      { tags },
+      {
+        params: {
+          selected_account: defaultBfAccount,
+        },
       }
-    })
+    );
   } catch (e) {
-    clientError(e)
+    clientError(e);
     // alert the user of the error
     // TODO: SWAL error message update
     Swal.fire({
@@ -2129,11 +2131,14 @@ const showCurrentTags = async () => {
     let tagsResponse;
     try {
       // TODO: Replace with FLASK api call -- READY
-      tagsResponse = await client.get(`/manage_datasets/datasets/${selectedBfDataset}/tags`, { 
-        params: { selected_account: selectedBfAccount }
-      });
+      tagsResponse = await client.get(
+        `/manage_datasets/datasets/${selectedBfDataset}/tags`,
+        {
+          params: { selected_account: selectedBfAccount },
+        }
+      );
     } catch (e) {
-      clientError(e)
+      clientError(e);
       // alert the user of the error
       // TODO: SWAL update to correct error message
       Swal.fire({
@@ -2159,7 +2164,7 @@ const showCurrentTags = async () => {
       return;
     }
 
-    let {tags} = tagsResponse.data;
+    let { tags } = tagsResponse.data;
 
     if (tags === undefined || tags.length == 0) {
       //if so make the button say add tags
