@@ -95,12 +95,30 @@ const getDatasetRole = async (datasetNameOrId) => {
   }
 };
 
+
+/**
+ * Withdraw any dataset from a pre-publishing review submission
+ * @param {string} datasetIdOrName 
+ * @returns {Promise<void>}
+ */
+ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
+  try {
+    await client.post(
+      `/disseminate_datasets/datasets/${datasetIdOrName}/publication/cancel`
+    );
+  } catch (error) {
+    clientError(error)
+    throw new Error(getAxiosErrorMessage(error))
+  }
+};
+
 const api = {
   getUserInformation,
   getDataset,
   getDatasetReadme,
   getDatasetBannerImageURL,
   getDatasetRole,
+  withdrawDatasetReviewSubmission
 };
 
 module.exports = api;

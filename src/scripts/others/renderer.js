@@ -1345,7 +1345,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => {});
+            }).then((result) => { });
             generateSubjectsFileHelper(false);
           }
         });
@@ -1361,7 +1361,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         generateSubjectsFileHelper(false);
       }
     }
@@ -1415,7 +1415,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   let bfdataset = document
     .getElementById("bf_dataset_load_subjects")
@@ -1513,7 +1513,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => {});
+            }).then((result) => { });
             generateSamplesFileHelper(uploadBFBoolean);
           }
         });
@@ -1529,7 +1529,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         generateSamplesFileHelper(uploadBFBoolean);
       }
     }
@@ -1583,7 +1583,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   // new client that has a longer timeout
   let clientLongTimeout = new zerorpc.Client({
@@ -2110,7 +2110,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   try {
     let load_taxonomy_species = await client.get(`/taxonomy/species`, {
       animal_list: [commonName],
@@ -2827,9 +2827,9 @@ function detectEmptyRequiredFields(funding) {
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
   var emptyMessageArray = [
     "- Missing required fields under Dataset Info section: " +
-      dsEmptyField.join(", "),
+    dsEmptyField.join(", "),
     "- Missing required fields under Contributor Info section: " +
-      conEmptyField.join(", "),
+    conEmptyField.join(", "),
     "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
   ];
   var allFieldsSatisfied = true;
@@ -3514,13 +3514,6 @@ async function withdrawDatasetCheck(res) {
   }
 }
 
-// ipcRenderer.on("warning-withdraw-dataset-selection", (event, index) => {
-//   if (index === 0) {
-//     withdrawReviewDataset();
-//   }
-//   $("#submit_prepublishing_review-spinner").hide();
-// });
-
 async function withdrawReviewDataset() {
   bfWithdrawReviewDatasetBtn.disabled = true;
   var selectedBfAccount = $("#current-bf-account").text();
@@ -3529,8 +3522,7 @@ async function withdrawReviewDataset() {
     .replace(/^\s+|\s+$/g, "");
 
   try {
-    // TODO: Replace with Flask Call -- READY
-    await withdrawDatasetReviewSubmission(selectedBfDataset);
+    await api.withdrawDatasetReviewSubmission(selectedBfDataset);
 
     logGeneralOperationsForAnalytics(
       "Success",
@@ -6445,16 +6437,14 @@ ipcRenderer.on(
 
                     numb.innerText = percentage_amount + "%";
                     if (percentage_amount <= 50) {
-                      progressBar_rightSide.style.transform = `rotate(${
-                        percentage_amount * 0.01 * 360
-                      }deg)`;
+                      progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
+                        }deg)`;
                     } else {
                       progressBar_rightSide.style.transition = "";
                       progressBar_rightSide.classList.add("notransition");
                       progressBar_rightSide.style.transform = `rotate(180deg)`;
-                      progressBar_leftSide.style.transform = `rotate(${
-                        percentage_amount * 0.01 * 180
-                      }deg)`;
+                      progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
+                        }deg)`;
                     }
 
                     if (finished === 1) {
@@ -6529,16 +6519,14 @@ ipcRenderer.on(
 
                   numb.innerText = percentage_amount + "%";
                   if (percentage_amount <= 50) {
-                    progressBar_rightSide.style.transform = `rotate(${
-                      percentage_amount * 0.01 * 360
-                    }deg)`;
+                    progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
+                      }deg)`;
                   } else {
                     progressBar_rightSide.style.transition = "";
                     progressBar_rightSide.classList.add("notransition");
                     progressBar_rightSide.style.transform = `rotate(180deg)`;
-                    progressBar_leftSide.style.transform = `rotate(${
-                      percentage_amount * 0.01 * 180
-                    }deg)`;
+                    progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
+                      }deg)`;
                   }
                   if (finished === 1) {
                     progressBar_leftSide.style.transform = `rotate(180deg)`;
@@ -6806,9 +6794,9 @@ document
     for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
       if (
         "manifest.xlsx" in
-          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
         sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-          "manifest.xlsx"
+        "manifest.xlsx"
         ]["forTreeview"]
       ) {
         delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
@@ -7399,7 +7387,7 @@ async function initiate_generate() {
           "track-event",
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE +
-            " - Step 7 - Generate - Dataset - Number of Files",
+          " - Step 7 - Generate - Dataset - Number of Files",
           `${datasetUploadSession.id}`,
           uploadedFiles
         );
@@ -7409,7 +7397,7 @@ async function initiate_generate() {
           "track-event",
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE +
-            " - Step 7 - Generate - Dataset - Size",
+          " - Step 7 - Generate - Dataset - Size",
           `${datasetUploadSession.id}`,
           increaseInFileSize
         );
@@ -8650,76 +8638,6 @@ const submitDatasetForPublication = async (
   }
 };
 
-// Withdraw any dataset from a pre-publishing review submission
-// I:
-//  datasetIdOrName: string - the id/name of the dataset being submitted for publication
-//  hasEmbargo: boolean - True when the dataset was submotted for publishing under embargo, false otherwise
-//  O:
-//    void
-const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
-  // ensure a valid dataset ir or name has been passed in
-  if (!datasetIdOrName || datasetIdOrName === "") {
-    throw new Error("A valid dataset must be provided");
-  }
-
-  // get the current SODA user's permissions (permissions are indicated by the user's assigned role for a given dataset)
-  let userRole = await getCurrentUserPermissions(datasetIdOrName);
-
-  // check that the current SODA user is the owner of the given dataset
-  if (!userIsOwnerOrManager(userRole))
-    throw new Error(
-      "You don't have permissions for withdrawing this dataset from publication. Please have the dataset owner withdraw the dataset."
-    );
-
-  // get the dataset id
-  let jwt = await get_access_token();
-
-  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
-
-  let { id } = dataset.content;
-
-  // create the api call options
-  // get the publication type
-  let publicationType = dataset.publication.type;
-
-  // if an embargo release date was selected add it to the query string
-  if (publicationType === "embargo") {
-    queryString = `?publicationType=embargo`;
-  } else {
-    // add the required publication type
-    queryString = `?publicationType=publication`;
-  }
-
-  let withdrawResponse = await client.get(
-    `/disseminate_datasets/datasets/${id}/publication/cancel`
-  );
-
-  // get the status code out of the response
-  let statusCode = withdrawResponse.status;
-
-  // check the status code of the response
-  switch (statusCode) {
-    case 201:
-      // success do nothing
-      break;
-    case 404:
-      throw new Error(
-        `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset to withdraw from publication.`
-      );
-    case 401:
-      throw new Error(
-        `${statusCode} - You cannot withdraw a dataset from publication while unauthenticated.`
-      );
-    case 403:
-      throw new Error(
-        `${statusCode} - You do not have access to this dataset. `
-      );
-    default:
-      // something unexpected happened
-      let statusText = withdrawResponse.statusText;
-      throw new Error(`${statusCode} - ${statusText}`);
-  }
-};
 
 /*
 ******************************************************
