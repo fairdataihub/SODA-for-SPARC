@@ -9,7 +9,6 @@ monkey.patch_all()
 from pennsieve import Pennsieve
 from flask import abort 
 import requests
-import urllib 
 
 from manageDatasets import bf_get_current_user_permission
 from utils import get_dataset, get_authenticated_ps
