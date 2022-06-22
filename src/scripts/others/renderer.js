@@ -8510,265 +8510,12 @@ function logGeneralOperationsForAnalytics(
   }
 }
 
-/*
-******************************************************
-******************************************************
-Pennsieve Authentication Section With Nodejs
-******************************************************
-******************************************************
-*/
 
-// Purpose: Functions that take a user through the authentication flow for the Pennsieve APIs.
-
-// retrieve the aws cognito configuration data for authenticating a user with their API key and secret using a Password Auth flow.
-const get_cognito_config = async () => {
-  const PENNSIEVE_URL = "https://api.pennsieve.io";
-  let cognitoConfigResponse;
-  try {
-    cognitoConfigResponse = await fetch(
-      `${PENNSIEVE_URL}/authentication/cognito-config`
-    );
-  } catch (e) {
-    // network error
-    throw e;
-  }
-
-  // check that there weren't any unexpected errors
-  let statusCode = cognitoConfigResponse.status;
-  if (statusCode === 404) {
-    throw new Error(
-      `${cognitoConfigResponse.status} - Resource for authenticating not found.`
-    );
-  } else if (statusCode !== 200) {
-    // something unexpected happened with the request
-    let statusText = await cognitoConfigResponse.json().statusText;
-    throw new Error(`${cognitoConfigResponse.status} - ${statusText}`);
-  }
-
-  let cognitoConfigData = await cognitoConfigResponse.json();
-  return cognitoConfigData;
-};
-
-// read the .ini file for the current user's api key and secret
-// the .ini file is where the current user's information is stored - such as their API key and secret
-const get_api_key_and_secret_from_ini = () => {
-  // get the path to the configuration file
-  const config_path = path.join(
-    app.getPath("home"),
-    ".pennsieve",
-    "config.ini"
-  );
-  let config;
-
-  // check that the user's configuration file exists
-  if (!fs.existsSync(config_path)) {
-    throw new Error(
-      "Error: Could not read information. No configuration file."
-    );
-  }
-
-  try {
-    // initialize the ini reader
-    config = ini.parse(fs.readFileSync(`${config_path}`, "utf-8"));
-  } catch (e) {
-    throw e;
-  }
-
-  // check that an api key and secret does ot exist
-  if (
-    !config["SODA-Pennsieve"]["api_secret"] ||
-    !config["SODA-Pennsieve"]["api_token"]
-  ) {
-    // throw an error
-    throw new Error(
-      "Error: User must connect their Pennsieve account to SODA in order to access this feature."
-    );
-  }
-
-  // return the user's api key and secret
-  const { api_token, api_secret } = config["SODA-Pennsieve"];
-  return { api_token, api_secret };
-};
-
-// authenticate a user with api key and api secret
-// this step is to validate that a user is who they say they are
-const authenticate_with_cognito = async (
-  cognitoConfigurationData,
-  usernameOrApiKey,
-  passwordOrSecret
-) => {
-  let cognito_app_client_id =
-    cognitoConfigurationData["tokenPool"]["appClientId"];
-  let cognito_pool_id = cognitoConfigurationData["tokenPool"]["id"];
-
-  var authParams = {
-    Username: `${usernameOrApiKey}`,
-    Password: `${passwordOrSecret}`,
-  };
-
-  var authenticationDetails = new cognitoClient.AuthenticationDetails(
-    authParams
-  );
-
-  var poolData = {
-    UserPoolId: cognito_pool_id,
-    ClientId: cognito_app_client_id, // Your client id here
-  };
-
-  var userPool = new cognitoClient.CognitoUserPool(poolData);
-
-  var userData = {
-    Username: `${usernameOrApiKey}`,
-    Pool: userPool,
-  };
-
-  var cognitoUser = new cognitoClient.CognitoUser(userData);
-
-  // tell the cognito user object to login using a user password flow
-  cognitoUser.setAuthenticationFlowType("USER_PASSWORD_AUTH");
-
-  return new Promise((resolve, reject) => {
-    cognitoUser.authenticateUser(authenticationDetails, {
-      onSuccess: resolve,
-      onFailure: reject,
-    });
-  });
-};
-
-// get the currnet Pennsieve user's access token -- this is used before every request to Pennsieve APIs as a bearer token
-const get_access_token = async () => {
-  // read the current user's ini file and get back their api key and secret
-  let userInformation;
-  try {
-    userInformation = get_api_key_and_secret_from_ini();
-  } catch (e) {
-    throw e;
-  }
-
-  // get the cognito configuration data for the given user
-  let configData;
-  try {
-    configData = await get_cognito_config();
-  } catch (e) {
-    throw e;
-  }
-
-  // get the access token from the cognito service for this user using the api key and secret for the current user
-  let cognitoResponse;
-  let { api_token, api_secret } = userInformation;
-  try {
-    cognitoResponse = await authenticate_with_cognito(
-      configData,
-      api_token,
-      api_secret
-    );
-  } catch (e) {
-    throw e;
-  }
-
-  if (!cognitoResponse["accessToken"]["jwtToken"])
-    throw new Error("Error: No access token available for this user.");
-
-  return cognitoResponse["accessToken"]["jwtToken"];
-};
-
-/*
-******************************************************
-******************************************************
-Manage Datasets Tag Section With Nodejs
-******************************************************
-******************************************************
-*/
-
-// to be used with an authenticated user that has a valid access token
-// Inputs:
-//    dataset_id_or_name: string
-//    jwt: string  (a valid JWT acquired from get_access_token)
-const get_dataset_by_name_id = async (dataset_id_or_Name, jwt = undefined) => {
-  // a name on the Pennsieve side is not made unqiue by " ","-", or "_" so remove them
-  function name_key(n) {
-    return n
-      .toLowerCase()
-      .trim()
-      .replace(" ", "")
-      .replace("_", "")
-      .replace("-", "");
-  }
-
-  let search_key = name_key(dataset_id_or_Name);
-
-  // a way to check if the given dataset's name or id matches one on the Pennsieve side
-  function is_match(ds) {
-    return name_key(ds.name) == search_key || ds.id == dataset_id_or_Name;
-  }
-
-  // get the all of datasets from Pennsieve that the user has access to in their organization
-  let datasetsRes = await client.get(`/manage_datasets/bf_dataset_account`, {
-    params: {
-      selected_account: defaultBfAccount,
-    },
-  });
-
-  let statusCode = datasetsRes.status;
-  if (statusCode == 401) {
-    throw new Error(
-      `${statusCode} - Please authenticate before accessing this resource by connecting your Pennsieve account to SODA.`
-    );
-  } else if (statusCode === 403) {
-    throw new Error(`${statusCode} - You do not have access to this dataset.`);
-  } else if (statusCode !== 200) {
-    // something unexpected
-    let statusText = datasetsRes.statusText;
-    throw new Error(`${statusCode} - ${statusText}`);
-  }
-
-  // valid datasets result
-  let datasets = datasetsRes.data;
-
-  // search through the datasets for a match
-  let matches = [];
-  for (const dataset of datasets) {
-    if (is_match(dataset["content"])) matches.push(dataset);
-  }
-
-  // check if there is no matching dataset
-  if (!matches.length) {
-    // could not find the dataset that matches the user's requested id/name
-    throw new Error(
-      `The dataset identified as ${dataset_id_or_Name} does not exist.`
-    );
-  }
-
-  // return the first match
-  return matches[0];
-
-  // try {
-  //   datasets_response = await fetch("https://api.pennsieve.io/datasets", {
-  //     headers: {
-  //       Accept: "application/json",
-  //       Authorization: `Bearer ${jwt}`,
-  //     },
-  //   });
-  // } catch (e) {
-  //   // network error
-  //   throw e;
-  // }
-
-  // check the status codes
-};
-
-
-/*
-******************************************************
-******************************************************
-Dissemniate Datasets Submit dataset for pre-publishing
-******************************************************
-******************************************************
-*/
-
-// I: The currently selected dataset - name or by id
-// O: A status object that details the state of each pre-publishing checklist item for the given dataset and user
-//   {subtitle: boolean, description: boolean, tags: boolean, bannerImageURL: boolean, license: boolean, ORCID: boolean}
+/**
+ * 
+ * @param {string} datasetIdOrName - The currently selected dataset - name or its ID
+ * @returns statuses - A status object that details the state of each pre-publishing checklist item for the given dataset and user
+ */
 const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // check that a dataset name or id is provided
   if (!datasetIdOrName || datasetIdOrName === "") {
@@ -8777,10 +8524,15 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
     );
   }
 
-  // get the dataset
-  let jwt = await get_access_token();
-
-  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+  // TODO: get a pennsieve dataset content
+  let datasetResponse
+  try {
+    datasetResponse = await client.get(`/datasets/${defaultBfDatasetId}`)
+  } catch (e) {
+    clientError(e)
+    throw e
+  }
+  let dataset = datasetResponse.data;
 
   // construct the statuses object
   const statuses = {};
@@ -8795,9 +8547,9 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   try {
     // TODO: Error handling testing
     readmeResponse = await client.get(
-      `/manage_datasets/datasets/${selectedBfDataset}/readme`,
-      { params: { selected_account: selectedBfAccount } }
-    ).data;
+      `/manage_datasets/datasets/${datasetIdOrName}/readme`,
+      { params: { selected_account: defaultBfAccount } }
+    );
   } catch (e) {
     clientError(e);
     throw e;
@@ -8812,37 +8564,61 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   statuses.tags = tags && tags.length ? true : false;
 
   // get the banner url
-  // TODO: REPLACE WITH FLASK CALL -- READY
-  const bannerPresignedUrl = await getDatasetBannerImageURL(datasetIdOrName);
+  let bannerResponse;
+  try {
+    bannerResponse = await client.get(`/manage_datasets/bf_banner_image`, {
+      params: {
+        selected_account: defaultBfAccount,
+        selected_dataset: defaultBfDataset
+      },
+    });
+  } catch (e) {
+    clientError(e)
+    throw e
+  }
+
+  let { banner_image } = bannerResponse.data;
 
   // set the banner image's url status
   statuses.bannerImageURL =
-    bannerPresignedUrl && bannerPresignedUrl.length ? true : false;
+    banner_image && banner_image.length ? true : false;
 
   // set the license's status
   statuses.license = license && license.length ? true : false;
 
-  // check if the user is the owner of the dataset
-  let owner = await userIsDatasetOwner(datasetIdOrName);
+
+  let datasetRoleResponse;
+  try {
+    datasetRoleResponse = await client.get(`/datasets/${defaultBfDataset}/role`, {
+      params: {
+        pennsieve_account: defaultBfAccount
+      },
+    });
+  } catch (e) {
+    clientError(e)
+    throw e
+  }
+
+  let { role } = datasetRoleResponse.data;
+
+  if(!role === "owner") {
+    return 
+  } 
 
   // declare the orcidId
   let orcidId;
 
-  // check if the user is the owner
-  if (owner) {
-    // get the user's information
-    // TODO: Replace with Flask call -- READY
-    let user = await getUserInformation();
+  // get the user's information
+  let user = await getUserInformation();
 
-    // get the orcid object out of the user information
-    let orcidObject = user.orcid;
+  // get the orcid object out of the user information
+  let orcidObject = user.orcid;
 
-    // check if the owner has an orcid id
-    if (orcidObject) {
-      orcidId = orcidObject.orcid;
-    } else {
-      orcidId = undefined;
-    }
+  // check if the owner has an orcid id
+  if (orcidObject) {
+    orcidId = orcidObject.orcid;
+  } else {
+    orcidId = undefined;
   }
 
   // the user has an ORCID iD if the property is defined and non-empty
@@ -9061,48 +8837,7 @@ const getDatasetBannerImageURL = async (datasetIdOrName) => {
     throw new Error("Error: Must provide a valid dataset to pull tags from.");
   }
 
-  // get an access token
-  let jwt = await get_access_token();
-
-  // get the dataset to get the id
-  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
-
-  let { id } = dataset["content"];
-
   // fetch the banner url from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
-  let bannerResponse = await client.get(`/manage_datasets/bf_banner_image`, {
-    params: {
-      selected_account: defaultBfAccount,
-    },
-  });
-  console.log(bannerResponse);
-
-  // get the status code out of the response
-  let statusCode = bannerResponse.status;
-
-  // check the status code of the response
-  switch (statusCode) {
-    case 200:
-      // success do nothing
-      break;
-    case 404:
-      throw new Error(
-        `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset to look at the banner image.`
-      );
-    case 401:
-      throw new Error(
-        `${statusCode} - You cannot get the dataset banner image without being authenticated. Please reauthenticate and try again.`
-      );
-    case 403:
-      throw new Error(
-        `${statusCode} - You do not have access to this dataset. `
-      );
-
-    default:
-      // something unexpected happened
-      let statusText = bannerResponse.statusText;
-      throw new Error(`${statusCode} - ${statusText}`);
-  }
 
   let { banner } = bannerResponse.data;
 
@@ -9136,12 +8871,6 @@ const getCurrentUserPermissions = async (datasetIdOrName) => {
   let id = dataset.content.id;
 
   // get the user's permissions
-  let dataset_roles = await client.get(`/datasets/${id}/role`, {
-    params: {
-      pennsieve_account: defaultBfAccount,
-    },
-  });
-  console.log(dataset_roles);
 
   // get the status code out of the response
   let statusCode = dataset_roles.status;
@@ -9209,7 +8938,6 @@ const userIsDatasetOwner = async (datasetIdOrName) => {
 
   // get the dataset the user wants to edit
   // TODO: Replace with Flask call -- READY
-  console.log("something here");
   let role = await getCurrentUserPermissions(datasetIdOrName);
 
   return userIsOwner(role);
@@ -9224,36 +8952,19 @@ Get User Information With Nodejs
 */
 
 const getUserInformation = async () => {
-  // get the access token
-  let jwt = await get_access_token();
-
   // get the user information
-  let userResponse = await client.get(`/user/`, {
+
+  let userResponse; 
+  try {
+    userResponse = await client.get(`/user`, {
     params: {
       pennsieve_account: defaultBfAccount,
     },
   });
-
-  let statusCode = userResponse.status;
-
-  switch (statusCode) {
-    case 200:
-      break;
-    case 403:
-      throw new Error(
-        `${statusCode} - You do not have access to this user information. `
-      );
-    case 401:
-      throw new Error(
-        `${statusCode} - Reauthenticate to access this user information. `
-      );
-    case 404:
-      throw new Error(`${statusCode} - Resource could not be found. `);
-    default:
-      // something unexpected happened
-      let pennsieveErrorObject = userResponse;
-      let { message } = pennsieveErrorObject;
-      throw new Error(`${statusCode} - ${message}`);
+  } catch(e) {
+    clientError(e)
+    // TODO: Add details here in a function that can be used everywhere
+    throw Error("Updated message that the client can understand and display to the user at the top level if need be.")
   }
 
   let user = userResponse.data;
