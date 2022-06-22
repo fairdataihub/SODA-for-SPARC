@@ -188,21 +188,9 @@ $("#button-create-bf-new-dataset").click(async () => {
 
       log.info(`Requesting list of datasets`);
 
-      try {
-        let responseObject = await client.get(
-          `manage_datasets/bf_dataset_account`,
-          {
-            params: {
-              selected_account: defaultBfAccount,
-            },
-          }
-        );
-        datasetList = [];
-        datasetList = responseObject.data.datasets;
-        log.info(`Requested list of datasets successfully`);
-      } catch (error) {
-        clientError(error);
-      }
+      datasetList = [];
+      datasetList = await api.getDatasetsForAccount(defaultBfAccount);
+      log.info(`Requested list of datasets successfully`);
 
       $(".bf-dataset-span").html(bfNewDatasetName);
 

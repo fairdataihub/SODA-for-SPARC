@@ -198,6 +198,27 @@ const getDatasetPermissions = async (selected_account, selected_dataset) => {
   }
 };
 
+
+const getDatasetsForAccount = async (selected_account) => {
+  try {
+    let responseObject = await client.get(
+      `manage_datasets/bf_dataset_account`,
+      {
+        params: {
+          selected_account
+        },
+      }
+    );
+
+    let { datasets } = responseObject.data;
+
+    return datasets
+  } catch (error) {
+    clientError(error);
+    throw new Error(getAxiosErrorMessage(error));
+  }
+}
+
 const api = {
   getUserInformation,
   getDataset,
@@ -209,6 +230,7 @@ const api = {
   updateDatasetExcludedFiles,
   getDatasetMetadataFiles,
   getDatasetPermissions,
+  getDatasetsForAccount
 };
 
 module.exports = api;
