@@ -1109,13 +1109,13 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
   });
 
   // get the dataset readme
-  let readme;
+  let readmeResponse;
   try {
     // TODO: Test error handling
-    readme = await client.get(
+    readmeResponse = await client.get(
       `/manage_datasets/datasets/${selectedBfDataset}/readme`,
       { params: { selected_account: defaultBfAccount } }
-    );
+    )
   } catch (err) {
     clientError(err);
     let emessage = userError(err);
@@ -1136,6 +1136,10 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
     );
     return;
   }
+
+
+  let {readme} = readmeResponse.data;
+
 
   // strip out the required sections (don't check for errors here because we check for them in showCurrentDescription for the same functions and the same readme)
   readme = stripRequiredSectionFromReadme(
@@ -1165,10 +1169,13 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
   // update the readme file
   try {
     // TODO: Replace with FLASK call -- READY
-    await updateDatasetReadme(selectedBfDataset, completeReadme);
+    await client.put(`/manage_datasets/datasets/${selectedBfDataset}/readme`, 
+    { updated_readme: completeReadme }, 
+    { params: {selected_account: defaultBfAccount}});
   } catch (error) {
-    log.error(error);
-    console.error(error);
+    clientError(error)
+
+    // TODO: Fix the error message since this won't be good I don't think
     let emessage = userError(error);
 
     Swal.fire({

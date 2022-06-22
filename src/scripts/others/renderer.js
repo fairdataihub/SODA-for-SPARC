@@ -8861,85 +8861,6 @@ const update_dataset_tags = async (datasetIdOrName, tags) => {
 /*
 ******************************************************
 ******************************************************
-Manage Datasets Add/Edit Description Section With Nodejs
-******************************************************
-******************************************************
-*/
-
-const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
-  if (datasetIdOrName === "" || datasetIdOrName === undefined) {
-    throw new Error(
-      "Must provide a valid dataset to get the metadata description."
-    );
-  }
-
-  // get the user's permissions
-  let role = await getCurrentUserPermissions(datasetIdOrName);
-
-  // check if the user permissions do not include "owner" or "manager"
-  if (!userIsOwnerOrManager(role)) {
-    // throw a permission error: "You don't have permissions for editing metadata on this Pennsieve dataset"
-    throw new Error(
-      "You don't have permissions for editing metadata on this Pennsieve dataset"
-    );
-  }
-
-  // get access token for the current user
-  let jwt = await get_access_token();
-
-  // get the dataset the user wants to edit
-  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
-
-  // get the id out of the dataset
-  let id = dataset.content.id;
-
-  // put the new readme data in the readme on Pennsieve
-
-  let updateReadme = await client.put(
-    `/manage_datasets/datasets/${id}/readme`,
-    {
-      params: {
-        selected_account: defaultBfAccount,
-      },
-      payload: {
-        updated_readme: JSON.stringify({ readme: updatedReadme.trim() }),
-      },
-    }
-  );
-
-  let res = updateReadme;
-  console.log(res);
-  // get the status code out of the response
-  let statusCode = res.status;
-
-  // check the status code of the response
-  switch (statusCode) {
-    case 200:
-      // success do nothing
-      break;
-    case 404:
-      throw new Error(
-        `${statusCode} - The selected dataset cannot be found. Please select a valid dataset.`
-      );
-    case 401:
-      throw new Error(
-        `${statusCode} - You cannot update the dataset  description while unauthenticated. Please reauthenticate and try again.`
-      );
-    case 403:
-      throw new Error(
-        `${statusCode} - You do not have access to this dataset. `
-      );
-
-    default:
-      // something unexpected happened
-      let statusText = res.statusText;
-      throw new Error(`${statusCode} - ${statusText}`);
-  }
-};
-
-/*
-******************************************************
-******************************************************
 Dissemniate Datasets Submit dataset for pre-publishing
 ******************************************************
 ******************************************************
@@ -8970,17 +8891,19 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // set the subtitle's status
   statuses.subtitle = description && description.length ? true : false;
 
-  let readme;
+  let readmeResponse;
   try {
     // TODO: Error handling testing
-    readme = await client.get(
+    readmeResponse = await client.get(
       `/manage_datasets/datasets/${selectedBfDataset}/readme`,
       { params: { selected_account: selectedBfAccount } }
-    ).data.readme;
+    ).data;
   } catch (e) {
     clientError(e);
     throw e;
   }
+
+  let {readme} = readmeResponse.data;
 
   // set the readme's status
   statuses.readme = readme && readme.length >= 1 ? true : false;
