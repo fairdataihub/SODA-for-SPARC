@@ -101,11 +101,33 @@ const getDatasetRole = async (datasetNameOrId) => {
  * @param {string} datasetIdOrName 
  * @returns {Promise<void>}
  */
- const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
+const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
   try {
     await client.post(
       `/disseminate_datasets/datasets/${datasetIdOrName}/publication/cancel`
     );
+  } catch (error) {
+    clientError(error)
+    throw new Error(getAxiosErrorMessage(error))
+  }
+};
+
+
+const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
+  try {
+    // get the excluded files
+    let excludedFilesRes = await client.get(
+      `/disseminate_datasets/datasets/${datasetIdOrName}/ignore-files`,
+      {
+        params: {
+          selected_account: defaultBfAccount,
+        }
+      }
+    );
+
+    let { ignore_files } = excludedFilesRes.data;
+
+    return ignore_files;
   } catch (error) {
     clientError(error)
     throw new Error(getAxiosErrorMessage(error))
@@ -118,7 +140,8 @@ const api = {
   getDatasetReadme,
   getDatasetBannerImageURL,
   getDatasetRole,
-  withdrawDatasetReviewSubmission
+  withdrawDatasetReviewSubmission,
+  getFilesExcludedFromPublishing
 };
 
 module.exports = api;
