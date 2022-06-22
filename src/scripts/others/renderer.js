@@ -8846,8 +8846,6 @@ Get User's Excluded Files with NodeJS
 ******************************************************
 */
 
-
-
 // retrieves the currently selected dataset's metadata files
 // I:
 //  datasetIdOrName: string - A dataset id or name

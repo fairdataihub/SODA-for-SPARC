@@ -143,7 +143,7 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
     await client.put(
       `/disseminate_datasets/datasets/${datasetIdOrName}/ignore-files`,
       {
-          ignore_files: files,
+        ignore_files: files,
       }
     );
   } catch (error) {
@@ -160,7 +160,7 @@ const api = {
   getDatasetRole,
   withdrawDatasetReviewSubmission,
   getFilesExcludedFromPublishing,
-  updateDatasetExcludedFiles
+  updateDatasetExcludedFiles,
 };
 
 module.exports = api;
