@@ -3295,9 +3295,8 @@ async function submitReviewDataset(embargoReleaseDate) {
     let files = getExcludedFilesFromPublicationFlow();
     try {
       // exclude the user's selected files from publication
-      // TODO: Replace with Flask calls -- WIP
       //check res
-      await updateDatasetExcludedFiles(selectedBfDataset, files);
+      await api.updateDatasetExcludedFiles(selectedBfDataset, files);
     } catch (error) {
       // log the error
       logGeneralOperationsForAnalytics(
@@ -3306,8 +3305,6 @@ async function submitReviewDataset(embargoReleaseDate) {
         AnalyticsGranularity.ALL_LEVELS,
         ["Updating excluded files"]
       );
-      log.error(error);
-      console.error(error);
 
       var emessage = userError(error);
 
@@ -8849,63 +8846,7 @@ Get User's Excluded Files with NodeJS
 ******************************************************
 */
 
-// tell Pennsieve to ignore a set of user selected files when publishing their dataset.
-// this keeps those files hidden from the public but visible to publishers and collaboraors.
-// I:
-//  datasetIdOrName: string - A dataset id or name
-//  files: [{fileName: string}] - An array of file name objects
-const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
-  // ensure a valid datasetIDOrName is passed in
-  if (!datasetIdOrName || datasetIdOrName === "") {
-    throw new Error(
-      "Error: Must provide a valid dataset to check permissions for."
-    );
-  }
 
-  // get the dataset ID
-  let jwt = await get_access_token();
-  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
-  let { id } = dataset.content;
-
-  // create the request options
-  let excludeFilesRes = await client.put(
-    `/disseminate_datasets/datasets/${id}/ignore-files`,
-    {
-      payload: {
-        ignore_files: JSON.stringify(files),
-      },
-    }
-  );
-  console.log(excludeFilesRes);
-
-  // check the status code
-  let { status } = excludeFilesRes.statusCode;
-  switch (status) {
-    //  200 is success do nothing
-    case 200:
-      break;
-
-    // 403 is forbidden from modifying this resource
-    case 403:
-      throw new Error(
-        `${status} - You are forbidden from accessing this resouce.`
-      );
-
-    // 401 is unauthenticated
-    case 401:
-      throw new Error(
-        `${status} - Not authenticated. Please reauthenticate to access this dataset.`
-      );
-
-    // else a 400 of some kind or a 500 as default
-    default:
-      let pennsieveErrorObject = excludeFilesRes;
-      let { message } = pennsieveErrorObject;
-      throw new Error(`${status} - ${message}`);
-  }
-
-  return;
-};
 
 // retrieves the currently selected dataset's metadata files
 // I:
