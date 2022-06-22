@@ -8846,66 +8846,7 @@ Get User's Excluded Files with NodeJS
 ******************************************************
 */
 
-const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
-  // check a valid dataset was provided
-  if (!datasetIdOrName || datasetIdOrName === "") {
-    throw new Error(
-      "Error: Must provide a valid dataset to check permissions for."
-    );
-  }
 
-  // get the access token
-  let jwt = await get_access_token();
-
-  // get the dataset
-  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
-
-  // peel out the id
-  let { id } = dataset.content;
-
-  // get the excluded files
-  let excludedFilesRes = await client.get(
-    `/disseminate_datasets/datasets/${id}/ignore-files`,
-    {
-      params: {
-        defaultBfAccount,
-      },
-    }
-  );
-
-  let res = excludedFilesRes;
-  console.log(res);
-
-  // get the status code
-  let statusCode = res.status;
-
-  // check the status code and respond appropriately
-  switch (statusCode) {
-    case 200:
-      break;
-    case 403:
-      throw new Error(
-        `${statusCode} - You do not have access to this dataset. `
-      );
-    case 401:
-      throw new Error(
-        `${statusCode} - Reauthenticate to access this dataset. `
-      );
-    case 404:
-      throw new Error(`${statusCode} - Dataset could not be found. `);
-    default:
-      // something unexpected happened
-      let pennsieveErrorObject = res;
-      let { message } = pennsieveErrorObject;
-      throw new Error(`${statusCode} - ${message}`);
-  }
-
-  // get the ignored files array
-  let { ignoreFiles } = res.data.ignore_files;
-
-  // return the ignored files
-  return ignoreFiles;
-};
 
 // tell Pennsieve to ignore a set of user selected files when publishing their dataset.
 // this keeps those files hidden from the public but visible to publishers and collaboraors.
