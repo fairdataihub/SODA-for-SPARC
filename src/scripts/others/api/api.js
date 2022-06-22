@@ -111,7 +111,6 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
   }
 };
 
-
 const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
   try {
     // get the excluded files
@@ -120,7 +119,7 @@ const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
       {
         params: {
           selected_account: defaultBfAccount,
-        }
+        },
       }
     );
 
@@ -128,8 +127,8 @@ const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
 
     return ignore_files;
   } catch (error) {
-    clientError(error)
-    throw new Error(getAxiosErrorMessage(error))
+    clientError(error);
+    throw new Error(getAxiosErrorMessage(error));
   }
 };
 
@@ -140,7 +139,7 @@ const api = {
   getDatasetBannerImageURL,
   getDatasetRole,
   withdrawDatasetReviewSubmission,
-  getFilesExcludedFromPublishing
+  getFilesExcludedFromPublishing,
 };
 
 module.exports = api;

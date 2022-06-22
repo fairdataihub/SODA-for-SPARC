@@ -8849,8 +8849,6 @@ Get User's Excluded Files with NodeJS
 ******************************************************
 */
 
-
-
 // tell Pennsieve to ignore a set of user selected files when publishing their dataset.
 // this keeps those files hidden from the public but visible to publishers and collaboraors.
 // I:
