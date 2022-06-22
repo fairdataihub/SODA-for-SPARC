@@ -95,10 +95,9 @@ const getDatasetRole = async (datasetNameOrId) => {
   }
 };
 
-
 /**
  * Withdraw any dataset from a pre-publishing review submission
- * @param {string} datasetIdOrName 
+ * @param {string} datasetIdOrName
  * @returns {Promise<void>}
  */
 const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
@@ -107,8 +106,8 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
       `/disseminate_datasets/datasets/${datasetIdOrName}/publication/cancel`
     );
   } catch (error) {
-    clientError(error)
-    throw new Error(getAxiosErrorMessage(error))
+    clientError(error);
+    throw new Error(getAxiosErrorMessage(error));
   }
 };
 
