@@ -8903,7 +8903,7 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
     throw e;
   }
 
-  let {readme} = readmeResponse.data;
+  let { readme } = readmeResponse.data;
 
   // set the readme's status
   statuses.readme = readme && readme.length >= 1 ? true : false;
