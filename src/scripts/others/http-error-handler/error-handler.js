@@ -5,28 +5,28 @@
  * @param {HTTP Error} error - An Axios erro object
  */
 function clientError(error) {
-  console.error(error)
-  log.error(error)
+  console.error(error);
+  log.error(error);
 
   if (error.response) {
-  let error_message = error.response.data.message;
-  let error_status = error.response.status;
-  let error_headers = error.response.headers;
+    let error_message = error.response.data.message;
+    let error_status = error.response.status;
+    let error_headers = error.response.headers;
 
-  log.error("Error caused from: " + JSON.stringify(error_message));
-  log.error("Response Status: " + JSON.stringify(error_status));
-  log.error("Headers: ");
-  log.error(error_headers);
+    log.error("Error caused from: " + JSON.stringify(error_message));
+    log.error("Response Status: " + JSON.stringify(error_status));
+    log.error("Headers: ");
+    log.error(error_headers);
 
-  console.log("Error caused from: " + JSON.stringify(error_message));
-  console.log("Response Status: " + JSON.stringify(error_status));
-  console.log("Headers: ");
-  console.log(error_headers);
+    console.log("Error caused from: " + JSON.stringify(error_message));
+    console.log("Response Status: " + JSON.stringify(error_status));
+    console.log("Headers: ");
+    console.log(error_headers);
   } else if (error.request) {
     // The request was made but no response was received
-    log.error(error.request)
+    log.error(error.request);
   } else {
-    log.error(error.message)
+    log.error(error.message);
   }
 }
 

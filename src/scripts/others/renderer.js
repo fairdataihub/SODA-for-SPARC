@@ -565,9 +565,9 @@ const serverIsLiveStartup = async () => {
 
   try {
     echoResponseObject = await client.get("/startup/echo?arg=server ready");
-  } catch(error) {
-    clientError(error)
-    throw error
+  } catch (error) {
+    clientError(error);
+    throw error;
   }
 
   let echoResponse = echoResponseObject.data;
@@ -588,8 +588,13 @@ const apiVersionsMatch = async () => {
   try {
     responseObject = await client.get("/startup/minimum_api_version");
   } catch (e) {
-    clientError(e)
-    ipcRenderer.send("track-event", "Error", "Verifying App Version", getAxiosErrorMessage(e));
+    clientError(e);
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Verifying App Version",
+      getAxiosErrorMessage(e)
+    );
 
     await Swal.fire({
       icon: "error",
@@ -703,7 +708,7 @@ const check_api_key = async () => {
       type: "error",
       message: "No account was found",
     });
-    clientError(e)
+    clientError(e);
     return false;
   }
 
@@ -3748,7 +3753,7 @@ async function updateBfAccountList() {
   try {
     responseObject = await client.get("manage_datasets/bf_account_list");
   } catch (error) {
-    clientError(error)
+    clientError(error);
     confirm_click_account_function();
     refreshBfUsersList();
     refreshBfTeamsList(bfListTeams);
@@ -3780,10 +3785,10 @@ async function loadDefaultAccount() {
       "/manage_datasets/bf_default_account_load"
     );
   } catch (e) {
-    clientError(e)
+    clientError(e);
     confirm_click_account_function();
     console.log("Could not get default account");
-    return 
+    return;
   }
 
   let accounts = responseObject.data["defaultAccounts"];
@@ -6825,7 +6830,7 @@ document
       );
     } catch (error) {
       clientError(error);
-      let emessage = getAxiosErrorMessage(error)
+      let emessage = getAxiosErrorMessage(error);
       document.getElementById(
         "para-new-curate-progress-bar-error-status"
       ).innerHTML = "<span style='color: red;'> Error: " + emessage + "</span>";

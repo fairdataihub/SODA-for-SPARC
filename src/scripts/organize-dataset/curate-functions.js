@@ -830,14 +830,13 @@ $(document).ready(async function () {
           }
         );
       } catch (error) {
-        clientError(error)
-        return 
+        clientError(error);
+        return;
       }
 
       datasetList = [];
       datasetList = responseObject.data.datasets;
       refreshDatasetList();
-
     }.bind(this)
   );
   this.observer.observe(accountDetails.get(0), {
@@ -858,7 +857,6 @@ $(document).ready(async function () {
   $("#bf_list_roles_team").selectpicker();
   $("#bf_list_roles_team").selectpicker("refresh");
 });
-
 
 // TODO: Test this function. Likely too many promises nested for no reason.
 const get_api_key = async (login, password, key_name) => {
@@ -974,7 +972,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             datasetList = responseObject.data.datasets;
             refreshDatasetList();
           } catch (error) {
-            clientError(error)
+            clientError(error);
             return;
           }
         } catch (error) {
@@ -1245,7 +1243,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
               }
             );
           } catch (error) {
-            clientError(error)
+            clientError(error);
             return;
           }
 
@@ -1960,9 +1958,9 @@ async function moveItems(ev, category) {
   for (var highLevelFol in datasetStructureJSONObj["folders"]) {
     if (
       "manifest.xlsx" in
-      datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
+        datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
       datasetStructureJSONObj["folders"][highLevelFol]["files"][
-      "manifest.xlsx"
+        "manifest.xlsx"
       ]["forTreeview"] === true
     ) {
       delete datasetStructureJSONObj["folders"][highLevelFol]["files"][

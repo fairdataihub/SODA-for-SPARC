@@ -1,4 +1,3 @@
-
 var jstreePreviewManifest = document.getElementById(
   "div-dataset-tree-preview-manifest"
 );
@@ -778,7 +777,6 @@ async function initiate_generate_manifest_bf() {
         },
       });
     }
-
 
     generatingBoolean = false;
     let destination = "";

@@ -2540,7 +2540,7 @@ $("#button-submit-dataset").click(async () => {
     }
   } catch (error) {
     clientError(error);
-    let emessage = getAxiosErrorMessage(error)
+    let emessage = getAxiosErrorMessage(error);
     $("#para-please-wait-manage-dataset").html("");
     $("#para-progress-bar-status").html("");
     cloneStatus.innerHTML = "";
