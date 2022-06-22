@@ -32,7 +32,6 @@ const introJs = require("intro.js");
 const selectpicker = require("bootstrap-select");
 const ini = require("ini");
 const { homedir } = require("os");
-const cognitoClient = require("amazon-cognito-identity-js");
 const diskCheck = require("check-disk-space").default;
 // TODO: Test with a build
 const {
@@ -46,6 +45,9 @@ const {
 const {
   determineDatasetLocation,
 } = require("./scripts/others/analytics/analytics-utils");
+const { clientError, getAxiosErrorMessage } = require("./scripts/others/http-error-handler/error-handler")
+const api = require("./scripts/others/api/api");
+
 
 const axios = require("axios").default;
 
@@ -145,8 +147,6 @@ console.log("Current SODA version:", appVersion);
 //////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
-// let client = new zerorpc.Client({ timeout: 300000 });
-// client.connect("tcp://127.0.0.1:4242");
 
 let client = null;
 
@@ -1344,7 +1344,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => {});
+            }).then((result) => { });
             generateSubjectsFileHelper(false);
           }
         });
@@ -1360,7 +1360,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         generateSubjectsFileHelper(false);
       }
     }
@@ -1414,7 +1414,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   let bfdataset = document
     .getElementById("bf_dataset_load_subjects")
@@ -1512,7 +1512,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => {});
+            }).then((result) => { });
             generateSamplesFileHelper(uploadBFBoolean);
           }
         });
@@ -1528,7 +1528,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         generateSamplesFileHelper(uploadBFBoolean);
       }
     }
@@ -1582,7 +1582,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   // new client that has a longer timeout
   let clientLongTimeout = new zerorpc.Client({
@@ -2112,7 +2112,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   try {
     let load_taxonomy_species = await client.get(`/taxonomy/species`, {
       animal_list: [commonName],
@@ -2829,9 +2829,9 @@ function detectEmptyRequiredFields(funding) {
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
   var emptyMessageArray = [
     "- Missing required fields under Dataset Info section: " +
-      dsEmptyField.join(", "),
+    dsEmptyField.join(", "),
     "- Missing required fields under Contributor Info section: " +
-      conEmptyField.join(", "),
+    conEmptyField.join(", "),
     "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
   ];
   var allFieldsSatisfied = true;
@@ -3782,21 +3782,6 @@ async function updateBfAccountList() {
   refreshBfTeamsList(bfListTeams);
 }
 
-function clientError(error) {
-  let error_message = error.response.data.message;
-  let error_status = error.response.status;
-  let error_headers = error.response.headers;
-
-  log.error("Error caused from: " + JSON.stringify(error_message));
-  log.error("Response Status: " + JSON.stringify(error_status));
-  log.error("Headers: ");
-  log.error(error_headers);
-
-  console.log("Error caused from: " + JSON.stringify(error_message));
-  console.log("Response Status: " + JSON.stringify(error_status));
-  console.log("Headers: ");
-  console.log(error_headers);
-}
 
 async function loadDefaultAccount() {
   let responseObject;
@@ -6473,16 +6458,14 @@ ipcRenderer.on(
 
                     numb.innerText = percentage_amount + "%";
                     if (percentage_amount <= 50) {
-                      progressBar_rightSide.style.transform = `rotate(${
-                        percentage_amount * 0.01 * 360
-                      }deg)`;
+                      progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
+                        }deg)`;
                     } else {
                       progressBar_rightSide.style.transition = "";
                       progressBar_rightSide.classList.add("notransition");
                       progressBar_rightSide.style.transform = `rotate(180deg)`;
-                      progressBar_leftSide.style.transform = `rotate(${
-                        percentage_amount * 0.01 * 180
-                      }deg)`;
+                      progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
+                        }deg)`;
                     }
 
                     if (finished === 1) {
@@ -6557,16 +6540,14 @@ ipcRenderer.on(
 
                   numb.innerText = percentage_amount + "%";
                   if (percentage_amount <= 50) {
-                    progressBar_rightSide.style.transform = `rotate(${
-                      percentage_amount * 0.01 * 360
-                    }deg)`;
+                    progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
+                      }deg)`;
                   } else {
                     progressBar_rightSide.style.transition = "";
                     progressBar_rightSide.classList.add("notransition");
                     progressBar_rightSide.style.transform = `rotate(180deg)`;
-                    progressBar_leftSide.style.transform = `rotate(${
-                      percentage_amount * 0.01 * 180
-                    }deg)`;
+                    progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
+                      }deg)`;
                   }
                   if (finished === 1) {
                     progressBar_leftSide.style.transform = `rotate(180deg)`;
@@ -6834,9 +6815,9 @@ document
     for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
       if (
         "manifest.xlsx" in
-          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
         sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-          "manifest.xlsx"
+        "manifest.xlsx"
         ]["forTreeview"]
       ) {
         delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
@@ -7428,7 +7409,7 @@ async function initiate_generate() {
           "track-event",
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE +
-            " - Step 7 - Generate - Dataset - Number of Files",
+          " - Step 7 - Generate - Dataset - Number of Files",
           `${datasetUploadSession.id}`,
           uploadedFiles
         );
@@ -7438,7 +7419,7 @@ async function initiate_generate() {
           "track-event",
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE +
-            " - Step 7 - Generate - Dataset - Size",
+          " - Step 7 - Generate - Dataset - Size",
           `${datasetUploadSession.id}`,
           increaseInFileSize
         );
@@ -8528,18 +8509,10 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
     );
   }
 
-  // TODO: get a pennsieve dataset content
-  let datasetResponse
-  try {
-    datasetResponse = await client.get(`/datasets/${defaultBfDatasetId}`)
-  } catch (e) {
-    clientError(e)
-    throw e
-  }
-  let dataset = datasetResponse.data;
-
   // construct the statuses object
   const statuses = {};
+
+  let dataset = await api.getDataset(defaultBfDatasetId)
 
   // get the description - aka subtitle (unfortunate naming), tags, banner image URL, collaborators, and license
   const { description, tags, license } = dataset["content"];
@@ -8547,19 +8520,7 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // set the subtitle's status
   statuses.subtitle = description && description.length ? true : false;
 
-  let readmeResponse;
-  try {
-    // TODO: Error handling testing
-    readmeResponse = await client.get(
-      `/manage_datasets/datasets/${datasetIdOrName}/readme`,
-      { params: { selected_account: defaultBfAccount } }
-    );
-  } catch (e) {
-    clientError(e);
-    throw e;
-  }
-
-  let { readme } = readmeResponse.data;
+  let readme = await api.getDatasetReadme(defaultBfDatasetId);
 
   // set the readme's status
   statuses.readme = readme && readme.length >= 1 ? true : false;
@@ -8567,53 +8528,26 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // set tags's status
   statuses.tags = tags && tags.length ? true : false;
 
-  // get the banner url
-  let bannerResponse;
-  try {
-    bannerResponse = await client.get(`/manage_datasets/bf_banner_image`, {
-      params: {
-        selected_account: defaultBfAccount,
-        selected_dataset: defaultBfDataset
-      },
-    });
-  } catch (e) {
-    clientError(e)
-    throw e
-  }
-
-  let { banner_image } = bannerResponse.data;
+  let bannerImageURL = await api.getDatasetBannerImageURL(defaultBfDataset)
 
   // set the banner image's url status
   statuses.bannerImageURL =
-    banner_image && banner_image.length ? true : false;
+    bannerImageURL && bannerImageURL.length ? true : false;
 
   // set the license's status
   statuses.license = license && license.length ? true : false;
 
+  let role = await api.getDatasetRole(defaultBfDataset)
 
-  let datasetRoleResponse;
-  try {
-    datasetRoleResponse = await client.get(`/datasets/${defaultBfDataset}/role`, {
-      params: {
-        pennsieve_account: defaultBfAccount
-      },
-    });
-  } catch (e) {
-    clientError(e)
-    throw e
+  if (!role === "owner") {
+    return
   }
-
-  let { role } = datasetRoleResponse.data;
-
-  if(!role === "owner") {
-    return 
-  } 
 
   // declare the orcidId
   let orcidId;
 
   // get the user's information
-  let user = await getUserInformation();
+  let user = await api.getUserInformation();
 
   // get the orcid object out of the user information
   let orcidObject = user.orcid;
@@ -8947,34 +8881,6 @@ const userIsDatasetOwner = async (datasetIdOrName) => {
   return userIsOwner(role);
 };
 
-/*
-******************************************************
-******************************************************
-Get User Information With Nodejs
-******************************************************
-******************************************************
-*/
-
-const getUserInformation = async () => {
-  // get the user information
-
-  let userResponse; 
-  try {
-    userResponse = await client.get(`/user`, {
-    params: {
-      pennsieve_account: defaultBfAccount,
-    },
-  });
-  } catch(e) {
-    clientError(e)
-    // TODO: Add details here in a function that can be used everywhere
-    throw Error("Updated message that the client can understand and display to the user at the top level if need be.")
-  }
-
-  let user = userResponse.data;
-
-  return user;
-};
 
 /*
 ******************************************************

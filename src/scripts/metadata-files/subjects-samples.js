@@ -619,7 +619,7 @@ function populateRRID(strain, type) {
       $("#bootbox-" + type + "-strain-RRID").val("");
       Swal.fire({
         title: `Failed to retrieve the RRID for "${strain}" from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
-        text: "Please check your Internet Connection or contact us at sodasparc@gmail.com",
+        text: "Please check your Internet Connection or contact us at help@fairdataihub.org",
         showCancelButton: false,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
