@@ -2,7 +2,6 @@
 Purpose: An abstraction layer between the client and making HTTP requests via Axios. This layer handles the error parsing and logging.
 */
 
-
 const getUserInformation = async () => {
   let userResponse;
   try {
@@ -12,8 +11,8 @@ const getUserInformation = async () => {
       },
     });
   } catch (e) {
-    clientError(e)
-    throw new Error(getAxiosErrorMessage(e))
+    clientError(e);
+    throw new Error(getAxiosErrorMessage(e));
   }
 
   let user = userResponse.data;
@@ -21,27 +20,24 @@ const getUserInformation = async () => {
   return user;
 };
 
-
 /**
- * 
+ *
  * @param {string} datasetId - the current dataset id
  * @returns {datasetObject} dataset - the dataset object
  */
 const getDataset = async (datasetId) => {
   try {
-    let datasetResponse = await client.get(`/datasets/${datasetId}`)
+    let datasetResponse = await client.get(`/datasets/${datasetId}`);
     return datasetResponse.data;
   } catch (e) {
-    clientError(e)
-    throw new Error(`${getAxiosErrorMessage(e)}`)
+    clientError(e);
+    throw new Error(`${getAxiosErrorMessage(e)}`);
   }
-}
-
-
+};
 
 /**
- * 
- * @param {string} datasetNameOrId 
+ *
+ * @param {string} datasetNameOrId
  * @returns {string} readme - The given dataset's readme
  */
 const getDatasetReadme = async (datasetNameOrId) => {
@@ -54,20 +50,19 @@ const getDatasetReadme = async (datasetNameOrId) => {
 
     let { readme } = readmeResponse.data;
 
-    return readme
+    return readme;
   } catch (e) {
     clientError(e);
-    throw new Error(`${getAxiosErrorMessage(e)}`)
+    throw new Error(`${getAxiosErrorMessage(e)}`);
   }
-}
-
+};
 
 const getDatasetBannerImageURL = async (datasetNameOrId) => {
   try {
     let bannerResponse = await client.get(`/manage_datasets/bf_banner_image`, {
       params: {
         selected_account: defaultBfAccount,
-        selected_dataset: defaultBfDataset
+        selected_dataset: defaultBfDataset,
       },
     });
 
@@ -75,36 +70,37 @@ const getDatasetBannerImageURL = async (datasetNameOrId) => {
 
     return banner_image;
   } catch (e) {
-    clientError(e)
-    throw new Error(`${getAxiosErrorMessage(e)}`)
+    clientError(e);
+    throw new Error(`${getAxiosErrorMessage(e)}`);
   }
-}
-
+};
 
 const getDatasetRole = async (datasetNameOrId) => {
   try {
-    let datasetRoleResponse = await client.get(`/datasets/${defaultBfDataset}/role`, {
-      params: {
-        pennsieve_account: defaultBfAccount
-      },
-    });
+    let datasetRoleResponse = await client.get(
+      `/datasets/${defaultBfDataset}/role`,
+      {
+        params: {
+          pennsieve_account: defaultBfAccount,
+        },
+      }
+    );
 
     let { role } = datasetRoleResponse.data;
 
-    return role
+    return role;
   } catch (e) {
-    clientError(e)
-    throw new Error(`${getAxiosErrorMessage(e)}`)
+    clientError(e);
+    throw new Error(`${getAxiosErrorMessage(e)}`);
   }
-}
+};
 
 const api = {
   getUserInformation,
   getDataset,
   getDatasetReadme,
   getDatasetBannerImageURL,
-  getDatasetRole
-}
+  getDatasetRole,
+};
 
-
-module.exports = api
+module.exports = api;
