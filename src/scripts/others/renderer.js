@@ -8639,31 +8639,7 @@ const submitDatasetForPublication = async (
   }
 };
 
-/*
-******************************************************
-******************************************************
-Manage Datasets Add/Edit Subtitle Section With Nodejs
-******************************************************
-******************************************************
-*/
 
-const getDatasetSubtitle = async (datasetIdOrName) => {
-  // check that a dataset name or id is provided
-  if (!datasetIdOrName) {
-    throw new Error("Error: Must provide a valid dataset to pull tags from.");
-  }
-
-  // get the current user's access token
-  let jwt = await get_access_token();
-
-  // get the dataset
-  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
-
-  // get the dataset subtitle from the dataset content
-  let subtitle = dataset["content"]["description"];
-
-  return subtitle;
-};
 
 /*
 ******************************************************
