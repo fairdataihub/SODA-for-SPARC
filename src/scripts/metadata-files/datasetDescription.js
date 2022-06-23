@@ -2320,7 +2320,7 @@ async function checkBFImportDD() {
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       icon: "error",
-      text: getAxiosErrorMessage(error),
+      text: userErrorMessage(error),
     });
 
     logMetadataForAnalytics(

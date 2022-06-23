@@ -767,7 +767,7 @@ async function initiate_generate_manifest_bf() {
 
       Swal.fire({
         title: "Failed to generate manifest files!",
-        text: getAxiosErrorMessage(error),
+        text: userErrorMessage(error),
         icon: "error",
         showConfirmButton: true,
         heightAuto: false,

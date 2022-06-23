@@ -180,7 +180,7 @@ async function helpMilestoneSubmission() {
             backdrop: "rgba(0,0,0, 0.4)",
             heightAuto: false,
             icon: "error",
-            text: getAxiosErrorMessage(error),
+            text: userErrorMessage(error),
           });
         }
       });
@@ -873,7 +873,7 @@ async function loadExistingSubmissionFile(filepath) {
 
     Swal.fire({
       title: "Failed to load the existing submission.xlsx file.",
-      html: getAxiosErrorMessage(error),
+      html: userErrorMessage(error),
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       icon: "error",
@@ -985,7 +985,7 @@ async function checkBFImportSubmission() {
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       icon: "error",
-      text: getAxiosErrorMessage(error),
+      text: userErrorMessage(error),
     });
     logMetadataForAnalytics(
       "Error",

@@ -2421,7 +2421,7 @@ async function checkBFImportSubjects() {
       backdrop: "rgba(0, 0, 0, 0.4)",
       heightAuto: false,
       icon: "error",
-      text: getAxiosErrorMessage(error),
+      text: userErrorMessage(error),
     });
 
     // log the error to analytics
@@ -2488,7 +2488,7 @@ async function checkBFImportSamples() {
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       icon: "error",
-      text: getAxiosErrorMessage(error),
+      text: userErrorMessage(error),
     });
 
     // log the error to analytics

@@ -876,7 +876,7 @@ const get_api_key = async (login, password, key_name) => {
       resolve(res);
     } catch (error) {
       clientError(error);
-      resolve(["failed", getAxiosErrorMessage(error)]);
+      resolve(["failed", userErrorMessage(error)]);
     }
   });
 };
@@ -981,7 +981,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             backdrop: "rgba(0,0,0, 0.4)",
             heightAuto: false,
             icon: "error",
-            text: getAxiosErrorMessage(error),
+            text: userErrorMessage(error),
             footer:
               "<a href='https://docs.pennsieve.io/docs/configuring-the-client-credentials'>Why do I have this issue?</a>",
           });

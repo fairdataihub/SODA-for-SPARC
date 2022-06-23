@@ -579,7 +579,7 @@ const getRC = async (type) => {
 
     Swal.fire({
       title: `Failed to load existing ${type} file`,
-      text: getAxiosErrorMessage(error),
+      text: userErrorMessage(error),
       icon: "warning",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",

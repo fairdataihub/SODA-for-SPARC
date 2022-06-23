@@ -268,72 +268,17 @@ $("#button-rename-dataset").click(async () => {
       $("#button-rename-dataset").prop("disabled", true);
 
       try {
-        let bf_rename_dataset = await client.put(
+        await client.put(
           `/manage_datasets/bf_rename_dataset?selected_account=${selectedbfaccount}&selected_dataset=${currentDatasetName}`,
           {
             input_new_name: renamedDatasetName,
           }
         );
-        let res = bf_rename_dataset;
-
-        log.info("Dataset rename success");
-        defaultBfDataset = renamedDatasetName;
-        $(".bf-dataset-span").html(renamedDatasetName);
-        refreshDatasetList();
-        $("#bf-rename-dataset-name").val(renamedDatasetName);
-        Swal.fire({
-          title: `Renamed dataset ${currentDatasetName} to ${renamedDatasetName}`,
-          icon: "success",
-          showConfirmButton: true,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          didOpen: () => {
-            Swal.hideLoading();
-          },
-        });
-        $("#button-rename-dataset").prop("disabled", false);
-
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_RENAME_DATASET,
-          `${defaultBfDatasetId}: ` +
-            currentDatasetName +
-            " to " +
-            renamedDatasetName
-        );
-
-        // in case the user does not select a dataset after changing the name add the new datasetID to name mapping
-        ipcRenderer.send(
-          "track-event",
-          "Dataset ID to Dataset Name Map",
-          defaultBfDatasetId,
-          renamedDatasetName
-        );
-
-        log.info("Requesting list of datasets");
-
-        try {
-          let responseObject = await client.get(
-            `manage_datasets/bf_dataset_account`,
-            {
-              params: {
-                selected_account: defaultBfAccount,
-              },
-            }
-          );
-          datasetList = [];
-          datasetList = responseObject.data.datasets;
-          refreshDatasetList();
-        } catch (error) {
-          clientError(error);
-        }
       } catch (error) {
         clientError(error);
-        var emessage = error.response.data.message;
         Swal.fire({
           title: "Failed to rename dataset",
-          text: emessage,
+          text: userErrorMessage(error),
           icon: "error",
           showConfirmButton: true,
           heightAuto: false,
@@ -346,10 +291,57 @@ $("#button-rename-dataset").click(async () => {
           "Error",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_RENAME_DATASET,
           `${defaultBfDatasetId}: ` +
-            currentDatasetName +
-            " to " +
-            renamedDatasetName
+          currentDatasetName +
+          " to " +
+          renamedDatasetName
         );
+
+        return
+      }
+
+      log.info("Dataset rename success");
+      defaultBfDataset = renamedDatasetName;
+      $(".bf-dataset-span").html(renamedDatasetName);
+      refreshDatasetList();
+      $("#bf-rename-dataset-name").val(renamedDatasetName);
+      Swal.fire({
+        title: `Renamed dataset ${currentDatasetName} to ${renamedDatasetName}`,
+        icon: "success",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        didOpen: () => {
+          Swal.hideLoading();
+        },
+      });
+      $("#button-rename-dataset").prop("disabled", false);
+
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_RENAME_DATASET,
+        `${defaultBfDatasetId}: ` +
+        currentDatasetName +
+        " to " +
+        renamedDatasetName
+      );
+
+      // in case the user does not select a dataset after changing the name add the new datasetID to name mapping
+      ipcRenderer.send(
+        "track-event",
+        "Dataset ID to Dataset Name Map",
+        defaultBfDatasetId,
+        renamedDatasetName
+      );
+
+      log.info("Requesting list of datasets");
+
+      try {
+        datasetList = [];
+        datasetList = await api.getDatasetsForAccount(defaultBfAccount)
+        refreshDatasetList();
+      } catch (error) {
+        clientError(error)
       }
     }
   }, delayAnimation);
@@ -989,7 +981,7 @@ const showCurrentDescription = async () => {
     // if so add it to the first section
     $("#ds-description-study-purpose").val(
       parsedReadme[requiredSections.studyPurpose].replace(/\r?\n|\r/g, "") +
-        parsedReadme[requiredSections.invalidText].replace(/\r?\n|\r/g, "")
+      parsedReadme[requiredSections.invalidText].replace(/\r?\n|\r/g, "")
     );
   }
 };
@@ -1103,7 +1095,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
     clientError(err);
     Swal.fire({
       title: "Failed to get description!",
-      text: getAxiosErrorMessage(err),
+      text: userErrorMessage(err),
       icon: "error",
       showConfirmButton: true,
       heightAuto: false,
@@ -1319,13 +1311,13 @@ const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
     readme.search(`[*][*]${requiredSections.studyPurpose}[ ]*:[*][*]`) !== -1 ||
     readme.search(`[*][*]${requiredSections.studyPurpose}[*][*][ ]*:`) !== -1 ||
     readme.search(`[*][*]${requiredSections.dataCollection}[ ]*:[*][*]`) !==
-      -1 ||
+    -1 ||
     readme.search(`[*][*]${requiredSections.dataCollection}[*][*][ ]*:`) !==
-      -1 ||
+    -1 ||
     readme.search(`[*][*]${requiredSections.primaryConclusion}[ ]*:[*][*]`) !==
-      -1 ||
+    -1 ||
     readme.search(`[*][*]${requiredSections.primaryConclusion}[*][*][ ]*:`) !==
-      -1
+    -1
   ) {
     throw new Error("There was a problem with reading your description file.");
   }
@@ -1456,7 +1448,7 @@ const showDatasetDescription = async () => {
         "track-event",
         "Success",
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE +
-          " - Get Subtitle",
+        " - Get Subtitle",
         defaultBfDatasetId
       );
       $("#ds-description").html(res);
@@ -1473,7 +1465,7 @@ const showDatasetDescription = async () => {
         "track-event",
         "Error",
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE +
-          " - Get Subtitle",
+        " - Get Subtitle",
         defaultBfDatasetId
       );
     }
@@ -1658,7 +1650,7 @@ const uploadBannerImage = async () => {
           "track-event",
           "Success",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
-            " - Size",
+          " - Size",
           "Size",
           image_file_size
         );
@@ -1668,7 +1660,7 @@ const uploadBannerImage = async () => {
           "track-event",
           "Success",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
-            " - Size",
+          " - Size",
           defaultBfDatasetId,
           image_file_size
         );
@@ -1699,8 +1691,8 @@ const uploadBannerImage = async () => {
     } else {
       $("#para-dataset-banner-image-status").html(
         "<span style='color: red;'> " +
-          "Final image size must be less than 5 MB" +
-          "</span>"
+        "Final image size must be less than 5 MB" +
+        "</span>"
       );
     }
   });
@@ -1756,8 +1748,8 @@ $("#save-banner-image").click((event) => {
     } else {
       $("#para-dataset-banner-image-status").html(
         "<span style='color: red;'> " +
-          "Dimensions of cropped area must be at least 512 px" +
-          "</span>"
+        "Dimensions of cropped area must be at least 512 px" +
+        "</span>"
       );
     }
   } else {
@@ -2017,7 +2009,7 @@ $("#button-add-tags").click(async () => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   // get the current tags from the input inside of the manage_datasets.html file inside of the tags section
   const tags = Array.from(datasetTagsTagify.getTagElms()).map((tag) => {
@@ -2045,7 +2037,7 @@ $("#button-add-tags").click(async () => {
     Swal.fire({
       title: "Failed to edit your dataset tags!",
       icon: "error",
-      text: getAxiosErrorMessage(e),
+      text: userErrorMessage(e),
       showConfirmButton: true,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
@@ -2123,7 +2115,7 @@ const showCurrentTags = async () => {
       Swal.fire({
         title: "Failed to retrieve your selected dataset!",
         icon: "error",
-        text: getAxiosErrorMessage(e),
+        text: userErrorMessage(e),
         showConfirmButton: true,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
@@ -2511,7 +2503,7 @@ $("#button-submit-dataset").click(async () => {
         "track-event",
         "Success",
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-          ` - Number of Folders`,
+        ` - Number of Folders`,
         `${datasetUploadSession.id}`,
         num_of_folders
       );
@@ -2522,13 +2514,13 @@ $("#button-submit-dataset").click(async () => {
         "track-event",
         "Error",
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-          ` - Number of Folders`,
+        ` - Number of Folders`,
         `${datasetUploadSession.id}`
       );
     }
   } catch (error) {
     clientError(error);
-    let emessage = getAxiosErrorMessage(error);
+    let emessage = userErrorMessage(error);
     $("#para-please-wait-manage-dataset").html("");
     $("#para-progress-bar-status").html("");
     cloneStatus.innerHTML = "";
@@ -2577,7 +2569,7 @@ $("#button-submit-dataset").click(async () => {
       "track-event",
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-        " - size",
+      " - size",
       "Size",
       totalFileSize
     );
@@ -2601,7 +2593,7 @@ $("#button-submit-dataset").click(async () => {
         "track-event",
         "Success",
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-          ` - Number of Folders`,
+        ` - Number of Folders`,
         "Number of folders local dataset",
         num_of_folders
       );
@@ -2612,7 +2604,7 @@ $("#button-submit-dataset").click(async () => {
         "track-event",
         "Error",
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-          ` - Number of Files`,
+        ` - Number of Files`,
         "Number of files local dataset",
         num_of_files
       );
@@ -2688,12 +2680,12 @@ $("#button-submit-dataset").click(async () => {
           cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%";
           $("#para-progress-bar-status").html(
             res[0] +
-              "Progress: " +
-              value.toFixed(2) +
-              "%" +
-              " (total size: " +
-              totalSizePrint +
-              ")"
+            "Progress: " +
+            value.toFixed(2) +
+            "%" +
+            " (total size: " +
+            totalSizePrint +
+            ")"
           );
         }
       }
@@ -2703,7 +2695,7 @@ $("#button-submit-dataset").click(async () => {
         "track-event",
         "Error",
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-          ` - Progress Track`,
+        ` - Progress Track`,
         defaultBfDatasetId
       );
       organizeDatasetButton.disabled = false;
@@ -2761,7 +2753,7 @@ $("#button-submit-dataset").click(async () => {
             "track-event",
             "Success",
             ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-              ` - Progress track`,
+            ` - Progress track`,
             defaultBfDatasetId
           );
         }
@@ -2777,7 +2769,7 @@ $("#button-submit-dataset").click(async () => {
           "track-event",
           "Success",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-            ` - Progress track`,
+          ` - Progress track`,
           defaultBfDatasetId
         );
       }
@@ -2813,7 +2805,7 @@ $("#button-submit-dataset").click(async () => {
             "track-event",
             "Success",
             ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-              ` - Number of Files`,
+            ` - Number of Files`,
             `${datasetUploadSession.id}`,
             250
           );
@@ -2822,7 +2814,7 @@ $("#button-submit-dataset").click(async () => {
             "track-event",
             "Success",
             ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-              " - size",
+            " - size",
             `${datasetUploadSession.id}`,
             incrementInFileSize
           );
@@ -2838,7 +2830,7 @@ $("#button-submit-dataset").click(async () => {
             "track-event",
             "Success",
             ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-              " - Number of Files",
+            " - Number of Files",
             `${datasetUploadSession.id}`,
             uploadedFiles
           );
@@ -2847,7 +2839,7 @@ $("#button-submit-dataset").click(async () => {
             "track-event",
             "Success",
             ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-              " - size",
+            " - size",
             `${datasetUploadSession.id}`,
             incrementInFileSize
           );
@@ -2999,7 +2991,7 @@ async function showCurrentDatasetStatus(callback) {
         "track-event",
         "Success",
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS +
-          ` - Get dataset Status`,
+        ` - Get dataset Status`,
         defaultBfDatasetId
       );
 
@@ -3039,7 +3031,7 @@ async function showCurrentDatasetStatus(callback) {
       clientError(error);
       Swal.fire({
         title: "Failed to change dataset status!",
-        text: getAxiosErrorMessage(error),
+        text: userErrorMessage(error),
         icon: "error",
         showConfirmButton: true,
         heightAuto: false,

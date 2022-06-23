@@ -47,7 +47,7 @@ const {
 } = require("./scripts/others/analytics/analytics-utils");
 const {
   clientError,
-  getAxiosErrorMessage,
+  userErrorMessage,
 } = require("./scripts/others/http-error-handler/error-handler");
 const api = require("./scripts/others/api/api");
 
@@ -593,7 +593,7 @@ const apiVersionsMatch = async () => {
       "track-event",
       "Error",
       "Verifying App Version",
-      getAxiosErrorMessage(e)
+      userErrorMessage(e)
     );
 
     await Swal.fire({
@@ -753,7 +753,7 @@ const check_agent_installed = async () => {
       message: "Pennsieve agent not found",
     });
     log.warn("Pennsieve agent not found");
-    return [false, getAxiosErrorMessage(error)];
+    return [false, userErrorMessage(error)];
   }
 
   let { agent_version } = responseObject.data;
@@ -1767,7 +1767,7 @@ async function loadSubjectsFileToDataframe(filePath) {
     clientError(error);
     Swal.fire({
       title: "Couldn't load existing subjects.xlsx file",
-      html: getAxiosErrorMessage(error),
+      html: userErrorMessage(error),
       icon: "error",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
@@ -1861,7 +1861,7 @@ async function loadSamplesFileToDataframe(filePath) {
 
     Swal.fire({
       title: "Couldn't load existing samples.xlsx file",
-      html: getAxiosErrorMessage(error),
+      html: userErrorMessage(error),
       icon: "error",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
@@ -2880,7 +2880,7 @@ async function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
   } catch (error) {
     clientError(error);
     curateBFAccountLoadStatus.innerHTML =
-      "<span style='color: red'>" + getAxiosErrorMessage(error) + "</span>";
+      "<span style='color: red'>" + userErrorMessage(error) + "</span>";
   }
 }
 
@@ -3854,7 +3854,7 @@ async function showPublishingStatus(callback) {
 
         Swal.fire({
           title: "Could not get your publishing status!",
-          text: getAxiosErrorMessage(error),
+          text: userErrorMessage(error),
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           confirmButtonText: "Ok",
@@ -6819,7 +6819,7 @@ document
       );
     } catch (error) {
       clientError(error);
-      let emessage = getAxiosErrorMessage(error);
+      let emessage = userErrorMessage(error);
       document.getElementById(
         "para-new-curate-progress-bar-error-status"
       ).innerHTML = "<span style='color: red;'> Error: " + emessage + "</span>";
@@ -7039,7 +7039,7 @@ async function initiate_generate() {
     });
   } catch (error) {
     clientError(error);
-    let emessage = getAxiosErrorMessage(error);
+    let emessage = userErrorMessage(error);
     organizeDataset_option_buttons.style.display = "flex";
     organizeDataset.disabled = false;
     organizeDataset.className = "content-button is-selected";
@@ -7167,7 +7167,7 @@ async function initiate_generate() {
       );
     } catch (error) {
       clientError(error);
-      let emessage = getAxiosErrorMessage(error);
+      let emessage = userErrorMessage(error);
 
       document.getElementById(
         "para-new-curate-progress-bar-error-status"
@@ -7678,7 +7678,7 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
       "Retrieve Dataset - Pennsieve",
       defaultBfDatasetId
     );
-    throw Error(getAxiosErrorMessage(error));
+    throw Error(userErrorMessage(error));
   }
 };
 

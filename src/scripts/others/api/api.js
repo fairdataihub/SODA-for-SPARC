@@ -3,17 +3,11 @@ Purpose: An abstraction layer between the client and making HTTP requests via Ax
 */
 
 const getUserInformation = async () => {
-  let userResponse;
-  try {
-    userResponse = await client.get(`/user`, {
-      params: {
-        pennsieve_account: defaultBfAccount,
-      },
-    });
-  } catch (e) {
-    clientError(e);
-    throw new Error(getAxiosErrorMessage(e));
-  }
+  let userResponse = await client.get(`/user`, {
+    params: {
+      pennsieve_account: defaultBfAccount,
+    },
+  });
 
   let user = userResponse.data;
 
@@ -31,7 +25,7 @@ const getDataset = async (datasetId) => {
     return datasetResponse.data;
   } catch (e) {
     clientError(e);
-    throw new Error(`${getAxiosErrorMessage(e)}`);
+    throw new Error(`${userErrorMessage(e)}`);
   }
 };
 
@@ -53,7 +47,7 @@ const getDatasetReadme = async (datasetNameOrId) => {
     return readme;
   } catch (e) {
     clientError(e);
-    throw new Error(`${getAxiosErrorMessage(e)}`);
+    throw new Error(`${userErrorMessage(e)}`);
   }
 };
 
@@ -71,7 +65,7 @@ const getDatasetBannerImageURL = async (datasetNameOrId) => {
     return banner_image;
   } catch (e) {
     clientError(e);
-    throw new Error(`${getAxiosErrorMessage(e)}`);
+    throw new Error(`${userErrorMessage(e)}`);
   }
 };
 
@@ -91,7 +85,7 @@ const getDatasetRole = async (datasetNameOrId) => {
     return role;
   } catch (e) {
     clientError(e);
-    throw new Error(`${getAxiosErrorMessage(e)}`);
+    throw new Error(`${userErrorMessage(e)}`);
   }
 };
 
@@ -107,7 +101,7 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
     );
   } catch (error) {
     clientError(error);
-    throw new Error(getAxiosErrorMessage(error));
+    throw new Error(userErrorMessage(error));
   }
 };
 
@@ -128,7 +122,7 @@ const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
     return ignore_files;
   } catch (error) {
     clientError(error);
-    throw new Error(getAxiosErrorMessage(error));
+    throw new Error(userErrorMessage(error));
   }
 };
 
@@ -148,7 +142,7 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
     );
   } catch (error) {
     clientError(error);
-    throw new Error(getAxiosErrorMessage(error));
+    throw new Error(userErrorMessage(error));
   }
 };
 
@@ -173,7 +167,7 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
     return metadata_files;
   } catch (error) {
     clientError(error);
-    throw new Error(getAxiosErrorMessage(error));
+    throw new Error(userErrorMessage(error));
   }
 };
 
@@ -194,28 +188,24 @@ const getDatasetPermissions = async (selected_account, selected_dataset) => {
     return permissions;
   } catch (error) {
     clientError(error);
-    throw new Error(getAxiosErrorMessage(error));
+    throw new Error(userErrorMessage(error));
   }
 };
 
 const getDatasetsForAccount = async (selected_account) => {
-  try {
-    let responseObject = await client.get(
-      `manage_datasets/bf_dataset_account`,
-      {
-        params: {
-          selected_account,
-        },
-      }
-    );
+  let responseObject = await client.get(
+    `manage_datasets/bf_dataset_account`,
+    {
+      params: {
+        selected_account,
+      },
+    }
+  );
 
-    let { datasets } = responseObject.data;
+  let { datasets } = responseObject.data;
 
-    return datasets;
-  } catch (error) {
-    clientError(error);
-    throw new Error(getAxiosErrorMessage(error));
-  }
+  return datasets;
+
 };
 
 const api = {

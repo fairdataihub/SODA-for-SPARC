@@ -1,41 +1,44 @@
 /**
- * Logs an Axios error to the console and the electron logs file
- * based off the type of error (request, response, and error).
+ * Logs an error object to the console and SODA logs. Handles general errors and Axios errors. 
  *
- * @param {HTTP Error} error - An Axios erro object
+ * @param {error} error - A general or Axios error object
  */
 function clientError(error) {
-  console.error(error);
-  log.error(error);
 
+  // Handles gneral errors and getting basic information from Axios errors
+  console.error(error);
+  log.error(JSON.stringify(error));
+
+  // Handle logging for Axios errors in greater detail
   if (error.response) {
     let error_message = error.response.data.message;
     let error_status = error.response.status;
     let error_headers = error.response.headers;
 
-    log.error("Error caused from: " + JSON.stringify(error_message));
+    log.error("Error message: " + JSON.stringify(error_message));
     log.error("Response Status: " + JSON.stringify(error_status));
-    log.error("Headers: ");
-    log.error(error_headers);
+    log.error("Request config: ")
+    log.error(JSON.stringify(error.config));
+    log.error("Response Headers: ");
+    log.error(JSON.stringify(error_headers));
 
-    console.log("Error caused from: " + JSON.stringify(error_message));
-    console.log("Response Status: " + JSON.stringify(error_status));
-    console.log("Headers: ");
+    console.log(`Error caused from: ${error_message}`);
+    console.log(`Response Status: ${error_status}`);
+    console.log("Headers:" );
     console.log(error_headers);
   } else if (error.request) {
     // The request was made but no response was received
     log.error(error.request);
-  } else {
-    log.error(error.message);
   }
 }
 
 /**
- *
- * @param {HTTP Error} error - The error object returned from an Axios HTTP request
+ * Given an error object, take the message out of the appropriate error property and present it in a readable format.
+ * Useful for getting a useful error message out of both Axios and general errors.
+ * @param {Error} error - The error object. Can be a general Error or an Axios subclass.
  * @returns {string} - The error message to display to the user
  */
-function getAxiosErrorMessage(error) {
+function userErrorMessage(error) {
   let errorMessage = "";
   if (error.response) {
     // The request was made and the server responded with a status code
@@ -55,4 +58,4 @@ function getAxiosErrorMessage(error) {
   return errorMessage;
 }
 
-module.exports = { clientError, getAxiosErrorMessage };
+module.exports = { clientError, userErrorMessage };
