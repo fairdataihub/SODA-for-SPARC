@@ -2083,64 +2083,68 @@ const showCurrentTags = async () => {
   if (selectedBfDataset === "Select dataset") {
     // this code executes when the pencil icon that allows a user to select a dataset is clicked in the tags section
     // for now do nothing
-  } else {
-    // remove all of the tags from the current input
-    datasetTagsTagify.removeAllTags();
+    return
+  }
 
-    // make the tags input display a loading spinner after a user selects a new dataset
-    datasetTagsTagify.loading(true);
+  log.info(`Getting current tags for dataset ${selectedBfDataset}`)
 
-    // get the tags from the Pennsieve API
-    let tagsResponse;
-    try {
-      tagsResponse = await client.get(
-        `/manage_datasets/datasets/${selectedBfDataset}/tags`,
-        {
-          params: { selected_account: selectedBfAccount },
-        }
-      );
-    } catch (e) {
-      clientError(e);
-      // alert the user of the error
-      Swal.fire({
-        title: "Failed to retrieve your selected dataset!",
-        icon: "error",
-        text: userErrorMessage(e),
-        showConfirmButton: true,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-      });
+  // remove all of the tags from the current input
+  datasetTagsTagify.removeAllTags();
 
-      logGeneralOperationsForAnalytics(
-        "Error",
-        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
-        AnalyticsGranularity.ALL_LEVELS,
-        ["Get Tags"]
-      );
+  // make the tags input display a loading spinner after a user selects a new dataset
+  datasetTagsTagify.loading(true);
 
-      // stop the loader -- no data can be fetched for this dataset
-      datasetTagsTagify.loading(false);
+  // get the tags from the Pennsieve API
+  let tagsResponse;
+  try {
+    tagsResponse = await client.get(
+      `/manage_datasets/datasets/${selectedBfDataset}/tags`,
+      {
+        params: { selected_account: selectedBfAccount },
+      }
+    );
+  } catch (e) {
+    clientError(e);
+    // alert the user of the error
+    Swal.fire({
+      title: "Failed to retrieve your selected dataset!",
+      icon: "error",
+      text: userErrorMessage(e),
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
 
-      // halt execution
-      return;
-    }
+    logGeneralOperationsForAnalytics(
+      "Error",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
+      AnalyticsGranularity.ALL_LEVELS,
+      ["Get Tags"]
+    );
 
-    let { tags } = tagsResponse.data;
-
-    if (tags === undefined || tags.length == 0) {
-      //if so make the button say add tags
-      $("#button-add-tags").html("Add tags");
-    } else {
-      //make the button say edit tags
-      $("#button-add-tags").html("Edit tags");
-    }
-
-    // stop displaying the tag loading spinner
+    // stop the loader -- no data can be fetched for this dataset
     datasetTagsTagify.loading(false);
 
-    // display the retrieved tags
-    datasetTagsTagify.addTags(tags);
+    // halt execution
+    return;
   }
+
+  let { tags } = tagsResponse.data;
+
+  if (tags === undefined || tags.length == 0) {
+    //if so make the button say add tags
+    $("#button-add-tags").html("Add tags");
+  } else {
+    //make the button say edit tags
+    $("#button-add-tags").html("Edit tags");
+  }
+
+  // stop displaying the tag loading spinner
+  datasetTagsTagify.loading(false);
+
+  // display the retrieved tags
+  datasetTagsTagify.addTags(tags);
+
 };
 
 // Add license //
@@ -2226,41 +2230,45 @@ const showCurrentLicense = async () => {
 
   if (selectedBfDataset === "Select dataset") {
     currentDatasetLicense.innerHTML = "None";
-  } else {
-    try {
-      let bf_get_license = await client.get(`/manage_datasets/bf_license`, {
-        params: {
-          selected_account: selectedBfAccount,
-          selected_dataset: selectedBfDataset,
-        },
-      });
-      currentDatasetLicense.innerHTML = bf_get_license.data.license;
-      if (bf_get_license.data.license === "Creative Commons Attribution") {
-        $("#button-add-license").hide();
-        $("#assign-a-license-header").hide();
-        if ($("#add_license-section").hasClass("is-shown")) {
-          Swal.fire({
-            title:
-              "You are all set. This dataset already has the correct license assigned.",
-            backdrop: "rgba(0,0,0, 0.4)",
-            heightAuto: false,
-            showConfirmButton: true,
-            icon: "success",
-          });
-        }
-      } else {
-        $("#button-add-license").show();
-        $("#assign-a-license-header").show();
+    return
+  }
+
+  log.info(`Getting current license for dataset ${selectedBfDataset}`)
+
+  try {
+    let bf_get_license = await client.get(`/manage_datasets/bf_license`, {
+      params: {
+        selected_account: selectedBfAccount,
+        selected_dataset: selectedBfDataset,
+      },
+    });
+    let { license } = bf_get_license.data
+    currentDatasetLicense.innerHTML = license;
+    if (license === "Creative Commons Attribution") {
+      $("#button-add-license").hide();
+      $("#assign-a-license-header").hide();
+      if ($("#add_license-section").hasClass("is-shown")) {
+        Swal.fire({
+          title:
+            "You are all set. This dataset already has the correct license assigned.",
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          showConfirmButton: true,
+          icon: "success",
+        });
       }
-    } catch (error) {
-      clientError(error);
-      logGeneralOperationsForAnalytics(
-        "Error",
-        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
-        AnalyticsGranularity.ALL_LEVELS,
-        ["Get License"]
-      );
+    } else {
+      $("#button-add-license").show();
+      $("#assign-a-license-header").show();
     }
+  } catch (error) {
+    clientError(error);
+    logGeneralOperationsForAnalytics(
+      "Error",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
+      AnalyticsGranularity.ALL_LEVELS,
+      ["Get License"]
+    );
   }
 };
 
@@ -2455,7 +2463,6 @@ $("#button-submit-dataset").click(async () => {
       }
     );
     let res = bf_submit_dataset.data;
-    console.log(res);
 
     $("#upload_local_dataset_progress_div")[0].scrollIntoView({
       behavior: "smooth",
@@ -2485,8 +2492,8 @@ $("#button-submit-dataset").click(async () => {
       let res = [];
       res = num_files_folders.data;
 
-      let num_of_files = res[0];
-      let num_of_folders = res[1];
+      let num_of_files = res["totalFiles"];
+      let num_of_folders = res["totalDir"];
 
       // log amount of folders uploaded in the given session
       ipcRenderer.send(
@@ -2575,8 +2582,8 @@ $("#button-submit-dataset").click(async () => {
       let res = [];
       res = num_files_folders.data;
 
-      let num_of_files = res[0];
-      let num_of_folders = res[1];
+      let num_of_files = res["totalFiles"];
+      let num_of_folders = res["totalDir"];
 
       // log amount of folders uploaded in the given session
       ipcRenderer.send(
@@ -2965,78 +2972,82 @@ async function showCurrentDatasetStatus(callback) {
     removeRadioOptions("dataset_status_ul");
 
     bfListDatasetStatus.style.color = "black";
-  } else {
-    try {
-      let bf_dataset_status = await client.get(
-        `/manage_datasets/bf_dataset_status`,
-        {
-          params: {
-            selected_dataset: selectedBfDataset,
-            selected_account: selectedBfAccount,
-          },
-        }
-      );
-      let res = bf_dataset_status.data;
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS +
-        ` - Get dataset Status`,
-        defaultBfDatasetId
-      );
 
-      removeOptions(bfListDatasetStatus);
-      removeRadioOptions("dataset_status_ul");
+    return 
+  }
 
-      for (let item in res["status_options"]) {
-        let option = document.createElement("option");
+  log.info(`Showing current dataset status for ${selectedBfDataset}`);
 
-        option.textContent = res["status_options"][item]["name"];
-        option.value = res["status_options"][item]["name"];
-        option.style.color = res["status_options"][item]["color"];
-
-        bfListDatasetStatus.appendChild(option);
-
-        addRadioOption(
-          "dataset_status_ul",
-          res["status_options"][item]["name"],
-          res["status_options"][item]["name"]
-        );
+  try {
+    let bf_dataset_status = await client.get(
+      `/manage_datasets/bf_dataset_status`,
+      {
+        params: {
+          selected_dataset: selectedBfDataset,
+          selected_account: selectedBfAccount,
+        },
       }
-      bfListDatasetStatus.value = res["current_status"];
+    );
+    let res = bf_dataset_status.data;
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS +
+      ` - Get dataset Status`,
+      defaultBfDatasetId
+    );
 
-      $(
-        `input[name=dataset_status_radio][value=${res["current_status"]}]`
-      ).prop("checked", true);
+    removeOptions(bfListDatasetStatus);
+    removeRadioOptions("dataset_status_ul");
 
-      selectOptionColor(bfListDatasetStatus);
+    for (let item in res["status_options"]) {
+      let option = document.createElement("option");
 
-      $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
-      $("#bf-dataset-status-spinner").css("display", "none");
+      option.textContent = res["status_options"][item]["name"];
+      option.value = res["status_options"][item]["name"];
+      option.style.color = res["status_options"][item]["color"];
 
-      if (callback !== undefined) {
-        callback();
-      }
-    } catch (error) {
-      clientError(error);
-      Swal.fire({
-        title: "Failed to change dataset status!",
-        text: userErrorMessage(error),
-        icon: "error",
-        showConfirmButton: true,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-      });
+      bfListDatasetStatus.appendChild(option);
 
-      logGeneralOperationsForAnalytics(
-        "Error",
-        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS,
-        AnalyticsGranularity.ALL_LEVELS,
-        ["Get Dataset Status"]
+      addRadioOption(
+        "dataset_status_ul",
+        res["status_options"][item]["name"],
+        res["status_options"][item]["name"]
       );
-
-      $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
-      $("#bf-dataset-status-spinner").css("display", "none");
     }
+    bfListDatasetStatus.value = res["current_status"];
+
+    $(
+      `input[name=dataset_status_radio][value=${res["current_status"]}]`
+    ).prop("checked", true);
+
+    selectOptionColor(bfListDatasetStatus);
+
+    $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
+    $("#bf-dataset-status-spinner").css("display", "none");
+
+    if (callback !== undefined) {
+      callback();
+    }
+  } catch (error) {
+    clientError(error);
+    Swal.fire({
+      title: "Failed to change dataset status!",
+      text: userErrorMessage(error),
+      icon: "error",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    logGeneralOperationsForAnalytics(
+      "Error",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS,
+      AnalyticsGranularity.ALL_LEVELS,
+      ["Get Dataset Status"]
+    );
+
+    $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
+    $("#bf-dataset-status-spinner").css("display", "none");
   }
 }
