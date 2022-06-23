@@ -29,8 +29,6 @@ const getDataset = async (datasetId) => {
   }
 };
 
-
-
 const getDatasetBannerImageURL = async (selected_account, selected_dataset) => {
   try {
     let bannerResponse = await client.get(`/manage_datasets/bf_banner_image`, {
@@ -204,7 +202,7 @@ const getDatasetReadme = async (selected_account, selected_dataset) => {
   let { readme } = readmeResponse.data;
 
   return readme;
-}
+};
 
 const api = {
   getUserInformation,
