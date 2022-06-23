@@ -2085,10 +2085,10 @@ const showCurrentTags = async () => {
   if (selectedBfDataset === "Select dataset") {
     // this code executes when the pencil icon that allows a user to select a dataset is clicked in the tags section
     // for now do nothing
-    return
+    return;
   }
 
-  log.info(`Getting current tags for dataset ${selectedBfDataset}`)
+  log.info(`Getting current tags for dataset ${selectedBfDataset}`);
 
   // remove all of the tags from the current input
   datasetTagsTagify.removeAllTags();
@@ -2146,7 +2146,6 @@ const showCurrentTags = async () => {
 
   // display the retrieved tags
   datasetTagsTagify.addTags(tags);
-
 };
 
 // Add license //
@@ -2232,10 +2231,10 @@ const showCurrentLicense = async () => {
 
   if (selectedBfDataset === "Select dataset") {
     currentDatasetLicense.innerHTML = "None";
-    return
+    return;
   }
 
-  log.info(`Getting current license for dataset ${selectedBfDataset}`)
+  log.info(`Getting current license for dataset ${selectedBfDataset}`);
 
   try {
     let bf_get_license = await client.get(`/manage_datasets/bf_license`, {
@@ -2244,7 +2243,7 @@ const showCurrentLicense = async () => {
         selected_dataset: selectedBfDataset,
       },
     });
-    let { license } = bf_get_license.data
+    let { license } = bf_get_license.data;
     currentDatasetLicense.innerHTML = license;
     if (license === "Creative Commons Attribution") {
       $("#button-add-license").hide();
@@ -2975,7 +2974,7 @@ async function showCurrentDatasetStatus(callback) {
 
     bfListDatasetStatus.style.color = "black";
 
-    return 
+    return;
   }
 
   log.info(`Showing current dataset status for ${selectedBfDataset}`);
@@ -2995,7 +2994,7 @@ async function showCurrentDatasetStatus(callback) {
       "track-event",
       "Success",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS +
-      ` - Get dataset Status`,
+        ` - Get dataset Status`,
       defaultBfDatasetId
     );
 
@@ -3019,9 +3018,10 @@ async function showCurrentDatasetStatus(callback) {
     }
     bfListDatasetStatus.value = res["current_status"];
 
-    $(
-      `input[name=dataset_status_radio][value=${res["current_status"]}]`
-    ).prop("checked", true);
+    $(`input[name=dataset_status_radio][value=${res["current_status"]}]`).prop(
+      "checked",
+      true
+    );
 
     selectOptionColor(bfListDatasetStatus);
 
