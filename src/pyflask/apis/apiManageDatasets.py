@@ -92,18 +92,17 @@ getNumberOfFilesAndFoldersLocally =  api.model('FilesAndFolders', {
 @api.route('/get_number_of_files_and_folders_locally')
 class GetNumberOfFilesAndFoldersLocally(Resource):
 
-  parser = reqparse.RequestParser(bundle_errors=True)
-  parser.add_argument('filepath', type=str, required=True, help='Path to the local dataset folder')
+  files_folders_parser = reqparse.RequestParser(bundle_errors=True)
+  files_folders_parser.add_argument('filepath', type=str, required=True, help='Path to the local dataset folder', location="args")
 
   @api.marshal_with( getNumberOfFilesAndFoldersLocally, False, 200)
   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'})
   # the request parameters
-  @api.expect(parser)
-
+  @api.expect(files_folders_parser)
   def get(self):
     # get the filepath from the request object
-    data = self.parser.parse_args(strict=True)
-    filepath = data['filepath']
+    data = self.files_folders_parser.parse_args()
+    filepath = data.get('filepath')
 
     api.logger.info(f' get_number_of_files_and_folders_locally --  args -- filepath: {filepath}')
 
