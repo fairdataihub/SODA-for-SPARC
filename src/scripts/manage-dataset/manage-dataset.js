@@ -871,14 +871,12 @@ const showCurrentDescription = async () => {
     $("#ds-isa-warning").css("display", "none");
   }
 
+  log.info(`Getting description for dataset ${selectedBfDataset}`);
+
   // get the dataset readme
-  let readmeResponse;
+  let readme;
   try {
-    // TODO: Error handling testing
-    readmeResponse = await client.get(
-      `/manage_datasets/datasets/${selectedBfDataset}/readme`,
-      { params: { selected_account: selectedBfAccount } }
-    );
+   readme = await api.getDatasetReadme(selectedBfAccount, selectedBfDataset);
   } catch (error) {
     clientError(error);
     logGeneralOperationsForAnalytics(
@@ -890,7 +888,6 @@ const showCurrentDescription = async () => {
     return;
   }
 
-  let { readme } = readmeResponse.data;
   logGeneralOperationsForAnalytics(
     "Success",
     ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
@@ -1061,6 +1058,9 @@ $("#ds-close-btn").click(() => {
 // I: user_markdown_input: A string that holds the user's markdown text.
 // Merges user readme file changes with the original readme file.
 const addDescription = async (selectedBfDataset, userMarkdownInput) => {
+
+  log.info(`Adding description to dataset ${selectedBfDataset}`)
+  
   Swal.fire({
     title: determineSwalLoadingMessage($("#button-add-description")),
     html: "Please wait...",
@@ -1076,13 +1076,9 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
   });
 
   // get the dataset readme
-  let readmeResponse;
+  let readme;
   try {
-    // TODO: Test error handling
-    readmeResponse = await client.get(
-      `/manage_datasets/datasets/${selectedBfDataset}/readme`,
-      { params: { selected_account: defaultBfAccount } }
-    );
+    readme = await api.getDatasetReadme(defaultBfAccount, selectedBfDataset);
   } catch (err) {
     clientError(err);
     Swal.fire({
@@ -1102,8 +1098,6 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
     );
     return;
   }
-
-  let { readme } = readmeResponse.data;
 
   // strip out the required sections (don't check for errors here because we check for them in showCurrentDescription for the same functions and the same readme)
   readme = stripRequiredSectionFromReadme(

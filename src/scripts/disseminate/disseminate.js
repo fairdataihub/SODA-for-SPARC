@@ -763,6 +763,7 @@ const showPrePublishingStatus = async (inPrePublishing = false) => {
   try {
     statuses = await getPrepublishingChecklistStatuses(defaultBfDataset);
   } catch (error) {
+    clientError(error);
     if (inPrePublishing) {
       Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",
@@ -779,8 +780,6 @@ const showPrePublishingStatus = async (inPrePublishing = false) => {
         },
       });
     }
-    log.error(error);
-    console.error(error);
     logGeneralOperationsForAnalytics(
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,

@@ -8498,7 +8498,7 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // set the subtitle's status
   statuses.subtitle = description && description.length ? true : false;
 
-  let readme = await api.getDatasetReadme(defaultBfDatasetId);
+  let readme = await api.getDatasetReadme(defaultBfAccount, defaultBfDatasetId);
 
   // set the readme's status
   statuses.readme = readme && readme.length >= 1 ? true : false;

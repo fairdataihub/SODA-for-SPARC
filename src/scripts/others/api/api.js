@@ -29,27 +29,7 @@ const getDataset = async (datasetId) => {
   }
 };
 
-/**
- *
- * @param {string} datasetNameOrId
- * @returns {string} readme - The given dataset's readme
- */
-const getDatasetReadme = async (datasetNameOrId) => {
-  try {
-    // TODO: Error handling testing
-    let readmeResponse = await client.get(
-      `/manage_datasets/datasets/${datasetNameOrId}/readme`,
-      { params: { selected_account: defaultBfAccount } }
-    );
 
-    let { readme } = readmeResponse.data;
-
-    return readme;
-  } catch (e) {
-    clientError(e);
-    throw new Error(`${userErrorMessage(e)}`);
-  }
-};
 
 const getDatasetBannerImageURL = async (datasetNameOrId) => {
   try {
@@ -202,7 +182,6 @@ const getDatasetsForAccount = async (selected_account) => {
 };
 
 
-
 const getDatasetSubtitle = async (selected_account, selected_dataset) => {
   let getSubtitleResponse = await client.get(
     `/manage_datasets/bf_dataset_subtitle`,
@@ -217,6 +196,17 @@ const getDatasetSubtitle = async (selected_account, selected_dataset) => {
   let {subtitle} = getSubtitleResponse.data;
 
   return subtitle
+}
+
+const getDatasetReadme = async (selected_account, selected_dataset) => {
+  let readmeResponse = await client.get(
+    `/manage_datasets/datasets/${selected_dataset}/readme`,
+    { params: { selected_account } }
+  );
+
+  let { readme } = readmeResponse.data;
+
+  return readme;
 }
 
 const api = {
