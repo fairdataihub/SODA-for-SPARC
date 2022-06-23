@@ -31,12 +31,12 @@ const getDataset = async (datasetId) => {
 
 
 
-const getDatasetBannerImageURL = async (datasetNameOrId) => {
+const getDatasetBannerImageURL = async (selected_account, selected_dataset) => {
   try {
     let bannerResponse = await client.get(`/manage_datasets/bf_banner_image`, {
       params: {
-        selected_account: defaultBfAccount,
-        selected_dataset: defaultBfDataset,
+        selected_account,
+        selected_dataset,
       },
     });
 
@@ -179,10 +179,6 @@ const getDatasetsForAccount = async (selected_account) => {
   return datasets;
 };
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 37645bac2bcab7864404defa383635427059ee8b
 const getDatasetSubtitle = async (selected_account, selected_dataset) => {
   let getSubtitleResponse = await client.get(
     `/manage_datasets/bf_dataset_subtitle`,
