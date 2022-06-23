@@ -1671,6 +1671,7 @@ const setActiveSubPage = (pageIdToActivate) => {
   //Show target page and hide its siblings
   pageElementToActivate.classList.remove("hidden");
   const pageElementSiblings = pageElementToActivate.parentElement.children;
+  console.log(pageElementSiblings);
   //filter pageelementSiblings to only contain elements with class "sub-page"
   const pageElementSiblingsToHide = Array.from(pageElementSiblings).filter(
     (pageElementSibling) => {
@@ -1680,6 +1681,7 @@ const setActiveSubPage = (pageIdToActivate) => {
       );
     }
   );
+  console.log(pageElementSiblingsToHide);
   //hide all pageElementSiblingsToHide
   pageElementSiblingsToHide.forEach((pageElementSibling) => {
     pageElementSibling.classList.add("hidden");
@@ -9459,16 +9461,16 @@ $(document).ready(() => {
             const selectedCompletionDate = document.querySelector(
               "input[name='completion-date']:checked"
             );
-            if (selectedCompletionDate) {
-              const completionDate = selectedCompletionDate.value;
-              sodaJSONObj["dataset-metadata"]["submission-metadata"][
-                "completion-date"
-              ] = completionDate;
-              setActiveSubPage("guided-submission-metadata-page");
-            } else {
+            if (!selectedCompletionDate) {
               notyf.error("Please select a completion date");
               return;
             }
+
+            const completionDate = selectedCompletionDate.value;
+            sodaJSONObj["dataset-metadata"]["submission-metadata"][
+              "completion-date"
+            ] = completionDate;
+            setActiveSubPage("guided-submission-metadata-page");
             break;
           }
           case "guided-submission-metadata-page": {

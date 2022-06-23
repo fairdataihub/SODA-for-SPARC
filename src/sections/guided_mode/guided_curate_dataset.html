@@ -1685,10 +1685,7 @@
                 id="guided-completion-date-selection-page"
                 data-skip-sub-page="false"
               >
-                <h2
-                  class="guided--text-sub-step"
-                  id="guided-completion-date-instructional-text"
-                >
+                <h2 class="guided--text-sub-step">
                   Select the completion date for your submission
                 </h2>
                 <div class="justify-center">
@@ -1700,60 +1697,58 @@
                     ></div>
                   </div>
                 </div>
-                <div
-                  class="guided--panel mt-md sub-page hidden"
-                  id="guided-submission-metadata-page"
-                  data-skip-sub-page="false"
-                >
-                  <div class="guided--section neumorphic mt-xl">
-                    <h2 class="guided--text-sub-step mt-0">
-                      Award and milestone information
-                    </h2>
-                    <label class="guided--form-label mt-xl"
-                      >SPARC award number:</label
-                    >
-                    <input
-                      class="guided--input"
-                      id="guided-submission-sparc-award"
-                      type="text"
-                      placeholder="Enter SPARC award here"
-                      onkeyup="validateInput($(this))"
-                    />
-                    <p class="guided--text-input-instructions mb-0">
-                      SPARC award associated with the dataset.
-                    </p>
-                    <label class="guided--form-label mt-xl"
-                      >Milestone(s):</label
-                    >
-                    <div class="demo-controls-body" style="width: 100%">
-                      <div class="ui input modified">
-                        <input
-                          class="guided-award-and-milestone-information"
-                          id="guided-tagify-submission-milestone-tags"
-                          name="milestone-tags"
-                          value=""
-                        />
-                      </div>
+              </div>
+              <div
+                class="guided--panel mt-md sub-page hidden"
+                id="guided-submission-metadata-page"
+                data-skip-sub-page="false"
+              >
+                <div class="guided--section neumorphic mt-xl">
+                  <h2 class="guided--text-sub-step mt-0">
+                    Award and milestone information
+                  </h2>
+                  <label class="guided--form-label mt-xl"
+                    >SPARC award number:</label
+                  >
+                  <input
+                    class="guided--input"
+                    id="guided-submission-sparc-award"
+                    type="text"
+                    placeholder="Enter SPARC award here"
+                    onkeyup="validateInput($(this))"
+                  />
+                  <p class="guided--text-input-instructions mb-0">
+                    SPARC award associated with the dataset.
+                  </p>
+                  <label class="guided--form-label mt-xl">Milestone(s):</label>
+                  <div class="demo-controls-body" style="width: 100%">
+                    <div class="ui input modified">
+                      <input
+                        class="guided-award-and-milestone-information"
+                        id="guided-tagify-submission-milestone-tags"
+                        name="milestone-tags"
+                        value=""
+                      />
                     </div>
-                    <p class="guided--text-input-instructions mb-0">
-                      The major organ systems related to this study, for
-                      example, spinal cord.<br />
-                      <b
-                        >Hit enter after inserting an organ system to save your
-                        input.</b
-                      >
-                    </p>
-                    <label class="guided--form-label mt-xl"
-                      >Completion date:</label
-                    >
-                    <input
-                      class="guided--input"
-                      id="guided-submission-completion-date"
-                      type="text"
-                      placeholder="Enter the completion date for your milestone(s) specified above."
-                      onkeyup="validateInput($(this))"
-                    />
                   </div>
+                  <p class="guided--text-input-instructions mb-0">
+                    The major organ systems related to this study, for example,
+                    spinal cord.<br />
+                    <b
+                      >Hit enter after inserting an organ system to save your
+                      input.</b
+                    >
+                  </p>
+                  <label class="guided--form-label mt-xl"
+                    >Completion date:</label
+                  >
+                  <input
+                    class="guided--input"
+                    id="guided-submission-completion-date"
+                    type="text"
+                    placeholder="Enter the completion date for your milestone(s) specified above."
+                    onkeyup="validateInput($(this))"
+                  />
                 </div>
               </div>
 
