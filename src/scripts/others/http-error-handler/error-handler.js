@@ -1,10 +1,9 @@
 /**
- * Logs an error object to the console and SODA logs. Handles general errors and Axios errors. 
+ * Logs an error object to the console and SODA logs. Handles general errors and Axios errors.
  *
  * @param {error} error - A general or Axios error object
  */
 function clientError(error) {
-
   // Handles gneral errors and getting basic information from Axios errors
   console.error(error);
   log.error(JSON.stringify(error));
@@ -17,14 +16,14 @@ function clientError(error) {
 
     log.error("Error message: " + JSON.stringify(error_message));
     log.error("Response Status: " + JSON.stringify(error_status));
-    log.error("Request config: ")
+    log.error("Request config: ");
     log.error(JSON.stringify(error.config));
     log.error("Response Headers: ");
     log.error(JSON.stringify(error_headers));
 
     console.log(`Error caused from: ${error_message}`);
     console.log(`Response Status: ${error_status}`);
-    console.log("Headers:" );
+    console.log("Headers:");
     console.log(error_headers);
   } else if (error.request) {
     // The request was made but no response was received

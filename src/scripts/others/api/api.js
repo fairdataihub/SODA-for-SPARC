@@ -193,19 +193,15 @@ const getDatasetPermissions = async (selected_account, selected_dataset) => {
 };
 
 const getDatasetsForAccount = async (selected_account) => {
-  let responseObject = await client.get(
-    `manage_datasets/bf_dataset_account`,
-    {
-      params: {
-        selected_account,
-      },
-    }
-  );
+  let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
+    params: {
+      selected_account,
+    },
+  });
 
   let { datasets } = responseObject.data;
 
   return datasets;
-
 };
 
 const api = {
