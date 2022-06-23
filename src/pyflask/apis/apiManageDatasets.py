@@ -885,7 +885,7 @@ class BfGetUploadProgress(Resource):
 
 model_upload_details_response = api.model("UploadDetailsResponse", {
   'uploaded_files':  fields.Integer(required=True, description="The number of files uploaded."),
-  'upload_file_size': fields.Integer(required=True, description="The size of the file being uploaded in bytes."),
+  'uploaded_file_size': fields.Integer(required=True, description="The size of the file being uploaded in bytes."),
   'did_fail': fields.Boolean(required=True, description="Whether or not the upload failed."),
   'did_upload': fields.Boolean(required=True, description="To inform the user that the upload failed and that it failed after uploading data - important for logging upload sessions"),
   'upload_folder_count': fields.Integer(required=True, description="The number of folders that have been uploaded."),
