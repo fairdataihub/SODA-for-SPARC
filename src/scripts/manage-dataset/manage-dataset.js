@@ -885,7 +885,7 @@ const showCurrentDescription = async () => {
   // get the dataset readme
   let readme;
   try {
-   readme = await api.getDatasetReadme(selectedBfAccount, selectedBfDataset);
+    readme = await api.getDatasetReadme(selectedBfAccount, selectedBfDataset);
   } catch (error) {
     clientError(error);
     logGeneralOperationsForAnalytics(
@@ -1067,9 +1067,8 @@ $("#ds-close-btn").click(() => {
 // I: user_markdown_input: A string that holds the user's markdown text.
 // Merges user readme file changes with the original readme file.
 const addDescription = async (selectedBfDataset, userMarkdownInput) => {
+  log.info(`Adding description to dataset ${selectedBfDataset}`);
 
-  log.info(`Adding description to dataset ${selectedBfDataset}`)
-  
   Swal.fire({
     title: determineSwalLoadingMessage($("#button-add-description")),
     html: "Please wait...",
