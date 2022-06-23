@@ -1623,6 +1623,37 @@ const setActiveSubPage = (pageIdToActivate) => {
     }
 
     case "guided-data-derivative-import-page": {
+      const unselectedMilestones =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"][
+          "unselected-milestones"
+        ];
+      if (unselectedMilestones) {
+        renderMilestoneSelectionTable(unselectedMilestones);
+        const selectedMilestones =
+          sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
+        if (selectedMilestones) {
+          //Check the checkboxes for previously selected milestones
+          const milestoneDescriptionsToCheck = selectedMilestones.map(
+            (milestone) => {
+              return milestone["description"];
+            }
+          );
+          for (const milestone of milestoneDescriptionsToCheck) {
+            //find the checkbox with name milestone and value of milestone
+            const milestoneCheckbox = document.querySelector(
+              `input[name="milestone"][value="${milestone}"]`
+            );
+            if (milestoneCheckbox) {
+              milestoneCheckbox.checked = true;
+            }
+          }
+        }
+        unHideAndSmoothScrollToElement("guided-div-data-deliverables-import");
+      } else {
+        document
+          .getElementById("guided-div-data-deliverables-import")
+          .classList.add("hidden");
+      }
       break;
     }
 
@@ -1639,7 +1670,7 @@ const setActiveSubPage = (pageIdToActivate) => {
         //save the completion date into sodaJSONObj
         const uniqueCompletionDate = uniqueCompletionDates[0];
         sodaJSONObj["dataset-metadata"]["submission-metadata"][
-          "completion-dates"
+          "completion-date"
         ] = uniqueCompletionDate;
         //click past this sub-page since the user doesn't need to select
         //a completion date if there is only one
@@ -1663,6 +1694,71 @@ const setActiveSubPage = (pageIdToActivate) => {
           .join("\n");
         document.getElementById("guided-completion-date-container").innerHTML =
           completionDateCheckMarks;
+
+        //If a completion date has already been selected, select it's radio button
+        const selectedCompletionDate =
+          sodaJSONObj["dataset-metadata"]["submission-metadata"][
+            "completion-date"
+          ];
+        if (selectedCompletionDate) {
+          const selectedCompletionDateRadioElement = document.querySelector(
+            `input[name="completion-date"][value="${selectedCompletionDate}"]`
+          );
+          if (selectedCompletionDateRadioElement) {
+            selectedCompletionDateRadioElement.checked = true;
+          }
+        }
+      }
+      break;
+    }
+
+    case "guided-submission-metadata-page": {
+      const sparcAward =
+        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+      const milestoneData =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
+      const completionDate =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"][
+          "completion-date"
+        ];
+
+      const sparcAwardInput = document.getElementById(
+        "guided-submission-sparc-award"
+      );
+      const completionDateInput = document.getElementById(
+        "guided-submission-completion-date"
+      );
+
+      //If a sparc award exists in sodaJSONObj, set and disable sparc award input
+      //If not, refresh the input and enable it
+      if (sparcAward) {
+        sparcAwardInput.value = sparcAward;
+        sparcAwardInput.disabled = true;
+      } else {
+        sparcAwardInput.value = "";
+        sparcAwardInput.disabled = false;
+      }
+
+      //If milestoneData exists in sodaJSONObj, add the milestones to the tagify input
+      //If not, reset the tagify input
+      if (milestoneData) {
+        for (milestone of milestoneData) {
+          guidedSubmissionTagsTagify.addTags([
+            { value: milestone["milestone"], readonly: true },
+          ]);
+        }
+      } else {
+        guidedSubmissionTagsTagify.removeAllTags();
+      }
+
+      //If completionDate exists in sodaJSONObj, set and disable completion date input
+      //If not, refresh the input and enable it
+      if (completionDate) {
+        completionDateInput.value = completionDate;
+        completionDateInput.disabled = true;
+      } else {
+        completionDateInput.value = "";
+        completionDateInput.disabled = false;
       }
       break;
     }
@@ -9444,17 +9540,40 @@ $(document).ready(() => {
       case "guided-create-submission-metadata-tab": {
         switch (openSubPageID) {
           case "guided-data-derivative-import-page": {
-            const checkedMilestoneData = getCheckedMilestones();
-            //if user does not select any milestones, show error message
-            if (checkedMilestoneData.length === 0) {
-              notyf.error("Please select at least one milestone");
-              return;
-            }
+            const buttonYesImportDataDerivatives = document.getElementById(
+              "guided-button-import-data-deliverables"
+            );
+            const buttonNoEnterSubmissionDataManually = document.getElementById(
+              "guided-button-enter-submission-metadata-manually"
+            );
 
-            sodaJSONObj["dataset-metadata"]["submission-metadata"][
-              "milestones"
-            ] = checkedMilestoneData;
-            setActiveSubPage("guided-completion-date-selection-page");
+            if (buttonYesImportDataDerivatives.classList.contains("selected")) {
+              const checkedMilestoneData = getCheckedMilestones();
+              //if user does not select any milestones, show error message
+              if (checkedMilestoneData.length === 0) {
+                notyf.error("Please select at least one milestone");
+                return;
+              }
+
+              sodaJSONObj["dataset-metadata"]["submission-metadata"][
+                "milestones"
+              ] = checkedMilestoneData;
+              setActiveSubPage("guided-completion-date-selection-page");
+            }
+            if (
+              buttonNoEnterSubmissionDataManually.classList.contains("selected")
+            ) {
+              //delete sodaJSONObj data from imported milestone data
+              delete sodaJSONObj["dataset-metadata"]["submission-metadata"][
+                "milestones"
+              ];
+              delete sodaJSONObj["dataset-metadata"]["submission-metadata"][
+                "completion-date"
+              ];
+              //skip to submission metadata page where user can enter milestones
+              //and completion date manually
+              setActiveSubPage("guided-submission-metadata-page");
+            }
             break;
           }
           case "guided-completion-date-selection-page": {
@@ -9474,6 +9593,7 @@ $(document).ready(() => {
             break;
           }
           case "guided-submission-metadata-page": {
+            hideSubNavAndShowMainNav("next");
             break;
           }
         }
@@ -9494,9 +9614,7 @@ $(document).ready(() => {
       case "guided-subjects-folder-tab": {
         switch (openSubPageID) {
           case "guided-specify-subjects-page": {
-            $("#guided-sub-page-navigation-footer-div").hide();
-            $("#guided-footer-div").css("display", "flex");
-            $("#guided-back-button").click();
+            hideSubNavAndShowMainNav("back");
             break;
           }
 
@@ -9511,7 +9629,7 @@ $(document).ready(() => {
           }
         }
       }
-      //back
+
       case "guided-primary-data-organization-tab": {
         switch (openSubPageID) {
           case "guided-primary-samples-organization-page": {
@@ -9537,9 +9655,7 @@ $(document).ready(() => {
       case "guided-source-data-organization-tab": {
         switch (openSubPageID) {
           case "guided-source-samples-organization-page": {
-            $("#guided-sub-page-navigation-footer-div").hide();
-            $("#guided-footer-div").css("display", "flex");
-            $("#guided-back-button").click();
+            hideSubNavAndShowMainNav("back");
             break;
           }
 
@@ -9553,14 +9669,45 @@ $(document).ready(() => {
       case "guided-derivative-data-organization-tab": {
         switch (openSubPageID) {
           case "guided-derivative-samples-organization-page": {
-            $("#guided-sub-page-navigation-footer-div").hide();
-            $("#guided-footer-div").css("display", "flex");
-            $("#guided-back-button").click();
+            hideSubNavAndShowMainNav("back");
             break;
           }
 
           case "guided-derivative-subjects-organization-page": {
             setActiveSubPage("guided-derivative-samples-organization-page");
+            break;
+          }
+        }
+      }
+
+      case "guided-create-submission-metadata-tab": {
+        switch (openSubPageID) {
+          case "guided-data-derivative-import-page": {
+            hideSubNavAndShowMainNav("back");
+            break;
+          }
+          case "guided-completion-date-selection-page": {
+            setActiveSubPage("guided-data-derivative-import-page");
+            break;
+          }
+          case "guided-submission-metadata-page": {
+            if (
+              document
+                .getElementById("guided-button-import-data-deliverables")
+                .classList.contains("selected")
+            ) {
+              setActiveSubPage("guided-completion-date-selection-page");
+            }
+
+            if (
+              document
+                .getElementById(
+                  "guided-button-enter-submission-metadata-manually"
+                )
+                .classList.contains("selected")
+            ) {
+              setActiveSubPage("guided-data-derivative-import-page");
+            }
             break;
           }
         }
