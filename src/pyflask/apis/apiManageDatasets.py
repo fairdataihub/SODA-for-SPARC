@@ -858,7 +858,7 @@ class BfCreateDatasetFolder(Resource):
 
 
 model_upload_progress_response = api.model("UploadProgressResponse", {
-  'progress': fields.Integer(required=True, description="The current progress of the upload."),
+  'progress': fields.String(required=True, description="The current progress of the upload."),
   'submit_dataset_status': fields.String(required=True, description="The status of the upload."),
   'submit_print_status': fields.String(required=True, description="The status of the print."),
   'total_file_size': fields.Integer(required=True, description="The total size of the file being uploaded."),
