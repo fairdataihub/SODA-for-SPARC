@@ -152,7 +152,6 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
 };
 
 const getDatasetPermissions = async (selected_account, selected_dataset) => {
-
   let getDatasetPermissionsResponse = await client.get(
     `/manage_datasets/bf_dataset_permissions`,
     {
@@ -168,7 +167,6 @@ const getDatasetPermissions = async (selected_account, selected_dataset) => {
   return permissions;
 };
 
-
 const getDatasetsForAccount = async (selected_account) => {
   let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
     params: {
@@ -181,7 +179,10 @@ const getDatasetsForAccount = async (selected_account) => {
   return datasets;
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 37645bac2bcab7864404defa383635427059ee8b
 const getDatasetSubtitle = async (selected_account, selected_dataset) => {
   let getSubtitleResponse = await client.get(
     `/manage_datasets/bf_dataset_subtitle`,
@@ -193,10 +194,10 @@ const getDatasetSubtitle = async (selected_account, selected_dataset) => {
     }
   );
 
-  let {subtitle} = getSubtitleResponse.data;
+  let { subtitle } = getSubtitleResponse.data;
 
-  return subtitle
-}
+  return subtitle;
+};
 
 const getDatasetReadme = async (selected_account, selected_dataset) => {
   let readmeResponse = await client.get(
@@ -221,7 +222,7 @@ const api = {
   getDatasetMetadataFiles,
   getDatasetPermissions,
   getDatasetsForAccount,
-  getDatasetSubtitle
+  getDatasetSubtitle,
 };
 
 module.exports = api;
