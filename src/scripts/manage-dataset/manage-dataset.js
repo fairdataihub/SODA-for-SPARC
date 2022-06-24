@@ -396,17 +396,23 @@ $("#button-add-permission-pi").click(async () => {
       let selectedUser = $("#bf_list_users_pi").val();
       let selectedRole = "owner";
 
-      //needs to be replaced
       try {
         let bf_change_owner = await client.patch(
-          `/manage_datasets/bf_dataset_permissions?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}&scope=user&name=${selectedUser}`,
+          `/manage_datasets/bf_dataset_permissions`,
           {
             input_role: selectedRole,
+          }, 
+          {
+            params: {
+              selected_account: selectedBfAccount,
+              selected_dataset: selectedBfDataset,
+              scope: "user",
+              name: selectedUser,
+            }
           }
         );
 
         let res = bf_change_owner.data.message;
-        console.log(res);
         log.info("Change PI Owner of dataset");
 
         ipcRenderer.send(
@@ -439,7 +445,7 @@ $("#button-add-permission-pi").click(async () => {
           defaultBfDatasetId
         );
 
-        let emessage = error.response.data.message;
+        let emessage = userErrorMessage(error);
         Swal.fire({
           title: "Failed to change PI permission!",
           text: emessage,
@@ -525,9 +531,17 @@ const addPermissionUser = async (
   let bf_add_permission;
   try {
     bf_add_permission = await client.patch(
-      `/manage_datasets/bf_dataset_permissions?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}&scope=user&name=${selectedUser}`,
+      `/manage_datasets/bf_dataset_permissions`,
       {
         input_role: selectedRole,
+      }, 
+      {
+        params: {
+          selected_account: selectedBfAccount,
+          selected_dataset: selectedBfDataset,
+          scope: "user",
+          name: selectedUser,
+        }
       }
     );
   } catch (error) {
@@ -548,6 +562,8 @@ const addPermissionUser = async (
       AnalyticsGranularity.ALL_LEVELS,
       ["Add User Permissions"]
     );
+
+    return 
   }
 
   let res = bf_add_permission.data.message;
@@ -662,9 +678,17 @@ $("#button-add-permission-team").click(async () => {
 
     try {
       let bf_add_team_permission = await client.patch(
-        `/manage_datasets/bf_dataset_permissions?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}&scope=team&name=${selectedTeam}`,
+        `/manage_datasets/bf_dataset_permissions`,
         {
           input_role: selectedRole,
+        }, 
+        {
+          params: {
+            selected_account: selectedBfAccount,
+            selected_dataset: selectedBfDataset,
+            scope: "team",
+            name: selectedTeam,
+          }
         }
       );
 
@@ -690,7 +714,7 @@ $("#button-add-permission-team").click(async () => {
     } catch (error) {
       clientError(error);
 
-      let emessage = error.response.data.message;
+      let emessage = userErrorMessage(error);
       Swal.fire({
         title: "Failed to change permission",
         text: emessage,
