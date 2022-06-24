@@ -20,51 +20,40 @@ const getUserInformation = async () => {
  * @returns {datasetObject} dataset - the dataset object
  */
 const getDataset = async (datasetId) => {
-  try {
-    let datasetResponse = await client.get(`/datasets/${datasetId}`);
-    return datasetResponse.data;
-  } catch (e) {
-    clientError(e);
-    throw new Error(`${userErrorMessage(e)}`);
-  }
+
+  let datasetResponse = await client.get(`/datasets/${datasetId}`);
+  return datasetResponse.data;
+
 };
 
 const getDatasetBannerImageURL = async (selected_account, selected_dataset) => {
-  try {
-    let bannerResponse = await client.get(`/manage_datasets/bf_banner_image`, {
-      params: {
-        selected_account,
-        selected_dataset,
-      },
-    });
+  let bannerResponse = await client.get(`/manage_datasets/bf_banner_image`, {
+    params: {
+      selected_account,
+      selected_dataset,
+    },
+  });
 
-    let { banner_image } = bannerResponse.data;
+  let { banner_image } = bannerResponse.data;
 
-    return banner_image;
-  } catch (e) {
-    clientError(e);
-    throw new Error(`${userErrorMessage(e)}`);
-  }
+  return banner_image;
+
 };
 
 const getDatasetRole = async (datasetNameOrId) => {
-  try {
-    let datasetRoleResponse = await client.get(
-      `/datasets/${defaultBfDataset}/role`,
-      {
-        params: {
-          pennsieve_account: defaultBfAccount,
-        },
-      }
-    );
+  let datasetRoleResponse = await client.get(
+    `/datasets/${defaultBfDataset}/role`,
+    {
+      params: {
+        pennsieve_account: defaultBfAccount,
+      },
+    }
+  );
 
-    let { role } = datasetRoleResponse.data;
+  let { role } = datasetRoleResponse.data;
 
-    return role;
-  } catch (e) {
-    clientError(e);
-    throw new Error(`${userErrorMessage(e)}`);
-  }
+  return role;
+
 };
 
 /**
@@ -73,35 +62,27 @@ const getDatasetRole = async (datasetNameOrId) => {
  * @returns {Promise<void>}
  */
 const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
-  try {
-    await client.post(
-      `/disseminate_datasets/datasets/${datasetIdOrName}/publication/cancel`
-    );
-  } catch (error) {
-    clientError(error);
-    throw new Error(userErrorMessage(error));
-  }
+  await client.post(
+    `/disseminate_datasets/datasets/${datasetIdOrName}/publication/cancel`
+  );
+
 };
 
 const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
-  try {
-    // get the excluded files
-    let excludedFilesRes = await client.get(
-      `/disseminate_datasets/datasets/${datasetIdOrName}/ignore-files`,
-      {
-        params: {
-          selected_account: defaultBfAccount,
-        },
-      }
-    );
+  // get the excluded files
+  let excludedFilesRes = await client.get(
+    `/disseminate_datasets/datasets/${datasetIdOrName}/ignore-files`,
+    {
+      params: {
+        selected_account: defaultBfAccount,
+      },
+    }
+  );
 
-    let { ignore_files } = excludedFilesRes.data;
+  let { ignore_files } = excludedFilesRes.data;
 
-    return ignore_files;
-  } catch (error) {
-    clientError(error);
-    throw new Error(userErrorMessage(error));
-  }
+  return ignore_files;
+
 };
 
 // tell Pennsieve to ignore a set of user selected files when publishing their dataset.
@@ -111,42 +92,34 @@ const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
 //  files: [{fileName: string}] - An array of file name objects
 const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
   // create the request options
-  try {
-    await client.put(
-      `/disseminate_datasets/datasets/${datasetIdOrName}/ignore-files`,
-      {
-        ignore_files: files,
-      }
-    );
-  } catch (error) {
-    clientError(error);
-    throw new Error(userErrorMessage(error));
-  }
+  await client.put(
+    `/disseminate_datasets/datasets/${datasetIdOrName}/ignore-files`,
+    {
+      ignore_files: files,
+    }
+  );
+
 };
 
 // retrieves the currently selected dataset's metadata files
 // I:
 //  datasetIdOrName: string - A dataset id or name
 const getDatasetMetadataFiles = async (datasetIdOrName) => {
-  try {
-    // get the metadata files for the dataset
-    let datasetwithChildrenResponse = client.get(
-      `/disseminate_datasets/datasets/${datasetIdOrName}/metadata-files`,
-      {
-        params: {
-          selected_account: defaultBfAccount,
-        },
-      }
-    );
+  // get the metadata files for the dataset
+  let datasetwithChildrenResponse = client.get(
+    `/disseminate_datasets/datasets/${datasetIdOrName}/metadata-files`,
+    {
+      params: {
+        selected_account: defaultBfAccount,
+      },
+    }
+  );
 
-    let { metadata_files } = datasetwithChildrenResponse.data;
+  let { metadata_files } = datasetwithChildrenResponse.data;
 
-    // return the metdata files to the client
-    return metadata_files;
-  } catch (error) {
-    clientError(error);
-    throw new Error(userErrorMessage(error));
-  }
+  // return the metdata files to the client
+  return metadata_files;
+
 };
 
 const getDatasetPermissions = async (selected_account, selected_dataset) => {
