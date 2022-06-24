@@ -20,10 +20,8 @@ const getUserInformation = async () => {
  * @returns {datasetObject} dataset - the dataset object
  */
 const getDataset = async (datasetId) => {
-
   let datasetResponse = await client.get(`/datasets/${datasetId}`);
   return datasetResponse.data;
-
 };
 
 const getDatasetBannerImageURL = async (selected_account, selected_dataset) => {
@@ -37,7 +35,6 @@ const getDatasetBannerImageURL = async (selected_account, selected_dataset) => {
   let { banner_image } = bannerResponse.data;
 
   return banner_image;
-
 };
 
 const getDatasetRole = async (datasetNameOrId) => {
@@ -53,7 +50,6 @@ const getDatasetRole = async (datasetNameOrId) => {
   let { role } = datasetRoleResponse.data;
 
   return role;
-
 };
 
 /**
@@ -65,7 +61,6 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
   await client.post(
     `/disseminate_datasets/datasets/${datasetIdOrName}/publication/cancel`
   );
-
 };
 
 const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
@@ -82,7 +77,6 @@ const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
   let { ignore_files } = excludedFilesRes.data;
 
   return ignore_files;
-
 };
 
 // tell Pennsieve to ignore a set of user selected files when publishing their dataset.
@@ -98,7 +92,6 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
       ignore_files: files,
     }
   );
-
 };
 
 // retrieves the currently selected dataset's metadata files
@@ -119,7 +112,6 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
 
   // return the metdata files to the client
   return metadata_files;
-
 };
 
 const getDatasetPermissions = async (selected_account, selected_dataset) => {
