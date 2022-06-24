@@ -1134,42 +1134,12 @@ const traverseToTab = (targetPageID) => {
     if (targetPageID === "guided-create-submission-metadata-tab") {
       openSubPageNavigation(targetPageID);
     }
-
-    if (targetPageID === "guided-samples-folder-tab") {
-      renderSamplesTables();
-    }
-    if (targetPageID === "guided-banner-image-tab") {
-      if (sodaJSONObj["digital-metadata"]["banner-image-path"]) {
-        guidedShowBannerImagePreview(
-          sodaJSONObj["digital-metadata"]["banner-image-path"]
-        );
-      }
-    }
-    if (targetPageID === "guided-designate-permissions-tab") {
-      renderPermissionsTable();
-    }
-    if (targetPageID === "guided-add-tags-tab") {
-      //clear dataset tags
-      guidedDatasetTagsTagify.removeAllTags();
-      //Add tags from jsonObj if they exist
-      const datasetTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
-      if (sodaJSONObj["digital-metadata"]["dataset-tags"]) {
-        guidedDatasetTagsTagify.addTags(datasetTags);
-      }
-    }
-    if (targetPageID === "guided-assign-license-tab") {
-      const licenseCheckbox = document.getElementById(
-        "guided-license-checkbox"
-      );
-      if (sodaJSONObj["digital-metadata"]["license"]) {
-        licenseCheckbox.checked = true;
-      } else {
-        licenseCheckbox.checked = false;
-      }
-    }
     if (targetPageID === "guided-contributors-tab") {
       const sparcAward =
         sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+      const contributors =
+        sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+
       // check if airtableconfig has non empty api-key and key-name properties
       const airTableKeyData = parseJson(airtableConfigPath);
       let airTableKeyDataValid = null;
@@ -1202,13 +1172,46 @@ const traverseToTab = (targetPageID) => {
         document
           .getElementById("guided-div-contributor-field-set")
           .classList.remove("hidden");
-        //Add an empty contributor information fieldset if contributors container is empty
-        if (
-          document.getElementById("contributors-container").innerHTML === ""
-        ) {
+        if (contributors) {
+          renderContributorFields(contributors);
+        } else {
+          document.getElementById("contributors-container").innerHTML === "";
           //add an empty contributor information fieldset
           addContributorField();
         }
+      }
+    }
+
+    if (targetPageID === "guided-samples-folder-tab") {
+      renderSamplesTables();
+    }
+    if (targetPageID === "guided-banner-image-tab") {
+      if (sodaJSONObj["digital-metadata"]["banner-image-path"]) {
+        guidedShowBannerImagePreview(
+          sodaJSONObj["digital-metadata"]["banner-image-path"]
+        );
+      }
+    }
+    if (targetPageID === "guided-designate-permissions-tab") {
+      renderPermissionsTable();
+    }
+    if (targetPageID === "guided-add-tags-tab") {
+      //clear dataset tags
+      guidedDatasetTagsTagify.removeAllTags();
+      //Add tags from jsonObj if they exist
+      const datasetTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
+      if (sodaJSONObj["digital-metadata"]["dataset-tags"]) {
+        guidedDatasetTagsTagify.addTags(datasetTags);
+      }
+    }
+    if (targetPageID === "guided-assign-license-tab") {
+      const licenseCheckbox = document.getElementById(
+        "guided-license-checkbox"
+      );
+      if (sodaJSONObj["digital-metadata"]["license"]) {
+        licenseCheckbox.checked = true;
+      } else {
+        licenseCheckbox.checked = false;
       }
     }
 
@@ -2793,8 +2796,16 @@ const generateContributorField = (
   contributorFirstName,
   contributorORCID,
   contributorAffiliation,
-  contributorRole
+  contributorRoles
 ) => {
+  console.log(contributorLastName);
+  console.log(contributorFirstName);
+  console.log(contributorORCID);
+  console.log(contributorAffiliation);
+  console.log(contributorRoles);
+  const initialContributorRoleString = contributorRoles
+    ? contributorRoles.join(",")
+    : "";
   return `
       <div class="guided--section mt-lg neumorphic guided-contributor-field-container" style="position: relative">
         <i 
@@ -2880,10 +2891,12 @@ const generateContributorField = (
         <input class="guided-contributor-role-input"
           contenteditable="true"
           placeholder='Type here to view and add contributor roles'
+          data-initial-contributor-roles="${initialContributorRoleString}"
         />
       </div>
     `;
 };
+
 const removeContributorField = (contributorDeleteButton) => {
   const contributorField = contributorDeleteButton.parentElement;
   contributorField.remove();
@@ -2970,8 +2983,8 @@ const addContributorField = () => {
   const newContributorRoleElement = newlyAddedContributorField.querySelector(
     ".guided-contributor-role-input"
   );
-  //Add a new tagify for the contributor role field for the new contributor field
 
+  //Add a new tagify for the contributor role field for the new contributor field
   const tagify = new Tagify(newContributorRoleElement, {
     whitelist: [
       "PrincipleInvestigator",
@@ -3057,7 +3070,74 @@ const removeProtocolField = (protocolDeleteButton) => {
   const protocolField = protocolDeleteButton.parentElement;
   protocolField.remove();
 };
+const renderContributorFields = (contributionMembersArray) => {
+  //loop through curationMembers object
+  let contributionMembersElements = contributionMembersArray
+    .map((contributionMember) => {
+      return generateContributorField(
+        contributionMember["contributorLastName"],
+        contributionMember["contributorFirstName"],
+        contributionMember["contributorORCID"],
+        contributionMember["contributorAffiliation"],
+        contributionMember["contributorRoles"]
+      );
+    })
+    .join("\n");
 
+  const contributorsContainer = document.getElementById(
+    "contributors-container"
+  );
+  contributorsContainer.innerHTML = contributionMembersElements;
+  const contributorRoleInputs = document.querySelectorAll(
+    ".guided-contributor-role-input"
+  );
+
+  //create a tagify for each element in contributorRoleElements
+  contributorRoleInputs.forEach((contributorRoleElement) => {
+    const tagify = new Tagify(contributorRoleElement, {
+      whitelist: [
+        "PrincipleInvestigator",
+        "Creator",
+        "CoInvestigator",
+        "DataCollector",
+        "DataCurator",
+        "DataManager",
+        "Distributor",
+        "Editor",
+        "Producer",
+        "ProjectLeader",
+        "ProjectManager",
+        "ProjectMember",
+        "RelatedPerson",
+        "Researcher",
+        "ResearchGroup",
+        "Sponsor",
+        "Supervisor",
+        "WorkPackageLeader",
+        "Other",
+      ],
+      enforceWhitelist: true,
+      dropdown: {
+        enabled: 1,
+        closeOnSelect: true,
+        position: "auto",
+      },
+    });
+    //if contributorRoleElement has data-initial-contributors, the create a tagify for each comma split contributor role
+    if (contributorRoleElement.dataset.initialContributorRoles) {
+      const initialContributors =
+        contributorRoleElement.dataset.initialContributorRoles;
+      const initialContributorsArray = initialContributors.split(",");
+      for (const contirubtorRole of initialContributorsArray) {
+        console.log(contirubtorRole);
+        tagify.addTags([contirubtorRole]);
+      }
+    }
+  });
+
+  //show the contributor fields
+  unHideAndSmoothScrollToElement("guided-div-contributor-field-set");
+};
 const renderAdditionalLinksTable = () => {
   const additionalLinksTableBody = document.getElementById(
     "additional-links-table-body"
@@ -7549,65 +7629,6 @@ $(document).ready(() => {
   };
 
   //description///////////////////////////////////////
-  const renderContributorFields = (contributionMembersArray) => {
-    //loop through curationMembers object
-    let contributionMembersElements = contributionMembersArray
-      .map((contributionMember) => {
-        return generateContributorField(
-          contributionMember["contributorLastName"],
-          contributionMember["contributorFirstName"],
-          contributionMember["contributorORCID"],
-          contributionMember["contributorAffiliation"],
-          contributionMember["contributorRole"]
-        );
-      })
-      .join("\n");
-
-    const contributorsContainer = document.getElementById(
-      "contributors-container"
-    );
-    contributorsContainer.innerHTML = contributionMembersElements;
-    const contributorRoleInputs = document.querySelectorAll(
-      ".guided-contributor-role-input"
-    );
-
-    //create a tagify for each element in contributorRoleElements
-    contributorRoleInputs.forEach((contributorRoleElement) => {
-      const tagify = new Tagify(contributorRoleElement, {
-        whitelist: [
-          "PrincipleInvestigator",
-          "Creator",
-          "CoInvestigator",
-          "DataCollector",
-          "DataCurator",
-          "DataManager",
-          "Distributor",
-          "Editor",
-          "Producer",
-          "ProjectLeader",
-          "ProjectManager",
-          "ProjectMember",
-          "RelatedPerson",
-          "Researcher",
-          "ResearchGroup",
-          "Sponsor",
-          "Supervisor",
-          "WorkPackageLeader",
-          "Other",
-        ],
-        enforceWhitelist: true,
-        dropdown: {
-          enabled: 1,
-          closeOnSelect: true,
-          position: "auto",
-        },
-      });
-    });
-
-    //show the contributor fields
-    unHideAndSmoothScrollToElement("guided-div-contributor-field-set");
-  };
-
   $("#guided-button-save-checked-contributors").on("click", async function () {
     //disable button and set to loading while querying contributor data from AirTable
     $(this).prop("disabled", true);
@@ -8893,7 +8914,9 @@ $(document).ready(() => {
           date: date,
           milestone: milestones[0],
         });
-        for (milestone of milestones) {
+        //loop through all milestones except the first one
+        //(already added in first milestone entry)
+        for (milestone of milestones.slice(1)) {
           json_arr.push({
             award: "",
             date: "",
@@ -8906,7 +8929,126 @@ $(document).ready(() => {
         sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] =
           award;
       }
+      if (pageBeingLeftID === "guided-contributors-tab") {
+        //case when user selects contributors from airTable
+        if (
+          !document
+            .getElementById("guided-div-contributors-imported-from-airtable")
+            .classList.remove("hidden")
+        ) {
+        }
+        //case when user adds contributors manually
+        ////////////////////////////////////////////////////////////////////////////////
+        if (
+          !document
+            .getElementById("guided-div-contributor-field-set")
+            .classList.remove("hidden")
+        ) {
+          let allInputsValid = true;
+          let contributors = [];
+          //get all contributor fields
+          const contributorFields = document.querySelectorAll(
+            ".guided-contributor-field-container"
+          );
+          //check if contributorFields is empty
+          if (contributorFields.length === 0) {
+            notyf.error("Please add at least one contributor");
+            //Add a contributor field to help the user out a lil
+            addContributorField();
+            return;
+          }
+
+          //loop through contributor fields and get values
+          const contributorFieldsArray = Array.from(contributorFields);
+          ///////////////////////////////////////////////////////////////////////////////
+          contributorFieldsArray.forEach((contributorField) => {
+            const contributorLastName = contributorField.querySelector(
+              ".guided-last-name-input"
+            );
+            contributorFirstName = contributorField.querySelector(
+              ".guided-first-name-input"
+            );
+            contributorORCID = contributorField.querySelector(
+              ".guided-orcid-input"
+            );
+            contributorAffiliation = contributorField.querySelector(
+              ".guided-affiliation-input"
+            );
+            //get the tags inside the tagify element with the class guided-contributor-role-input
+            const contributorRoleTagify = contributorField.querySelector(
+              ".guided-contributor-role-input"
+            );
+            //get the children of contributorRoleTagify in an array
+            const contributorRoleTagifyChildren = Array.from(
+              contributorRoleTagify.children
+            );
+            //remove the span element from the array so only tag elements are left
+            contributorRoleTagifyChildren.pop();
+            //get the titles of the tagify tagsh
+            const contributorRoles = contributorRoleTagifyChildren.map(
+              (child) => {
+                return child.title;
+              }
+            );
+            //Validate all of the contributor fields
+            const textInputs = [
+              contributorLastName,
+              contributorFirstName,
+              contributorORCID,
+              contributorAffiliation,
+            ];
+            //check if all text inputs are valid
+            textInputs.forEach((textInput) => {
+              if (textInput.value === "") {
+                textInput.style.setProperty("border-color", "red", "important");
+                allInputsValid = false;
+              } else {
+                textInput.style.setProperty(
+                  "border-color",
+                  "hsl(0, 0%, 88%)",
+                  "important"
+                );
+              }
+            });
+            //Check if user added at least one contributor
+            if (contributorRoles.length === 0) {
+              contributorRoleTagify.style.setProperty(
+                "border-color",
+                "red",
+                "important"
+              );
+              allInputsValid = false;
+            } else {
+              //remove the red border from the contributor role tagify
+              contributorRoleTagify.style.setProperty(
+                "border-color",
+                "hsl(0, 0%, 88%)",
+                "important"
+              );
+            }
+
+            const contributorInputObj = {
+              contributorLastName: contributorLastName.value,
+              contributorFirstName: contributorFirstName.value,
+              contributorORCID: contributorORCID.value,
+              contributorAffiliation: contributorAffiliation.value,
+              contributorRoles: contributorRoles,
+            };
+            contributors.push(contributorInputObj);
+          });
+          ///////////////////////////////////////////////////////////////////////////////
+          if (!allInputsValid) {
+            throw new Error(
+              "Please fill out all contributor information fields"
+            );
+          }
+          sodaJSONObj["dataset-metadata"]["description-metadata"][
+            "contributors"
+          ] = contributors;
+        }
+      }
       if (pageBeingLeftID === "guided-create-description-metadata-tab") {
+        guidedSaveDescriptionFile();
       }
       if (pageBeingLeftID === "guided-create-readme-metadata-tab") {
         guidedShowTreePreview(
@@ -9546,6 +9688,21 @@ $(document).ready(() => {
             const buttonNoEnterSubmissionDataManually = document.getElementById(
               "guided-button-enter-submission-metadata-manually"
             );
+
+            if (
+              !buttonYesImportDataDerivatives.classList.contains("selected") &&
+              !buttonNoEnterSubmissionDataManually.classList.contains(
+                "selected"
+              )
+            ) {
+              notyf.open({
+                duration: "5000",
+                type: "error",
+                message:
+                  "Please indicate if you would like to import milestone data.",
+              });
+              return;
+            }
 
             if (buttonYesImportDataDerivatives.classList.contains("selected")) {
               const checkedMilestoneData = getCheckedMilestones();
