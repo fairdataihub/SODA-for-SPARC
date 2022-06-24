@@ -271,9 +271,15 @@ $("#button-rename-dataset").click(async () => {
 
       try {
         await client.put(
-          `/manage_datasets/bf_rename_dataset?selected_account=${selectedbfaccount}&selected_dataset=${currentDatasetName}`,
+          `/manage_datasets/bf_rename_dataset`,
           {
             input_new_name: renamedDatasetName,
+          }, 
+          {
+            params: {
+              selected_account: selectedbfaccount,
+              selected_dataset: currentDatasetName,
+            }
           }
         );
       } catch (error) {
@@ -743,14 +749,18 @@ $("#button-add-subtitle").click(async () => {
     log.info(inputSubtitle);
 
     try {
-      let bf_add_subtitle = await client.put(
-        `/manage_datasets/bf_dataset_subtitle?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}`,
+      await client.put(
+        `/manage_datasets/bf_dataset_subtitle`,
         {
           input_subtitle: inputSubtitle,
+        }, {
+          params: {
+            selected_account: selectedBfAccount,
+            selected_dataset: selectedBfDataset,
+          }
         }
       );
-      let res = bf_add_subtitle.data.message;
-      console.log(res);
+
       log.info("Added subtitle to dataset");
 
       $("#ds-description").val(inputSubtitle);
@@ -780,7 +790,7 @@ $("#button-add-subtitle").click(async () => {
     } catch (error) {
       clientError(error);
 
-      let emessage = error.response.data.message;
+      let emessage = userErrorMessage(error);
       Swal.fire({
         title: "Failed to add subtitle!",
         text: emessage,
@@ -1136,7 +1146,6 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
 
   // update the readme file
   try {
-    // TODO: Replace with FLASK call -- READY
     await client.put(
       `/manage_datasets/datasets/${selectedBfDataset}/readme`,
       { updated_readme: completeReadme },
@@ -1622,9 +1631,15 @@ const uploadBannerImage = async () => {
 
       try {
         let bf_add_banner = await client.put(
-          `/manage_datasets/bf_banner_image?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}`,
+          `/manage_datasets/bf_banner_image`,
           {
             input_banner_image_path: imagePath,
+          }, 
+          {
+            params: {
+              selected_account: selectedBfAccount,
+              selected_dataset: selectedBfDataset,
+            }
           }
         );
         let res = bf_add_banner.data.message;
@@ -1671,8 +1686,7 @@ const uploadBannerImage = async () => {
         showPrePublishingStatus();
       } catch (error) {
         clientError(error);
-
-        let emessage = error.response.data.message;
+        let emessage = userErrorMessage(error);
         $("#para-dataset-banner-image-status").html(
           "<span style='color: red;'> " + emessage + "</span>"
         );
@@ -2015,7 +2029,6 @@ $("#button-add-tags").click(async () => {
 
   // Add tags to dataset
   try {
-    // TODO: Test endpoint error handling
     await client.put(
       `/manage_datasets/datasets/${selectedBfDataset}/tags`,
       { tags },
@@ -2171,11 +2184,18 @@ $("#button-add-license").click(async () => {
     let selectedBfDataset = defaultBfDataset;
     let selectedLicense = "Creative Commons Attribution";
 
+    log.info(`Adding license to selected dataset ${selectedBfDataset}`);
     try {
-      let bf_add_license = await client.put(
-        `/manage_datasets/bf_license?selected_account=${selectedBfAccount}&selected_dataset=${selectedBfDataset}`,
+      await client.put(
+        `/manage_datasets/bf_license`,
         {
           input_license: selectedLicense,
+        }, 
+        {
+          params: {
+            selected_account: selectedBfAccount,
+            selected_dataset: selectedBfDataset,
+          }
         }
       );
 
@@ -2200,7 +2220,7 @@ $("#button-add-license").click(async () => {
       showPrePublishingStatus();
     } catch (error) {
       clientError(error);
-      let emessage = userError(error.response.data.message);
+      let emessage = userErrorMessage(error);
 
       Swal.fire({
         title: "Failed to add the license to your dataset!",
@@ -2907,6 +2927,8 @@ $("#bf_list_dataset_status").on("change", async () => {
   let selectedStatusOption =
     bfListDatasetStatus.options[bfListDatasetStatus.selectedIndex].text;
 
+  log.info(`Changing dataset status to ${selectedStatusOption}`);
+
   try {
     let bf_change_dataset_status = await client.put(
       `/manage_datasets/bf_dataset_status`,
@@ -2917,7 +2939,6 @@ $("#bf_list_dataset_status").on("change", async () => {
       }
     );
     let res = bf_change_dataset_status.data.message;
-    console.log(res);
 
     ipcRenderer.send(
       "track-event",
@@ -2945,10 +2966,7 @@ $("#bf_list_dataset_status").on("change", async () => {
       defaultBfDatasetId
     );
 
-    log.error(error);
-    console.error(error);
-
-    var emessage = userError(error.response.data.message);
+    var emessage = userErrorMessage(error)
 
     function showErrorDatasetStatus() {
       Swal.fire({

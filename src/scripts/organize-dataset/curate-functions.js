@@ -1063,7 +1063,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
           let apiSecret = result.value.secret;
           //needs to be replaced
           try {
-            let add_account_username = await client.put(
+            await client.put(
               `/manage_datasets/account/username`,
               {
                 keyname: key_name,

@@ -202,6 +202,9 @@ const disseminateCurationTeam = async (account, dataset, share_status = "") => {
   if (share_status === "unshare") {
     selectedRole = "remove current permissions";
   }
+
+  log.info(`Sharing dataset ${dataset} with ${selectedTeam} as ${selectedRole}`);
+
   try {
     await client.patch(
       `/manage_datasets/bf_dataset_permissions`,
@@ -358,6 +361,8 @@ async function disseminateConsortium(bfAcct, bfDS, share_status = "") {
   if (share_status === "unshare") {
     selectedRole = "remove current permissions";
   }
+
+  log.info(`Sharing dataset ${bfDS} with ${selectedTeam} as ${selectedRole}`);
 
   try {
     await client.patch(

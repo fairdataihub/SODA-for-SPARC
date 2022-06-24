@@ -395,8 +395,7 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
       resourcesPath: resourcesPath,
     });
   } catch (error) {
-    console.log(error);
-    log.error(error);
+    clientError(error)
     ipcRenderer.send("track-event", "Error", "Setting Templates Path");
     return;
   }
@@ -8029,7 +8028,7 @@ async function addBFAccountInsideSweetalert(myBootboxDialog) {
   var apiKey = $("#bootbox-api-key").val();
   var apiSecret = $("#bootbox-api-secret").val();
   try {
-    let add_api_key = await client.put(`/manage_datasets/account/api_key`, {
+    await client.put(`/manage_datasets/account/api_key`, {
       keyname: name,
       key: apiKey,
       secret: apiSecret,
