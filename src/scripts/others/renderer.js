@@ -4327,9 +4327,8 @@ async function retrieveBFAccounts() {
         bfAccountOptions[accounts[myitem]] = accounts[myitem];
       }
       console.log(`BF Accounts: `, bfAccountOptions);
-      console.log(`Accounts return value`,  accounts); 
+      console.log(`Accounts return value`, accounts);
       showDefaultBFAccount();
-      
     })
     .catch((error) => {
       log.error(error);
