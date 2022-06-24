@@ -365,9 +365,13 @@ async function disseminateConsortium(bfAcct, bfDS, share_status = "") {
   if (share_status === "unshare") {
     selectedRole = "remove current permissions";
   }
+
   try {
-    let share_with_sparc = await client.patch(
+    await client.patch(
       `/manage_datasets/bf_dataset_permissions`,
+      {
+        input_role: selectedRole
+      },
       {
         params: {
           selected_account: bfAcct,
@@ -375,13 +379,8 @@ async function disseminateConsortium(bfAcct, bfDS, share_status = "") {
           scope: "team",
           name: selectedTeam,
         },
-        payload: {
-          input_role: selectedRole,
-        },
       }
     );
-
-    let res = share_with_sparc.data.message;
 
     // log the success to SPARC
     logGeneralOperationsForAnalytics(
@@ -401,7 +400,7 @@ async function disseminateConsortium(bfAcct, bfDS, share_status = "") {
       selectedStatusOption = "10. Curated & Awaiting PI Approval (Curators)";
     }
     try {
-      let change_dataset_status = await client.put(
+      await client.put(
         `/manage_datasets/bf_dataset_status`,
         {
           selected_bfaccount: bfAcct,
@@ -409,8 +408,6 @@ async function disseminateConsortium(bfAcct, bfDS, share_status = "") {
           selected_status: selectedStatusOption,
         }
       );
-
-      let res = change_dataset_status.data.message;
 
       if (share_status === "unshare") {
         Swal.fire({
@@ -465,7 +462,7 @@ async function disseminateConsortium(bfAcct, bfDS, share_status = "") {
       $(".spinner.post-curation").hide();
     } catch (error) {
       clientError(error);
-      let emessage = error.response.data.message;
+      let emessage = userErrorMessage(error);
 
       Swal.fire({
         title: "Failed to share with Consortium!",
@@ -494,7 +491,7 @@ async function disseminateConsortium(bfAcct, bfDS, share_status = "") {
     }
   } catch (error) {
     clientError(error);
-    let emessage = error.response.data.message;
+    let emessage = userErrorMessage(error);
 
     Swal.fire({
       title: "Failed to share with SPARC Consortium!",
@@ -733,7 +730,7 @@ $("#ORCID-btn").on("click", async () => {
       "track-event",
       "Success",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-        " - Integrate ORCID iD",
+      " - Integrate ORCID iD",
       defaultBfDatasetId
     );
 
@@ -1037,7 +1034,7 @@ $(".pre-publishing-continue").on("click", async function () {
       "track-event",
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-        " - Get Excluded Files",
+      " - Get Excluded Files",
       defaultBfDatasetId
     );
 
@@ -1048,7 +1045,7 @@ $(".pre-publishing-continue").on("click", async function () {
     "track-event",
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Get Excluded Files",
+    " - Get Excluded Files",
     defaultBfDatasetId
   );
 
@@ -1076,7 +1073,7 @@ $(".pre-publishing-continue").on("click", async function () {
       "track-event",
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-        " - Get Metadata Files",
+      " - Get Metadata Files",
       defaultBfDatasetId
     );
   }
@@ -1085,7 +1082,7 @@ $(".pre-publishing-continue").on("click", async function () {
     "track-event",
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Get Metadata Files",
+    " - Get Metadata Files",
     defaultBfDatasetId
   );
 

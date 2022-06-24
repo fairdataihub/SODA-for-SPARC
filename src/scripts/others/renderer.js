@@ -7821,7 +7821,7 @@ const curation_consortium_check = async (mode = "") => {
           );
           let res = bf_dataset_permissions.data;
 
-          let dataset_status_value = res[1];
+          let dataset_status_value = res["current_status"];
           let dataset_status = parseInt(dataset_status_value.substring(0, 2));
           let curation_status_satisfied = false;
           let consortium_status_satisfied = false;
