@@ -370,7 +370,7 @@ async function disseminateConsortium(bfAcct, bfDS, share_status = "") {
     await client.patch(
       `/manage_datasets/bf_dataset_permissions`,
       {
-        input_role: selectedRole
+        input_role: selectedRole,
       },
       {
         params: {
@@ -400,14 +400,11 @@ async function disseminateConsortium(bfAcct, bfDS, share_status = "") {
       selectedStatusOption = "10. Curated & Awaiting PI Approval (Curators)";
     }
     try {
-      await client.put(
-        `/manage_datasets/bf_dataset_status`,
-        {
-          selected_bfaccount: bfAcct,
-          selected_bfdataset: bfDS,
-          selected_status: selectedStatusOption,
-        }
-      );
+      await client.put(`/manage_datasets/bf_dataset_status`, {
+        selected_bfaccount: bfAcct,
+        selected_bfdataset: bfDS,
+        selected_status: selectedStatusOption,
+      });
 
       if (share_status === "unshare") {
         Swal.fire({
@@ -730,7 +727,7 @@ $("#ORCID-btn").on("click", async () => {
       "track-event",
       "Success",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Integrate ORCID iD",
+        " - Integrate ORCID iD",
       defaultBfDatasetId
     );
 
@@ -1034,7 +1031,7 @@ $(".pre-publishing-continue").on("click", async function () {
       "track-event",
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Get Excluded Files",
+        " - Get Excluded Files",
       defaultBfDatasetId
     );
 
@@ -1045,7 +1042,7 @@ $(".pre-publishing-continue").on("click", async function () {
     "track-event",
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-    " - Get Excluded Files",
+      " - Get Excluded Files",
     defaultBfDatasetId
   );
 
@@ -1073,7 +1070,7 @@ $(".pre-publishing-continue").on("click", async function () {
       "track-event",
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Get Metadata Files",
+        " - Get Metadata Files",
       defaultBfDatasetId
     );
   }
@@ -1082,7 +1079,7 @@ $(".pre-publishing-continue").on("click", async function () {
     "track-event",
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-    " - Get Metadata Files",
+      " - Get Metadata Files",
     defaultBfDatasetId
   );
 
