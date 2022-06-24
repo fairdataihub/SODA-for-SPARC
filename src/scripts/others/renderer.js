@@ -395,7 +395,7 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
       resourcesPath: resourcesPath,
     });
   } catch (error) {
-    clientError(error)
+    clientError(error);
     ipcRenderer.send("track-event", "Error", "Setting Templates Path");
     return;
   }

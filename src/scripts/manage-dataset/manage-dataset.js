@@ -274,12 +274,12 @@ $("#button-rename-dataset").click(async () => {
           `/manage_datasets/bf_rename_dataset`,
           {
             input_new_name: renamedDatasetName,
-          }, 
+          },
           {
             params: {
               selected_account: selectedbfaccount,
               selected_dataset: currentDatasetName,
-            }
+            },
           }
         );
       } catch (error) {
@@ -753,11 +753,12 @@ $("#button-add-subtitle").click(async () => {
         `/manage_datasets/bf_dataset_subtitle`,
         {
           input_subtitle: inputSubtitle,
-        }, {
+        },
+        {
           params: {
             selected_account: selectedBfAccount,
             selected_dataset: selectedBfDataset,
-          }
+          },
         }
       );
 
@@ -1634,12 +1635,12 @@ const uploadBannerImage = async () => {
           `/manage_datasets/bf_banner_image`,
           {
             input_banner_image_path: imagePath,
-          }, 
+          },
           {
             params: {
               selected_account: selectedBfAccount,
               selected_dataset: selectedBfDataset,
-            }
+            },
           }
         );
         let res = bf_add_banner.data.message;
@@ -2190,12 +2191,12 @@ $("#button-add-license").click(async () => {
         `/manage_datasets/bf_license`,
         {
           input_license: selectedLicense,
-        }, 
+        },
         {
           params: {
             selected_account: selectedBfAccount,
             selected_dataset: selectedBfDataset,
-          }
+          },
         }
       );
 
@@ -2966,7 +2967,7 @@ $("#bf_list_dataset_status").on("change", async () => {
       defaultBfDatasetId
     );
 
-    var emessage = userErrorMessage(error)
+    var emessage = userErrorMessage(error);
 
     function showErrorDatasetStatus() {
       Swal.fire({

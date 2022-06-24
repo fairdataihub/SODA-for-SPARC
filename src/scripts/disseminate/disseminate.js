@@ -203,7 +203,9 @@ const disseminateCurationTeam = async (account, dataset, share_status = "") => {
     selectedRole = "remove current permissions";
   }
 
-  log.info(`Sharing dataset ${dataset} with ${selectedTeam} as ${selectedRole}`);
+  log.info(
+    `Sharing dataset ${dataset} with ${selectedTeam} as ${selectedRole}`
+  );
 
   try {
     await client.patch(
