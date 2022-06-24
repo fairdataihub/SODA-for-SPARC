@@ -680,14 +680,18 @@ $("#ORCID-btn").on("click", async () => {
       },
     });
 
-    log.info("Connecting orcid to Pennsieve account.")
+    log.info("Connecting orcid to Pennsieve account.");
 
     try {
-      await client.post(`/user/orcid`, { access_code: accessCode }, {
-        params: {
-          pennsieve_account: defaultBfAccount,
-        },
-      });
+      await client.post(
+        `/user/orcid`,
+        { access_code: accessCode },
+        {
+          params: {
+            pennsieve_account: defaultBfAccount,
+          },
+        }
+      );
     } catch (error) {
       clientError(error);
       let emessage = userErrorMessage(error);
@@ -729,7 +733,7 @@ $("#ORCID-btn").on("click", async () => {
       "track-event",
       "Success",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Integrate ORCID iD",
+        " - Integrate ORCID iD",
       defaultBfDatasetId
     );
 
@@ -1033,7 +1037,7 @@ $(".pre-publishing-continue").on("click", async function () {
       "track-event",
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Get Excluded Files",
+        " - Get Excluded Files",
       defaultBfDatasetId
     );
 
@@ -1044,7 +1048,7 @@ $(".pre-publishing-continue").on("click", async function () {
     "track-event",
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-    " - Get Excluded Files",
+      " - Get Excluded Files",
     defaultBfDatasetId
   );
 
@@ -1071,7 +1075,7 @@ $(".pre-publishing-continue").on("click", async function () {
       "track-event",
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Get Metadata Files",
+        " - Get Metadata Files",
       defaultBfDatasetId
     );
   }
@@ -1080,7 +1084,7 @@ $(".pre-publishing-continue").on("click", async function () {
     "track-event",
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-    " - Get Metadata Files",
+      " - Get Metadata Files",
     defaultBfDatasetId
   );
 

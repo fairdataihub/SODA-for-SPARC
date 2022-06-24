@@ -1420,7 +1420,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     .getElementById("bf_dataset_load_subjects")
     .innerText.trim();
   try {
-    log.info(`Generating a subjects file.`)
+    log.info(`Generating a subjects file.`);
     let save_locally = await client.post(
       `/prepare_metadata/subjects_file`,
       {
@@ -1432,7 +1432,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
       {
         params: {
           upload_boolean: uploadBFBoolean,
-        }
+        },
       }
     );
 
@@ -1461,7 +1461,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     logMetadataSizeForAnalytics(uploadBFBoolean, "subjects.xlsx", size);
   } catch (error) {
     clientError(error);
-    let emessage = userErrorMessage(error)
+    let emessage = userErrorMessage(error);
 
     Swal.fire({
       title: "Failed to generate the subjects.xlsx file.",
@@ -2116,8 +2116,8 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
   try {
     let load_taxonomy_species = await client.get(`/taxonomy/species`, {
       params: {
-        animals_list: [commonName]
-      }
+        animals_list: [commonName],
+      },
     });
     let res = load_taxonomy_species.data;
 
@@ -3339,7 +3339,7 @@ async function submitReviewDataset(embargoReleaseDate) {
       embargoReleaseDate
     );
   } catch (error) {
-    clientError(error)
+    clientError(error);
     logGeneralOperationsForAnalytics(
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
@@ -4474,7 +4474,7 @@ ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
           generation_type: "create-new",
           generation_destination_path: filepath[0],
           dataset_name: newDSName,
-          soda_json_directory_structure: datasetStructureJSONObj
+          soda_json_directory_structure: datasetStructureJSONObj,
         });
 
         document.getElementById("para-organize-datasets-error").style.display =
@@ -7955,13 +7955,10 @@ ipcRenderer.on("selected-manifest-folder", async (event, result) => {
     }
 
     try {
-      await client.post(
-        `/curate_datasets/manifest_files`,
-        {
-          generate_purpose: "",
-          soda_json_object: temp_sodaJSONObj,
-        }
-      );
+      await client.post(`/curate_datasets/manifest_files`, {
+        generate_purpose: "",
+        soda_json_object: temp_sodaJSONObj,
+      });
 
       $("body").removeClass("waiting");
       logCurationForAnalytics(
@@ -8080,7 +8077,7 @@ async function addBFAccountInsideSweetalert(myBootboxDialog) {
       showHideDropdownButtons("account", "hide");
       confirm_click_account_function();
 
-      return
+      return;
     }
 
     Swal.fire({
@@ -8532,8 +8529,6 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   return statuses;
 };
 
-
-
 /*
 ******************************************************
 ******************************************************
@@ -8655,7 +8650,6 @@ const userIsDatasetOwner = async (datasetIdOrName) => {
 
   return userIsOwner(role);
 };
-
 
 const create_validation_report = (error_report) => {
   // let accordion_elements = ` <div class="title active"> `;

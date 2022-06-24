@@ -378,7 +378,7 @@ async function generateManifest(action, type, manifestEditBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   // Case 1: Local dataset
   if (type === "local") {
     sodaJSONObj["starting-point"]["local-path"] = localDatasetFolderPath;
@@ -450,7 +450,7 @@ async function generateManifest(action, type, manifestEditBoolean) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => { });
+          }).then((result) => {});
 
           // log the error to analytics
           logMetadataForAnalytics(
@@ -478,7 +478,7 @@ async function generateManifest(action, type, manifestEditBoolean) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => { });
+          }).then((result) => {});
           // log the error to analytics
           logMetadataForAnalytics(
             "Error",
@@ -505,7 +505,7 @@ async function generateManifest(action, type, manifestEditBoolean) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => { });
+          }).then((result) => {});
           // log the error to analytics
           logMetadataForAnalytics(
             "Error",
@@ -981,7 +981,7 @@ async function extractBFDatasetForManifestFile(
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       $("#Question-prepare-manifest-4").removeClass("show");
       $("#Question-prepare-manifest-4").removeClass("prev");
       $("#Question-prepare-manifest-3").removeClass("prev");
@@ -1011,7 +1011,7 @@ async function extractBFDatasetForManifestFile(
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       $("#Question-prepare-manifest-4").removeClass("show");
       $("#Question-prepare-manifest-4").removeClass("prev");
       $("#Question-prepare-manifest-3").removeClass("prev");
@@ -1067,7 +1067,7 @@ function validateSPARCdataset() {
           $(".swal-popover").popover();
         },
         footer: footer,
-      }).then((result) => { });
+      }).then((result) => {});
       return false;
     } else {
       return true;
@@ -1260,7 +1260,7 @@ async function generateManifestFolderLocallyForEdit() {
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       return;
     } else {
       createManifestLocally("local", true, "");
@@ -1290,7 +1290,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
       `/curate_datasets/manifest_files`,
       {
         generate_purpose: "edit-manifest",
-        soda_json_object: sodaJSONObj
+        soda_json_object: sodaJSONObj,
       }
     );
     let res =
@@ -1315,14 +1315,14 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
           didOpen: () => {
             Swal.hideLoading();
           },
-        }).then((result) => { });
+        }).then((result) => {});
         $("#preview-manifest-fake-confirm").click();
         $("#Question-prepare-manifest-4").removeClass("show");
         $("#Question-prepare-manifest-4").removeClass("prev");
         loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
       } catch (error) {
         clientError(error);
-        let emessage = userErrorMessage(error)
+        let emessage = userErrorMessage(error);
 
         Swal.fire({
           title: "Failed to load the manifest files for edits.",
@@ -1334,9 +1334,9 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
           didOpen: () => {
             Swal.hideLoading();
           },
-        })
+        });
 
-        return 
+        return;
       }
 
       Swal.fire({
@@ -1349,7 +1349,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       localDatasetFolderPath = "";
     } else {
       // SODA Manifest Files folder
@@ -1395,7 +1395,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
     }
   } catch (error) {
     clientError(error);
-    let emessage = userErrorMessage(error)
+    let emessage = userErrorMessage(error);
 
     Swal.fire({
       title: "Failed to generate the manifest files.",
@@ -1407,7 +1407,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
       didOpen: () => {
         Swal.hideLoading();
       },
-    }).then((result) => { });
+    }).then((result) => {});
     $("#Question-prepare-manifest-4").removeClass("show");
     $("#Question-prepare-manifest-4").removeClass("prev");
     $("#Question-prepare-manifest-3").removeClass("prev");
