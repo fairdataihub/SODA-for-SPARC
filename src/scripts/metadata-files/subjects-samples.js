@@ -2391,6 +2391,8 @@ async function checkBFImportSubjects() {
   let bfDataset = document
     .getElementById("bf_dataset_load_subjects")
     .innerText.trim();
+
+  log.info(`Getting subjects.xlsx for dataset ${bfDataset} from Pennsieve.`);
   try {
     let import_metadata_file = await client.get(
       `/prepare_metadata/import_metadata_file`,
@@ -2458,6 +2460,8 @@ async function checkBFImportSamples() {
   }
 
   let bfDataset = document.getElementById("bf_dataset_load_samples").innerText;
+
+  log.info(`Getting samples.xlsx for dataset ${bfDataset} from Pennsieve.`);
   try {
     let import_metadata = await client.get(
       `/prepare_metadata/import_metadata_file`,
