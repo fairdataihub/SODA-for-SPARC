@@ -203,8 +203,11 @@ const disseminateCurationTeam = async (account, dataset, share_status = "") => {
     selectedRole = "remove current permissions";
   }
   try {
-    let share_sparc_team = await client.patch(
+    await client.patch(
       `/manage_datasets/bf_dataset_permissions`,
+      {
+        input_role: selectedRole
+      },
       {
         params: {
           selected_account: account,
@@ -212,13 +215,9 @@ const disseminateCurationTeam = async (account, dataset, share_status = "") => {
           scope: "team",
           name: selectedTeam,
         },
-        payload: {
-          input_role: selectedRole,
-        },
+
       }
     );
-
-    let res = share_sparc_team.data.message;
 
     logGeneralOperationsForAnalytics(
       "Success",
@@ -237,18 +236,16 @@ const disseminateCurationTeam = async (account, dataset, share_status = "") => {
     if (share_status === "unshare") {
       selectedStatusOption = "02. Work In Progress (Investigator)";
     }
+
     try {
-      let change_dataset_status = await client.put(
+      await client.put(
         `/manage_datasets/bf_dataset_status`,
         {
-          payload: {
-            selected_bfaccount: account,
-            selected_bfdataset: dataset,
-            selected_status: selectedStatusOption,
-          },
+          selected_bfaccount: account,
+          selected_bfdataset: dataset,
+          selected_status: selectedStatusOption,
         }
       );
-      let res = change_dataset_status.data.message;
 
       $("#share-curation-team-spinner").hide();
 
@@ -299,7 +296,7 @@ const disseminateCurationTeam = async (account, dataset, share_status = "") => {
       $("#curation-team-unshare-btn").prop("disabled", false);
     } catch (error) {
       clientError(error);
-      let emessage = error.response.data.message;
+      let emessage = userErrorMessage(error);
 
       Swal.fire({
         title: "Failed to share with Curation team!",
@@ -327,7 +324,7 @@ const disseminateCurationTeam = async (account, dataset, share_status = "") => {
     }
   } catch (error) {
     clientError(error);
-    let emessage = error.response.data.message;
+    let emessage = userErrorMessage(error);
 
     Swal.fire({
       title: "Failed to share with Curation team!",
@@ -738,7 +735,7 @@ $("#ORCID-btn").on("click", async () => {
       "track-event",
       "Success",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-        " - Integrate ORCID iD",
+      " - Integrate ORCID iD",
       defaultBfDatasetId
     );
 
@@ -1042,7 +1039,7 @@ $(".pre-publishing-continue").on("click", async function () {
       "track-event",
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-        " - Get Excluded Files",
+      " - Get Excluded Files",
       defaultBfDatasetId
     );
 
@@ -1053,7 +1050,7 @@ $(".pre-publishing-continue").on("click", async function () {
     "track-event",
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Get Excluded Files",
+    " - Get Excluded Files",
     defaultBfDatasetId
   );
 
@@ -1081,7 +1078,7 @@ $(".pre-publishing-continue").on("click", async function () {
       "track-event",
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-        " - Get Metadata Files",
+      " - Get Metadata Files",
       defaultBfDatasetId
     );
   }
@@ -1090,7 +1087,7 @@ $(".pre-publishing-continue").on("click", async function () {
     "track-event",
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Get Metadata Files",
+    " - Get Metadata Files",
     defaultBfDatasetId
   );
 
