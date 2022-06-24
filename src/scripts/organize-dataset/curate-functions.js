@@ -819,7 +819,7 @@ $(document).ready(async function () {
     async function (mutations) {
       let datasets;
       try {
-        datasets = api.getDatasetsForAccount(defaultBfAccount);
+        datasets = await api.getDatasetsForAccount(defaultBfAccount);
       } catch (error) {
         clientError(error);
         return;
@@ -959,6 +959,8 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
                 },
               }
             );
+
+            console.log("Open dropdown prompt dataset response: ", responseObject);
             datasetList = [];
             datasetList = responseObject.data.datasets;
             refreshDatasetList();
@@ -1146,6 +1148,9 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
     $("#div-permission-list-2").css("display", "none");
     $(".ui.active.green.inline.loader.small").css("display", "block");
 
+    console.log("Dropdown prompt in dataset section")
+
+
     setTimeout(async function () {
       // disable the Continue btn first
       $("#nextBtn").prop("disabled", true);
@@ -1188,6 +1193,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
 
       var accountPresent = await check_api_key();
       if (accountPresent === false) {
+        console.log("No account found")
         //If there is no API key pair, warning will pop up allowing user to sign in
         await Swal.fire({
           icon: "warning",
@@ -1222,9 +1228,11 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
           1
         );
       } else {
+        console.log("Account found")
         //account is signed in but no datasets have been fetched or created
         //invoke dataset request to ensure no datasets have been created
         if (datasetList.length === 0) {
+          console.log("Don't have a single stinking dataset")
           let responseObject;
           try {
             responseObject = await client.get(
@@ -1250,6 +1258,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       //after request check length again
       //if 0 then no datasets have been created
       if (datasetList.length === 0) {
+        console.log("Dont have a single stinking dataset twice")
         Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
           cancelButtonText: "Cancel",
@@ -1288,9 +1297,14 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
           1
         );
       }
+
+      console.log("Dataset list is not 0")
       //datasets do exist so display popup with dataset options
       //else datasets have been created
+      console.log(datasetList)
+      console.log(`Dataset list length is: ${datasetList.length}`)
       if (datasetList.length > 0) {
+        console.log("Datasets do exist")
         const { value: bfDS } = await Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
           cancelButtonText: "Cancel",

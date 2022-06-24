@@ -4321,10 +4321,13 @@ async function retrieveBFAccounts() {
     .get("manage_datasets/bf_account_list")
     .then((res) => {
       let accounts = res.data;
-      for (myitem in accounts) {
+      for (const myitem in accounts) {
         bfAccountOptions[accounts[myitem]] = accounts[myitem];
       }
+      console.log(`BF Accounts: `, bfAccountOptions);
+      console.log(`Accounts return value`,  accounts); 
       showDefaultBFAccount();
+      
     })
     .catch((error) => {
       log.error(error);
