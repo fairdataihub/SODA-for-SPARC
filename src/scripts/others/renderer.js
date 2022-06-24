@@ -743,7 +743,6 @@ const check_agent_installed = async () => {
   let responseObject;
 
   try {
-    // TODO: Test errors
     responseObject = await client.get("/manage_datasets/check_agent_install");
   } catch (error) {
     clientError(error);
@@ -1345,7 +1344,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => {});
+            }).then((result) => { });
             generateSubjectsFileHelper(false);
           }
         });
@@ -1361,7 +1360,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         generateSubjectsFileHelper(false);
       }
     }
@@ -1415,7 +1414,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   let bfdataset = document
     .getElementById("bf_dataset_load_subjects")
@@ -1513,7 +1512,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => {});
+            }).then((result) => { });
             generateSamplesFileHelper(uploadBFBoolean);
           }
         });
@@ -1529,7 +1528,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         generateSamplesFileHelper(uploadBFBoolean);
       }
     }
@@ -1583,7 +1582,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   // new client that has a longer timeout
   let clientLongTimeout = new zerorpc.Client({
@@ -1797,16 +1796,12 @@ async function loadSamplesFileToDataframe(filePath) {
       {
         params: {
           type: "samples.xlsx",
-        },
-        payload: {
           filepath: filePath,
           ui_fields: fieldSampleEntries,
         },
-      }
-    );
+      })
 
     let res = import_samples_file.data.sample_file_rows;
-    console.log(res);
     // res is a dataframe, now we load it into our samplesTableData in order to populate the UI
     if (res.length > 1) {
       result = transformImportedExcelFile("samples", res);
@@ -2110,14 +2105,14 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   try {
     let load_taxonomy_species = await client.get(`/taxonomy/species`, {
-      animal_list: [commonName],
+      params: { 
+        animals_list: [commonName]
+      }
     });
-    console.log(load_taxonomy_species);
     let res = load_taxonomy_species.data;
-    console.log(res);
 
     if (Object.keys(res).length === 0) {
       Swal.fire({
@@ -2827,9 +2822,9 @@ function detectEmptyRequiredFields(funding) {
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
   var emptyMessageArray = [
     "- Missing required fields under Dataset Info section: " +
-      dsEmptyField.join(", "),
+    dsEmptyField.join(", "),
     "- Missing required fields under Contributor Info section: " +
-      conEmptyField.join(", "),
+    conEmptyField.join(", "),
     "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
   ];
   var allFieldsSatisfied = true;
@@ -3776,7 +3771,6 @@ async function loadDefaultAccount() {
   } catch (e) {
     clientError(e);
     confirm_click_account_function();
-    console.log("Could not get default account");
     return;
   }
 
@@ -6416,7 +6410,6 @@ ipcRenderer.on(
                 let local_progress = setInterval(progressReport, 500);
                 async function progressReport() {
                   try {
-                    // TODO: Test error handling
                     let monitorProgressResponse = await client.get(
                       `/organize_datasets/datasets/import/progress`
                     );
@@ -6434,16 +6427,14 @@ ipcRenderer.on(
 
                     numb.innerText = percentage_amount + "%";
                     if (percentage_amount <= 50) {
-                      progressBar_rightSide.style.transform = `rotate(${
-                        percentage_amount * 0.01 * 360
-                      }deg)`;
+                      progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
+                        }deg)`;
                     } else {
                       progressBar_rightSide.style.transition = "";
                       progressBar_rightSide.classList.add("notransition");
                       progressBar_rightSide.style.transform = `rotate(180deg)`;
-                      progressBar_leftSide.style.transform = `rotate(${
-                        percentage_amount * 0.01 * 180
-                      }deg)`;
+                      progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
+                        }deg)`;
                     }
 
                     if (finished === 1) {
@@ -6518,16 +6509,14 @@ ipcRenderer.on(
 
                   numb.innerText = percentage_amount + "%";
                   if (percentage_amount <= 50) {
-                    progressBar_rightSide.style.transform = `rotate(${
-                      percentage_amount * 0.01 * 360
-                    }deg)`;
+                    progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
+                      }deg)`;
                   } else {
                     progressBar_rightSide.style.transition = "";
                     progressBar_rightSide.classList.add("notransition");
                     progressBar_rightSide.style.transform = `rotate(180deg)`;
-                    progressBar_leftSide.style.transform = `rotate(${
-                      percentage_amount * 0.01 * 180
-                    }deg)`;
+                    progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
+                      }deg)`;
                   }
                   if (finished === 1) {
                     progressBar_leftSide.style.transform = `rotate(180deg)`;
@@ -6795,9 +6784,9 @@ document
     for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
       if (
         "manifest.xlsx" in
-          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
         sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-          "manifest.xlsx"
+        "manifest.xlsx"
         ]["forTreeview"]
       ) {
         delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
@@ -7087,7 +7076,6 @@ async function initiate_generate() {
     console.error(error);
 
     try {
-      // TODO: Test error handling
       let responseObject = await client.get(
         `manage_datasets/bf_dataset_account`,
         {
@@ -7100,7 +7088,7 @@ async function initiate_generate() {
       datasetList = responseObject.data.datasets;
     } catch (error) {
       clientError(error);
-      emessage = error.response.data.message;
+      emessage = userErrorMessage(error);
     }
 
     // wait to see if the uploaded files or size will grow once the client has time to ask for the updated information
@@ -7161,7 +7149,6 @@ async function initiate_generate() {
   async function main_progressfunction() {
     let mainCurationProgressResponse;
     try {
-      // TODO: Test error handling
       mainCurationProgressResponse = await client.get(
         `/curate_datasetscuration/progress`
       );
@@ -7388,7 +7375,7 @@ async function initiate_generate() {
           "track-event",
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE +
-            " - Step 7 - Generate - Dataset - Number of Files",
+          " - Step 7 - Generate - Dataset - Number of Files",
           `${datasetUploadSession.id}`,
           uploadedFiles
         );
@@ -7398,7 +7385,7 @@ async function initiate_generate() {
           "track-event",
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE +
-            " - Step 7 - Generate - Dataset - Size",
+          " - Step 7 - Generate - Dataset - Size",
           `${datasetUploadSession.id}`,
           increaseInFileSize
         );
@@ -7827,7 +7814,7 @@ const curation_consortium_check = async (mode = "") => {
               },
             }
           );
-          let res = bf_dataset_permission.data;
+          let res = bf_dataset_permissions.data;
 
           let dataset_status_value = res[1];
           let dataset_status = parseInt(dataset_status_value.substring(0, 2));
@@ -8092,6 +8079,8 @@ async function addBFAccountInsideSweetalert(myBootboxDialog) {
       });
       showHideDropdownButtons("account", "hide");
       confirm_click_account_function();
+
+      return 
     }
 
     Swal.fire({
@@ -8108,7 +8097,7 @@ async function addBFAccountInsideSweetalert(myBootboxDialog) {
     clientError(error);
     Swal.fire({
       icon: "error",
-      html: "<span>" + error.response.data.message + "</span>",
+      html: "<span>" + userErrorMessage(error) + "</span>",
       heightAuto: false,
       backdrop: "rgba(0,0,0,0.4)",
     }).then((result) => {

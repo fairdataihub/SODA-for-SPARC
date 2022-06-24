@@ -144,6 +144,7 @@ async function helpMilestoneSubmission() {
 
         const filepath = result.value.filepath;
         var award = $("#submission-sparc-award");
+        log.info(`Importing Data Deliverables document: ${filepath}`);
         try {
           let extract_milestone = await client.get(
             `/prepare_metadata/import_milestone`,
@@ -155,7 +156,6 @@ async function helpMilestoneSubmission() {
           );
 
           let res = extract_milestone.data;
-          console.log(res);
           milestoneObj = res;
           createMetadataDir();
           var informationJson = {};
@@ -858,11 +858,14 @@ function importExistingSubmissionFile(type) {
 
 // function to load existing submission files
 async function loadExistingSubmissionFile(filepath) {
+  log.info(`Loading existing submission file: ${filepath}`);
   try {
     let load_submission_file = await client.get(
       `/prepare_metadata/submission_file`,
       {
-        filepath: filepath,
+        params: { 
+          filepath
+        }
       }
     );
 
@@ -964,6 +967,7 @@ async function checkBFImportSubmission() {
     },
   }).then((result) => {});
   let bfDataset = $("#bf_dataset_load_submission").text().trim();
+  log.info(`Loading submission file from Pennsieve dataset: ${bfDataset}`);
   try {
     let import_metadata = await client.get(
       `/prepare_metadata/import_metadata_file`,

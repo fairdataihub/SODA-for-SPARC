@@ -365,8 +365,8 @@ class SamplesFile(Resource):
     
     parser_create_data_frames = reqparse.RequestParser(bundle_errors=True)
     parser_create_data_frames.add_argument('type', type=str, help="samples.xlsx is the valid metadata type.", location="args", required=True)
-    parser_create_data_frames.add_argument('filepath', type=str, help="Path to the subjects or samples file on the user's machine.", location="json", required=True)
-    parser_create_data_frames.add_argument('ui_fields', type=list, help='The fields to include in the final data frame.', location="json", required=True)
+    parser_create_data_frames.add_argument('filepath', type=str, help="Path to the subjects or samples file on the user's machine.", location="args", required=True)
+    parser_create_data_frames.add_argument('ui_fields', type=list, help='The fields to include in the final data frame.', location="args", required=True)
 
     @api.expect(parser_create_data_frames)
     @api.doc(description='Get a local samples file data in the form of data frames.', responses={500: "Internal Server Error", 400: "Bad Request"})

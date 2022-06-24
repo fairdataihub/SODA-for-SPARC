@@ -1,6 +1,7 @@
 from flask_restx import Resource, reqparse
 from namespaces import get_namespace, NamespaceEnum
 from taxonomy import load_taxonomy_species
+from flask import request
 
 api = get_namespace(NamespaceEnum.TAXONOMY)
 
@@ -8,14 +9,14 @@ api = get_namespace(NamespaceEnum.TAXONOMY)
 @api.route("/species")
 class Species(Resource):
 
-    parser = reqparse.RequestParser(bundle_errors=True)
-
-    parser.add_argument("animal_list", type=list, required=True, help="Animal names", location="json")
-
-    @api.expect(parser)
-    @api.doc(response={200: "Success", 400: "Bad Request", 500: "Internal Server Error"}, description="Get the scientific name for a species")
+    @api.doc(response={200: "Success", 400: "Bad Request", 500: "Internal Server Error"}, description="Get the scientific name for a species", params={"animals_list": "List of animal names"})
     def get(self):
-        animals_list = self.parser.parse_args().get("animal_list")
+        data = request.args.to_dict()
+
+        animals_list = data.get("animals_list")
+
+        if animals_list is None:
+            api.abort(400, "Missing animal_list parameter")
 
         try:
             return load_taxonomy_species(animals_list)

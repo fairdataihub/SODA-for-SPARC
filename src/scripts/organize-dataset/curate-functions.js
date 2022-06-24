@@ -224,12 +224,13 @@ const checkAvailableSpace = () => {
     .getAttribute("placeholder");
 
   checkDiskSpace(location).then(async (diskSpace) => {
+
+    log.info(`Checking available disk space for ${location}`);
     let freeMemory = diskSpace.free; //returns in bytes
     let freeMemoryMB = roundToHundredth(freeMemory / 1024 ** 2);
 
     let datasetSizeResponse;
     try {
-      // TODO: Test error response
       datasetSizeResponse = await client.get("/curate_datasets/dataset_size", {
         params: {
           soda_json_structure: sodaJSONObj,
@@ -310,9 +311,7 @@ const checkAvailableSpace = () => {
         determineDatasetLocation()
       );
     } catch (error) {
-      if (error.message != "Request aborted") {
-        clientError(error);
-      }
+      clientError(error)
     }
   });
 };
@@ -449,6 +448,7 @@ const importGenerateDatasetStep = async (object) => {
         $("#para-account-detail-curate").html("");
 
         try {
+          log.info(`Loading account details for ${bfAccountSelected}`);
           let dataset_request = await client.get(
             `/manage_datasets/bf_account_details`,
             {
@@ -466,7 +466,7 @@ const importGenerateDatasetStep = async (object) => {
           showHideDropdownButtons("account", "hide");
         }
 
-        // $("#div-bf-account-btns").css("display", "flex");
+ 
         $("#btn-bf-account").trigger("click");
         // Step 3: choose to generate on an existing or new dataset
         if (
@@ -819,23 +819,16 @@ $(document).ready(async function () {
   //Observe the paragraph
   this.observer = new MutationObserver(
     async function (mutations) {
-      let responseObject;
+      let datasets;
       try {
-        responseObject = await client.get(
-          `manage_datasets/bf_dataset_account`,
-          {
-            params: {
-              selected_account: defaultBfAccount,
-            },
-          }
-        );
+        datasets = api.getDatasetsForAccount(defaultBfAccount)
       } catch (error) {
         clientError(error);
         return;
       }
 
       datasetList = [];
-      datasetList = responseObject.data.datasets;
+      datasetList = datasets;
       refreshDatasetList();
     }.bind(this)
   );
@@ -973,6 +966,10 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             refreshDatasetList();
           } catch (error) {
             clientError(error);
+            document.getElementById(
+              "para-filter-datasets-status-2"
+            ).innerHTML =
+              "<span style='color: red'>" + userErrorMessage(error) + "</span>";
             return;
           }
         } catch (error) {
@@ -1079,7 +1076,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
 
             try {
               let bf_account_details_req = await client.get(
-                `/manage_datasets/bf_account_details?selected_account=${defaultBfAccount}`,
+                `/manage_datasets/bf_account_details`,
                 {
                   params: {
                     selected_account: defaultBfAccount,
