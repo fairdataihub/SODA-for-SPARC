@@ -863,9 +863,9 @@ async function loadExistingSubmissionFile(filepath) {
     let load_submission_file = await client.get(
       `/prepare_metadata/submission_file`,
       {
-        params: { 
-          filepath
-        }
+        params: {
+          filepath,
+        },
       }
     );
 

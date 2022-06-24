@@ -224,7 +224,6 @@ const checkAvailableSpace = () => {
     .getAttribute("placeholder");
 
   checkDiskSpace(location).then(async (diskSpace) => {
-
     log.info(`Checking available disk space for ${location}`);
     let freeMemory = diskSpace.free; //returns in bytes
     let freeMemoryMB = roundToHundredth(freeMemory / 1024 ** 2);
@@ -311,7 +310,7 @@ const checkAvailableSpace = () => {
         determineDatasetLocation()
       );
     } catch (error) {
-      clientError(error)
+      clientError(error);
     }
   });
 };
@@ -466,7 +465,6 @@ const importGenerateDatasetStep = async (object) => {
           showHideDropdownButtons("account", "hide");
         }
 
- 
         $("#btn-bf-account").trigger("click");
         // Step 3: choose to generate on an existing or new dataset
         if (
@@ -821,7 +819,7 @@ $(document).ready(async function () {
     async function (mutations) {
       let datasets;
       try {
-        datasets = api.getDatasetsForAccount(defaultBfAccount)
+        datasets = api.getDatasetsForAccount(defaultBfAccount);
       } catch (error) {
         clientError(error);
         return;
@@ -966,9 +964,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             refreshDatasetList();
           } catch (error) {
             clientError(error);
-            document.getElementById(
-              "para-filter-datasets-status-2"
-            ).innerHTML =
+            document.getElementById("para-filter-datasets-status-2").innerHTML =
               "<span style='color: red'>" + userErrorMessage(error) + "</span>";
             return;
           }
