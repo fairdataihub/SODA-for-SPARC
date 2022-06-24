@@ -1343,7 +1343,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => { });
+            }).then((result) => {});
             generateSubjectsFileHelper(false);
           }
         });
@@ -1359,7 +1359,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => { });
+        }).then((result) => {});
         generateSubjectsFileHelper(false);
       }
     }
@@ -1413,7 +1413,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   let bfdataset = document
     .getElementById("bf_dataset_load_subjects")
@@ -1517,7 +1517,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => { });
+            }).then((result) => {});
             generateSamplesFileHelper(uploadBFBoolean);
           }
         });
@@ -1533,7 +1533,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => { });
+        }).then((result) => {});
         generateSamplesFileHelper(uploadBFBoolean);
       }
     }
@@ -1587,7 +1587,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   // new client that has a longer timeout
   let clientLongTimeout = new zerorpc.Client({
@@ -2111,7 +2111,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   try {
     let load_taxonomy_species = await client.get(`/taxonomy/species`, {
       params: {
@@ -2828,9 +2828,9 @@ function detectEmptyRequiredFields(funding) {
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
   var emptyMessageArray = [
     "- Missing required fields under Dataset Info section: " +
-    dsEmptyField.join(", "),
+      dsEmptyField.join(", "),
     "- Missing required fields under Contributor Info section: " +
-    conEmptyField.join(", "),
+      conEmptyField.join(", "),
     "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
   ];
   var allFieldsSatisfied = true;
@@ -6435,14 +6435,16 @@ ipcRenderer.on(
 
                     numb.innerText = percentage_amount + "%";
                     if (percentage_amount <= 50) {
-                      progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
-                        }deg)`;
+                      progressBar_rightSide.style.transform = `rotate(${
+                        percentage_amount * 0.01 * 360
+                      }deg)`;
                     } else {
                       progressBar_rightSide.style.transition = "";
                       progressBar_rightSide.classList.add("notransition");
                       progressBar_rightSide.style.transform = `rotate(180deg)`;
-                      progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
-                        }deg)`;
+                      progressBar_leftSide.style.transform = `rotate(${
+                        percentage_amount * 0.01 * 180
+                      }deg)`;
                     }
 
                     if (finished === 1) {
@@ -6516,14 +6518,16 @@ ipcRenderer.on(
 
                   numb.innerText = percentage_amount + "%";
                   if (percentage_amount <= 50) {
-                    progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
-                      }deg)`;
+                    progressBar_rightSide.style.transform = `rotate(${
+                      percentage_amount * 0.01 * 360
+                    }deg)`;
                   } else {
                     progressBar_rightSide.style.transition = "";
                     progressBar_rightSide.classList.add("notransition");
                     progressBar_rightSide.style.transform = `rotate(180deg)`;
-                    progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
-                      }deg)`;
+                    progressBar_leftSide.style.transform = `rotate(${
+                      percentage_amount * 0.01 * 180
+                    }deg)`;
                   }
                   if (finished === 1) {
                     progressBar_leftSide.style.transform = `rotate(180deg)`;
@@ -6787,9 +6791,9 @@ document
     for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
       if (
         "manifest.xlsx" in
-        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
         sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-        "manifest.xlsx"
+          "manifest.xlsx"
         ]["forTreeview"]
       ) {
         delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
@@ -7023,121 +7027,125 @@ async function initiate_generate() {
   // clear the Pennsieve Queue (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
   clearQueue();
 
-  client.post(`/curate_datasets/curation`, {
-    soda_json_structure: sodaJSONObj,
-  }).then( async response => {
-    let { data } = response;
+  client
+    .post(`/curate_datasets/curation`, {
+      soda_json_structure: sodaJSONObj,
+    })
+    .then(async (response) => {
+      let { data } = response;
 
-    main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
-    uploadedFiles = data["main_curation_uploaded_files"];
+      main_total_generate_dataset_size =
+        data["main_total_generate_dataset_size"];
+      uploadedFiles = data["main_curation_uploaded_files"];
 
-    $("#sidebarCollapse").prop("disabled", false);
-    log.info("Completed curate function");
+      $("#sidebarCollapse").prop("disabled", false);
+      log.info("Completed curate function");
 
-    // log relevant curation details about the dataset generation/Upload to Google Analytics
-    logCurationSuccessToAnalytics(
-      manifest_files_requested,
-      main_total_generate_dataset_size,
-      dataset_name,
-      dataset_destination,
-      uploadedFiles
-    );
-
-    try {
-      let responseObject = await client.get(
-        `manage_datasets/bf_dataset_account`,
-        {
-          params: {
-            selected_account: defaultBfAccount,
-          },
-        }
+      // log relevant curation details about the dataset generation/Upload to Google Analytics
+      logCurationSuccessToAnalytics(
+        manifest_files_requested,
+        main_total_generate_dataset_size,
+        dataset_name,
+        dataset_destination,
+        uploadedFiles
       );
-      datasetList = [];
-      datasetList = responseObject.data.datasets;
-    } catch (error) {
-      clientError(error);
-    }
-  }).catch( async error => {
-    clientError(error);
-    let emessage = userErrorMessage(error);
-    organizeDataset_option_buttons.style.display = "flex";
-    organizeDataset.disabled = false;
-    organizeDataset.className = "content-button is-selected";
-    organizeDataset.style = "background-color: #fff";
-    $("#sidebarCollapse").prop("disabled", false);
-    document.getElementById(
-      "para-new-curate-progress-bar-error-status"
-    ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
-    uploadLocally.disabled = false;
-    uploadLocally.className = "content-button is-selected";
-    uploadLocally.style = "background-color: #fff";
-    Swal.fire({
-      icon: "error",
-      title: "An Error Occurred While Uploading Your Dataset",
-      html: "Check the error text in the Organize Dataset's upload page to see what went wrong.",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    }).then((result) => {
-      statusBarClone.remove();
-      sparc_container.style.display = "inline";
-      if (result.isConfirmed) {
-        organizeDataset.click();
-        let button = document.getElementById("button-generate");
-        $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
-        document.getElementById("prevBtn").style.display = "none";
-        document.getElementById("start-over-btn").style.display = "none";
-        document.getElementById("div-vertical-progress-bar").style.display =
-          "none";
-        document.getElementById("div-generate-comeback").style.display = "none";
-        document.getElementById("generate-dataset-progress-tab").style.display =
-          "flex";
+
+      try {
+        let responseObject = await client.get(
+          `manage_datasets/bf_dataset_account`,
+          {
+            params: {
+              selected_account: defaultBfAccount,
+            },
+          }
+        );
+        datasetList = [];
+        datasetList = responseObject.data.datasets;
+      } catch (error) {
+        clientError(error);
       }
-    });
-    progressStatus.innerHTML = "";
-    statusText.innerHTML = "";
-    document.getElementById("div-new-curate-progress").style.display = "none";
-    generateProgressBar.value = 0;
-
-    try {
-      let responseObject = await client.get(
-        `manage_datasets/bf_dataset_account`,
-        {
-          params: {
-            selected_account: defaultBfAccount,
-          },
-        }
-      );
-      datasetList = [];
-      datasetList = responseObject.data.datasets;
-    } catch (error) {
+    })
+    .catch(async (error) => {
       clientError(error);
-      emessage = userErrorMessage(error);
-    }
+      let emessage = userErrorMessage(error);
+      organizeDataset_option_buttons.style.display = "flex";
+      organizeDataset.disabled = false;
+      organizeDataset.className = "content-button is-selected";
+      organizeDataset.style = "background-color: #fff";
+      $("#sidebarCollapse").prop("disabled", false);
+      document.getElementById(
+        "para-new-curate-progress-bar-error-status"
+      ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
+      uploadLocally.disabled = false;
+      uploadLocally.className = "content-button is-selected";
+      uploadLocally.style = "background-color: #fff";
+      Swal.fire({
+        icon: "error",
+        title: "An Error Occurred While Uploading Your Dataset",
+        html: "Check the error text in the Organize Dataset's upload page to see what went wrong.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      }).then((result) => {
+        statusBarClone.remove();
+        sparc_container.style.display = "inline";
+        if (result.isConfirmed) {
+          organizeDataset.click();
+          let button = document.getElementById("button-generate");
+          $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
+          document.getElementById("prevBtn").style.display = "none";
+          document.getElementById("start-over-btn").style.display = "none";
+          document.getElementById("div-vertical-progress-bar").style.display =
+            "none";
+          document.getElementById("div-generate-comeback").style.display =
+            "none";
+          document.getElementById(
+            "generate-dataset-progress-tab"
+          ).style.display = "flex";
+        }
+      });
+      progressStatus.innerHTML = "";
+      statusText.innerHTML = "";
+      document.getElementById("div-new-curate-progress").style.display = "none";
+      generateProgressBar.value = 0;
 
-    // wait to see if the uploaded files or size will grow once the client has time to ask for the updated information
-    // if they stay zero that means nothing was uploaded
-    if (uploadedFiles === 0 || uploadedFilesSize === 0) {
-      await wait(2000);
-    }
+      try {
+        let responseObject = await client.get(
+          `manage_datasets/bf_dataset_account`,
+          {
+            params: {
+              selected_account: defaultBfAccount,
+            },
+          }
+        );
+        datasetList = [];
+        datasetList = responseObject.data.datasets;
+      } catch (error) {
+        clientError(error);
+        emessage = userErrorMessage(error);
+      }
 
-    // log the curation errors to Google Analytics
-    logCurationErrorsToAnalytics(
-      uploadedFiles,
-      uploadedFilesSize,
-      dataset_destination,
-      main_total_generate_dataset_size,
-      increaseInFileSize,
-      datasetUploadSession
-    );
-  })
+      // wait to see if the uploaded files or size will grow once the client has time to ask for the updated information
+      // if they stay zero that means nothing was uploaded
+      if (uploadedFiles === 0 || uploadedFilesSize === 0) {
+        await wait(2000);
+      }
 
-
+      // log the curation errors to Google Analytics
+      logCurationErrorsToAnalytics(
+        uploadedFiles,
+        uploadedFilesSize,
+        dataset_destination,
+        main_total_generate_dataset_size,
+        increaseInFileSize,
+        datasetUploadSession
+      );
+    });
 
   // Progress tracking function for main curate
   var countDone = 0;
@@ -7204,7 +7212,7 @@ async function initiate_generate() {
       console.error(error);
       //Clear the interval to stop the generation of new sweet alerts after intitial error
       clearInterval(timerProgress);
-      return 
+      return;
     }
 
     let { data } = mainCurationProgressResponse;
@@ -7353,7 +7361,7 @@ async function initiate_generate() {
     } catch (error) {
       clientError(error);
       clearInterval(timerCheckForBucketUpload);
-      return
+      return;
     }
 
     let { data } = mainCurationDetailsResponse;
@@ -7378,7 +7386,7 @@ async function initiate_generate() {
           "track-event",
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE +
-          " - Step 7 - Generate - Dataset - Number of Files",
+            " - Step 7 - Generate - Dataset - Number of Files",
           `${datasetUploadSession.id}`,
           uploadedFiles
         );
@@ -7388,7 +7396,7 @@ async function initiate_generate() {
           "track-event",
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE +
-          " - Step 7 - Generate - Dataset - Size",
+            " - Step 7 - Generate - Dataset - Size",
           `${datasetUploadSession.id}`,
           increaseInFileSize
         );
@@ -7421,9 +7429,6 @@ async function initiate_generate() {
 
   let timerCheckForBucketUpload = setInterval(checkForBucketUpload, 1000);
 }
-
-
-
 
 const show_curation_shortcut = () => {
   Swal.fire({
