@@ -1420,13 +1420,19 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     .getElementById("bf_dataset_load_subjects")
     .innerText.trim();
   try {
+    log.info(`Generating a subjects file.`)
     let save_locally = await client.post(
-      `/prepare_metadata/subjects_file?upload_boolean=${uploadBFBoolean}`,
+      `/prepare_metadata/subjects_file`,
       {
         filepath: subjectsDestinationPath,
         selected_account: defaultBfAccount,
         selected_dataset: bfdataset,
-        subjects_str: subjectsTableData,
+        subjects_header_row: subjectsTableData,
+      },
+      {
+        params: {
+          upload_boolean: uploadBFBoolean,
+        }
       }
     );
 
@@ -1455,7 +1461,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     logMetadataSizeForAnalytics(uploadBFBoolean, "subjects.xlsx", size);
   } catch (error) {
     clientError(error);
-    let emessage = error.response.data.message;
+    let emessage = userErrorMessage(error)
 
     Swal.fire({
       title: "Failed to generate the subjects.xlsx file.",
@@ -2108,7 +2114,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
   }).then((result) => { });
   try {
     let load_taxonomy_species = await client.get(`/taxonomy/species`, {
-      params: { 
+      params: {
         animals_list: [commonName]
       }
     });
@@ -3326,23 +3332,21 @@ async function submitReviewDataset(embargoReleaseDate) {
   }
 
   try {
-    // TODO: Replace with Flask Call -- READY
-    await submitDatasetForPublication(
+    await api.submitDatasetForPublication(
       selectedBfAccount,
       selectedBfDataset,
       embargoReleaseDate
     );
   } catch (error) {
+    clientError(error)
     logGeneralOperationsForAnalytics(
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
       AnalyticsGranularity.ALL_LEVELS,
       ["Submit dataset"]
     );
-    log.error(error);
-    console.error(error);
 
-    var emessage = userError(error);
+    var emessage = userErrorMessage(error);
 
     // alert the user of an error
     Swal.fire({
@@ -4461,14 +4465,15 @@ ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
         "block";
       document.getElementById("para-organize-datasets-loading").innerHTML =
         "<span>Please wait...</span>";
+
+      log.info("Generating a new dataset organize datasets at ${filepath}");
+
       try {
-        let local_dataset = await client.post(`/organize_datasets/dataset`, {
+        await client.post(`/organize_datasets/datasets`, {
           generation_type: "create-new",
           generation_destination_path: filepath[0],
           dataset_name: newDSName,
-          soda_json_directory_structure: JSON.stringify(
-            datasetStructureJSONObj
-          ),
+          soda_json_directory_structure: datasetStructureJSONObj
         });
 
         document.getElementById("para-organize-datasets-error").style.display =
@@ -4480,14 +4485,13 @@ ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
           "<span>Generated successfully!</span>";
       } catch (error) {
         clientError(error);
-
         document.getElementById(
           "para-organize-datasets-success"
         ).style.display = "none";
         document.getElementById("para-organize-datasets-error").style.display =
           "block";
         document.getElementById("para-organize-datasets-error").innerHTML =
-          "<span> " + error + "</span>";
+          "<span> " + userErrorMessage(error) + "</span>";
       }
     }
   }
@@ -6492,7 +6496,6 @@ ipcRenderer.on(
               let local_progress = setInterval(progressReport, 500);
               async function progressReport() {
                 try {
-                  // TODO: Test error handling
                   let monitorProgressResponse = await client.get(
                     `/organize_datasets/datasets/import/progress`
                   );
@@ -6549,12 +6552,8 @@ ipcRenderer.on(
                   clearInterval(local_progress);
                 }
               }
+
               try {
-                console.log("sodaJSONObj", sodaJSONObj);
-                console.log("Root folder path:", root_folder_path);
-                console.log("Irregular folders: ", irregularFolderArray);
-                console.log("Replaced folders: ", replaced);
-                // TODO: Test Error handling
                 let importLocalDatasetResponse = await client.post(
                   `/organize_datasets/datasets/import`,
                   {
@@ -7022,7 +7021,6 @@ async function initiate_generate() {
 
   let mainCurateResponse;
   try {
-    // TODO: Test Error handling
     mainCurateResponse = await client.post(`/curate_datasets/curation`, {
       soda_json_structure: sodaJSONObj,
     });
@@ -7072,8 +7070,6 @@ async function initiate_generate() {
     statusText.innerHTML = "";
     document.getElementById("div-new-curate-progress").style.display = "none";
     generateProgressBar.value = 0;
-    log.error(error);
-    console.error(error);
 
     try {
       let responseObject = await client.get(
@@ -7954,14 +7950,13 @@ ipcRenderer.on("selected-manifest-folder", async (event, result) => {
     }
 
     try {
-      let generate_manifest_locally = await client.post(
+      await client.post(
         `/curate_datasets/manifest_files`,
         {
           generate_purpose: "",
           soda_json_object: temp_sodaJSONObj,
         }
       );
-      let res = generate_manifest_locally.data;
 
       $("body").removeClass("waiting");
       logCurationForAnalytics(
@@ -8080,7 +8075,7 @@ async function addBFAccountInsideSweetalert(myBootboxDialog) {
       showHideDropdownButtons("account", "hide");
       confirm_click_account_function();
 
-      return 
+      return
     }
 
     Swal.fire({
@@ -8532,101 +8527,7 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   return statuses;
 };
 
-// Submits the selected dataset for review by the publishers within a given user's organization.
-// Note: To be run after the pre-publishing validation checks have all passed.
-// I:
-//  pennsieveAccount: string - the SODA user's pennsieve account
-//  datasetIdOrName: string - the id/name of the dataset being submitted for publication
-//  embargoReleaseDate?: string  - in yyyy-mm-dd format. Represents the day an embargo will be lifted on this dataset; at which point the dataset will be made public.
-// O: void
-const submitDatasetForPublication = async (
-  pennsieveAccount,
-  datasetIdOrName,
-  embargoReleaseDate
-) => {
-  // check that a dataset was provided
-  if (!datasetIdOrName || datasetIdOrName === "") {
-    throw new Error(
-      "A valid dataset must be provided to the dataset review process."
-    );
-  }
 
-  // get the current SODA user's permissions (permissions are indicated by the user's assigned role for a given dataset)
-  let userRole = await getCurrentUserPermissions(datasetIdOrName);
-
-  // check that the current SODA user is the owner of the given dataset
-  if (!userIsOwnerOrManager(userRole))
-    throw new Error(
-      "You don't have permissions for submitting this dataset for publication. Please have the dataset owner start the submission process."
-    );
-
-  // get an access token for the user
-  let jwt = await get_access_token();
-
-  // get the dataset by name or id
-  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
-
-  // set the publication type to "publication" or "embargo" based on the value of embargoReleaseDate
-  const publicationType = embargoReleaseDate === "" ? "publication" : "embargo";
-
-  // get the dataset id
-  const { id } = dataset.content;
-
-  // construct the appropriate query string
-  let queryString = "";
-
-  // if an embargo release date was selected add it to the query string
-  if (embargoReleaseDate !== "") {
-    queryString = `?embargoReleaseDate=${embargoReleaseDate}&publicationType=${publicationType}`;
-  } else {
-    // add the required publication type
-    queryString = `?publicationType=${publicationType}`;
-  }
-  // request that the dataset be sent in for publication/publication review
-  let publicationPost = await client.post(
-    `/disseminate_datasets/datasets/${id}/publication/request`,
-    {
-      params: {
-        selected_account: defaultBfAccount,
-      },
-      payload: {
-        publication_type: publicationType,
-        embargo_release_date: embargoReleaseDate,
-      },
-    }
-  );
-
-  // get the status code out of the response
-  let statusCode = publicationPost.status;
-
-  // check the status code of the response
-  switch (statusCode) {
-    case 201:
-      // success do nothing
-      break;
-    case 404:
-      throw new Error(
-        `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset to add submit for publication.`
-      );
-    case 401:
-      throw new Error(
-        `${statusCode} - You cannot submit a dataset for publication while unauthenticated.`
-      );
-    case 403:
-      throw new Error(
-        `${statusCode} - You do not have access to this dataset. `
-      );
-    case 400:
-      throw new Error(
-        `${statusCode} - You did not complete an item in the pre-publishing checklist before submitting your dataset for publication.`
-      );
-
-    default:
-      // something unexpected happened
-      let statusText = publicationPost.statusText;
-      throw new Error(`${statusCode} - ${statusText}`);
-  }
-};
 
 /*
 ******************************************************
@@ -8750,56 +8651,6 @@ const userIsDatasetOwner = async (datasetIdOrName) => {
   return userIsOwner(role);
 };
 
-/*
-******************************************************
-******************************************************
-ORCID Integration with NodeJS
-******************************************************
-******************************************************
-*/
-
-const integrateORCIDWithPennsieve = async (accessCode) => {
-  // check that the accessCode is defined and non-empty
-  if (accessCode === "" || !accessCode) {
-    throw new Error(
-      "Cannot integrate your ORCID iD to Pennsieve without an access code."
-    );
-  }
-
-  // integrate the ORCID to Pennsieve using the access code
-  let jwt = await get_access_token();
-  let orcidResponse = client.post(`/user/orcid`, {
-    params: {
-      pennsieve_account: defaultBfAccount,
-    },
-    payload: {
-      access_code: JSON.stringify({ authorizationCode: accessCode }),
-    },
-  });
-
-  // get the status code
-  let statusCode = orcidResponse.status;
-
-  // check for any http errors and statuses
-  switch (statusCode) {
-    case 200:
-      // success do nothing
-      break;
-    case 404:
-      throw new Error(
-        `${statusCode} - The currently signed in user does not exist on Pennsieve.`
-      );
-    case 401:
-      throw new Error(
-        `${statusCode} - You cannot update the dataset description while unauthenticated. Please reauthenticate and try again.`
-      );
-    default:
-      // something unexpected happened -- likely a 400 or something in the 500s
-      let pennsieveErrorObject = orcidResponse.response.data.message;
-      let { message } = pennsieveErrorObject;
-      throw new Error(`${statusCode} - ${message}`);
-  }
-};
 
 const create_validation_report = (error_report) => {
   // let accordion_elements = ` <div class="title active"> `;

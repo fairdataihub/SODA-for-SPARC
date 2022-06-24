@@ -242,10 +242,10 @@ function populateProtocolLink(ev) {
       for (var key of Object.keys(protocolResearcherList)) {
         $("#select-misc-links").append(
           '<option value="' +
-            protocolResearcherList[key] +
-            '">' +
-            key +
-            "</option>"
+          protocolResearcherList[key] +
+          '">' +
+          key +
+          "</option>"
         );
       }
     }
@@ -347,7 +347,7 @@ function cancelOtherContributors(table) {
   var rowIndex = rowcount - 1;
   var currentRow =
     document.getElementById(table).rows[
-      document.getElementById(table).rows.length - 1
+    document.getElementById(table).rows.length - 1
     ];
   currentRow.cells[0].outerHTML =
     "<td class='grab'><select id='ds-description-contributor-list-last-" +
@@ -371,7 +371,7 @@ function addOtherContributors(table) {
   var rowIndex = rowcount;
   var currentRow =
     document.getElementById(table).rows[
-      document.getElementById(table).rows.length - 1
+    document.getElementById(table).rows.length - 1
     ];
   currentRow.cells[0].outerHTML =
     "<td><input type='text' placeholder='Type here' contenteditable='true' id='other-contributors-last-" +
@@ -448,7 +448,7 @@ function resetDDUI(table) {
   var rowIndex = rowcount - 1;
   var currentRow =
     document.getElementById(table).rows[
-      document.getElementById(table).rows.length - 1
+    document.getElementById(table).rows.length - 1
     ];
 
   $("#SPARC-Award-raw-input-div-dd").css("display", "none");
@@ -750,7 +750,7 @@ async function generateDDFile(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   var datasetInfoValueObj = grabDSInfoEntries();
   var studyInfoValueObject = grabStudyInfoEntries();
   //// grab entries from contributor info section and pass values to conSectionArray
@@ -800,28 +800,29 @@ async function generateDDFile(uploadBFBoolean) {
   let bf_dataset = document
     .getElementById("bf_dataset_load_dd")
     .innerText.trim();
+
+  log.info(`Generating a dataset description file.`)
   /// call python function to save file
   try {
     let save_ds_desc_file = await client.post(
       `/prepare_metadata/dataset_description_file`,
       {
+        selected_account: bfaccountname,
+        selected_dataset: bf_dataset,
+        filepath: ddDestinationPath,
+        dataset_str: json_str_ds,
+        study_str: json_str_study,
+        contributor_str: json_str_con,
+        related_info_str: json_str_related_info,
+      },
+      {
         params: {
           upload_boolean: uploadBFBoolean,
-        },
-        payload: {
-          selected_account: defaultBfAccount,
-          selected_dataset: bf_dataset,
-          filepath: ddDestinationPath,
-          dataset_str: json_str_ds,
-          study_str: json_str_study,
-          contributor_str: json_str_con,
-          related_info_str: json_str_related_info,
-        },
+        }
       }
     );
 
     let res = save_ds_desc_file.data.size;
-    console.log(size);
 
     if (uploadBFBoolean) {
       var successMessage =
@@ -856,7 +857,7 @@ async function generateDDFile(uploadBFBoolean) {
     );
   } catch (error) {
     clientError(error);
-    let emessage = error.response.data.message;
+    let emessage = userErrorMessage(error);
 
     Swal.fire({
       title: "Failed to generate the dataset_description file",
@@ -1271,7 +1272,7 @@ function changeAward(award) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   $("#ds-description-award-input").val(award);
   $("#submission-sparc-award").val(award);
   loadContributorInfofromAirtable(award);
@@ -1939,7 +1940,7 @@ function addNewRow(table) {
   var rowIndex = rowcount;
   var currentRow =
     document.getElementById(table).rows[
-      document.getElementById(table).rows.length - 1
+    document.getElementById(table).rows.length - 1
     ];
   if (table === "doi-table") {
     if (
@@ -2270,7 +2271,7 @@ function importExistingDDFile() {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       setTimeout(loadDDfileDataframe(filePath), 1000);
     }
   }

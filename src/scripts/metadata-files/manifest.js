@@ -378,7 +378,7 @@ async function generateManifest(action, type, manifestEditBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   // Case 1: Local dataset
   if (type === "local") {
     sodaJSONObj["starting-point"]["local-path"] = localDatasetFolderPath;
@@ -450,7 +450,7 @@ async function generateManifest(action, type, manifestEditBoolean) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
 
           // log the error to analytics
           logMetadataForAnalytics(
@@ -478,7 +478,7 @@ async function generateManifest(action, type, manifestEditBoolean) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
           // log the error to analytics
           logMetadataForAnalytics(
             "Error",
@@ -505,7 +505,7 @@ async function generateManifest(action, type, manifestEditBoolean) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
           // log the error to analytics
           logMetadataForAnalytics(
             "Error",
@@ -739,13 +739,11 @@ async function initiate_generate_manifest_bf() {
   clearQueue();
   let curationResponse;
   try {
-    // TODO: Test error handling
     curationResponse = await client.post(`/curate_datasets/curation`, {
       soda_json_structure: sodaJSONObj,
     });
   } catch (error) {
     clientError(error);
-    let emessage = error.response.data.message;
     file_counter = 0;
     folder_counter = 0;
     get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
@@ -983,7 +981,7 @@ async function extractBFDatasetForManifestFile(
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       $("#Question-prepare-manifest-4").removeClass("show");
       $("#Question-prepare-manifest-4").removeClass("prev");
       $("#Question-prepare-manifest-3").removeClass("prev");
@@ -1013,7 +1011,7 @@ async function extractBFDatasetForManifestFile(
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       $("#Question-prepare-manifest-4").removeClass("show");
       $("#Question-prepare-manifest-4").removeClass("prev");
       $("#Question-prepare-manifest-3").removeClass("prev");
@@ -1069,7 +1067,7 @@ function validateSPARCdataset() {
           $(".swal-popover").popover();
         },
         footer: footer,
-      }).then((result) => {});
+      }).then((result) => { });
       return false;
     } else {
       return true;
@@ -1262,7 +1260,7 @@ async function generateManifestFolderLocallyForEdit() {
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       return;
     } else {
       createManifestLocally("local", true, "");
@@ -1291,29 +1289,22 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
     let generate_local_manifest = await client.post(
       `/curate_datasets/manifest_files`,
       {
-        payload: {
-          generate_purpose: "edit-manifest",
-          soda_json_object: JSON.stringify(sodaJSONObj),
-        },
+        generate_purpose: "edit-manifest",
+        soda_json_object: sodaJSONObj
       }
     );
     let res =
       generate_local_manifest.data.success_message_or_manifest_destination;
-    console.log(res);
     if (editBoolean) {
       //// else: create locally for the purpose of generating of manifest files locally
       try {
         let create_manifest = await client.post(
           `/curate_datasets/manifest_files/local`,
           {
-            payload: {
-              filepath: generatePath,
-            },
+            filepath: generatePath,
           }
         );
 
-        let res = create_manifest.data;
-        console.log(res);
         Swal.fire({
           title: "Successfully generated!",
           heightAuto: false,
@@ -1324,14 +1315,14 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
           didOpen: () => {
             Swal.hideLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         $("#preview-manifest-fake-confirm").click();
         $("#Question-prepare-manifest-4").removeClass("show");
         $("#Question-prepare-manifest-4").removeClass("prev");
         loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
       } catch (error) {
         clientError(error);
-        let emessage = error.response.data.message;
+        let emessage = userErrorMessage(error)
 
         Swal.fire({
           title: "Failed to load the manifest files for edits.",
@@ -1343,7 +1334,9 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
           didOpen: () => {
             Swal.hideLoading();
           },
-        }).then((result) => {});
+        })
+
+        return 
       }
 
       Swal.fire({
@@ -1356,7 +1349,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       localDatasetFolderPath = "";
     } else {
       // SODA Manifest Files folder
@@ -1402,7 +1395,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
     }
   } catch (error) {
     clientError(error);
-    let emessage = error.response.data.message;
+    let emessage = userErrorMessage(error)
 
     Swal.fire({
       title: "Failed to generate the manifest files.",
@@ -1414,7 +1407,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
       didOpen: () => {
         Swal.hideLoading();
       },
-    }).then((result) => {});
+    }).then((result) => { });
     $("#Question-prepare-manifest-4").removeClass("show");
     $("#Question-prepare-manifest-4").removeClass("prev");
     $("#Question-prepare-manifest-3").removeClass("prev");

@@ -169,6 +169,34 @@ const getDatasetReadme = async (selected_account, selected_dataset) => {
   return readme;
 };
 
+// Submits the selected dataset for review by the publishers within a given user's organization.
+// Note: To be run after the pre-publishing validation checks have all passed.
+// I:
+//  pennsieveAccount: string - the SODA user's pennsieve account
+//  datasetIdOrName: string - the id/name of the dataset being submitted for publication
+//  embargoReleaseDate?: string  - in yyyy-mm-dd format. Represents the day an embargo will be lifted on this dataset; at which point the dataset will be made public.
+// O: void
+const submitDatasetForPublication = async (
+  pennsieveAccount,
+  datasetIdOrName,
+  embargoReleaseDate
+) => {
+  // request that the dataset be sent in for publication/publication review
+  await client.post(
+    `/disseminate_datasets/datasets/${datasetIdOrName}/publication/request`,
+    {
+      publication_type: publicationType,
+      embargo_release_date: embargoReleaseDate,
+    },
+    {
+      params: {
+        selected_account: pennsieveAccount,
+      }
+    }
+  );
+
+};
+
 const api = {
   getUserInformation,
   getDataset,
@@ -182,6 +210,7 @@ const api = {
   getDatasetPermissions,
   getDatasetsForAccount,
   getDatasetSubtitle,
+  submitDatasetForPublication
 };
 
 module.exports = api;

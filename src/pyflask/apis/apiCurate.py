@@ -55,7 +55,7 @@ model_main_curation_function_response = api.model( "MainCurationFunctionResponse
 class Curation(Resource):
 
     @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request', 403: 'Forbidden'}, 
-    description="Given a sodajsonobject generate a dataset. Used in the final step of Organize Datasets.")
+    description="Given a sodajsonobject generate a dataset. Used in the final step of Organize Datasets.")   
     @api.marshal_with(model_main_curation_function_response)
     def post(self):
         data = request.get_json()
