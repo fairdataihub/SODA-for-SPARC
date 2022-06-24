@@ -206,7 +206,7 @@ const disseminateCurationTeam = async (account, dataset, share_status = "") => {
     await client.patch(
       `/manage_datasets/bf_dataset_permissions`,
       {
-        input_role: selectedRole
+        input_role: selectedRole,
       },
       {
         params: {
@@ -215,7 +215,6 @@ const disseminateCurationTeam = async (account, dataset, share_status = "") => {
           scope: "team",
           name: selectedTeam,
         },
-
       }
     );
 
@@ -238,14 +237,11 @@ const disseminateCurationTeam = async (account, dataset, share_status = "") => {
     }
 
     try {
-      await client.put(
-        `/manage_datasets/bf_dataset_status`,
-        {
-          selected_bfaccount: account,
-          selected_bfdataset: dataset,
-          selected_status: selectedStatusOption,
-        }
-      );
+      await client.put(`/manage_datasets/bf_dataset_status`, {
+        selected_bfaccount: account,
+        selected_bfdataset: dataset,
+        selected_status: selectedStatusOption,
+      });
 
       $("#share-curation-team-spinner").hide();
 
@@ -735,7 +731,7 @@ $("#ORCID-btn").on("click", async () => {
       "track-event",
       "Success",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Integrate ORCID iD",
+        " - Integrate ORCID iD",
       defaultBfDatasetId
     );
 
@@ -1039,7 +1035,7 @@ $(".pre-publishing-continue").on("click", async function () {
       "track-event",
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Get Excluded Files",
+        " - Get Excluded Files",
       defaultBfDatasetId
     );
 
@@ -1050,7 +1046,7 @@ $(".pre-publishing-continue").on("click", async function () {
     "track-event",
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-    " - Get Excluded Files",
+      " - Get Excluded Files",
     defaultBfDatasetId
   );
 
@@ -1078,7 +1074,7 @@ $(".pre-publishing-continue").on("click", async function () {
       "track-event",
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Get Metadata Files",
+        " - Get Metadata Files",
       defaultBfDatasetId
     );
   }
@@ -1087,7 +1083,7 @@ $(".pre-publishing-continue").on("click", async function () {
     "track-event",
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-    " - Get Metadata Files",
+      " - Get Metadata Files",
     defaultBfDatasetId
   );
 
