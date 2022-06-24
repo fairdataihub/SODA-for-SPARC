@@ -401,14 +401,14 @@ $("#button-add-permission-pi").click(async () => {
           `/manage_datasets/bf_dataset_permissions`,
           {
             input_role: selectedRole,
-          }, 
+          },
           {
             params: {
               selected_account: selectedBfAccount,
               selected_dataset: selectedBfDataset,
               scope: "user",
               name: selectedUser,
-            }
+            },
           }
         );
 
@@ -534,14 +534,14 @@ const addPermissionUser = async (
       `/manage_datasets/bf_dataset_permissions`,
       {
         input_role: selectedRole,
-      }, 
+      },
       {
         params: {
           selected_account: selectedBfAccount,
           selected_dataset: selectedBfDataset,
           scope: "user",
           name: selectedUser,
-        }
+        },
       }
     );
   } catch (error) {
@@ -563,7 +563,7 @@ const addPermissionUser = async (
       ["Add User Permissions"]
     );
 
-    return 
+    return;
   }
 
   let res = bf_add_permission.data.message;
@@ -681,14 +681,14 @@ $("#button-add-permission-team").click(async () => {
         `/manage_datasets/bf_dataset_permissions`,
         {
           input_role: selectedRole,
-        }, 
+        },
         {
           params: {
             selected_account: selectedBfAccount,
             selected_dataset: selectedBfDataset,
             scope: "team",
             name: selectedTeam,
-          }
+          },
         }
       );
 
