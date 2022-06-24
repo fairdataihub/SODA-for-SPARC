@@ -3300,7 +3300,7 @@ async function submitReviewDataset(embargoReleaseDate) {
       //check res
       await api.updateDatasetExcludedFiles(defaultBfDatasetId, files);
     } catch (error) {
-      clientError(error)
+      clientError(error);
       // log the error
       logGeneralOperationsForAnalytics(
         "Error",
@@ -3337,7 +3337,7 @@ async function submitReviewDataset(embargoReleaseDate) {
     await api.submitDatasetForPublication(
       selectedBfAccount,
       selectedBfDataset,
-      embargoReleaseDate, 
+      embargoReleaseDate,
       embargoReleaseDate === "" ? "publication" : "embargo"
     );
   } catch (error) {
@@ -8496,7 +8496,10 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // set tags's status
   statuses.tags = tags && tags.length ? true : false;
 
-  let bannerImageURL = await api.getDatasetBannerImageURL(defaultBfAccount, defaultBfDataset);
+  let bannerImageURL = await api.getDatasetBannerImageURL(
+    defaultBfAccount,
+    defaultBfDataset
+  );
 
   // set the banner image's url status
   statuses.bannerImageURL =

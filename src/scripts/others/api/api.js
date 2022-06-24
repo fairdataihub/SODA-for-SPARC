@@ -86,12 +86,9 @@ const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
 //  files: [{fileName: string}] - An array of file name objects
 const updateDatasetExcludedFiles = async (datasetId, files) => {
   // create the request options
-  await client.put(
-    `/disseminate_datasets/datasets/${datasetId}/ignore-files`,
-    {
-      ignore_files: files,
-    }
-  );
+  await client.put(`/disseminate_datasets/datasets/${datasetId}/ignore-files`, {
+    ignore_files: files,
+  });
 };
 
 // retrieves the currently selected dataset's metadata files
@@ -179,7 +176,7 @@ const getDatasetReadme = async (selected_account, selected_dataset) => {
 const submitDatasetForPublication = async (
   pennsieveAccount,
   datasetIdOrName,
-  embargoReleaseDate, 
+  embargoReleaseDate,
   publicationType
 ) => {
   // request that the dataset be sent in for publication/publication review

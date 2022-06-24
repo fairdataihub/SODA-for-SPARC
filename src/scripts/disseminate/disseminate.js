@@ -733,7 +733,7 @@ $("#ORCID-btn").on("click", async () => {
       "track-event",
       "Success",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Integrate ORCID iD",
+        " - Integrate ORCID iD",
       defaultBfDatasetId
     );
 
@@ -1037,7 +1037,7 @@ $(".pre-publishing-continue").on("click", async function () {
       "track-event",
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Get Excluded Files",
+        " - Get Excluded Files",
       defaultBfDatasetId
     );
 
@@ -1048,7 +1048,7 @@ $(".pre-publishing-continue").on("click", async function () {
     "track-event",
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-    " - Get Excluded Files",
+      " - Get Excluded Files",
     defaultBfDatasetId
   );
 
@@ -1057,7 +1057,7 @@ $(".pre-publishing-continue").on("click", async function () {
     // read in all of the metadata files for the dataset
     metadataFiles = await api.getDatasetMetadataFiles(defaultBfDataset);
   } catch (error) {
-    clientError(error)
+    clientError(error);
     // tell the user something went wrong getting access to their datasets ignored files
     await Swal.fire({
       title: "Failed to get your dataset's files",
@@ -1076,7 +1076,7 @@ $(".pre-publishing-continue").on("click", async function () {
       "track-event",
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Get Metadata Files",
+        " - Get Metadata Files",
       defaultBfDatasetId
     );
   }
@@ -1085,7 +1085,7 @@ $(".pre-publishing-continue").on("click", async function () {
     "track-event",
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-    " - Get Metadata Files",
+      " - Get Metadata Files",
     defaultBfDatasetId
   );
 
@@ -1120,7 +1120,7 @@ $("#begin-prepublishing-btn").on("click", async function () {
   // check if the user is the dataset owner
   let role;
   try {
-    role = await api.getDatasetRole(defaultBfDataset)
+    role = await api.getDatasetRole(defaultBfDataset);
   } catch (error) {
     // tell the user something went wrong getting access to their dataset permissions
     await Swal.fire({
@@ -1136,7 +1136,7 @@ $("#begin-prepublishing-btn").on("click", async function () {
     });
 
     // log the error information then continue execution -- this is because they may not want to ignore files when they publish
-    clientError(error)
+    clientError(error);
     logGeneralOperationsForAnalytics(
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
