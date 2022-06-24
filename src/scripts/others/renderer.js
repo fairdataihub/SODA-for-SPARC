@@ -3298,8 +3298,9 @@ async function submitReviewDataset(embargoReleaseDate) {
     try {
       // exclude the user's selected files from publication
       //check res
-      await api.updateDatasetExcludedFiles(selectedBfDataset, files);
+      await api.updateDatasetExcludedFiles(defaultBfDatasetId, files);
     } catch (error) {
+      clientError(error)
       // log the error
       logGeneralOperationsForAnalytics(
         "Error",
@@ -3308,7 +3309,7 @@ async function submitReviewDataset(embargoReleaseDate) {
         ["Updating excluded files"]
       );
 
-      var emessage = userError(error);
+      var emessage = userErrorMessage(error);
 
       // alert the user of the error
       Swal.fire({
@@ -3336,7 +3337,8 @@ async function submitReviewDataset(embargoReleaseDate) {
     await api.submitDatasetForPublication(
       selectedBfAccount,
       selectedBfDataset,
-      embargoReleaseDate
+      embargoReleaseDate, 
+      embargoReleaseDate === "" ? "publication" : "embargo"
     );
   } catch (error) {
     clientError(error);
@@ -3357,7 +3359,7 @@ async function submitReviewDataset(embargoReleaseDate) {
       title: `Could not submit your dataset for pre-publishing review`,
       icon: "error",
       reverseButtons: reverseSwalButtons,
-      text: `${emessage}`,
+      text: emessage,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -8495,7 +8497,7 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // set tags's status
   statuses.tags = tags && tags.length ? true : false;
 
-  let bannerImageURL = await api.getDatasetBannerImageURL(defaultBfDataset);
+  let bannerImageURL = await api.getDatasetBannerImageURL(defaultBfAccount, defaultBfDataset);
 
   // set the banner image's url status
   statuses.bannerImageURL =

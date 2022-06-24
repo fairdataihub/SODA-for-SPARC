@@ -657,7 +657,7 @@ $("#ORCID-btn").on("click", async () => {
   // tell the main process to open a Modal window with the webcontents of the user's Pennsieve profile so they can add an ORCID iD
   ipcRenderer.send(
     "orcid",
-    "https://orcid.org/oauth/authorize?client_id=APP-J86O4ZY7LKQGWJ2X&response_type=code&scope=/authenticate&redirect_uri=https://app.pennsieve.io/orcid-redirect"
+    "https://orcid.org/oauth/authorize?client_id=APP-DRQCE0GUWKTRCWY2&response_type=code&scope=/authenticate&redirect_uri=https://app.pennsieve.io/orcid-redirect"
   );
 
   // handle the reply from the asynhronous message to sign the user into Pennsieve
@@ -733,7 +733,7 @@ $("#ORCID-btn").on("click", async () => {
       "track-event",
       "Success",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-        " - Integrate ORCID iD",
+      " - Integrate ORCID iD",
       defaultBfDatasetId
     );
 
@@ -1037,7 +1037,7 @@ $(".pre-publishing-continue").on("click", async function () {
       "track-event",
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-        " - Get Excluded Files",
+      " - Get Excluded Files",
       defaultBfDatasetId
     );
 
@@ -1048,7 +1048,7 @@ $(".pre-publishing-continue").on("click", async function () {
     "track-event",
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Get Excluded Files",
+    " - Get Excluded Files",
     defaultBfDatasetId
   );
 
@@ -1057,6 +1057,7 @@ $(".pre-publishing-continue").on("click", async function () {
     // read in all of the metadata files for the dataset
     metadataFiles = await api.getDatasetMetadataFiles(defaultBfDataset);
   } catch (error) {
+    clientError(error)
     // tell the user something went wrong getting access to their datasets ignored files
     await Swal.fire({
       title: "Failed to get your dataset's files",
@@ -1075,7 +1076,7 @@ $(".pre-publishing-continue").on("click", async function () {
       "track-event",
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-        " - Get Metadata Files",
+      " - Get Metadata Files",
       defaultBfDatasetId
     );
   }
@@ -1084,7 +1085,7 @@ $(".pre-publishing-continue").on("click", async function () {
     "track-event",
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Get Metadata Files",
+    " - Get Metadata Files",
     defaultBfDatasetId
   );
 
@@ -1117,14 +1118,14 @@ $("#begin-prepublishing-btn").on("click", async function () {
   });
 
   // check if the user is the dataset owner
-  let owner;
+  let role;
   try {
-    owner = await userIsDatasetOwner(defaultBfDataset);
+    role = await api.getDatasetRole(defaultBfDataset)
   } catch (error) {
     // tell the user something went wrong getting access to their dataset permissions
     await Swal.fire({
       title: "Failed to determine if you are the dataset owner",
-      text: `${error}`,
+      text: userErrorMessage(error),
       icon: "error",
       confirmButtonText: "Ok",
       allowEscapeKey: false,
@@ -1135,8 +1136,7 @@ $("#begin-prepublishing-btn").on("click", async function () {
     });
 
     // log the error information then continue execution -- this is because they may not want to ignore files when they publish
-    log.error(error);
-    console.error(error);
+    clientError(error)
     logGeneralOperationsForAnalytics(
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
@@ -1155,7 +1155,7 @@ $("#begin-prepublishing-btn").on("click", async function () {
   );
 
   // check if the user is the owner
-  if (!owner) {
+  if (role !== "owner") {
     await Swal.fire({
       title:
         "Only the dataset owner can submit a dataset for pre-publishing review.",
