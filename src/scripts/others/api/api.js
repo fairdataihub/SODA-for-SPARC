@@ -191,10 +191,9 @@ const submitDatasetForPublication = async (
     {
       params: {
         selected_account: pennsieveAccount,
-      }
+      },
     }
   );
-
 };
 
 const api = {
@@ -210,7 +209,7 @@ const api = {
   getDatasetPermissions,
   getDatasetsForAccount,
   getDatasetSubtitle,
-  submitDatasetForPublication
+  submitDatasetForPublication,
 };
 
 module.exports = api;
