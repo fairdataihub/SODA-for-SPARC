@@ -79,7 +79,7 @@ class Curation(Resource):
 
 model_curation_progress_response = api.model( "CurationProgressResponse", {
     "main_curate_status": fields.String(description="Status of the main curation function"),
-    "start_generate": fields.Boolean(description="True if the main curation function is running"),
+    "start_generate": fields.Integer(description="True if the main curation function is running"),
     "main_curate_progress_message": fields.String(description="Progress message from the main curation function"),
     "main_total_generate_dataset_size": fields.Integer(description="Total size of the dataset"),
     "main_generated_dataset_size": fields.Integer(description="Size of the dataset that has been generated thus far"),
