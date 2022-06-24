@@ -7354,7 +7354,6 @@ async function initiate_generate() {
 
     let mainCurationDetailsResponse;
     try {
-      // TODO: Test error handling
       mainCurationDetailsResponse = await client.get(
         `/curate_datasetscuration/upload_details`
       );
@@ -7428,7 +7427,7 @@ async function initiate_generate() {
   };
 
   let timerCheckForBucketUpload = setInterval(checkForBucketUpload, 1000);
-}
+} // end initiate_generate
 
 const show_curation_shortcut = () => {
   Swal.fire({
