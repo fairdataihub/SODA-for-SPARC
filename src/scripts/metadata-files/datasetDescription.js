@@ -2290,11 +2290,12 @@ async function checkBFImportDD() {
     didOpen: () => {
       Swal.showLoading();
     },
-  })
-
+  });
 
   let bf_dataset = document.getElementById("bf_dataset_load_dd").innerText;
-  log.info(`Importing dataset_description.xlsx file from Pennsieve for dataset ${bf_dataset}`);
+  log.info(
+    `Importing dataset_description.xlsx file from Pennsieve for dataset ${bf_dataset}`
+  );
   try {
     let metadata_import = await client.get(
       `/prepare_metadata/import_metadata_file`,
