@@ -530,7 +530,7 @@ const getRC = async (type) => {
   let datasetName = $(`#bf_dataset_load_${shortName}`).text().trim();
 
   log.info(`Getting ${type} file for dataset ${datasetName}`);
-  
+
   try {
     let import_rc_file = await client.get(
       `/prepare_metadata/readme_changes_file`,
