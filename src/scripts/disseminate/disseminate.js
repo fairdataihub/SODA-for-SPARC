@@ -571,7 +571,15 @@ async function disseminiateShowCurrentDatasetStatus(
     bfListDatasetStatus.style.color = "black";
   } else {
     try {
-      let permissions = await api.getDatasetPermissions(account, dataset);
+      let statusOptionsResponse = await client.get(`/manage_datasets/bf_dataset_status`, {
+        params: {
+          selected_account: account,
+          selected_dataset: dataset,
+        }
+      })
+
+      let res = statusOptionsResponse.data
+      let { current_status } = statusOptionsResponse.data
 
       ipcRenderer.send(
         "track-event",
@@ -581,14 +589,14 @@ async function disseminiateShowCurrentDatasetStatus(
       );
       var myitemselect = [];
       removeOptions(bfListDatasetStatus);
-      for (var item in permissions[0]) {
+      for (const item in res["status_options"]) {
         var option = document.createElement("option");
-        option.textContent = permissions[0][item]["displayName"];
-        option.value = permissions[0][item]["name"];
-        option.style.color = permissions[0][item]["color"];
+        option.textContent = res["status_options"][item]["displayName"];
+        option.value = res["status_options"][item]["name"];
+        option.style.color = res["status_options"][item]["color"];
         bfListDatasetStatus.appendChild(option);
       }
-      bfListDatasetStatus.value = permissions[1];
+      bfListDatasetStatus.value = current_status;
       selectOptionColor(bfListDatasetStatus);
       //bfCurrentDatasetStatusProgress.style.display = "none";
       $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
@@ -727,7 +735,7 @@ $("#ORCID-btn").on("click", async () => {
       "track-event",
       "Success",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-        " - Integrate ORCID iD",
+      " - Integrate ORCID iD",
       defaultBfDatasetId
     );
 
@@ -1031,7 +1039,7 @@ $(".pre-publishing-continue").on("click", async function () {
       "track-event",
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-        " - Get Excluded Files",
+      " - Get Excluded Files",
       defaultBfDatasetId
     );
 
@@ -1042,7 +1050,7 @@ $(".pre-publishing-continue").on("click", async function () {
     "track-event",
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Get Excluded Files",
+    " - Get Excluded Files",
     defaultBfDatasetId
   );
 
@@ -1070,7 +1078,7 @@ $(".pre-publishing-continue").on("click", async function () {
       "track-event",
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-        " - Get Metadata Files",
+      " - Get Metadata Files",
       defaultBfDatasetId
     );
   }
@@ -1079,7 +1087,7 @@ $(".pre-publishing-continue").on("click", async function () {
     "track-event",
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Get Metadata Files",
+    " - Get Metadata Files",
     defaultBfDatasetId
   );
 
