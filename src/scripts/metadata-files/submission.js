@@ -265,7 +265,7 @@ const generateMilestoneRowElement = (
     <tr>
       <td class="middle aligned collapsing text-center">
         <div class="ui fitted checkbox">
-          <input type="checkbox" name="milestone">
+          <input type="checkbox" name="milestone" value="${dataDescription}">
           <label></label>
         </div>
       </td>
@@ -304,7 +304,33 @@ const getCheckedMilestones = () => {
   });
   return checkedMilestoneData;
 };
-//check if xxxx/xx/xx date string is before today's date
+const renderMilestoneSelectionTable = (milestoneData) => {
+  //create a table row element for each description array element for each milestone key in guidedMilestoneData
+  const milestoneTableRows = Object.keys(milestoneData)
+    .map((milestoneKey) => {
+      const milestoneDescriptionArray = milestoneData[milestoneKey];
+      const milestoneDescriptionTableRows = milestoneDescriptionArray.map(
+        (milestoneDescription) => {
+          console.log(milestoneDescription);
+          const descriptionString = milestoneDescription["Description of data"];
+          const milestoneString = milestoneKey;
+          const completionDateString =
+            milestoneDescription["Expected date of completion"];
+          return generateMilestoneRowElement(
+            descriptionString,
+            milestoneString,
+            completionDateString
+          );
+        }
+      );
+      return milestoneDescriptionTableRows.join("");
+    })
+    .join("\n");
+  const milestonesTableContainer = document.getElementById(
+    "milestones-table-container"
+  );
+  milestonesTableContainer.innerHTML = milestoneTableRows;
+};
 
 const guidedHelpMilestoneSubmission = () => {
   var filepath = "";
@@ -362,34 +388,13 @@ const guidedHelpMilestoneSubmission = () => {
         ];
         console.log(guidedMilestoneData);
 
-        //create a table row element for each description array element for each milestone key in guidedMilestoneData
-        const milestoneTableRows = Object.keys(guidedMilestoneData)
-          .map((milestoneKey) => {
-            const milestoneDescriptionArray = guidedMilestoneData[milestoneKey];
-            const milestoneDescriptionTableRows = milestoneDescriptionArray.map(
-              (milestoneDescription) => {
-                console.log(milestoneDescription);
-                const descriptionString =
-                  milestoneDescription["Description of data"];
-                const milestoneString = milestoneKey;
-                const completionDateString =
-                  milestoneDescription["Expected date of completion"];
-                return generateMilestoneRowElement(
-                  descriptionString,
-                  milestoneString,
-                  completionDateString
-                );
-              }
-            );
-            return milestoneDescriptionTableRows.join("");
-          })
-          .join("\n");
-        const milestonesTableContainer = document.getElementById(
-          "milestones-table-container"
-        );
-        milestonesTableContainer.innerHTML = milestoneTableRows;
+        //save the unselected milestones into sodaJSONObj
+        sodaJSONObj["dataset-metadata"]["submission-metadata"][
+          "unselected-milestones"
+        ] = guidedMilestoneData;
 
-        guidedSubmissionTagsTagify.removeAllTags();
+        renderMilestoneSelectionTable(guidedMilestoneData);
+
         guidedSubmissionTagsTagify.settings.whitelist = [];
 
         unHideAndSmoothScrollToElement("guided-div-data-deliverables-import");
