@@ -1529,6 +1529,7 @@
               <div class="guided--radio-button-container">
                 <button
                   class="ui positive basic button guided--radio-button"
+                  id="guided-button-import-sparc-award"
                   data-next-element="guided-div-SPARC-award-import"
                   data-button-config-value="SPARC-award-imported"
                   data-button-config-value-state="yes"
@@ -1537,6 +1538,7 @@
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button"
+                  id="guided-button-enter-sparc-award-manually"
                   data-button-config-value="SPARC-award-imported"
                   data-button-config-value-state="no"
                 >
@@ -1865,13 +1867,6 @@
                 <tbody id="contributors-table-container"></tbody>
               </table>
               <button
-                class="ui primary button"
-                id="guided-button-save-checked-contributors"
-                style="background-color: var(--color-light-green) !important"
-              >
-                Continue
-              </button>
-              <button
                 class="ui primary button hidden"
                 id="guided-button-edit-checked-contributors"
                 style="
@@ -1906,23 +1901,6 @@
               >
                 <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new
                 contributor
-              </button>
-              <button
-                class="ui primary button mt-md"
-                id="guided-button-save-contributor-fields"
-                style="background-color: var(--color-light-green) !important"
-              >
-                Continue
-              </button>
-              <button
-                class="ui primary button mt-md hidden"
-                id="guided-button-edit-contributor-fields"
-                style="
-                  background-color: var(--color-light-green) !important;
-                  display: none;
-                "
-              >
-                Edit contributor information
               </button>
             </div>
           </div>

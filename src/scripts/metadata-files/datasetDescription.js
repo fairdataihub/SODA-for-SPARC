@@ -1479,15 +1479,29 @@ const loadContributorInfofromAirtable = async (award, curationMode) => {
       })
       .join("\n");
 
+    //If the response is empty, hide the contributor selection table
+    //and allow the user to add contributors manually
+    if (contributorTableRows.length === 0) {
+      //create a notyf
+      notyf.error("No contributors found for this award.");
+      //hide AirTable contributor table and show contributor information fields
+      document
+        .getElementById("guided-div-contributors-imported-from-airtable")
+        .classList.add("hidden");
+      document
+        .getElementById("guided-div-contributor-field-set")
+        .classList.remove("hidden");
+
+      document.getElementById("contributors-container").innerHTML === "";
+      //add an empty contributor information fieldset
+      addContributorField();
+      return;
+    }
+
     const contributorsTableContainer = document.getElementById(
       "contributors-table-container"
     );
     contributorsTableContainer.innerHTML = contributorTableRows;
-    console.log(currentContributorsLastNames);
-    // show the table
-    document
-      .getElementById("guided-div-contributors-imported-from-airtable")
-      .classList.remove("hidden");
   }
 };
 

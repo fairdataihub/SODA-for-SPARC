@@ -1140,41 +1140,43 @@ const traverseToTab = (targetPageID) => {
       const contributors =
         sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
 
-      // check if airtableconfig has non empty api-key and key-name properties
-      const airTableKeyData = parseJson(airtableConfigPath);
-      let airTableKeyDataValid = null;
-      if (
-        airTableKeyData["api-key"] &&
-        airTableKeyData["key-name"] &&
-        airTableKeyData["key-name"] !== "" &&
-        airTableKeyData["api-key"] !== ""
-      ) {
-        airTableKeyDataValid = true;
-      } else {
-        airTableKeyDataValid = false;
-      }
-      //if an AirTable account and sparc award already exist, show the table
-      //if not, show the prompt to import award/contributor data
-      if (airTableKeyDataValid && sparcAward) {
-        //Show contributor fields and hide contributor information fields
-        document
-          .getElementById("guided-div-contributors-imported-from-airtable")
-          .classList.remove("hidden");
-        document
-          .getElementById("guided-div-contributor-field-set")
-          .classList.add("hidden");
-        loadContributorInfofromAirtable(sparcAward, "guided");
-      } else {
-        //hide AirTable contributor table and show contributor information fields
+      if (contributors) {
         document
           .getElementById("guided-div-contributors-imported-from-airtable")
           .classList.add("hidden");
         document
           .getElementById("guided-div-contributor-field-set")
           .classList.remove("hidden");
-        if (contributors) {
-          renderContributorFields(contributors);
+
+        renderContributorFields(contributors);
+      } else {
+        // check if airtableconfig has non empty api-key and key-name properties
+        const airTableKeyData = parseJson(airtableConfigPath);
+
+        if (
+          sparcAward &&
+          airTableKeyData["api-key"] &&
+          airTableKeyData["api-key"] &&
+          airTableKeyData["key-name"] !== "" &&
+          airTableKeyData["api-key"] !== ""
+        ) {
+          //Show contributor fields and hide contributor information fields
+          document
+            .getElementById("guided-div-contributors-imported-from-airtable")
+            .classList.remove("hidden");
+          document
+            .getElementById("guided-div-contributor-field-set")
+            .classList.add("hidden");
+          loadContributorInfofromAirtable(sparcAward, "guided");
         } else {
+          //hide AirTable contributor table and show contributor information fields
+          document
+            .getElementById("guided-div-contributors-imported-from-airtable")
+            .classList.add("hidden");
+          document
+            .getElementById("guided-div-contributor-field-set")
+            .classList.remove("hidden");
+
           document.getElementById("contributors-container").innerHTML === "";
           //add an empty contributor information fieldset
           addContributorField();
@@ -3133,6 +3135,7 @@ const renderContributorFields = (contributionMembersArray) => {
         tagify.addTags([contirubtorRole]);
       }
     }
+    console.log("foo");
   });
 
   //show the contributor fields
@@ -7713,125 +7716,6 @@ $(document).ready(() => {
     ).style.display = "flex";
   });
 
-  $("#guided-button-save-contributor-fields").on("click", () => {
-    let allInputsValid = true;
-    //get all contributor fields
-    const contributorFields = document.querySelectorAll(
-      ".guided-contributor-field-container"
-    );
-    //check if contributorFields is empty
-    if (contributorFields.length === 0) {
-      notyf.error("Please add at least one contributor");
-      //Add a contributor field to help the user out a lil
-      addContributorField();
-      return;
-    }
-
-    //loop through contributor fields and get values
-    const contributorFieldsArray = Array.from(contributorFields);
-    ///////////////////////////////////////////////////////////////////////////////
-    contributorFieldsArray.forEach((contributorField) => {
-      const contributorLastName = contributorField.querySelector(
-        ".guided-last-name-input"
-      );
-      contributorFirstName = contributorField.querySelector(
-        ".guided-first-name-input"
-      );
-      contributorORCID = contributorField.querySelector(".guided-orcid-input");
-      contributorAffiliation = contributorField.querySelector(
-        ".guided-affiliation-input"
-      );
-      //get the tags inside the tagify element with the class guided-contributor-role-input
-      const contributorRoleTagify = contributorField.querySelector(
-        ".guided-contributor-role-input"
-      );
-      //get the children of contributorRoleTagify in an array
-      const contributorRoleTagifyChildren = Array.from(
-        contributorRoleTagify.children
-      );
-      //remove the span element from the array so only tag elements are left
-      contributorRoleTagifyChildren.pop();
-      //get the titles of the tagify tagsh
-      const contributorRoles = contributorRoleTagifyChildren.map((child) => {
-        return child.title;
-      });
-      //Validate all of the contributor fields
-      const textInputs = [
-        contributorLastName,
-        contributorFirstName,
-        contributorORCID,
-        contributorAffiliation,
-      ];
-      //check if all text inputs are valid
-      textInputs.forEach((textInput) => {
-        if (textInput.value === "") {
-          textInput.style.setProperty("border-color", "red", "important");
-          allInputsValid = false;
-        } else {
-          textInput.style.setProperty(
-            "border-color",
-            "hsl(0, 0%, 88%)",
-            "important"
-          );
-        }
-      });
-      //Check if user added at least one contributor
-      if (contributorRoles.length === 0) {
-        contributorRoleTagify.style.setProperty(
-          "border-color",
-          "red",
-          "important"
-        );
-        allInputsValid = false;
-      } else {
-        //remove the red border from the contributor role tagify
-        contributorRoleTagify.style.setProperty(
-          "border-color",
-          "hsl(0, 0%, 88%)",
-          "important"
-        );
-      }
-
-      const contributorInputObj = {
-        contributorLastName: contributorLastName.value,
-        contributorFirstName: contributorFirstName.value,
-        contributorORCID: contributorORCID.value,
-        contributorAffiliation: contributorAffiliation.value,
-        contributorRoles: contributorRoles,
-      };
-    });
-    ///////////////////////////////////////////////////////////////////////////////
-    if (!allInputsValid) {
-      notyf.error("Please fill out all contributor information fields");
-      return;
-    }
-
-    //set opacity and remove pointer events for table and show edit button
-    disableElementById("contributors-container");
-    disableElementById("guided-button-add-contributor");
-
-    //switch button from save to edit
-    document.getElementById(
-      "guided-button-save-contributor-fields"
-    ).style.display = "none";
-    document.getElementById(
-      "guided-button-edit-contributor-fields"
-    ).style.display = "flex";
-    pulseNextButton();
-  });
-  $("#guided-button-edit-contributor-fields").on("click", () => {
-    enableElementById("contributors-container");
-    enableElementById("guided-button-add-contributor");
-    //switch button from edit to save
-    document.getElementById(
-      "guided-button-edit-contributor-fields"
-    ).style.display = "none";
-    document.getElementById(
-      "guided-button-save-contributor-fields"
-    ).style.display = "flex";
-    unPulseNextButton();
-  });
-
   $("#guided-button-save-protocol-fields").on("click", () => {
     let allInputsValid = true;
     let protocolData = [];
@@ -8929,21 +8813,60 @@ $(document).ready(() => {
         sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] =
           award;
       }
-      if (pageBeingLeftID === "guided-contributors-tab") {
-        //case when user selects contributors from airTable
+      if (pageBeingLeftID === "guided-airtable-award-tab") {
+        const buttonYesImportSparcAward = document.getElementById(
+          "guided-button-import-sparc-award"
+        );
+        const buttonNoEnterSparcAwardManually = document.getElementById(
+          "guided-button-enter-sparc-award-manually"
+        );
+
+        // If the user did not select if they would like to import a SPARC award,
+        // throw an error
         if (
-          !document
-            .getElementById("guided-div-contributors-imported-from-airtable")
-            .classList.remove("hidden")
+          !buttonYesImportSparcAward.classList.contains("selected") &&
+          !buttonNoEnterSparcAwardManually.classList.contains("selected")
         ) {
+          errorArray.push({
+            type: "notyf",
+            message:
+              "Please indicate if you would like to import a SPARC award",
+          });
+          throw errorArray;
         }
-        //case when user adds contributors manually
+
+        const sparcAward =
+          sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+
+        if (buttonYesImportSparcAward.classList.contains("selected")) {
+          if (!sparcAward) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "Please import a SPARC award of select no to enter a SPARC award manually",
+            });
+            throw errorArray;
+          }
+          if (buttonNoEnterSparcAwardManually.classList.contains("selected")) {
+            //if A SPARC award exists, delete it.
+            if (sparcAward) {
+              delete sodaJSONObj["dataset-metadata"]["shared-metadata"][
+                "sparc-award"
+              ];
+            }
+          }
+        }
+      }
+      if (pageBeingLeftID === "guided-contributors-tab") {
         ////////////////////////////////////////////////////////////////////////////////
-        if (
-          !document
-            .getElementById("guided-div-contributor-field-set")
-            .classList.remove("hidden")
-        ) {
+        const airTableContributorImportDiv = document.getElementById(
+          "guided-div-contributor-field-set"
+        );
+        const contributorFieldSetDiv = document.getElementById(
+          "guided-div-contributors-imported-from-airtable"
+        );
+        //case when user selects contributors from airTable
+        if (!airTableContributorImportDiv.classList.contains("hidden")) {
           let allInputsValid = true;
           let contributors = [];
           //get all contributor fields
@@ -8952,10 +8875,11 @@ $(document).ready(() => {
           );
           //check if contributorFields is empty
           if (contributorFields.length === 0) {
-            notyf.error("Please add at least one contributor");
-            //Add a contributor field to help the user out a lil
-            addContributorField();
-            return;
+            errorArray.push({
+              type: "notyf",
+              message: "Please add at least one contributor",
+            });
+            throw errorArray;
           }
 
           //loop through contributor fields and get values
@@ -8965,13 +8889,13 @@ $(document).ready(() => {
             const contributorLastName = contributorField.querySelector(
               ".guided-last-name-input"
             );
-            contributorFirstName = contributorField.querySelector(
+            const contributorFirstName = contributorField.querySelector(
               ".guided-first-name-input"
             );
-            contributorORCID = contributorField.querySelector(
+            const contributorORCID = contributorField.querySelector(
               ".guided-orcid-input"
             );
-            contributorAffiliation = contributorField.querySelector(
+            const contributorAffiliation = contributorField.querySelector(
               ".guided-affiliation-input"
             );
             //get the tags inside the tagify element with the class guided-contributor-role-input
@@ -9038,13 +8962,68 @@ $(document).ready(() => {
           });
           ///////////////////////////////////////////////////////////////////////////////
           if (!allInputsValid) {
-            throw new Error(
-              "Please fill out all contributor information fields"
-            );
+            errorArray.push({
+              type: "notyf",
+              message: "Please fill out all contributor information fields",
+            });
+            throw errorArray;
           }
           sodaJSONObj["dataset-metadata"]["description-metadata"][
             "contributors"
           ] = contributors;
+        } else {
+          //case when user adds contributors manually
+          if (!contributorFieldSetDiv.classList.contains("hidden")) {
+            const checkedContributors = getCheckedContributors();
+            //if checkedMilestoneData is empty, create notyf
+            if (checkedContributors.length === 0) {
+              errorArray.push({
+                type: "notyf",
+                message: "Please select at least one contributor",
+              });
+              throw errorArray;
+            }
+
+            const airKeyContent = parseJson(airtableConfigPath);
+            const airKeyInput = airKeyContent["api-key"];
+            const base = Airtable.base("appiYd1Tz9Sv857GZ");
+            // Create a filter string to select every entry with first and last names that match the checked contributors
+            let contributorInfoFilterString = "OR(";
+            for (const contributor of checkedContributors) {
+              contributorInfoFilterString += `AND({First_name} = "${contributor["contributorFirstName"]}", {Last_name} = "${contributor["contributorLastName"]}"),`;
+            }
+            //replace last comma with closing bracket
+            contributorInfoFilterString =
+              contributorInfoFilterString.slice(0, -1) + ")";
+
+            //Select contributors where contributor first name is Jacob and contributor last name is Smith or contributor first name is John and contributor last name is Doe
+            const contributorInfoResult = await base("sparc_members")
+              .select({
+                filterByFormula: contributorInfoFilterString,
+              })
+              .all();
+            console.log(contributorInfoResult);
+
+            const contributorInfo = contributorInfoResult.map((contributor) => {
+              return {
+                contributorLastName: contributor.fields["Last_name"],
+                contributorFirstName: contributor.fields["First_name"],
+                contributorORCID: contributor.fields["ORCID"],
+                contributorAffiliation: contributor.fields["Institution"],
+                contributorRoles: contributor.fields["NIH_Project_Role"],
+              };
+            });
+            sodaJSONObj["dataset-metadata"]["description-metadata"][
+              "contributors"
+            ] = contributorInfo;
+            renderContributorFields(contributorInfo);
+            document
+              .getElementById("guided-div-contributors-imported-from-airtable")
+              .classList.add("hidden");
+            document
+              .getElementById("guided-div-contributor-field-set")
+              .classList.remove("hidden");
+          }
         }
       }
       if (pageBeingLeftID === "guided-create-description-metadata-tab") {
