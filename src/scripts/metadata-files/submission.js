@@ -609,9 +609,17 @@ async function generateSubmissionHelper(uploadBFBoolean) {
   let datasetName = $("#bf_dataset_load_submission").text().trim();
   client
     .post(
-      `/prepare_metadata/save_submission_file?upload_boolean=${uploadBFBoolean}&bfaccount=${defaultBfAccount}&bfdataset=${datasetName}&filepath=${submissionDestinationPath}`,
+      `/prepare_metadata/submission_file`,
       {
-        json_str: json_arr,
+        submission_file_rows: json_arr,
+        filepath: submissionDestinationPath,
+        upload_boolean: uploadBFBoolean,
+      },
+      {
+        params: {
+          selected_account: defaultBfAccount,
+          selected_dataset: datasetName,
+        },
       }
     )
     .then((res) => {

@@ -789,12 +789,6 @@ async function generateDDFile(uploadBFBoolean) {
   studyInfoValueObject["study technique"] = studyTechniqueArr;
   studyInfoValueObject["study approach"] = studyApproachesArr;
 
-  ///////////// stringify JSON objects //////////////////////
-  json_str_ds = JSON.stringify(datasetInfoValueObj);
-  json_str_study = JSON.stringify(studyInfoValueObject);
-  json_str_con = JSON.stringify(contributorObj);
-  json_str_related_info = JSON.stringify(relatedInfoArr);
-
   /// get current, selected Pennsieve account
   var bfaccountname = $("#current-bf-account").text();
   let bf_dataset = document
@@ -810,10 +804,10 @@ async function generateDDFile(uploadBFBoolean) {
         selected_account: bfaccountname,
         selected_dataset: bf_dataset,
         filepath: ddDestinationPath,
-        dataset_str: json_str_ds,
-        study_str: json_str_study,
-        contributor_str: json_str_con,
-        related_info_str: json_str_related_info,
+        dataset_str: datasetInfoValueObj,
+        study_str: studyInfoValueObject,
+        contributor_str: contributorObj,
+        related_info_str: relatedInfoArr,
       },
       {
         params: {
@@ -2338,50 +2332,49 @@ async function checkBFImportDD() {
   }
 }
 
-function loadDDfileDataframe(filePath) {
-  // new client that has a longer timeout
-  let clientLongTimeout = new zerorpc.Client({
-    timeout: 300000,
-    heartbeatInterval: 60000,
-  });
-  clientLongTimeout.connect("tcp://127.0.0.1:4242");
-  clientLongTimeout.invoke(
-    "api_load_existing_DD_file",
-    "local",
-    filePath,
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        console.log(error);
-        Swal.fire({
-          title: "Failed to load the existing dataset_description.xlsx file",
-          html: emessage,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          icon: "error",
-        });
-
-        // log the import action failure to analytics
-        logMetadataForAnalytics(
-          "Error",
-          MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Existing",
-          Destinations.LOCAL
-        );
-      } else {
-        loadDDFileToUI(res, "local");
-        // log the import action success to analytics
-        logMetadataForAnalytics(
-          "Success",
-          MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
-          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-          "Existing",
-          Destinations.LOCAL
-        );
+async function loadDDfileDataframe(filePath) {
+  try {
+    let ddFileResponse = await client.get(
+      "/prepare_metadata/dataset_description_file",
+      {
+        params: {
+          filepath: filePath,
+          import_type: "local",
+        },
       }
-    }
-  );
+    );
+
+    let ddFileData = ddFileResponse.data;
+
+    loadDDFileToUI(ddFileData, "local");
+    // log the import action success to analytics
+    logMetadataForAnalytics(
+      "Success",
+      MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      "Existing",
+      Destinations.LOCAL
+    );
+  } catch (error) {
+    clientError(error);
+    var emessage = userErrorMessage(error);
+    Swal.fire({
+      title: "Failed to load the existing dataset_description.xlsx file",
+      html: emessage,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      icon: "error",
+    });
+
+    // log the import action failure to analytics
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.LOCAL
+    );
+  }
 }
 
 function loadDDFileToUI(object, file_type) {

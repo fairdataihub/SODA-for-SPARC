@@ -219,6 +219,8 @@ class DatasetDescriptionFile(Resource):
     def post(self):
         data = self.parser_dataset_description_file.parse_args()
 
+        print(data)
+
         dataset_str = data.get('dataset_str')
         filepath = data.get('filepath')
         upload_boolean = data.get('upload_boolean')
@@ -265,7 +267,7 @@ class SubjectsFile(Resource):
         upload_boolean = data.get('upload_boolean')
         selected_account = data.get('selected_account')
         selected_dataset = data.get('selected_dataset')
-        subjects_str = data.get('subjects_str')
+        subjects_str = data.get('subjects_header_row')
 
         if upload_boolean and not selected_account and not selected_dataset:
             api.abort(400, "To save a subjects file on Pennsieve provide a dataset and pennsieve account.")
@@ -366,7 +368,7 @@ class SamplesFile(Resource):
     parser_create_data_frames = reqparse.RequestParser(bundle_errors=True)
     parser_create_data_frames.add_argument('type', type=str, help="samples.xlsx is the valid metadata type.", location="args", required=True)
     parser_create_data_frames.add_argument('filepath', type=str, help="Path to the subjects or samples file on the user's machine.", location="args", required=True)
-    parser_create_data_frames.add_argument('ui_fields', type=list, help='The fields to include in the final data frame.', location="args", required=True)
+    parser_create_data_frames.add_argument('ui_fields', type=str, help='The fields to include in the final data frame.', location="args", required=False)
 
     @api.expect(parser_create_data_frames)
     @api.doc(description='Get a local samples file data in the form of data frames.', responses={500: "Internal Server Error", 400: "Bad Request"})
@@ -378,8 +380,18 @@ class SamplesFile(Resource):
         filepath = data.get('filepath')
         ui_fields = data.get('ui_fields')
 
+        print(ui_fields)
+
         if file_type != 'samples.xlsx':
             api.abort(400, "Error: The type parameter must be samples.")
+
+        if ui_fields:
+            # a bug in the reqparser library makes any input with location=args and type=list to be parsed character by character.
+            # to fix this it would be necessary to join into a string, remove quotes and [] chars and then split on commas.
+            # more than that the type in Swagger docs is not recognized as a list even when explicitly called one.
+            # Rather than deal with that I will just set type=str and use the below workaround
+            # that converts the string representation of the list to an actual list.
+            ui_fields = list(map(str.strip, ui_fields.strip('][').replace("'", '').replace('"', '').split(',')))
 
         try:
             return convert_subjects_samples_file_to_df(file_type, filepath, ui_fields)

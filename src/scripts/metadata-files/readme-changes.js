@@ -71,9 +71,11 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
           text: textValue,
         },
         {
-          file_type: upperCaseLetters,
-          selected_account: defaultBfAccount,
-          selected_dataset: bfDataset,
+          params: {
+            file_type: upperCaseLetters,
+            selected_account: defaultBfAccount,
+            selected_dataset: bfDataset,
+          },
         }
       );
       let res = upload_rc_file.data;

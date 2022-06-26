@@ -2463,7 +2463,7 @@ async function checkBFImportSamples() {
 
   log.info(`Getting samples.xlsx for dataset ${bfDataset} from Pennsieve.`);
   try {
-    let import_metadata = await client.get(
+    let importMetadataResponse = await client.get(
       `/prepare_metadata/import_metadata_file`,
       {
         params: {
@@ -2474,7 +2474,8 @@ async function checkBFImportSamples() {
         },
       }
     );
-    let res = import_metadata.data.sample_file_rows;
+
+    let res = importMetadataResponse.data.sample_file_rows;
 
     // log the success to analytics
     logMetadataForAnalytics(

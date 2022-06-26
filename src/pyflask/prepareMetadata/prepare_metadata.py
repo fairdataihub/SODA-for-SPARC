@@ -344,7 +344,7 @@ def populate_contributor_info(workbook, val_array):
     ):
         workbook[column + "19"] = contributor["conName"]
         workbook[column + "20"] = contributor["conID"]
-        workbook[column + "21"] = contributor["conAffiliation"]
+        workbook[column + "21"] = contributor["conAffliation"]
         workbook[column + "22"] = contributor["conRole"]
 
     return [val_array["funding"], val_array["contributors"]]
@@ -714,7 +714,7 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
 
     sortMatrix = sortedSubjectsTableData(transpose, ui_fields)
 
-    return {"sample_file_rows": transposeMatrix(sortMatrix)} if type == "samples" else {"subject_file_rows": transposeMatrix(sortMatrix)}
+    return {"sample_file_rows": transposeMatrix(sortMatrix)} if type in ["samples.xlsx", "samples"] else {"subject_file_rows": transposeMatrix(sortMatrix)}
 
 
 def checkEmptyColumn(column):
@@ -880,6 +880,8 @@ def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
 # import readme or changes file from Pennsieve
 def import_bf_RC(bfaccount, bfdataset, file_type):
 
+    file_type = file_type + ".txt"
+
     try:
         bf = Pennsieve(bfaccount)
     except Exception:
@@ -891,6 +893,8 @@ def import_bf_RC(bfaccount, bfdataset, file_type):
         abort(400, "Error: Please select a valid Pennsieve dataset.")
 
     for i in range(len(myds.items)):
+
+        print(myds.items[i].name)
 
         if myds.items[i].name == file_type:
 

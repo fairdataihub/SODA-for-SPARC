@@ -1589,62 +1589,60 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
     },
   }).then((result) => {});
 
-  // new client that has a longer timeout
-  let clientLongTimeout = new zerorpc.Client({
-    timeout: 300000,
-    heartbeatInterval: 60000,
-  });
-  clientLongTimeout.connect("tcp://127.0.0.1:4242");
-  clientLongTimeout.invoke(
-    "api_save_samples_file",
-    uploadBFBoolean,
-    defaultBfAccount,
-    $("#bf_dataset_load_samples").text().trim(),
-    samplesDestinationPath,
-    samplesTableData,
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        Swal.fire({
-          title: "Failed to generate the samples.xlsx file.",
-          html: emessage,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          icon: "error",
-        });
-
-        logMetadataForAnalytics(
-          "Error",
-          MetadataAnalyticsPrefix.SAMPLES,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Generate",
-          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
-        );
-      } else {
-        Swal.fire({
-          title:
-            "The samples.xlsx file has been successfully generated at the specified location.",
-          icon: "success",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-
-        logMetadataForAnalytics(
-          "Success",
-          MetadataAnalyticsPrefix.SAMPLES,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Generate",
-          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
-        );
-
-        // log the size of the metadata file that was generated at varying levels of granularity
-        const size = res;
-        logMetadataSizeForAnalytics(uploadBFBoolean, "samples.xlsx", size);
+  try {
+    let samplesFileResponse = await client.post(
+      "prepare_metadata/samples_file",
+      {
+        filepath: samplesDestinationPath,
+        selected_account: defaultBfAccount,
+        selected_dataset: $("#bf_dataset_load_samples").text().trim(),
+        samples_str: samplesTableData,
+      },
+      {
+        params: {
+          upload_boolean: uploadBFBoolean,
+        },
       }
-    }
-  );
+    );
+
+    Swal.fire({
+      title:
+        "The samples.xlsx file has been successfully generated at the specified location.",
+      icon: "success",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    logMetadataForAnalytics(
+      "Success",
+      MetadataAnalyticsPrefix.SAMPLES,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Generate",
+      uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+    );
+
+    // log the size of the metadata file that was generated at varying levels of granularity
+    const { size } = samplesFileResponse.data;
+    logMetadataSizeForAnalytics(uploadBFBoolean, "samples.xlsx", size);
+  } catch (error) {
+    clientError(error);
+    var emessage = userErrorMessage(error);
+    Swal.fire({
+      title: "Failed to generate the samples.xlsx file.",
+      html: emessage,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      icon: "error",
+    });
+
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.SAMPLES,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Generate",
+      uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+    );
+  }
 }
 
 // import Primary folder
@@ -1714,12 +1712,12 @@ async function loadSubjectsFileToDataframe(filePath) {
         params: {
           type: "subjects",
           filepath: filePath,
-          ui_fields: fieldSubjectEntries,
+          ui_fields: JSON.stringify(fieldSubjectEntries),
         },
       }
     );
 
-    let res = import_subjects_file.data;
+    let res = import_subjects_file.data.subject_file_rows;
     // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
     if (res.length > 1) {
       result = transformImportedExcelFile("subjects", res);
@@ -1796,18 +1794,18 @@ async function loadSamplesFileToDataframe(filePath) {
     fieldSampleEntries.push(field.name.toLowerCase());
   }
   try {
-    let import_samples_file = await client.get(
+    let importSamplesResponse = await client.get(
       `/prepare_metadata/samples_file`,
       {
         params: {
           type: "samples.xlsx",
           filepath: filePath,
-          ui_fields: fieldSampleEntries,
+          ui_fields: JSON.stringify(fieldSampleEntries),
         },
       }
     );
 
-    let res = import_samples_file.data.sample_file_rows;
+    let res = importSamplesResponse.data.sample_file_rows;
     // res is a dataframe, now we load it into our samplesTableData in order to populate the UI
     if (res.length > 1) {
       result = transformImportedExcelFile("samples", res);
