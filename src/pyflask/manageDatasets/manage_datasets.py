@@ -1971,7 +1971,7 @@ def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_st
                 c += 1
                 break
         if c == 0:
-            abort(400, str(e))
+            abort(400, "Selected status is not available for this Pennsieve account.")
 
         # gchange dataset status
         selected_dataset_id = myds.id

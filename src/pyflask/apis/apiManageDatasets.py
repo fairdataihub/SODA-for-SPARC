@@ -128,7 +128,7 @@ successMessage = api.model('SuccessMessage', {
 model_status_options = api.model('StatusOptions', {
   'id': fields.String(required=True, description="The id of the dataset"),
   'name': fields.String(required=True, description="The name of the dataset"),
-  'diplayName': fields.String(required=True, description="The display name of the dataset"),
+  'displayName': fields.String(required=True, description="The display name of the dataset"),
   'color': fields.String(required=True, description="The color of the dataset"),
   'inUse': fields.Boolean(required=True, description="Whether the dataset is in use"),
 })

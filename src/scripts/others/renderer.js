@@ -3800,14 +3800,15 @@ const showPrePublishingPageElements = () => {
   var selectedBfDataset = defaultBfDataset;
 
   if (selectedBfDataset === "Select dataset") {
-  } else {
-    // show the "Begin Publishing" button and hide the checklist and submission section
-    $("#begin-prepublishing-btn").show();
-    $("#prepublishing-checklist-container").hide();
-    $("#prepublishing-submit-btn-container").hide();
-    $("#excluded-files-container").hide();
-    $(".pre-publishing-continue-container").hide();
+    return;
   }
+
+  // show the "Begin Publishing" button and hide the checklist and submission section
+  $("#begin-prepublishing-btn").show();
+  $("#prepublishing-checklist-container").hide();
+  $("#prepublishing-submit-btn-container").hide();
+  $("#excluded-files-container").hide();
+  $(".pre-publishing-continue-container").hide();
 };
 
 async function showPublishingStatus(callback) {

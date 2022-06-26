@@ -3058,7 +3058,7 @@ async function showCurrentDatasetStatus(callback) {
     for (let item in res["status_options"]) {
       let option = document.createElement("option");
 
-      option.textContent = res["status_options"][item]["name"];
+      option.textContent = res["status_options"][item]["displayName"];
       option.value = res["status_options"][item]["name"];
       option.style.color = res["status_options"][item]["color"];
 
@@ -3066,7 +3066,7 @@ async function showCurrentDatasetStatus(callback) {
 
       addRadioOption(
         "dataset_status_ul",
-        res["status_options"][item]["name"],
+        res["status_options"][item]["displayName"],
         res["status_options"][item]["name"]
       );
     }

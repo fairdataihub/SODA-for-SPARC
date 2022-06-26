@@ -859,23 +859,6 @@ const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
   }
 };
 
-// update a prepublishing checklist item by its Pennsieve value
-// const updatePrepublishingChecklistIcon = async (getMetadataFunction, iconElementId) => {
-//   let result;
-
-//   try {
-//     result = await getMetadataFunction(defaultBfDataset)
-//   } catch(error) {
-//     log.error(error)
-//     console.error(error)
-//     ipcRenderer.send("track-event", "Error", "Updating prepublishing checklist item", defaultBfDataset)
-//   }
-
-//   if(result.length <  1) {
-//     setPrepublishingChecklistItemIconByStatus(iconElementId)
-//   }
-// }
-
 // reads the pre-publishing checklist items from the UI and returns true if all are completed and false otherwise
 const allPrepublishingChecklistItemsCompleted = () => {
   // get the icons for the checklist elements
