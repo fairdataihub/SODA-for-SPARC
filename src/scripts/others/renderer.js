@@ -6477,6 +6477,7 @@ ipcRenderer.on(
                     }
                   } catch (error) {
                     clientError(error);
+                    clearInterval(local_progress);
                   }
                 }
                 //create setInterval variable that will keep track of the iterated items
@@ -6510,6 +6511,7 @@ ipcRenderer.on(
                   );
 
                   let { data } = monitorProgressResponse;
+                  console.log(data);
                   percentage_amount = data["progress_percentage"].toFixed(2);
                   finished = data["create_soda_json_completed"];
                   progressBar_rightSide = document.getElementById(
@@ -6538,6 +6540,8 @@ ipcRenderer.on(
 
                     clearInterval(local_progress);
                     progressBar_rightSide.classList.remove("notransition");
+                    console.log("Dataset structure json: ");
+                    console.log(datasetStructureJSONObj);
                     populate_existing_folders(datasetStructureJSONObj);
                     populate_existing_metadata(sodaJSONObj);
                     $("#para-continue-location-dataset-getting-started").text(
@@ -6576,7 +6580,7 @@ ipcRenderer.on(
                 );
                 let { data } = importLocalDatasetResponse;
                 sodajsonobject = data;
-                datasetStructureJSONObj = sodaIsConnected["dataset-structure"];
+                datasetStructureJSONObj = sodajsonobject["dataset-structure"];
               } catch (error) {
                 clientError(error);
                 clearInterval(local_progress);

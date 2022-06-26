@@ -128,7 +128,7 @@ model_import_dataset_organize_datasets_progress_response = api.model("ImportData
     "create_soda_json_progress": fields.Integer( required=True, description="The progress of the create soda json object operation."),
     "create_soda_json_total_items": fields.Integer( required=True, description="The total number of items to be processed in the create soda json object operation."),
     "progress_percentage": fields.Integer( required=True, description="The percentage of the create soda json object operation completed."),
-    "create_soda_json_completed": fields.Boolean( required=True, description="Whether the create soda json object operation has completed.")
+    "create_soda_json_completed": fields.Integer( required=True, description="Whether the create soda json object operation has completed.")
 })
 
 @api.route('/datasets/import/progress')
