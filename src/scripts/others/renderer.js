@@ -3456,7 +3456,7 @@ function withdrawDatasetSubmission() {
 }
 
 async function withdrawDatasetCheck(res) {
-  var reviewstatus = res[0];
+  var reviewstatus = res["publishing_status"];
   if (reviewstatus !== "requested") {
     Swal.fire({
       icon: "error",
@@ -3518,7 +3518,10 @@ async function withdrawReviewDataset() {
     .replace(/^\s+|\s+$/g, "");
 
   try {
-    await api.withdrawDatasetReviewSubmission(selectedBfDataset);
+    await api.withdrawDatasetReviewSubmission(
+      selectedBfDataset,
+      selectedBfAccount
+    );
 
     logGeneralOperationsForAnalytics(
       "Success",
@@ -3560,9 +3563,8 @@ async function withdrawReviewDataset() {
     bfRefreshPublishingDatasetStatusBtn.disabled = false;
     bfWithdrawReviewDatasetBtn.disabled = false;
   } catch (error) {
-    log.error(error);
-    console.error(error);
-    var emessage = userError(error);
+    clientError(error);
+    var emessage = userErrorMessage(error);
     Swal.fire({
       title: "Could not withdraw dataset from publication!",
       text: `${emessage}`,
@@ -3827,6 +3829,8 @@ async function showPublishingStatus(callback) {
         );
         let res = get_publishing_status.data;
 
+        console.log(res);
+
         try {
           //update the dataset's publication status and display
           //onscreen for the user under their dataset name
@@ -3879,8 +3883,8 @@ async function showPublishingStatus(callback) {
 }
 
 function publishStatusOutputConversion(res) {
-  var reviewStatus = res[0];
-  var publishStatus = res[1];
+  var reviewStatus = res["publishing_status"];
+  var publishStatus = res["review_request_status"];
 
   var outputMessage = "";
   if (reviewStatus === "draft" || reviewStatus === "cancelled") {
