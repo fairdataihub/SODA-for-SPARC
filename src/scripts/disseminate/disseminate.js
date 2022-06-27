@@ -558,7 +558,7 @@ async function disseminateShowCurrentPermission(bfAcct, bfDS) {
   );
 }
 
-// TODO: Figure out: Permissions has these properties used in the below function?
+
 async function disseminiateShowCurrentDatasetStatus(
   callback,
   account,
@@ -738,7 +738,7 @@ $("#ORCID-btn").on("click", async () => {
       "track-event",
       "Success",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-        " - Integrate ORCID iD",
+      " - Integrate ORCID iD",
       defaultBfDatasetId
     );
 
@@ -757,6 +757,13 @@ $("#ORCID-btn").on("click", async () => {
 const showPrePublishingStatus = async (inPrePublishing = false) => {
   if (defaultBfDataset === "Select dataset") {
     return;
+  }
+
+  if (
+    $("#para-review-dataset-info-disseminate").text() !==
+    "Dataset is not under review currently"
+  ) {
+    return
   }
 
   // spinners that fit into the checklist icon slots until statuses have been verified for the items
@@ -1025,7 +1032,7 @@ $(".pre-publishing-continue").on("click", async function () {
       "track-event",
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-        " - Get Excluded Files",
+      " - Get Excluded Files",
       defaultBfDatasetId
     );
 
@@ -1036,7 +1043,7 @@ $(".pre-publishing-continue").on("click", async function () {
     "track-event",
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Get Excluded Files",
+    " - Get Excluded Files",
     defaultBfDatasetId
   );
 
@@ -1064,7 +1071,7 @@ $(".pre-publishing-continue").on("click", async function () {
       "track-event",
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-        " - Get Metadata Files",
+      " - Get Metadata Files",
       defaultBfDatasetId
     );
   }
@@ -1073,7 +1080,7 @@ $(".pre-publishing-continue").on("click", async function () {
     "track-event",
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Get Metadata Files",
+    " - Get Metadata Files",
     defaultBfDatasetId
   );
 
@@ -1158,6 +1165,15 @@ $("#begin-prepublishing-btn").on("click", async function () {
 
   // close the loading popup
   Swal.close();
+
+  // wait for the Review status to be filled
+  if (
+    $("#para-review-dataset-info-disseminate").text() ===
+    ""
+  ) {
+    await wait(1000)
+  }
+
 
   // transition to the next question
   transitionFreeFormMode(
