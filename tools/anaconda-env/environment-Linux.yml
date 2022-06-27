@@ -3,7 +3,7 @@ channels:
 - defaults
 - conda-forge
 dependencies:
-- python = 3.9.7
+- python = 3.9
 - PyInstaller = 4.7
 - nodejs = 10.13.0
 - libgcc = 7.2.0
@@ -20,3 +20,5 @@ dependencies:
   - biopython == 1.78
   - flask == 2.0.2
   - flask_restx
+  - protobuf == 3.20.0
+  - gevent == 21.12.0
