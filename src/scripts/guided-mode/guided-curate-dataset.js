@@ -982,6 +982,35 @@ const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
     }
   }
 };
+
+const guidedLoadDescriptionDatasetInformation = () => {
+  const descriptionMetadata =
+    sodaJSONObj["dataset-metadata"]["description-metadata"][
+      "dataset-information"
+    ];
+
+  if (descriptionMetadata) {
+    //check the checkbox for the study type where name is dataset-relation
+    const studyType = descriptionMetadata["type"];
+    const studyTypeRadioButton = document.querySelector(
+      `input[name='dataset-relation'][value='${studyType}']`
+    );
+    if (studyTypeRadioButton) {
+      studyTypeRadioButton.checked = true;
+    }
+  } else {
+    //reset the study type checkboxes
+    const studyTypeRadioButtons = document.querySelectorAll(
+      "input[name='dataset-relation']"
+    );
+    for (const studyTypeRadioButton of studyTypeRadioButtons) {
+      studyTypeRadioButton.checked = false;
+    }
+  }
+};
+const guidedLoadDescriptionStudyInformation = () => {};
+const guidedLoadDescriptionAdditionalInformation = () => {};
+
 const traverseToTab = (targetPageID) => {
   console.log(targetPageID);
   try {
@@ -1195,6 +1224,38 @@ const traverseToTab = (targetPageID) => {
         addProtocolField();
       }
     }
+    if (targetPageID === "guided-create-description-metadata-tab") {
+      guidedLoadDescriptionDatasetInformation();
+      /*renderAdditionalLinksTable();
+
+      //set study purpose, data collection, and primary conclusion from sodaJSONObj
+      const studyPurpose = sodaJSONObj["digital-metadata"]["study-purpose"];
+      const dataCollection = sodaJSONObj["digital-metadata"]["data-collection"];
+      const primaryConclusion =
+        sodaJSONObj["digital-metadata"]["primary-conclusion"];
+
+      if (studyPurpose) {
+        const studyPurposeInput = document.getElementById(
+          "guided-ds-study-purpose"
+        );
+        studyPurposeInput.value = studyPurpose;
+        studyPurposeInput.disabled = true;
+      }
+      if (dataCollection) {
+        const dataCollectionInput = document.getElementById(
+          "guided-ds-study-data-collection"
+        );
+        dataCollectionInput.value = dataCollection;
+        dataCollectionInput.disabled = true;
+      }
+      if (primaryConclusion) {
+        const primaryConclusionInput = document.getElementById(
+          "guided-ds-study-primary-conclusion"
+        );
+        primaryConclusionInput.value = primaryConclusion;
+        primaryConclusionInput.disabled = true;
+      }*/
+    }
 
     if (targetPageID === "guided-samples-folder-tab") {
       renderSamplesTables();
@@ -1281,37 +1342,6 @@ const traverseToTab = (targetPageID) => {
         loop: true,
         autoplay: true,
       });
-    }
-    if (targetPageID === "guided-create-description-metadata-tab") {
-      renderAdditionalLinksTable();
-
-      //set study purpose, data collection, and primary conclusion from sodaJSONObj
-      const studyPurpose = sodaJSONObj["digital-metadata"]["study-purpose"];
-      const dataCollection = sodaJSONObj["digital-metadata"]["data-collection"];
-      const primaryConclusion =
-        sodaJSONObj["digital-metadata"]["primary-conclusion"];
-
-      if (studyPurpose) {
-        const studyPurposeInput = document.getElementById(
-          "guided-ds-study-purpose"
-        );
-        studyPurposeInput.value = studyPurpose;
-        studyPurposeInput.disabled = true;
-      }
-      if (dataCollection) {
-        const dataCollectionInput = document.getElementById(
-          "guided-ds-study-data-collection"
-        );
-        dataCollectionInput.value = dataCollection;
-        dataCollectionInput.disabled = true;
-      }
-      if (primaryConclusion) {
-        const primaryConclusionInput = document.getElementById(
-          "guided-ds-study-primary-conclusion"
-        );
-        primaryConclusionInput.value = primaryConclusion;
-        primaryConclusionInput.disabled = true;
-      }
     }
 
     let currentParentTab = CURRENT_PAGE.parent();
@@ -3606,7 +3636,6 @@ const openCopySubjectMetadataPopup = async () => {
   //Combine sample data from subjects in and out of pools
   let subjectsArray = [...subjectsInPools, ...subjectsOutsidePools];
 
-  //sort subjects object by subjectName property alphabetically
   subjectsArray = subjectsArray.map((subject) => subject.subjectName);
 
   const copyFromMetadata = subjectsArray
@@ -8088,6 +8117,7 @@ $(document).ready(() => {
 
   const guidedSaveDescriptionFile = () => {
     let datasetInfoValueObj = getGuidedDatasetInformation();
+    console.log(datasetInfoValueObj);
     let studyInfoValueObject = getGuidedDatasetStudyInformation();
     let contributorObj = getGuidedDatasetContributorInformation();
     let relatedInfoArr = guidedCombineLinkSections();
@@ -8145,13 +8175,110 @@ $(document).ready(() => {
       );
     }
   };
+  const guidedSaveDescriptionDatasetInformation = () => {
+    const title = sodaJSONObj["digital-metadata"]["name"];
+    const subtitle = sodaJSONObj["digital-metadata"]["subtitle"];
+    let studyType = null;
+    const selectedStudyTypeRadioButton = document.querySelector(
+      "input[name='dataset-relation']:checked"
+    );
+    if (!selectedStudyTypeRadioButton) {
+      throw "Please select a study type";
+    } else {
+      studyType = selectedStudyTypeRadioButton.value;
+    }
+
+    //get the keywords from the keywords textarea
+    const keywordArray = keywordTagify.value;
+
+    //get the number of subjects
+    const [subjectsInPools, subjectsOutsidePools] =
+      sodaJSONObj.getAllSubjects();
+    //Combine sample data from subjects in and out of pools
+    const subjectsArray = [...subjectsInPools, ...subjectsOutsidePools];
+    const numSubjects = subjectsArray.length;
+
+    //get the number of samples
+    let numSamples = 0;
+    for (const subject of subjectsArray) {
+      numSamples += subject.samples.length;
+    }
+
+    sodaJSONObj["dataset-metadata"]["description-metadata"][
+      "dataset-information"
+    ] = {
+      name: title,
+      description: subtitle,
+      type: studyType,
+      keywords: keywordArray,
+      "number of samples": numSamples,
+      "number of subjects": numSubjects,
+    };
+  };
+
+  const guidedSaveDescriptionStudyInformation = () => {
+    const studyOrganSystemTags = getTagsFromTagifyElement(
+      guidedStudyOrganSystemsTagify
+    );
+    console.log(studyOrganSystemTags);
+    const studyApproachTags = getTagsFromTagifyElement(
+      guidedStudyApproachTagify
+    );
+    console.log(studyApproachTags);
+    const studyTechniqueTags = getTagsFromTagifyElement(
+      guidedStudyTechniquesTagify
+    );
+    console.log(studyTechniqueTags);
+    const studyPurpose = document.getElementById(
+      "guided-ds-study-purpose"
+    ).value;
+    const studyDataCollection = document.getElementById(
+      "guided-ds-study-data-collection"
+    ).value;
+    const studyPrimaryConclusion = document.getElementById(
+      "guided-ds-study-primary-conclusion"
+    ).value;
+    const studyCollectionTitle = document.getElementById(
+      "guided-ds-study-collection-title"
+    ).value;
+
+    sodaJSONObj["dataset-metadata"]["description-metadata"][
+      "study-information"
+    ] = {
+      "study organ system": studyOrganSystemTags,
+      "study approach": studyApproachTags,
+      "study technique": studyTechniqueTags,
+      "study purpose": studyPurpose,
+      "study data collection": studyDataCollection,
+      "study primary conclusion": studyPrimaryConclusion,
+      "study collection title": studyCollectionTitle,
+    };
+    console.log(
+      sodaJSONObj["dataset-metadata"]["description-metadata"][
+        "study-information"
+      ]
+    );
+    throw "asdf";
+  };
   const getGuidedDatasetInformation = () => {
-    const name = sodaJSONObj["digital-metadata"]["name"];
+    const title = sodaJSONObj["digital-metadata"]["name"];
     const description = sodaJSONObj["digital-metadata"]["subtitle"];
     //get the value of the checked radio button with the name dataset-relation and store as type
+    errorArray.push({
+      type: "notyf",
+      message: "Please select a dataset start location",
+    });
+    throw errorArray;
     const type = document.querySelector(
       "input[name='dataset-relation']:checked"
     ).value;
+    if (!type) {
+      errorArray.push({
+        type: "notyf",
+        message: "Please select a dataset start location",
+      });
+      throw errorArray;
+    }
     const keywordArray = keywordTagify.value;
     const subjects = guidedGetSubjects();
     const numSubjects = subjects.length;
@@ -8170,35 +8297,7 @@ $(document).ready(() => {
       "number of subjects": numSubjects,
     };
   };
-  const getGuidedDatasetStudyInformation = () => {
-    var studyOrganSystemTags = getTagsFromTagifyElement(
-      guidedStudyOrganSystemsTagify
-    );
-    var studyApproachTags = getTagsFromTagifyElement(guidedStudyApproachTagify);
-    var studyTechniqueTags = getTagsFromTagifyElement(
-      guidedStudyTechniquesTagify
-    );
-    var studyPurpose = document.getElementById("guided-ds-study-purpose").value;
-    var studyDataCollection = document.getElementById(
-      "guided-ds-study-data-collection"
-    ).value;
-    var studyPrimaryConclusion = document.getElementById(
-      "guided-ds-study-primary-conclusion"
-    ).value;
-    var studyCollectionTitle = document.getElementById(
-      "guided-ds-study-collection-title"
-    ).value;
-
-    return {
-      "study organ system": studyOrganSystemTags,
-      "study approach": studyApproachTags,
-      "study technique": studyTechniqueTags,
-      "study purpose": studyPurpose,
-      "study data collection": studyDataCollection,
-      "study primary conclusion": studyPrimaryConclusion,
-      "study collection title": studyCollectionTitle,
-    };
-  };
+  const getGuidedDatasetStudyInformation = () => {};
   const getGuidedDatasetContributorInformation = () => {
     var funding = document.getElementById(
       "guided-ds-description-award-input"
@@ -8264,7 +8363,11 @@ $(document).ready(() => {
     return protocolLinks;
   };
   $("#guided-generate-description-file").on("click", () => {
-    guidedSaveDescriptionFile();
+    try {
+      guidedSaveDescriptionFile();
+    } catch (error) {
+      console.log(error);
+    }
   });
 
   const guidedSaveParticipantInformation = () => {
@@ -9162,7 +9265,7 @@ $(document).ready(() => {
         if (!allProtocolFieldsValid) {
           errorArray.push({
             type: "notyf",
-            message: "Please fill out all protol information fields",
+            message: "Please fill out all protocol information fields",
           });
           throw errorArray;
         }
@@ -9170,7 +9273,17 @@ $(document).ready(() => {
           protocols;
       }
       if (pageBeingLeftID === "guided-create-description-metadata-tab") {
-        guidedSaveDescriptionFile();
+        try {
+          guidedSaveDescriptionDatasetInformation();
+          guidedSaveDescriptionStudyInformation();
+        } catch (error) {
+          console.log(error);
+          errorArray.push({
+            type: "notyf",
+            message: error,
+          });
+          throw errorArray;
+        }
       }
       if (pageBeingLeftID === "guided-create-readme-metadata-tab") {
         guidedShowTreePreview(
@@ -9243,7 +9356,6 @@ $(document).ready(() => {
             message: error.message,
           });
         }
-        errorArray = [];
       });
     }
     $(this).removeClass("loading");
