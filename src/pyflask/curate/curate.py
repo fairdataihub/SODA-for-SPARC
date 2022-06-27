@@ -2572,8 +2572,12 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                         relative_path
                     )
 
+                    current_os = platform.system()
+
                     # clear the pennsieve queue for successive batches
-                    clear_queue()
+                    # Mac builds not able to spawn subprocess from Python at the moment
+                    if not current_os == "Darwin":
+                        clear_queue()
 
                     # upload the files
                     bf_folder.upload(*upload_bucket)
@@ -2620,8 +2624,13 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                     # update the start_index to end_index + 1
                     start_index = end_index + 1
             else:
+                # get the current OS
+                current_os = platform.system()
+
                 # clear the pennsieve queue
-                clear_queue()
+                if not current_os == "Darwin":
+                    # clear the pennsieve queue
+                    clear_queue()
 
                 # upload all files at once for the folder
                 main_curate_progress_message = "Uploading files in " + str(

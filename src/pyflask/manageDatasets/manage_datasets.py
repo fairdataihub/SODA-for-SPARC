@@ -35,6 +35,8 @@ from pennsieve.api.agent import AgentError, socket_address
 from pennsieve import Settings
 from threading import Thread
 
+import platform
+
 
 import boto3
 import requests
@@ -983,8 +985,13 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                             file_path = join(dirpath, file)
                             files_with_destination.append(file_path)
 
-                        # clear the pennsieve queue for successive batches
-                        clear_queue()
+                        # get the current OS
+                        current_os = platform.system()
+
+                        # Mac builds not able to spawn subprocess from Python at the moment
+                        if not current_os == "Darwin":
+                            # clear the pennsieve queue
+                            clear_queue()
 
                         # upload the current bucket
                         current_folder.upload(*files_with_destination)
@@ -1014,7 +1021,13 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                             file_path = join(dirpath, file)
                             files_with_destination.append(file_path)
 
-                        clear_queue()
+                        # get the current OS
+                        current_os = platform.system()
+
+                        # Mac builds not able to spawn subprocess from Python at the moment
+                        if not current_os == "Darwin":
+                            # clear the pennsieve queue
+                            clear_queue()
 
                         # upload the files
                         current_folder.upload(*files_with_destination)
