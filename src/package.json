@@ -16,7 +16,6 @@
     "python-onefile-build-win": "python -m PyInstaller api.spec --distpath pyflaskdist --clean --onefile",
     "postinstall": "electron-builder install-app-deps"
   },
-  "pyzmq-directory": "C:\\Users\\CMarroquin\\anaconda3\\envs\\env-electron-python\\Lib\\site-packages\\pyzmq.libs\\*;pyzmq.libs",
   "repository": {
     "type": "git",
     "url": "https://github.com/fairdataihub/SODA-for-SPARC.git"
@@ -39,7 +38,7 @@
       "icon": "assets/app-icon/win/icon.ico",
       "extraResources": [
         {
-          "from": "./pysodadist/api"
+          "from": "./pyflaskdist/api"
         }
       ]
     },
