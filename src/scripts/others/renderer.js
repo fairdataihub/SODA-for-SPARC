@@ -7659,10 +7659,7 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
         },
       }
     );
-    //check return value
-    // TODO: This returns two messages along with the soda_json_structure as it originally did.
-    //       Gonna have to replace just grabbing soda_json_structure with the whole res object
-    //       and make sure it works given the introduction of keys all the way down.
+
     let data = filesFoldersResponse.data;
 
     ipcRenderer.send(

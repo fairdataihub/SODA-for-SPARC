@@ -953,7 +953,7 @@ async function extractBFDatasetForManifestFile(
     sodaJSONObj["bf-dataset-selected"]["dataset-name"] = "";
     return;
   } else {
-    sodaJSONObj = result[1][0];
+    sodaJSONObj = result[1]["soda_object"];
     if (JSON.stringify(sodaJSONObj["dataset-structure"]) !== "{}") {
       datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
     } else {
@@ -1298,7 +1298,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
     if (editBoolean) {
       //// else: create locally for the purpose of generating of manifest files locally
       try {
-        let create_manifest = await client.post(
+        await client.post(
           `/curate_datasets/manifest_files/local`,
           {
             filepath: generatePath,

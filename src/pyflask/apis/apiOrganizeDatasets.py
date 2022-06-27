@@ -5,8 +5,6 @@ from organizeDatasets import (
     monitor_local_json_progress,
 )
 
-from flask import request
-
 from namespaces import NamespaceEnum, get_namespace
 from flask_restx import Resource, fields, reqparse
 from errorHandlers import notBadRequestException

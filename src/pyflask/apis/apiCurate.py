@@ -131,7 +131,7 @@ class CurationFileDetails(Resource):
 @api.route("/manifest_files/local")
 class GenerateManifestFiles(Resource):
     parser = reqparse.RequestParser()
-    parser.add_argument("filepath", type=dict, required=True, help="Path to either a local dataset or a SODA directory for storing temporary manifest files. The latter is used for editing manifest files for local datasets. The former for editing manifest files of manifest information pulled from Pennsieve.", location="json")
+    parser.add_argument("filepath", type=str, required=True, help="Path to either a local dataset or a SODA directory for storing temporary manifest files. The latter is used for editing manifest files for local datasets. The former for editing manifest files of manifest information pulled from Pennsieve.", location="json")
     
 
     @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request'}, description="Generate manifest files in a local temporary directory or in the user's dataset directory. Allows users to edit their manifest files in the standalone manifest file generator feature.")
