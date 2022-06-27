@@ -121,6 +121,42 @@
 </div>
 
 <div
+  class="guided--section mt-lg neumorphic guided-protocol-field-container"
+  style="position: relative"
+>
+  <i
+    class="fas fa-times fa-2x"
+    style="
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      color: black;
+      cursor: pointer;
+    "
+    onclick="removeProtocolField(this)"
+  >
+  </i>
+  <h2 class="guided--text-sub-step">Enter protocol details</h2>
+  <label class="guided--form-label mt-lg">Protocol URL: </label>
+  <input
+    class="guided--input guided-protocol-url-input"
+    type="text"
+    placeholder="Enter protocol URL here"
+    onkeyup="validateInput($(this))"
+  />
+  <label class="guided--form-label mt-lg">Protocol description:</label>
+  <textarea
+    class="guided--input guided--text-area guided-protocol-description-input"
+    type="text"
+    placeholder="Enter protocol description here"
+    style="height: 7.5em; padding-bottom: 20px"
+    onkeyup="validateInput($(this))"
+  >
+The protocol used to generate this dataset</textarea
+  >
+</div>
+
+<div
   id="guided-source-data-organization-tab"
   class="guided--panel hidden guided-curate-new-dataset-branch-page"
 >

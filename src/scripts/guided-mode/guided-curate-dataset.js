@@ -57,6 +57,7 @@ const scrollToBottomOfGuidedBody = () => {
 
 const getOpenSubPageInPage = (pageID) => {
   const subPageContainer = document.getElementById(pageID);
+  console.log(subPageContainer);
   const openPage = subPageContainer.querySelector(".sub-page:not(.hidden)");
   return openPage.id;
 };
@@ -1181,6 +1182,17 @@ const traverseToTab = (targetPageID) => {
           //add an empty contributor information fieldset
           addContributorField();
         }
+      }
+    }
+    if (targetPageID === "guided-protocols-tab") {
+      const protocols =
+        sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
+      if (protocols) {
+        renderProtocolFields(protocols);
+      } else {
+        document.getElementById("protocols-container").innerHTML === "";
+        //add an empty contributor information fieldset
+        addProtocolField();
       }
     }
 
@@ -3072,6 +3084,63 @@ const removeProtocolField = (protocolDeleteButton) => {
   const protocolField = protocolDeleteButton.parentElement;
   protocolField.remove();
 };
+
+const generateProtocolField = (protocolUrl, protocolDescription) => {
+  return `
+    <div
+      class="guided--section mt-lg neumorphic guided-protocol-field-container"
+      style="position: relative"
+    >
+      <i
+        class="fas fa-times fa-2x"
+        style="
+          position: absolute;
+          top: 10px;
+          right: 15px;
+          color: black;
+          cursor: pointer;
+        "
+        onclick="removeProtocolField(this)"
+      >
+      </i>
+      <h2 class="guided--text-sub-step">Enter protocol details</h2>
+      <label class="guided--form-label mt-lg">Protocol URL: </label>
+      <input
+        class="guided--input guided-protocol-url-input"
+        type="text"
+        placeholder="Enter protocol URL here"
+        value="${protocolUrl ? protocolUrl : ""}"
+        onkeyup="validateInput($(this))"
+      />
+      <label class="guided--form-label mt-lg">Protocol description:</label>
+      <textarea
+        class="guided--input guided--text-area guided-protocol-description-input"
+        type="text"
+        placeholder="Enter protocol description here"
+        style="height: 7.5em; padding-bottom: 20px"
+        onkeyup="validateInput($(this))"
+      >${
+        protocolDescription
+          ? protocolDescription.trim()
+          : "The protocol used to generate this dataset"
+      }</textarea
+      >
+    </div>
+  `;
+};
+
+const renderProtocolFields = (protocolsArray) => {
+  const protocolsContainer = document.getElementById("protocols-container");
+  let protocolElements = protocolsArray
+    .map((protocol) => {
+      return generateProtocolField(
+        protocol["protocolUrl"],
+        protocol["protocolDescription"]
+      );
+    })
+    .join("\n");
+  protocolsContainer.innerHTML = protocolElements;
+};
 const renderContributorFields = (contributionMembersArray) => {
   //loop through curationMembers object
   let contributionMembersElements = contributionMembersArray
@@ -3135,7 +3204,6 @@ const renderContributorFields = (contributionMembersArray) => {
         tagify.addTags([contirubtorRole]);
       }
     }
-    console.log("foo");
   });
 
   //show the contributor fields
@@ -9023,8 +9091,83 @@ $(document).ready(() => {
             document
               .getElementById("guided-div-contributor-field-set")
               .classList.remove("hidden");
+
+            $(this).removeClass("loading");
+            return;
           }
         }
+      }
+      if (pageBeingLeftID === "guided-protocols-tab") {
+        const buttonYesImportProtocols = document.getElementById(
+          "guided-button-import-protocols"
+        );
+        const buttonNoEnterProtocolsManually = document.getElementById(
+          "guided-section-enter-protocols-manually"
+        );
+        if (
+          !buttonYesImportProtocols.classList.contains("selected") &&
+          !buttonNoEnterProtocolsManually.classList.contains("selected")
+        ) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please indicate if you would like to import protocols",
+          });
+          throw errorArray;
+        }
+
+        const protocolFields = document.querySelectorAll(
+          ".guided-protocol-field-container"
+        );
+
+        //Initializa allprotocolFieldsValid as true
+        //If any protocol fields are found invalid, allProtocolFieldsValid will be set to valid
+        //and an error will be thrown when next button is clicked.
+        let allProtocolFieldsValid = true;
+        let protocols = [];
+
+        //loop through protocol fields and get protocol values
+        const protocolFieldsArray = Array.from(protocolFields);
+        protocolFieldsArray.forEach((protocolField) => {
+          console.log(protocolField);
+          const protocolUrl = protocolField.querySelector(
+            ".guided-protocol-url-input"
+          );
+          const protocolDescription = protocolField.querySelector(
+            ".guided-protocol-description-input"
+          );
+
+          //Validate all of the protocol fields
+          const textInputs = [protocolUrl, protocolDescription];
+          console.log(textInputs);
+          //check if all text inputs are valid
+          textInputs.forEach((textInput) => {
+            if (textInput.value === "") {
+              textInput.style.setProperty("border-color", "red", "important");
+              allProtocolFieldsValid = false;
+            } else {
+              textInput.style.setProperty(
+                "border-color",
+                "hsl(0, 0%, 88%)",
+                "important"
+              );
+            }
+          });
+
+          const protocolObj = {
+            protocolUrl: protocolUrl.value,
+            protocolDescription: protocolDescription.value,
+          };
+          protocols.push(protocolObj);
+        });
+        if (!allProtocolFieldsValid) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please fill out all protol information fields",
+          });
+          throw errorArray;
+        }
+        sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] =
+          protocols;
       }
       if (pageBeingLeftID === "guided-create-description-metadata-tab") {
         guidedSaveDescriptionFile();
@@ -9702,6 +9845,9 @@ $(document).ready(() => {
               //delete sodaJSONObj data from imported milestone data
               delete sodaJSONObj["dataset-metadata"]["submission-metadata"][
                 "milestones"
+              ];
+              delete sodaJSONObj["dataset-metadata"]["submission-metadata"][
+                "completion-date"
               ];
               delete sodaJSONObj["dataset-metadata"]["submission-metadata"][
                 "completion-date"

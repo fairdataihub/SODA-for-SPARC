@@ -1611,7 +1611,7 @@
                 <button
                   class="ui positive basic button guided--radio-button"
                   id="guided-button-import-data-deliverables"
-                  data-next-element="guided-div-complete-submission-metadata"
+                  data-next-element="guided-section-data-derivative-import"
                   data-button-config-value="data-deliverables-imported"
                   data-button-config-value-state="yes"
                 >
@@ -1620,7 +1620,7 @@
                 <button
                   class="ui negative basic button guided--radio-button"
                   id="guided-button-enter-submission-metadata-manually"
-                  data-next-element="guided-div-complete-submission-metadata"
+                  data-next-element="guided-section-enter-data-derivatives-manually"
                   data-button-config-value="data-deliverables-imported"
                   data-button-config-value-state="no"
                 >
@@ -1651,35 +1651,51 @@
                 id="guided-data-derivative-import-page"
                 data-skip-sub-page="false"
               >
-                <button
-                  class="ui primary button"
-                  style="background-color: var(--color-light-green) !important"
-                  onclick="guidedHelpMilestoneSubmission()"
-                >
-                  Import data deliverables
-                </button>
                 <div
-                  class="guided--panel hidden mt-xl"
-                  id="guided-div-data-deliverables-import"
+                  class="guided--section"
+                  id="guided-section-data-derivative-import"
                 >
-                  <h2 class="guided--text-sub-step mb-0">
-                    Select the milestones to be supplied to the NIH
-                  </h2>
-                  <table
-                    class="ui celled striped table"
-                    id="milestones-table"
-                    style="margin-bottom: 25px; width: 900px"
+                  <button
+                    class="ui primary button"
+                    style="
+                      background-color: var(--color-light-green) !important;
+                    "
+                    onclick="guidedHelpMilestoneSubmission()"
                   >
-                    <thead>
-                      <tr>
-                        <th></th>
-                        <th>Description</th>
-                        <th>Milestone</th>
-                        <th class="center aligned">Completion date</th>
-                      </tr>
-                    </thead>
-                    <tbody id="milestones-table-container"></tbody>
-                  </table>
+                    Import data deliverables
+                  </button>
+                  <div
+                    class="guided--panel hidden mt-xl"
+                    id="guided-div-data-deliverables-import"
+                  >
+                    <h2 class="guided--text-sub-step mb-0">
+                      Select the milestones to be supplied to the NIH
+                    </h2>
+                    <table
+                      class="ui celled striped table"
+                      id="milestones-table"
+                      style="margin-bottom: 25px; width: 900px"
+                    >
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th>Description</th>
+                          <th>Milestone</th>
+                          <th class="center aligned">Completion date</th>
+                        </tr>
+                      </thead>
+                      <tbody id="milestones-table-container"></tbody>
+                    </table>
+                  </div>
+                </div>
+                <div
+                  class="guided--section"
+                  id="guided-section-enter-data-derivatives-manually"
+                >
+                  <h1 class="guided--text-sub-step">
+                    Click Next to skip importing data deliverables and enter
+                    submission metadata manually
+                  </h1>
                 </div>
               </div>
               <div
@@ -1921,6 +1937,7 @@
               <div class="guided--radio-button-container">
                 <button
                   class="ui positive basic button guided--radio-button"
+                  id="guided-button-import-protocols"
                   data-next-element="guided-div-protocols-import"
                   data-button-config-value="protocols-imported"
                   data-button-config-value-state="yes"
@@ -1929,6 +1946,7 @@
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button"
+                  id="guided-section-enter-protocols-manually"
                   data-next-element="guided-div-protocol-container"
                   data-button-config-value="protocols-imported"
                   data-button-config-value-state="no"
