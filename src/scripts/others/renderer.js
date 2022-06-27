@@ -2,7 +2,6 @@
 // Import required modules
 //////////////////////////////////
 
-
 const fs = require("fs-extra");
 const os = require("os");
 const path = require("path");
