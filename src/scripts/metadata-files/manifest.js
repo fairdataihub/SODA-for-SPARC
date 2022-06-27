@@ -1298,12 +1298,9 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
     if (editBoolean) {
       //// else: create locally for the purpose of generating of manifest files locally
       try {
-        await client.post(
-          `/curate_datasets/manifest_files/local`,
-          {
-            filepath: generatePath,
-          }
-        );
+        await client.post(`/curate_datasets/manifest_files/local`, {
+          filepath: generatePath,
+        });
 
         Swal.fire({
           title: "Successfully generated!",
