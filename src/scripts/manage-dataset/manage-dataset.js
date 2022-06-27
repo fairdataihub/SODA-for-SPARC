@@ -2638,7 +2638,7 @@ $("#button-submit-dataset").click(async () => {
       // log amount of folders uploaded in the given session
       ipcRenderer.send(
         "track-event",
-        "Success",
+        "Error",
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
           ` - Number of Folders`,
         "Number of folders local dataset",
