@@ -281,7 +281,7 @@ def open_file(file_path):
     """
     try:
         if platform.system() == "Windows":
-            subprocess.Popen(r"explorer /select," + str(file_path))
+            subprocess.Popen(f"explorer /select,{str(file_path)}")
         elif platform.system() == "Darwin":
             subprocess.Popen(["open", file_path])
         else:
@@ -316,10 +316,7 @@ def path_size(path):
     Returns:
         total_size: total size of the file/folder in bytes (integer)
     """
-    if isdir(path):
-        return folder_size(path)
-    else:
-        return getsize(path)
+    return folder_size(path) if isdir(path) else getsize(path)
 
 
 def create_folder_level_manifest(jsonpath, jsondescription):
@@ -367,10 +364,7 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                 countpath = -1
                 for pathname in allfiles:
                     countpath += 1
-                    if (
-                        basename(pathname) == "manifest.csv"
-                        or basename(pathname) == "manifest.xlsx"
-                    ):
+                    if basename(pathname) in ["manifest.csv", "manifest.xlsx"]:
                         allfiles.pop(countpath)
                         alldescription.pop(countpath)
 
@@ -439,11 +433,7 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                         if isdir(paths):
                             filetype.append("folder")
                         else:
-                            fileextension = splitext(file)[1]
-                            if (
-                                not fileextension
-                            ):  # if empty (happens e.g. with Readme files)
-                                fileextension = "None"
+                            fileextension = splitext(file)[1] or "None"
                             filetype.append(fileextension)
 
                 df["filename"] = filename
@@ -474,14 +464,13 @@ def return_new_path(topath):
     Returns:
         topath: new folder name based on the availability in destination folder (string)
     """
-    if exists(topath):
-        i = 1
-        while True:
-            if not exists(topath + " (" + str(i) + ")"):
-                return topath + " (" + str(i) + ")"
-            i += 1
-    else:
+    if not exists(topath):
         return topath
+    i = 1
+    while True:
+        if not exists(topath + " (" + str(i) + ")"):
+            return topath + " (" + str(i) + ")"
+        i += 1
 
 
 def return_new_path_replace(topath):
@@ -495,14 +484,13 @@ def return_new_path_replace(topath):
         topath: new folder name based on the availability in destination folder (string)
     """
 
-    if exists(topath):
-        i = 1
-        while True:
-            if not exists(topath + " (" + str(i) + ")"):
-                return topath + " (" + str(i) + ")"
-            i += 1
-    else:
+    if not exists(topath):
         return topath
+    i = 1
+    while True:
+        if not exists(topath + " (" + str(i) + ")"):
+            return topath + " (" + str(i) + ")"
+        i += 1
 
 
 def time_format(elapsed_time):
@@ -765,10 +753,7 @@ def create_dataset(jsonpath, pathdataset):
         # create all subfolders and generate a list of all files to copy
         listallfiles = []
         for i in folderrequired:
-            if i == "main":
-                outputpath = pathdataset
-            else:
-                outputpath = join(pathdataset, i)
+            outputpath = pathdataset if i == "main" else join(pathdataset, i)
             for tablepath in mydict[i]:
                 if isdir(tablepath):
                     foldername = basename(tablepath)
@@ -795,7 +780,7 @@ def create_dataset(jsonpath, pathdataset):
         for fileinfo in listallfiles:
             srcfile = fileinfo[0]
             distfile = fileinfo[1]
-            curateprogress = "Copying " + str(srcfile)
+            curateprogress = f"Copying {str(srcfile)}"
             mycopyfile_with_metadata(srcfile, distfile)
 
     except Exception as e:
@@ -816,11 +801,7 @@ def bf_get_current_user_permission(bf, myds):
 
     try:
         selected_dataset_id = myds.id
-        user_role = bf._api._get("/datasets/" + str(selected_dataset_id) + "/role")[
-            "role"
-        ]
-
-        return user_role
+        return bf._api._get(f"/datasets/{str(selected_dataset_id)}/role")["role"]
 
     except Exception as e:
         raise e
@@ -838,16 +819,15 @@ def validate_dataset(validator_input):
                 "Error: validator input must be string (path to dataset) or a SODA JSON Structure/Python dictionary"
             )
 
-        res = []
-
         validatorHighLevelFolder = validate_high_level_folder_structure(jsonStruct)
         validatorObj = validatorHighLevelFolder
-        resitem = {}
-        resitem["pass"] = validatorObj.passes
-        resitem["warnings"] = validatorObj.warnings
-        resitem["fatal"] = validatorObj.fatal
-        res.append(resitem)
+        resitem = {
+            "pass": validatorObj.passes,
+            "warnings": validatorObj.warnings,
+            "fatal": validatorObj.fatal,
+        }
 
+        res = [resitem]
         (
             validatorHighLevelMetadataFiles,
             isSubmission,
@@ -884,17 +864,21 @@ def validate_dataset(validator_input):
             resitem["fatal"] = validatorObj.fatal
             res.append(resitem)
         elif isSubmission == 0:
-            resitem = {}
-            resitem["warnings"] = [
-                "Include a 'submission' file in a valid format to check it through the validator"
-            ]
+            resitem = {
+                "warnings": [
+                    "Include a 'submission' file in a valid format to check it through the validator"
+                ]
+            }
+
             res.append(resitem)
 
         elif isSubmission > 1:
-            resitem = {}
-            resitem["warnings"] = [
-                "Include a unique 'submission' file to check it through the validator"
-            ]
+            resitem = {
+                "warnings": [
+                    "Include a unique 'submission' file to check it through the validator"
+                ]
+            }
+
             res.append(resitem)
 
         if isDatasetDescription == 1:
@@ -914,16 +898,20 @@ def validate_dataset(validator_input):
             res.append(resitem)
 
         elif isDatasetDescription == 0:
-            resitem = {}
-            resitem["warnings"] = [
-                "Include a 'dataset_description' file in a valid format to check it through the validator"
-            ]
+            resitem = {
+                "warnings": [
+                    "Include a 'dataset_description' file in a valid format to check it through the validator"
+                ]
+            }
+
             res.append(resitem)
         elif isDatasetDescription > 1:
-            resitem = {}
-            resitem["warnings"] = [
-                "Include a unique 'dataset_description' file to check it through the validator"
-            ]
+            resitem = {
+                "warnings": [
+                    "Include a unique 'dataset_description' file to check it through the validator"
+                ]
+            }
+
             res.append(resitem)
 
         return res
@@ -950,7 +938,7 @@ def bf_dataset_size():
 
     try:
         selected_dataset_id = myds.id
-        bf_response = bf._api._get("/datasets/" + str(selected_dataset_id))
+        bf_response = bf._api._get(f"/datasets/{str(selected_dataset_id)}")
         return bf_response["storage"] if "storage" in bf_response.keys() else 0
     except Exception as e:
         raise e
@@ -1004,16 +992,12 @@ def check_empty_files_folders(soda_json_structure):
                     folder, folder_key, folders_content, relative_path, error_folders
                 )
 
-            if not my_folder["folders"]:
-                if not my_folder["files"]:
-                    ignore = False
-                    if "type" in my_folder:
-                        if my_folder["type"] == "bf":
-                            ignore = True
-                    if ignore == False:
-                        error_message = my_relative_path
-                        error_folders.append(error_message)
-                        del my_folders_content[my_folder_key]
+            if not my_folder["folders"] and not my_folder["files"]:
+                ignore = "type" in my_folder and my_folder["type"] == "bf"
+                if not ignore:
+                    error_message = my_relative_path
+                    error_folders.append(error_message)
+                    del my_folders_content[my_folder_key]
             return error_folders
 
         error_files = []
@@ -1093,7 +1077,7 @@ def check_local_dataset_files_validity(soda_json_structure):
             file_type = file["type"]
             if file_type == "local":
                 file_path = file["path"]
-                if file["type"] == "bf":
+                if file_type == "bf":
                     continue
                 if not isfile(file_path):
                     relative_path = my_relative_path + "/" + file_key
@@ -1115,10 +1099,12 @@ def check_local_dataset_files_validity(soda_json_structure):
             folder = my_folder["folders"][folder_key]
             recursive_empty_local_folder_remove(folder, folder_key, folders_content)
 
-        if not my_folder["folders"]:
-            if not my_folder["files"]:
-                if my_folder["type"] != "bf":
-                    del my_folders_content[my_folder_key]
+        if (
+            not my_folder["folders"]
+            and not my_folder["files"]
+            and my_folder["type"] != "bf"
+        ):
+            del my_folders_content[my_folder_key]
 
     error = []
     if "dataset-structure" in soda_json_structure.keys():
@@ -1236,10 +1222,7 @@ def create_high_level_manifest_files(soda_json_structure):
 
         def file_manifest_entry(file_key, file, relative_path, dict_folder_manifest):
             # filename
-            if relative_path:
-                filename = relative_path + "/" + file_key
-            else:
-                filename = file_key
+            filename = relative_path + "/" + file_key if relative_path else file_key
             dict_folder_manifest["filename"].append(filename)
             # timestamp
             file_type = file["type"]
@@ -1328,7 +1311,7 @@ def check_JSON_size(jsonStructure):
 
             if "files" in folder.keys():
                 for file_key, file in folder["files"].items():
-                    if not "deleted" in file["action"]:
+                    if "deleted" not in file["action"]:
                         file_type = file["type"]
                         if file_type == "local":
                             file_path = file["path"]
@@ -1397,7 +1380,7 @@ def generate_dataset_locally(soda_json_structure):
 
             if "files" in my_folder.keys():
                 for file_key, file in my_folder["files"].items():
-                    if not "deleted" in file["action"]:
+                    if "deleted" not in file["action"]:
                         file_type = file["type"]
                         if file_type == "local":
                             file_path = file["path"]
@@ -1540,7 +1523,7 @@ def bf_create_new_dataset(datasetname, bf):
             c += 1
 
         if not datasetname:
-            error = error + "Error: Please enter valid dataset name" + "<br>"
+            error = f"{error}Error: Please enter valid dataset name<br>"
             c += 1
 
         if datasetname.isspace():
@@ -1616,11 +1599,11 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
     def recursive_folder_traversal(folder, dict_folder_manifest):
         if "files" in folder.keys():
             for item in list(folder["files"]):
-                relative_file_name = ""
-                i = 1
-                while i < len(folder["files"][item]["folderpath"]):
-                    relative_file_name += folder["files"][item]["folderpath"][i] + "/"
-                    i += 1
+                relative_file_name = "".join(
+                    folder["files"][item]["folderpath"][i] + "/"
+                    for i in range(1, len(folder["files"][item]["folderpath"]))
+                )
+
                 relative_file_name += item
                 relative_file_name.replace("\\", "/")
                 dict_folder_manifest["filename"].append(relative_file_name)
@@ -1766,55 +1749,52 @@ def create_high_level_manifest_files_existing_bf(
                     dict_folder_manifest = recursive_manifest_info_import_bf(
                         item, relative_path, dict_folder_manifest, manifest_df
                     )
-                else:
-                    if item.name != "manifest":
-                        file_id = item.id
-                        file_details = bf._api._get(
-                            "/packages/" + str(file_id) + "/view"
-                        )
-                        file_name = file_details[0]["content"]["name"]
-                        file_extension = splitext(file_name)[1]
-                        file_name_with_extension = (
-                            splitext(item.name)[0] + file_extension
-                        )
-                        relative_path = generate_relative_path(
-                            my_relative_path, file_name_with_extension
-                        )
-                        dict_folder_manifest["filename"].append(relative_path)
+                elif item.name != "manifest":
+                    file_id = item.id
+                    file_details = bf._api._get(f"/packages/{str(file_id)}/view")
+                    file_name = file_details[0]["content"]["name"]
+                    file_extension = splitext(file_name)[1]
+                    file_name_with_extension = (
+                        splitext(item.name)[0] + file_extension
+                    )
+                    relative_path = generate_relative_path(
+                        my_relative_path, file_name_with_extension
+                    )
+                    dict_folder_manifest["filename"].append(relative_path)
 
-                        # file type
-                        unused_file_name, file_extension = get_name_extension(file_name)
-                        if file_extension == "":
-                            file_extension = "None"
-                        # file_extension = splitext(file_name)[1]
-                        dict_folder_manifest["file type"].append(file_extension)
+                    # file type
+                    unused_file_name, file_extension = get_name_extension(file_name)
+                    if file_extension == "":
+                        file_extension = "None"
+                    # file_extension = splitext(file_name)[1]
+                    dict_folder_manifest["file type"].append(file_extension)
 
                         # timestamp, description, Additional Metadata
-                        if not manifest_df.empty:
-                            if relative_path in manifest_df["filename"].values:
-                                timestamp = manifest_df[
-                                    manifest_df["filename"] == relative_path
-                                ]["timestamp"].iloc[0]
-                                description = manifest_df[
-                                    manifest_df["filename"] == relative_path
-                                ]["description"].iloc[0]
-                                additional_metadata = manifest_df[
-                                    manifest_df["filename"] == relative_path
-                                ]["Additional Metadata"].iloc[0]
-                            else:
-                                timestamp = ""
-                                description = ""
-                                additional_metadata = ""
-                            dict_folder_manifest["timestamp"].append(timestamp)
-                            dict_folder_manifest["description"].append(description)
-                            dict_folder_manifest["Additional Metadata"].append(
-                                additional_metadata
-                            )
-                        else:
-                            dict_folder_manifest["timestamp"].append("")
-                            dict_folder_manifest["description"].append("")
-                            dict_folder_manifest["Additional Metadata"].append("")
+                    if manifest_df.empty:
+                        dict_folder_manifest["timestamp"].append("")
+                        dict_folder_manifest["description"].append("")
+                        dict_folder_manifest["Additional Metadata"].append("")
 
+                    else:
+                        if relative_path in manifest_df["filename"].values:
+                            timestamp = manifest_df[
+                                manifest_df["filename"] == relative_path
+                            ]["timestamp"].iloc[0]
+                            description = manifest_df[
+                                manifest_df["filename"] == relative_path
+                            ]["description"].iloc[0]
+                            additional_metadata = manifest_df[
+                                manifest_df["filename"] == relative_path
+                            ]["Additional Metadata"].iloc[0]
+                        else:
+                            timestamp = ""
+                            description = ""
+                            additional_metadata = ""
+                        dict_folder_manifest["timestamp"].append(timestamp)
+                        dict_folder_manifest["description"].append(description)
+                        dict_folder_manifest["Additional Metadata"].append(
+                            additional_metadata
+                        )
             return dict_folder_manifest
 
         # Merge existing folders
@@ -1874,36 +1854,42 @@ def create_high_level_manifest_files_existing_bf(
                             file_extension = splitext(file_key)[1]
 
                             # manage existing file request
-                            if existing_file_option == "skip":
-                                if file_key in my_bf_existing_files_name_with_extension:
-                                    continue
+                            if (
+                                existing_file_option == "skip"
+                                and file_key
+                                in my_bf_existing_files_name_with_extension
+                            ):
+                                continue
 
-                            if existing_file_option == "replace":
-                                if file_key in my_bf_existing_files_name_with_extension:
-                                    # remove existing from manifest
-                                    filename = generate_relative_path(
-                                        my_relative_path, file_key
-                                    )
-                                    filename_list = dict_folder_manifest["filename"]
-                                    index_file = filename_list.index(filename)
-                                    del dict_folder_manifest["filename"][index_file]
-                                    del dict_folder_manifest["timestamp"][index_file]
-                                    del dict_folder_manifest["description"][index_file]
-                                    del dict_folder_manifest["file type"][index_file]
-                                    del dict_folder_manifest["Additional Metadata"][
-                                        index_file
-                                    ]
+                            if (
+                                existing_file_option == "replace"
+                                and file_key
+                                in my_bf_existing_files_name_with_extension
+                            ):
+                                # remove existing from manifest
+                                filename = generate_relative_path(
+                                    my_relative_path, file_key
+                                )
+                                filename_list = dict_folder_manifest["filename"]
+                                index_file = filename_list.index(filename)
+                                del dict_folder_manifest["filename"][index_file]
+                                del dict_folder_manifest["timestamp"][index_file]
+                                del dict_folder_manifest["description"][index_file]
+                                del dict_folder_manifest["file type"][index_file]
+                                del dict_folder_manifest["Additional Metadata"][
+                                    index_file
+                                ]
 
-                                    index_name = (
-                                        my_bf_existing_files_name_with_extension.index(
-                                            file_key
-                                        )
+                                index_name = (
+                                    my_bf_existing_files_name_with_extension.index(
+                                        file_key
                                     )
-                                    del my_bf_existing_files[index_name]
-                                    del my_bf_existing_files_name[index_name]
-                                    del my_bf_existing_files_name_with_extension[
-                                        index_name
-                                    ]
+                                )
+                                del my_bf_existing_files[index_name]
+                                del my_bf_existing_files_name[index_name]
+                                del my_bf_existing_files_name_with_extension[
+                                    index_name
+                                ]
 
                             if desired_name not in my_bf_existing_files_name:
                                 final_name = file_key
@@ -1912,8 +1898,7 @@ def create_high_level_manifest_files_existing_bf(
                                 # expected final name
                                 count_done = 0
                                 final_name = desired_name
-                                output = get_base_file_name(desired_name)
-                                if output:
+                                if output := get_base_file_name(desired_name):
                                     base_name = output[0]
                                     count_exist = output[1]
                                     while count_done == 0:
@@ -2127,11 +2112,7 @@ def create_high_level_manifest_files_existing_local_starting_point(dataset_path)
 
 
 def generate_relative_path(x, y):
-    if x:
-        relative_path = x + "/" + y
-    else:
-        relative_path = y
-    return relative_path
+    return x + "/" + y if x else y
 
 
 def bf_get_existing_folders_details(bf_folder):
@@ -2165,21 +2146,17 @@ def bf_get_existing_files_details(bf_folder):
         if extension == "":
             return file_name
 
-        double_ext = False
-        for ext in double_extensions:
-            if file_name.find(ext) != -1:
-                double_ext = True
-                break
-
+        double_ext = any(file_name.find(ext) != -1 for ext in double_extensions)
         extension_from_name = ""
 
-        if double_ext == False:
-            extension_from_name = os.path.splitext(file_name)[1]
-        else:
-            extension_from_name = (
+        extension_from_name = (
+            (
                 os.path.splitext(os.path.splitext(file_name)[0])[1]
                 + os.path.splitext(file_name)[1]
             )
+            if double_ext
+            else os.path.splitext(file_name)[1]
+        )
 
         if extension_from_name == ("." + extension):
             return file_name
@@ -2230,16 +2207,11 @@ def get_base_file_name(file_name):
             count_start -= 1
             character = file_name[count_start - 1]
         if character == "(":
-            base_name = file_name[0 : count_start - 1]
+            base_name = file_name[:count_start - 1]
             num = file_name[count_start : string_length - 1]
             if check_if_int(num):
                 output = [base_name, int(num)]
-            return output
-        else:
-            return output
-
-    else:
-        return output
+    return output
 
 
 def bf_update_existing_dataset(soda_json_structure, bf, ds):
@@ -2390,12 +2362,11 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
             if (
                 folder["folders"][item]["type"] == "bf"
                 and "action" in folder["folders"][item].keys()
-            ):
-                if mode in folder["folders"][item]["action"]:
-                    file = bf.get(folder["folders"][item]["path"])
-                    if file is not None:
-                        file.name = item
-                        file.update()
+            ) and mode in folder["folders"][item]["action"]:
+                file = bf.get(folder["folders"][item]["path"])
+                if file is not None:
+                    file.name = item
+                    file.update()
             recursive_folder_rename(folder["folders"][item], mode)
 
         return
@@ -2558,9 +2529,11 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                 for folder_key, folder in my_folder["folders"].items():
                     relative_path = generate_relative_path(my_relative_path, folder_key)
 
-                    if existing_folder_option == "skip":
-                        if folder_key not in my_tracking_folder["folders"].keys():
-                            continue
+                    if (
+                        existing_folder_option == "skip"
+                        and folder_key not in my_tracking_folder["folders"].keys()
+                    ):
+                        continue
 
                     tracking_folder = my_tracking_folder["folders"][folder_key]
                     list_upload_files = recursive_dataset_scan_for_bf(
@@ -2582,17 +2555,19 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                 for file_key, file in my_folder["files"].items():
                     if file["type"] == "local":
                         file_path = file["path"]
-                        if isfile(file_path):
-                            if existing_file_option == "replace":
-                                if file_key in my_bf_existing_files_name_with_extension:
-                                    index_file = (
-                                        my_bf_existing_files_name_with_extension.index(
-                                            file_key
-                                        )
-                                    )
-                                    my_file = my_bf_existing_files[index_file]
-                                    my_file.delete()
-                                    my_bf_folder.update()
+                        if (
+                            isfile(file_path)
+                            and existing_file_option == "replace"
+                            and file_key in my_bf_existing_files_name_with_extension
+                        ):
+                            index_file = (
+                                my_bf_existing_files_name_with_extension.index(
+                                    file_key
+                                )
+                            )
+                            my_file = my_bf_existing_files[index_file]
+                            my_file.delete()
+                            my_bf_folder.update()
 
                 # create list of files to be uploaded with projected and desired names saved
                 (
@@ -2619,11 +2594,12 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                             desired_name = splitext(file_key)[0]
                             desired_name_extension = splitext(file_key)[1]
                             desired_name_with_extension = file_key
-                            # desired_name = file_key
-
-                            if existing_file_option == "skip":
-                                if file_key in my_bf_existing_files_name_with_extension:
-                                    continue
+                            if (
+                                existing_file_option == "skip"
+                                and desired_name_with_extension
+                                in my_bf_existing_files_name_with_extension
+                            ):
+                                continue
 
                             # check if initial filename exists on Pennsieve dataset and get the projected name of the file after upload
                             count_done = 0
@@ -2648,8 +2624,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                             # expected final name
                             count_done = 0
                             final_name = desired_name_with_extension
-                            output = get_base_file_name(desired_name)
-                            if output:
+                            if output := get_base_file_name(desired_name):
                                 base_name = output[0]
                                 count_exist = output[1]
                                 while count_done == 0:
@@ -3036,11 +3011,10 @@ def bf_check_dataset_files_validity(soda_json_structure, bf):
                 if folder_type == "bf":
                     package_id = folder["path"]
                     try:
-                        details = bf._api._get("/packages/" + str(package_id) + "/view")
+                        details = bf._api._get(f"/packages/{str(package_id)}/view")
                     except Exception as e:
                         error_message = relative_path + " (id: " + package_id + ")"
                         error.append(error_message)
-                        pass
                 error = recursive_bf_dataset_check(folder, relative_path, error)
         if "files" in my_folder.keys():
             for file_key, file in my_folder["files"].items():
@@ -3048,13 +3022,11 @@ def bf_check_dataset_files_validity(soda_json_structure, bf):
                 if file_type == "bf":
                     package_id = file["path"]
                     try:
-                        details = bf._api._get("/packages/" + str(package_id) + "/view")
+                        details = bf._api._get(f"/packages/{str(package_id)}/view")
                     except Exception as e:
                         relative_path = my_relative_path + "/" + file_key
                         error_message = relative_path + " (id: " + package_id + ")"
                         error.append(error_message)
-                        pass
-
         return error
 
     error = []
