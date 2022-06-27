@@ -313,10 +313,10 @@ const startupServerAndApiCheck = async () => {
   try {
     await backOff(serverIsLiveStartup, {
       delayFirstAttempt: true,
-      startingDelay: 1000, // 1 second + 2 second + 4 second + 8 second
+      startingDelay: 1000, // 1 second + 2 second + 4 second + 8 second + 16 seconds + 32 seconds
       timeMultiple: 2,
-      numOfAttempts: 4,
-      maxDelay: 8000, // 16 seconds max wait time
+      numOfAttempts: 6,
+      maxDelay: 32000, // 16 seconds max wait time
     });
   } catch (e) {
     log.error(e);
