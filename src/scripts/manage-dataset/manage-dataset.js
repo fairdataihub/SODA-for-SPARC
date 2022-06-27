@@ -2791,6 +2791,10 @@ $("#button-submit-dataset").click(async () => {
         let didUpload = res[3];
         uploadedFolders = res[4];
 
+        // analytics places values with matching action and label pairs into a single 'bucket/aggregate'
+        // so log the increase in size at every step to get the sum total size of the uploaded files
+        incrementInFileSize = uploadedFileSize - previousUploadedFileSize;
+
         // failed to upload a bucket, but did upload some files
         if (didFail && didUpload) {
           // even when the upload fails we want to know how many files were uploaded and their size
