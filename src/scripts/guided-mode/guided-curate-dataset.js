@@ -1008,13 +1008,62 @@ const guidedLoadDescriptionDatasetInformation = () => {
     }
   }
 };
-const guidedLoadDescriptionStudyInformation = () => {};
+const guidedLoadDescriptionStudyInformation = () => {
+  const studyPurposeInput = document.getElementById("guided-ds-study-purpose");
+  const studyDataCollectionInput = document.getElementById(
+    "guided-ds-study-data-collection"
+  );
+  const studyPrimaryConclusionInput = document.getElementById(
+    "guided-ds-study-primary-conclusion"
+  );
+  const studyCollectionTitleInput = document.getElementById(
+    "guided-ds-study-collection-title"
+  );
+
+  //reset dataset descript tags
+  /*guidedStudyOrganSystemsTagify.removeAllTags();
+  guidedStudyApproachTagify.removeAllTags();
+  guidedStudyTechniquesTagify.removeAllTags();*/
+
+  const studyInformationMetadata =
+    sodaJSONObj["dataset-metadata"]["description-metadata"][
+      "dataset-information"
+    ];
+
+  if (studyInformationMetadata) {
+    studyPurposeInput.value = studyInformationMetadata["study purpose"];
+    studyDataCollectionInput.value =
+      studyInformationMetadata["study data collection"];
+    studyPrimaryConclusionInput.value =
+      studyInformationMetadata["study primary conclusion"];
+    studyCollectionTitleInput.value =
+      studyInformationMetadata["study collection title"];
+    guidedStudyOrganSystemsTagify.addTags(
+      studyInformationMetadata["study organ system"]
+    );
+    guidedStudyApproachTagify.addTags(
+      studyInformationMetadata["study approach"]
+    );
+    guidedStudyTechniquesTagify.addTags(
+      studyInformationMetadata["study technique"]
+    );
+  } else {
+    //reset the inputs
+    console.log("resetting inputs");
+    studyPurposeInput.value = "";
+    studyDataCollectionInput.value = "";
+    studyPrimaryConclusionInput.value = "";
+    studyCollectionTitleInput.value = "";
+  }
+};
 const guidedLoadDescriptionAdditionalInformation = () => {};
 
 const traverseToTab = (targetPageID) => {
   console.log(targetPageID);
   try {
+    //reset the radio buttons for the page being navigated to
     resetGuidedRadioButtons(targetPageID);
+    //update the radio buttons using the button config from sodaJSONObj
     updateGuidedRadioButtonsFromJSON(targetPageID);
     //refresh selectPickers if page has them
     if (
@@ -1226,6 +1275,7 @@ const traverseToTab = (targetPageID) => {
     }
     if (targetPageID === "guided-create-description-metadata-tab") {
       guidedLoadDescriptionDatasetInformation();
+      guidedLoadDescriptionStudyInformation();
       /*renderAdditionalLinksTable();
 
       //set study purpose, data collection, and primary conclusion from sodaJSONObj
@@ -1320,28 +1370,76 @@ const traverseToTab = (targetPageID) => {
       });
     }
     if (targetPageID === "guided-add-code-metadata-tab") {
+      const codeMetadata = sodaJSONObj["dataset-metadata"]["code-metadata"];
+
       const codeDescriptionLottieContainer = document.getElementById(
         "code-description-lottie-container"
       );
-      codeDescriptionLottieContainer.innerHTML = "";
-      lottie.loadAnimation({
-        container: codeDescriptionLottieContainer,
-        animationData: dragDrop,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
+      const codeDescriptionParaText = document.getElementById(
+        "guided-code-description-para-text"
+      );
+
       const codeParametersLottieContainer = document.getElementById(
         "code-parameters-lottie-container"
       );
-      codeParametersLottieContainer.innerHTML = "";
-      lottie.loadAnimation({
-        container: codeParametersLottieContainer,
-        animationData: dragDrop,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
+      const codeParametersParaText = document.getElementById(
+        "guided-code-parameters-para-text"
+      );
+
+      if (codeMetadata["code_description"]) {
+        codeDescriptionLottieContainer.innerHTML = "";
+        lottie.loadAnimation({
+          container: codeDescriptionLottieContainer,
+          animationData: successCheck,
+          renderer: "svg",
+          loop: false,
+          autoplay: true,
+        });
+        codeDescriptionParaText.innerHTML = codeMetadata["code_description"];
+
+        if (codeMetadata["code_parameters"]) {
+          codeParametersLottieContainer.innerHTML = "";
+          lottie.loadAnimation({
+            container: codeParametersLottieContainer,
+            animationData: successCheck,
+            renderer: "svg",
+            loop: false,
+            autoplay: true,
+          });
+          codeParametersParaText.innerHTML = codeMetadata["code_parameters"];
+        } else {
+          codeParametersLottieContainer.innerHTML = "";
+          lottie.loadAnimation({
+            container: codeParametersLottieContainer,
+            animationData: dragDrop,
+            renderer: "svg",
+            loop: true,
+            autoplay: true,
+          });
+          codeParametersParaText.innerHTML = "";
+        }
+      } else {
+        //reset the code metadata lotties and para text
+        codeDescriptionLottieContainer.innerHTML = "";
+        lottie.loadAnimation({
+          container: codeDescriptionLottieContainer,
+          animationData: dragDrop,
+          renderer: "svg",
+          loop: true,
+          autoplay: true,
+        });
+        codeDescriptionParaText.innerHTML = "";
+
+        codeParametersLottieContainer.innerHTML = "";
+        lottie.loadAnimation({
+          container: codeParametersLottieContainer,
+          animationData: dragDrop,
+          renderer: "svg",
+          loop: true,
+          autoplay: true,
+        });
+        codeParametersParaText.innerHTML = "";
+      }
     }
 
     let currentParentTab = CURRENT_PAGE.parent();
@@ -2248,6 +2346,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["dataset-metadata"]["sample-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["submission-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["description-metadata"] = {};
+  sodaJSONObj["dataset-metadata"]["code-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"] =
     [];
   sodaJSONObj["dataset-metadata"]["readMe-metadata"] = {};
@@ -5660,8 +5759,7 @@ $(document).ready(() => {
 
         guidedTransitionFromDatasetNameSubtitlePage();
 
-        /*$("#guided-button-guided-dataset-structuring").click();
-        $("#guided-next-button").click();
+        $("#guided-button-guided-dataset-structuring").click();
         sodaJSONObj.addSubject("sub-1");
         sodaJSONObj.addSubject("sub-2");
         sodaJSONObj.addSubject("sub-3");
@@ -5740,7 +5838,8 @@ $(document).ready(() => {
 
         sodaJSONObj.addSampleToSubject("sam-sub121", "", "sub-12");
         sodaJSONObj.addSampleToSubject("sam-sub122", "", "sub-12");
-        sodaJSONObj.addSampleToSubject("sam-sub123", "", "sub-12");*/
+        sodaJSONObj.addSampleToSubject("sam-sub123", "", "sub-12");
+        traverseToTab("guided-add-code-metadata-tab");
       } else {
         if (datasetName == "") {
           errorArray.push({
@@ -8220,28 +8319,52 @@ $(document).ready(() => {
     const studyOrganSystemTags = getTagsFromTagifyElement(
       guidedStudyOrganSystemsTagify
     );
-    console.log(studyOrganSystemTags);
     const studyApproachTags = getTagsFromTagifyElement(
       guidedStudyApproachTagify
     );
-    console.log(studyApproachTags);
     const studyTechniqueTags = getTagsFromTagifyElement(
       guidedStudyTechniquesTagify
     );
-    console.log(studyTechniqueTags);
-    const studyPurpose = document.getElementById(
+    const studyPurposeInput = document.getElementById(
       "guided-ds-study-purpose"
-    ).value;
-    const studyDataCollection = document.getElementById(
+    );
+    const studyDataCollectionInput = document.getElementById(
       "guided-ds-study-data-collection"
-    ).value;
-    const studyPrimaryConclusion = document.getElementById(
+    );
+    const studyPrimaryConclusionInput = document.getElementById(
       "guided-ds-study-primary-conclusion"
-    ).value;
-    const studyCollectionTitle = document.getElementById(
+    );
+    const studyCollectionTitleInput = document.getElementById(
       "guided-ds-study-collection-title"
-    ).value;
+    );
+    //Initialize the study information variables
+    let studyPurpose = null;
+    let studyDataCollection = null;
+    let studyPrimaryConclusion = null;
+    let studyCollectionTitle = null;
+    //Throw an error if any study information variables are not filled out
+    if (!studyPurposeInput.value) {
+      throw "Please add a study purpose";
+    } else {
+      studyPurpose = studyPurposeInput.value;
+    }
+    if (!studyDataCollectionInput.value) {
+      throw "Please add a study data collection";
+    } else {
+      studyDataCollection = studyDataCollectionInput.value;
+    }
+    if (!studyPrimaryConclusionInput.value) {
+      throw "Please add a study primary conclusion";
+    } else {
+      studyPrimaryConclusion = studyPrimaryConclusionInput.value;
+    }
+    if (!studyCollectionTitleInput.value) {
+      throw "Please add a study collection title";
+    } else {
+      studyCollectionTitle = studyCollectionTitleInput.value;
+    }
 
+    //After validation, add the study information to the JSON object
     sodaJSONObj["dataset-metadata"]["description-metadata"][
       "study-information"
     ] = {
@@ -8258,7 +8381,6 @@ $(document).ready(() => {
         "study-information"
       ]
     );
-    throw "asdf";
   };
   const getGuidedDatasetInformation = () => {
     const title = sodaJSONObj["digital-metadata"]["name"];
@@ -8809,6 +8931,17 @@ $(document).ready(() => {
               "Returning to sample metadata addition page to complete all fields"
             );
           }
+        }
+      }
+      if (pageBeingLeftID === "guided-add-code-metadata-tab") {
+        const requiredCodeDescriptionFilePath =
+          sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"];
+        if (!requiredCodeDescriptionFilePath) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please import a code_description file",
+          });
+          throw errorArray;
         }
       }
       if (pageBeingLeftID === "guided-banner-image-tab") {

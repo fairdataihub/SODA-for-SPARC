@@ -201,7 +201,12 @@ function dropHandler(ev, paraElement, metadataFile, curationMode) {
             //Add success checkmark lottie animation inside metadata card
             const dragDropContainer =
               document.getElementById(paraElement).parentElement;
-            console.log(dragDropContainer);
+            //get the value of data-code-metadata-file-type from dragDropContainer
+            const metadataFileType =
+              dragDropContainer.dataset.codeMetadataFileType;
+            //save the path of the metadata file to the json object
+            sodaJSONObj["dataset-metadata"]["code-metadata"][metadataFileType] =
+              file.path;
             const lottieContainer = dragDropContainer.querySelector(
               ".code-metadata-lottie-container"
             );

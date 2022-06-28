@@ -2090,6 +2090,51 @@
             <div class="guided--section neumorphic mt-xl">
               <h2 class="guided--text-sub-step mt-0">Study information</h2>
               <label class="guided--form-label mt-xl required"
+                >Study purpose:</label
+              >
+              <textarea
+                class="guided--input guided--text-area"
+                type="text"
+                name="guided-study-purpose"
+                placeholder="Enter your study purpose here"
+                id="guided-ds-study-purpose"
+                style="height: 7.5em"
+              ></textarea>
+              <p class="guided--text-input-instructions mb-0">
+                Enter a paragraph that explains the purpose of your study.
+                <br /><b>Refrain from using markdown.</b>
+              </p>
+              <label class="guided--form-label mt-xl required"
+                >Data collection:</label
+              >
+              <textarea
+                class="guided--input guided--text-area"
+                type="text"
+                name="guided-data-collection"
+                placeholder="Enter your data collection here"
+                id="guided-ds-study-data-collection"
+                style="height: 7.5em"
+              ></textarea>
+              <p class="guided--text-input-instructions mb-0">
+                Enter a paragraph that explains the method you used for data
+                collection.<br /><b>Refrain from using markdown.</b>
+              </p>
+              <label class="guided--form-label mt-xl required"
+                >Primary conclusion:</label
+              >
+              <textarea
+                class="guided--input guided--text-area"
+                type="text"
+                name="guided-primary-conclusion"
+                placeholder="Enter your primary conclusion here"
+                id="guided-ds-study-primary-conclusion"
+                style="height: 7.5em"
+              ></textarea>
+              <p class="guided--text-input-instructions mb-0">
+                Enter a paragraph that explains the primary conclusion of your
+                study.<br /><b>Refrain from using markdown.</b>
+              </p>
+              <label class="guided--form-label mt-xl required"
                 >Study organ system:</label
               >
               <div class="demo-controls-body" style="width: 100%">
@@ -3388,7 +3433,10 @@
                 ondrop="dropHandler(event, 'guided-code-description-para-text', 'code_description', 'guided');"
                 ondragover="return false;"
               >
-                <div class="guided--file-import">
+                <div
+                  class="guided--file-import"
+                  data-code-metadata-file-type="code_description"
+                >
                   <div
                     id="code-description-lottie-container"
                     class="code-metadata-lottie-container"
@@ -3408,6 +3456,7 @@
                   <p
                     class="guided--help-text small text-center mt-sm"
                     id="guided-code-description-para-text"
+                    style="max-width: 240px; overflow-wrap: break-word"
                   ></p>
                 </div>
               </div>
@@ -3436,7 +3485,10 @@
                 ondrop="dropHandler(event, 'guided-code-parameters-para-text', 'code_parameters', 'guided');"
                 ondragover="return false;"
               >
-                <div class="guided--file-import">
+                <div
+                  class="guided--file-import"
+                  data-code-metadata-file-type="code_parameters"
+                >
                   <div
                     id="code-parameters-lottie-container"
                     class="code-metadata-lottie-container"
@@ -3456,6 +3508,7 @@
                   <p
                     class="guided--help-text small text-center mt-sm"
                     id="guided-code-parameters-para-text"
+                    style="max-width: 240px; overflow-wrap: break-word"
                   ></p>
                 </div>
               </div>
