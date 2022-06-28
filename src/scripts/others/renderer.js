@@ -10196,7 +10196,6 @@ var documentation_lottie_observer = new MutationObserver(function (mutations) {
       //play lottie
       documentation_lottie.play();
     } else {
-
       // lottie.stop(documentation_lottie);
       documentation_lottie.stop();
     }
