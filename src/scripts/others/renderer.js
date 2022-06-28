@@ -6809,7 +6809,6 @@ document
 
     let emptyFilesFoldersResponse;
     try {
-      // TODO: Test error handling
       emptyFilesFoldersResponse = await client.get(
         `/curate_datasets/empty_files_and_folders`,
         {
@@ -6826,6 +6825,7 @@ document
       ).innerHTML = "<span style='color: red;'> Error: " + emessage + "</span>";
       document.getElementById("para-please-wait-new-curate").innerHTML = "";
       $("#sidebarCollapse").prop("disabled", false);
+      return;
     }
 
     let { data } = emptyFilesFoldersResponse;
@@ -8087,8 +8087,6 @@ async function addBFAccountInsideSweetalert(myBootboxDialog) {
       });
       showHideDropdownButtons("account", "hide");
       confirm_click_account_function();
-
-      return;
     }
 
     Swal.fire({

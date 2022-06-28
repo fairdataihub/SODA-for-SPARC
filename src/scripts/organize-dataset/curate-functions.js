@@ -961,10 +961,6 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
               }
             );
 
-            console.log(
-              "Open dropdown prompt dataset response: ",
-              responseObject
-            );
             datasetList = [];
             datasetList = responseObject.data.datasets;
             refreshDatasetList();
@@ -1135,7 +1131,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             });
           } catch (error) {
             clientError(error);
-            Swal.showValidationMessage(userError(error));
+            Swal.showValidationMessage(userErrorMessage(error));
             Swal.close();
           }
         }
@@ -1228,11 +1224,9 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
           1
         );
       } else {
-        console.log("Account found");
         //account is signed in but no datasets have been fetched or created
         //invoke dataset request to ensure no datasets have been created
         if (datasetList.length === 0) {
-          console.log("Don't have a single stinking dataset");
           let responseObject;
           try {
             responseObject = await client.get(

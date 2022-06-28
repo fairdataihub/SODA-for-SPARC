@@ -528,6 +528,7 @@ async function disseminateShowCurrentPermission(bfAcct, bfDS) {
   try {
     permissions = await api.getDatasetPermissions(bfAcct, bfDS);
   } catch (error) {
+    clientError(error);
     ipcRenderer.send(
       "track-event",
       "Error",
@@ -1014,6 +1015,7 @@ $(".pre-publishing-continue").on("click", async function () {
       defaultBfDataset
     );
   } catch (error) {
+    clientError(error);
     // tell the user something went wrong getting access to their datasets ignored files
     await Swal.fire({
       title: "Failed to get information on any ignored files you may have",
@@ -1073,6 +1075,8 @@ $(".pre-publishing-continue").on("click", async function () {
         " - Get Metadata Files",
       defaultBfDatasetId
     );
+
+    return;
   }
 
   ipcRenderer.send(

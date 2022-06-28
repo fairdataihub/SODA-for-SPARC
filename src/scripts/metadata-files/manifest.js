@@ -753,19 +753,19 @@ async function initiate_generate_manifest_bf() {
       datasetList = await api.getDatasetsForAccount(defaultBfAccount);
     } catch (error) {
       clientError(error);
-
-      Swal.fire({
-        title: "Failed to generate manifest files!",
-        text: userErrorMessage(error),
-        icon: "error",
-        showConfirmButton: true,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        didOpen: () => {
-          Swal.hideLoading();
-        },
-      });
     }
+
+    Swal.fire({
+      title: "Failed to generate manifest files!",
+      text: userErrorMessage(error),
+      icon: "error",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      didOpen: () => {
+        Swal.hideLoading();
+      },
+    });
 
     generatingBoolean = false;
     let destination = "";
@@ -787,6 +787,8 @@ async function initiate_generate_manifest_bf() {
       "Generate",
       Destinations.PENNSIEVE
     );
+
+    return;
   }
 
   let res = curationResponse.data;
