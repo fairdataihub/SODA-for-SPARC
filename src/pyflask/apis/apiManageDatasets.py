@@ -52,7 +52,7 @@ api = get_namespace(NamespaceEnum.MANAGE_DATASETS)
 # the model for the pennsieve api key secret endpoint defines what is returned from the endpoint
 pennsieveAPIKeyAndSecret = api.model('PennsieveAPIKeyAndSecret', {
     "success": fields.String(required=True, description="Success or failure"), 
-    "keys": fields.String(required=True, description="API key from the Pennsieve platform"),
+    "key": fields.String(required=True, description="API key from the Pennsieve platform"),
     "secret": fields.String(required=True, description="Secret from the Pennsieve platform"), 
     "name": fields.String(required=True, description="Name of the user?"),
 })
@@ -63,22 +63,32 @@ pennsieveAPIKeyAndSecret = api.model('PennsieveAPIKeyAndSecret', {
 class PennsieveAPIKeyAndSecret(Resource):
 
   # the parser for the pennsieve and api key secret endpoint defines the parameters that are accepted in the request
-  parser = reqparse.RequestParser(bundle_errors=True)
-  parser.add_argument('username', type=str, required=True, help='Username of the user')
-  parser.add_argument('password', type=str, required=True, help='Password of the user')
-  parser.add_argument('api_key', type=str, required=True, help='API key from the Pennsieve platform')
+  api_key_parser = reqparse.RequestParser(bundle_errors=True)
+  api_key_parser.add_argument('username', type=str, required=True, help='Username of the user', location="json")
+  api_key_parser.add_argument('password', type=str, required=True, help='Password of the user', location="json")
+  api_key_parser.add_argument('api_key', type=str, required=True, help='API key from the Pennsieve platform', location="json")
 
   # the response object
   @api.marshal_with(pennsieveAPIKeyAndSecret, False, 201)
   # response types/codes
   @api.doc(responses={500: 'There was an internal server error', 400: 'Username or password are incorrect'})
   # the request parameters
-  @api.expect(parser)
-
+  @api.expect(api_key_parser)
   # get the self, email, password, keyname=SODA_SPARC_API_KEY from the request object 
-  def get(self):
-    return get_pennsieve_api_key_secret()
+  def post(self):
+    # get the request parameters
+    args = self.api_key_parser.parse_args()
+    # get the username, password, and api key from the request object
+    username = args.get('username')
+    password = args.get('password')
+    api_key = args.get('api_key')
 
+    try: 
+      return get_pennsieve_api_key_secret(username, password, api_key)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
 
 
 

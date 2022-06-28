@@ -2111,7 +2111,12 @@ def get_pennsieve_api_key_secret(email, password, keyname):
         response = requests.request("POST", url, json=payload, headers=headers)
         response.raise_for_status()
         response = response.json()
-        return ("success", response["key"], response["secret"], response["name"])
+        return { 
+            "success": "success", 
+            "key": response["key"], 
+            "secret": response["secret"], 
+            "name": response["name"]
+        }
     except Exception as e:
         raise e
 

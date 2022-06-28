@@ -850,17 +850,18 @@ $(document).ready(async function () {
 });
 
 // TODO: Test this function. Likely too many promises nested for no reason.
-const get_api_key = async (login, password, key_name) => {
+const get_api_key = (login, password, key_name) => {
   return new Promise(async (resolve) => {
     try {
-      let bf_get_pennsieve_secret_key = await client.get(
+      console.log(`The username is ${login}`);
+      console.log(`The password is ${password}`);
+      console.log(`The key name is ${key_name}`);
+      let bf_get_pennsieve_secret_key = await client.post(
         `/manage_datasets/pennsieve_api_key_secret`,
         {
-          params: {
-            username: login,
-            password: password,
-            api_key: key_name,
-          },
+          username: login,
+          password: password,
+          api_key: key_name,
         }
       );
       let res = bf_get_pennsieve_secret_key.data;
@@ -1037,11 +1038,11 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
               document.getElementById(
                 "swal2-validation-message"
               ).style.flexDirection = "column";
-            } else if (response[0] == "success") {
+            } else if (response["success"] == "success") {
               return {
-                key: response[1],
-                secret: response[2],
-                name: response[3],
+                key: response["key"],
+                secret: response["secret"],
+                name: response["name"],
               };
             }
           }
