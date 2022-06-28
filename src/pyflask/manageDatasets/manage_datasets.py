@@ -221,7 +221,7 @@ def bf_add_account_api_key(keyname, key, secret):
         org_id = bf.context.id
 
         # CHANGE BACK
-        if org_id == "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
+        if org_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
             abort(403,
                 "Error: Please check that your account is within the SPARC Consortium Organization"
             )

@@ -3649,8 +3649,7 @@ function refreshBfUsersList() {
         }
       })
       .catch((error) => {
-        log.error(error);
-        console.error(error);
+        clientError(error);
       });
   }
 }
