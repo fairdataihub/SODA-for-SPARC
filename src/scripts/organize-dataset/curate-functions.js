@@ -986,13 +986,34 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
         hideClass: {
           popup: "animate__animated animate__fadeOutUp animate__faster",
         },
-        footer:
-          '<a onclick="showBFAddAccountSweetalert()">I want to connect with an API key instead</a>',
+        footer: `<a onclick="showBFAddAccountSweetalert()">I don't have a Pennsieve account and/or access to the SPARC Consortium Organization</a>`,
         didOpen: () => {
           $(".swal-popover").popover();
           let div_footer = document.getElementsByClassName("swal2-footer")[0];
+          document.getElementsByClassName("swal2-popup")[0].style.width =
+            "43rem";
           div_footer.style.flexDirection = "column";
           div_footer.style.alignItems = "center";
+          let swal_actions =
+            document.getElementsByClassName("swal2-actions")[0];
+          let api_button = document.createElement("button");
+          let api_arrow = document.createElement("i");
+          console.log(swal_actions);
+          console.log(swal_actions.parentElement);
+          api_button.innerText = "Connect with API key instead";
+          api_button.setAttribute("onclick", "showBFAddAccountSweetalert()");
+          api_arrow.classList.add("fas");
+          api_arrow.classList.add("fa-arrow-right");
+          api_arrow.style.marginLeft = "10px";
+          api_button.type = "button";
+          api_button.style.border = "";
+          api_button.id = "api_connect_btn";
+          api_button.classList.add("transition-btn");
+          api_button.classList.add("api_key-btn");
+          api_button.classList.add("back");
+          api_button.style.display = "inline";
+          api_button.appendChild(api_arrow);
+          swal_actions.parentElement.insertBefore(api_button, div_footer);
         },
         preConfirm: async () => {
           Swal.resetValidationMessage();
@@ -1007,11 +1028,13 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             let response = await get_api_key(login, password, key_name);
             if (response[0] == "failed") {
               let error_message = response[1];
+              console.log(response[1]);
+              console.log(response);
               if (
                 response[1]["message"] ===
                 "exceptions must derive from BaseException"
               ) {
-                error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">It seems that you do not have access to the SPARC Consortium organization on Pennsieve. Email <a href="mailto:support@pennsieve.net">support@pennsieve.net</a> to get access to the SPARC Consortium organization then try again.</div>`;
+                error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">It seems that you do not have access to the SPARC Consortium organization on Pennsieve. See our <a target="_blank" href="https://docs.sodaforsparc.io/docs/next/how-to/how-to-get-a-pennsieve-account">[dedicated help page]</a> to learn how to get access</div>`;
               }
               console.log(response[1]["message"]);
               if (
@@ -1304,6 +1327,8 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
               "animate__animated animate__fadeOutUp animate__faster animate_fastest",
           },
           willOpen: () => {
+            $("#license-lottie-div").css("display", "none");
+            $("#license-assigned").css("display", "none");
             $("#curatebfdatasetlist").selectpicker("hide");
             $("#curatebfdatasetlist").selectpicker("refresh");
             $("#bf-dataset-select-div").hide();
@@ -1362,6 +1387,8 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
 
                 return undefined;
               } else {
+                $("#license-lottie-div").css("display", "none");
+                $("#license-assigned").css("display", "none");
                 return bfDataset;
               }
             }

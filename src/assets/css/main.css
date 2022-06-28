@@ -1915,6 +1915,20 @@ details[open] > summary::before {
   margin: 0px !important;
 }
 
+.api_key-btn {
+  background: #fff !important;
+  color: #666666 !important;
+  display: inline !important;
+  margin-top: 1rem !important;
+  align-self: center !important;
+  width: 258px !important;
+  border: none !important
+}
+
+.api_key-btn:hover {
+  border: 1px solid #666666 !important;
+}
+
 .view_doc_button {
   transition-property: all;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);

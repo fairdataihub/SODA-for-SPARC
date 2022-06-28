@@ -4354,47 +4354,24 @@ const pasteFromClipboard = (event, target_element) => {
 };
 
 var bfAddAccountBootboxMessage = `<form>
-    <div class="form-group row" style="margin-bottom: 0px;">
-      <label for="bootbox-key-name" class="col-sm-3 col-form-label" style="padding-bottom: 0; line-height: 4rem;">
-        Key name:
-      </label>
-      <div class="col-sm-9" style="display: flex">
-        <input type="text" style="width: 80%; margin: 0;" id="bootbox-key-name" class="swal2-input" />
+    <div class="form-group row" style="justify-content: center; margin-top: .5rem; margin-bottom: 2rem;">
+      <div style="display: flex; width: 100%">
+        <input placeholder="Enter key name" type="text" style="width: 100%; margin: 0;" id="bootbox-key-name" class="swal2-input" />
       </div>
     </div>
-    <div class="form-group row">
-      <label for="bootbox-api-key" class="col-sm-3 col-form-label" style="line-height: 3rem; padding-bottom: 0;">
-        API Key:
-      </label>
-      <div class="col-sm-9" style="display:flex; align-items: flex-end;">
-        <input id="bootbox-api-key" type="text" class="swal2-input" style="width: 80%; margin: 0;" />
-        <button
-          class="ui left floated button"
-          style="height:100%; margin-left:3px;"
-          onclick="pasteFromClipboard(event, 'bootbox-api-key')"
-        >
-          <i class="fas fa-paste"></i>
-        </button>
+    <div style="justify-content: center;">
+      <div style="display:flex; align-items: flex-end; width: 100%;">
+        <input placeholder="Enter API key" id="bootbox-api-key" type="text" class="swal2-input" style="width: 100%; margin: 0;" />
       </div>
     </div>
-    <div class="form-group row">
-      <label for="bootbox-api-secret" class="col-sm-3 col-form-label" style="padding-bottom: 0; line-height: 3rem;">
-        API Secret:
-      </label>
-      <div class="col-sm-9" style="display:flex; align-items: flex-end;">
-        <input id="bootbox-api-secret" class="swal2-input" type="text" style="margin: 0;" />
-        <button
-          class="ui left floated button"
-          style="height:100%; margin-left:3px"
-          onclick="pasteFromClipboard(event, 'bootbox-api-secret')"
-        >
-          <i class="fas fa-paste"></i>
-        </button>
+    <div style="justify-content: center; margin-bottom: .5rem; margin-top: 2rem;">
+      <div style="display:flex; align-items: flex-end; width: 100%">
+        <input placeholder="Enter API secret" id="bootbox-api-secret" class="swal2-input" type="text" style="margin: 0; width: 100%" />
       </div>
     </div>
   </form>`;
 
-var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Pennsieve API key and secret below:</h3>`;
+var bfaddaccountTitle = `<h3 style="text-align:center">Please enter your Pennsieve API key information below:</h3>`;
 
 // once connected to SODA get the user's accounts
 (async () => {
@@ -8106,26 +8083,107 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
   }
 });
 
-function showBFAddAccountSweetalert() {
-  var bootb = Swal.fire({
+async function showBFAddAccountSweetalert() {
+  var bootb = await Swal.fire({
     title: bfaddaccountTitle,
     html: bfAddAccountBootboxMessage,
     showCancelButton: true,
+    showLoaderOnConfirm: true,
     focusCancel: true,
     cancelButtonText: "Cancel",
     confirmButtonText: "Connect to Pennsieve",
-    customClass: "swal-wide",
     reverseButtons: reverseSwalButtons,
     backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
     allowOutsideClick: false,
     footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/manage-dataset/connect-your-pennsieve-account-with-soda" style="text-decoration: none;">Help me get an API key</a>`,
-    didOpen: () => {},
+    didOpen: () => {
+      let swal_container = document.getElementsByClassName("swal2-popup")[0];
+      swal_container.style.width = "43rem";
+    },
     showClass: {
       popup: "animate__animated animate__fadeInDown animate__faster",
     },
     hideClass: {
       popup: "animate__animated animate__fadeOutUp animate__faster",
+    },
+    preConfirm: async (result) => {
+      // Swal.showLoading();
+      var name = $("#bootbox-key-name").val();
+      var apiKey = $("#bootbox-api-key").val();
+      var apiSecret = $("#bootbox-api-secret").val();
+      console.log(result);
+      if (result === true) {
+        let add_api_key = await client.invoke(
+          "api_bf_add_account_api_key",
+          name,
+          apiKey,
+          apiSecret,
+          async (error, res) => {
+            if (error) {
+              Swal.showValidationMessage(error);
+              log.error(error);
+              console.error(error);
+              return false;
+            } else {
+              $("#bootbox-key-name").val("");
+              $("#bootbox-api-key").val("");
+              $("#bootbox-api-secret").val("");
+              bfAccountOptions[name] = name;
+              defaultBfAccount = name;
+              defaultBfDataset = "Select dataset";
+              await client.invoke(
+                "api_bf_account_details",
+                name,
+                async (error, res) => {
+                  if (error) {
+                    log.error(error);
+                    console.error(error);
+                    Swal.fire({
+                      icon: "error",
+                      text: "Something went wrong!",
+                      heightAuto: false,
+                      backdrop: "rgba(0,0,0, 0.4)",
+                      footer:
+                        '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
+                    });
+                    showHideDropdownButtons("account", "hide");
+                    confirm_click_account_function();
+                  } else {
+                    $("#para-account-detail-curate").html(res);
+                    $("#current-bf-account").text(name);
+                    $("#current-bf-account-generate").text(name);
+                    $("#create_empty_dataset_BF_account_span").text(name);
+                    $(".bf-account-span").text(name);
+                    $("#current-bf-dataset").text("None");
+                    $("#current-bf-dataset-generate").text("None");
+                    $(".bf-dataset-span").html("None");
+                    $("#para-account-detail-curate-generate").html(res);
+                    $("#para_create_empty_dataset_BF_account").html(res);
+                    $(".bf-account-details-span").html(res);
+                    $("#para-continue-bf-dataset-getting-started").text("");
+                    showHideDropdownButtons("account", "show");
+                    confirm_click_account_function();
+                    updateBfAccountList();
+                  }
+                }
+              );
+              await Swal.fire({
+                icon: "success",
+                title:
+                  "Successfully added! <br/>Loading your account details...",
+                timer: 3000,
+                timerProgressBar: true,
+                allowEscapeKey: false,
+                heightAuto: false,
+                backdrop: "rgba(0,0,0, 0.4)",
+                showConfirmButton: false,
+              });
+            }
+          }
+        );
+        console.log(add_api_key);
+      }
     },
   }).then((result) => {
     if (result.isConfirmed) {
