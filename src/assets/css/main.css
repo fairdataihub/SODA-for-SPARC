@@ -1922,7 +1922,7 @@ details[open] > summary::before {
   margin-top: 1rem !important;
   align-self: center !important;
   width: 258px !important;
-  border: none !important
+  border: none !important;
 }
 
 .api_key-btn:hover {
