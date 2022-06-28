@@ -1194,8 +1194,16 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       //$(".selectpicker").selectpicker("hide");
       //$(".selectpicker").selectpicker("refresh");
       //$("#bf-dataset-select-div").hide();
-
-      var accountPresent = await check_api_key();
+      try {
+        var accountPresent = await check_api_key();
+        console.log(accountPresent);
+      } catch (error) {
+        console.log("here");
+        console.error(error);
+        $(".ui.active.green.inline.loader.small").css("display", "none");
+        $(".svg-change-current-account.dataset").css("display", "block");
+        accountPresent = false;
+      }
       if (accountPresent === false) {
         //If there is no API key pair, warning will pop up allowing user to sign in
         await Swal.fire({

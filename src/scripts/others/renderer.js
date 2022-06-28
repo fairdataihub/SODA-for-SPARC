@@ -3831,7 +3831,7 @@ function loadDefaultAccount() {
   });
 }
 
-function updateBfAccountList() {
+function updateBfAccountList(api_key) {
   client.invoke("api_bf_account_list", (error, res) => {
     if (error) {
       log.error(error);
@@ -3846,7 +3846,9 @@ function updateBfAccountList() {
         option.value = myitemselect;
         var option2 = option.cloneNode(true);
       }
-      loadDefaultAccount();
+      if (api_key === undefined) {
+        loadDefaultAccount();
+      }
       if (res[0] === "Select" && res.length === 1) {
         // todo: no existing accounts to load
       }
@@ -8092,6 +8094,7 @@ async function showBFAddAccountSweetalert() {
   var bootb = await Swal.fire({
     title: bfaddaccountTitle,
     html: bfAddAccountBootboxMessage,
+    showLoaderOnConfirm: true,
     showCancelButton: true,
     focusCancel: true,
     cancelButtonText: "Cancel",
@@ -8135,6 +8138,16 @@ async function showBFAddAccountSweetalert() {
                 document.getElementsByClassName(
                   "swal2-actions"
                 )[0].children[3].disabled = false;
+                console.log(
+                  document.getElementsByClassName("swal2-actions")[0]
+                    .children[0]
+                );
+                document.getElementsByClassName(
+                  "swal2-actions"
+                )[0].children[0].style.display = "none";
+                document.getElementsByClassName(
+                  "swal2-actions"
+                )[0].children[1].style.display = "inline-block";
                 reject(false);
                 // Swal.fire({
                 //   icon: "error",
@@ -8155,12 +8168,15 @@ async function showBFAddAccountSweetalert() {
                 bfAccountOptions[name] = name;
                 defaultBfAccount = name;
                 defaultBfDataset = "Select dataset";
+                console.log(name);
                 return new Promise((resolve, reject) => {
+                  console.log("second promise");
                   client.invoke(
                     "api_bf_account_details",
                     name,
                     (error, res) => {
                       if (error) {
+                        console.log("error");
                         log.error(error);
                         console.error(error);
                         Swal.showValidationMessage(error);
@@ -8170,6 +8186,17 @@ async function showBFAddAccountSweetalert() {
                         document.getElementsByClassName(
                           "swal2-actions"
                         )[0].children[3].disabled = false;
+                        console.log(
+                          document.getElementsByClassName("swal2-actions")[0]
+                            .children[0]
+                        );
+                        document.getElementsByClassName(
+                          "swal2-actions"
+                        )[0].children[0].style.display = "none";
+                        document.getElementsByClassName(
+                          "swal2-actions"
+                        )[0].children[1].style.display = "inline-block";
+
                         reject(false);
                         // Swal.fire({
                         //   icon: "error",
@@ -8182,6 +8209,8 @@ async function showBFAddAccountSweetalert() {
                         showHideDropdownButtons("account", "hide");
                         confirm_click_account_function();
                       } else {
+                        console.log(res);
+                        console.log(name);
                         $("#para-account-detail-curate").html(res);
                         $("#current-bf-account").text(name);
                         $("#current-bf-account-generate").text(name);
@@ -8196,7 +8225,7 @@ async function showBFAddAccountSweetalert() {
                         $("#para-continue-bf-dataset-getting-started").text("");
                         showHideDropdownButtons("account", "show");
                         confirm_click_account_function();
-                        updateBfAccountList();
+                        updateBfAccountList(false);
                       }
                     }
                   );
@@ -8647,10 +8676,8 @@ const get_api_key_and_secret_from_ini = () => {
   }
 
   // check that an api key and secret does ot exist
-  if (
-    !config["SODA-Pennsieve"]["api_secret"] ||
-    !config["SODA-Pennsieve"]["api_token"]
-  ) {
+  console.log(config);
+  if (!config["global"] || !config["global"]) {
     // throw an error
     throw new Error(
       "Error: User must connect their Pennsieve account to SODA in order to access this feature."
@@ -8658,7 +8685,8 @@ const get_api_key_and_secret_from_ini = () => {
   }
 
   // return the user's api key and secret
-  const { api_token, api_secret } = config["SODA-Pennsieve"];
+  let default_profile = config["global"]["default_profile"];
+  const { api_token, api_secret } = config[default_profile];
   // console.log(api_token);
   // console.log(api_secret);
   return { api_token, api_secret };
@@ -10196,7 +10224,6 @@ var documentation_lottie_observer = new MutationObserver(function (mutations) {
       //play lottie
       documentation_lottie.play();
     } else {
-
       // lottie.stop(documentation_lottie);
       documentation_lottie.stop();
     }
