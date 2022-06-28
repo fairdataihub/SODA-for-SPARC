@@ -213,7 +213,7 @@ def bf_add_account_api_key(keyname, key, secret):
     except Exception:
         bf_delete_account(keyname)
         abort(401, 
-            "Authentication Error: please check that key name, key, and secret are entered properly"
+            "Please check that key name, key, and secret are entered properly"
         )
 
     # Check that the Pennsieve account is in the SPARC Consortium organization
@@ -2045,8 +2045,7 @@ def get_pennsieve_api_key_secret(email, password, keyname):
             ClientId=cognito_app_client_id,
         )
     except Exception as e:
-        error = "Error: Username or password was incorrect."
-        raise Exception(error)
+        abort(400, "Username or password was incorrect.")
 
     try:
         api_key = login_response["AuthenticationResult"]["AccessToken"]
