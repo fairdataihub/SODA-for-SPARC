@@ -2203,7 +2203,6 @@ $("#button-add-license").click(() => {
           });
 
           showCurrentLicense();
-          console.log("once");
 
           ipcRenderer.send(
             "track-event",
@@ -2221,7 +2220,6 @@ $("#button-add-license").click(() => {
 });
 
 const showCurrentLicense = async () => {
-  console.log("uhh");
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
@@ -2250,7 +2248,6 @@ const showCurrentLicense = async () => {
           );
         } else {
           let licenseContainer = document.getElementById("license-lottie-div");
-          console.log(licenseContainer.children.length);
           var lottie_container;
           if (licenseContainer.children.length < 1) {
             // licenseContainer.removeChild(licenseContainer.children[1]);
@@ -2272,13 +2269,11 @@ const showCurrentLicense = async () => {
                 "block";
 
             licenseContainer.style.display = "block";
-            console.log("creating here");
           } else {
             $("#button-add-license").show();
             $("#assign-a-license-header").show();
             document.getElementById("license-assigned").style.display = "none";
             licenseContainer.style.display = "none";
-            console.log("destroying");
           }
         }
       }

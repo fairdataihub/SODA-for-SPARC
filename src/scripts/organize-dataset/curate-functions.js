@@ -998,8 +998,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             document.getElementsByClassName("swal2-actions")[0];
           let api_button = document.createElement("button");
           let api_arrow = document.createElement("i");
-          console.log(swal_actions);
-          console.log(swal_actions.parentElement);
+
           api_button.innerText = "Connect with API key instead";
           api_button.setAttribute("onclick", "showBFAddAccountSweetalert()");
           api_arrow.classList.add("fas");
@@ -1028,22 +1027,18 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             let response = await get_api_key(login, password, key_name);
             if (response[0] == "failed") {
               let error_message = response[1];
-              console.log(response[1]);
-              console.log(response);
               if (
                 response[1]["message"] ===
                 "exceptions must derive from BaseException"
               ) {
                 error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">It seems that you do not have access to the SPARC Consortium organization on Pennsieve. See our <a target="_blank" href="https://docs.sodaforsparc.io/docs/next/how-to/how-to-get-a-pennsieve-account">[dedicated help page]</a> to learn how to get access</div>`;
               }
-              console.log(response[1]["message"]);
               if (
                 response[1]["message"] ===
                 "Error: Username or password was incorrect."
               ) {
                 error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">Error: Username or password was incorrect</div>`;
               }
-              console.log(error_message);
               Swal.hideLoading();
               Swal.showValidationMessage(error_message);
               document.getElementById(
