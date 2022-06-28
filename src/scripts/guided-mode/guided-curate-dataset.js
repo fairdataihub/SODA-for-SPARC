@@ -1008,6 +1008,7 @@ const guidedLoadDescriptionDatasetInformation = () => {
     }
   }
 };
+
 const guidedLoadDescriptionStudyInformation = () => {
   const studyPurposeInput = document.getElementById("guided-ds-study-purpose");
   const studyDataCollectionInput = document.getElementById(
@@ -1020,6 +1021,8 @@ const guidedLoadDescriptionStudyInformation = () => {
     "guided-ds-study-collection-title"
   );
 
+  console.log(guidedStudyOrganSystemsTagify);
+
   //reset dataset descript tags
   /*guidedStudyOrganSystemsTagify.removeAllTags();
   guidedStudyApproachTagify.removeAllTags();
@@ -1027,7 +1030,7 @@ const guidedLoadDescriptionStudyInformation = () => {
 
   const studyInformationMetadata =
     sodaJSONObj["dataset-metadata"]["description-metadata"][
-      "dataset-information"
+      "study-information"
     ];
 
   if (studyInformationMetadata) {
@@ -1038,7 +1041,7 @@ const guidedLoadDescriptionStudyInformation = () => {
       studyInformationMetadata["study primary conclusion"];
     studyCollectionTitleInput.value =
       studyInformationMetadata["study collection title"];
-    guidedStudyOrganSystemsTagify.addTags(
+    /*guidedStudyOrganSystemsTagify.addTags(
       studyInformationMetadata["study organ system"]
     );
     guidedStudyApproachTagify.addTags(
@@ -1046,7 +1049,7 @@ const guidedLoadDescriptionStudyInformation = () => {
     );
     guidedStudyTechniquesTagify.addTags(
       studyInformationMetadata["study technique"]
-    );
+    );*/
   } else {
     //reset the inputs
     console.log("resetting inputs");
@@ -1056,6 +1059,7 @@ const guidedLoadDescriptionStudyInformation = () => {
     studyCollectionTitleInput.value = "";
   }
 };
+
 const guidedLoadDescriptionAdditionalInformation = () => {};
 
 const traverseToTab = (targetPageID) => {
@@ -1441,6 +1445,32 @@ const traverseToTab = (targetPageID) => {
         codeParametersParaText.innerHTML = "";
       }
     }
+    if (targetPageID === "guided-create-readme-metadata-tab") {
+      const readMeTextArea = document.getElementById(
+        "guided-textarea-create-readme"
+      );
+
+      const readMe = sodaJSONObj["dataset-metadata"]["README"];
+
+      if (readMe) {
+        readMeTextArea.value = readMe;
+      } else {
+        readMeTextArea.value = "";
+      }
+    }
+    if (targetPageID === "guided-create-changes-metadata-tab") {
+      const changesTextArea = document.getElementById(
+        "guided-textarea-create-changes"
+      );
+
+      const changes = sodaJSONObj["dataset-metadata"]["CHANGES"];
+
+      if (changes) {
+        changesTextArea.value = changes;
+      } else {
+        changesTextArea.value = "";
+      }
+    }
 
     let currentParentTab = CURRENT_PAGE.parent();
     let targetPage = $(`#${targetPageID}`);
@@ -1772,6 +1802,7 @@ const setActiveSubPage = (pageIdToActivate) => {
         sodaJSONObj["dataset-metadata"]["submission-metadata"][
           "unselected-milestones"
         ];
+      console.log(unselectedMilestones);
       if (unselectedMilestones) {
         renderMilestoneSelectionTable(unselectedMilestones);
         const selectedMilestones =
@@ -1805,6 +1836,8 @@ const setActiveSubPage = (pageIdToActivate) => {
     case "guided-completion-date-selection-page": {
       const milestoneData =
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
+      console.log(milestoneData);
+
       // get a unique set of completionDates from checkedMilestoneData
       const uniqueCompletionDates = Array.from(
         new Set(milestoneData.map((milestone) => milestone.completionDate))
@@ -2349,8 +2382,8 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["dataset-metadata"]["code-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"] =
     [];
-  sodaJSONObj["dataset-metadata"]["readMe-metadata"] = {};
-  sodaJSONObj["dataset-metadata"]["changes-metadata"] = {};
+  sodaJSONObj["dataset-metadata"]["README"] = "";
+  sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
   sodaJSONObj["digital-metadata"] = {};
   sodaJSONObj["digital-metadata"]["user-permissions"] = [];
   sodaJSONObj["digital-metadata"]["team-permissions"] = [];
@@ -5839,7 +5872,6 @@ $(document).ready(() => {
         sodaJSONObj.addSampleToSubject("sam-sub121", "", "sub-12");
         sodaJSONObj.addSampleToSubject("sam-sub122", "", "sub-12");
         sodaJSONObj.addSampleToSubject("sam-sub123", "", "sub-12");
-        traverseToTab("guided-add-code-metadata-tab");
       } else {
         if (datasetName == "") {
           errorArray.push({
@@ -8371,10 +8403,10 @@ $(document).ready(() => {
       "study organ system": studyOrganSystemTags,
       "study approach": studyApproachTags,
       "study technique": studyTechniqueTags,
-      "study purpose": studyPurpose,
-      "study data collection": studyDataCollection,
-      "study primary conclusion": studyPrimaryConclusion,
-      "study collection title": studyCollectionTitle,
+      "study purpose": studyPurposeInput.value.trim(),
+      "study data collection": studyDataCollectionInput.value.trim(),
+      "study primary conclusion": studyPrimaryConclusionInput.value.trim(),
+      "study collection title": studyCollectionTitleInput.value.trim(),
     };
     console.log(
       sodaJSONObj["dataset-metadata"]["description-metadata"][
@@ -8508,52 +8540,6 @@ $(document).ready(() => {
         numSubjects;
       sodaJSONObj["dataset-metadata"]["description-metadata"]["numSamples"] =
         numSamples;
-    }
-  };
-
-  const guidedSaveStudyInformation = () => {
-    let studyOrganSystems = getTagsFromTagifyElement(
-      guidedStudyOrganSystemsTagify
-    );
-    let studyApproaches = getTagsFromTagifyElement(guidedStudyApproachTagify);
-    let studyTechniques = getTagsFromTagifyElement(guidedStudyTechniquesTagify);
-    let studyPurpose = $("#guided-ds-study-purpose").val();
-    let studyDataCollection = $("#guided-ds-study-data-collection").val();
-    let studyPrimaryConclusion = $("#guided-ds-study-primary-conclusion").val();
-
-    if (
-      studyOrganSystems.length === 0 ||
-      studyApproaches.length === 0 ||
-      studyTechniques.length == 0 ||
-      studyPurpose.length == 0 ||
-      studyDataCollection.length == 0 ||
-      studyPrimaryConclusion.length == 0
-    ) {
-      /*Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-        icon: "error",
-        text: "Please fill in all of the study information fields.",
-        title: "Incomplete information",
-      });*/
-    } else {
-      sodaJSONObj["dataset-metadata"]["description-metadata"][
-        "studyOrganSystems"
-      ] = studyOrganSystems;
-      sodaJSONObj["dataset-metadata"]["description-metadata"][
-        "studyApproaches"
-      ] = studyApproaches;
-      sodaJSONObj["dataset-metadata"]["description-metadata"][
-        "studyTechniques"
-      ] = studyTechniques;
-      sodaJSONObj["dataset-metadata"]["description-metadata"]["studyPurpose"] =
-        studyPurpose;
-      sodaJSONObj["dataset-metadata"]["description-metadata"][
-        "studyDataCollection"
-      ] = studyDataCollection;
-      sodaJSONObj["dataset-metadata"]["description-metadata"][
-        "studyPrimaryConclusion"
-      ] = studyPrimaryConclusion;
     }
   };
 
@@ -9112,7 +9098,8 @@ $(document).ready(() => {
           });
         }
         json_str = JSON.stringify(json_arr);
-        sodaJSONObj["dataset-metadata"]["submission-metadata"] = json_str;
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["json_str"] =
+          json_str;
         // save the award string to JSONObj to be shared with other award inputs
         sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] =
           award;
@@ -9418,11 +9405,36 @@ $(document).ready(() => {
           throw errorArray;
         }
       }
+
       if (pageBeingLeftID === "guided-create-readme-metadata-tab") {
-        guidedShowTreePreview(
-          sodaJSONObj["digital-metadata"]["name"],
-          guidedJstreePreview
+        const readMeTextArea = document.getElementById(
+          "guided-textarea-create-readme"
         );
+        if (readMeTextArea.value.trim() === "") {
+          errorArray.push({
+            type: "notyf",
+            message: "Please enter a README for your dataset",
+          });
+          throw errorArray;
+        } else {
+          const readMe = readMeTextArea.value.trim();
+          sodaJSONObj["dataset-metadata"]["README"] = readMe;
+        }
+      }
+      if (pageBeingLeftID === "guided-create-changes-metadata-tab") {
+        const changesTextArea = document.getElementById(
+          "guided-textarea-create-changes"
+        );
+        if (changesTextArea.value.trim() === "") {
+          errorArray.push({
+            type: "notyf",
+            message: "Please enter CHANGES for your dataset",
+          });
+          throw errorArray;
+        } else {
+          const changes = changesTextArea.value.trim();
+          sodaJSONObj["dataset-metadata"]["CHANGES"] = changes;
+        }
       }
 
       console.log(sodaJSONObj);
@@ -10089,10 +10101,10 @@ $(document).ready(() => {
             ) {
               //delete sodaJSONObj data from imported milestone data
               delete sodaJSONObj["dataset-metadata"]["submission-metadata"][
-                "milestones"
+                "unselected-milestones"
               ];
               delete sodaJSONObj["dataset-metadata"]["submission-metadata"][
-                "completion-date"
+                "milestones"
               ];
               delete sodaJSONObj["dataset-metadata"]["submission-metadata"][
                 "completion-date"
