@@ -2521,15 +2521,9 @@ async function switchMetadataManifestQuestion() {
     if (continueProgressManifest) {
       // deleting manifest file folders in user/SODA path that were generated half-way before users switch.
       try {
-        let delete_dummy_folders = await client.delete(
-          `prepare_metadata/manifest_dummy_folders`,
-          {
-            paths: [userpath1, userpath2],
-          }
-        );
-
-        let res = delete_dummy_folders.data;
-        console.log(res);
+        await client.delete(`prepare_metadata/manifest_dummy_folders`, {
+          paths: [userpath1, userpath2],
+        });
 
         sodaJSONObj = {
           "starting-point": { type: "" },
