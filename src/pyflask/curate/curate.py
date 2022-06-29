@@ -3,6 +3,8 @@
 ### Import required python modules
 from gevent import monkey
 
+from pyFlask.namespaces import namespaceLogger
+
 monkey.patch_all()
 import platform
 import os
@@ -38,6 +40,10 @@ from pysodaUtils import (
 )
 
 from organizeDatasets import bf_get_dataset_files_folders
+
+from namespaces import NamespaceEnum, get_namespace_logger
+
+namespace_logger = get_namespace_logger(NamespaceEnum.MANAGE_DATASETS)
 
 
 ### Global variables
@@ -1058,6 +1064,10 @@ def check_JSON_size(jsonStructure):
 
 def generate_dataset_locally(soda_json_structure):
 
+    global namespace_logger
+
+    namespace_logger.info("starting generate_dataset_locally")
+
     global main_curate_progress_message
     global progress_percentage
     global main_total_generate_dataset_size
@@ -1936,6 +1946,11 @@ def get_base_file_name(file_name):
 
 
 def bf_update_existing_dataset(soda_json_structure, bf, ds):
+
+    global namespace_logger
+
+    namespace_logger.info("Starting bf_update_existing_dataset")
+
     global main_curate_progress_message
     global main_total_generate_dataset_size
     global start_generate
@@ -2172,6 +2187,10 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
 
 
 def bf_generate_new_dataset(soda_json_structure, bf, ds):
+
+    global namespace_logger
+
+    namespace_logger.info("Starting bf_generate_new_dataset")
 
     global main_curate_progress_message
     global main_total_generate_dataset_size
@@ -2796,6 +2815,10 @@ def bf_check_dataset_files_validity(soda_json_structure, bf):
 
 def main_curate_function(soda_json_structure):
 
+    global namespace_logger
+
+    namespace_logger.info("Starting main_curate_function")
+
     global main_curate_status
     global main_curate_progress_message
     global main_total_generate_dataset_size
@@ -2838,6 +2861,8 @@ def main_curate_function(soda_json_structure):
 
     # 1] Check for potential errors
 
+    namespace_logger.info("main_curate_function step 1")
+
     # 1.1. Check that the local destination is valid if generate dataset locally is requested
     if "generate-dataset" in main_keys and soda_json_structure["generate-dataset"]["destination"] == "local":
         main_curate_progress_message = "Checking that the local destination selected for generating your dataset is valid"
@@ -2854,6 +2879,8 @@ def main_curate_function(soda_json_structure):
             main_curate_status = "Done"
             error = error_message
             abort(400, error)
+
+    namespace_logger.info("main_curate_function step 1.2")
 
     # 1.2. Check that the bf destination is valid if generate on bf, or any other bf actions are requested
     if "bf-account-selected" in soda_json_structure:
@@ -2888,6 +2915,7 @@ def main_curate_function(soda_json_structure):
             main_curate_status = "Done"
             abort(403, "Error: You don't have permissions for uploading to this Pennsieve dataset")
 
+    namespace_logger.info("main_curate_function step 1.3")
 
     # 1.3. Check that specified dataset files and folders are valid (existing path) if generate dataset is requested
     # Note: Empty folders and 0 kb files will be removed without warning (a warning will be provided on the front end before starting the curate process)
@@ -2935,6 +2963,9 @@ def main_curate_function(soda_json_structure):
                 main_curate_status = "Done"
                 raise e
 
+
+    namespace_logger.info("main_curate_function step 3")
+
     # 3] Generate
     if "generate-dataset" in main_keys:
         main_curate_progress_message = "Generating dataset"
@@ -2966,6 +2997,8 @@ def main_curate_function(soda_json_structure):
         except Exception as e:
             main_curate_status = "Done"
             raise e
+
+    namespace_logger.info("main_curate_function finished")
 
     main_curate_status = "Done"
     main_curate_progress_message = "Success: COMPLETED!"

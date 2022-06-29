@@ -65,6 +65,8 @@ class Curation(Resource):
 
         soda_json_structure = data["soda_json_structure"]
 
+        api.logger.info('/curation POST request')
+
         try:
             return main_curate_function(soda_json_structure)
         except Exception as e:
