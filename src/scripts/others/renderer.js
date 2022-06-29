@@ -149,52 +149,58 @@ let over_view_section = document.getElementById("getting_started-section");
 let column1 = document.getElementById("lottie1");
 let column2 = document.getElementById("lottie2");
 let column3 = document.getElementById("lottie3");
+let heart_lottie = document.getElementById("heart_lottie");
 
-var observer = new MutationObserver(function (mutations) {
+var column1_lottie = lottie.loadAnimation({
+  container: column1,
+  animationData: column1Lottie /*(json js variable, (view src/assets/lotties)*/,
+  renderer: "svg",
+  loop: true /*controls looping*/,
+  autoplay: true,
+});
+var column2_lottie = lottie.loadAnimation({
+  container: column2,
+  animationData: column2Lottie /*(json js variable, (view src/assets/lotties)*/,
+  renderer: "svg",
+  loop: true /*controls looping*/,
+  autoplay: true,
+});
+var column3_lottie = lottie.loadAnimation({
+  container: column3,
+  animationData: column3Lottie,
+  renderer: "svg",
+  loop: true,
+  autoplay: true,
+});
+var heart_container = lottie.loadAnimation({
+  container: heart_lottie,
+  animationData: heartLottie,
+  renderer: "svg",
+  loop: true,
+  autoplay: true,
+});
+
+var overview_observer = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
     var attributeValue = $(mutation.target).prop(mutation.attributeName);
 
     if (attributeValue.includes("is-shown") == true) {
       //add lotties
-      column1.innerText = "";
-      column2.innerText = "";
-      column3.innerText = "";
-
-      var column1_lottie = lottie.loadAnimation({
-        container: column1,
-        animationData:
-          column1Lottie /*(json js variable, (view src/assets/lotties)*/,
-        renderer: "svg",
-        loop: true /*controls looping*/,
-        autoplay: true,
-      });
-      var column2_lottie = lottie.loadAnimation({
-        container: column2,
-        animationData:
-          column2Lottie /*(json js variable, (view src/assets/lotties)*/,
-        renderer: "svg",
-        loop: true /*controls looping*/,
-        autoplay: true,
-      });
-      var column3_lottie = lottie.loadAnimation({
-        container: column3,
-        animationData: column3Lottie,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
+      column1_lottie.play();
+      column2_lottie.play();
+      column3_lottie.play();
+      heart_container.play();
     } else {
-      column1.innerText = "";
-      column2.innerText = "";
-      column3.innerText = "";
-      lottie.stop(column1_lottie);
-      lottie.stop(column2_lottie);
-      lottie.stop(column3_lottie);
+      console.log("removing overview lotties");
+      column1_lottie.stop();
+      column2_lottie.stop();
+      column3_lottie.stop();
+      heart_container.stop();
     }
   });
 });
 
-observer.observe(over_view_section, {
+overview_observer.observe(over_view_section, {
   attributes: true,
   attributeFilter: ["class"],
 });
@@ -797,6 +803,7 @@ const check_api_key = async () => {
         console.error(error);
         resolve(false);
       } else {
+        console.log(res);
         log.info("Found a set of valid API keys");
         if (res[0] === "Select" && res.length === 1) {
           //no api key found
@@ -3910,7 +3917,6 @@ function loadDefaultAccount() {
       log.error(error);
       console.error(error);
       confirm_click_account_function();
-      console.log("Could not get default account");
     } else {
       if (res.length > 0) {
         var myitemselect = res[0];
@@ -3927,7 +3933,7 @@ function loadDefaultAccount() {
   });
 }
 
-function updateBfAccountList() {
+function updateBfAccountList(api_key) {
   client.invoke("api_bf_account_list", (error, res) => {
     if (error) {
       log.error(error);
@@ -3942,7 +3948,9 @@ function updateBfAccountList() {
         option.value = myitemselect;
         var option2 = option.cloneNode(true);
       }
-      loadDefaultAccount();
+      if (api_key === undefined) {
+        loadDefaultAccount();
+      }
       if (res[0] === "Select" && res.length === 1) {
         // todo: no existing accounts to load
       }
@@ -4438,62 +4446,29 @@ const pasteFromClipboard = (event, target_element) => {
     target_element == "bootbox-api-key" ||
     target_element == "bootbox-api-secret"
   ) {
-    const regex = new RegExp(
-      "^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$",
-      "i"
-    );
-    // "/^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i";
-    if (regex.test(key)) {
-      $(`#${target_element}`).val(key);
-    } else {
-      console.log("Invalid API Key");
-      log.error("Invalid API Key");
-    }
+    $(`#${target_element}`).val(key);
   }
 };
 
 var bfAddAccountBootboxMessage = `<form>
-    <div class="form-group row">
-      <label for="bootbox-key-name" class="col-sm-3 col-form-label">
-        Key name:
-      </label>
-      <div class="col-sm-9">
-        <input type="text" id="bootbox-key-name" class="form-control" />
+    <div class="form-group row" style="justify-content: center; margin-top: .5rem; margin-bottom: 2rem;">
+      <div style="display: flex; width: 100%">
+        <input placeholder="Enter key name" type="text" style="width: 100%; margin: 0;" id="bootbox-key-name" class="swal2-input" />
       </div>
     </div>
-    <div class="form-group row">
-      <label for="bootbox-api-key" class="col-sm-3 col-form-label">
-        API Key:
-      </label>
-      <div class="col-sm-9" style="display:flex">
-        <input id="bootbox-api-key" type="text" class="form-control" />
-        <button
-          class="ui left floated button"
-          style="height:auto; margin-left:3px"
-          onclick="pasteFromClipboard(event, 'bootbox-api-key')"
-        >
-          <i class="fas fa-paste"></i>
-        </button>
+    <div style="justify-content: center;">
+      <div style="display:flex; align-items: flex-end; width: 100%;">
+        <input placeholder="Enter API key" id="bootbox-api-key" type="text" class="swal2-input" style="width: 100%; margin: 0;" />
       </div>
     </div>
-    <div class="form-group row">
-      <label for="bootbox-api-secret" class="col-sm-3 col-form-label">
-        API Secret:
-      </label>
-      <div class="col-sm-9" style="display:flex">
-        <input id="bootbox-api-secret" class="form-control" type="text" />
-        <button
-          class="ui left floated button"
-          style="height:auto; margin-left:3px"
-          onclick="pasteFromClipboard(event, 'bootbox-api-secret')"
-        >
-          <i class="fas fa-paste"></i>
-        </button>
+    <div style="justify-content: center; margin-bottom: .5rem; margin-top: 2rem;">
+      <div style="display:flex; align-items: flex-end; width: 100%">
+        <input placeholder="Enter API secret" id="bootbox-api-secret" class="swal2-input" type="text" style="margin: 0; width: 100%" />
       </div>
     </div>
   </form>`;
 
-var bfaddaccountTitle = `<h3 style="text-align:center">Connect your Pennsieve account using an API key:</h3>`;
+var bfaddaccountTitle = `<h3 style="text-align:center">Please enter your Pennsieve API key information below:</h3>`;
 
 // once connected to SODA get the user's accounts
 (async () => {
@@ -8068,7 +8043,6 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
           left_progress_bar.style.transform = `rotate(180deg)`;
           right_progress_bar.style.transform = `rotate(180deg)`;
           right_progress_bar.classList.remove("notransition");
-          console.log(percentage_text.innerText);
           clearInterval(pennsieve_progress);
           setTimeout(() => {
             progress_container.style.display = "none";
@@ -8415,28 +8389,31 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
   }
 });
 
-function showBFAddAccountSweetalert() {
-  var bootb = Swal.fire({
+async function showBFAddAccountSweetalert() {
+  // let this_one = await get_access_token();
+  // console.log(this_one);
+  // try {
+  //   userInformation = get_api_key_and_secret_from_ini();
+  //   console.log(userInformation);
+  // } catch (e) {
+  //   throw e;
+  // }
+  await Swal.fire({
     title: bfaddaccountTitle,
     html: bfAddAccountBootboxMessage,
+    showLoaderOnConfirm: true,
     showCancelButton: true,
     focusCancel: true,
     cancelButtonText: "Cancel",
-    confirmButtonText: "Add Account",
-    customClass: "swal-wide",
+    confirmButtonText: "Connect to Pennsieve",
     reverseButtons: reverseSwalButtons,
     backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
     allowOutsideClick: false,
+    footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/manage-dataset/connect-your-pennsieve-account-with-soda" style="text-decoration: none;">Help me get an API key</a>`,
     didOpen: () => {
-      tippy("#add-bf-account-tooltip", {
-        allowHTML: true,
-        interactive: true,
-        placement: "right",
-        theme: "light",
-        content:
-          "See our dedicated <a target='_blank' href='https://docs.sodaforsparc.io/docs/manage-dataset/connect-your-pennsieve-account-with-soda'> help page </a>for generating API key and secret and setting up your Pennsieve account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Pennsieve accounts under the SPARC Consortium organization with SODA.",
-      });
+      let swal_container = document.getElementsByClassName("swal2-popup")[0];
+      swal_container.style.width = "43rem";
     },
     showClass: {
       popup: "animate__animated animate__fadeInDown animate__faster",
@@ -8444,90 +8421,145 @@ function showBFAddAccountSweetalert() {
     hideClass: {
       popup: "animate__animated animate__fadeOutUp animate__faster",
     },
+    preConfirm: async (result) => {
+      if (result === true) {
+        var name = $("#bootbox-key-name").val();
+        var apiKey = $("#bootbox-api-key").val();
+        var apiSecret = $("#bootbox-api-secret").val();
+        return new Promise((resolve, reject) => {
+          client.invoke(
+            "api_bf_add_account_api_key",
+            name,
+            apiKey,
+            apiSecret,
+            (error, res) => {
+              if (error) {
+                if (String(error).includes("please check that key name")) {
+                  error =
+                    "Please check that your key name, key and api secret are entered properly";
+                }
+                Swal.showValidationMessage(error);
+                document.getElementsByClassName(
+                  "swal2-actions"
+                )[0].children[1].disabled = false;
+                document.getElementsByClassName(
+                  "swal2-actions"
+                )[0].children[3].disabled = false;
+                console.log(
+                  document.getElementsByClassName("swal2-actions")[0]
+                    .children[0]
+                );
+                document.getElementsByClassName(
+                  "swal2-actions"
+                )[0].children[0].style.display = "none";
+                document.getElementsByClassName(
+                  "swal2-actions"
+                )[0].children[1].style.display = "inline-block";
+                reject(false);
+                // Swal.fire({
+                //   icon: "error",
+                //   html: "<span>" + error + "</span>",
+                //   heightAuto: false,
+                //   backdrop: "rgba(0,0,0,0.4)",
+                // }).then((result) => {
+                //   if (result.isConfirmed) {
+                //     showBFAddAccountSweetalert();
+                //   }
+                // });
+                log.error(error);
+                console.error(error);
+              } else {
+                $("#bootbox-key-name").val("");
+                $("#bootbox-api-key").val("");
+                $("#bootbox-api-secret").val("");
+                bfAccountOptions[name] = name;
+                defaultBfAccount = name;
+                defaultBfDataset = "Select dataset";
+                console.log(name);
+                return new Promise((resolve, reject) => {
+                  console.log("second promise");
+                  client.invoke(
+                    "api_bf_account_details",
+                    name,
+                    (error, res) => {
+                      if (error) {
+                        console.log("error");
+                        log.error(error);
+                        console.error(error);
+                        Swal.showValidationMessage(error);
+                        document.getElementsByClassName(
+                          "swal2-actions"
+                        )[0].children[1].disabled = false;
+                        document.getElementsByClassName(
+                          "swal2-actions"
+                        )[0].children[3].disabled = false;
+                        console.log(
+                          document.getElementsByClassName("swal2-actions")[0]
+                            .children[0]
+                        );
+                        document.getElementsByClassName(
+                          "swal2-actions"
+                        )[0].children[0].style.display = "none";
+                        document.getElementsByClassName(
+                          "swal2-actions"
+                        )[0].children[1].style.display = "inline-block";
+
+                        reject(false);
+                        // Swal.fire({
+                        //   icon: "error",
+                        //   text: "Something went wrong!",
+                        //   heightAuto: false,
+                        //   backdrop: "rgba(0,0,0, 0.4)",
+                        //   footer:
+                        //     '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
+                        // });
+                        showHideDropdownButtons("account", "hide");
+                        confirm_click_account_function();
+                      } else {
+                        console.log(res);
+                        console.log(name);
+                        $("#para-account-detail-curate").html(res);
+                        $("#current-bf-account").text(name);
+                        $("#current-bf-account-generate").text(name);
+                        $("#create_empty_dataset_BF_account_span").text(name);
+                        $(".bf-account-span").text(name);
+                        $("#current-bf-dataset").text("None");
+                        $("#current-bf-dataset-generate").text("None");
+                        $(".bf-dataset-span").html("None");
+                        $("#para-account-detail-curate-generate").html(res);
+                        $("#para_create_empty_dataset_BF_account").html(res);
+                        $(".bf-account-details-span").html(res);
+                        $("#para-continue-bf-dataset-getting-started").text("");
+                        showHideDropdownButtons("account", "show");
+                        confirm_click_account_function();
+                        updateBfAccountList(false);
+                      }
+                    }
+                  );
+                  Swal.fire({
+                    icon: "success",
+                    title:
+                      "Successfully added! <br/>Loading your account details...",
+                    timer: 3000,
+                    timerProgressBar: true,
+                    allowEscapeKey: false,
+                    heightAuto: false,
+                    backdrop: "rgba(0,0,0, 0.4)",
+                    showConfirmButton: false,
+                  });
+                  resolve();
+                });
+              }
+            }
+          );
+        });
+      }
+    },
   }).then((result) => {
     if (result.isConfirmed) {
-      addBFAccountInsideSweetalert(bootb);
     }
   });
 }
-
-function addBFAccountInsideSweetalert(myBootboxDialog) {
-  var name = $("#bootbox-key-name").val();
-  var apiKey = $("#bootbox-api-key").val();
-  var apiSecret = $("#bootbox-api-secret").val();
-  client.invoke(
-    "api_bf_add_account_api_key",
-    name,
-    apiKey,
-    apiSecret,
-    (error, res) => {
-      if (error) {
-        Swal.fire({
-          icon: "error",
-          html: "<span>" + error + "</span>",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0,0.4)",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            showBFAddAccountSweetalert();
-          }
-        });
-        log.error(error);
-        console.error(error);
-      } else {
-        $("#bootbox-key-name").val("");
-        $("#bootbox-api-key").val("");
-        $("#bootbox-api-secret").val("");
-        bfAccountOptions[name] = name;
-        defaultBfAccount = name;
-        defaultBfDataset = "Select dataset";
-        client.invoke("api_bf_account_details", name, (error, res) => {
-          if (error) {
-            log.error(error);
-            console.error(error);
-            Swal.fire({
-              icon: "error",
-              text: "Something went wrong!",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              footer:
-                '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
-            });
-            showHideDropdownButtons("account", "hide");
-            confirm_click_account_function();
-          } else {
-            $("#para-account-detail-curate").html(res);
-            $("#current-bf-account").text(name);
-            $("#current-bf-account-generate").text(name);
-            $("#create_empty_dataset_BF_account_span").text(name);
-            $(".bf-account-span").text(name);
-            $("#current-bf-dataset").text("None");
-            $("#current-bf-dataset-generate").text("None");
-            $(".bf-dataset-span").html("None");
-            $("#para-account-detail-curate-generate").html(res);
-            $("#para_create_empty_dataset_BF_account").html(res);
-            $(".bf-account-details-span").html(res);
-            $("#para-continue-bf-dataset-getting-started").text("");
-            showHideDropdownButtons("account", "show");
-            confirm_click_account_function();
-            updateBfAccountList();
-          }
-        });
-        Swal.fire({
-          icon: "success",
-          title: "Successfully added! <br/>Loading your account details...",
-          timer: 3000,
-          timerProgressBar: true,
-          allowEscapeKey: false,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          showConfirmButton: false,
-        });
-      }
-    }
-  );
-}
-
 /*
 ******************************************************
 ******************************************************
@@ -8948,10 +8980,8 @@ const get_api_key_and_secret_from_ini = () => {
   }
 
   // check that an api key and secret does ot exist
-  if (
-    !config["SODA-Pennsieve"]["api_secret"] ||
-    !config["SODA-Pennsieve"]["api_token"]
-  ) {
+  console.log(config);
+  if (!config["global"]) {
     // throw an error
     throw new Error(
       "Error: User must connect their Pennsieve account to SODA in order to access this feature."
@@ -8959,7 +8989,10 @@ const get_api_key_and_secret_from_ini = () => {
   }
 
   // return the user's api key and secret
-  const { api_token, api_secret } = config["SODA-Pennsieve"];
+  let default_profile = config["global"]["default_profile"];
+  const { api_token, api_secret } = config[default_profile];
+  // console.log(api_token);
+  // console.log(api_secret);
   return { api_token, api_secret };
 };
 
@@ -10301,9 +10334,9 @@ function gatherLogs() {
   let log_path = "";
   let log_files = ["main.log", "renderer.log", "out.log"];
 
-  if (os.type() === "Darwin") {
+  if (os.type().includes("Darwin") === true) {
     log_path = path.join(homedir, "/Library/Logs/SODA for SPARC/");
-  } else if (os.type() === "Windows") {
+  } else if (os.type().includes("Windows") === true) {
     log_path = path.join(
       homedir,
       "AppData",
@@ -10455,7 +10488,9 @@ function directToDocumentation() {
   document.getElementById("overview-column-2").blur();
   // window.open('https://docs.sodaforsparc.io', '_blank');
 }
-
+document
+  .getElementById("doc-btn")
+  .addEventListener("click", directToDocumentation);
 document.getElementById("sodaVideo-btn").addEventListener("click", sodaVideo);
 document
   .getElementById("direct-to-doc-button")
@@ -10463,3 +10498,63 @@ document
 document
   .getElementById("getting-started-button")
   .addEventListener("click", gettingStarted);
+
+let docu_lottie_section = document.getElementById("documentation-section");
+let doc_lottie = document.getElementById("documentation-lottie");
+
+let contact_section = document.getElementById("contact-us-section");
+let contact_lottie_container = document.getElementById("contact-us-lottie");
+
+var contact_lottie_animation = lottie.loadAnimation({
+  container: contact_lottie_container,
+  animationData:
+    contact_lottie /*(json js variable, (view src/assets/lotties)*/,
+  renderer: "svg",
+  loop: true /*controls looping*/,
+  autoplay: true,
+});
+contact_lottie_animation.pause();
+var documentation_lottie = lottie.loadAnimation({
+  container: doc_lottie,
+  animationData: docu_lottie /*(json js variable, (view src/assets/lotties)*/,
+  renderer: "svg",
+  loop: true /*controls looping*/,
+  autoplay: true,
+});
+documentation_lottie.pause();
+
+var documentation_lottie_observer = new MutationObserver(function (mutations) {
+  mutations.forEach(function (mutation) {
+    var attributeValue = $(mutation.target).prop(mutation.attributeName);
+    if (attributeValue.includes("is-shown") == true) {
+      //play lottie
+      documentation_lottie.play();
+    } else {
+      // lottie.stop(documentation_lottie);
+      documentation_lottie.stop();
+    }
+  });
+});
+
+var contact_us_lottie_observer = new MutationObserver(function (mutations) {
+  mutations.forEach(function (mutation) {
+    var attributeValue = $(mutation.target).prop(mutation.attributeName);
+    if (attributeValue.includes("is-shown") == true) {
+      //play lottie
+      contact_lottie_animation.play();
+    } else {
+      contact_lottie_animation.stop();
+      // lottie.stop(contact_lottie_animation);
+    }
+  });
+});
+
+documentation_lottie_observer.observe(docu_lottie_section, {
+  attributes: true,
+  attributeFilter: ["class"],
+});
+
+contact_us_lottie_observer.observe(contact_section, {
+  attributes: true,
+  attributeFilter: ["class"],
+});

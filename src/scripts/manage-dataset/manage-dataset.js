@@ -381,6 +381,12 @@ $("#button-add-permission-pi").click(() => {
     hideClass: {
       popup: "animate__animated animate__zoomOut animate__faster",
     },
+    preConfirm: () => {
+      let userVal = document.getElementById("bf_list_users_pi").value;
+      if (userVal === "Select PI") {
+        Swal.showValidationMessage("Please choose a valid user");
+      }
+    },
   }).then((result) => {
     if (result.isConfirmed) {
       log.info("Changing PI Owner of datset");
@@ -2214,7 +2220,7 @@ $("#button-add-license").click(() => {
   }, delayAnimation);
 });
 
-const showCurrentLicense = () => {
+const showCurrentLicense = async () => {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
@@ -2231,7 +2237,7 @@ const showCurrentLicense = () => {
       "api_bf_get_license",
       selectedBfAccount,
       selectedBfDataset,
-      (error, res) => {
+      async (error, res) => {
         if (error) {
           log.error(error);
           console.error(error);
@@ -2242,23 +2248,31 @@ const showCurrentLicense = () => {
             ["Get License"]
           );
         } else {
+          let licenseContainer = document.getElementById("license-lottie-div");
+          if (licenseContainer.children.length < 1) {
+            // licenseContainer.removeChild(licenseContainer.children[1]);
+            lottie.loadAnimation({
+              container: licenseContainer,
+              animationData: licenseLottie,
+              renderer: "svg",
+              loop: true,
+              autoplay: true,
+            });
+          }
           currentDatasetLicense.innerHTML = res;
           if (res === "Creative Commons Attribution") {
             $("#button-add-license").hide();
             $("#assign-a-license-header").hide();
-            if ($("#add_license-section").hasClass("is-shown")) {
-              Swal.fire({
-                title:
-                  "You are all set. This dataset already has the correct license assigned.",
-                backdrop: "rgba(0,0,0, 0.4)",
-                heightAuto: false,
-                showConfirmButton: true,
-                icon: "success",
-              });
-            }
+            if ($("#add_license-section").hasClass("is-shown"))
+              document.getElementById("license-assigned").style.display =
+                "block";
+
+            licenseContainer.style.display = "block";
           } else {
             $("#button-add-license").show();
             $("#assign-a-license-header").show();
+            document.getElementById("license-assigned").style.display = "none";
+            licenseContainer.style.display = "none";
           }
         }
       }

@@ -2429,6 +2429,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj = {};
 
   sodaJSONObj["guided-options"] = {};
+  sodaJSONObj["bf-account-selected"] = {};
   sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
   sodaJSONObj["generate-dataset"] = {};
   sodaJSONObj["manifest-files"] = {};
@@ -6513,15 +6514,6 @@ $(document).ready(() => {
     ipcRenderer.send("guided-open-file-dialog-local-destination-curate");
   });
 
-  $("#pennsieve-account-confirm-button").on("click", () => {
-    sodaJSONObj["generate-dataset"]["starting-point"] = "bf";
-    sodaJSONObj["bf-account-selected"] = {};
-    sodaJSONObj["bf-account-selected"]["account-name"] =
-      $("#guided-bf-account").text();
-    enableProgressButton();
-    $("#guided-next-button").click();
-  });
-
   $("#guided-dataset-name-confirm-button").on("click", () => {
     sodaJSONObj["bf-dataset-selected"] = {};
     sodaJSONObj["bf-dataset-selected"]["dataset-name"] = $(
@@ -9133,6 +9125,41 @@ $(document).ready(() => {
         }
       }
       if (pageBeingLeftID === "guided-dataset-generate-location-tab") {
+        const buttonGenerateLocally = document.getElementById(
+          "guided-button-generate-dataset-locally"
+        );
+        const buttonGenerateOnPennsieve = document.getElementById(
+          "guided-button-generate-dataset-on-pennsieve"
+        );
+
+        // If the user did not select if they would like to import a SPARC award,
+        // throw an error
+        if (
+          !buttonGenerateLocally.classList.contains("selected") &&
+          !buttonGenerateOnPennsieve.classList.contains("selected")
+        ) {
+          errorArray.push({
+            type: "notyf",
+            message:
+              "Please indicate where you would like to genrate your dataset",
+          });
+          throw errorArray;
+        }
+
+        if (buttonGenerateOnPennsieve.classList.contains("selected")) {
+          const accountName = document.getElementById("guided-bf-account");
+          if (accountName.innerHTML.trim() === "None") {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "Please select a Pennsieve account to generate your dataset on",
+            });
+            throw errorArray;
+          }
+          sodaJSONObj["generate-dataset"]["destination"] = "bf";
+          sodaJSONObj["bf-account-selected"]["account-name"] =
+            accountName.value;
+        }
         if ($("#guided-generate-dataset-local-card").hasClass("checked")) {
           sodaJSONObj["generate-dataset"]["destination"] = "local";
         }

@@ -57,6 +57,8 @@ function handleSectionTrigger(event) {
     "getting_started-section",
     "guided_mode-section",
     "help-section",
+    "documentation-section",
+    "contact-us-section",
   ];
 
   if (showSidebarSections.includes(sectionId)) {

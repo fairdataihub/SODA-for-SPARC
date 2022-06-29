@@ -4957,78 +4957,29 @@
                 style="margin-bottom: 7px"
               >
                 <button
-                  class="ui primary basic button guided--radio-button"
-                  id="a"
-                  data-next-element="guided-designate-self-PI"
-                  data-button-config-value="c"
-                  data-button-config-value-state="d"
+                  class="ui primary basic button guided--radio-button coming-soon-div"
+                  id="guided-button-generate-dataset-locally"
+                  data-content="Coming soon..."
+                  rel="popover"
+                  data-placement="bottom"
+                  data-trigger="hover"
+                  data-next-element="guided-generate-dataset-local-panel"
+                  data-button-config-value="dataset-generation-location"
+                  data-button-config-value-state="local"
+                  style="width: 240px"
                 >
                   Generate dataset locally
                 </button>
                 <button
                   class="ui primary basic button guided--radio-button"
-                  id="b"
-                  data-next-element="guided-designate-other-PI"
-                  data-button-config-value="c"
-                  data-button-config-value-state="d"
+                  id="guided-button-generate-dataset-on-pennsieve"
+                  data-next-element="guided-generate-dataset-pennsieve-panel"
+                  data-button-config-value="dataset-generation-location"
+                  data-button-config-value-state="Pennsieve"
+                  style="width: 240px"
                 >
                   Generate dataset on PennSieve
                 </button>
-              </div>
-
-              <div class="guided--card-container">
-                <div
-                  class="coming-soon-div"
-                  data-content="Coming soon..."
-                  rel="popover"
-                  data-placement="bottom"
-                  data-trigger="hover"
-                >
-                  <div
-                    class="option-card radio-button non-selected"
-                    style="
-                      background: #f6f6f6;
-                      pointer-events: none;
-                      opacity: 0.4;
-                    "
-                    id="guided-generate-dataset-local-card"
-                  >
-                    <div class="card-head"></div>
-                    <div class="card-body">
-                      <i class="fas fa-desktop" style="color: #13716d"></i>
-                      <h2>Generate on my computer</h2>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="option-card radio-button non-selected"
-                  id="guided-generate-dataset-pennsieve-card"
-                >
-                  <div class="card-head"></div>
-                  <div class="card-body">
-                    <svg
-                      width="50px"
-                      height="50px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-cloud-arrow-up"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"
-                        fill="#565E6B"
-                      />
-                      <path
-                        fill-rule="evenodd"
-                        d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2z"
-                        fill="#B80D49"
-                      />
-                    </svg>
-                    <h2 style="margin-top: 10px">
-                      Generate directly on Pennsieve
-                    </h2>
-                  </div>
-                </div>
               </div>
               <div
                 id="guided-dataset-generate-location-panels"
@@ -5092,17 +5043,6 @@
                       </div>
                     </div>
                   </div>
-                  <button
-                    class="ui positive button guided--button"
-                    id="pennsieve-account-confirm-button"
-                    style="
-                      background-color: var(--color-light-green) !important;
-                      width: 120px !important;
-                      margin: 20px !important;
-                    "
-                  >
-                    Confirm
-                  </button>
                 </div>
               </div>
             </div>
