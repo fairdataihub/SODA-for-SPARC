@@ -8854,7 +8854,7 @@ function gatherLogs() {
   let homedir = os.homedir();
   let file_path = "";
   let clientLogsPath = "";
-  let serverLogsPath = path.join(homedir, "SODA", "logs");; 
+  let serverLogsPath = path.join(homedir, "SODA", "logs");
   let logFiles = ["main.log", "renderer.log", "out.log", "api.log"];
 
   if (os.type() === "Darwin") {
@@ -8936,7 +8936,7 @@ function gatherLogs() {
             let logFilePath;
             if (logFile === "out.log") {
               logFilePath = path.join(homedir, ".pennsieve", logFile);
-            } else if(logFile === "api.log") {
+            } else if (logFile === "api.log") {
               logFilePath = path.join(serverLogsPath, logFile);
             } else {
               logFilePath = path.join(clientLogsPath, logFile);
@@ -8968,7 +8968,7 @@ function gatherLogs() {
             },
           });
         } catch (error) {
-          clientError(error)
+          clientError(error);
           Swal.fire({
             title: "Failed to create log folder!",
             text: error,
