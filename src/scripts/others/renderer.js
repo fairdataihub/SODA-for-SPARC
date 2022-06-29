@@ -783,7 +783,6 @@ const check_internet_connection = async (show_notification = true) => {
 };
 
 const check_api_key = async () => {
-  let jwt = await get_access_token();
   let notification = null;
   notification = notyf.open({
     type: "api_key_search",
@@ -4344,11 +4343,7 @@ const pasteFromClipboard = (event, target_element) => {
     target_element == "bootbox-api-key" ||
     target_element == "bootbox-api-secret"
   ) {
-    const regex = new RegExp(
-      "^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$",
-      "i"
-    );
-    // "/^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i";
+
     $(`#${target_element}`).val(key);
   }
 };
@@ -8091,7 +8086,7 @@ async function showBFAddAccountSweetalert() {
   // } catch (e) {
   //   throw e;
   // }
-  var bootb = await Swal.fire({
+  await Swal.fire({
     title: bfaddaccountTitle,
     html: bfAddAccountBootboxMessage,
     showLoaderOnConfirm: true,
@@ -8253,9 +8248,6 @@ async function showBFAddAccountSweetalert() {
     }
   });
 }
-
-async function addBFAccountInsideSweetalert(myBootboxDialog) {}
-
 /*
 ******************************************************
 ******************************************************
@@ -8677,7 +8669,7 @@ const get_api_key_and_secret_from_ini = () => {
 
   // check that an api key and secret does ot exist
   console.log(config);
-  if (!config["global"] || !config["global"]) {
+  if (!config["global"]) {
     // throw an error
     throw new Error(
       "Error: User must connect their Pennsieve account to SODA in order to access this feature."

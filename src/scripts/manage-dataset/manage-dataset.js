@@ -2248,17 +2248,15 @@ const showCurrentLicense = async () => {
           );
         } else {
           let licenseContainer = document.getElementById("license-lottie-div");
-          var lottie_container;
           if (licenseContainer.children.length < 1) {
             // licenseContainer.removeChild(licenseContainer.children[1]);
-            lottie_container = lottie.loadAnimation({
+            lottie.loadAnimation({
               container: licenseContainer,
               animationData: licenseLottie,
               renderer: "svg",
               loop: true,
               autoplay: true,
             });
-            count++;
           }
           currentDatasetLicense.innerHTML = res;
           if (res === "Creative Commons Attribution") {
