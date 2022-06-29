@@ -2229,11 +2229,9 @@ const showCurrentLicense = async () => {
     return;
   }
 
-  console.log(selectedBfDataset);
   if (selectedBfDataset === "Select dataset") {
     currentDatasetLicense.innerHTML = "None";
   } else {
-    console.log('here');
     client.invoke(
       "api_bf_get_license",
       selectedBfAccount,
@@ -2261,7 +2259,6 @@ const showCurrentLicense = async () => {
             });
           }
           currentDatasetLicense.innerHTML = res;
-          console.log(res);
           if (res === "Creative Commons Attribution") {
             $("#button-add-license").hide();
             $("#assign-a-license-header").hide();

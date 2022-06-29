@@ -1195,9 +1195,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       //$("#bf-dataset-select-div").hide();
       try {
         var accountPresent = await check_api_key();
-        console.log(accountPresent);
       } catch (error) {
-        console.log("here");
         console.error(error);
         $(".ui.active.green.inline.loader.small").css("display", "none");
         $(".svg-change-current-account.dataset").css("display", "block");
@@ -1395,7 +1393,6 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             }
           },
         }).then((result) => {
-          console.log(result);
           if(result.isConfirmed) {
               if (show_timer) {
                 Swal.fire({
@@ -1432,8 +1429,6 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
               showHideDropdownButtons("dataset", "show");
               // checkPrevDivForConfirmButton("dataset");
           } else if (result.isDismissed) {
-            console.log(currentDatasetLicense.innerText);
-            console.log(defaultBfDataset);
             currentDatasetLicense.innerText = currentDatasetLicense.innerText;
             defaultBfDataset = defaultBfDataset;
           }
@@ -1447,7 +1442,6 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
         //currently changing it but not visually in the UI
         $("#bf_list_users_pi").val("Select PI");
 
-        console.log(bfDataset);
         
 
         // update the gloabl dataset id
