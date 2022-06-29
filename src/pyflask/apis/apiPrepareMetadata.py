@@ -16,6 +16,7 @@ from prepareMetadata import (
     import_bf_manifest_file
 )
 from flask import request
+import json
 from namespaces import NamespaceEnum, get_namespace
 from flask_restx import Resource, reqparse, fields
 from flask_restx.inputs import boolean
@@ -562,6 +563,8 @@ class GenerateManifestFilesPennsieve(Resource):
 
         if not selected_account or not selected_dataset or not soda_json_object:
             api.abort(400, "Error: To generate manifest files for Pennsieve provide a selected_account, selected_dataset, and soda_json_object.")
+
+        soda_json_object = json.loads(soda_json_object)
 
         try:
             return import_bf_manifest_file(soda_json_object, selected_account, selected_dataset)
