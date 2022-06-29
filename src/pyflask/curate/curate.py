@@ -1004,7 +1004,6 @@ def create_high_level_manifest_files(soda_json_structure):
         raise e
 
 
-
 def check_JSON_size(jsonStructure):
     """
         This function is called to check size of files that will be created locally on a user's device.
@@ -1052,7 +1051,6 @@ def check_JSON_size(jsonStructure):
                 if isfile(manifestpath):
                     total_dataset_size += getsize(manifestpath)
 
-        # total_dataset_size = total_dataset_size/(1024**2)
         # returns in bytes
         return {"dataset_size": total_dataset_size}
     except Exception as e:
@@ -1803,36 +1801,33 @@ def create_high_level_manifest_files_existing_bf(
 
 
 def create_high_level_manifest_files_existing_local_starting_point(dataset_path):
-    soda_manifest_folder_path = join(userpath, "SODA", "SODA Manifest Files")
-    # # create local folder to save manifest files temporarily (delete any existing one first)
-    # shutil.rmtree(soda_manifest_folder_path) if isdir(soda_manifest_folder_path) else 0
-    # makedirs(soda_manifest_folder_path)
+    soda_manifest_folder_path = join(userpath, "SODA", "manifest_files")
 
-    for high_level_fol in listdir(dataset_path):
+    if dataset_path != "":
+        for high_level_fol in listdir(dataset_path):
 
-        if high_level_fol in [
-            "primary",
-            "derivative",
-            "docs",
-            "code",
-            "source",
-            "protocol",
-        ]:
-            onlyfiles = [
-                join(dataset_path, high_level_fol, f)
-                for f in listdir(join(dataset_path, high_level_fol))
-                if isfile(join(dataset_path, high_level_fol, f))
-            ]
+            if high_level_fol in [
+                "primary",
+                "derivative",
+                "docs",
+                "code",
+                "source",
+                "protocol",
+            ]:
+                onlyfiles = [
+                    join(dataset_path, high_level_fol, f)
+                    for f in listdir(join(dataset_path, high_level_fol))
+                    if isfile(join(dataset_path, high_level_fol, f))
+                ]
 
-            for file in onlyfiles:
+                for file in onlyfiles:
 
-                p = pathlib.Path(file)
-                # create high-level folder at the temporary location
-                folderpath = join(soda_manifest_folder_path, high_level_fol)
-                # makedirs(folderpath)
-                if p.stem == "manifest":
-                    # make copy from this manifest path to folderpath
-                    shutil.copyfile(file, join(folderpath, p.name))
+                    p = pathlib.Path(file)
+                    # create high-level folder at the temporary location
+                    folderpath = join(soda_manifest_folder_path, high_level_fol)
+                    if p.stem == "manifest":
+                        # make copy from this manifest path to folderpath
+                        shutil.copyfile(file, join(folderpath, p.name))
 
 
 def generate_relative_path(x, y):
@@ -1912,8 +1907,6 @@ def bf_get_existing_files_details(bf_folder):
                 file_details["content"]["name"], file_details["extension"]
             )
 
-        # file_extension = splitext(file_name_with_extension)[1]
-        # file_name_with_extension = splitext(file.name)[0] + file_extension
         bf_existing_files_name_with_extension.append(file_name_with_extension)
 
     return (
@@ -1963,8 +1956,6 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     global main_total_generate_dataset_size
     global start_generate
     global main_initial_bfdataset_size
-    # global progress_percentage
-    # global progress_percentage_array
     bfsd = ""
 
     # Delete any files on Pennsieve that have been marked as deleted
@@ -2217,8 +2208,6 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
     global main_curation_uploaded_files
     global uploaded_folder_counter
     global current_size_of_uploaded_files
-    # global progress_percentage
-    # global progress_percentage_array
 
     uploaded_folder_counter = 0
     current_size_of_uploaded_files = 0

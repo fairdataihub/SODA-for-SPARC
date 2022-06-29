@@ -744,6 +744,7 @@ async function edit_current_protocol_id(ev) {
   var type = $(currentRow)[0].cells[2].innerText;
   var relation = $(currentRow)[0].cells[3].innerText;
   var desc = $(currentRow)[0].cells[4].innerText;
+  let protocolLink = "";
 
   const { value: values } = await Swal.fire({
     title: "Edit protocol",
@@ -751,8 +752,6 @@ async function edit_current_protocol_id(ev) {
       '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL" value="' +
       link +
       '"/>' +
-      '<label>Protocol Type: <i class="fas fa-info-circle swal-popover" data-content="This will state whether your protocol is a \'URL\' or \'DOI\' item. Use one of those two items to reference the type of identifier." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-select" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
-      '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="A prespecified list of relations for common protocols used in SPARC datasets. </br> The value in this field must be read as the \'relationship that this dataset has to the specified protocol\'." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsProtocolFor">IsProtocolFor</option><option value="HasProtocol">HasProtocol</option><option value="IsSoftwareFor">IsSoftwareFor</option><option value="HasSoftware">HasSoftware</option></select>' +
       '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description">' +
       desc +
       "</textarea>",
@@ -761,32 +760,56 @@ async function edit_current_protocol_id(ev) {
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     reverseButtons: reverseSwalButtons,
-    onOpen: () => {
+    didOpen: () => {
       $("#DD-protocol-link-select").val(type);
       $("#DD-protocol-link-relation").val(relation);
     },
     preConfirm: () => {
+      let link = $("#DD-protocol-link").val();
       if ($("#DD-protocol-link").val() === "") {
         Swal.showValidationMessage(`Please enter a link!`);
-      }
-      if ($("#DD-protocol-link-select").val() === "Select") {
-        Swal.showValidationMessage(`Please choose a link type!`);
-      }
-      if ($("#DD-protocol-link-relation").val() === "Select") {
-        Swal.showValidationMessage(`Please choose a link relation!`);
+      } else {
+        if (doiRegex.declared({ exact: true }).test(link) === true) {
+          //format must begin with doi:
+          //example: doi:10.1000/xyz000
+          protocolLink = "DOI";
+        } else {
+          //check if link is a valid URL
+          if (validator.isURL(link) != true) {
+            Swal.showValidationMessage("Please enter a valid link");
+          } else {
+            if (link.includes("doi")) {
+              //link is valid url and checks for 'doi' in link
+              protocolLink = "DOI";
+            } else {
+              protocolLink = "URL";
+            }
+          }
+        }
       }
       if ($("#DD-protocol-description").val() === "") {
         Swal.showValidationMessage(`Please enter a short description!`);
       }
+      let duplicate = checkLinkDuplicate(
+        $("#DD-protocol-link").val(),
+        document.getElementById("protocol-link-table-dd")
+      );
+      if (duplicate) {
+        Swal.showValidationMessage(
+          "Duplicate protocol. The protocol you entered is already added."
+        );
+      }
+      //need to check for duplicates here
       return [
         $("#DD-protocol-link").val(),
-        $("#DD-protocol-link-select").val(),
-        $("#DD-protocol-link-relation").val(),
+        protocolLink,
+        "IsProtocolFor",
         $("#DD-protocol-description").val(),
       ];
     },
   });
   if (values) {
+    console.log(values);
     $(currentRow)[0].cells[1].innerHTML =
       "<a href='" + values[0] + "' target='_blank'>" + values[0] + "</a>";
     $(currentRow)[0].cells[2].innerHTML = values[1];
@@ -2940,7 +2963,7 @@ async function addAdditionalLink() {
     html:
       '<label>URL or DOI: <i class="fas fa-info-circle swal-popover" data-content="Specify your actual URL (if resource is public) or DOI (if resource is private). This can be web links to repositories or papers (DOI)."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-other-link" class="swal2-input" placeholder="Enter a URL">' +
       '<label>Link Type: <i class="fas fa-info-circle swal-popover" data-content="This will state whether your protocol is a \'URL\' or \'DOI\' item. Use one of those two items to reference the type of identifier." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-other-link-type" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
-      '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="A prespecified list of relations for common URLs or DOIs used in SPARC datasets. </br>  The value in this field must be read as the \'relationship that this dataset has to the specified URL/DOI\'." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-other-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsCitedBy">IsCitedBy</option><option value="Cites">Cites</option><option value="IsSupplementTo">IsSupplementTo</option><option value="IsSupplementedBy">IsSupplementedBy</option><option value="IsContinuedByContinues">IsContinuedByContinues</option><option value="IsDescribedBy">IsDescribedBy</option><option value="Describes">Describes</option><option value="HasMetadata">HasMetadata</option><option value="IsMetadataFor">IsMetadataFor</option><option value="HasVersion">HasVersion</option><option value="IsVersionOf">IsVersionOf</option><option value="IsNewVersionOf">IsNewVersionOf</option><option value="IsPreviousVersionOf">IsPreviousVersionOf</option><option value="IsPreviousVersionOf">IsPreviousVersionOf</option><option value="HasPart">HasPart</option><option value="IsPublishedIn">IsPublishedIn</option><option value="IsReferencedBy">IsReferencedBy</option><option value="References">References</option><option value="IsDocumentedBy">IsDocumentedBy</option><option value="Documents">Documents</option><option value="IsCompiledBy">IsCompiledBy</option><option value="Compiles">Compiles</option><option value="IsVariantFormOf">IsVariantFormOf</option><option value="IsOriginalFormOf">IsOriginalFormOf</option><option value="IsIdenticalTo">IsIdenticalTo</option><option value="IsReviewedBy">IsReviewedBy</option><option value="Reviews">Reviews</option><option value="IsDerivedFrom">IsDerivedFrom</option><option value="IsSourceOf">IsSourceOf</option><option value="IsRequiredBy">IsRequiredBy</option><option value="Requires">Requires</option><option value="IsObsoletedBy">IsObsoletedBy</option><option value="Obsoletes">Obsoletes</option></select>' +
+      '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="A prespecified list of relations for common URLs or DOIs used in SPARC datasets. </br>  The value in this field must be read as the \'relationship that this dataset has to the specified URL/DOI\'." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-other-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsSoftwareFor">IsSoftwareFor</option><option value="HasSoftware">HasSoftware</option><option value="IsCitedBy">IsCitedBy</option><option value="Cites">Cites</option><option value="IsSupplementTo">IsSupplementTo</option><option value="IsSupplementedBy">IsSupplementedBy</option><option value="IsContinuedByContinues">IsContinuedByContinues</option><option value="IsDescribedBy">IsDescribedBy</option><option value="Describes">Describes</option><option value="HasMetadata">HasMetadata</option><option value="IsMetadataFor">IsMetadataFor</option><option value="HasVersion">HasVersion</option><option value="IsVersionOf">IsVersionOf</option><option value="IsNewVersionOf">IsNewVersionOf</option><option value="IsPreviousVersionOf">IsPreviousVersionOf</option><option value="IsPreviousVersionOf">IsPreviousVersionOf</option><option value="HasPart">HasPart</option><option value="IsPublishedIn">IsPublishedIn</option><option value="IsReferencedBy">IsReferencedBy</option><option value="References">References</option><option value="IsDocumentedBy">IsDocumentedBy</option><option value="Documents">Documents</option><option value="IsCompiledBy">IsCompiledBy</option><option value="Compiles">Compiles</option><option value="IsVariantFormOf">IsVariantFormOf</option><option value="IsOriginalFormOf">IsOriginalFormOf</option><option value="IsIdenticalTo">IsIdenticalTo</option><option value="IsReviewedBy">IsReviewedBy</option><option value="Reviews">Reviews</option><option value="IsDerivedFrom">IsDerivedFrom</option><option value="IsSourceOf">IsSourceOf</option><option value="IsRequiredBy">IsRequiredBy</option><option value="Requires">Requires</option><option value="IsObsoletedBy">IsObsoletedBy</option><option value="Obsoletes">Obsoletes</option></select>' +
       '<label>Link description: <i class="fas fa-info-circle swal-popover" data-content="Provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-other-description" class="swal2-textarea" placeholder="Enter a description"></textarea>',
 
     focusConfirm: false,
@@ -2956,11 +2979,24 @@ async function addAdditionalLink() {
     },
     preConfirm: () => {
       var link = $("#DD-other-link").val();
-      if ($("#DD-other-link-type").val() === "Select") {
-        Swal.showValidationMessage(`Please select a type of links!`);
-      }
       if (link === "") {
-        Swal.showValidationMessage(`Please enter a link.`);
+        Swal.showValidationMessage(`Please enter a link!`);
+      } else {
+        if (doiRegex.declared({ exact: true }).test(link) === true) {
+          protocolLink = "DOI";
+        } else {
+          //check if link is valid
+          if (validator.isURL(link) != true) {
+            Swal.showValidationMessage(`Please enter a valid link`);
+          } else {
+            //link is valid url and check for 'doi' in link
+            if (link.includes("doi")) {
+              protocolLink = "DOI";
+            } else {
+              protocolLink = "URL";
+            }
+          }
+        }
       }
       if ($("#DD-other-link-relation").val() === "Select") {
         Swal.showValidationMessage(`Please enter a link relation.`);
@@ -2979,7 +3015,7 @@ async function addAdditionalLink() {
       }
       return [
         $("#DD-other-link").val(),
-        $("#DD-other-link-type").val(),
+        protocolLink,
         $("#DD-other-link-relation").val(),
         $("#DD-other-description").val(),
       ];

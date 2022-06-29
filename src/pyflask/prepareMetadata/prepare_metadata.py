@@ -717,6 +717,17 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
     return {"sample_file_rows": transposeMatrix(sortMatrix)} if type in ["samples.xlsx", "samples"] else {"subject_file_rows": transposeMatrix(sortMatrix)}
 
 
+### function to read existing Pennsieve manifest files and load info into a dictionary
+def convert_manifest_to_dict(url):
+
+    manifest_df = pd.read_excel(url, engine="openpyxl", usecols=column_check, header=0)
+    manifest_df = manifest_df.dropna(axis=0, how="all")
+    manifest_df = manifest_df.replace(np.nan, "", regex=True)
+    manifest_df = manifest_df.applymap(str)
+
+    return manifest_df.to_dict()
+
+
 def checkEmptyColumn(column):
     for element in column:
         if element:
@@ -907,6 +918,66 @@ def import_bf_RC(bfaccount, bfdataset, file_type):
     abort (400, f"Error: no {file_type} file was found at the root of the dataset provided.")
 
 
+# path to local SODA folder for saving manifest files
+manifest_folder_path = join(userpath, "SODA", "manifest_files")
+
+
+def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
+    bf = Pennsieve(bfaccount)
+    myds = bf.get_dataset(bfdataset)
+
+    dataset_structure = soda_json_structure["dataset-structure"]
+    recursive_item_path_create(dataset_structure, [])
+
+    # first, create manifest files for all folders
+    create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure)
+
+    no_manifest_boolean = False
+
+    # now, overwrite existing (created by SODA) manifest files with existing manifest files from Pennsieve (if there's any).
+    # doing this allows for high level folders with no manifest files to get manifest files created by SODA while also allows for folders that
+    # already have manifest files be read and loaded onto SODA for edits.
+    for i in range(len(myds.items)):
+
+        if myds.items[i].name in [
+            "code",
+            "derivative",
+            "docs",
+            "primary",
+            "protocol",
+            "source",
+        ]:
+            for j in range(len(myds.items[i])):
+                if myds.items[i][j].name == "manifest.xlsx":
+                    item_id = myds.items[i][j].id
+                    url = returnFileURL(bf, item_id)
+
+                    manifest_df = pd.read_excel(
+                        url, engine="openpyxl", usecols=column_check, header=0
+                    )
+
+                    filepath = join(
+                        manifest_folder_path, myds.items[i].name, "manifest.xlsx"
+                    )
+                    manifest_df.to_excel(filepath, index=False)
+                    no_manifest_boolean = True
+
+                    # break because we only need to read the "manifest.xlsx" file in each high level folder.
+                    break
+
+
+def copytree(src, dst, symlinks=False, ignore=None):
+    for item in os.listdir(src):
+        s = os.path.join(src, item)
+        d = os.path.join(dst, item)
+        if os.path.isdir(s):
+            if os.path.exists(d):
+                shutil.rmtree(d)
+            shutil.copytree(s, d, symlinks, ignore)
+        else:
+            shutil.copy2(s, d)
+
+
 # obtain Pennsieve S3 URL for an existing metadata file
 def returnFileURL(bf_object, item_id):
 
@@ -917,6 +988,24 @@ def returnFileURL(bf_object, item_id):
     )
 
     return file_url_info["url"]
+
+
+def recursive_item_path_create(folder, path):
+    if "files" in folder.keys():
+        for item in list(folder["files"]):
+            if "folderpath" not in folder["files"][item]:
+                folder["files"][item]["folderpath"] = path[:]
+
+    if "folders" in folder.keys():
+        for item in list(folder["folders"]):
+            if "folderpath" not in folder["folders"][item]:
+                folder["folders"][item]["folderpath"] = path[:]
+                folder["folders"][item]["folderpath"].append(item)
+            recursive_item_path_create(
+                folder["folders"][item], folder["folders"][item]["folderpath"][:]
+            )
+
+    return
 
 
 ## import an existing local or Pennsieve dataset_description.xlsx file

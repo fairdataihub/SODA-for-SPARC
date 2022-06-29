@@ -5,15 +5,22 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.6.1.0 - TBD
+
+## Feature additions:
+
+- Step 4 in Prepare a Dataset. README.txt is now a mandatory metadata file in datasets.
+- Layout of Prepare Metadata tab has been changed. Buttons are spread out more evenly and Manifest file button received an icon change.
+
 ## v.6.0.0 - 2022-05-17
 
 ### Feature additions:
 
-- In Organize Dataset: Lazy loading is now a feature when viewing all imported items in a dataset. This will ease performance when datasets are large (over 500+ items) and can cause issues when rendering on older machines.
+- In Organize Dataset: Lazy loading is now a feature when viewing all imported items in a dataset. This will increase performance when rendering large datasets (over 500+ items).
 - Importing a local dataset will now be handled on the python end to increase performance. A progress bar is also included to show details about import to user.
 - In the Organize Datasets section importing files/folders will cause a toast to display on the bottom right to notify the user of a successful import.
-- SODA-for-SPARC now uses onefile builds for all OS!
-- SODA-for-SPARC uses .asar formatting for Mac and Linux builds!
+- SODA for SPARC now uses onefile builds for all OS!
+- SODA for SPARC uses .asar formatting for Mac and Linux builds!
 - Added the "Unknown" option for the "Sex" field in the subjects file generator.
 
 ### Bug fixes:
