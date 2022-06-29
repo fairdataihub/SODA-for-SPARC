@@ -2851,7 +2851,8 @@ def main_curate_function(soda_json_structure):
     global namespace_logger
 
     namespace_logger.info("Starting main_curate_function")
-
+    namespace_logger.info(f"main_curate_function metadata generate-options={soda_json_structure['generate-dataset']}")
+        
     global main_curate_status
     global main_curate_progress_message
     global main_total_generate_dataset_size
