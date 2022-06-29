@@ -2070,6 +2070,27 @@
               <p class="guided--text-input-instructions">
                 Experimental vs computational helper text
               </p>
+              <label class="guided--form-label mt-xl">Dataset keywords:</label>
+              <div class="demo-controls-body" style="width: 100%">
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    class="form-container-input-bf"
+                    id="guided-ds-dataset-keywords"
+                    name="study approach"
+                    placeholder="Enter dataset keyword(s) here"
+                    style="font-size: 14px"
+                  />
+                </div>
+              </div>
+              <p class="guided--text-input-instructions mb-0">
+                Provide a set of 3-5 keywords that will aid in the search of
+                your dataset when published on the SPARC portal.<br />
+                <b
+                  >Hit enter after typing a keyword to add the text as a
+                  keyword.</b
+                >
+              </p>
             </div>
             <div class="guided--section neumorphic mt-xl">
               <h2 class="guided--text-sub-step mt-0">Study information</h2>
@@ -4589,6 +4610,8 @@
                   class="ui positive basic button guided--radio-button"
                   id="guided-button-designate-self-PI"
                   data-next-element="guided-designate-self-PI"
+                  data-button-config-value="designated-owner"
+                  data-button-config-value-state="myself"
                 >
                   Myself
                 </button>
@@ -4596,6 +4619,8 @@
                   class="ui negative basic button guided--radio-button"
                   id="guided-button-designate-other-PI"
                   data-next-element="guided-designate-other-PI"
+                  data-button-config-value="designated-owner"
+                  data-button-config-value-state="someone-else"
                 >
                   Someone else
                 </button>
@@ -4705,7 +4730,7 @@
                 class="ui positive basic button guided--radio-button"
                 id="guided-button-add-permissions"
                 data-next-element="guided-add-permissions"
-                data-button-config-value="dataset-contains-additional-permissions"
+                data-button-config-value="add-other-user-team-permissions"
                 data-button-config-value-state="yes"
               >
                 Yes
@@ -4714,7 +4739,7 @@
                 class="ui negative basic button guided--radio-button"
                 id="guided-button-no-permissions"
                 data-next-element="guided-no-permissions"
-                data-button-config-value="dataset-contains-additional-permissions"
+                data-button-config-value="add-other-user-team-permissions"
                 data-button-config-value-state="no"
               >
                 No

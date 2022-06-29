@@ -2,6 +2,7 @@ const { parseJSON } = require("jquery");
 
 //Initialize description tagify variables as null
 //to make them accessible to functions outside of $(document).ready
+let guidedDatasetKeywordsTagify = null;
 let guidedStudyTechniquesTagify = null;
 let guidedStudyApproachTagify = null;
 let guidedStudyOrganSystemsTagify = null;
@@ -995,6 +996,8 @@ const guidedLoadDescriptionDatasetInformation = () => {
       "dataset-information"
     ];
 
+  guidedDatasetKeywordsTagify.removeAllTags();
+
   if (descriptionMetadata) {
     //check the checkbox for the study type where name is dataset-relation
     const studyType = descriptionMetadata["type"];
@@ -1004,6 +1007,7 @@ const guidedLoadDescriptionDatasetInformation = () => {
     if (studyTypeRadioButton) {
       studyTypeRadioButton.checked = true;
     }
+    guidedDatasetKeywordsTagify.addTags(descriptionMetadata["keywords"]);
   } else {
     //reset the study type checkboxes
     const studyTypeRadioButtons = document.querySelectorAll(
@@ -8356,7 +8360,10 @@ $(document).ready(() => {
     }
 
     //get the keywords from the keywords textarea
-    const keywordArray = keywordTagify.value;
+    const keywordArray = getTagsFromTagifyElement(guidedDatasetKeywordsTagify);
+    if (keywordArray.length < 3) {
+      throw "Please enter at least 3 keywords";
+    }
 
     //get the number of subjects
     const [subjectsInPools, subjectsOutsidePools] =
@@ -10337,6 +10344,13 @@ $(document).ready(() => {
       enabled: 0,
       closeOnSelect: true,
     },
+  });
+
+  const guidedDatasetKeyWordsInput = document.getElementById(
+    "guided-ds-dataset-keywords"
+  );
+  guidedDatasetKeywordsTagify = new Tagify(guidedDatasetKeyWordsInput, {
+    duplicates: false,
   });
   const guidedStudyApproachInput = document.getElementById(
     "guided-ds-study-approach"
