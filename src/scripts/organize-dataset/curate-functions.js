@@ -1392,41 +1392,41 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             }
           },
         }).then((result) => {
-          if(result.isConfirmed) {
-              if (show_timer) {
-                Swal.fire({
-                  allowEscapeKey: false,
-                  backdrop: "rgba(0,0,0, 0.4)",
-                  heightAuto: false,
-                  showConfirmButton: false,
-                  timer: 2000,
-                  timerProgressBar: false,
-                  title: "Loading your dataset details...",
-                  didOpen: () => {
-                    Swal.showLoading();
-                  },
-                });
-              }
-    
-              if (dropdownEventID === "dd-select-pennsieve-dataset") {
-                $("#ds-name").val(bfDataset);
-                $("body").removeClass("waiting");
-                $(".svg-change-current-account.dataset").css("display", "block");
-                dropdownEventID = "";
-                return;
-              }
-              $("#current-bf-dataset").text(bfDataset);
-              $("#current-bf-dataset-generate").text(bfDataset);
-              $(".bf-dataset-span").html(bfDataset);
-              confirm_click_function();
-    
-              defaultBfDataset = bfDataset;
-              // document.getElementById("ds-description").innerHTML = "";
-              refreshDatasetList();
-              $("#dataset-loaded-message").hide();
-    
-              showHideDropdownButtons("dataset", "show");
-              // checkPrevDivForConfirmButton("dataset");
+          if (result.isConfirmed) {
+            if (show_timer) {
+              Swal.fire({
+                allowEscapeKey: false,
+                backdrop: "rgba(0,0,0, 0.4)",
+                heightAuto: false,
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: false,
+                title: "Loading your dataset details...",
+                didOpen: () => {
+                  Swal.showLoading();
+                },
+              });
+            }
+
+            if (dropdownEventID === "dd-select-pennsieve-dataset") {
+              $("#ds-name").val(bfDataset);
+              $("body").removeClass("waiting");
+              $(".svg-change-current-account.dataset").css("display", "block");
+              dropdownEventID = "";
+              return;
+            }
+            $("#current-bf-dataset").text(bfDataset);
+            $("#current-bf-dataset-generate").text(bfDataset);
+            $(".bf-dataset-span").html(bfDataset);
+            confirm_click_function();
+
+            defaultBfDataset = bfDataset;
+            // document.getElementById("ds-description").innerHTML = "";
+            refreshDatasetList();
+            $("#dataset-loaded-message").hide();
+
+            showHideDropdownButtons("dataset", "show");
+            // checkPrevDivForConfirmButton("dataset");
           } else if (result.isDismissed) {
             currentDatasetLicense.innerText = currentDatasetLicense.innerText;
             defaultBfDataset = defaultBfDataset;
