@@ -856,7 +856,6 @@ const get_api_key = async (login, password, key_name) => {
           console.error(error);
           resolve(["failed", error]);
         } else {
-          console.log(res);
           resolve(res);
         }
       }
@@ -986,7 +985,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
         hideClass: {
           popup: "animate__animated animate__fadeOutUp animate__faster",
         },
-        footer: `<a onclick="showBFAddAccountSweetalert()">I don't have a Pennsieve account and/or access to the SPARC Consortium Organization</a>`,
+        footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-a-pennsieve-account">I don't have a Pennsieve account and/or access to the SPARC Consortium Organization</a>`,
         didOpen: () => {
           $(".swal-popover").popover();
           let div_footer = document.getElementsByClassName("swal2-footer")[0];
@@ -1021,7 +1020,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
           const password = Swal.getPopup().querySelector("#ps_password").value;
           if (!login || !password) {
             Swal.hideLoading();
-            Swal.showValidationMessage(`Please enter login and password`);
+            Swal.showValidationMessage(`Please enter email and password`);
           } else {
             let key_name = SODA_SPARC_API_KEY;
             let response = await get_api_key(login, password, key_name);
@@ -1307,7 +1306,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       //datasets do exist so display popup with dataset options
       //else datasets have been created
       if (datasetList.length > 0) {
-        const { value: bfDS } = await Swal.fire({
+        await Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
           cancelButtonText: "Cancel",
           confirmButtonText: "Confirm",
@@ -1330,8 +1329,6 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
               "animate__animated animate__fadeOutUp animate__faster animate_fastest",
           },
           willOpen: () => {
-            $("#license-lottie-div").css("display", "none");
-            $("#license-assigned").css("display", "none");
             $("#curatebfdatasetlist").selectpicker("hide");
             $("#curatebfdatasetlist").selectpicker("refresh");
             $("#bf-dataset-select-div").hide();
@@ -1390,51 +1387,58 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
 
                 return undefined;
               } else {
+                
                 $("#license-lottie-div").css("display", "none");
                 $("#license-assigned").css("display", "none");
                 return bfDataset;
               }
             }
           },
+        }).then((result) => {
+          console.log(result);
+          if(result.isConfirmed) {
+              if (show_timer) {
+                Swal.fire({
+                  allowEscapeKey: false,
+                  backdrop: "rgba(0,0,0, 0.4)",
+                  heightAuto: false,
+                  showConfirmButton: false,
+                  timer: 2000,
+                  timerProgressBar: false,
+                  title: "Loading your dataset details...",
+                  didOpen: () => {
+                    Swal.showLoading();
+                  },
+                });
+              }
+    
+              if (dropdownEventID === "dd-select-pennsieve-dataset") {
+                $("#ds-name").val(bfDataset);
+                $("body").removeClass("waiting");
+                $(".svg-change-current-account.dataset").css("display", "block");
+                dropdownEventID = "";
+                return;
+              }
+              $("#current-bf-dataset").text(bfDataset);
+              $("#current-bf-dataset-generate").text(bfDataset);
+              $(".bf-dataset-span").html(bfDataset);
+              confirm_click_function();
+    
+              defaultBfDataset = bfDataset;
+              // document.getElementById("ds-description").innerHTML = "";
+              refreshDatasetList();
+              $("#dataset-loaded-message").hide();
+    
+              showHideDropdownButtons("dataset", "show");
+              // checkPrevDivForConfirmButton("dataset");
+          } else if (result.isDismissed) {
+            console.log(currentDatasetLicense.innerText);
+            console.log(defaultBfDataset);
+            currentDatasetLicense.innerText = currentDatasetLicense.innerText;
+            defaultBfDataset = defaultBfDataset;
+          }
         });
 
-        // check return value
-        if (bfDS) {
-          if (show_timer) {
-            Swal.fire({
-              allowEscapeKey: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              heightAuto: false,
-              showConfirmButton: false,
-              timer: 2000,
-              timerProgressBar: false,
-              title: "Loading your dataset details...",
-              didOpen: () => {
-                Swal.showLoading();
-              },
-            });
-          }
-
-          if (dropdownEventID === "dd-select-pennsieve-dataset") {
-            $("#ds-name").val(bfDataset);
-            $("body").removeClass("waiting");
-            $(".svg-change-current-account.dataset").css("display", "block");
-            dropdownEventID = "";
-            return;
-          }
-          $("#current-bf-dataset").text(bfDataset);
-          $("#current-bf-dataset-generate").text(bfDataset);
-          $(".bf-dataset-span").html(bfDataset);
-          confirm_click_function();
-
-          defaultBfDataset = bfDataset;
-          // document.getElementById("ds-description").innerHTML = "";
-          refreshDatasetList();
-          $("#dataset-loaded-message").hide();
-
-          showHideDropdownButtons("dataset", "show");
-          // checkPrevDivForConfirmButton("dataset");
-        }
         if ($("#current-bf-dataset-generate").text() === "None") {
           showHideDropdownButtons("dataset", "hide");
         } else {
@@ -1443,7 +1447,8 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
         //currently changing it but not visually in the UI
         $("#bf_list_users_pi").val("Select PI");
 
-        defaultBfDataset = bfDataset;
+        console.log(bfDataset);
+        
 
         // update the gloabl dataset id
         for (const item of datasetList) {

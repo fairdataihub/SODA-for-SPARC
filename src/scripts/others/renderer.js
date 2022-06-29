@@ -190,7 +190,6 @@ var overview_observer = new MutationObserver(function (mutations) {
       column3_lottie.play();
       heart_container.play();
     } else {
-      console.log("removing overview lotties");
       column1_lottie.stop();
       column2_lottie.stop();
       column3_lottie.stop();
@@ -485,9 +484,11 @@ const startupServerAndApiCheck = async () => {
   }
 
   apiVersionChecked = true;
+  console.log(apiVersionChecked);
 };
 
 startupServerAndApiCheck();
+console.log("before");
 
 // Check if we are connected to the Pysoda server
 // Check app version on current app and display in the side bar
@@ -495,6 +496,8 @@ startupServerAndApiCheck();
 ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
   // run pre flight checks once the server connection is confirmed
   // wait until soda is connected to the backend server
+  console.log(sodaIsConnected);
+  console.log(apiVersionChecked);
   while (!sodaIsConnected || !apiVersionChecked) {
     await wait(1000);
   }
@@ -522,9 +525,11 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
     }
   );
 });
+console.log("after");
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
+  console.log("preflight");
   return new Promise(async (resolve) => {
     let connection_response = "";
     let agent_installed_response = "";
@@ -533,6 +538,7 @@ const run_pre_flight_checks = async (check_update = true) => {
 
     // Check the internet connection and if available check the rest.
     connection_response = await check_internet_connection();
+    console.log(connection_response);
     if (!connection_response) {
       await Swal.fire({
         title: "No Internet Connection",
@@ -559,6 +565,7 @@ const run_pre_flight_checks = async (check_update = true) => {
 
       // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
       account_present = await check_api_key();
+      consolelog(account_present);
       if (account_present) {
         // Check for an installed Pennsieve agent
         await wait(500);
@@ -592,6 +599,8 @@ const run_pre_flight_checks = async (check_update = true) => {
           // Check the installed agent version. We aren't enforcing the min limit yet but is the python version starts enforcing it, we might have to.
           [browser_download_url, latest_agent_version] =
             await check_agent_installed_version(agent_version_response);
+          console.log(browser_download_url);
+          console.log(latest_agent_version);
           if (browser_download_url != "") {
             Swal.fire({
               icon: "warning",
@@ -644,6 +653,7 @@ const run_pre_flight_checks = async (check_update = true) => {
           }
         }
       } else {
+        console.log("here");
         if (check_update) {
           checkNewAppVersion();
         }
@@ -800,9 +810,30 @@ const check_api_key = async () => {
         });
         log.error(error);
         console.error(error);
-        resolve(false);
+        Swal.fire({
+          icon: "warning",
+          text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "Yes",
+          showCancelButton: true,
+          reverseButtons: reverseSwalButtons,
+          cancelButtonText: "I'll do it later",
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            await openDropdownPrompt(null, "bf");
+            resolve(false);
+          } else {
+            resolve(true);
+          }
+        });
       } else {
-        console.log(res);
         log.info("Found a set of valid API keys");
         if (res[0] === "Select" && res.length === 1) {
           //no api key found
@@ -811,7 +842,29 @@ const check_api_key = async () => {
             type: "error",
             message: "No account was found",
           });
-          resolve(false);
+          Swal.fire({
+            icon: "warning",
+            text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            confirmButtonText: "Yes",
+            showCancelButton: true,
+            reverseButtons: reverseSwalButtons,
+            cancelButtonText: "I'll do it later",
+            showClass: {
+              popup: "animate__animated animate__zoomIn animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__zoomOut animate__faster",
+            },
+          }).then(async (result) => {
+            if (result.isConfirmed) {
+              await openDropdownPrompt(null, "bf");
+              resolve(false);
+            } else {
+              resolve(true);
+            }
+          });
         } else {
           notyf.dismiss(notification);
           notyf.open({
@@ -3700,7 +3753,7 @@ function refreshBfUsersList() {
   optionUserPI.textContent = "Select PI";
   bfListUsersPI.appendChild(optionUserPI);
 
-  if (accountSelected !== "Select") {
+  if (accountSelected !== "Select" || accountSelected !== undefined) {
     client.invoke("api_bf_get_users", accountSelected, (error, res) => {
       if (error) {
         log.error(error);
@@ -3737,7 +3790,7 @@ function refreshBfTeamsList(teamList) {
   optionTeam.textContent = "Select team";
   teamList.appendChild(optionTeam);
 
-  if (accountSelected !== "Select") {
+  if (accountSelected !== "Select" || accountSelected !== undefined) {
     client.invoke("api_bf_get_teams", accountSelected, (error, res) => {
       if (error) {
         log.error(error);
@@ -4365,7 +4418,7 @@ var bfAddAccountBootboxMessage = `<form>
     </div>
   </form>`;
 
-var bfaddaccountTitle = `<h3 style="text-align:center">Please enter your Pennsieve API key information below:</h3>`;
+var bfaddaccountTitle = `<h3 style="text-align:center">Connect your Pennsieve account using an API key:</h3>`;
 
 // once connected to SODA get the user's accounts
 (async () => {
@@ -8124,6 +8177,8 @@ async function showBFAddAccountSweetalert() {
                 if (String(error).includes("please check that key name")) {
                   error =
                     "Please check that your key name, key and api secret are entered properly";
+                } else if(String(error).includes("Please enter valid keyname")) {
+                  error = "Please enter valid keyname, key, and/or secret";
                 }
                 Swal.showValidationMessage(error);
                 document.getElementsByClassName(
@@ -8132,10 +8187,6 @@ async function showBFAddAccountSweetalert() {
                 document.getElementsByClassName(
                   "swal2-actions"
                 )[0].children[3].disabled = false;
-                console.log(
-                  document.getElementsByClassName("swal2-actions")[0]
-                    .children[0]
-                );
                 document.getElementsByClassName(
                   "swal2-actions"
                 )[0].children[0].style.display = "none";
@@ -8143,16 +8194,6 @@ async function showBFAddAccountSweetalert() {
                   "swal2-actions"
                 )[0].children[1].style.display = "inline-block";
                 reject(false);
-                // Swal.fire({
-                //   icon: "error",
-                //   html: "<span>" + error + "</span>",
-                //   heightAuto: false,
-                //   backdrop: "rgba(0,0,0,0.4)",
-                // }).then((result) => {
-                //   if (result.isConfirmed) {
-                //     showBFAddAccountSweetalert();
-                //   }
-                // });
                 log.error(error);
                 console.error(error);
               } else {
@@ -8162,15 +8203,12 @@ async function showBFAddAccountSweetalert() {
                 bfAccountOptions[name] = name;
                 defaultBfAccount = name;
                 defaultBfDataset = "Select dataset";
-                console.log(name);
                 return new Promise((resolve, reject) => {
-                  console.log("second promise");
                   client.invoke(
                     "api_bf_account_details",
                     name,
                     (error, res) => {
                       if (error) {
-                        console.log("error");
                         log.error(error);
                         console.error(error);
                         Swal.showValidationMessage(error);
@@ -8180,10 +8218,6 @@ async function showBFAddAccountSweetalert() {
                         document.getElementsByClassName(
                           "swal2-actions"
                         )[0].children[3].disabled = false;
-                        console.log(
-                          document.getElementsByClassName("swal2-actions")[0]
-                            .children[0]
-                        );
                         document.getElementsByClassName(
                           "swal2-actions"
                         )[0].children[0].style.display = "none";
@@ -8192,19 +8226,9 @@ async function showBFAddAccountSweetalert() {
                         )[0].children[1].style.display = "inline-block";
 
                         reject(false);
-                        // Swal.fire({
-                        //   icon: "error",
-                        //   text: "Something went wrong!",
-                        //   heightAuto: false,
-                        //   backdrop: "rgba(0,0,0, 0.4)",
-                        //   footer:
-                        //     '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
-                        // });
                         showHideDropdownButtons("account", "hide");
                         confirm_click_account_function();
                       } else {
-                        console.log(res);
-                        console.log(name);
                         $("#para-account-detail-curate").html(res);
                         $("#current-bf-account").text(name);
                         $("#current-bf-account-generate").text(name);
@@ -8242,9 +8266,6 @@ async function showBFAddAccountSweetalert() {
         });
       }
     },
-  }).then((result) => {
-    if (result.isConfirmed) {
-    }
   });
 }
 /*
@@ -8667,7 +8688,6 @@ const get_api_key_and_secret_from_ini = () => {
   }
 
   // check that an api key and secret does ot exist
-  console.log(config);
   if (!config["global"]) {
     // throw an error
     throw new Error(
