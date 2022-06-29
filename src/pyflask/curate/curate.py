@@ -40,7 +40,7 @@ from organizeDatasets import bf_get_dataset_files_folders
 
 from namespaces import NamespaceEnum, get_namespace_logger
 
-namespace_logger = get_namespace_logger(NamespaceEnum.MANAGE_DATASETS)
+namespace_logger = get_namespace_logger(NamespaceEnum.CURATE_DATASETS)
 
 
 ### Global variables
