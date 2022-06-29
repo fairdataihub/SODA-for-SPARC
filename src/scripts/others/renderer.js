@@ -8853,13 +8853,14 @@ function gatherLogs() {
   //function will be used to gather all logs on all OS's
   let homedir = os.homedir();
   let file_path = "";
-  let log_path = "";
-  let log_files = ["main.log", "renderer.log", "out.log"];
+  let clientLogsPath = "";
+  let serverLogsPath = path.join(homedir, "SODA", "logs");; 
+  let logFiles = ["main.log", "renderer.log", "out.log", "api.log"];
 
   if (os.type() === "Darwin") {
-    log_path = path.join(homedir, "/Library/Logs/SODA for SPARC/");
+    clientLogsPath = path.join(homedir, "/Library/Logs/SODA for SPARC/");
   } else if (os.type() === "Windows") {
-    log_path = path.join(
+    clientLogsPath = path.join(
       homedir,
       "AppData",
       "Roaming",
@@ -8867,7 +8868,7 @@ function gatherLogs() {
       "logs"
     );
   } else {
-    log_path = path.join(homedir, ".config", "SODA for SPARC", "logs");
+    clientLogsPath = path.join(homedir, ".config", "SODA for SPARC", "logs");
   }
 
   Swal.fire({
@@ -8931,16 +8932,18 @@ function gatherLogs() {
         try {
           fs.mkdirSync(log_folder, { recursive: true });
           // destination will be created or overwritten by default.
-          for (let i = 0; i < log_files.length; i++) {
-            var log_file;
-            if (i === 2) {
-              log_file = path.join(homedir, ".pennsieve", log_files[i]);
+          for (const logFile of logFiles) {
+            let logFilePath;
+            if (logFile === "out.log") {
+              logFilePath = path.join(homedir, ".pennsieve", logFile);
+            } else if(logFile === "api.log") {
+              logFilePath = path.join(serverLogsPath, logFile);
             } else {
-              log_file = path.join(log_path, log_files[i]);
+              logFilePath = path.join(clientLogsPath, logFile);
             }
-            let log_copy = path.join(log_folder, log_files[i]);
+            let log_copy = path.join(log_folder, logFile);
 
-            fs.copyFileSync(log_file, log_copy, (err) => {
+            fs.copyFileSync(logFilePath, log_copy, (err) => {
               if (err) throw err;
             });
           }
@@ -8965,8 +8968,7 @@ function gatherLogs() {
             },
           });
         } catch (error) {
-          log.error(error);
-          console.log(error);
+          clientError(error)
           Swal.fire({
             title: "Failed to create log folder!",
             text: error,
