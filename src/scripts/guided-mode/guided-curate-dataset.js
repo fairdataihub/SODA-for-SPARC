@@ -1359,15 +1359,47 @@ const traverseToTab = (targetPageID) => {
     if (targetPageID === "guided-designate-permissions-tab") {
       renderPermissionsTable();
     }
-    if (targetPageID === "guided-add-tags-tab") {
-      //clear dataset tags
-      guidedDatasetTagsTagify.removeAllTags();
-      //Add tags from jsonObj if they exist
-      const datasetTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
-      if (sodaJSONObj["digital-metadata"]["dataset-tags"]) {
-        guidedDatasetTagsTagify.addTags(datasetTags);
+    if (targetPageID === "guided-add-description-tab") {
+      const studyPurposeInput = document.getElementById(
+        "guided-pennsieve-study-purpose"
+      );
+      const studyDataCollectionInput = document.getElementById(
+        "guided-pennsieve-study-data-collection"
+      );
+      const studyPrimaryConclusionInput = document.getElementById(
+        "guided-pennsieve-study-primary-conclusion"
+      );
+
+      const studyInformation =
+        sodaJSONObj["dataset-metadata"]["description-metadata"][
+          "study-information"
+        ];
+      if (studyInformation) {
+        studyPurposeInput.value = studyInformation["study purpose"];
+        studyDataCollectionInput.value =
+          studyInformation["study data collection"];
+        studyPrimaryConclusionInput.value =
+          studyInformation["study primary conclusion"];
+      } else {
+        studyPurposeInput.value = "";
+        studyDataCollectionInput.value = "";
+        studyPrimaryConclusionInput.value = "";
       }
     }
+    if (targetPageID === "guided-add-tags-tab") {
+      //Add tags from jsonObj if they exist
+      const datasetTagsFromDescriptionMetadata =
+        sodaJSONObj["dataset-metadata"]["description-metadata"][
+          "dataset-information"
+        ]["keywords"];
+      const datasetTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
+      if (datasetTags) {
+        guidedDatasetTagsTagify.addTags(datasetTags);
+      } else if (datasetTagsFromDescriptionMetadata) {
+        guidedDatasetTagsTagify.addTags(datasetTagsFromDescriptionMetadata);
+      }
+    }
+
     if (targetPageID === "guided-assign-license-tab") {
       const licenseCheckbox = document.getElementById(
         "guided-license-checkbox"
@@ -9039,23 +9071,51 @@ $(document).ready(() => {
       if (pageBeingLeftID === "guided-designate-permissions-tab") {
       }
       if (pageBeingLeftID === "guided-add-description-tab") {
-        let studyPurpose = document
-          .getElementById("guided-ds-description-study-purpose")
-          .value.trim();
-        let dataCollection = document
-          .getElementById("guided-ds-description-data-collection")
-          .value.trim();
-        let primaryConclusion = document
-          .getElementById("guided-ds-description-primary-conclusion")
-          .value.trim();
-        sodaJSONObj["digital-metadata"]["study-purpose"] = studyPurpose;
-        sodaJSONObj["digital-metadata"]["data-collection"] = dataCollection;
-        sodaJSONObj["digital-metadata"]["primary-conclusion"] =
-          primaryConclusion;
+        const studyPurposeInput = document.getElementById(
+          "guided-pennsieve-study-purpose"
+        );
+        const studyDataCollectionInput = document.getElementById(
+          "guided-pennsieve-study-data-collection"
+        );
+        const studyPrimaryConclusionInput = document.getElementById(
+          "guided-pennsieve-study-primary-conclusion"
+        );
+
+        if (studyPurposeInput.value.trim() === "") {
+          errorArray.push({
+            type: "notyf",
+            message: "Please enter your study's purpose",
+          });
+        }
+
+        if (studyDataCollectionInput.value.trim() === "") {
+          errorArray.push({
+            type: "notyf",
+            message: "Please your study's data collection method",
+          });
+        }
+
+        if (studyPrimaryConclusionInput.value.trim() === "") {
+          errorArray.push({
+            type: "notyf",
+            message: "Please enter your study's primary conclusion",
+          });
+        }
+        if (errorArray.length > 0) {
+          throw errorArray;
+        } else {
+          sodaJSONObj["digital-metadata"]["study-purpose"] =
+            studyPurposeInput.value.trim();
+
+          sodaJSONObj["digital-metadata"]["data-collection"] =
+            studyDataCollectionInput.value.trim();
+
+          sodaJSONObj["digital-metadata"]["primary-conclusion"] =
+            studyPrimaryConclusionInput.value.trim();
+        }
       }
       if (pageBeingLeftID === "guided-add-tags-tab") {
         let datasetTags = getTagsFromTagifyElement(guidedDatasetTagsTagify);
-        $(".guidedDatasetTags").text(datasetTags.join("\r\n"));
         sodaJSONObj["digital-metadata"]["dataset-tags"] = datasetTags;
       }
       if (pageBeingLeftID === "guided-designate-permissions-tab") {
@@ -9072,14 +9132,6 @@ $(document).ready(() => {
           throw errorArray;
         }
       }
-      if (pageBeingLeftID === "guided-dataset-generation-tab") {
-        if ($("#generate-dataset-local-card").hasClass("checked")) {
-          sodaJSONObj["generate-dataset"]["destination"] = "local";
-        }
-        if ($("#generate-dataset-pennsieve-card").hasClass("checked")) {
-          sodaJSONObj["generate-dataset"]["destination"] = "bf";
-        }
-      }
       if (pageBeingLeftID === "guided-dataset-generate-location-tab") {
         if ($("#guided-generate-dataset-local-card").hasClass("checked")) {
           sodaJSONObj["generate-dataset"]["destination"] = "local";
@@ -9088,6 +9140,15 @@ $(document).ready(() => {
           sodaJSONObj["generate-dataset"]["destination"] = "bf";
         }
       }
+      if (pageBeingLeftID === "guided-dataset-generation-tab") {
+        if ($("#generate-dataset-local-card").hasClass("checked")) {
+          sodaJSONObj["generate-dataset"]["destination"] = "local";
+        }
+        if ($("#generate-dataset-pennsieve-card").hasClass("checked")) {
+          sodaJSONObj["generate-dataset"]["destination"] = "bf";
+        }
+      }
+
       if (pageBeingLeftID === "guided-dataset-generate-destination-tab") {
         if ($("#guided-generate-dataset-new-card").hasClass("checked")) {
           confirmed_dataset_name = $("#guided-bf-dataset-name-confirm").text();
