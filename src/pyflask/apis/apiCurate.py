@@ -184,9 +184,6 @@ class GenerateManifestLocally(Resource):
 
 
 
-
-
-
 model_dataset_size_response = api.model( "DatasetSizeResponse", {
     "dataset_size": fields.Integer(description="Size of the dataset"),
 })

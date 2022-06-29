@@ -36,6 +36,7 @@ from flask import abort
 from manageDatasets import (
     bf_get_current_user_permission,
 )
+from curate import create_high_level_manifest_files_existing_bf_starting_point
 
 from pysodaUtils import agent_running
 

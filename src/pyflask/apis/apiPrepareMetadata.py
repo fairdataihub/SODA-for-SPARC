@@ -12,8 +12,10 @@ from prepareMetadata import (
     import_bf_RC,
     upload_RC_file,
     delete_manifest_dummy_folders,
-    set_template_path
+    set_template_path, 
+    import_bf_manifest_file
 )
+from flask import request
 from namespaces import NamespaceEnum, get_namespace
 from flask_restx import Resource, reqparse, fields
 from flask_restx.inputs import boolean
@@ -536,5 +538,32 @@ class DeleteManifestDummyFolders(Resource):
 
         try:
             return delete_manifest_dummy_folders(paths)
+        except Exception as e:
+            api.abort(500, str(e))
+
+
+
+
+@api.route('/manifest_files/pennsieve')
+class GenerateManifestFilesPennsieve(Resource):
+
+    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request'}, 
+            description="Generate manifest files locally. Used in the standalone manifest file generation feature. Can take edit-manifest keyword that stores the manifest file in a separate directory. Allows ease of editing manifest information for the client.",
+            params={"soda_json_object": "SODA dataset structure", 
+                    "selected_account": "The pennsieve account for the user", 
+                    "selected_dataset": "The dataset that the user wants to generate manifest files for"})
+    # @api.marshal_with(model_generate_manifest_locally_response, False, 200)
+    def get(self):
+        args = request.args.to_dict()
+
+        selected_account = args.get("selected_account")
+        selected_dataset = args.get("selected_dataset")
+        soda_json_object = args.get("soda_json_object")
+
+        if not selected_account or not selected_dataset or not soda_json_object:
+            api.abort(400, "Error: To generate manifest files for Pennsieve provide a selected_account, selected_dataset, and soda_json_object.")
+
+        try:
+            return import_bf_manifest_file(soda_json_object, selected_account, selected_dataset)
         except Exception as e:
             api.abort(500, str(e))
