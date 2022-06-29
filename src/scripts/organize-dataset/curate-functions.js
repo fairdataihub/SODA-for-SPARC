@@ -1385,7 +1385,6 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
 
                 return undefined;
               } else {
-                
                 $("#license-lottie-div").css("display", "none");
                 $("#license-assigned").css("display", "none");
                 return bfDataset;
@@ -1441,8 +1440,6 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
         }
         //currently changing it but not visually in the UI
         $("#bf_list_users_pi").val("Select PI");
-
-        
 
         // update the gloabl dataset id
         for (const item of datasetList) {
