@@ -673,7 +673,7 @@ const nextPrev = (n) => {
           missingFiles = [];
         }
       });
-      for (element in requiredFiles) {
+      for (let element in requiredFiles) {
         let swal_element = `<li>${requiredFiles[element]}</li>`;
         missingFiles.push(swal_element);
       }
