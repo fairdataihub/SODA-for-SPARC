@@ -2861,8 +2861,6 @@ def main_curate_function(soda_json_structure):
     global generate_start_time
     global main_generate_destination
     global main_initial_bfdataset_size
-    # global progress_percentage
-    # global progress_percentage_array
     global main_curation_uploaded_files
     global uploaded_folder_counter
 
