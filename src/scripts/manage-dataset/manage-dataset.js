@@ -2233,7 +2233,7 @@ const showCurrentLicense = async () => {
   if (selectedBfDataset === "Select dataset") {
     currentDatasetLicense.innerHTML = "None";
   } else {
-    console.log('here');
+    console.log("here");
     client.invoke(
       "api_bf_get_license",
       selectedBfAccount,

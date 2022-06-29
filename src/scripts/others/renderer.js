@@ -8177,7 +8177,9 @@ async function showBFAddAccountSweetalert() {
                 if (String(error).includes("please check that key name")) {
                   error =
                     "Please check that your key name, key and api secret are entered properly";
-                } else if(String(error).includes("Please enter valid keyname")) {
+                } else if (
+                  String(error).includes("Please enter valid keyname")
+                ) {
                   error = "Please enter valid keyname, key, and/or secret";
                 }
                 Swal.showValidationMessage(error);
