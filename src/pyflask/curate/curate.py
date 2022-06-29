@@ -2,9 +2,6 @@
 
 ### Import required python modules
 from gevent import monkey
-
-from pyFlask.namespaces import namespaceLogger
-
 monkey.patch_all()
 import platform
 import os
@@ -1123,6 +1120,8 @@ def generate_dataset_locally(soda_json_structure):
                                         )
             return list_copy_files, list_move_files
 
+
+        namespace_logger.info("generate_dataset_locally step 1")
         # 1. Create new folder for dataset or use existing merge with existing or create new dataset?
         main_curate_progress_message = "Generating folder structure and list of files to be included in the dataset"
         dataset_absolute_path = soda_json_structure["generate-dataset"]["path"]
@@ -1132,6 +1131,7 @@ def generate_dataset_locally(soda_json_structure):
         datasetpath = return_new_path(datasetpath)
         mkdir(datasetpath)
 
+        namespace_logger.info("generate_dataset_locally step 2")
         # 2. Scan the dataset structure and:
         # 2.1. Create all folders (with new name if renamed)
         # 2.2. Compile a list of files to be copied and a list of files to be moved (with new name recorded if renamed)
@@ -1145,8 +1145,10 @@ def generate_dataset_locally(soda_json_structure):
                 folder, folderpath, list_copy_files, list_move_files
             )
 
+        
         # 3. Add high-level metadata files in the list
         if "metadata-files" in soda_json_structure.keys():
+            namespace_logger.info("generate_dataset_locally (optional) step 3 handling metadata-files")
             metadata_files = soda_json_structure["metadata-files"]
             for file_key, file in metadata_files.items():
                 if file["type"] == "local":
@@ -1161,6 +1163,7 @@ def generate_dataset_locally(soda_json_structure):
 
         # 4. Add manifest files in the list
         if "manifest-files" in soda_json_structure.keys():
+            namespace_logger.info("generate_dataset_locally (optional) step 4 handling manifest-files")
             main_curate_progress_message = "Preparing manifest files"
             manifest_files_structure = create_high_level_manifest_files(
                 soda_json_structure
@@ -1172,6 +1175,7 @@ def generate_dataset_locally(soda_json_structure):
                     main_total_generate_dataset_size += getsize(manifestpath)
                     list_copy_files.append([manifestpath, destination_path])
 
+        namespace_logger.info("generate_dataset_locally step 5 moving files to new location")
         # 5. Move files to new location
         main_curate_progress_message = "Moving files to new location"
         for fileinfo in list_move_files:
@@ -1182,6 +1186,7 @@ def generate_dataset_locally(soda_json_structure):
             )
             mymovefile_with_metadata(srcfile, distfile)
 
+        namespace_logger.info("generate_dataset_locally step 6 copying files to new location")
         # 6. Copy files to new location
         main_curate_progress_message = "Copying files to new location"
         start_generate = 1
@@ -1195,9 +1200,12 @@ def generate_dataset_locally(soda_json_structure):
             mycopyfile_with_metadata(srcfile, distfile)
             main_curation_uploaded_files += 1
 
+       
+        namespace_logger.info("generate_dataset_locally step 7")
         # 7. Delete manifest folder and original folder if merge requested and rename new folder
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
         if if_existing == "merge":
+            namespace_logger.info("generate_dataset_locally (optional) step 7.1 delete manifest folder if merge requested")
             main_curate_progress_message = "Finalizing dataset"
             original_dataset_path = join(dataset_absolute_path, dataset_name)
             shutil.rmtree(original_dataset_path)
@@ -2111,6 +2119,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
         return
 
     # 1. Remove all existing files on Pennsieve, that the user deleted.
+    namespace_logger.info("bf_update_existing_dataset step 1 remove existing files on Pennsieve the user delted")
     main_curate_progress_message = "Checking Pennsieve for deleted files"
     dataset_structure = soda_json_structure["dataset-structure"]
     recursive_file_delete(dataset_structure)
@@ -2119,18 +2128,21 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     )
 
     # 2. Rename any deleted folders on Pennsieve to allow for replacements.
+    namespace_logger.info("bf_update_existing_dataset step 2 rename deleted folders on Pennsieve to allow for replacements")
     main_curate_progress_message = "Checking Pennsieve for deleted folders"
     dataset_structure = soda_json_structure["dataset-structure"]
     recursive_folder_rename(dataset_structure, "deleted")
     main_curate_progress_message = "Folders on Pennsieve have been marked for deletion"
 
     # 2.5 Rename folders that need to be in the final destination.
+    namespace_logger.info("bf_update_existing_dataset step 2.5 rename folders that need to be in the final destination")
     main_curate_progress_message = "Renaming any folders requested by the user"
     recursive_folder_rename(dataset_structure, "renamed")
     main_curate_progress_message = "Renamed all folders requested by the user"
 
     # 3. Get the status of all files currently on Pennsieve and create
     # the folderpath for all items in both dataset structures.
+    namespace_logger.info("bf_update_existing_dataset step 3 get the status of all files currently on Pennsieve and create the folderpath for all items in both dataset structures")
     main_curate_progress_message = "Fetching files and folders from Pennsieve"
     current_bf_dataset_files_folders = bf_get_dataset_files_folders(
         soda_json_structure.copy()
@@ -2143,16 +2155,19 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
 
     # 4. Move any files that are marked as moved on Pennsieve.
     # Create any additional folders if required
+    namespace_logger.info("bf_update_existing_dataset step 4 move any files that are marked as moved on Pennsieve")
     main_curate_progress_message = "Moving any files requested by the user"
     recursive_check_moved_files(dataset_structure)
     main_curate_progress_message = "Moved all files requested by the user"
 
     # 5. Rename any Pennsieve files that are marked as renamed.
+    namespace_logger.info("bf_update_existing_dataset step 5 rename any Pennsieve files that are marked as renamed")
     main_curate_progress_message = "Renaming any files requested by the user"
     recursive_file_rename(dataset_structure)
     main_curate_progress_message = "Renamed all files requested by the user"
 
     # 6. Delete any Pennsieve folders that are marked as deleted.
+    namespace_logger.info("bf_update_existing_dataset step 6 delete any Pennsieve folders that are marked as deleted")
     main_curate_progress_message = (
         "Deleting any additional folders present on Pennsieve"
     )
@@ -2160,16 +2175,19 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     main_curate_progress_message = "Deletion of additional folders complete"
 
     # 7. Rename any Pennsieve folders that are marked as renamed.
+    namespace_logger.info("bf_update_existing_dataset step 7 rename any Pennsieve folders that are marked as renamed")
     main_curate_progress_message = "Renaming any folders requested by the user"
     recursive_folder_rename(dataset_structure, "renamed")
     main_curate_progress_message = "Renamed all folders requested by the user"
 
     # 8. Delete any metadata files that are marked as deleted.
+    namespace_logger.info("bf_update_existing_dataset step 8 delete any metadata files that are marked as deleted")
     main_curate_progress_message = "Removing any metadata files marked for deletion"
     metadata_file_delete(soda_json_structure)
     main_curate_progress_message = "Removed metadata files marked for deletion"
 
     # 9. Run the original code to upload any new files added to the dataset.
+    namespace_logger.info("bf_update_existing_dataset step 9 run the bf_generate_new_dataset code to upload any new files added to the dataset")
     if "manifest-files" in soda_json_structure.keys():
         soda_json_structure["manifest-files"] = {"destination": "bf"}
 
@@ -2444,6 +2462,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
 
             return list_upload_files
 
+        namespace_logger.info("bf_generate_new_dataset step 1 create non-existent folders")
         # 1. Scan the dataset structure to create all non-existent folders
         # create a tracking dict which would track the generation of the dataset on Pennsieve
         main_curate_progress_message = "Creating folder structure"
@@ -2454,6 +2473,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             dataset_structure, tracking_json_structure, existing_folder_option
         )
 
+        namespace_logger.info("bf_generate_new_dataset step 2 create list of files to be uploaded and handle renaming")
         # 2. Scan the dataset structure and compile a list of files to be uploaded along with desired renaming
         ds.update()
         main_curate_progress_message = "Preparing a list of files to upload"
@@ -2470,12 +2490,13 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             relative_path,
         )
 
+        
         # main_curate_progress_message = "About to update after doing recursive dataset scan"
         # 3. Add high-level metadata files to a list
         ds.update()
         list_upload_metadata_files = []
         if "metadata-files" in soda_json_structure.keys():
-
+            namespace_logger.info("bf_generate_new_dataset (optional) step 3 create high level metadata list")
             (
                 my_bf_existing_files,
                 my_bf_existing_files_name,
@@ -2505,6 +2526,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
         # 4. Prepare and add manifest files to a list
         list_upload_manifest_files = []
         if "manifest-files" in soda_json_structure.keys():
+            namespace_logger.info("bf_generate_new_dataset (optional) step 4 create manifest list")
 
             # prepare manifest files
             if soda_json_structure["starting-point"]["type"] == "bf":
@@ -2547,6 +2569,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                 main_total_generate_dataset_size += getsize(manifestpath)
 
         # 5. Upload files, rename, and add to tracking list
+        namespace_logger.info("bf_generate_new_dataset step 5 upload files, rename and add to tracking list")
         main_initial_bfdataset_size = bf_dataset_size()
         start_generate = 1
         for item in list_upload_files:
@@ -2590,6 +2613,8 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                     main_curate_progress_message = "Uploading files in " + str(
                         relative_path
                     )
+
+                    namespace_logger.info(f"bf_generate_new_dataset step 5.1 uploading files to folder {bf_folder.name}")
 
                     current_os = platform.system()
 
@@ -2656,6 +2681,8 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                     relative_path
                 )
 
+                namespace_logger.info(f"bf_generate_new_dataset step 5.1 uploading files to folder {bf_folder.name}")
+
                 # fails when a single folder has more than 750 files (at which point I'm not sure)
                 bf_folder.upload(*list_upload)
                 bf_folder.update()
@@ -2687,13 +2714,19 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                                         "value": item
                                     }
 
+
+        # 6. Upload metadata files
         if list_upload_metadata_files:
+            namespace_logger.info("bf_generate_new_dataset (optional) step 6 upload metadata files")
             main_curate_progress_message = (
                 "Uploading metadata files in high-level dataset folder " + str(ds.name)
             )
             ds.upload(*list_upload_metadata_files)
 
+
+        # 7. Upload manifest files
         if list_upload_manifest_files:
+            namespace_logger.info("bf_generate_new_dataset (optional) step 7 upload manifest files")
             for item in list_upload_manifest_files:
                 manifest_file = item[0]
                 bf_folder = item[1]
