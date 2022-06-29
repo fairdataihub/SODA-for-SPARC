@@ -4343,7 +4343,6 @@ const pasteFromClipboard = (event, target_element) => {
     target_element == "bootbox-api-key" ||
     target_element == "bootbox-api-secret"
   ) {
-
     $(`#${target_element}`).val(key);
   }
 };
