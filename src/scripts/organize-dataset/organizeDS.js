@@ -1717,10 +1717,25 @@ async function addFilesfunction(
 
   // check for duplicate or files with the same name
   var nonAllowedDuplicateFiles = [];
+  var nonAllowedFiles = [];
   var regularFiles = {};
+  var hiddenFiles = [];
 
   for (var i = 0; i < fileArray.length; i++) {
     var fileName = fileArray[i];
+    console.log(path.parse(fileName).name);
+    if (path.parse(fileName).name.substr(0, 1) === ".") {
+      if (
+        path.parse(fileName).name === ".DS_Store" ||
+        path.parse(fileName).name === "Thumb.db"
+      ) {
+        nonAllowedFiles.push(fileName);
+        continue;
+      } else {
+        hiddenFiles.push(fileName);
+        continue;
+      }
+    }
     // check if dataset structure level is at high level folder
     var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
     if (slashCount === 1) {
@@ -1842,7 +1857,7 @@ async function addFilesfunction(
         html_word = "Folders";
       }
     }
-    Swal.fire({
+    await Swal.fire({
       title: titleSwal,
       icon: "warning",
       showConfirmButton: false,
@@ -1870,6 +1885,67 @@ async function addFilesfunction(
         <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}')">Import Duplicates</button>
         <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
         </div>`,
+    });
+  }
+
+  if (nonAllowedFiles.length > 0) {
+    await Swal.fire({
+      title:
+        "The following files are banned as per SPARC guidelines and will not be imported",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        nonAllowedFiles.join("</br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      confirmButtonText: "Okay",
+    });
+  }
+
+  if (hiddenFiles.length > 0) {
+    await Swal.fire({
+      title:
+        "The following files have an expected name starting with a period. How should we handle them?",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        hiddenFiles.join("</br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Remove characters",
+      denyButtonText: "Continue as is",
+      cancelButtonText: "Cancel",
+      didOpen: () => {
+        $(".swal-popover").popover();
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        //replace characters
+        for (let i = 0; i < hiddenFiles.length; i++) {
+          console.log(hiddenFiles[i]);
+          regularFiles[
+            path.parse(hiddenFiles[i]).base.substr(1, hiddenFiles[0].length)
+          ] = {
+            path: hiddenFiles[i],
+            basename: path
+              .parse(hiddenFiles[0])
+              .base.substr(1, hiddenFiles[0].length),
+          };
+        }
+        console.log("HTML");
+      } else if (result.isDenied) {
+        //leave as is
+        for (let i = 0; i < hiddenFiles.length; i++) {
+          console.log(hiddenFiles[i]);
+          regularFiles[path.parse(hiddenFiles[i]).base] = {
+            path: hiddenFiles[i],
+            basename: path.parse(hiddenFiles[0]).base,
+          };
+        }
+      }
     });
   }
 
