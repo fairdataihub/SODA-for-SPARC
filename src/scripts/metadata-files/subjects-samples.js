@@ -716,6 +716,7 @@ function addSubjectMetadataEntriesIntoJSON(curationMode) {
       field.value === undefined ||
       field.value === "Select"
     ) {
+      console.log("empty");
       field.value = null;
     } else {
       console.log(field);
@@ -738,7 +739,10 @@ function addSubjectMetadataEntriesIntoJSON(curationMode) {
       }
     }
     if (field.name === "Sex") {
-      if ($("#bootbox-subject-sex").val() === "Unknown") {
+      if (
+        $(`#${curationModeSelectorPrefix}bootbox-subject-sex`).val() ===
+        "Unknown"
+      ) {
         field.value = "";
       } else {
         field.value = field.value;

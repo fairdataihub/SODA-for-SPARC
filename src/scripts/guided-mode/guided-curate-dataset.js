@@ -1,8 +1,11 @@
 const { parseJSON } = require("jquery");
 
-//Temp variables used for data storage until put into sodaJSONObj on next button press
-let guidedUserPermissions = [];
-let guidedTeamPermissions = [];
+//Initialize description tagify variables as null
+//to make them accessible to functions outside of $(document).ready
+let guidedStudyTechniquesTagify = null;
+let guidedStudyApproachTagify = null;
+let guidedStudyOrganSystemsTagify = null;
+let guidedOtherFundingsourcesTagify = null;
 
 //main nav variables initialized to first page of guided mode
 let CURRENT_PAGE = $("#guided-dataset-starting-point-tab");
@@ -191,6 +194,9 @@ const saveGuidedProgress = (guidedProgressFileName) => {
   //Add datasetStructureJSONObj to the sodaJSONObj and use to load the
   //datasetStructureJsonObj when progress resumed
   sodaJSONObj["saved-datset-structure-json-obj"] = datasetStructureJSONObj;
+  sodaJSONObj["subjects-table-data"] = subjectsTableData;
+  sodaJSONObj["samples-table-data"] = samplesTableData;
+
   fs.writeFileSync(guidedFilePath, JSON.stringify(sodaJSONObj, null, 2));
 };
 const readDirAsync = async (path) => {
@@ -1021,17 +1027,16 @@ const guidedLoadDescriptionStudyInformation = () => {
     "guided-ds-study-collection-title"
   );
 
-  console.log(guidedStudyOrganSystemsTagify);
-
   //reset dataset descript tags
-  /*guidedStudyOrganSystemsTagify.removeAllTags();
+  guidedStudyOrganSystemsTagify.removeAllTags();
   guidedStudyApproachTagify.removeAllTags();
-  guidedStudyTechniquesTagify.removeAllTags();*/
+  guidedStudyTechniquesTagify.removeAllTags();
 
   const studyInformationMetadata =
     sodaJSONObj["dataset-metadata"]["description-metadata"][
       "study-information"
     ];
+  console.log(studyInformationMetadata);
 
   if (studyInformationMetadata) {
     studyPurposeInput.value = studyInformationMetadata["study purpose"];
@@ -1041,7 +1046,8 @@ const guidedLoadDescriptionStudyInformation = () => {
       studyInformationMetadata["study primary conclusion"];
     studyCollectionTitleInput.value =
       studyInformationMetadata["study collection title"];
-    /*guidedStudyOrganSystemsTagify.addTags(
+
+    guidedStudyOrganSystemsTagify.addTags(
       studyInformationMetadata["study organ system"]
     );
     guidedStudyApproachTagify.addTags(
@@ -1049,7 +1055,7 @@ const guidedLoadDescriptionStudyInformation = () => {
     );
     guidedStudyTechniquesTagify.addTags(
       studyInformationMetadata["study technique"]
-    );*/
+    );
   } else {
     //reset the inputs
     console.log("resetting inputs");
@@ -1057,10 +1063,34 @@ const guidedLoadDescriptionStudyInformation = () => {
     studyDataCollectionInput.value = "";
     studyPrimaryConclusionInput.value = "";
     studyCollectionTitleInput.value = "";
+    guidedStudyOrganSystemsTagify.removeAllTags();
+    guidedStudyApproachTagify.removeAllTags();
+    guidedStudyTechniquesTagify.removeAllTags();
   }
 };
 
-const guidedLoadDescriptionAdditionalInformation = () => {};
+const guidedLoadDescriptionContributorInformation = () => {
+  const acknowledgementsInput = document.getElementById(
+    "guided-ds-acknowledgements"
+  );
+  const contributorInformationMetadata =
+    sodaJSONObj["dataset-metadata"]["description-metadata"][
+      "contributor-information"
+    ];
+
+  guidedOtherFundingsourcesTagify.removeAllTags();
+
+  if (contributorInformationMetadata) {
+    acknowledgementsInput.value =
+      contributorInformationMetadata["acknowledgement"];
+    guidedOtherFundingsourcesTagify.addTags(
+      contributorInformationMetadata["funding"]
+    );
+  } else {
+    acknowledgementsInput.value = "";
+    guidedOtherFundingsourcesTagify.removeAllTags();
+  }
+};
 
 const traverseToTab = (targetPageID) => {
   console.log(targetPageID);
@@ -1280,6 +1310,7 @@ const traverseToTab = (targetPageID) => {
     if (targetPageID === "guided-create-description-metadata-tab") {
       guidedLoadDescriptionDatasetInformation();
       guidedLoadDescriptionStudyInformation();
+      guidedLoadDescriptionContributorInformation();
       /*renderAdditionalLinksTable();
 
       //set study purpose, data collection, and primary conclusion from sodaJSONObj
@@ -2247,6 +2278,8 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   attachGuidedMethodsToSodaJSONObj();
 
   datasetStructureJSONObj = sodaJSONObj["saved-datset-structure-json-obj"];
+  subjectsTableData = sodaJSONObj["subjects-table-data"];
+  samplesTableData = sodaJSONObj["samples-table-data"];
   guidedTransitionFromHome();
   //Set the dataset name and subtitle input values using the
   //previously saved dataset name and subtitle
@@ -3855,8 +3888,7 @@ const openCopySubjectMetadataPopup = async () => {
             subjectsTableData.push(newSubjectData);
           }
         }
-
-        console.log(subjectsTableData);
+        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       }
     });
 };
@@ -3966,9 +3998,9 @@ const openCopySampleMetadataPopup = async () => {
               copyFromSampleData
             );
             samplesTableData.push(newsampleData);
-            console.log(samplesTableData);
           }
         }
+        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       }
     });
 };
@@ -5594,7 +5626,7 @@ const renderSubjectsMetadataAsideItems = () => {
           "guided-form-add-a-subject"
         );
       }
-
+      //Save the subject metadata from the previous subject being worked on
       previousSubject = document.getElementById(
         "guided-metadata-subject-id"
       ).innerHTML;
@@ -5619,6 +5651,8 @@ const renderSubjectsMetadataAsideItems = () => {
       //Set the pool id field based of clicked elements data-pool-id attribute
       document.getElementById("guided-bootbox-subject-pool-id").value =
         e.target.getAttribute("data-pool-id");
+
+      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     });
     //add hover event that changes the background color
     item.addEventListener("mouseover", (e) => {
@@ -5713,6 +5747,8 @@ const renderSamplesMetadataAsideItems = () => {
         samplesSubject,
         samplesPool
       );
+
+      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     });
 
     item.addEventListener("mouseover", (e) => {
@@ -8357,6 +8393,7 @@ $(document).ready(() => {
     const studyTechniqueTags = getTagsFromTagifyElement(
       guidedStudyTechniquesTagify
     );
+
     const studyPurposeInput = document.getElementById(
       "guided-ds-study-purpose"
     );
@@ -8375,25 +8412,25 @@ $(document).ready(() => {
     let studyPrimaryConclusion = null;
     let studyCollectionTitle = null;
     //Throw an error if any study information variables are not filled out
-    if (!studyPurposeInput.value) {
+    if (!studyPurposeInput.value.trim()) {
       throw "Please add a study purpose";
     } else {
-      studyPurpose = studyPurposeInput.value;
+      studyPurpose = studyPurposeInput.value.trim();
     }
-    if (!studyDataCollectionInput.value) {
+    if (!studyDataCollectionInput.value.trim()) {
       throw "Please add a study data collection";
     } else {
-      studyDataCollection = studyDataCollectionInput.value;
+      studyDataCollection = studyDataCollectionInput.value.trim();
     }
-    if (!studyPrimaryConclusionInput.value) {
+    if (!studyPrimaryConclusionInput.value.trim()) {
       throw "Please add a study primary conclusion";
     } else {
-      studyPrimaryConclusion = studyPrimaryConclusionInput.value;
+      studyPrimaryConclusion = studyPrimaryConclusionInput.value.trim();
     }
-    if (!studyCollectionTitleInput.value) {
+    if (!studyCollectionTitleInput.value.trim()) {
       throw "Please add a study collection title";
     } else {
-      studyCollectionTitle = studyCollectionTitleInput.value;
+      studyCollectionTitle = studyCollectionTitleInput.value.trim();
     }
 
     //After validation, add the study information to the JSON object
@@ -8403,26 +8440,34 @@ $(document).ready(() => {
       "study organ system": studyOrganSystemTags,
       "study approach": studyApproachTags,
       "study technique": studyTechniqueTags,
-      "study purpose": studyPurposeInput.value.trim(),
-      "study data collection": studyDataCollectionInput.value.trim(),
-      "study primary conclusion": studyPrimaryConclusionInput.value.trim(),
-      "study collection title": studyCollectionTitleInput.value.trim(),
+      "study purpose": studyPurpose,
+      "study data collection": studyDataCollection,
+      "study primary conclusion": studyPrimaryConclusion,
+      "study collection title": studyCollectionTitle,
     };
-    console.log(
-      sodaJSONObj["dataset-metadata"]["description-metadata"][
-        "study-information"
-      ]
+  };
+  const guidedSaveDescriptionContributorInformation = () => {
+    const acknowledgementsInput = document.getElementById(
+      "guided-ds-acknowledgements"
     );
+    const acknowledgements = acknowledgementsInput.value.trim();
+
+    // Get tags from other funding tagify
+    const otherFunding = getTagsFromTagifyElement(
+      guidedOtherFundingsourcesTagify
+    );
+
+    sodaJSONObj["dataset-metadata"]["description-metadata"][
+      "contributor-information"
+    ] = {
+      funding: otherFunding,
+      acknowledgement: acknowledgements,
+    };
   };
   const getGuidedDatasetInformation = () => {
     const title = sodaJSONObj["digital-metadata"]["name"];
     const description = sodaJSONObj["digital-metadata"]["subtitle"];
     //get the value of the checked radio button with the name dataset-relation and store as type
-    errorArray.push({
-      type: "notyf",
-      message: "Please select a dataset start location",
-    });
-    throw errorArray;
     const type = document.querySelector(
       "input[name='dataset-relation']:checked"
     ).value;
@@ -8443,7 +8488,7 @@ $(document).ready(() => {
     }
 
     return {
-      name: name,
+      name: title,
       description: description,
       type: type,
       keywords: keywordArray,
@@ -9396,6 +9441,7 @@ $(document).ready(() => {
         try {
           guidedSaveDescriptionDatasetInformation();
           guidedSaveDescriptionStudyInformation();
+          guidedSaveDescriptionContributorInformation();
         } catch (error) {
           console.log(error);
           errorArray.push({
@@ -10258,54 +10304,50 @@ $(document).ready(() => {
   const guidedOtherFundingSourcesInput = document.getElementById(
     "guided-ds-other-funding"
   );
-  const guidedOtherFundingsourcesTagify = new Tagify(
-    guidedOtherFundingSourcesInput,
-    { duplicates: false }
-  );
+  guidedOtherFundingsourcesTagify = new Tagify(guidedOtherFundingSourcesInput, {
+    duplicates: false,
+  });
   const guidedStudyOrganSystemsInput = document.getElementById(
     "guided-ds-study-organ-system"
   );
-  const guidedStudyOrganSystemsTagify = new Tagify(
-    guidedStudyOrganSystemsInput,
-    {
-      whitelist: [
-        "autonomic ganglion",
-        "brain",
-        "colon",
-        "heart",
-        "intestine",
-        "kidney",
-        "large intestine",
-        "liver",
-        "lower urinary tract",
-        "lung",
-        "nervous system",
-        "pancreas",
-        "peripheral nervous system",
-        "small intestine",
-        "spinal cord",
-        "spleen",
-        "stomach",
-        "sympathetic nervous system",
-        "urinary bladder",
-      ],
-      duplicates: false,
-      dropdown: {
-        enabled: 0,
-        closeOnSelect: true,
-      },
-    }
-  );
+  guidedStudyOrganSystemsTagify = new Tagify(guidedStudyOrganSystemsInput, {
+    whitelist: [
+      "autonomic ganglion",
+      "brain",
+      "colon",
+      "heart",
+      "intestine",
+      "kidney",
+      "large intestine",
+      "liver",
+      "lower urinary tract",
+      "lung",
+      "nervous system",
+      "pancreas",
+      "peripheral nervous system",
+      "small intestine",
+      "spinal cord",
+      "spleen",
+      "stomach",
+      "sympathetic nervous system",
+      "urinary bladder",
+    ],
+    duplicates: false,
+    dropdown: {
+      enabled: 0,
+      closeOnSelect: true,
+    },
+  });
   const guidedStudyApproachInput = document.getElementById(
     "guided-ds-study-approach"
   );
-  const guidedStudyApproachTagify = new Tagify(guidedStudyApproachInput, {
+  guidedStudyApproachTagify = new Tagify(guidedStudyApproachInput, {
     duplicates: false,
   });
   const guidedStudyTechniquesInput = document.getElementById(
     "guided-ds-study-technique"
   );
-  const guidedStudyTechniquesTagify = new Tagify(guidedStudyTechniquesInput, {
+  guidedStudyTechniquesTagify = new Tagify(guidedStudyTechniquesInput, {
     duplicates: false,
   });
 
