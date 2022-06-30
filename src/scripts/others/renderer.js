@@ -4420,7 +4420,7 @@ var bfAddAccountBootboxMessage = `<form>
     </div>
   </form>`;
 
-var bfaddaccountTitle = `<h3 style="text-align:center">Connect your Pennsieve account using an API key:</h3>`;
+var bfaddaccountTitle = `<h3 style="text-align:center">Connect your Pennsieve account using an API key</h3>`;
 
 // once connected to SODA get the user's accounts
 (async () => {
