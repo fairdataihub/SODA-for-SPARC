@@ -1492,7 +1492,6 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     );
 
     let res = save_locally.data;
-    console.log(res);
 
     Swal.fire({
       title:

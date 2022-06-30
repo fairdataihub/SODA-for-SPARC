@@ -2331,7 +2331,7 @@ function importExistingSubjectsFile() {
           Swal.showLoading();
         },
       }).then((result) => {});
-      setTimeout(loadSubjectsFileToDataframe(filePath), 1000);
+      setTimeout(loadSubjectsFileToDataframe, 1000, filePath);
     }
   }
 }
