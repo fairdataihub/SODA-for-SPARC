@@ -1429,7 +1429,6 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             // checkPrevDivForConfirmButton("dataset");
           } else if (result.isDismissed) {
             currentDatasetLicense.innerText = currentDatasetLicense.innerText;
-            defaultBfDataset = defaultBfDataset;
           }
         });
 

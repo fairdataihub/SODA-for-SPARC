@@ -585,7 +585,7 @@ const run_pre_flight_checks = async (check_update = true) => {
             cancelButtonText: "Skip for now",
           }).then(async (result) => {
             if (result.isConfirmed) {
-              [browser_download_url, latest_agent_version] =
+              let [browser_download_url, latest_agent_version] =
                 await get_latest_agent_version();
               shell.openExternal(browser_download_url);
               shell.openExternal(
@@ -597,7 +597,7 @@ const run_pre_flight_checks = async (check_update = true) => {
         } else {
           await wait(500);
           // Check the installed agent version. We aren't enforcing the min limit yet but is the python version starts enforcing it, we might have to.
-          [browser_download_url, latest_agent_version] =
+          let [browser_download_url, latest_agent_version] =
             await check_agent_installed_version(agent_version_response);
           console.log(browser_download_url);
           console.log(latest_agent_version);
@@ -3753,7 +3753,7 @@ function refreshBfUsersList() {
   optionUserPI.textContent = "Select PI";
   bfListUsersPI.appendChild(optionUserPI);
 
-  if (accountSelected !== "Select" || accountSelected !== undefined) {
+  if (accountSelected !== "Select") {
     client.invoke("api_bf_get_users", accountSelected, (error, res) => {
       if (error) {
         log.error(error);
@@ -3790,7 +3790,7 @@ function refreshBfTeamsList(teamList) {
   optionTeam.textContent = "Select team";
   teamList.appendChild(optionTeam);
 
-  if (accountSelected !== "Select" || accountSelected !== undefined) {
+  if (accountSelected !== "Select") {
     client.invoke("api_bf_get_teams", accountSelected, (error, res) => {
       if (error) {
         log.error(error);
