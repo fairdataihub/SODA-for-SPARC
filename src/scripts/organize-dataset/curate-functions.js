@@ -979,7 +979,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
         heightAuto: false,
         reverseButtons: reverseSwalButtons,
         showCancelButton: true,
-        title: `<span style="text-align:center">Connect your Pennsieve account using your email and password</span><p class="tip-content" style="margin-top: .5rem">Your email and password will not be saved and not seen by anyone.</p>`,
+        title: `<h3 style="text-align:center">Connect your Pennsieve account using your email and password</h3><p class="tip-content" style="margin-top: .5rem">Your email and password will not be saved and not seen by anyone.</p>`,
         html: `<input type="text" id="ps_login" class="swal2-input" placeholder="Email Address for Pennsieve">
         <input type="password" id="ps_password" class="swal2-input" placeholder="Password">`,
         showClass: {
@@ -988,7 +988,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
         hideClass: {
           popup: "animate__animated animate__fadeOutUp animate__faster",
         },
-        footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-a-pennsieve-account">I don't have a Pennsieve account and/or access to the SPARC Consortium Organization</a>`,
+        footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-a-pennsieve-account" style="text-decoration: none;">I don't have a Pennsieve account and/or access to the SPARC Consortium Organization</a>`,
         didOpen: () => {
           $(".swal-popover").popover();
           let div_footer = document.getElementsByClassName("swal2-footer")[0];
