@@ -280,7 +280,7 @@ class SubjectsFile(Resource):
 
 
         try:
-            save_subjects_file(upload_boolean, selected_account, selected_dataset, filepath, subjects_str)
+            return save_subjects_file(upload_boolean, selected_account, selected_dataset, filepath, subjects_str)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
