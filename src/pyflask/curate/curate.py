@@ -2,6 +2,7 @@
 
 ### Import required python modules
 from gevent import monkey
+import requests
 monkey.patch_all()
 import platform
 import os
@@ -2605,6 +2606,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
 
                     namespace_logger.info(f"bf_generate_new_dataset step 5.1 uploading files to folder {bf_folder.name}")
 
+
                     current_os = platform.system()
 
                     # clear the pennsieve queue for successive batches
@@ -2612,7 +2614,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                     if not current_os == "Darwin":
                         clear_queue()
 
-                    # upload the files
+                    # upload the file
                     bf_folder.upload(*upload_bucket)
 
                     # update the files
@@ -2673,6 +2675,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                 namespace_logger.info(f"bf_generate_new_dataset step 5.1 uploading files to folder {bf_folder.name}")
 
                 # fails when a single folder has more than 750 files (at which point I'm not sure)
+
                 bf_folder.upload(*list_upload)
                 bf_folder.update()
 
@@ -2696,7 +2699,11 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                         for item in my_bf_existing_files:
                             if item.name == projected_name:
                                 item.name = final_name
-                                item.update()
+                                try: 
+                                    item.update()
+                                except requests.exceptions.HTTPError as e:
+                                    handle_duplicate_package_name_error(e, soda_json_structure)
+                                   
                                 if "files" not in tracking_folder:
                                     tracking_folder["files"] = {}
                                     tracking_folder["files"][desired_name] = {
@@ -2746,7 +2753,13 @@ myds = ""
 
 
 # TODO: Make sure copying as we do for the local case is fine. I believe it is since there is no freeze. Just make that case wait for the success or fail to log. Get the result from the backend in the fail case.
+def handle_duplicate_package_name_error(e, soda_json_structure):
+    if e.response.text == '{"type":"BadRequest","message":"package name must be unique","code":400}':
+        if "if-existing-files" in soda_json_structure["generate-dataset"]:
+            if soda_json_structure["generate-dataset"]["if-existing-files"] == "create-duplicate":
+                return
 
+    raise e
 
 def bf_check_dataset_files_validity(soda_json_structure, bf):
     """
