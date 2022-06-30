@@ -3498,3 +3498,12 @@ def generate_manifest_file_locally(generate_purpose, soda_json_structure):
 
     open_file(manifest_destination)
     return "success"
+
+
+def handle_duplicate_package_name_error(e, soda_json_structure):
+    if e.response.text == '{"type":"BadRequest","message":"package name must be unique","code":400}':
+        if "if-existing-files" in soda_json_structure["generate-dataset"]:
+            if soda_json_structure["generate-dataset"]["if-existing-files"] == "create-duplicate":
+                return
+
+    raise e
