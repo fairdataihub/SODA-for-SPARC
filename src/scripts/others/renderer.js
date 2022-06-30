@@ -565,7 +565,6 @@ const run_pre_flight_checks = async (check_update = true) => {
 
       // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
       account_present = await check_api_key();
-      consolelog(account_present);
       if (account_present) {
         // Check for an installed Pennsieve agent
         await wait(500);
