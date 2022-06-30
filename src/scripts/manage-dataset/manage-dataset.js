@@ -2265,7 +2265,6 @@ const showCurrentLicense = async () => {
 
             licenseContainer.style.display = "block";
             document.getElementById("license-assigned").style.display = "block";
-
           } else {
             $("#button-add-license").show();
             $("#assign-a-license-header").show();
