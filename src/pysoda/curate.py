@@ -2926,10 +2926,12 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                             ]:
                                 if item.name == projected_name:
                                     item.name = final_name
-                                    try: 
+                                    try:
                                         item.update()
                                     except requests.exceptions.HTTPError as e:
-                                        handle_duplicate_package_name_error(e, soda_json_structure)
+                                        handle_duplicate_package_name_error(
+                                            e, soda_json_structure
+                                        )
                                     if "files" not in tracking_folder:
                                         tracking_folder["files"] = {}
                                         tracking_folder["files"][desired_name] = {
@@ -2976,10 +2978,12 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                         for item in my_bf_existing_files:
                             if item.name == projected_name:
                                 item.name = final_name
-                                try: 
+                                try:
                                     item.update()
                                 except requests.exceptions.HTTPError as e:
-                                    handle_duplicate_package_name_error(e, soda_json_structure)
+                                    handle_duplicate_package_name_error(
+                                        e, soda_json_structure
+                                    )
                                 if "files" not in tracking_folder:
                                     tracking_folder["files"] = {}
                                     tracking_folder["files"][desired_name] = {
@@ -3508,9 +3512,15 @@ def generate_manifest_file_locally(generate_purpose, soda_json_structure):
 
 
 def handle_duplicate_package_name_error(e, soda_json_structure):
-    if e.response.text == '{"type":"BadRequest","message":"package name must be unique","code":400}':
+    if (
+        e.response.text
+        == '{"type":"BadRequest","message":"package name must be unique","code":400}'
+    ):
         if "if-existing-files" in soda_json_structure["generate-dataset"]:
-            if soda_json_structure["generate-dataset"]["if-existing-files"] == "create-duplicate":
+            if (
+                soda_json_structure["generate-dataset"]["if-existing-files"]
+                == "create-duplicate"
+            ):
                 return
 
     raise e
