@@ -7092,6 +7092,7 @@ $(document).ready(() => {
     let guidedLicense = sodaJSONObj["digital-metadata"]["license"];
     let guidedBannerImagePath =
       sodaJSONObj["digital-metadata"]["banner-image-path"];
+    let guidedSubjectsMetadata = sodaJSONObj["subjects-table-data"];
 
     create_dataset(
       guidedDatasetName,
@@ -7112,6 +7113,13 @@ $(document).ready(() => {
         guided_add_description(guidedBfAccount, guidedDatasetName, guidedReadMe)
       )
       .then(guided_main_curate())
+      .then(
+        guided_add_dataset_metadata(
+          guidedBfAccount,
+          guidedDatasetName,
+          guidedSubjectsMetadata
+        )
+      )
       /*.then(guided_add_metadata(guidedBfAccount, guidedDatasetName))*/
       /*
       .then((res) => {
@@ -7556,6 +7564,56 @@ $(document).ready(() => {
         }
       }
     );
+  };
+  const guided_add_dataset_metadata = async (
+    guidedBfAccount,
+    guidedDatasetName,
+    guidedSubjectsMetadata
+  ) => {
+    async function guidedUploadSubjectsMetadata(
+      bfAccount,
+      datasetName,
+      subjectsTableData
+    ) {
+      return new Promise((resolve, reject) => {
+        client.invoke(
+          "api_save_subjects_file",
+          true,
+          bfAccount,
+          datasetName,
+          undefined,
+          subjectsTableData,
+          (error, res) => {
+            if (error) {
+              guidedUploadStatusIcon(
+                "guided-subjects-metadata-upload-status",
+                "error"
+              );
+              log.error(error);
+              console.error(error);
+              let emessage = userError(error);
+              reject(error);
+            } else {
+              guidedUploadStatusIcon(
+                "guided-subjects-metadata-upload-status",
+                "success"
+              );
+              console.log("Subjects metadata added + " + res);
+              resolve(`Subjects metadata added` + res);
+            }
+          }
+        );
+      });
+    }
+    const promises = [
+      guidedUploadSubjectsMetadata(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedSubjectsMetadata
+      ),
+    ];
+    const result = await Promise.allSettled(promises);
+    return result;
   };
   $("#guided-add-subject-button").on("click", () => {
     $("#guided-subjects-intro").hide();
