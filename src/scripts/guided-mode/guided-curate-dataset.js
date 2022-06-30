@@ -1456,8 +1456,17 @@ const traverseToTab = (targetPageID) => {
       datasetNameReviewText.innerHTML = datsetName;
       datasetSubtitleReviewText.innerHTML = datsetSubtitle;
       datasetPiOwnerReviewText.innerHTML = datasetPiOwner;
-      datasetUserPermissionsReviewText.innerHTML = datasetUserPermissions;
-      datasetTeamPermissionsReviewText.innerHTML = datasetTeamPermissions;
+
+      const datasetUserPermissionsString = datasetUserPermissions
+        .map((permission) => permission.userString)
+        .join("<br>");
+      datasetUserPermissionsReviewText.innerHTML = datasetUserPermissionsString;
+
+      const datasetTeamPermissionsString = datasetTeamPermissions
+        .map((permission) => permission.teamString)
+        .join("<br>");
+      datasetTeamPermissionsReviewText.innerHTML = datasetTeamPermissionsString;
+
       datasetTagsReviewText.innerHTML = datasetTags;
       datasetLicenseReviewText.innerHTML = datasetLicense;
     }
@@ -7168,16 +7177,12 @@ $(document).ready(() => {
     let guidedUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
     let guidedPIOwner = sodaJSONObj["digital-metadata"]["pi-owner"];
     let guidedTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
-    let guidedStudyPurpose = sodaJSONObj["digital-metadata"]["study-purpose"];
+    /*let guidedStudyPurpose = sodaJSONObj["digital-metadata"]["study-purpose"];
     let guidedDataCollection =
       sodaJSONObj["digital-metadata"]["data-collection"];
     let guidedPrimaryConclusion =
-      sodaJSONObj["digital-metadata"]["primary-conclusion"];
-    let guidedReadMe = buildReadMeString(
-      guidedStudyPurpose,
-      guidedDataCollection,
-      guidedPrimaryConclusion
-    );
+      sodaJSONObj["digital-metadata"]["primary-conclusion"];*/
+    let guidedReadMe = sodaJSONObj["dataset-metadata"]["README"];
     let guidedTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
     let guidedLicense = sodaJSONObj["digital-metadata"]["license"];
     let guidedBannerImagePath =
