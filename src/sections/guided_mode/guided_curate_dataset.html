@@ -4981,6 +4981,7 @@
                   Generate dataset on PennSieve
                 </button>
               </div>
+
               <div
                 id="guided-dataset-generate-location-panels"
                 class="guided--panel"
@@ -5009,7 +5010,10 @@
                             Current account:
                           </h5>
                         </div>
-                        <div class="guided--dataset-content-container">
+                        <div
+                          class="guided--dataset-content-container"
+                          onClick="openDropdownPrompt(this, 'bf')"
+                        >
                           <h5
                             id="guided-bf-account"
                             class="guided--dataset-content guidedBfAccount"
@@ -5028,7 +5032,10 @@
                             Account details:
                           </h5>
                         </div>
-                        <div class="guided--dataset-content-container">
+                        <div
+                          class="guided--dataset-content-container"
+                          onClick="openDropdownPrompt(this, 'bf')"
+                        >
                           <h5
                             class="guided--dataset-content guidedBfAccountDetails"
                             id="guided-account-details"
@@ -5052,109 +5059,38 @@
             id="guided-dataset-generate-destination-tab"
             class="guided--panel hidden"
           >
-            <div class="guided--container-data-display">
-              <div class="guided--card-dataset-info">
-                <div class="guided--dataset-description-container">
-                  <h5 class="guided--dataset-description">Current account:</h5>
-                </div>
-                <div class="guided--dataset-content-container">
-                  <h5 class="guided--dataset-content guidedBfAccount">None</h5>
-                  <i
-                    class="far fa-edit jump-back guided-change-dataset-name"
-                    style="color: #000"
-                  ></i>
-                </div>
-              </div>
-              <div class="guided--card-dataset-info">
-                <div class="guided--dataset-description-container">
-                  <h5 class="guided--dataset-description">Account details:</h5>
-                </div>
-                <div class="guided--dataset-content-container">
-                  <h5 class="guided--dataset-content guidedBfAccountDetails">
-                    None
-                  </h5>
-                  <i
-                    class="far fa-edit jump-back guided-change-dataset-name"
-                    style="color: #000"
-                  ></i>
-                </div>
-              </div>
-            </div>
             <div class="guided--section">
-              <h2 class="guided--text-sub-step">
-                Which dataset would you like to generate on?
-              </h2>
-
-              <div class="guided--card-container">
-                <div
-                  class="option-card radio-button non-selected"
-                  id="guided-generate-dataset-new-card"
-                >
-                  <div class="card-head"></div>
-                  <div class="card-body">
-                    <svg
-                      width="40px"
-                      height="40px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-folder-plus"
-                      fill="var(--color-bg-orange)"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z"
-                        fill="#565E6B"
-                      />
-                      <path
-                        fill-rule="evenodd"
-                        d="M13.5 10a.5.5 0 0 1 .5.5V12h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V13h-1.5a.5.5 0 0 1 0-1H13v-1.5a.5.5 0 0 1 .5-.5z"
-                        fill="#13716D"
-                      />
-                    </svg>
-                    <h2>I want to generate on a new dataset</h2>
-                  </div>
-                </div>
-                <div
-                  class="coming-soon-div"
+              <h1 class="guided--text-sub-step mt-sm">
+                Which dataset would you like to genenerate on?
+              </h1>
+              <div
+                class="guided--radio-button-container"
+                style="margin-bottom: 7px"
+              >
+                <button
+                  class="ui primary basic button guided--radio-button coming-soon-div"
+                  id="guided-button-pennsieve-generate-existing"
                   data-content="Coming soon..."
                   rel="popover"
                   data-placement="bottom"
                   data-trigger="hover"
+                  data-next-element="guided-generate-dataset-existing-panel"
+                  data-button-config-value="pennsieve-generation-location"
+                  data-button-config-value-state="existing"
+                  style="width: 280px"
                 >
-                  <div
-                    class="option-card radio-button non-selected"
-                    style="
-                      background: #f6f6f6;
-                      pointer-events: none;
-                      opacity: 0.4;
-                    "
-                    id="guided-generate-dataset-existing-card"
-                  >
-                    <div class="card-head"></div>
-                    <div class="card-body">
-                      <svg
-                        width="40px"
-                        height="40px"
-                        viewBox="0 0 16 16"
-                        class="bi bi-folder-check"
-                        fill="var(--tagify-dd-color-primary)"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          fill-rule="evenodd"
-                          d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z"
-                          fill="#565E6B"
-                        />
-                        <path
-                          fill-rule="evenodd"
-                          d="M15.854 10.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708l1.146 1.147 2.646-2.647a.5.5 0 0 1 .708 0z"
-                          fill="#13716D"
-                        />
-                      </svg>
-                      <h2>I want to genenerate on an existing dataset</h2>
-                    </div>
-                  </div>
-                </div>
+                  Update an existing Pennsieve dataset
+                </button>
+                <button
+                  class="ui primary basic button guided--radio-button"
+                  id="guided-button-pennsieve-generate-new"
+                  data-next-element="guided-generate-dataset-new-panel"
+                  data-button-config-value="pennsieve-generation-location"
+                  data-button-config-value-state="new"
+                  style="width: 280px"
+                >
+                  Generate a new Pennsieve dataset
+                </button>
               </div>
               <div
                 id="generate-dataset-destination-panels"
@@ -5192,17 +5128,6 @@
                       </div>
                     </div>
                   </div>
-                  <button
-                    class="ui positive button guided--button"
-                    id="guided-dataset-name-confirm-button"
-                    style="
-                      background-color: var(--color-light-green) !important;
-                      width: 120px !important;
-                      margin-bottom: 10px;
-                    "
-                  >
-                    Confirm
-                  </button>
                 </div>
                 <div
                   id="guided-generate-dataset-existing-panel"
@@ -5437,7 +5362,10 @@
                   <h5 class="guided--dataset-description">Dataset Name:</h5>
                 </div>
                 <div class="guided--dataset-content-container">
-                  <h5 class="guided--dataset-content guidedDatasetName">
+                  <h5
+                    class="guided--dataset-content"
+                    id="guided-review-dataset-name"
+                  >
                     None
                   </h5>
                   <i
@@ -5451,7 +5379,10 @@
                   <h5 class="guided--dataset-description">Dataset subtitle:</h5>
                 </div>
                 <div class="guided--dataset-content-container">
-                  <h5 class="guided--dataset-content guidedDatasetSubtitle">
+                  <h5
+                    class="guided--dataset-content guidedDatasetSubtitle"
+                    id="guided-review-dataset-subtitle"
+                  >
                     None
                   </h5>
                   <i class="far fa-edit jump-back" style="color: #000"></i>
@@ -5464,13 +5395,19 @@
                   </h5>
                 </div>
                 <div class="guided--dataset-content-container">
-                  <h5 class="guided--dataset-content guidedDatasetOwner"></h5>
+                  <h5
+                    class="guided--dataset-content"
+                    id="guided-review-dataset-pi-owner"
+                  ></h5>
                   <i class="far fa-edit jump-back" style="color: #000"></i>
                 </div>
               </div>
               <div class="guided--card-dataset-info">
                 <div class="guided--dataset-description-container">
-                  <h5 class="guided--dataset-description">
+                  <h5
+                    class="guided--dataset-description"
+                    id="guided-review-dataset-user-permissions"
+                  >
                     Designated user permissions:
                   </h5>
                 </div>
@@ -5480,7 +5417,10 @@
               </div>
               <div class="guided--card-dataset-info">
                 <div class="guided--dataset-description-container">
-                  <h5 class="guided--dataset-description">
+                  <h5
+                    class="guided--dataset-description"
+                    id="guided-review-dataset-team-permissions"
+                  >
                     Designated team permissions:
                   </h5>
                 </div>
@@ -5496,13 +5436,17 @@
                   <h5
                     class="guided--dataset-content guidedDatasetTags"
                     style="white-space: pre-wrap"
+                    id="guided-review-dataset-tags"
                   ></h5>
                   <i class="far fa-edit jump-back" style="color: #000"></i>
                 </div>
               </div>
               <div class="guided--card-dataset-info">
                 <div class="guided--dataset-description-container">
-                  <h5 class="guided--dataset-description">
+                  <h5
+                    class="guided--dataset-description"
+                    id="guided-review-dataset-license"
+                  >
                     Designated license:
                   </h5>
                 </div>

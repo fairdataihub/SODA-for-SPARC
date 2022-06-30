@@ -917,3 +917,7 @@ h1.guided--text-sub-step {
 .selection-aside-item:hover {
   background-color: aliceblue;
 }
+
+.coming-soon-div {
+  pointer-events: none;
+}
