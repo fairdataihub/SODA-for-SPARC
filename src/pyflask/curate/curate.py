@@ -2649,7 +2649,10 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                             ]:
                                 if item.name == projected_name:
                                     item.name = final_name
-                                    item.update()
+                                    try: 
+                                        item.update()
+                                    except requests.exceptions.HTTPError as e:
+                                        handle_duplicate_package_name_error(e, soda_json_structure)
                                     if "files" not in tracking_folder:
                                         tracking_folder["files"] = {}
                                         tracking_folder["files"][desired_name] = {
