@@ -1713,9 +1713,8 @@
                 text-align: center;
               "
               >Where would you like to generate your submission.xlsx file?
-              <br /><span style="color: #898989; font-size: 12px"
-                >Please select one:</span
-              ></label
+              <br />
+              <p class="sub-text">Please select one:</p></label
             >
 
             <div
@@ -3693,9 +3692,8 @@
                 text-align: center;
               "
               >Where would you like to generate your dataset_description.xlsx
-              file? <br /><span style="color: #898989; font-size: 12px"
-                >Please select one:</span
-              ></label
+              file? <br />
+              <p class="sub-text">Please select one:</p></label
             >
 
             <div
@@ -4712,10 +4710,8 @@
                 color: var(--color-bg-plum);
                 text-align: center;
               "
-              >Where would you like to generate your subjects.xlsx file?
-              <br /><span style="color: #898989; font-size: 12px"
-                >Please select one:</span
-              ></label
+              >Where would you like to generate your subjects.xlsx file? <br />
+              <p class="sub-text">Please select one:</p></label
             >
 
             <div
@@ -6866,10 +6862,8 @@
                 color: var(--color-bg-plum);
                 text-align: center;
               "
-              >Where would you like to generate your samples.xlsx file?
-              <br /><span style="color: #898989; font-size: 12px"
-                >Please select one:</span
-              ></label
+              >Where would you like to generate your samples.xlsx file? <br />
+              <p class="sub-text">Please select one:</p></label
             >
 
             <div
@@ -8648,10 +8642,8 @@
                 color: var(--color-bg-plum);
                 text-align: center;
               "
-              >Where would you like to generate your CHANGES.txt file?
-              <br /><span style="color: #898989; font-size: 12px"
-                >Please select one:</span
-              ></label
+              >Where would you like to generate your CHANGES.txt file? <br />
+              <p class="sub-text">Please select one:</p></label
             >
 
             <div
@@ -9625,10 +9617,8 @@
                 color: var(--color-bg-plum);
                 text-align: center;
               "
-              >Where would you like to generate your README.txt file?
-              <br /><span style="color: #898989; font-size: 12px"
-                >Please select one:</span
-              ></label
+              >Where would you like to generate your README.txt file? <br />
+              <p class="sub-text">Please select one:</p></label
             >
 
             <div
@@ -10033,6 +10023,36 @@
       >
         <div class="ui form" style="width: 100%">
           <div class="grouped fields">
+            <div
+              style="
+                border-radius: 0.5rem;
+                margin-top: 7px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                width: 550px;
+                margin-bottom: 20px;
+                align-self: center;
+              "
+            >
+              <label
+                style="
+                  font-size: 17px;
+                  font-weight: 700;
+                  color: var(--color-bg-plum) !important;
+                  margin-bottom: 10px;
+                "
+                >About</label
+              >
+              <p style="color: dimgray">
+                The SPARC guidelines require each dataset to have specific
+                metadata files including manifest files, as described by the
+                SPARC Data Standards (SDS). A manifest file is required in
+                either each of the high-level SPARC folders OR in each of the
+                dataset folders with at least one file. A manifest file must
+                contain the two fields: filename and timestamp.
+              </p>
+            </div>
             <label
               style="
                 font-size: 17px;
@@ -10040,9 +10060,8 @@
                 text-align: center;
               "
               >For which of the below do you want to create manifest.xlsx files?
-              <br /><span style="color: #898989; font-size: 12px"
-                >Please select one:</span
-              ></label
+              <br />
+              <p class="sub-text">Please select one:</p></label
             >
 
             <div
@@ -10175,17 +10194,35 @@
               display: none;
               flex-direction: row;
               justify-content: center;
-              margin: 0 auto;
+              margin: 10px auto;
             "
           >
             <button
-              id="btn-confirm-manifest-local-folder-dataset"
-              data-next="Question-prepare-manifest-4"
-              onclick="transitionFreeFormMode(this, 'Question-prepare-manifest-2', 'create_manifest-tab', 'delete', 'prepare-manifest')"
+              onclick="generateManifestFolderLocallyForEdit(this)"
               class="btn_animated"
               style="margin: 0 10px; width: 100px; border: none !important"
             >
               Confirm
+            </button>
+            <button
+              class="btn_question"
+              data-next="Question-prepare-manifest-5"
+              id="preview-manifest-fake-confirm-local"
+              onclick="transitionFreeFormMode(this, 'Question-prepare-manifest-2', 'create_manifest-tab', '', 'individual-question prepare-manifest')"
+              style="
+                cursor: pointer;
+                border-radius: 8px;
+                background: #fff;
+                color: var(--color-light-green);
+                font-weight: 600;
+                border: 1px solid var(--color-light-green);
+                width: 160px;
+                padding: 10px;
+                display: none;
+                visibility: hidden;
+              "
+            >
+              Fake confirm
             </button>
           </div>
         </div>
@@ -10326,12 +10363,30 @@
                 id="div-check-bf-create-manifest"
               >
                 <button
-                  data-next="Question-prepare-manifest-4"
-                  onclick="transitionFreeFormMode(this, 'Question-prepare-manifest-3', 'create_manifest-tab', 'delete', 'prepare-manifest')"
+                  onclick="generateManifestFolderLocallyForEdit(this)"
                   class="btn_animated"
                   style="margin: 0 10px; width: 100px; border: none !important"
                 >
                   Confirm
+                </button>
+                <button
+                  class="btn_question"
+                  data-next="Question-prepare-manifest-5"
+                  id="preview-manifest-fake-confirm-pennsieve"
+                  onclick="transitionFreeFormMode(this, 'Question-prepare-manifest-3', 'create_manifest-tab', '', 'individual-question prepare-manifest')"
+                  style="
+                    cursor: pointer;
+                    border-radius: 8px;
+                    background: #fff;
+                    color: var(--color-light-green);
+                    font-weight: 600;
+                    border: 1px solid var(--color-light-green);
+                    width: 160px;
+                    padding: 10px;
+                    display: none;
+                  "
+                >
+                  Fake confirm
                 </button>
               </div>
             </div>
@@ -10347,16 +10402,15 @@
           <div class="grouped fields">
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >Do you want to add any additional metadata to the manifest files?
-              <br /><span style="color: #898989; font-size: 12px"
-                >Please select one:</span
-              >
+              <br />
+              <p class="sub-text">Please select one:</p>
             </label>
             <div class="field" style="margin: auto; width: 500px">
               <div
                 style="display: flex; justify-content: center; margin-top: 25px"
               >
                 <button
-                  onclick="generateManifestPrecheck(false)"
+                  onclick="generateManifestPrecheck(false, this)"
                   class="btn_question"
                   style="
                     cursor: pointer;
@@ -10421,11 +10475,23 @@
       >
         <div class="ui form" style="width: 100%">
           <div class="grouped fields">
-            <label style="font-size: 17px; color: var(--color-bg-plum)">
-              Please select any manifest file in the dataset structure below to
-              edit. <br /><span style="color: #898989; font-size: 12px"
-                >Click on a folder to expand it:</span
-              >
+            <label
+              style="
+                font-size: 17px;
+                color: var(--color-bg-plum);
+                margin: 0 auto;
+                width: 550px;
+              "
+            >
+              Review/Edit manifest files. <br />
+              <p class="sub-text">
+                SODA will automatically include the "filename", "timestamp", and
+                "file type" in your manifest files. Any "description" and
+                "Additional Metadata" from existing manifest files will be
+                imported and included as well. Double click on any manifest file
+                below to preview or add additional metadata then click on
+                "Generate now" to generate them.
+              </p>
             </label>
             <div
               class="field"
@@ -10450,7 +10516,7 @@
                 style="display: flex; justify-content: center; margin-top: 25px"
               >
                 <button
-                  onclick="generateManifestPrecheck(true)"
+                  onclick="generateManifestPrecheck(true, this)"
                   class="btn_question"
                   style="
                     cursor: pointer;

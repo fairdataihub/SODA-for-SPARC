@@ -20,7 +20,7 @@ $(document).ready(function () {
             "display",
             "flex"
           );
-          $("#div-confirm-manifest-local-folder-dataset button").show();
+          $($("#div-confirm-manifest-local-folder-dataset button")[0]).show();
         } else {
           document.getElementById(
             "input-manifest-local-folder-dataset"
@@ -317,7 +317,7 @@ const processManifestInfo = (headers, data) => {
 
 var localDatasetFolderPath = "";
 
-async function generateManifestPrecheck(manifestEditBoolean) {
+async function generateManifestPrecheck(manifestEditBoolean, ev) {
   var type = "local";
   if (
     $('input[name="generate-manifest-1"]:checked').prop("id") ===
@@ -356,10 +356,10 @@ async function generateManifestPrecheck(manifestEditBoolean) {
   if (!continueProgress) {
     return;
   }
-  generateManifest("", type, manifestEditBoolean);
+  generateManifest("", type, manifestEditBoolean, ev);
 }
 
-async function generateManifest(action, type, manifestEditBoolean) {
+async function generateManifest(action, type, manifestEditBoolean, ev) {
   Swal.fire({
     title: "Reviewing the dataset structure.",
     html: "Please wait...",
@@ -527,7 +527,8 @@ async function generateManifest(action, type, manifestEditBoolean) {
       extractBFDatasetForManifestFile(
         false,
         defaultBfAccount,
-        defaultBfDataset
+        defaultBfDataset,
+        ev
       );
     }
   }
@@ -905,7 +906,8 @@ const removeDir = function (pathdir) {
 async function extractBFDatasetForManifestFile(
   editBoolean,
   bfaccount,
-  bfdataset
+  bfdataset,
+  ev
 ) {
   var result;
   try {
@@ -1056,9 +1058,10 @@ async function extractBFDatasetForManifestFile(
   if (!editBoolean) {
     generateManifestOnPennsieve();
   } else {
-    $("#preview-manifest-fake-confirm").click();
+    $("#preview-manifest-fake-confirm-pennsieve").click();
     $("#Question-prepare-manifest-4").removeClass("show");
     $("#Question-prepare-manifest-4").removeClass("prev");
+    $(ev).hide();
     loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
     Swal.fire({
       title: "Successfully generated!",
@@ -1267,7 +1270,7 @@ function checkEmptySubFolders(datasetStructure) {
 // helper function 1: First, generate manifest file folder locally
 // Parameter: dataset structure object
 // Return: manifest file folder path
-async function generateManifestFolderLocallyForEdit() {
+async function generateManifestFolderLocallyForEdit(ev) {
   // Show loading popup
   Swal.fire({
     title: `Generating manifest files for edits`,
@@ -1329,17 +1332,22 @@ async function generateManifestFolderLocallyForEdit() {
       }).then((result) => {});
       return;
     } else {
-      createManifestLocally("local", true, "");
+      createManifestLocally("local", true, "", ev);
     }
   } else {
     // Case 2: bf dataset
     sodaJSONObj["bf-account-selected"] = { "account-name": defaultBfAccount };
     sodaJSONObj["bf-dataset-selected"] = { "dataset-name": defaultBfDataset };
-    extractBFDatasetForManifestFile(true, defaultBfAccount, defaultBfDataset);
+    extractBFDatasetForManifestFile(
+      true,
+      defaultBfAccount,
+      defaultBfDataset,
+      ev
+    );
   }
 }
 
-function createManifestLocally(type, editBoolean, originalDataset) {
+function createManifestLocally(type, editBoolean, originalDataset, ev) {
   // generateManifestHelper();
   var generatePath = "";
   sodaJSONObj["manifest-files"]["local-destination"] = path.join(
@@ -1410,9 +1418,10 @@ function createManifestLocally(type, editBoolean, originalDataset) {
                       Swal.hideLoading();
                     },
                   }).then((result) => {});
-                  $("#preview-manifest-fake-confirm").click();
+                  $("#preview-manifest-fake-confirm-local").click();
                   $("#Question-prepare-manifest-4").removeClass("show");
                   $("#Question-prepare-manifest-4").removeClass("prev");
+                  $(ev).hide();
                   loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
                 }
               }
@@ -1547,29 +1556,37 @@ function createChildNodeManifest(
   };
   if (oldFormatNode) {
     for (const [key, value] of Object.entries(oldFormatNode["folders"])) {
-      let disabled = true;
-      let opened = false;
+      let disabled = false;
+      let opened = true;
       let selected = false;
-      if (
-        highLevelFolders.includes(nodeName) ||
-        nodeName === "My_dataset_structure"
-      ) {
-        opened = true;
-        selected = true;
-        disabled = false;
+      if (nodeName === "My_dataset_structure") {
+        newFormatNode.state.selected = true;
+        newFormatNode.state.opened = true;
+        newFormatNode.state.disabled = false;
+        var new_node = createChildNodeManifest(
+          value,
+          key,
+          "folder",
+          "",
+          opened,
+          selected,
+          disabled
+        );
       }
-      newFormatNode.state.selected = selected;
-      newFormatNode.state.opened = opened;
-      newFormatNode.state.disabled = disabled;
-      var new_node = createChildNodeManifest(
-        value,
-        key,
-        "folder",
-        "",
-        opened,
-        selected,
-        disabled
-      );
+      if (highLevelFolders.includes(key)) {
+        newFormatNode.state.selected = selected;
+        newFormatNode.state.opened = true;
+        newFormatNode.state.disabled = disabled;
+        var new_node = createChildNodeManifest(
+          value,
+          key,
+          "folder",
+          "",
+          true,
+          selected,
+          disabled
+        );
+      }
       newFormatNode["children"].push(new_node);
       newFormatNode["children"].sort((a, b) => (a.text > b.text ? 1 : -1));
     }
@@ -1605,17 +1622,11 @@ function createChildNodeManifest(
                 state: { disabled: false },
                 type: nodeType,
               };
-            } else {
-              var new_node = {
-                text: key,
-                state: { disabled: true },
-                type: nodeType,
-              };
+              newFormatNode["children"].push(new_node);
+              newFormatNode["children"].sort((a, b) =>
+                a.text > b.text ? 1 : -1
+              );
             }
-            newFormatNode["children"].push(new_node);
-            newFormatNode["children"].sort((a, b) =>
-              a.text > b.text ? 1 : -1
-            );
           }
         }
       }

@@ -644,33 +644,50 @@ const nextPrev = (n) => {
     });
     // check if required metadata files are included
   } else if (n === 1 && x[currentTab].id === "metadata-files-tab") {
-    var requiredFiles = ["submission", "dataset_description", "subjects"];
-    if (
-      $(".metadata-button.button-generate-dataset.code-metadata").css(
-        "display"
-      ) === "block"
-    ) {
-      requiredFiles.push("code_description");
-    }
+    var requiredFiles = [
+      "submission",
+      "dataset_description",
+      "subjects",
+      "README",
+    ];
+    let missingFiles = [];
     var withoutExtMetadataArray = [];
     if (!("metadata-files" in sodaJSONObj)) {
       sodaJSONObj["metadata-files"] = {};
     }
-    Object.keys(sodaJSONObj["metadata-files"]).forEach((element) => {
-      if (!element.includes("-DELETED")) {
-        withoutExtMetadataArray.push(path.parse(element).name);
-      }
-    });
-    var subArrayBoolean = requiredFiles.every((val) =>
-      withoutExtMetadataArray.includes(val)
-    );
-    if (requiredFiles.includes("code_description")) {
-      var extraRequiredFile = "<li> code_description</li>";
-    } else {
-      var extraRequiredFile = "";
+    if (
+      Object.keys(sodaJSONObj["dataset-structure"]["folders"]).includes("code")
+    ) {
+      requiredFiles.push("code_description");
     }
-    if (!subArrayBoolean) {
-      var notIncludedMessage = `<div style='text-align: left'>You did not include all of the following required metadata files: <br><ol style='text-align: left'><li> submission</li><li> dataset_description</li> <li> subjects</li> ${extraRequiredFile} </ol>Are you sure you want to continue?</div>`;
+
+    if (Object.keys(sodaJSONObj["metadata-files"]).length > 0) {
+      Object.keys(sodaJSONObj["metadata-files"]).forEach((element) => {
+        let file_name = path.parse(element).name;
+        if (!element.includes("-DELETED")) {
+          withoutExtMetadataArray.push(path.parse(element).name);
+        }
+        if (requiredFiles.includes(file_name)) {
+          let element_index = requiredFiles.indexOf(file_name);
+          requiredFiles.splice(element_index, 1);
+          missingFiles = [];
+        }
+      });
+      for (let element in requiredFiles) {
+        let swal_element = `<li>${requiredFiles[element]}</li>`;
+        missingFiles.push(swal_element);
+      }
+    } else {
+      for (let element in requiredFiles) {
+        let swal_element = `<li>${requiredFiles[element]}</li>`;
+        missingFiles.push(swal_element);
+      }
+    }
+
+    if (missingFiles.length > 0) {
+      var notIncludedMessage = `<div style='text-align: left'>This dataset seems to have non SPARC folders and/or high-level metadata files: <br><ol style='text-align: left'>${missingFiles.join(
+        ""
+      )} </ol>Are you sure you want to continue?</div>`;
       Swal.fire({
         allowOutsideClick: false,
         allowEscapeKey: false,
