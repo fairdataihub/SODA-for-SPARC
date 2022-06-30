@@ -2266,101 +2266,6 @@ const isPageValid = (pageID) => {
   }
 };
 
-//populates user inputs from the completed-tabs array, and returns the last page
-//that the user completed
-const populateGuidedModePages = (loadedJSONObj) => {
-  let completedTabs = loadedJSONObj["completed-tabs"];
-  //variable that keeps track if last completed page. Once this function is finished populating the UI,
-  //the last completed page is rendered and next button clicked
-  let lastCompletedTab = "none";
-
-  if (completedTabs.includes("guided-dataset-starting-point-tab")) {
-    let datasetName = loadedJSONObj["digital-metadata"]["name"];
-    let datasetSubtitle = loadedJSONObj["digital-metadata"]["subtitle"];
-
-    $("#guided-dataset-name-input").val(datasetName);
-    $("#guided-dataset-subtitle-input").val(datasetSubtitle);
-
-    let startingPoint = loadedJSONObj["starting-point"]["type"];
-    if (startingPoint == "new") {
-      //this will break when no/yes cards are changed
-      handlePageBranching($("#guided-curate-new-dataset-card"));
-      lastCompletedTab = "guided-dataset-starting-point-tab";
-    }
-    if (startingPoint == "local") {
-      handlePageBranching($("#guided-curate-existing-local-dataset-card"));
-      lastCompletedTab = "guided-dataset-starting-point-tab";
-    } else {
-      lastCompletedTab = "guided-dataset-starting-point-tab";
-    }
-  }
-  if (completedTabs.includes("guided-banner-image-addition-tab")) {
-    // CURRENTLY NO UI UPDATES ON THIS TAB
-    console.log("contains banner image");
-    lastCompletedTab = "guided-banner-image-addition-tab";
-  }
-  if (completedTabs.includes("guided-subjects-folder-tab")) {
-    lastCompletedTab = "guided-subjects-folder-tab";
-  }
-  if (completedTabs.includes("guided-samples-folder-tab")) {
-    lastCompletedTab = "guided-samples-folder-tab";
-  }
-  if (completedTabs.includes("guided-source-folder-tab")) {
-    lastCompletedTab = "guided-source-folder-tab";
-  }
-  if (completedTabs.includes("guided-derivative-folder-tab")) {
-    lastCompletedTab = "guided-derivative-folder-tab";
-  }
-  if (completedTabs.includes("guided-code-folder-tab")) {
-    lastCompletedTab = "guided-code-folder-tab";
-  }
-  if (completedTabs.includes("guided-docs-folder-tab")) {
-    lastCompletedTab = "guided-docs-folder-tab";
-  }
-
-  if (completedTabs.includes("guided-folder-importation-tab")) {
-    let datasetLocation = loadedJSONObj["starting-point"]["local-path"];
-    $(".guidedDatasetPath").text(datasetLocation);
-    lastCompletedTab = "guided-folder-importation-tab";
-  }
-  if (completedTabs.includes("guided-designate-pi-owner-tab")) {
-    let PIOwner = loadedJSONObj["digital-metadata"]["pi-owner"]["userString"];
-    $(".guidedDatasetOwner").text(PIOwner);
-    lastCompletedTab = "guided-designate-pi-owner-tab";
-  }
-  if (completedTabs.includes("guided-designate-permissions-tab")) {
-    // CURRENTLY NO UI UPDATES ON THIS TAB   TODO LATER
-
-    lastCompletedTab = "guided-designate-permissions-tab";
-  }
-  if (completedTabs.includes("guided-add-description-tab")) {
-    let studyPurpose = loadedJSONObj["digital-metadata"]["study-purpose"];
-    let dataCollection = loadedJSONObj["digital-metadata"]["data-collection"];
-    let primaryConclusion =
-      loadedJSONObj["digital-metadata"]["primary-conclusion"];
-    let datasetTags = loadedJSONObj["digital-metadata"]["dataset-tags"];
-    $("#guided-ds-description-study-purpose").val(studyPurpose);
-    $("#guided-ds-description-data-collection").val(dataCollection);
-    $("#guided-ds-description-primary-conclusion").val(primaryConclusion);
-    guidedDatasetTagsTagify.addTags(datasetTags);
-
-    lastCompletedTab = "guided-add-description-tab";
-  }
-  if (completedTabs.includes("guided-assign-license-tab")) {
-    // CURRENTLY NO UI UPDATES ON THIS TAB   TODO LATER
-    let datasetLicense = loadedJSONObj["digital-metadata"]["license"];
-    $(".guidedBfLicense").text(datasetLicense);
-
-    lastCompletedTab = "guided-assign-license-tab";
-  }
-
-  $("#guided_create_new_bf_dataset_btn").click();
-  console.log(lastCompletedTab);
-  traverseToTab(lastCompletedTab);
-  //Refresh select pickers so items can be selected
-  $(".selectpicker").selectpicker("refresh");
-  $("#guided-next-button").click();
-};
 //Loads UI when continue curation button is pressed
 const guidedResumeProgress = async (resumeProgressButton) => {
   const datasetNameToResume = resumeProgressButton
@@ -6979,7 +6884,7 @@ $(document).ready(() => {
         (error, res) => {
           if (error) {
             guidedUploadStatusIcon(
-              "guided-dataset-user-permissions-upload-status",
+              "guided-dataset-team-permissions-upload-status",
               "error"
             );
             log.error(error);
@@ -6988,7 +6893,7 @@ $(document).ready(() => {
             reject(error);
           } else {
             guidedUploadStatusIcon(
-              "guided-dataset-user-permissions-upload-status",
+              "guided-dataset-team-permissions-upload-status",
               "success"
             );
             log.info("Dataset permission added");
@@ -7038,7 +6943,7 @@ $(document).ready(() => {
     console.log(result.map((promise) => promise.status));
   };
 
-  const buildReadMeString = (
+  /*const buildReadMeString = (
     studyPurpose,
     dataCollection,
     primaryConclusion
@@ -7051,7 +6956,7 @@ $(document).ready(() => {
     );
     requiredFields = requiredFields.join("");
     return requiredFields;
-  };
+  };*/
 
   const guided_add_description = async (bfAccount, bfDataset, readMe) => {
     return new Promise((resolve, reject) => {
@@ -7188,8 +7093,6 @@ $(document).ready(() => {
     let guidedBannerImagePath =
       sodaJSONObj["digital-metadata"]["banner-image-path"];
 
-    guidedUpdateJSONStructureGenerate();
-
     create_dataset(
       guidedDatasetName,
       guidedDatasetSubtitle,
@@ -7225,13 +7128,13 @@ $(document).ready(() => {
         });
       });
   };
-
+  /*
   const guidedUpdateJSONStructureGenerate = () => {
     sodaJSONObj["generate-dataset"] = {
       destination: "bf",
       "generate-option": "existing-bf",
     };
-  };
+  };*/
 
   function guided_initiate_generate() {
     // Initiate curation by calling Python function
@@ -7250,25 +7153,12 @@ $(document).ready(() => {
       }
     }
 
-    let dataset_name = "";
-    let dataset_destination = "";
-
-    if ("bf-dataset-selected" in sodaJSONObj) {
-      dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-      dataset_destination = "Pennsieve";
-    } else if ("generate-dataset" in sodaJSONObj) {
-      if ("destination" in sodaJSONObj["generate-dataset"]) {
-        let destination = sodaJSONObj["generate-dataset"]["destination"];
-        if (destination == "local") {
-          dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-          dataset_destination = "Local";
-        }
-        if (destination == "bf") {
-          dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-          dataset_destination = "Pennsieve";
-        }
-      }
-    }
+    let dataset_name = sodaJSONObj["digital-metadata"]["name"];
+    sodaJSONObj["bf-dataset-selected"] = {};
+    sodaJSONObj["bf-dataset-selected"]["dataset-name"] = dataset_name;
+    sodaJSONObj["generate-dataset"]["destination"] = "bf";
+    sodaJSONObj["generate-dataset"]["generate-option"] = "existing-bf";
+    let dataset_destination = "Pennsieve";
 
     client.invoke("api_main_curate_function", sodaJSONObj, (error, res) => {
       if (error) {
@@ -8808,11 +8698,13 @@ $(document).ready(() => {
         if (buttonNoGuidedCurateSelected) {
           sodaJSONObj["guided-options"]["dataset-start-location"] =
             "guided-curate";
+          sodaJSONObj["starting-point"]["type"] = "new";
         }
 
         if (buttonYesImportExistingSelected) {
           sodaJSONObj["guided-options"]["dataset-start-location"] =
             "import-existing";
+          sodaJSONObj["starting-point"]["type"] = "local";
         }
       }
 
@@ -10755,210 +10647,3 @@ $(document).ready(() => {
     }
   });*/
 });
-
-const guided_generate = async () => {
-  // Initiate curation by calling Python function
-  let manifest_files_requested = false;
-  var main_curate_status = "Solving";
-  var main_total_generate_dataset_size;
-
-  if ("manifest-files" in sodaJSONObj) {
-    if ("destination" in sodaJSONObj["manifest-files"]) {
-      if (sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
-        manifest_files_requested = true;
-        delete_imported_manifest();
-      }
-    }
-  }
-
-  let dataset_name = "";
-  let dataset_destination = "";
-
-  if ("bf-dataset-selected" in sodaJSONObj) {
-    dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-    dataset_destination = "Pennsieve";
-    console.log(dataset_name);
-  } else if ("generate-dataset" in sodaJSONObj) {
-    if ("destination" in sodaJSONObj["generate-dataset"]) {
-      let destination = sodaJSONObj["generate-dataset"]["destination"];
-      if (destination == "local") {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-        dataset_destination = "Local";
-      }
-      if (destination == "bf") {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-        dataset_destination = "Pennsieve";
-      }
-    }
-  }
-  console.log(dataset_name);
-
-  // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
-
-  client.invoke("api_main_curate_function", sodaJSONObj, (error, res) => {
-    if (error) {
-      $("#sidebarCollapse").prop("disabled", false);
-      var emessage = userError(error);
-      document.getElementById(
-        "para-new-curate-progress-bar-error-status"
-      ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
-      document.getElementById("para-new-curate-progress-bar-status").innerHTML =
-        "";
-      document.getElementById("div-new-curate-progress").style.display = "none";
-      generateProgressBar.value = 0;
-      log.error(error);
-      console.error(error);
-      // forceActionSidebar('show');
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        "Generate Dataset",
-        dataset_name
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        `Generate Dataset - ${dataset_destination}`,
-        dataset_name
-      );
-
-      file_counter = 0;
-      folder_counter = 0;
-      get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
-
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        "Generate Dataset - Size",
-        main_total_generate_dataset_size
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        `Generate Dataset - ${dataset_destination} - Size`,
-        dataset_name,
-        main_total_generate_dataset_size
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        `Generate Dataset - Number of Files`,
-        dataset_name,
-        file_counter
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        `Generate Dataset - ${dataset_destination} - Number of Files`,
-        dataset_name,
-        file_counter
-      );
-
-      client.invoke(
-        "api_bf_dataset_account",
-        defaultBfAccount,
-        (error, result) => {
-          if (error) {
-            log.error(error);
-            console.log(error);
-            var emessage = error;
-          } else {
-            datasetList = [];
-            datasetList = result;
-          }
-        }
-      );
-    } else {
-      $("#sidebarCollapse").prop("disabled", false);
-      log.info("Completed curate function");
-      console.log("Completed curate function");
-      if (manifest_files_requested) {
-        let high_level_folder_num = 0;
-        if ("dataset-structure" in sodaJSONObj) {
-          if ("folders" in sodaJSONObj["dataset-structure"]) {
-            for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
-              high_level_folder_num += 1;
-            }
-          }
-        }
-
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Manifest Files Created",
-          dataset_name,
-          high_level_folder_num
-        );
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          `Manifest Files Created - ${dataset_destination}`,
-          dataset_name,
-          high_level_folder_num
-        );
-      }
-
-      if (dataset_destination == "Pennsieve") {
-        show_curation_shortcut();
-      }
-
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        `Generate Dataset`,
-        dataset_name
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        `Generate Dataset - ${dataset_destination}`,
-        dataset_name
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        "Generate Dataset - Size",
-        dataset_name,
-        main_total_generate_dataset_size
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        `Generate Dataset - ${dataset_destination} - Size`,
-        dataset_name,
-        main_total_generate_dataset_size
-      );
-
-      file_counter = 0;
-      folder_counter = 0;
-      get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
-
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        `Generate Dataset - Number of Files`,
-        dataset_name,
-        file_counter
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        `Generate Dataset - ${dataset_destination} - Number of Files`,
-        dataset_name,
-        file_counter
-      );
-    }
-  });
-
-  // Progress tracking function for main curate
-  var countDone = 0;
-  var timerProgress = setInterval(main_progressfunction, 1000);
-};
