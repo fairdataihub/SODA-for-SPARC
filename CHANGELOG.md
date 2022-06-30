@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Step 4 in Prepare a Dataset. README.txt is now a mandatory metadata file in datasets.
 - Layout of Prepare Metadata tab has been changed. Buttons are spread out more evenly and Manifest file button received an icon change.
 
+## Bug fixes:
+
+- The option to upload duplicate files to an existing Pennsieve dataset through the Organize Datasets feature no longer causes an error while uploading.
+
 ## v.6.0.0 - 2022-05-17
 
 ### Feature additions:

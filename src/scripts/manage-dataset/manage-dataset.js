@@ -2262,8 +2262,10 @@ const showCurrentLicense = async () => {
           if (res === "Creative Commons Attribution") {
             $("#button-add-license").hide();
             $("#assign-a-license-header").hide();
+
             licenseContainer.style.display = "block";
             document.getElementById("license-assigned").style.display = "block";
+
           } else {
             $("#button-add-license").show();
             $("#assign-a-license-header").show();
