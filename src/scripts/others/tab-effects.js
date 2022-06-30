@@ -655,6 +655,11 @@ const nextPrev = (n) => {
     if (!("metadata-files" in sodaJSONObj)) {
       sodaJSONObj["metadata-files"] = {};
     }
+    if (
+      Object.keys(sodaJSONObj["dataset-structure"]["folders"]).includes("code")
+    ) {
+      requiredFiles.push("code_description");
+    }
 
     if (Object.keys(sodaJSONObj["metadata-files"]).length > 0) {
       Object.keys(sodaJSONObj["metadata-files"]).forEach((element) => {
@@ -666,12 +671,12 @@ const nextPrev = (n) => {
           let element_index = requiredFiles.indexOf(file_name);
           requiredFiles.splice(element_index, 1);
           missingFiles = [];
-          for (element in requiredFiles) {
-            let swal_element = `<li>${requiredFiles[element]}</li>`;
-            missingFiles.push(swal_element);
-          }
         }
       });
+      for (let element in requiredFiles) {
+        let swal_element = `<li>${requiredFiles[element]}</li>`;
+        missingFiles.push(swal_element);
+      }
     } else {
       for (let element in requiredFiles) {
         let swal_element = `<li>${requiredFiles[element]}</li>`;
@@ -680,7 +685,7 @@ const nextPrev = (n) => {
     }
 
     if (missingFiles.length > 0) {
-      var notIncludedMessage = `<div style='text-align: left'>You did not include some of the following metadata files that are typically expected for all SPARC datasets: <br><ol style='text-align: left'>${missingFiles.join(
+      var notIncludedMessage = `<div style='text-align: left'>This dataset seems to have non SPARC folders and/or high-level metadata files: <br><ol style='text-align: left'>${missingFiles.join(
         ""
       )} </ol>Are you sure you want to continue?</div>`;
       Swal.fire({
@@ -1867,7 +1872,6 @@ async function transitionSubQuestionsButton(
     try {
       var res = await bf_request_and_populate_dataset(sodaJSONObj);
       result = [true, res];
-      console.log("requested here");
     } catch (err) {
       result = [false, err];
     }
@@ -3767,7 +3771,7 @@ $(document).ready(() => {
 
     if (section === "rename_existing_bf_dataset") {
       let rename_dataset_name = $("#rename_dataset_name").html();
-      if (rename_dataset_name != "None" && rename_dataset_name != "") {
+      if (rename_dataset_name.trim() != "None" && rename_dataset_name != "") {
         $("#bf-rename-dataset-name").val(rename_dataset_name);
       } else {
         $("#bf-rename-dataset-name").val("");

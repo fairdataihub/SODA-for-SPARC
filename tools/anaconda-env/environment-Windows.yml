@@ -20,3 +20,4 @@ dependencies:
   - xlrd == 2.0.1
   - biopython == 1.79
   - gevent == 21.12.0
+  - protobuf == 3.20.0
