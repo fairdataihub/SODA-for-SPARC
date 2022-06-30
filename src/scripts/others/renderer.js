@@ -3797,14 +3797,20 @@ function refreshBfUsersList() {
         $("#bf_list_users").selectpicker("refresh");
         $("#bf_list_users").find("option:not(:first)").remove();
         $("#guided_bf_list_users_and_teams").selectpicker("refresh");
-        $("#guided_bf_list_users_and_teams")
-          .find("option:not(:first)")
-          .remove();
+
+        //delete all elements with data-permission-type of "team"
+        const userDropdownElements = document.querySelectorAll(
+          "#guided_bf_list_users_and_teams option[permission-type='user']"
+        );
+        userDropdownElements.forEach((element) => {
+          element.remove();
+        });
+
         $("#button-add-permission-user").hide();
         $("#bf_list_users_pi").selectpicker("refresh");
         $("#bf_list_users_pi").find("option:not(:first)").remove();
         $("#guided_bf_list_users_pi").selectpicker("refresh");
-        $("#guided_bf_list_users_pi").find("option:not(:first)").remove();
+
         for (var myItem in res) {
           // returns like [..,''fname lname email !!**!! pennsieve_id',',..]
           let sep_pos = res[myItem].lastIndexOf("!|**|!");
@@ -3846,8 +3852,15 @@ function refreshBfTeamsList(teamList) {
         $("#bf_list_teams").selectpicker("refresh");
         $("#bf_list_teams").find("option:not(:first)").remove();
         $("#guided_bf_list_users_and_teams").selectpicker("refresh");
-
         $("#button-add-permission-team").hide();
+        //delete all elements with data-permission-type of "team"
+        const teamDropdownElements = document.querySelectorAll(
+          "#guided_bf_list_users_and_teams option[permission-type='team']"
+        );
+        teamDropdownElements.forEach((element) => {
+          element.remove();
+        });
+
         for (var myItem in res) {
           var myTeam = res[myItem];
           var optionTeam = document.createElement("option");

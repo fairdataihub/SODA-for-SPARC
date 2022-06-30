@@ -1104,10 +1104,7 @@ const traverseToTab = (targetPageID) => {
     //update the radio buttons using the button config from sodaJSONObj
     updateGuidedRadioButtonsFromJSON(targetPageID);
     //refresh selectPickers if page has them
-    if (
-      targetPageID === "guided-designate-pi-owner-tab" ||
-      "guided-designate-permissions-tab"
-    ) {
+    if (targetPageID === "guided-designate-pi-owner-tab") {
       //Refresh select pickers so items can be selected
       $(".selectpicker").selectpicker("refresh");
     }
@@ -1429,6 +1426,40 @@ const traverseToTab = (targetPageID) => {
         sodaJSONObj["digital-metadata"]["pi-owner"]["userString"];
       const datasetUserPermissions =
         sodaJSONObj["digital-metadata"]["user-permissions"];
+      const datasetTeamPermissions =
+        sodaJSONObj["digital-metadata"]["team-permissions"];
+      const datasetTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
+      const datasetLicense = sodaJSONObj["digital-metadata"]["license"];
+
+      const datasetNameReviewText = document.getElementById(
+        "guided-review-dataset-name"
+      );
+      const datasetSubtitleReviewText = document.getElementById(
+        "guided-review-dataset-subtitle"
+      );
+      const datasetPiOwnerReviewText = document.getElementById(
+        "guided-review-dataset-pi-owner"
+      );
+      const datasetUserPermissionsReviewText = document.getElementById(
+        "guided-review-dataset-user-permissions"
+      );
+      const datasetTeamPermissionsReviewText = document.getElementById(
+        "guided-review-dataset-team-permissions"
+      );
+      const datasetTagsReviewText = document.getElementById(
+        "guided-review-dataset-tags"
+      );
+      const datasetLicenseReviewText = document.getElementById(
+        "guided-review-dataset-license"
+      );
+
+      datasetNameReviewText.innerHTML = datsetName;
+      datasetSubtitleReviewText.innerHTML = datsetSubtitle;
+      datasetPiOwnerReviewText.innerHTML = datasetPiOwner;
+      datasetUserPermissionsReviewText.innerHTML = datasetUserPermissions;
+      datasetTeamPermissionsReviewText.innerHTML = datasetTeamPermissions;
+      datasetTagsReviewText.innerHTML = datasetTags;
+      datasetLicenseReviewText.innerHTML = datasetLicense;
     }
 
     if (targetPageID === "guided-create-subjects-metadata-tab") {
@@ -5379,6 +5410,7 @@ const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
 };
 
 const guidedAddUserPermission = (newUserPermissionObj) => {
+  //If an existing user with the same ID already exists, update the existing user's position
   for (userPermission of sodaJSONObj["digital-metadata"]["user-permissions"]) {
     if (
       userPermission["userString"] == newUserPermissionObj.userString &&
@@ -5389,7 +5421,7 @@ const guidedAddUserPermission = (newUserPermissionObj) => {
       return;
     }
   }
-
+  //add a new user permission
   sodaJSONObj["digital-metadata"]["user-permissions"].push(
     newUserPermissionObj
   );
@@ -5398,6 +5430,7 @@ const guidedAddUserPermission = (newUserPermissionObj) => {
 const guidedRemoveUserPermission = (userParentElement) => {};
 
 const guidedAddTeamPermission = (newTeamPermissionObj) => {
+  //If an existing team with the same ID already exists, update the existing team's position
   for (teamPermission of sodaJSONObj["digital-metadata"]["team-permissions"]) {
     if (
       teamPermission["teamString"] == newTeamPermissionObj.teamString &&
@@ -5408,7 +5441,7 @@ const guidedAddTeamPermission = (newTeamPermissionObj) => {
       return;
     }
   }
-
+  //add a new user permission
   sodaJSONObj["digital-metadata"]["team-permissions"].push(
     newTeamPermissionObj
   );
