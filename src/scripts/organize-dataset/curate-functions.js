@@ -972,14 +972,14 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       Swal.fire({
         allowOutsideClick: false,
         backdrop: "rgba(0,0,0, 0.4)",
-        cancelButtonText: "Use my API key instead",
+        cancelButtonText: "Cancel",
         confirmButtonText: "Connect to Pennsieve",
-        showCloseButton: true,
-        focusConfirm: true,
+        showCloseButton: false,
+        focusConfirm: false,
         heightAuto: false,
         reverseButtons: reverseSwalButtons,
-        showCancelButton: false,
-        title: `<span style="text-align:center">Connect your Pennsieve account using your email and password <i class="fas fa-info-circle swal-popover" data-content="Your email and password will not be saved and not seen by anyone." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></span>`,
+        showCancelButton: true,
+        title: `<span style="text-align:center">Connect your Pennsieve account using your email and password</span><p class="tip-content" style="margin-top: .5rem">Your email and password will not be saved and not seen by anyone.</p>`,
         html: `<input type="text" id="ps_login" class="swal2-input" placeholder="Email Address for Pennsieve">
         <input type="password" id="ps_password" class="swal2-input" placeholder="Password">`,
         showClass: {
@@ -988,10 +988,33 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
         hideClass: {
           popup: "animate__animated animate__fadeOutUp animate__faster",
         },
-        footer:
-          '<a onclick="showBFAddAccountSweetalert()">I want to connect with an API key instead</a>',
+        footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-a-pennsieve-account">I don't have a Pennsieve account and/or access to the SPARC Consortium Organization</a>`,
         didOpen: () => {
           $(".swal-popover").popover();
+          let div_footer = document.getElementsByClassName("swal2-footer")[0];
+          document.getElementsByClassName("swal2-popup")[0].style.width =
+            "43rem";
+          div_footer.style.flexDirection = "column";
+          div_footer.style.alignItems = "center";
+          let swal_actions =
+            document.getElementsByClassName("swal2-actions")[0];
+          let api_button = document.createElement("button");
+          let api_arrow = document.createElement("i");
+
+          api_button.innerText = "Connect with API key instead";
+          api_button.setAttribute("onclick", "showBFAddAccountSweetalert()");
+          api_arrow.classList.add("fas");
+          api_arrow.classList.add("fa-arrow-right");
+          api_arrow.style.marginLeft = "10px";
+          api_button.type = "button";
+          api_button.style.border = "";
+          api_button.id = "api_connect_btn";
+          api_button.classList.add("transition-btn");
+          api_button.classList.add("api_key-btn");
+          api_button.classList.add("back");
+          api_button.style.display = "inline";
+          api_button.appendChild(api_arrow);
+          swal_actions.parentElement.insertBefore(api_button, div_footer);
         },
         preConfirm: async () => {
           Swal.resetValidationMessage();
@@ -1000,7 +1023,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
           const password = Swal.getPopup().querySelector("#ps_password").value;
           if (!login || !password) {
             Swal.hideLoading();
-            Swal.showValidationMessage(`Please enter login and password`);
+            Swal.showValidationMessage(`Please enter email and password`);
           } else {
             let key_name = SODA_SPARC_API_KEY;
             let response = await get_api_key(login, password, key_name);
@@ -1010,7 +1033,13 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
                 response[1]["message"] ===
                 "exceptions must derive from BaseException"
               ) {
-                error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">It seems that you do not have access to the SPARC Consortium organization on Pennsieve. Email <a href="mailto:support@pennsieve.net">support@pennsieve.net</a> to get access to the SPARC Consortium organization then try again.</div>`;
+                error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">It seems that you do not have access to the SPARC Consortium organization on Pennsieve. See our <a target="_blank" href="https://docs.sodaforsparc.io/docs/next/how-to/how-to-get-a-pennsieve-account">[dedicated help page]</a> to learn how to get access</div>`;
+              }
+              if (
+                response[1]["message"] ===
+                "Error: Username or password was incorrect."
+              ) {
+                error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">Error: Username or password was incorrect</div>`;
               }
               Swal.hideLoading();
               Swal.showValidationMessage(error_message);
@@ -1167,8 +1196,14 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       //$(".selectpicker").selectpicker("hide");
       //$(".selectpicker").selectpicker("refresh");
       //$("#bf-dataset-select-div").hide();
-
-      var accountPresent = await check_api_key();
+      try {
+        var accountPresent = await check_api_key();
+      } catch (error) {
+        console.error(error);
+        $(".ui.active.green.inline.loader.small").css("display", "none");
+        $(".svg-change-current-account.dataset").css("display", "block");
+        accountPresent = false;
+      }
       if (accountPresent === false) {
         //If there is no API key pair, warning will pop up allowing user to sign in
         await Swal.fire({
@@ -1272,7 +1307,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       //datasets do exist so display popup with dataset options
       //else datasets have been created
       if (datasetList.length > 0) {
-        const { value: bfDS } = await Swal.fire({
+        await Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
           cancelButtonText: "Cancel",
           confirmButtonText: "Confirm",
@@ -1312,6 +1347,20 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             $("#bf-dataset-select-div").show();
 
             bfDataset = $("#curatebfdatasetlist").val();
+            let sweet_al = document.getElementsByClassName("swal2-content")[0];
+            let sweet_alrt =
+              document.getElementsByClassName("swal2-actions")[0];
+            sweet_alrt.style.marginTop = "1rem";
+
+            let tip_container = document.createElement("div");
+            let tip_content = document.createElement("p");
+            tip_content.innerText =
+              "Only datasets where you have owner or manager permissions will be shown in the list";
+            tip_content.classList.add("tip-content");
+            tip_content.style.textAlign = "left";
+            tip_container.style.marginTop = ".5rem";
+            tip_container.appendChild(tip_content);
+            sweet_al.appendChild(tip_container);
           },
           preConfirm: () => {
             bfDataset = $("#curatebfdatasetlist").val();
@@ -1339,56 +1388,60 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
 
                 return undefined;
               } else {
+                $("#license-lottie-div").css("display", "none");
+                $("#license-assigned").css("display", "none");
                 return bfDataset;
               }
             }
           },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            if (show_timer) {
+              Swal.fire({
+                allowEscapeKey: false,
+                backdrop: "rgba(0,0,0, 0.4)",
+                heightAuto: false,
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: false,
+                title: "Loading your dataset details...",
+                didOpen: () => {
+                  Swal.showLoading();
+                },
+              });
+            }
+
+            if (dropdownEventID === "dd-select-pennsieve-dataset") {
+              $("#ds-name").val(bfDataset);
+              $("body").removeClass("waiting");
+              $(".svg-change-current-account.dataset").css("display", "block");
+              dropdownEventID = "";
+              return;
+            }
+            $("#current-bf-dataset").text(bfDataset);
+            $("#current-bf-dataset-generate").text(bfDataset);
+            $(".bf-dataset-span").html(bfDataset);
+            confirm_click_function();
+
+            defaultBfDataset = bfDataset;
+            // document.getElementById("ds-description").innerHTML = "";
+            refreshDatasetList();
+            $("#dataset-loaded-message").hide();
+
+            showHideDropdownButtons("dataset", "show");
+            // checkPrevDivForConfirmButton("dataset");
+          } else if (result.isDismissed) {
+            currentDatasetLicense.innerText = currentDatasetLicense.innerText;
+          }
         });
 
-        // check return value
-        if (bfDS) {
-          if (show_timer) {
-            Swal.fire({
-              allowEscapeKey: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              heightAuto: false,
-              showConfirmButton: false,
-              timer: 2000,
-              timerProgressBar: false,
-              title: "Loading your dataset details...",
-              didOpen: () => {
-                Swal.showLoading();
-              },
-            });
-          }
-
-          if (dropdownEventID === "dd-select-pennsieve-dataset") {
-            $("#ds-name").val(bfDataset);
-            $("body").removeClass("waiting");
-            $(".svg-change-current-account.dataset").css("display", "block");
-            dropdownEventID = "";
-            return;
-          }
-          $("#current-bf-dataset").text(bfDataset);
-          $("#current-bf-dataset-generate").text(bfDataset);
-          $(".bf-dataset-span").html(bfDataset);
-          confirm_click_function();
-
-          defaultBfDataset = bfDataset;
-          // document.getElementById("ds-description").innerHTML = "";
-          refreshDatasetList();
-          $("#dataset-loaded-message").hide();
-
-          showHideDropdownButtons("dataset", "show");
-          // checkPrevDivForConfirmButton("dataset");
-        }
         if ($("#current-bf-dataset-generate").text() === "None") {
           showHideDropdownButtons("dataset", "hide");
         } else {
           showHideDropdownButtons("dataset", "show");
         }
-
-        defaultBfDataset = bfDataset;
+        //currently changing it but not visually in the UI
+        $("#bf_list_users_pi").val("Select PI");
 
         // update the gloabl dataset id
         for (const item of datasetList) {
@@ -1398,6 +1451,10 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             defaultBfDatasetId = id;
           }
         }
+
+        let PI_users = document.getElementById("bf_list_users_pi");
+        PI_users.value = "Select PI";
+        $("#bf_list_users_pi").selectpicker("refresh");
 
         // log a map of datasetId to dataset name to analytics
         // this will be used to help us track private datasets which are not trackable using a datasetId alone
