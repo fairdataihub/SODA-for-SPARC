@@ -46,6 +46,7 @@ from threading import Thread
 import pathlib
 import io
 from contextlib import redirect_stdout
+import requests
 
 from datetime import datetime, timezone
 
@@ -2925,7 +2926,10 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                             ]:
                                 if item.name == projected_name:
                                     item.name = final_name
-                                    item.update()
+                                    try: 
+                                        item.update()
+                                    except requests.exceptions.HTTPError as e:
+                                        handle_duplicate_package_name_error(e, soda_json_structure)
                                     if "files" not in tracking_folder:
                                         tracking_folder["files"] = {}
                                         tracking_folder["files"][desired_name] = {
@@ -2972,7 +2976,10 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                         for item in my_bf_existing_files:
                             if item.name == projected_name:
                                 item.name = final_name
-                                item.update()
+                                try: 
+                                    item.update()
+                                except requests.exceptions.HTTPError as e:
+                                    handle_duplicate_package_name_error(e, soda_json_structure)
                                 if "files" not in tracking_folder:
                                     tracking_folder["files"] = {}
                                     tracking_folder["files"][desired_name] = {
