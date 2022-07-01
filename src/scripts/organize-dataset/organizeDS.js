@@ -1822,7 +1822,6 @@ async function addFilesfunction(
     }
   }
 
-  console.log(hiddenFiles);
   if (hiddenFiles.length > 0) {
     await Swal.fire({
       title:
@@ -1994,13 +1993,17 @@ async function addFilesfunction(
         <p>${htmlSwal}<p><ul style="text-align:start;">${listElements}</ul></p></p>
       </div>  
       <div class="swal-button-container">
-        <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
+      <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
         list +
         `')">Skip ${html_word}</button>
-        <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}')">Replace Existing ${html_word}</button>
-        <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}')">Import Duplicates</button>
-        <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
-        </div>`,
+      <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '` +
+        list +
+        `')">Replace Existing ${html_word}</button>
+      <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '` +
+        list +
+        `')">Import Duplicates</button>
+      <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
+      </div>`,
     });
   }
 

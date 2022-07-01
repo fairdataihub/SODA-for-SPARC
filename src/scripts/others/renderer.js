@@ -5184,7 +5184,7 @@ async function drop(ev) {
   }
 }
 
-function dropHelper(
+async function dropHelper(
   ev1,
   ev2,
   action,
@@ -5215,6 +5215,9 @@ function dropHelper(
   });
   var folderPath = [];
   var duplicateFolders = [];
+  var hiddenFiles = [];
+  var nonAllowedFiles = [];
+
   for (var i = 0; i < ev1.length; i++) {
     /// Get all the file information
     var itemPath = ev1[i].path;
@@ -5233,6 +5236,20 @@ function dropHelper(
       var nonAllowedDuplicate = false;
       var originalFileName = path.parse(itemPath).base;
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+
+      if (path.parse(itemPath).name.substr(0, 1) === ".") {
+        if (
+          path.parse(itemPath).base === ".DS_Store" ||
+          path.parse(itemPath).base === "Thumb.db"
+        ) {
+          nonAllowedFiles.push(itemPath);
+          continue;
+        } else {
+          hiddenFiles.push(itemPath);
+          continue;
+        }
+      }
+
       if (slashCount === 1) {
         Swal.fire({
           icon: "error",
@@ -5341,10 +5358,139 @@ function dropHelper(
       }
     }
   }
+
+  if (hiddenFiles.length > 0) {
+    await Swal.fire({
+      title:
+        "The following files have an unexpected name starting with a period. How should we handle them?",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        hiddenFiles.join("</br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Remove characters",
+      denyButtonText: "Continue as is",
+      cancelButtonText: "Cancel",
+      didOpen: () => {
+        $(".swal-popover").popover();
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        //replace characters
+        //check for already imported
+        for (let i = 0; i < hiddenFiles.length; i++) {
+          let file_name = path.parse(hiddenFiles[i]).base;
+          let path_name = hiddenFiles[i];
+
+          if (Object.keys(myPath["files"]).length > 0) {
+            for (const objectKey in myPath["files"]) {
+              //tries finding duplicates with the same path
+              if (objectKey != undefined) {
+                console.log(objectKey);
+                nonAllowedDuplicate = false;
+                //if file already exist in json
+                if (path_name === myPath["files"][objectKey]["path"]) {
+                  if (
+                    myPath["files"][objectKey]["action"].includes("renamed") ===
+                    true
+                  ) {
+                    //same path and has not been renamed
+                    nonAllowedDuplicateFiles.push(path_name);
+                    nonAllowedDuplicate = true;
+                    continue;
+                  }
+                } else {
+                  //file path and object key path arent the same
+                  //check if the file name are the same
+                  //if so consider it as a duplicate
+                  if (file_name.substr(1, file_name.length) === objectKey) {
+                    nonAllowedDuplicateFiles.push(path_name);
+                    nonAllowedDuplicate = true;
+                    continue;
+                  } else {
+                    //store in imported files
+                    importedFiles[file_name.substr(1, file_name.length)] = {
+                      path: path_name,
+                      basename: file_name.substr(1, file_name.length),
+                    };
+                  }
+                }
+              }
+            }
+          } else {
+            //store in imported files
+            importedFiles[file_name.substr(1, file_name.length)] = {
+              path: path_name,
+              basename: file_name.substr(1, file_name.length),
+            };
+          }
+        }
+      } else if (result.isDenied) {
+        //leave as is
+        for (let i = 0; i < hiddenFiles.length; i++) {
+          let file_name = path.parse(hiddenFiles[i]).base;
+          let path_name = hiddenFiles[i];
+
+          for (const objectKey in myPath["files"]) {
+            //tries finding duplicates with the same path
+            if (objectKey != undefined) {
+              nonAllowedDuplicate = false;
+              //if file already exist in json
+              if (path_name === myPath["files"][objectKey]["path"]) {
+                if (
+                  myPath["files"][objectKey]["action"].includes("renamed") ===
+                  true
+                ) {
+                  //same path and has not been renamed
+                  nonAllowedDuplicateFiles.push(path_name);
+                  nonAllowedDuplicate = true;
+                  continue;
+                }
+              } else {
+                //file path and object key path arent the same
+                //check if the file name are the same
+                //if so consider it as a duplicate
+                if (file_name === objectKey) {
+                  nonAllowedDuplicateFiles.push(file_name);
+                  nonAllowedDuplicate = true;
+                  continue;
+                } else {
+                  //store in regular files
+                  myPath[file_name] = {
+                    path: path_name,
+                    basename: file_name,
+                  };
+                }
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  if (nonAllowedFiles.length > 0) {
+    await Swal.fire({
+      title:
+        "The following files are banned as per SPARC guidelines and will not be imported",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        nonAllowedFiles.join("</br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      confirmButtonText: "Okay",
+    });
+  }
+
   var listElements = showItemsAsListBootbox(duplicateFolders);
   var list = JSON.stringify(folderPath).replace(/"/g, "");
   if (duplicateFolders.length > 0) {
-    Swal.fire({
+    await Swal.fire({
       title: "Duplicate folder(s) detected",
       icon: "warning",
       showConfirmButton: false,
@@ -5389,7 +5535,7 @@ function dropHelper(
     }
     var listElements = showItemsAsListBootbox(baseName);
     var list = JSON.stringify(nonAllowedDuplicateFiles).replace(/"/g, "");
-    Swal.fire({
+    await Swal.fire({
       title: "Duplicate file(s) detected",
       icon: "warning",
       showConfirmButton: false,
