@@ -7147,36 +7147,108 @@ $(document).ready(() => {
     });
   }
 
+  async function guidedUploadSubmissionMetadata(
+    bfAccount,
+    datasetName,
+    guidedSubmissionMetadataJSON
+  ) {
+    return new Promise((resolve, reject) => {
+      client.invoke(
+        "api_save_submission_file",
+        true,
+        bfAccount,
+        datasetName,
+        undefined,
+        guidedSubmissionMetadataJSON,
+        (error, res) => {
+          if (error) {
+            guidedUploadStatusIcon(
+              "guided-submission-metadata-upload-status",
+              "error"
+            );
+            log.error(error);
+            console.error(error);
+            let emessage = userError(error);
+            reject(error);
+          } else {
+            guidedUploadStatusIcon(
+              "guided-submission-metadata-upload-status",
+              "success"
+            );
+            console.log("Submission metadata added + " + res);
+            resolve(`Submission metadata added` + res);
+          }
+        }
+      );
+    });
+  }
+
+  async function guidedUploadDatasetDescriptionMetadata(
+    bfAccount,
+    datasetName,
+    guidedSubmissionMetadataJSON
+  ) {
+    return new Promise((resolve, reject) => {
+      client.invoke(
+        "api_save_submission_file",
+        true,
+        bfAccount,
+        datasetName,
+        undefined,
+        guidedSubmissionMetadataJSON,
+        (error, res) => {
+          if (error) {
+            guidedUploadStatusIcon(
+              "guided-submission-metadata-upload-status",
+              "error"
+            );
+            log.error(error);
+            console.error(error);
+            let emessage = userError(error);
+            reject(error);
+          } else {
+            guidedUploadStatusIcon(
+              "guided-submission-metadata-upload-status",
+              "success"
+            );
+            console.log("Submission metadata added + " + res);
+            resolve(`Submission metadata added` + res);
+          }
+        }
+      );
+    });
+  }
+
   const guidedPennsieveDatasetUpload = async () => {
-    let guidedBfAccount = defaultBfAccount;
-    let guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
-    let guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
-    let guidedUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
-    let guidedPIOwner = sodaJSONObj["digital-metadata"]["pi-owner"];
-    let guidedTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
+    const guidedBfAccount = defaultBfAccount;
+    const guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
+    const guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
+    const guidedUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
+    const guidedPIOwner = sodaJSONObj["digital-metadata"]["pi-owner"];
+    const guidedTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
     /*let guidedStudyPurpose = sodaJSONObj["digital-metadata"]["study-purpose"];
     let guidedDataCollection =
       sodaJSONObj["digital-metadata"]["data-collection"];
     let guidedPrimaryConclusion =
       sodaJSONObj["digital-metadata"]["primary-conclusion"];*/
-    let guidedReadMe = sodaJSONObj["dataset-metadata"]["README"];
-    let guidedTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
-    let guidedLicense = sodaJSONObj["digital-metadata"]["license"];
-    let guidedBannerImagePath =
+    const guidedReadMe = sodaJSONObj["dataset-metadata"]["README"];
+    const guidedTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
+    const guidedLicense = sodaJSONObj["digital-metadata"]["license"];
+    const guidedBannerImagePath =
       sodaJSONObj["digital-metadata"]["banner-image-path"];
 
     //Subjects Metadata Variables
-    let guidedSubjectsMetadata = sodaJSONObj["subjects-table-data"];
+    const guidedSubjectsMetadata = sodaJSONObj["subjects-table-data"];
 
     //Samples Metadata variables
-    let guidedSamplesMetadata = sodaJSONObj["samples-table-data"];
+    const guidedSamplesMetadata = sodaJSONObj["samples-table-data"];
 
     //Submission Metadata variables
-    let guidedSparcAward =
+    const guidedSparcAward =
       sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-    let guidedMilestones =
+    const guidedMilestones =
       sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
-    let guidedCompletionDate =
+    const guidedCompletionDate =
       sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
     let guidedSubmissionMetadataJSON = [];
     guidedSubmissionMetadataJSON.push({
@@ -7194,8 +7266,65 @@ $(document).ready(() => {
     guidedSubmissionMetadataJSON = JSON.stringify(guidedSubmissionMetadataJSON);
 
     //Dataset Description Metadata variables
+    const guidedDatasetInformation =
+      sodaJSONObj["dataset-metadata"]["description-metadata"][
+        "dataset-information"
+      ];
+    const guidedStudyInformation =
+      sodaJSONObj["dataset-metadata"]["description-metadata"][
+        "study-information"
+      ];
+    const guidedContributorInformation = "";
+    const guidedRelatedInformation = "";
 
-    create_dataset(
+    try {
+      //await create_dataset and then console log response
+      let datasetUploadResponse = await create_dataset(
+        guidedDatasetName,
+        guidedDatasetSubtitle,
+        guidedTags,
+        guidedLicense
+      );
+      console.log(datasetUploadResponse);
+      //once create_dataset is finished, addPennsieveMetadata
+      let addPennsieveMetadataResponse = await addPennsieveMetadata(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedBannerImagePath,
+        guidedUsers,
+        guidedTeams
+      );
+      console.log(addPennsieveMetadataResponse);
+
+      let addDescriptionResponse = await guided_add_description(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedReadMe
+      );
+      console.log(addDescriptionResponse);
+      let addSubjectsMetadataResponse = await guidedUploadSubjectsMetadata(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedSubjectsMetadata
+      );
+      console.log(addSubjectsMetadataResponse);
+      let addSamplesMetadataResponse = await guidedUploadSamplesMetadata(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedSamplesMetadata
+      );
+      console.log(addSamplesMetadataResponse);
+      let addSubmissionMetadataResponse = await guidedUploadSubmissionMetadata(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedSubmissionMetadataJSON
+      );
+      console.log(addSubmissionMetadataResponse);
+    } catch (e) {
+      console.error(e);
+    }
+
+    /*create_dataset(
       guidedDatasetName,
       guidedDatasetSubtitle,
       guidedTags,
@@ -7210,26 +7339,30 @@ $(document).ready(() => {
           guidedTeams
         );
       })
-      .then(
-        guided_add_description(guidedBfAccount, guidedDatasetName, guidedReadMe)
-      )
-      .then(
+      .then((res) => {
+        guided_add_description(
+          guidedBfAccount,
+          guidedDatasetName,
+          guidedReadMe
+        );
+      })
+      .then((res) => {
         guidedUploadSubjectsMetadata(
           guidedBfAccount,
           guidedDatasetName,
           guidedSubjectsMetadata
-        )
-      )
-      .then(
+        );
+      })
+      .then((res) => {
         guidedUploadSamplesMetadata(
           guidedBfAccount,
           guidedDatasetName,
           guidedSamplesMetadata
-        )
-      )
+        );
+      })
       .then(guided_main_curate())
 
-      /*.then(
+      .then(
         guided_add_dataset_metadata(
           guidedBfAccount,
           guidedDatasetName,
@@ -7237,12 +7370,12 @@ $(document).ready(() => {
           guidedSamplesMetadata,
           guidedSubmissionMetadataJSON
         )
-      )*/
-      /*.then(guided_add_metadata(guidedBfAccount, guidedDatasetName))*/
-      /*
+      )
+      .then(guided_add_metadata(guidedBfAccount, guidedDatasetName))
+      
       .then((res) => {
         guided_add_PI_owner(guidedBfAccount, guidedDatasetName, guidedPIOwner);//this will need to change as PI owner obj changed
-      })*/
+      })
       .catch((error) => {
         console.log(error);
         Swal.fire({
@@ -7259,8 +7392,8 @@ $(document).ready(() => {
     sodaJSONObj["generate-dataset"] = {
       destination: "bf",
       "generate-option": "existing-bf",
-    };
-  };*/
+    };*/
+  };
 
   function guided_initiate_generate() {
     // Initiate curation by calling Python function
@@ -7690,42 +7823,6 @@ $(document).ready(() => {
     guidedSamplesMetadata,
     guidedSubmissionMetadataJSON
   ) => {
-    async function guidedUploadSubmissionMetadata(
-      bfAccount,
-      datasetName,
-      guidedSubmissionMetadataJSON
-    ) {
-      return new Promise((resolve, reject) => {
-        client.invoke(
-          "api_save_submission_file",
-          true,
-          bfAccount,
-          datasetName,
-          undefined,
-          guidedSubmissionMetadataJSON,
-          (error, res) => {
-            if (error) {
-              guidedUploadStatusIcon(
-                "guided-submission-metadata-upload-status",
-                "error"
-              );
-              log.error(error);
-              console.error(error);
-              let emessage = userError(error);
-              reject(error);
-            } else {
-              guidedUploadStatusIcon(
-                "guided-submission-metadata-upload-status",
-                "success"
-              );
-              console.log("Submission metadata added + " + res);
-              resolve(`Submission metadata added` + res);
-            }
-          }
-        );
-      });
-    }
-
     const promises = [
       /*guidedUploadSubmissionMetadata(
         guidedBfAccount,
@@ -8447,6 +8544,10 @@ $(document).ready(() => {
     let json_str_study = JSON.stringify(studyInfoValueObject);
     let json_str_con = JSON.stringify(contributorObj);
     let json_str_related_info = JSON.stringify(relatedInfoArr);
+    console.log(json_str_ds);
+    console.log(json_str_study);
+    console.log(json_str_con);
+    console.log(json_str_related_info);
 
     let descriptionFileDestination = path.join(
       $("#guided-dataset-path").text().trim(),
@@ -8515,18 +8616,16 @@ $(document).ready(() => {
       throw "Please enter at least 3 keywords";
     }
 
-    //get the number of subjects
+    //Get the count of all subjects in and outside of pools
     const [subjectsInPools, subjectsOutsidePools] =
       sodaJSONObj.getAllSubjects();
-    //Combine sample data from subjects in and out of pools
-    const subjectsArray = [...subjectsInPools, ...subjectsOutsidePools];
-    const numSubjects = subjectsArray.length;
+    const numSubjects = [...subjectsInPools, ...subjectsOutsidePools].length;
 
-    //get the number of samples
-    let numSamples = 0;
-    for (const subject of subjectsArray) {
-      numSamples += subject.samples.length;
-    }
+    //Get the count of all samples
+    const [samplesInPools, samplesOutsidePools] =
+      sodaJSONObj.getAllSamplesFromSubjects();
+    //Combine sample data from samples in and out of pools
+    const numSamples = [...samplesInPools, ...samplesOutsidePools].length;
 
     sodaJSONObj["dataset-metadata"]["description-metadata"][
       "dataset-information"
@@ -8628,21 +8727,17 @@ $(document).ready(() => {
     const type = document.querySelector(
       "input[name='dataset-relation']:checked"
     ).value;
-    if (!type) {
-      errorArray.push({
-        type: "notyf",
-        message: "Please select a dataset start location",
-      });
-      throw errorArray;
-    }
     const keywordArray = keywordTagify.value;
-    const subjects = guidedGetSubjects();
-    const numSubjects = subjects.length;
-    let numSamples = 0;
-    //get the number of samples for each subject and add it to the numSamples variable
-    for (const subject of subjects) {
-      numSamples += guidedGetSubjectSamples(subject).length;
-    }
+
+    //Get the count of all subjects in and outside of pools
+    const [subjectsInPools, subjectsOutsidePools] =
+      sodaJSONObj.getAllSubjects();
+    const numSubjects = [...subjectsInPools, ...subjectsOutsidePools].length;
+
+    const [samplesInPools, samplesOutsidePools] =
+      sodaJSONObj.getAllSamplesFromSubjects();
+    //Combine sample data from samples in and out of pools
+    const numSamples = [...samplesInPools, ...samplesOutsidePools].length;
 
     return {
       name: title,
