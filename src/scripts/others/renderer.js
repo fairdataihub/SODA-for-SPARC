@@ -5257,7 +5257,7 @@ async function dropHelper(
       }
 
       if (slashCount === 1) {
-        Swal.fire({
+        await Swal.fire({
           icon: "error",
           html: "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
           heightAuto: false,
@@ -5317,7 +5317,7 @@ async function dropHelper(
       /// drop a folder
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
       if (slashCount === 1) {
-        Swal.fire({
+        await Swal.fire({
           icon: "error",
           text: "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
           heightAuto: false,
@@ -5395,6 +5395,11 @@ async function dropHelper(
             for (const objectKey in myPath["files"]) {
               //tries finding duplicates with the same path
               if (objectKey != undefined) {
+                if (file_name.substr(1, file_name.length) === objectKey) {
+                  nonAllowedDuplicateFiles.push(path_name);
+                  nonAllowedDuplicate = true;
+                  continue;
+                }
                 console.log(objectKey);
                 nonAllowedDuplicate = false;
                 //if file already exist in json
@@ -5444,6 +5449,11 @@ async function dropHelper(
             //tries finding duplicates with the same path
             if (objectKey != undefined) {
               nonAllowedDuplicate = false;
+              if (file_name === objectKey) {
+                nonAllowedDuplicateFiles.push(file_name);
+                nonAllowedDuplicate = true;
+                continue;
+              }
               //if file already exist in json
               if (path_name === myPath["files"][objectKey]["path"]) {
                 if (
