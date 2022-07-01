@@ -817,6 +817,10 @@ async function generateDDFile(uploadBFBoolean) {
     json_str_con,
     json_str_related_info,
     async (error, res) => {
+      console.log(json_str_ds);
+      console.log(json_str_study);
+      console.log(json_str_con);
+      console.log(json_str_related_info);
       if (error) {
         var emessage = userError(error);
         log.error(error);

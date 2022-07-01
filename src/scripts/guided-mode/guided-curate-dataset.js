@@ -7075,6 +7075,78 @@ $(document).ready(() => {
     });
   };
 
+  async function guidedUploadSubjectsMetadata(
+    bfAccount,
+    datasetName,
+    subjectsTableData
+  ) {
+    return new Promise((resolve, reject) => {
+      client.invoke(
+        "api_save_subjects_file",
+        true,
+        bfAccount,
+        datasetName,
+        undefined,
+        subjectsTableData,
+        (error, res) => {
+          if (error) {
+            guidedUploadStatusIcon(
+              "guided-subjects-metadata-upload-status",
+              "error"
+            );
+            log.error(error);
+            console.error(error);
+            let emessage = userError(error);
+            reject(error);
+          } else {
+            guidedUploadStatusIcon(
+              "guided-subjects-metadata-upload-status",
+              "success"
+            );
+            console.log("Subjects metadata added + " + res);
+            resolve(`Subjects metadata added` + res);
+          }
+        }
+      );
+    });
+  }
+
+  async function guidedUploadSamplesMetadata(
+    bfAccount,
+    datasetName,
+    samplesTableData
+  ) {
+    return new Promise((resolve, reject) => {
+      client.invoke(
+        "api_save_samples_file",
+        true,
+        bfAccount,
+        datasetName,
+        undefined,
+        samplesTableData,
+        (error, res) => {
+          if (error) {
+            guidedUploadStatusIcon(
+              "guided-samples-metadata-upload-status",
+              "error"
+            );
+            log.error(error);
+            console.error(error);
+            let emessage = userError(error);
+            reject(error);
+          } else {
+            guidedUploadStatusIcon(
+              "guided-samples-metadata-upload-status",
+              "success"
+            );
+            console.log("samples metadata added + " + res);
+            resolve(`samples metadata added` + res);
+          }
+        }
+      );
+    });
+  }
+
   const guidedPennsieveDatasetUpload = async () => {
     let guidedBfAccount = defaultBfAccount;
     let guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
@@ -7092,7 +7164,36 @@ $(document).ready(() => {
     let guidedLicense = sodaJSONObj["digital-metadata"]["license"];
     let guidedBannerImagePath =
       sodaJSONObj["digital-metadata"]["banner-image-path"];
+
+    //Subjects Metadata Variables
     let guidedSubjectsMetadata = sodaJSONObj["subjects-table-data"];
+
+    //Samples Metadata variables
+    let guidedSamplesMetadata = sodaJSONObj["samples-table-data"];
+
+    //Submission Metadata variables
+    let guidedSparcAward =
+      sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+    let guidedMilestones =
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
+    let guidedCompletionDate =
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
+    let guidedSubmissionMetadataJSON = [];
+    guidedSubmissionMetadataJSON.push({
+      award: guidedSparcAward,
+      date: guidedCompletionDate,
+      milestone: guidedMilestones[0].milestone,
+    });
+    for (let i = 1; i < guidedMilestones.length; i++) {
+      guidedSubmissionMetadataJSON.push({
+        award: "",
+        date: "",
+        milestone: guidedMilestones[i].milestone,
+      });
+    }
+    guidedSubmissionMetadataJSON = JSON.stringify(guidedSubmissionMetadataJSON);
+
+    //Dataset Description Metadata variables
 
     create_dataset(
       guidedDatasetName,
@@ -7112,14 +7213,31 @@ $(document).ready(() => {
       .then(
         guided_add_description(guidedBfAccount, guidedDatasetName, guidedReadMe)
       )
-      .then(guided_main_curate())
       .then(
-        guided_add_dataset_metadata(
+        guidedUploadSubjectsMetadata(
           guidedBfAccount,
           guidedDatasetName,
           guidedSubjectsMetadata
         )
       )
+      .then(
+        guidedUploadSamplesMetadata(
+          guidedBfAccount,
+          guidedDatasetName,
+          guidedSamplesMetadata
+        )
+      )
+      .then(guided_main_curate())
+
+      /*.then(
+        guided_add_dataset_metadata(
+          guidedBfAccount,
+          guidedDatasetName,
+          guidedSubjectsMetadata,
+          guidedSamplesMetadata,
+          guidedSubmissionMetadataJSON
+        )
+      )*/
       /*.then(guided_add_metadata(guidedBfAccount, guidedDatasetName))*/
       /*
       .then((res) => {
@@ -7568,25 +7686,27 @@ $(document).ready(() => {
   const guided_add_dataset_metadata = async (
     guidedBfAccount,
     guidedDatasetName,
-    guidedSubjectsMetadata
+    guidedSubjectsMetadata,
+    guidedSamplesMetadata,
+    guidedSubmissionMetadataJSON
   ) => {
-    async function guidedUploadSubjectsMetadata(
+    async function guidedUploadSubmissionMetadata(
       bfAccount,
       datasetName,
-      subjectsTableData
+      guidedSubmissionMetadataJSON
     ) {
       return new Promise((resolve, reject) => {
         client.invoke(
-          "api_save_subjects_file",
+          "api_save_submission_file",
           true,
           bfAccount,
           datasetName,
           undefined,
-          subjectsTableData,
+          guidedSubmissionMetadataJSON,
           (error, res) => {
             if (error) {
               guidedUploadStatusIcon(
-                "guided-subjects-metadata-upload-status",
+                "guided-submission-metadata-upload-status",
                 "error"
               );
               log.error(error);
@@ -7595,24 +7715,36 @@ $(document).ready(() => {
               reject(error);
             } else {
               guidedUploadStatusIcon(
-                "guided-subjects-metadata-upload-status",
+                "guided-submission-metadata-upload-status",
                 "success"
               );
-              console.log("Subjects metadata added + " + res);
-              resolve(`Subjects metadata added` + res);
+              console.log("Submission metadata added + " + res);
+              resolve(`Submission metadata added` + res);
             }
           }
         );
       });
     }
+
     const promises = [
+      /*guidedUploadSubmissionMetadata(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedSubmissionMetadataJSON
+      ),*/
       guidedUploadSubjectsMetadata(
         guidedBfAccount,
         guidedDatasetName,
         guidedSubjectsMetadata
       ),
+      guidedUploadSamplesMetadata(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedSamplesMetadata
+      ),
     ];
     const result = await Promise.allSettled(promises);
+    console.log(result);
     return result;
   };
   $("#guided-add-subject-button").on("click", () => {
@@ -9780,14 +9912,17 @@ $(document).ready(() => {
               return;
             }
             if (buttonYesSubjects.classList.contains("selected")) {
-              const subjects =
-                sodaJSONObj["dataset-metadata"][
-                  "pool-subject-sample-structure"
-                ]["subjects"];
+              //Get the count of all subjects in and outside of pools
+              const [subjectsInPools, subjectsOutsidePools] =
+                sodaJSONObj.getAllSubjects();
+              const subjectsCount = [
+                ...subjectsInPools,
+                ...subjectsOutsidePools,
+              ].length;
 
               //Check to see if any subjects were added, and if not, disallow the user
               //from progressing until they add at least one subject or select that they do not
-              if (Object.keys(subjects).length === 0) {
+              if (subjectsCount === 0) {
                 notyf.open({
                   duration: "5000",
                   type: "error",
@@ -9895,11 +10030,12 @@ $(document).ready(() => {
               const [samplesInPools, samplesOutsidePools] =
                 sodaJSONObj.getAllSamplesFromSubjects();
               //Combine sample data from samples in and out of pools
-              let samples = [...samplesInPools, ...samplesOutsidePools];
+              const samplesCount = [...samplesInPools, ...samplesOutsidePools]
+                .length;
               //Check to see if any samples were added, and if not, disallow the user
               //from progressing until they add at least one sample or select that they do not
               //have any samples
-              if (samples.length === 0) {
+              if (samplesCount === 0) {
                 notyf.open({
                   duration: "5000",
                   type: "error",
