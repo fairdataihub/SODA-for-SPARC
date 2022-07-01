@@ -1723,7 +1723,7 @@ async function addFilesfunction(
 
   for (var i = 0; i < fileArray.length; i++) {
     var fileName = fileArray[i];
-    console.log(path.parse(fileName).name);
+
     if (path.parse(fileName).name.substr(0, 1) === ".") {
       if (
         path.parse(fileName).name === ".DS_Store" ||
@@ -1822,6 +1822,122 @@ async function addFilesfunction(
     }
   }
 
+  console.log(hiddenFiles);
+  if (hiddenFiles.length > 0) {
+    await Swal.fire({
+      title:
+        "The following files have an unexpected name starting with a period. How should we handle them?",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        hiddenFiles.join("</br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Remove characters",
+      denyButtonText: "Continue as is",
+      cancelButtonText: "Cancel",
+      didOpen: () => {
+        $(".swal-popover").popover();
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        //replace characters
+        //check for already imported
+        for (let i = 0; i < hiddenFiles.length; i++) {
+          let file_name = path.parse(hiddenFiles[i]).base;
+          let path_name = hiddenFiles[i];
+
+          if (Object.keys(currentLocation["files"]).length > 0) {
+            for (const objectKey in currentLocation["files"]) {
+              //tries finding duplicates with the same path
+              if (objectKey != undefined) {
+                console.log(objectKey);
+                nonAllowedDuplicate = false;
+                //if file already exist in json
+                if (path_name === currentLocation["files"][objectKey]["path"]) {
+                  if (
+                    currentLocation["files"][objectKey]["action"].includes(
+                      "renamed"
+                    ) === true
+                  ) {
+                    //same path and has not been renamed
+                    nonAllowedDuplicateFiles.push(path_name);
+                    nonAllowedDuplicate = true;
+                    continue;
+                  }
+                } else {
+                  //file path and object key path arent the same
+                  //check if the file name are the same
+                  //if so consider it as a duplicate
+                  if (file_name.substr(1, file_name.length) === objectKey) {
+                    nonAllowedDuplicateFiles.push(path_name);
+                    nonAllowedDuplicate = true;
+                    continue;
+                  } else {
+                    //store in regular files
+                    regularFiles[file_name.substr(1, file_name.length)] = {
+                      path: path_name,
+                      basename: file_name.substr(1, file_name.length),
+                    };
+                  }
+                }
+              }
+            }
+          } else {
+            //store in regular files
+            regularFiles[file_name.substr(1, file_name.length)] = {
+              path: path_name,
+              basename: file_name.substr(1, file_name.length),
+            };
+          }
+        }
+      } else if (result.isDenied) {
+        //leave as is
+        for (let i = 0; i < hiddenFiles.length; i++) {
+          let file_name = path.parse(hiddenFiles[i]).base;
+          let path_name = hiddenFiles[i];
+
+          for (const objectKey in currentLocation["files"]) {
+            //tries finding duplicates with the same path
+            if (objectKey != undefined) {
+              nonAllowedDuplicate = false;
+              //if file already exist in json
+              if (path_name === currentLocation["files"][objectKey]["path"]) {
+                if (
+                  currentLocation["files"][objectKey]["action"].includes(
+                    "renamed"
+                  ) === true
+                ) {
+                  //same path and has not been renamed
+                  nonAllowedDuplicateFiles.push(path_name);
+                  nonAllowedDuplicate = true;
+                  continue;
+                }
+              } else {
+                //file path and object key path arent the same
+                //check if the file name are the same
+                //if so consider it as a duplicate
+                if (file_name === objectKey) {
+                  nonAllowedDuplicateFiles.push(file_name);
+                  nonAllowedDuplicate = true;
+                  continue;
+                } else {
+                  //store in regular files
+                  regularFiles[file_name] = {
+                    path: path_name,
+                    basename: file_name,
+                  };
+                }
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
   if (nonAllowedDuplicateFiles.length > 0) {
     //add sweetalert here before non duplicate files pop
     var baseName = [];
@@ -1900,52 +2016,6 @@ async function addFilesfunction(
       backdrop: "rgba(0,0,0, 0.4)",
       showConfirmButton: true,
       confirmButtonText: "Okay",
-    });
-  }
-
-  if (hiddenFiles.length > 0) {
-    await Swal.fire({
-      title:
-        "The following files have an expected name starting with a period. How should we handle them?",
-      html:
-        "<div style='max-height:300px; overflow-y:auto'>" +
-        hiddenFiles.join("</br>") +
-        "</div>",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showDenyButton: true,
-      showCancelButton: true,
-      confirmButtonText: "Remove characters",
-      denyButtonText: "Continue as is",
-      cancelButtonText: "Cancel",
-      didOpen: () => {
-        $(".swal-popover").popover();
-      },
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        //replace characters
-        for (let i = 0; i < hiddenFiles.length; i++) {
-          console.log(hiddenFiles[i]);
-          regularFiles[
-            path.parse(hiddenFiles[i]).base.substr(1, hiddenFiles[0].length)
-          ] = {
-            path: hiddenFiles[i],
-            basename: path
-              .parse(hiddenFiles[0])
-              .base.substr(1, hiddenFiles[0].length),
-          };
-        }
-        console.log("HTML");
-      } else if (result.isDenied) {
-        //leave as is
-        for (let i = 0; i < hiddenFiles.length; i++) {
-          console.log(hiddenFiles[i]);
-          regularFiles[path.parse(hiddenFiles[i]).base] = {
-            path: hiddenFiles[i],
-            basename: path.parse(hiddenFiles[0]).base,
-          };
-        }
-      }
     });
   }
 
