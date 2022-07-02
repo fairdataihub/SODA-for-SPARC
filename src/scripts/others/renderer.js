@@ -488,7 +488,6 @@ const startupServerAndApiCheck = async () => {
 };
 
 startupServerAndApiCheck();
-console.log("before");
 
 // Check if we are connected to the Pysoda server
 // Check app version on current app and display in the side bar
@@ -496,8 +495,6 @@ console.log("before");
 ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
   // run pre flight checks once the server connection is confirmed
   // wait until soda is connected to the backend server
-  console.log(sodaIsConnected);
-  console.log(apiVersionChecked);
   while (!sodaIsConnected || !apiVersionChecked) {
     await wait(1000);
   }
@@ -525,7 +522,6 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
     }
   );
 });
-console.log("after");
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
@@ -538,7 +534,7 @@ const run_pre_flight_checks = async (check_update = true) => {
 
     // Check the internet connection and if available check the rest.
     connection_response = await check_internet_connection();
-    console.log(connection_response);
+
     if (!connection_response) {
       await Swal.fire({
         title: "No Internet Connection",
@@ -598,8 +594,7 @@ const run_pre_flight_checks = async (check_update = true) => {
           // Check the installed agent version. We aren't enforcing the min limit yet but is the python version starts enforcing it, we might have to.
           let [browser_download_url, latest_agent_version] =
             await check_agent_installed_version(agent_version_response);
-          console.log(browser_download_url);
-          console.log(latest_agent_version);
+
           if (browser_download_url != "") {
             Swal.fire({
               icon: "warning",
@@ -652,7 +647,6 @@ const run_pre_flight_checks = async (check_update = true) => {
           }
         }
       } else {
-        console.log("here");
         if (check_update) {
           checkNewAppVersion();
         }
@@ -981,7 +975,6 @@ const get_latest_agent_version = async () => {
             });
           }
 
-          console.log("before resolve");
           resolve([browser_download_url, latest_agent_version]);
         }
       }
@@ -4286,12 +4279,10 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
 function populateJSONObjFolder(action, jsonObject, folderPath) {
   var myitems = fs.readdirSync(folderPath);
   myitems.forEach((element) => {
-    console.log(element);
     //prevented here
     var statsObj = fs.statSync(path.join(folderPath, element));
     var addedElement = path.join(folderPath, element);
     if (statsObj.isDirectory() && !/(^|\/)\[^\/\.]/g.test(element)) {
-      console.log(element);
       if (irregularFolderArray.includes(addedElement)) {
         var renamedFolderName = "";
         if (action !== "ignore" && action !== "") {
@@ -4892,7 +4883,6 @@ async function addFoldersfunction(
   folderArray,
   currentLocation
 ) {
-  console.log(folderArray);
   let importToast = new Notyf({
     position: { x: "right", y: "bottom" },
     ripple: true,
@@ -5395,29 +5385,10 @@ async function dropHelper(
             for (const objectKey in myPath["files"]) {
               //tries finding duplicates with the same path
               if (objectKey != undefined) {
-                if (file_name.substr(1, file_name.length) === objectKey) {
-                  nonAllowedDuplicateFiles.push(path_name);
-                  nonAllowedDuplicate = true;
-                  continue;
-                }
-                console.log(objectKey);
                 nonAllowedDuplicate = false;
-                //if file already exist in json
-                if (path_name === myPath["files"][objectKey]["path"]) {
-                  if (
-                    myPath["files"][objectKey]["action"].includes("renamed") ===
-                    true
-                  ) {
+                if (file_name.substr(1, file_name.length) === objectKey) {
+                  if (path_name === myPath["files"][objectKey]["path"]) {
                     //same path and has not been renamed
-                    nonAllowedDuplicateFiles.push(path_name);
-                    nonAllowedDuplicate = true;
-                    continue;
-                  }
-                } else {
-                  //file path and object key path arent the same
-                  //check if the file name are the same
-                  //if so consider it as a duplicate
-                  if (file_name.substr(1, file_name.length) === objectKey) {
                     nonAllowedDuplicateFiles.push(path_name);
                     nonAllowedDuplicate = true;
                     continue;
@@ -5428,6 +5399,12 @@ async function dropHelper(
                       basename: file_name.substr(1, file_name.length),
                     };
                   }
+                } else {
+                  //store in imported files
+                  importedFiles[file_name.substr(1, file_name.length)] = {
+                    path: path_name,
+                    basename: file_name.substr(1, file_name.length),
+                  };
                 }
               }
             }
@@ -5441,47 +5418,48 @@ async function dropHelper(
         }
       } else if (result.isDenied) {
         //leave as is
+
         for (let i = 0; i < hiddenFiles.length; i++) {
           let file_name = path.parse(hiddenFiles[i]).base;
           let path_name = hiddenFiles[i];
 
-          for (const objectKey in myPath["files"]) {
-            //tries finding duplicates with the same path
-            if (objectKey != undefined) {
-              nonAllowedDuplicate = false;
-              if (file_name === objectKey) {
-                nonAllowedDuplicateFiles.push(file_name);
-                nonAllowedDuplicate = true;
-                continue;
-              }
-              //if file already exist in json
-              if (path_name === myPath["files"][objectKey]["path"]) {
-                if (
-                  myPath["files"][objectKey]["action"].includes("renamed") ===
-                  true
-                ) {
-                  //same path and has not been renamed
-                  nonAllowedDuplicateFiles.push(path_name);
-                  nonAllowedDuplicate = true;
-                  continue;
-                }
-              } else {
-                //file path and object key path arent the same
-                //check if the file name are the same
-                //if so consider it as a duplicate
+          if (Object.keys(myPath["files"]).length > 0) {
+            for (const objectKey in myPath["files"]) {
+              //tries finding duplicates with the same path
+              if (objectKey != undefined) {
+                nonAllowedDuplicate = false;
                 if (file_name === objectKey) {
-                  nonAllowedDuplicateFiles.push(file_name);
-                  nonAllowedDuplicate = true;
-                  continue;
+                  if (path_name === myPath["files"][objectKey]["path"]) {
+                    //same path and has not been renamed
+                    nonAllowedDuplicateFiles.push(path_name);
+                    nonAllowedDuplicate = true;
+                    continue;
+                  } else {
+                    //file path and object key path arent the same
+                    //check if the file name are the same
+                    //if so consider it as a duplicate
+
+                    //store in regular files
+                    importedFiles[file_name] = {
+                      path: path_name,
+                      basename: file_name,
+                    };
+                  }
                 } else {
                   //store in regular files
-                  myPath[file_name] = {
+                  importedFiles[file_name] = {
                     path: path_name,
                     basename: file_name,
                   };
                 }
               }
             }
+          } else {
+            //store in regular files
+            importedFiles[file_name] = {
+              path: path_name,
+              basename: file_name,
+            };
           }
         }
       }
@@ -5581,6 +5559,7 @@ async function dropHelper(
     });
   }
   // // now append to UI files and folders
+
   if (Object.keys(importedFiles).length > 0) {
     for (var element in importedFiles) {
       myPath["files"][importedFiles[element]["basename"]] = {

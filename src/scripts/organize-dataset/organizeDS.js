@@ -1854,25 +1854,17 @@ async function addFilesfunction(
             for (const objectKey in currentLocation["files"]) {
               //tries finding duplicates with the same path
               if (objectKey != undefined) {
-                console.log(objectKey);
                 nonAllowedDuplicate = false;
-                console.log(file_name.substr(1, file_name.length));
-                console.log(objectKey);
                 if (file_name.substr(1, file_name.length) === objectKey) {
-                  console.log("uh");
                   //if file already exist in json
                   if (
                     path_name === currentLocation["files"][objectKey]["path"]
                   ) {
-                    console.log("lol");
-
-                    console.log("here");
                     //same path and has not been renamed
                     nonAllowedDuplicateFiles.push(path_name);
                     nonAllowedDuplicate = true;
                     continue;
                   } else {
-                    console.log("eh");
                     //file path and object key path arent the same
                     //check if the file name are the same
                     //if so consider it as a duplicate

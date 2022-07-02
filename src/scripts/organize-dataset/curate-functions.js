@@ -364,7 +364,6 @@ const importMetadataFilesProgress = (object) => {
   populateMetadataProgress(false, "", "");
   if ("metadata-files" in object) {
     var metadataFileArray = Object.keys(object["metadata-files"]);
-    console.log(metadataFileArray);
     metadataFileArray.forEach((element) => {
       var fullPath = object["metadata-files"][element]["path"];
 
@@ -609,7 +608,6 @@ function loadProgressFile(ev) {
       importMetadataFilesProgress(sodaJSONObj);
       importDatasetStructure(sodaJSONObj);
       importGenerateDatasetStep(sodaJSONObj);
-      console.log(sodaJSONObj);
       if (missing_dataset_files.length > 0 || missing_metadata_files > 0) {
         verify_missing_files("pre-existing");
       } else {
