@@ -1822,6 +1822,7 @@ async function addFilesfunction(
     }
   }
 
+  console.log(hiddenFiles);
   if (hiddenFiles.length > 0) {
     await Swal.fire({
       title:
@@ -1841,6 +1842,7 @@ async function addFilesfunction(
         $(".swal-popover").popover();
       },
     }).then(async (result) => {
+      console.log(result);
       if (result.isConfirmed) {
         //replace characters
         //check for already imported
@@ -1854,33 +1856,38 @@ async function addFilesfunction(
               if (objectKey != undefined) {
                 console.log(objectKey);
                 nonAllowedDuplicate = false;
-                //if file already exist in json
-                if (path_name === currentLocation["files"][objectKey]["path"]) {
+                console.log(file_name.substr(1, file_name.length));
+                console.log(objectKey);
+                if (file_name.substr(1, file_name.length) === objectKey) {
+                  console.log("uh");
+                  //if file already exist in json
                   if (
-                    currentLocation["files"][objectKey]["action"].includes(
-                      "renamed"
-                    ) === true
+                    path_name === currentLocation["files"][objectKey]["path"]
                   ) {
+                    console.log("lol");
+
+                    console.log("here");
                     //same path and has not been renamed
                     nonAllowedDuplicateFiles.push(path_name);
                     nonAllowedDuplicate = true;
                     continue;
-                  }
-                } else {
-                  //file path and object key path arent the same
-                  //check if the file name are the same
-                  //if so consider it as a duplicate
-                  if (file_name.substr(1, file_name.length) === objectKey) {
-                    nonAllowedDuplicateFiles.push(path_name);
-                    nonAllowedDuplicate = true;
-                    continue;
                   } else {
+                    console.log("eh");
+                    //file path and object key path arent the same
+                    //check if the file name are the same
+                    //if so consider it as a duplicate
                     //store in regular files
                     regularFiles[file_name.substr(1, file_name.length)] = {
                       path: path_name,
                       basename: file_name.substr(1, file_name.length),
                     };
                   }
+                } else {
+                  //store in regular files
+                  regularFiles[file_name.substr(1, file_name.length)] = {
+                    path: path_name,
+                    basename: file_name.substr(1, file_name.length),
+                  };
                 }
               }
             }
@@ -1892,45 +1899,49 @@ async function addFilesfunction(
             };
           }
         }
-      } else if (result.isDenied) {
+      }
+      if (result.isDenied) {
         //leave as is
         for (let i = 0; i < hiddenFiles.length; i++) {
+          console.log(hiddenFiles[i]);
           let file_name = path.parse(hiddenFiles[i]).base;
           let path_name = hiddenFiles[i];
 
-          for (const objectKey in currentLocation["files"]) {
-            //tries finding duplicates with the same path
-            if (objectKey != undefined) {
-              nonAllowedDuplicate = false;
-              //if file already exist in json
-              if (path_name === currentLocation["files"][objectKey]["path"]) {
-                if (
-                  currentLocation["files"][objectKey]["action"].includes(
-                    "renamed"
-                  ) === true
-                ) {
-                  //same path and has not been renamed
-                  nonAllowedDuplicateFiles.push(path_name);
-                  nonAllowedDuplicate = true;
-                  continue;
-                }
-              } else {
-                //file path and object key path arent the same
-                //check if the file name are the same
-                //if so consider it as a duplicate
+          if (Object.keys(currentLocation["files"]).length > 0) {
+            for (const objectKey in currentLocation["files"]) {
+              console.log(objectKey);
+              console.log(file_name);
+              //tries finding duplicates with the same path
+              if (objectKey != undefined) {
+                nonAllowedDuplicate = false;
+                //if file already exist in json
                 if (file_name === objectKey) {
-                  nonAllowedDuplicateFiles.push(file_name);
-                  nonAllowedDuplicate = true;
-                  continue;
-                } else {
-                  //store in regular files
-                  regularFiles[file_name] = {
-                    path: path_name,
-                    basename: file_name,
-                  };
+                  if (
+                    path_name === currentLocation["files"][objectKey]["path"]
+                  ) {
+                    //same path and has not been renamed
+                    nonAllowedDuplicateFiles.push(path_name);
+                    nonAllowedDuplicate = true;
+                    continue;
+                  } else {
+                    //store in regular files
+                    regularFiles[file_name] = {
+                      path: path_name,
+                      basename: file_name,
+                    };
+                  }
+                  //file path and object key path arent the same
+                  //check if the file name are the same
+                  //if so consider it as a duplicate
                 }
               }
             }
+          } else {
+            //store in regular files
+            regularFiles[file_name] = {
+              path: path_name,
+              basename: file_name,
+            };
           }
         }
       }
