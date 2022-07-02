@@ -920,6 +920,7 @@ const check_agent_installed_version = async (agent_version) => {
   let browser_download_url = "";
   [browser_download_url, latest_agent_version] =
     await get_latest_agent_version();
+
   if (latest_agent_version != agent_version) {
     notyf.dismiss(notification);
     notyf.open({
@@ -941,43 +942,48 @@ const check_agent_installed_version = async (agent_version) => {
 };
 
 const get_latest_agent_version = async () => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     $.getJSON("https://api.github.com/repos/Pennsieve/agent/releases").done(
-      (release_res) => {
-        let release = release_res[0];
-        let latest_agent_version = release.tag_name;
-        if (process.platform == "darwin") {
-          reverseSwalButtons = true;
-          release.assets.forEach((asset, index) => {
-            let file_name = asset.name;
-            if (path.extname(file_name) == ".pkg") {
-              browser_download_url = asset.browser_download_url;
-            }
-          });
-        }
-        if (process.platform == "win32") {
-          reverseSwalButtons = false;
-          release.assets.forEach((asset, index) => {
-            let file_name = asset.name;
-            if (
-              path.extname(file_name) == ".msi" ||
-              path.extname(file_name) == ".exe"
-            ) {
-              browser_download_url = asset.browser_download_url;
-            }
-          });
-        }
-        if (process.platform == "linux") {
-          reverseSwalButtons = false;
-          release.assets.forEach((asset, index) => {
-            let file_name = asset.name;
-            if (path.extname(file_name) == ".deb") {
-              browser_download_url = asset.browser_download_url;
-            }
-          });
-        }
+      (release_res, error) => {
+        if (error) {
+          reject(error);
+        } else {
+          let release = release_res[0];
+          let latest_agent_version = release.tag_name;
+          if (process.platform == "darwin") {
+            reverseSwalButtons = true;
+            release.assets.forEach((asset, index) => {
+              let file_name = asset.name;
+              if (path.extname(file_name) == ".pkg") {
+                browser_download_url = asset.browser_download_url;
+              }
+            });
+          }
+          if (process.platform == "win32") {
+            reverseSwalButtons = false;
+            release.assets.forEach((asset, index) => {
+              let file_name = asset.name;
+              if (
+                path.extname(file_name) == ".msi" ||
+                path.extname(file_name) == ".exe"
+              ) {
+                browser_download_url = asset.browser_download_url;
+              }
+            });
+          }
+          if (process.platform == "linux") {
+            reverseSwalButtons = false;
+            release.assets.forEach((asset, index) => {
+              let file_name = asset.name;
+              if (path.extname(file_name) == ".deb") {
+                browser_download_url = asset.browser_download_url;
+              }
+            });
+          }
 
-        resolve([browser_download_url, latest_agent_version]);
+          console.log("before resolve");
+          resolve([browser_download_url, latest_agent_version]);
+        }
       }
     );
   });
