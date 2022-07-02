@@ -1727,7 +1727,7 @@ async function addFilesfunction(
     if (path.parse(fileName).name.substr(0, 1) === ".") {
       if (
         path.parse(fileName).name === ".DS_Store" ||
-        path.parse(fileName).name === "Thumb.db"
+        path.parse(fileName).name === "Thumbs.db"
       ) {
         nonAllowedFiles.push(fileName);
         continue;
@@ -1822,7 +1822,6 @@ async function addFilesfunction(
     }
   }
 
-  console.log(hiddenFiles);
   if (hiddenFiles.length > 0) {
     await Swal.fire({
       title:
@@ -1842,7 +1841,6 @@ async function addFilesfunction(
         $(".swal-popover").popover();
       },
     }).then(async (result) => {
-      console.log(result);
       if (result.isConfirmed) {
         //replace characters
         //check for already imported
@@ -1895,14 +1893,11 @@ async function addFilesfunction(
       if (result.isDenied) {
         //leave as is
         for (let i = 0; i < hiddenFiles.length; i++) {
-          console.log(hiddenFiles[i]);
           let file_name = path.parse(hiddenFiles[i]).base;
           let path_name = hiddenFiles[i];
 
           if (Object.keys(currentLocation["files"]).length > 0) {
             for (const objectKey in currentLocation["files"]) {
-              console.log(objectKey);
-              console.log(file_name);
               //tries finding duplicates with the same path
               if (objectKey != undefined) {
                 nonAllowedDuplicate = false;

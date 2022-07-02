@@ -5236,7 +5236,7 @@ async function dropHelper(
       if (path.parse(itemPath).name.substr(0, 1) === ".") {
         if (
           path.parse(itemPath).base === ".DS_Store" ||
-          path.parse(itemPath).base === "Thumb.db"
+          path.parse(itemPath).base === "Thumbs.db"
         ) {
           nonAllowedFiles.push(itemPath);
           continue;
