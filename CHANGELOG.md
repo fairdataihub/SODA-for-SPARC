@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Layout of Prepare Metadata tab has been changed. Buttons are spread out more evenly and Manifest file button received an icon change.
 - New landing page and additional tabs in the navigation bar (Documentation and Contact Us)
 - Contact Us tab will provide user information on how to reach out to the team for any issues or suggestions. As well as providing a Gather Logs button for the user to provide in an email for the team to look at any issues in depth.
-- Main login prompt and API login prompt were modified in terms of styling. 
+- Main login prompt and API login prompt were modified in terms of styling.
 
 ## Bug fixes:
 
