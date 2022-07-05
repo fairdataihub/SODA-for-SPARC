@@ -1992,7 +1992,6 @@ function beginScrollListen() {
 }
 
 async function lazyLoad() {
-  console.log("inside lady loading");
   let total_items = already_created_elem.length;
   let filtered = getGlobalPath(dataset_path);
   let myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);

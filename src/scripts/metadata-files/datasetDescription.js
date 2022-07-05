@@ -1006,7 +1006,13 @@ async function addProtocol(curationMode) {
   });
   if (values) {
     console.log(values);
-    addProtocolLinktoTableDD(values[0], values[1], values[2], values[3]);
+    addProtocolLinktoTableDD(
+      values[0],
+      values[1],
+      values[2],
+      values[3],
+      "free-form"
+    );
   }
 }
 

@@ -1086,7 +1086,7 @@ const guidedLoadDescriptionContributorInformation = () => {
 
   if (contributorInformationMetadata) {
     acknowledgementsInput.value =
-      contributorInformationMetadata["acknowledgement"];
+      contributorInformationMetadata["acknowledgment"];
     guidedOtherFundingsourcesTagify.addTags(
       contributorInformationMetadata["funding"]
     );
@@ -1312,8 +1312,8 @@ const traverseToTab = (targetPageID) => {
       guidedLoadDescriptionDatasetInformation();
       guidedLoadDescriptionStudyInformation();
       guidedLoadDescriptionContributorInformation();
-      /*renderAdditionalLinksTable();
-
+      renderAdditionalLinksTable();
+      /*
       //set study purpose, data collection, and primary conclusion from sodaJSONObj
       const studyPurpose = sodaJSONObj["digital-metadata"]["study-purpose"];
       const dataCollection = sodaJSONObj["digital-metadata"]["data-collection"];
@@ -3050,7 +3050,6 @@ const generateContributorField = (
               placeholder="Enter last name here"
               onkeyup="validateInput($(this))"
               value="${contributorLastName ? contributorLastName : ""}"
-              ${contributorFirstName ? "readonly" : ""}
             />
           </div>
           <div class="guided--flex-center mt-sm" style="width: 45%">
@@ -3064,7 +3063,6 @@ const generateContributorField = (
               placeholder="Enter first name here"
               onkeyup="validateInput($(this))"
               value="${contributorFirstName ? contributorFirstName : ""}"
-              ${contributorFirstName ? "readonly" : ""}
             />
           </div>
         </div>
@@ -3080,7 +3078,6 @@ const generateContributorField = (
               placeholder="Enter ORCID here"
               onkeyup="validateInput($(this))"
               value="${contributorORCID ? contributorORCID : ""}"
-              ${contributorORCID ? "readonly" : ""}
             />
           </div>
           <div class="guided--flex-center mt-md" style="width: 45%">
@@ -3094,7 +3091,6 @@ const generateContributorField = (
               placeholder="Enter affiliation here"
               onkeyup="validateInput($(this))"
               value="${contributorAffiliation ? contributorAffiliation : ""}"
-              ${contributorAffiliation ? "readonly" : ""}
             />
           </div>
         </div>
@@ -3330,10 +3326,7 @@ const renderProtocolFields = (protocolsArray) => {
   const protocolsContainer = document.getElementById("protocols-container");
   let protocolElements = protocolsArray
     .map((protocol) => {
-      return generateProtocolField(
-        protocol["protocolUrl"],
-        protocol["protocolDescription"]
-      );
+      return generateProtocolField(protocol["link"], protocol["description"]);
     })
     .join("\n");
   protocolsContainer.innerHTML = protocolElements;
@@ -3345,9 +3338,9 @@ const renderContributorFields = (contributionMembersArray) => {
       return generateContributorField(
         contributionMember["contributorLastName"],
         contributionMember["contributorFirstName"],
-        contributionMember["contributorORCID"],
-        contributionMember["contributorAffiliation"],
-        contributionMember["contributorRoles"]
+        contributionMember["conID"],
+        contributionMember["conAffliation"],
+        contributionMember["conRole"]
       );
     })
     .join("\n");
@@ -3418,7 +3411,7 @@ const renderAdditionalLinksTable = () => {
         console.log(link);
         return generateadditionalLinkRowElement(
           link.link,
-          link.linkType,
+          link.type,
           link.relation
         );
       })
@@ -3438,8 +3431,8 @@ const openAddAdditionLinkSwal = async () => {
   const { value: values } = await Swal.fire({
     title: "Add additional link",
     html: `
-      <label
-        >URL or DOI:
+      <label>
+        URL or DOI:
       </label>
       <input
         id="guided-other-link"
@@ -3535,7 +3528,7 @@ const openAddAdditionLinkSwal = async () => {
   if (values) {
     const link = values[0];
     const relation = values[1];
-    let linkType = null;
+    let linkType;
     //check if link starts with "https://"
     if (link.startsWith("https://doi.org/")) {
       linkType = "DOI";
@@ -3550,7 +3543,7 @@ const openAddAdditionLinkSwal = async () => {
       link: link,
       relation: relation,
       description: description,
-      linkType: linkType,
+      type: linkType,
     });
     renderAdditionalLinksTable();
   }
@@ -6525,7 +6518,6 @@ $(document).ready(() => {
     const response = await fetch("https://api.pennsieve.io/datasets/", options);
 
     if (!response.ok) {
-      const message = `An error has occured: ${response.status}`;
       Swal.fire({
         icon: "error",
         text: `An error has occured: ${response.status}`,
@@ -6537,7 +6529,7 @@ $(document).ready(() => {
       guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "error");
       guidedUploadStatusIcon("guided-dataset-license-upload-status", "error");
       guidedUploadStatusIcon("guided-dataset-tags-upload-status", "error");
-      throw new Error(message);
+      throw new Error(response.status);
     } else {
       guidedUploadStatusIcon("guided-dataset-name-upload-status", "success");
       guidedUploadStatusIcon(
@@ -7186,20 +7178,34 @@ $(document).ready(() => {
   async function guidedUploadDatasetDescriptionMetadata(
     bfAccount,
     datasetName,
-    guidedSubmissionMetadataJSON
+    guidedDatasetInformation,
+    guidedStudyInformation,
+    guidedContributorInformation,
+    guidedAdditionalLinks
   ) {
+    console.log(
+      bfAccount,
+      datasetName,
+      guidedDatasetInformation,
+      guidedStudyInformation,
+      guidedContributorInformation,
+      guidedAdditionalLinks
+    );
     return new Promise((resolve, reject) => {
       client.invoke(
-        "api_save_submission_file",
+        "api_save_ds_description_file",
         true,
         bfAccount,
         datasetName,
         undefined,
-        guidedSubmissionMetadataJSON,
+        guidedDatasetInformation,
+        guidedStudyInformation,
+        guidedContributorInformation,
+        guidedAdditionalLinks,
         (error, res) => {
           if (error) {
             guidedUploadStatusIcon(
-              "guided-submission-metadata-upload-status",
+              "guided-dataset-description-metadata-upload-status",
               "error"
             );
             log.error(error);
@@ -7208,16 +7214,53 @@ $(document).ready(() => {
             reject(error);
           } else {
             guidedUploadStatusIcon(
-              "guided-submission-metadata-upload-status",
+              "guided-dataset-description-metadata-upload-status",
               "success"
             );
-            console.log("Submission metadata added + " + res);
-            resolve(`Submission metadata added` + res);
+            console.log("Description metadata added + " + res);
+            resolve(`description metadata added` + res);
           }
         }
       );
     });
   }
+
+  const guidedUploadREADMEorCHANGESMetadata = async (
+    bfAccount,
+    datasetName,
+    readmeORchanges, //lowercase file type
+    readmeOrChangesMetadata
+  ) => {
+    const fileName = `${readmeORchanges}.txt`;
+    return new Promise((resolve, reject) => {
+      client.invoke(
+        "api_upload_RC_file",
+        readmeOrChangesMetadata, //RC text to upload e.g. this dataset or changes...
+        fileName, //CHANGES.txt or README.txt
+        bfAccount,
+        datasetName,
+        (error, res) => {
+          if (error) {
+            guidedUploadStatusIcon(
+              `guided-${readmeORchanges}-metadata-upload-status`,
+              "error"
+            );
+            log.error(error);
+            console.error(error);
+            let emessage = userError(error);
+            reject(error);
+          } else {
+            guidedUploadStatusIcon(
+              `guided-${readmeORchanges}-metadata-upload-status`,
+              "success"
+            );
+            console.log(`${readmeORchanges} metadata added` + res);
+            resolve(`${readmeORchanges} metadata added` + res);
+          }
+        }
+      );
+    });
+  };
 
   const guidedPennsieveDatasetUpload = async () => {
     const guidedBfAccount = defaultBfAccount;
@@ -7266,16 +7309,48 @@ $(document).ready(() => {
     guidedSubmissionMetadataJSON = JSON.stringify(guidedSubmissionMetadataJSON);
 
     //Dataset Description Metadata variables
-    const guidedDatasetInformation =
+    const guidedDatasetInformation = JSON.stringify(
       sodaJSONObj["dataset-metadata"]["description-metadata"][
         "dataset-information"
-      ];
-    const guidedStudyInformation =
+      ]
+    );
+
+    const guidedStudyInformation = JSON.stringify(
       sodaJSONObj["dataset-metadata"]["description-metadata"][
         "study-information"
+      ]
+    );
+
+    let guidedContributorInformation =
+      sodaJSONObj["dataset-metadata"]["description-metadata"][
+        "contributor-information"
       ];
-    const guidedContributorInformation = "";
-    const guidedRelatedInformation = "";
+
+    //Add contributors from sodaJSONObj to guidedContributorInformation in the "contributors" key
+    let contributors =
+      sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+    //change the contributor's conRole property from an array to a comma seperated string
+    for (const contributor of contributors) {
+      contributor["conRole"] = contributor["conRole"].join(", ");
+    }
+    guidedContributorInformation["contributors"] = contributors;
+
+    guidedContributorInformation = JSON.stringify(guidedContributorInformation);
+
+    const guidedAdditionalLinks = JSON.stringify(
+      sodaJSONObj["dataset-metadata"]["description-metadata"][
+        "additional-links"
+      ]
+    );
+
+    //README and CHANGES Metadata variables
+    const guidedReadMeMetadata = sodaJSONObj["dataset-metadata"]["README"];
+    const guidedChangesMetadata = sodaJSONObj["dataset-metadata"]["CHANGES"];
+
+    console.log(guidedDatasetInformation);
+    console.log(guidedStudyInformation);
+    console.log(guidedContributorInformation);
+    console.log(guidedAdditionalLinks);
 
     try {
       //await create_dataset and then console log response
@@ -7286,6 +7361,7 @@ $(document).ready(() => {
         guidedLicense
       );
       console.log(datasetUploadResponse);
+
       //once create_dataset is finished, addPennsieveMetadata
       let addPennsieveMetadataResponse = await addPennsieveMetadata(
         guidedBfAccount,
@@ -7302,24 +7378,55 @@ $(document).ready(() => {
         guidedReadMe
       );
       console.log(addDescriptionResponse);
+
       let addSubjectsMetadataResponse = await guidedUploadSubjectsMetadata(
         guidedBfAccount,
         guidedDatasetName,
         guidedSubjectsMetadata
       );
       console.log(addSubjectsMetadataResponse);
+
       let addSamplesMetadataResponse = await guidedUploadSamplesMetadata(
         guidedBfAccount,
         guidedDatasetName,
         guidedSamplesMetadata
       );
       console.log(addSamplesMetadataResponse);
+
       let addSubmissionMetadataResponse = await guidedUploadSubmissionMetadata(
         guidedBfAccount,
         guidedDatasetName,
         guidedSubmissionMetadataJSON
       );
       console.log(addSubmissionMetadataResponse);
+
+      let addDescriptionMetadataResponse =
+        await guidedUploadDatasetDescriptionMetadata(
+          guidedBfAccount,
+          guidedDatasetName,
+          guidedDatasetInformation,
+          guidedStudyInformation,
+          guidedContributorInformation,
+          guidedAdditionalLinks
+        );
+      console.log(addDescriptionMetadataResponse);
+
+      let addReadMeMetadataResponse = await guidedUploadREADMEorCHANGESMetadata(
+        guidedBfAccount,
+        guidedDatasetName,
+        "readme",
+        guidedReadMeMetadata
+      );
+      console.log(addReadMeMetadataResponse);
+
+      let addChangesMetadataResponse =
+        await guidedUploadREADMEorCHANGESMetadata(
+          guidedBfAccount,
+          guidedDatasetName,
+          "changes",
+          guidedChangesMetadata
+        );
+      console.log(addChangesMetadataResponse);
     } catch (e) {
       console.error(e);
     }
@@ -8146,160 +8253,6 @@ $(document).ready(() => {
     return checkedContributorData;
   };
 
-  //description///////////////////////////////////////
-  $("#guided-button-save-checked-contributors").on("click", async function () {
-    //disable button and set to loading while querying contributor data from AirTable
-    $(this).prop("disabled", true);
-    $(this).addClass("loading");
-    const checkedContributors = getCheckedContributors();
-    console.log(checkedContributors);
-    //if checkedMilestoneData is empty, create notyf
-    if (checkedContributors.length === 0) {
-      notyf.error("Please select at least one contributor");
-      $(this).prop("disabled", false);
-      $(this).removeClass("loading");
-      return;
-    }
-
-    var airKeyContent = parseJson(airtableConfigPath);
-    var airKeyInput = airKeyContent["api-key"];
-    var airtableConfig = Airtable.configure({
-      endpointUrl: "https://" + airtableHostname,
-      apiKey: airKeyInput,
-    });
-    var base = Airtable.base("appiYd1Tz9Sv857GZ");
-    // Create a filter string to select every entry with first and last names that match the checked contributors
-    let contributorInfoFilterString = "OR(";
-    for (const contributor of checkedContributors) {
-      contributorInfoFilterString += `AND({First_name} = "${contributor["contributorFirstName"]}", {Last_name} = "${contributor["contributorLastName"]}"),`;
-    }
-    //replace last comma with closing bracket
-    contributorInfoFilterString =
-      contributorInfoFilterString.slice(0, -1) + ")";
-
-    //Select contributors where contributor first name is Jacob and contributor last name is Smith or contributor first name is John and contributor last name is Doe
-    const contributorInfoResult = await base("sparc_members")
-      .select({
-        filterByFormula: contributorInfoFilterString,
-      })
-      .all();
-
-    const contributorInfo = contributorInfoResult.map((contributor) => {
-      return {
-        contributorFirstName: contributor.fields["First_name"],
-        contributorLastName: contributor.fields["Last_name"],
-        contributorORCID: contributor.fields["ORCID"],
-        contributorAffiliation: contributor.fields["Institution"],
-        contributorRole: contributor.fields["Institution_role"],
-      };
-    });
-    renderContributorFields(contributorInfo);
-
-    //set opacity and remove pointer events for table and show edit button
-    disableElementById("contributors-table");
-    //switch button from save to edit
-    document.getElementById(
-      "guided-button-save-checked-contributors"
-    ).style.display = "none";
-    document.getElementById(
-      "guided-button-edit-checked-contributors"
-    ).style.display = "flex";
-    $(this).prop("disabled", false);
-    $(this).removeClass("loading");
-  });
-
-  $("#guided-button-edit-checked-contributors").on("click", () => {
-    enableElementById("contributors-table");
-    enableElementById("contributors-container");
-    enableElementById("guided-button-add-contributor");
-    document
-      .getElementById("guided-div-contributor-field-set")
-      .classList.add("hidden");
-
-    //switch button from edit to save
-    document.getElementById(
-      "guided-button-edit-checked-contributors"
-    ).style.display = "none";
-    document.getElementById(
-      "guided-button-save-checked-contributors"
-    ).style.display = "flex";
-    document.getElementById(
-      "guided-button-edit-contributor-fields"
-    ).style.display = "none";
-    document.getElementById(
-      "guided-button-save-contributor-fields"
-    ).style.display = "flex";
-  });
-
-  $("#guided-button-save-protocol-fields").on("click", () => {
-    let allInputsValid = true;
-    let protocolData = [];
-
-    //get all contributor fields
-    const protocolFields = document.querySelectorAll(
-      ".guided-protocol-field-container"
-    );
-    //check if contributorFields is empty
-    if (protocolFields.length === 0) {
-      notyf.error("Please add at least one protocol");
-      return;
-    }
-
-    //loop through contributor fields and get values
-    const protocolFieldsArray = Array.from(protocolFields);
-    ///////////////////////////////////////////////////////////////////////////////
-    protocolFieldsArray.forEach((protocolField) => {
-      protocolUrl = protocolField.querySelector(".guided-protocol-url-input");
-      protocolDescription = protocolField.querySelector(
-        ".guided-protocol-description-input"
-      );
-
-      const textInputs = [protocolUrl, protocolDescription];
-
-      //check if all text inputs are valid
-      textInputs.forEach((textInput) => {
-        if (textInput.value === "") {
-          textInput.style.setProperty("border-color", "red", "important");
-          allInputsValid = false;
-        } else {
-          textInput.style.setProperty(
-            "border-color",
-            "hsl(0, 0%, 88%)",
-            "important"
-          );
-        }
-      });
-      //
-      const protocolInputObj = {
-        protocolUrl: protocolUrl,
-        protocolDescription: protocolDescription,
-      };
-      protocolData.push(protocolInputObj);
-    });
-    ///////////////////////////////////////////////////////////////////////////////
-
-    if (!allInputsValid) {
-      notyf.error("Please fill out all protocol fields");
-      return;
-    }
-
-    //Add the protocol data to the jsonObj
-    for (const protocol of protocolData) {
-      sodaJSONObj["dataset-metadata"]["protocol-data"].push(protocol);
-    }
-
-    //set opacity and remove pointer events for table and show edit button
-    disableElementById("protocols-container");
-    disableElementById("guided-button-add-protocol");
-
-    //switch button from save to edit
-    document.getElementById(
-      "guided-button-save-protocol-fields"
-    ).style.display = "none";
-    document.getElementById(
-      "guided-button-edit-protocol-fields"
-    ).style.display = "flex";
-  });
   $("#guided-button-edit-protocol-fields").on("click", () => {
     enableElementById("protocols-container");
     enableElementById("guided-button-add-protocol");
@@ -8717,7 +8670,7 @@ $(document).ready(() => {
       "contributor-information"
     ] = {
       funding: otherFunding,
-      acknowledgement: acknowledgements,
+      acknowledgment: acknowledgements,
     };
   };
   const getGuidedDatasetInformation = () => {
@@ -9567,16 +9520,16 @@ $(document).ready(() => {
           const contributorFieldsArray = Array.from(contributorFields);
           ///////////////////////////////////////////////////////////////////////////////
           contributorFieldsArray.forEach((contributorField) => {
-            const contributorLastName = contributorField.querySelector(
+            const contributorLastNameInput = contributorField.querySelector(
               ".guided-last-name-input"
             );
-            const contributorFirstName = contributorField.querySelector(
+            const contributorFirstNameInput = contributorField.querySelector(
               ".guided-first-name-input"
             );
-            const contributorORCID = contributorField.querySelector(
+            const contributorORCIDInput = contributorField.querySelector(
               ".guided-orcid-input"
             );
-            const contributorAffiliation = contributorField.querySelector(
+            const contributorAffiliationInput = contributorField.querySelector(
               ".guided-affiliation-input"
             );
             //get the tags inside the tagify element with the class guided-contributor-role-input
@@ -9597,10 +9550,10 @@ $(document).ready(() => {
             );
             //Validate all of the contributor fields
             const textInputs = [
-              contributorLastName,
-              contributorFirstName,
-              contributorORCID,
-              contributorAffiliation,
+              contributorLastNameInput,
+              contributorFirstNameInput,
+              contributorORCIDInput,
+              contributorAffiliationInput,
             ];
             //check if all text inputs are valid
             textInputs.forEach((textInput) => {
@@ -9633,11 +9586,12 @@ $(document).ready(() => {
             }
 
             const contributorInputObj = {
-              contributorLastName: contributorLastName.value,
-              contributorFirstName: contributorFirstName.value,
-              contributorORCID: contributorORCID.value,
-              contributorAffiliation: contributorAffiliation.value,
-              contributorRoles: contributorRoles,
+              contributorLastName: contributorLastNameInput.value,
+              contributorFirstName: contributorFirstNameInput.value,
+              conName: `${contributorLastNameInput.value}, ${contributorFirstNameInput.value}`,
+              conID: contributorORCIDInput.value,
+              conAffliation: contributorAffiliationInput.value,
+              conRole: contributorRoles,
             };
             contributors.push(contributorInputObj);
           });
@@ -9689,15 +9643,18 @@ $(document).ready(() => {
               return {
                 contributorLastName: contributor.fields["Last_name"],
                 contributorFirstName: contributor.fields["First_name"],
-                contributorORCID: contributor.fields["ORCID"],
-                contributorAffiliation: contributor.fields["Institution"],
-                contributorRoles: contributor.fields["NIH_Project_Role"],
+                conName: `${contributor.fields["Last_name"]}, ${contributor.fields["First_name"]}`,
+                conID: contributor.fields["ORCID"],
+                conAffliation: contributor.fields["Institution"],
+                conRole: contributor.fields["NIH_Project_Role"],
               };
             });
             sodaJSONObj["dataset-metadata"]["description-metadata"][
               "contributors"
             ] = contributorInfo;
+
             renderContributorFields(contributorInfo);
+
             document
               .getElementById("guided-div-contributors-imported-from-airtable")
               .classList.add("hidden");
@@ -9742,15 +9699,15 @@ $(document).ready(() => {
         const protocolFieldsArray = Array.from(protocolFields);
         protocolFieldsArray.forEach((protocolField) => {
           console.log(protocolField);
-          const protocolUrl = protocolField.querySelector(
+          const protocolUrlInput = protocolField.querySelector(
             ".guided-protocol-url-input"
           );
-          const protocolDescription = protocolField.querySelector(
+          const protocolDescriptionInput = protocolField.querySelector(
             ".guided-protocol-description-input"
           );
 
           //Validate all of the protocol fields
-          const textInputs = [protocolUrl, protocolDescription];
+          const textInputs = [protocolUrlInput, protocolDescriptionInput];
           console.log(textInputs);
           //check if all text inputs are valid
           textInputs.forEach((textInput) => {
@@ -9767,8 +9724,12 @@ $(document).ready(() => {
           });
 
           const protocolObj = {
-            protocolUrl: protocolUrl.value,
-            protocolDescription: protocolDescription.value,
+            link: protocolUrlInput.value,
+            type: protocolUrlInput.value.startsWith("https://doi.org/")
+              ? "DOI"
+              : "URL",
+            relation: "isProtocolFor",
+            description: protocolDescriptionInput.value,
           };
           protocols.push(protocolObj);
         });
@@ -9782,6 +9743,7 @@ $(document).ready(() => {
         sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] =
           protocols;
       }
+
       if (pageBeingLeftID === "guided-create-description-metadata-tab") {
         try {
           guidedSaveDescriptionDatasetInformation();

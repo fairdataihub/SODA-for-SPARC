@@ -60,6 +60,8 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
     },
   }).then((result) => {});
   var textValue = $(`#textarea-create-${fileType}`).val().trim();
+  console.log(textValue);
+  console.log(upperCaseLetters);
   if (uploadBFBoolean) {
     client.invoke(
       "api_upload_RC_file",
