@@ -290,11 +290,6 @@ button[data-id="guided_bf_list_users_and_teams"] {
   width: 100%;
 }
 
-#guided_pi_bootstrap_select_div > .dropdown.bootstrap-select,
-#guided_permissions_select_div > .dropdown.bootstrap-select {
-  width: 100%;
-}
-
 .sidebar {
   background-color: var(--color-teal);
   height: 100%;
@@ -1695,8 +1690,10 @@ details[open] > summary::before {
 }
 
 .about-text {
-  color: dimgray;
+  color: dimgray !important;
   text-align: justify;
+  font-size: 1rem !important;
+  font-weight: 500 !important;
 }
 
 .tip-content {

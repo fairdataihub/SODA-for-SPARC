@@ -191,7 +191,6 @@ var overview_observer = new MutationObserver(function (mutations) {
       column3_lottie.play();
       heart_container.play();
     } else {
-      console.log("removing overview lotties");
       column1_lottie.stop();
       column2_lottie.stop();
       column3_lottie.stop();
@@ -486,6 +485,7 @@ const startupServerAndApiCheck = async () => {
   }
 
   apiVersionChecked = true;
+  console.log(apiVersionChecked);
 };
 
 startupServerAndApiCheck();
@@ -526,6 +526,7 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
+  console.log("preflight");
   return new Promise(async (resolve) => {
     let connection_response = "";
     let agent_installed_response = "";
@@ -534,6 +535,7 @@ const run_pre_flight_checks = async (check_update = true) => {
 
     // Check the internet connection and if available check the rest.
     connection_response = await check_internet_connection();
+
     if (!connection_response) {
       await Swal.fire({
         title: "No Internet Connection",
@@ -579,7 +581,7 @@ const run_pre_flight_checks = async (check_update = true) => {
             cancelButtonText: "Skip for now",
           }).then(async (result) => {
             if (result.isConfirmed) {
-              [browser_download_url, latest_agent_version] =
+              let [browser_download_url, latest_agent_version] =
                 await get_latest_agent_version();
               shell.openExternal(browser_download_url);
               shell.openExternal(
@@ -591,8 +593,9 @@ const run_pre_flight_checks = async (check_update = true) => {
         } else {
           await wait(500);
           // Check the installed agent version. We aren't enforcing the min limit yet but is the python version starts enforcing it, we might have to.
-          [browser_download_url, latest_agent_version] =
+          let [browser_download_url, latest_agent_version] =
             await check_agent_installed_version(agent_version_response);
+
           if (browser_download_url != "") {
             Swal.fire({
               icon: "warning",
@@ -801,7 +804,29 @@ const check_api_key = async () => {
         });
         log.error(error);
         console.error(error);
-        resolve(false);
+        Swal.fire({
+          icon: "warning",
+          text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "Yes",
+          showCancelButton: true,
+          reverseButtons: reverseSwalButtons,
+          cancelButtonText: "I'll do it later",
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            await openDropdownPrompt(null, "bf");
+            resolve(false);
+          } else {
+            resolve(true);
+          }
+        });
       } else {
         console.log(res);
         log.info("Found a set of valid API keys");
@@ -812,7 +837,29 @@ const check_api_key = async () => {
             type: "error",
             message: "No account was found",
           });
-          resolve(false);
+          Swal.fire({
+            icon: "warning",
+            text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            confirmButtonText: "Yes",
+            showCancelButton: true,
+            reverseButtons: reverseSwalButtons,
+            cancelButtonText: "I'll do it later",
+            showClass: {
+              popup: "animate__animated animate__zoomIn animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__zoomOut animate__faster",
+            },
+          }).then(async (result) => {
+            if (result.isConfirmed) {
+              await openDropdownPrompt(null, "bf");
+              resolve(false);
+            } else {
+              resolve(true);
+            }
+          });
         } else {
           notyf.dismiss(notification);
           notyf.open({
@@ -869,6 +916,7 @@ const check_agent_installed_version = async (agent_version) => {
   let browser_download_url = "";
   [browser_download_url, latest_agent_version] =
     await get_latest_agent_version();
+
   if (latest_agent_version != agent_version) {
     notyf.dismiss(notification);
     notyf.open({
@@ -890,43 +938,47 @@ const check_agent_installed_version = async (agent_version) => {
 };
 
 const get_latest_agent_version = async () => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     $.getJSON("https://api.github.com/repos/Pennsieve/agent/releases").done(
-      (release_res) => {
-        let release = release_res[0];
-        let latest_agent_version = release.tag_name;
-        if (process.platform == "darwin") {
-          reverseSwalButtons = true;
-          release.assets.forEach((asset, index) => {
-            let file_name = asset.name;
-            if (path.extname(file_name) == ".pkg") {
-              browser_download_url = asset.browser_download_url;
-            }
-          });
-        }
-        if (process.platform == "win32") {
-          reverseSwalButtons = false;
-          release.assets.forEach((asset, index) => {
-            let file_name = asset.name;
-            if (
-              path.extname(file_name) == ".msi" ||
-              path.extname(file_name) == ".exe"
-            ) {
-              browser_download_url = asset.browser_download_url;
-            }
-          });
-        }
-        if (process.platform == "linux") {
-          reverseSwalButtons = false;
-          release.assets.forEach((asset, index) => {
-            let file_name = asset.name;
-            if (path.extname(file_name) == ".deb") {
-              browser_download_url = asset.browser_download_url;
-            }
-          });
-        }
+      (release_res, error) => {
+        if (error) {
+          reject(error);
+        } else {
+          let release = release_res[0];
+          let latest_agent_version = release.tag_name;
+          if (process.platform == "darwin") {
+            reverseSwalButtons = true;
+            release.assets.forEach((asset, index) => {
+              let file_name = asset.name;
+              if (path.extname(file_name) == ".pkg") {
+                browser_download_url = asset.browser_download_url;
+              }
+            });
+          }
+          if (process.platform == "win32") {
+            reverseSwalButtons = false;
+            release.assets.forEach((asset, index) => {
+              let file_name = asset.name;
+              if (
+                path.extname(file_name) == ".msi" ||
+                path.extname(file_name) == ".exe"
+              ) {
+                browser_download_url = asset.browser_download_url;
+              }
+            });
+          }
+          if (process.platform == "linux") {
+            reverseSwalButtons = false;
+            release.assets.forEach((asset, index) => {
+              let file_name = asset.name;
+              if (path.extname(file_name) == ".deb") {
+                browser_download_url = asset.browser_download_url;
+              }
+            });
+          }
 
-        resolve([browser_download_url, latest_agent_version]);
+          resolve([browser_download_url, latest_agent_version]);
+        }
       }
     );
   });
@@ -4344,9 +4396,10 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
 function populateJSONObjFolder(action, jsonObject, folderPath) {
   var myitems = fs.readdirSync(folderPath);
   myitems.forEach((element) => {
+    //prevented here
     var statsObj = fs.statSync(path.join(folderPath, element));
     var addedElement = path.join(folderPath, element);
-    if (statsObj.isDirectory() && !/(^|\/)\.[^\/\.]/g.test(element)) {
+    if (statsObj.isDirectory() && !/(^|\/)\[^\/\.]/g.test(element)) {
       if (irregularFolderArray.includes(addedElement)) {
         var renamedFolderName = "";
         if (action !== "ignore" && action !== "") {
@@ -4481,7 +4534,7 @@ var bfAddAccountBootboxMessage = `<form>
     </div>
   </form>`;
 
-var bfaddaccountTitle = `<h3 style="text-align:center">Please enter your Pennsieve API key information below:</h3>`;
+var bfaddaccountTitle = `<h3 style="text-align:center">Connect your Pennsieve account using an API key</h3>`;
 
 // once connected to SODA get the user's accounts
 (async () => {
@@ -5260,7 +5313,7 @@ async function drop(ev) {
   }
 }
 
-function dropHelper(
+async function dropHelper(
   ev1,
   ev2,
   action,
@@ -5291,7 +5344,9 @@ function dropHelper(
   });
   var folderPath = [];
   var duplicateFolders = [];
-  var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+  var hiddenFiles = [];
+  var nonAllowedFiles = [];
+
   for (var i = 0; i < ev1.length; i++) {
     /// Get all the file information
     var itemPath = ev1[i].path;
@@ -5309,10 +5364,23 @@ function dropHelper(
     if (statsObj.isFile()) {
       var nonAllowedDuplicate = false;
       var originalFileName = path.parse(itemPath).base;
+      var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+
+      if (path.parse(itemPath).name.substr(0, 1) === ".") {
+        if (
+          path.parse(itemPath).base === ".DS_Store" ||
+          path.parse(itemPath).base === "Thumbs.db"
+        ) {
+          nonAllowedFiles.push(itemPath);
+          continue;
+        } else {
+          hiddenFiles.push(itemPath);
+          continue;
+        }
+      }
 
       if (slashCount === 1) {
-        console.log("slash count is not 1");
-        Swal.fire({
+        await Swal.fire({
           icon: "error",
           html: "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
           heightAuto: false,
@@ -5372,8 +5440,7 @@ function dropHelper(
     } else if (statsObj.isDirectory()) {
       /// drop a folder
       if (slashCount === 1) {
-        console.log("from drop helper");
-        Swal.fire({
+        await Swal.fire({
           icon: "error",
           text: "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
           heightAuto: false,
@@ -5420,10 +5487,137 @@ function dropHelper(
       }
     }
   }
+
+  if (hiddenFiles.length > 0) {
+    await Swal.fire({
+      title:
+        "The following files have an unexpected name starting with a period. How should we handle them?",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        hiddenFiles.join("</br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Remove characters",
+      denyButtonText: "Continue as is",
+      cancelButtonText: "Cancel",
+      didOpen: () => {
+        $(".swal-popover").popover();
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        //replace characters
+        //check for already imported
+        for (let i = 0; i < hiddenFiles.length; i++) {
+          let file_name = path.parse(hiddenFiles[i]).base;
+          let path_name = hiddenFiles[i];
+
+          if (Object.keys(myPath["files"]).length > 0) {
+            for (const objectKey in myPath["files"]) {
+              //tries finding duplicates with the same path
+              if (objectKey != undefined) {
+                nonAllowedDuplicate = false;
+                if (file_name.substr(1, file_name.length) === objectKey) {
+                  if (path_name === myPath["files"][objectKey]["path"]) {
+                    //same path and has not been renamed
+                    nonAllowedDuplicateFiles.push(path_name);
+                    nonAllowedDuplicate = true;
+                    continue;
+                  } else {
+                    //store in imported files
+                    importedFiles[file_name.substr(1, file_name.length)] = {
+                      path: path_name,
+                      basename: file_name.substr(1, file_name.length),
+                    };
+                  }
+                } else {
+                  //store in imported files
+                  importedFiles[file_name.substr(1, file_name.length)] = {
+                    path: path_name,
+                    basename: file_name.substr(1, file_name.length),
+                  };
+                }
+              }
+            }
+          } else {
+            //store in imported files
+            importedFiles[file_name.substr(1, file_name.length)] = {
+              path: path_name,
+              basename: file_name.substr(1, file_name.length),
+            };
+          }
+        }
+      } else if (result.isDenied) {
+        //leave as is
+
+        for (let i = 0; i < hiddenFiles.length; i++) {
+          let file_name = path.parse(hiddenFiles[i]).base;
+          let path_name = hiddenFiles[i];
+
+          if (Object.keys(myPath["files"]).length > 0) {
+            for (const objectKey in myPath["files"]) {
+              //tries finding duplicates with the same path
+              if (objectKey != undefined) {
+                nonAllowedDuplicate = false;
+                if (file_name === objectKey) {
+                  if (path_name === myPath["files"][objectKey]["path"]) {
+                    //same path and has not been renamed
+                    nonAllowedDuplicateFiles.push(path_name);
+                    nonAllowedDuplicate = true;
+                    continue;
+                  } else {
+                    //file path and object key path arent the same
+                    //check if the file name are the same
+                    //if so consider it as a duplicate
+
+                    //store in regular files
+                    importedFiles[file_name] = {
+                      path: path_name,
+                      basename: file_name,
+                    };
+                  }
+                } else {
+                  //store in regular files
+                  importedFiles[file_name] = {
+                    path: path_name,
+                    basename: file_name,
+                  };
+                }
+              }
+            }
+          } else {
+            //store in regular files
+            importedFiles[file_name] = {
+              path: path_name,
+              basename: file_name,
+            };
+          }
+        }
+      }
+    });
+  }
+
+  if (nonAllowedFiles.length > 0) {
+    await Swal.fire({
+      title:
+        "The following files are banned as per SPARC guidelines and will not be imported",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        nonAllowedFiles.join("</br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      confirmButtonText: "Okay",
+    });
+  }
+
   var listElements = showItemsAsListBootbox(duplicateFolders);
   var list = JSON.stringify(folderPath).replace(/"/g, "");
   if (duplicateFolders.length > 0) {
-    Swal.fire({
+    await Swal.fire({
       title: "Duplicate folder(s) detected",
       icon: "warning",
       showConfirmButton: false,
@@ -5468,7 +5662,7 @@ function dropHelper(
     }
     var listElements = showItemsAsListBootbox(baseName);
     var list = JSON.stringify(nonAllowedDuplicateFiles).replace(/"/g, "");
-    Swal.fire({
+    await Swal.fire({
       title: "Duplicate file(s) detected",
       icon: "warning",
       showConfirmButton: false,
@@ -5498,6 +5692,7 @@ function dropHelper(
     });
   }
   // // now append to UI files and folders
+
   if (Object.keys(importedFiles).length > 0) {
     for (var element in importedFiles) {
       myPath["files"][importedFiles[element]["basename"]] = {
@@ -8423,7 +8618,7 @@ async function showBFAddAccountSweetalert() {
     backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
     allowOutsideClick: false,
-    footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/manage-dataset/connect-your-pennsieve-account-with-soda" style="text-decoration: none;">Help me get an API key</a>`,
+    footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/manage-dataset/connect-your-pennsieve-account-with-soda#how-to-login-with-api-key" style="text-decoration: none;">Help me get an API key</a>`,
     didOpen: () => {
       let swal_container = document.getElementsByClassName("swal2-popup")[0];
       swal_container.style.width = "43rem";
@@ -8450,6 +8645,10 @@ async function showBFAddAccountSweetalert() {
                 if (String(error).includes("please check that key name")) {
                   error =
                     "Please check that your key name, key and api secret are entered properly";
+                } else if (
+                  String(error).includes("Please enter valid keyname")
+                ) {
+                  error = "Please enter valid keyname, key, and/or secret";
                 }
                 Swal.showValidationMessage(error);
                 document.getElementsByClassName(
@@ -8458,10 +8657,6 @@ async function showBFAddAccountSweetalert() {
                 document.getElementsByClassName(
                   "swal2-actions"
                 )[0].children[3].disabled = false;
-                console.log(
-                  document.getElementsByClassName("swal2-actions")[0]
-                    .children[0]
-                );
                 document.getElementsByClassName(
                   "swal2-actions"
                 )[0].children[0].style.display = "none";
@@ -8469,16 +8664,6 @@ async function showBFAddAccountSweetalert() {
                   "swal2-actions"
                 )[0].children[1].style.display = "inline-block";
                 reject(false);
-                // Swal.fire({
-                //   icon: "error",
-                //   html: "<span>" + error + "</span>",
-                //   heightAuto: false,
-                //   backdrop: "rgba(0,0,0,0.4)",
-                // }).then((result) => {
-                //   if (result.isConfirmed) {
-                //     showBFAddAccountSweetalert();
-                //   }
-                // });
                 log.error(error);
                 console.error(error);
               } else {
@@ -8488,15 +8673,12 @@ async function showBFAddAccountSweetalert() {
                 bfAccountOptions[name] = name;
                 defaultBfAccount = name;
                 defaultBfDataset = "Select dataset";
-                console.log(name);
                 return new Promise((resolve, reject) => {
-                  console.log("second promise");
                   client.invoke(
                     "api_bf_account_details",
                     name,
                     (error, res) => {
                       if (error) {
-                        console.log("error");
                         log.error(error);
                         console.error(error);
                         Swal.showValidationMessage(error);
@@ -8506,10 +8688,6 @@ async function showBFAddAccountSweetalert() {
                         document.getElementsByClassName(
                           "swal2-actions"
                         )[0].children[3].disabled = false;
-                        console.log(
-                          document.getElementsByClassName("swal2-actions")[0]
-                            .children[0]
-                        );
                         document.getElementsByClassName(
                           "swal2-actions"
                         )[0].children[0].style.display = "none";
@@ -8518,19 +8696,9 @@ async function showBFAddAccountSweetalert() {
                         )[0].children[1].style.display = "inline-block";
 
                         reject(false);
-                        // Swal.fire({
-                        //   icon: "error",
-                        //   text: "Something went wrong!",
-                        //   heightAuto: false,
-                        //   backdrop: "rgba(0,0,0, 0.4)",
-                        //   footer:
-                        //     '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
-                        // });
                         showHideDropdownButtons("account", "hide");
                         confirm_click_account_function();
                       } else {
-                        console.log(res);
-                        console.log(name);
                         $("#para-account-detail-curate").html(res);
                         $("#current-bf-account").text(name);
                         $("#current-bf-account-generate").text(name);
@@ -8568,9 +8736,6 @@ async function showBFAddAccountSweetalert() {
         });
       }
     },
-  }).then((result) => {
-    if (result.isConfirmed) {
-    }
   });
 }
 /*
@@ -8993,7 +9158,6 @@ const get_api_key_and_secret_from_ini = () => {
   }
 
   // check that an api key and secret does ot exist
-  console.log(config);
   if (!config["global"]) {
     // throw an error
     throw new Error(

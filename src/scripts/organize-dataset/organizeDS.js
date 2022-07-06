@@ -1724,10 +1724,25 @@ async function addFilesfunction(
 
   // check for duplicate or files with the same name
   var nonAllowedDuplicateFiles = [];
+  var nonAllowedFiles = [];
   var regularFiles = {};
+  var hiddenFiles = [];
 
   for (var i = 0; i < fileArray.length; i++) {
     var fileName = fileArray[i];
+
+    if (path.parse(fileName).name.substr(0, 1) === ".") {
+      if (
+        path.parse(fileName).name === ".DS_Store" ||
+        path.parse(fileName).name === "Thumbs.db"
+      ) {
+        nonAllowedFiles.push(fileName);
+        continue;
+      } else {
+        hiddenFiles.push(fileName);
+        continue;
+      }
+    }
     // check if dataset structure level is at high level folder
     var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
     if (slashCount === 1) {
@@ -1814,6 +1829,119 @@ async function addFilesfunction(
     }
   }
 
+  if (hiddenFiles.length > 0) {
+    await Swal.fire({
+      title:
+        "The following files have an unexpected name starting with a period. How should we handle them?",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        hiddenFiles.join("</br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Remove characters",
+      denyButtonText: "Continue as is",
+      cancelButtonText: "Cancel",
+      didOpen: () => {
+        $(".swal-popover").popover();
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        //replace characters
+        //check for already imported
+        for (let i = 0; i < hiddenFiles.length; i++) {
+          let file_name = path.parse(hiddenFiles[i]).base;
+          let path_name = hiddenFiles[i];
+
+          if (Object.keys(currentLocation["files"]).length > 0) {
+            for (const objectKey in currentLocation["files"]) {
+              //tries finding duplicates with the same path
+              if (objectKey != undefined) {
+                nonAllowedDuplicate = false;
+                if (file_name.substr(1, file_name.length) === objectKey) {
+                  //if file already exist in json
+                  if (
+                    path_name === currentLocation["files"][objectKey]["path"]
+                  ) {
+                    //same path and has not been renamed
+                    nonAllowedDuplicateFiles.push(path_name);
+                    nonAllowedDuplicate = true;
+                    continue;
+                  } else {
+                    //file path and object key path arent the same
+                    //check if the file name are the same
+                    //if so consider it as a duplicate
+                    //store in regular files
+                    regularFiles[file_name.substr(1, file_name.length)] = {
+                      path: path_name,
+                      basename: file_name.substr(1, file_name.length),
+                    };
+                  }
+                } else {
+                  //store in regular files
+                  regularFiles[file_name.substr(1, file_name.length)] = {
+                    path: path_name,
+                    basename: file_name.substr(1, file_name.length),
+                  };
+                }
+              }
+            }
+          } else {
+            //store in regular files
+            regularFiles[file_name.substr(1, file_name.length)] = {
+              path: path_name,
+              basename: file_name.substr(1, file_name.length),
+            };
+          }
+        }
+      }
+      if (result.isDenied) {
+        //leave as is
+        for (let i = 0; i < hiddenFiles.length; i++) {
+          let file_name = path.parse(hiddenFiles[i]).base;
+          let path_name = hiddenFiles[i];
+
+          if (Object.keys(currentLocation["files"]).length > 0) {
+            for (const objectKey in currentLocation["files"]) {
+              //tries finding duplicates with the same path
+              if (objectKey != undefined) {
+                nonAllowedDuplicate = false;
+                //if file already exist in json
+                if (file_name === objectKey) {
+                  if (
+                    path_name === currentLocation["files"][objectKey]["path"]
+                  ) {
+                    //same path and has not been renamed
+                    nonAllowedDuplicateFiles.push(path_name);
+                    nonAllowedDuplicate = true;
+                    continue;
+                  } else {
+                    //store in regular files
+                    regularFiles[file_name] = {
+                      path: path_name,
+                      basename: file_name,
+                    };
+                  }
+                  //file path and object key path arent the same
+                  //check if the file name are the same
+                  //if so consider it as a duplicate
+                }
+              }
+            }
+          } else {
+            //store in regular files
+            regularFiles[file_name] = {
+              path: path_name,
+              basename: file_name,
+            };
+          }
+        }
+      }
+    });
+  }
+
   if (nonAllowedDuplicateFiles.length > 0) {
     //add sweetalert here before non duplicate files pop
     var baseName = [];
@@ -1849,7 +1977,7 @@ async function addFilesfunction(
         html_word = "Folders";
       }
     }
-    Swal.fire({
+    await Swal.fire({
       title: titleSwal,
       icon: "warning",
       showConfirmButton: false,
@@ -1870,13 +1998,32 @@ async function addFilesfunction(
         <p>${htmlSwal}<p><ul style="text-align:start;">${listElements}</ul></p></p>
       </div>  
       <div class="swal-button-container">
-        <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
+      <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
         list +
-        `', 'free-form')">Skip ${html_word}</button>
-        <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}', 'free-form')">Replace Existing ${html_word}</button>
-        <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}', 'free-form')">Import Duplicates</button>
-        <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel, '', 'free-form'))">Cancel</button>
-        </div>`,
+        `')">Skip ${html_word}</button>
+      <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '` +
+        list +
+        `')">Replace Existing ${html_word}</button>
+      <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '` +
+        list +
+        `')">Import Duplicates</button>
+      <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
+      </div>`,
+    });
+  }
+
+  if (nonAllowedFiles.length > 0) {
+    await Swal.fire({
+      title:
+        "The following files are banned as per SPARC guidelines and will not be imported",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        nonAllowedFiles.join("</br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      confirmButtonText: "Okay",
     });
   }
 

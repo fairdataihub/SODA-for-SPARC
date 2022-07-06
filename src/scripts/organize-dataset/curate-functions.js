@@ -389,6 +389,7 @@ const importMetadataFilesProgress = (object) => {
     var metadataFileArray = Object.keys(object["metadata-files"]);
     metadataFileArray.forEach((element) => {
       var fullPath = object["metadata-files"][element]["path"];
+
       populateMetadataProgress(true, path.parse(element).name, fullPath);
       if (!fs.existsSync(fullPath)) {
         missing_metadata_files.push(fullPath);
@@ -1011,7 +1012,9 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
         heightAuto: false,
         reverseButtons: reverseSwalButtons,
         showCancelButton: true,
-        title: `<span style="text-align:center">Connect your Pennsieve account using your email and password</span><p class="tip-content" style="margin-top: .5rem">Your email and password will not be saved and not seen by anyone.</p>`,
+
+        title: `<h3 style="text-align:center">Connect your Pennsieve account using your email and password</h3><p class="tip-content" style="margin-top: .5rem">Your email and password will not be saved and not seen by anyone.</p>`,
+
         html: `<input type="text" id="ps_login" class="swal2-input" placeholder="Email Address for Pennsieve">
         <input type="password" id="ps_password" class="swal2-input" placeholder="Password">`,
         showClass: {
@@ -1020,7 +1023,9 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
         hideClass: {
           popup: "animate__animated animate__fadeOutUp animate__faster",
         },
-        footer: `<a onclick="showBFAddAccountSweetalert()">I don't have a Pennsieve account and/or access to the SPARC Consortium Organization</a>`,
+
+        footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-a-pennsieve-account" style="text-decoration: none;">I don't have a Pennsieve account and/or access to the SPARC Consortium Organization</a>`,
+
         didOpen: () => {
           $(".swal-popover").popover();
           let div_footer = document.getElementsByClassName("swal2-footer")[0];
@@ -1055,7 +1060,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
           const password = Swal.getPopup().querySelector("#ps_password").value;
           if (!login || !password) {
             Swal.hideLoading();
-            Swal.showValidationMessage(`Please enter login and password`);
+            Swal.showValidationMessage(`Please enter email and password`);
           } else {
             let key_name = SODA_SPARC_API_KEY;
             let response = await get_api_key(login, password, key_name);
@@ -1233,9 +1238,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       //$("#bf-dataset-select-div").hide();
       try {
         var accountPresent = await check_api_key();
-        console.log(accountPresent);
       } catch (error) {
-        console.log("here");
         console.error(error);
         $(".ui.active.green.inline.loader.small").css("display", "none");
         $(".svg-change-current-account.dataset").css("display", "block");
@@ -1344,7 +1347,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       //datasets do exist so display popup with dataset options
       //else datasets have been created
       if (datasetList.length > 0) {
-        const { value: bfDS } = await Swal.fire({
+        await Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
           cancelButtonText: "Cancel",
           confirmButtonText: "Confirm",
@@ -1433,46 +1436,47 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
               }
             }
           },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            if (show_timer) {
+              Swal.fire({
+                allowEscapeKey: false,
+                backdrop: "rgba(0,0,0, 0.4)",
+                heightAuto: false,
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: false,
+                title: "Loading your dataset details...",
+                didOpen: () => {
+                  Swal.showLoading();
+                },
+              });
+            }
+
+            if (dropdownEventID === "dd-select-pennsieve-dataset") {
+              $("#ds-name").val(bfDataset);
+              $("body").removeClass("waiting");
+              $(".svg-change-current-account.dataset").css("display", "block");
+              dropdownEventID = "";
+              return;
+            }
+            $("#current-bf-dataset").text(bfDataset);
+            $("#current-bf-dataset-generate").text(bfDataset);
+            $(".bf-dataset-span").html(bfDataset);
+            confirm_click_function();
+
+            defaultBfDataset = bfDataset;
+            // document.getElementById("ds-description").innerHTML = "";
+            refreshDatasetList();
+            $("#dataset-loaded-message").hide();
+
+            showHideDropdownButtons("dataset", "show");
+            // checkPrevDivForConfirmButton("dataset");
+          } else if (result.isDismissed) {
+            currentDatasetLicense.innerText = currentDatasetLicense.innerText;
+          }
         });
 
-        // check return value
-        if (bfDS) {
-          if (show_timer) {
-            Swal.fire({
-              allowEscapeKey: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              heightAuto: false,
-              showConfirmButton: false,
-              timer: 2000,
-              timerProgressBar: false,
-              title: "Loading your dataset details...",
-              didOpen: () => {
-                Swal.showLoading();
-              },
-            });
-          }
-
-          if (dropdownEventID === "dd-select-pennsieve-dataset") {
-            $("#ds-name").val(bfDataset);
-            $("body").removeClass("waiting");
-            $(".svg-change-current-account.dataset").css("display", "block");
-            dropdownEventID = "";
-            return;
-          }
-          $("#current-bf-dataset").text(bfDataset);
-          $("#current-bf-dataset-generate").text(bfDataset);
-          $("#guided-current-bf-dataset-generate").text(bfDataset);
-          $(".bf-dataset-span").html(bfDataset);
-          confirm_click_function();
-
-          defaultBfDataset = bfDataset;
-          // document.getElementById("ds-description").innerHTML = "";
-          refreshDatasetList();
-          $("#dataset-loaded-message").hide();
-
-          showHideDropdownButtons("dataset", "show");
-          // checkPrevDivForConfirmButton("dataset");
-        }
         if ($("#current-bf-dataset-generate").text() === "None") {
           showHideDropdownButtons("dataset", "hide");
         } else {
@@ -1480,8 +1484,6 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
         }
         //currently changing it but not visually in the UI
         $("#bf_list_users_pi").val("Select PI");
-
-        defaultBfDataset = bfDataset;
 
         // update the gloabl dataset id
         for (const item of datasetList) {
