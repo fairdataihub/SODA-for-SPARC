@@ -7974,7 +7974,7 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
           clearInterval(pennsieve_progress);
           setTimeout(() => {
             progress_container.style.display = "none";
-          }, 2000);
+          }, 1000);
         }
       }
     });
