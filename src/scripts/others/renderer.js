@@ -484,7 +484,6 @@ const startupServerAndApiCheck = async () => {
   }
 
   apiVersionChecked = true;
-  console.log(apiVersionChecked);
 };
 
 startupServerAndApiCheck();
@@ -525,7 +524,6 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
-  console.log("preflight");
   return new Promise(async (resolve) => {
     let connection_response = "";
     let agent_installed_response = "";
@@ -8844,8 +8842,6 @@ const get_api_key_and_secret_from_ini = () => {
   // return the user's api key and secret
   let default_profile = config["global"]["default_profile"];
   const { api_token, api_secret } = config[default_profile];
-  // console.log(api_token);
-  // console.log(api_secret);
   return { api_token, api_secret };
 };
 
