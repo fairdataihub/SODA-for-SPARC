@@ -1959,3 +1959,71 @@ details[open] > summary::before {
   font-weight: 500;
   margin-top: 0 !important;
 }
+
+.circular {
+  height: 100px;
+  width: 100px;
+  position: relative;
+  transform: scale(1);
+}
+.circular .inner {
+  position: absolute;
+  z-index: 6;
+  top: 50%;
+  left: 50%;
+  height: 80px;
+  width: 80px;
+  margin: -40px 0 0 -40px;
+  background: #f5f5f5;
+  border-radius: 100%;
+}
+.circular .number {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  font-size: 18px;
+  font-weight: 500;
+  color: black;
+}
+.circular .bar {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background: #fff;
+  -webkit-border-radius: 100%;
+  clip: rect(0px, 100px, 100px, 50px);
+}
+.circle .bar .progress {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  -webkit-border-radius: 100%;
+  clip: rect(0px, 50px, 100px, 0px);
+  background: var(--color-light-green);
+}
+.circle .left .progress {
+  z-index: 1;
+  transition: transform 500ms ease-in-out;
+}
+
+.circle .right {
+  transform: rotate(180deg);
+  transition: linear;
+  z-index: 3;
+}
+.circle .right .progress {
+  transition: transform 500ms ease-in-out;
+}
+
+#Question-getting-started-locally-destination {
+  text-align: -webkit-center;
+}
+
+.notransition {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -o-transition: none !important;
+  transition: none !important;
+}
