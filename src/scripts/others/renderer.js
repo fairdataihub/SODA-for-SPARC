@@ -603,7 +603,7 @@ const run_pre_flight_checks = async (check_update = true) => {
                   hideClass: {
                     popup: "animate__animated animate__zoomOut animate__faster",
                   },
-                })
+                });
               }
             }
           });
@@ -611,19 +611,24 @@ const run_pre_flight_checks = async (check_update = true) => {
         } else {
           await wait(500);
           // Check the installed agent version. We aren't enforcing the min limit yet but is the python version starts enforcing it, we might have to.
-          let browser_download_url, latest_agent_version = ""
+          let browser_download_url,
+            latest_agent_version = "";
           try {
-            [browser_download_url, latest_agent_version] = await check_agent_installed_version(agent_version_response);
+            [browser_download_url, latest_agent_version] =
+              await check_agent_installed_version(agent_version_response);
           } catch (e) {
             notyf.dismiss(notification);
             notyf.open({
               type: "error",
-              message: "Unable to verify that your Pennsieve Agent is up to date.",
+              message:
+                "Unable to verify that your Pennsieve Agent is up to date.",
             });
-            log.error("Unable to verify that your Pennsieve Agent is up to date.");
+            log.error(
+              "Unable to verify that your Pennsieve Agent is up to date."
+            );
             console.log(error);
-            log.error(error)
-            return resolve(false)
+            log.error(error);
+            return resolve(false);
           }
           if (browser_download_url != "") {
             Swal.fire({
@@ -651,10 +656,9 @@ const run_pre_flight_checks = async (check_update = true) => {
                   shell.openExternal(
                     "https://docs.pennsieve.io/docs/the-pennsieve-agent"
                   );
-                }
-                catch (e) {
-                  console.log(e)
-                  log.error(e)
+                } catch (e) {
+                  console.log(e);
+                  log.error(e);
                   await Swal.fire({
                     icon: "error",
                     text: "We are unable to get the latest version of the Pennsieve Agent. Please try again later. If this issue persists please contact the SODA team at help@fairdataihub.org",
@@ -663,12 +667,14 @@ const run_pre_flight_checks = async (check_update = true) => {
                     showCancelButton: true,
                     confirmButtonText: "Ok",
                     showClass: {
-                      popup: "animate__animated animate__zoomIn animate__faster",
+                      popup:
+                        "animate__animated animate__zoomIn animate__faster",
                     },
                     hideClass: {
-                      popup: "animate__animated animate__zoomOut animate__faster",
+                      popup:
+                        "animate__animated animate__zoomOut animate__faster",
                     },
-                  })
+                  });
                 }
                 resolve(false);
               }
@@ -1026,7 +1032,7 @@ const get_latest_agent_version = () => {
       })
       .fail((error) => {
         console.log("Request failed: " + error);
-        reject()
+        reject();
       });
   });
 };
@@ -1535,7 +1541,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => { });
+            }).then((result) => {});
             generateSubjectsFileHelper(false);
           }
         });
@@ -1551,7 +1557,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => { });
+        }).then((result) => {});
         generateSubjectsFileHelper(false);
       }
     }
@@ -1605,7 +1611,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   client.invoke(
     "api_save_subjects_file",
@@ -1697,7 +1703,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => { });
+            }).then((result) => {});
             generateSamplesFileHelper(uploadBFBoolean);
           }
         });
@@ -1713,7 +1719,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => { });
+        }).then((result) => {});
         generateSamplesFileHelper(uploadBFBoolean);
       }
     }
@@ -1767,7 +1773,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   // new client that has a longer timeout
   let clientLongTimeout = new zerorpc.Client({
@@ -2285,7 +2291,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   await client.invoke(
     "api_load_taxonomy_species",
     [commonName],
@@ -3002,9 +3008,9 @@ function detectEmptyRequiredFields(funding) {
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
   var emptyMessageArray = [
     "- Missing required fields under Dataset Info section: " +
-    dsEmptyField.join(", "),
+      dsEmptyField.join(", "),
     "- Missing required fields under Contributor Info section: " +
-    conEmptyField.join(", "),
+      conEmptyField.join(", "),
     "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
   ];
   var allFieldsSatisfied = true;
@@ -6745,14 +6751,16 @@ ipcRenderer.on(
 
                         numb.innerText = percentage_amount + "%";
                         if (percentage_amount <= 50) {
-                          progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
-                            }deg)`;
+                          progressBar_rightSide.style.transform = `rotate(${
+                            percentage_amount * 0.01 * 360
+                          }deg)`;
                         } else {
                           progressBar_rightSide.style.transition = "";
                           progressBar_rightSide.classList.add("notransition");
                           progressBar_rightSide.style.transform = `rotate(180deg)`;
-                          progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
-                            }deg)`;
+                          progressBar_leftSide.style.transform = `rotate(${
+                            percentage_amount * 0.01 * 180
+                          }deg)`;
                         }
 
                         if (finished === 1) {
@@ -6850,14 +6858,16 @@ ipcRenderer.on(
 
                       numb.innerText = percentage_amount + "%";
                       if (percentage_amount <= 50) {
-                        progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
-                          }deg)`;
+                        progressBar_rightSide.style.transform = `rotate(${
+                          percentage_amount * 0.01 * 360
+                        }deg)`;
                       } else {
                         progressBar_rightSide.style.transition = "";
                         progressBar_rightSide.classList.add("notransition");
                         progressBar_rightSide.style.transform = `rotate(180deg)`;
-                        progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
-                          }deg)`;
+                        progressBar_leftSide.style.transform = `rotate(${
+                          percentage_amount * 0.01 * 180
+                        }deg)`;
                       }
                       if (finished === 1) {
                         progressBar_leftSide.style.transform = `rotate(180deg)`;
@@ -7118,9 +7128,9 @@ document
     for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
       if (
         "manifest.xlsx" in
-        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
         sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-        "manifest.xlsx"
+          "manifest.xlsx"
         ]["forTreeview"]
       ) {
         delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
@@ -7681,7 +7691,7 @@ async function initiate_generate() {
             "track-event",
             "Success",
             PrepareDatasetsAnalyticsPrefix.CURATE +
-            " - Step 7 - Generate - Dataset - Number of Files",
+              " - Step 7 - Generate - Dataset - Number of Files",
             `${datasetUploadSession.id}`,
             uploadedFiles
           );
@@ -7691,7 +7701,7 @@ async function initiate_generate() {
             "track-event",
             "Success",
             PrepareDatasetsAnalyticsPrefix.CURATE +
-            " - Step 7 - Generate - Dataset - Size",
+              " - Step 7 - Generate - Dataset - Size",
             `${datasetUploadSession.id}`,
             increaseInFileSize
           );
@@ -7956,14 +7966,16 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
         finished = res[3];
         percentage_text.innerText = percentage_amount + "%";
         if (percentage_amount <= 50) {
-          left_progress_bar.style.transform = `rotate(${percentage_amount * 0.01 * 360
-            }deg)`;
+          left_progress_bar.style.transform = `rotate(${
+            percentage_amount * 0.01 * 360
+          }deg)`;
         } else {
           left_progress_bar.style.transition = "";
           left_progress_bar.classList.add("notransition");
           left_progress_bar.style.transform = `rotate(180deg)`;
-          right_progress_bar.style.transform = `rotate(${percentage_amount * 0.01 * 180
-            }deg)`;
+          right_progress_bar.style.transform = `rotate(${
+            percentage_amount * 0.01 * 180
+          }deg)`;
         }
 
         if (finished === 1) {
