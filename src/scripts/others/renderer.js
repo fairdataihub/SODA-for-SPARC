@@ -144,6 +144,10 @@ console.log("User OS:", os.type(), os.platform(), "version:", os.release());
 const appVersion = window.require("electron").remote.app.getVersion();
 log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
+
+// Here is where the splash screen lotties are created and loaded.
+// A mutation observer watches for when the overview tab element has
+// a class change to 'is-shown' to know when to load and unload the lotties
 let over_view_section = document.getElementById("getting_started-section");
 let column1 = document.getElementById("lottie1");
 let column2 = document.getElementById("lottie2");
@@ -935,7 +939,7 @@ const check_agent_installed_version = async (agent_version) => {
   return [browser_download_url, latest_agent_version];
 };
 
-const get_latest_agent_version = async () => {
+const get_latest_agent_version = () => {
   return new Promise((resolve, reject) => {
     $.getJSON("https://api.github.com/repos/Pennsieve/agent/releases").done(
       (release_res, error) => {
