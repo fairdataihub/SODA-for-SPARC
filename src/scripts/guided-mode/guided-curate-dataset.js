@@ -1303,7 +1303,7 @@ const traverseToTab = (targetPageID) => {
       if (protocols) {
         renderProtocolFields(protocols);
       } else {
-        document.getElementById("protocols-container").innerHTML === "";
+        document.getElementById("protocols-container").innerHTML = "";
         //add an empty contributor information fieldset
         addProtocolField();
       }
@@ -2965,10 +2965,34 @@ const updateFolderStructureUI = (pageDataObj) => {
   console.log("loading done");
 };
 //Description metadata functions
+const editAdditionalLink = (clickedEditLinkButton) => {
+  console.log(clickedEditLinkButton);
+  const tr = clickedEditLinkButton.parentNode.parentNode;
+};
+
+const deleteAdditionalLink = (clickedDeleteLinkButton) => {
+  const tr = clickedDeleteLinkButton.parentNode.parentNode;
+  const linkNameToDelete = tr.querySelector(".link-name-cell").innerHTML.trim();
+  console.log(linkNameToDelete);
+  const additionalLinks =
+    sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"];
+  //filter additional links to remove the one to be deleted
+  const filteredAdditionalLinks = additionalLinks.filter((link) => {
+    console.log(link);
+    console.log(link.link);
+    console.log(linkNameToDelete);
+    return link.link != linkNameToDelete;
+  });
+  console.log(filteredAdditionalLinks);
+  sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"] =
+    filteredAdditionalLinks;
+  //update the UI
+  renderAdditionalLinksTable();
+};
 const generateadditionalLinkRowElement = (link, linkType, linkRelation) => {
   return `
     <tr>
-      <td class="middle aligned collapsing">
+      <td class="middle aligned collapsing link-name-cell">
         ${link}
       </td>
       <td class="middle aligned collapsing">
@@ -2981,18 +3005,8 @@ const generateadditionalLinkRowElement = (link, linkType, linkRelation) => {
       <td class="middle aligned collapsing text-center">
         <button
           type="button"
-          class="btn btn-primary btn-sm"
-          style="
-            margin-right: 5px;
-          "
-          onclick="editLink($(this))"
-        >
-          Edit link
-        </button>
-        <button
-          type="button"
           class="btn btn-danger btn-sm"
-          onclick="deleteLink($(this))"
+          onclick="deleteAdditionalLink(this)"
         >   
           Delete link
         </button>
@@ -3001,7 +3015,6 @@ const generateadditionalLinkRowElement = (link, linkType, linkRelation) => {
   `;
 };
 
-const deleteAdditionalLink = (deleteLinkRowButton) => {};
 const generateContributorField = (
   contributorLastName,
   contributorFirstName,
@@ -5823,7 +5836,7 @@ $(document).ready(() => {
         saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
         guidedTransitionFromDatasetNameSubtitlePage();
-
+        /*
         $("#guided-button-guided-dataset-structuring").click();
         sodaJSONObj.addSubject("sub-1");
         sodaJSONObj.addSubject("sub-2");
@@ -5903,7 +5916,7 @@ $(document).ready(() => {
 
         sodaJSONObj.addSampleToSubject("sam-sub121", "", "sub-12");
         sodaJSONObj.addSampleToSubject("sam-sub122", "", "sub-12");
-        sodaJSONObj.addSampleToSubject("sam-sub123", "", "sub-12");
+        sodaJSONObj.addSampleToSubject("sam-sub123", "", "sub-12");*/
       } else {
         if (datasetName == "") {
           errorArray.push({

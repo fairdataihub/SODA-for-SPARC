@@ -406,6 +406,7 @@
                   <button
                     class="ui negative basic button guided--radio-button"
                     id="guided-button-no-subjects"
+                    data-next-element="guided-div-warning-before-deleting-pool-sub-sam-structure"
                     data-button-config-value="dataset-contains-subjects"
                     data-button-config-value-state="no"
                   >
@@ -443,6 +444,21 @@
                 >
                   Continue
                 </button>-->
+                </div>
+                <div
+                  class="guided--panel hidden"
+                  id="guided-div-warning-before-deleting-pool-sub-sam-structure"
+                >
+                  <h1 class="guided--text-sub-step">
+                    Click Next to confirm that your dataset does not contain
+                    human or non-human subjects
+                  </h1>
+                  <p class="guided--help-text">
+                    Please note that clicking next will skip the steps where you
+                    specify your subject and sample structure. You will be able
+                    to come back to this page and specify subjects and samples
+                    if you change your mind.
+                  </p>
                 </div>
               </div>
             </div>
@@ -2217,7 +2233,7 @@
                     <th style="min-width: 250px">Link</th>
                     <th>Type</th>
                     <th>Relation</th>
-                    <th class="text-center">Modify</th>
+                    <th class="text-center">Delete</th>
                   </tr>
                 </thead>
                 <tbody id="additional-links-table-body"></tbody>
