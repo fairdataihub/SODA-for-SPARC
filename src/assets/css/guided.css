@@ -736,14 +736,14 @@ h1.guided--text-sub-step {
   width: 50px;
   margin-left: 5px;
   margin-right: 5px;
-  background-color: rgb(255, 218, 185);
+  background-color: #d5eaff;
   border: none;
   display: inline-block;
   cursor: pointer;
   transform: skewx(-25deg);
 }
 .guided--capsule-sub-page.active {
-  background-color: var(--color-bg-orange);
+  background-color: #007bff !important;
 }
 
 .guided--form-label {

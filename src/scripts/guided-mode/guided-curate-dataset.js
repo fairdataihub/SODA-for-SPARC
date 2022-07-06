@@ -3001,7 +3001,6 @@ const generateadditionalLinkRowElement = (link, linkType, linkRelation) => {
       <td class="middle aligned collapsing">
         ${linkRelation}
       </td>
-
       <td class="middle aligned collapsing text-center">
         <button
           type="button"
@@ -5289,6 +5288,60 @@ const getTagsFromTagifyElement = (tagifyElement) => {
 const setGuidedDatasetName = (datasetName) => {
   sodaJSONObj["digital-metadata"]["name"] = datasetName;
   $(".guidedDatasetName").text(datasetName);
+};
+
+const openGuidedDatasetRenameSwal = () => {
+  const currentDatasetName = sodaJSONObj["digital-metadata"]["name"];
+  Swal.fire({
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    title: "Rename your dataset",
+    html: `<b>Current dataset name:</b> ${currentDatasetName}<br /><br />Enter a new name for your dataset below:`,
+    input: "text",
+    inputPlaceholder: "Enter a new name for your dataset",
+    inputAttributes: {
+      autocapitalize: "off",
+    },
+    showCancelButton: true,
+    confirmButtonText: "Rename",
+    confirmButtonColor: "#3085d6 !important",
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
+    preConfirm: (inputValue) => {
+      if (inputValue === "") {
+        Swal.showValidationMessage(
+          "You need to enter a name for your dataset!"
+        );
+        return false;
+      }
+      return true;
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      setGuidedDatasetName(result.value);
+    }
+  });
+};
+const getExistingPennsieveDatasetNames = async () => {
+  // get the access token so the user can access the Pennsieve api
+  let jwt = await get_access_token();
+  const options = {
+    method: "GET",
+    headers: {
+      Accept: "*/*",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+    },
+  };
+  const datasetNamesResponse = await fetch(
+    "https://api.pennsieve.io/datasets/",
+    options
+  );
+  return datasetNamesResponse;
 };
 const getGuidedDatasetName = () => {
   return sodaJSONObj["digital-metadata"]["name"];
@@ -8960,52 +9013,6 @@ $(document).ready(() => {
       }
 
       if (pageBeingLeftID === "guided-subjects-folder-tab") {
-        const skipSubSamFolderAndMetadataPages = () => {
-          $("#guided-create-subjects-metadata-tab").attr(
-            "data-skip-page",
-            "true"
-          );
-          $("#guided-create-samples-metadata-tab").attr(
-            "data-skip-page",
-            "true"
-          );
-        };
-        const unSkipSubSamFolderAndMetadataPages = () => {
-          $("#guided-create-subjects-metadata-tab").attr(
-            "data-skip-page",
-            "false"
-          );
-          $("#guided-create-samples-metadata-tab").attr(
-            "data-skip-page",
-            "false"
-          );
-        };
-        //If the user indicated they had subjects however left the subjects table page without adding any,
-        //Ask the user if they would like to go back to subjects table, and if not, skip
-        //to the source folder
-        if (guidedGetSubjects().length == 0) {
-          let result = await Swal.fire({
-            title: "Continue?",
-            text: "You indicated that your dataset contained subjects, however, you did not add any subjects to your subjects table.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085D6",
-            confirmButtonText: "I want to add subjects into the subject table",
-            cancelButtonText: "I do not have any subjects",
-          });
-          //If the user indicates they do not have any subjects, skip to source folder
-          if (result.isConfirmed) {
-            $(this).removeClass("loading");
-            return;
-          } else {
-            skipSubSamFolderAndMetadataPages();
-            traverseToTab("guided-source-folder-tab");
-            $(this).removeClass("loading");
-            return;
-          }
-        } else {
-          unSkipSubSamFolderAndMetadataPages();
-        }
       }
       if (pageBeingLeftID === "guided-samples-folder-tab") {
         const skipSampleMetadataPages = () => {
