@@ -859,29 +859,7 @@ const check_api_key = async () => {
         });
         log.error(error);
         console.error(error);
-        Swal.fire({
-          icon: "warning",
-          text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: "Yes",
-          showCancelButton: true,
-          reverseButtons: reverseSwalButtons,
-          cancelButtonText: "I'll do it later",
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
-        }).then(async (result) => {
-          if (result.isConfirmed) {
-            await openDropdownPrompt(null, "bf");
-            resolve(false);
-          } else {
-            resolve(true);
-          }
-        });
+        resolve(false);
       } else {
         log.info("Found a set of valid API keys");
         if (res[0] === "Select" && res.length === 1) {
@@ -891,29 +869,7 @@ const check_api_key = async () => {
             type: "error",
             message: "No account was found",
           });
-          Swal.fire({
-            icon: "warning",
-            text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            confirmButtonText: "Yes",
-            showCancelButton: true,
-            reverseButtons: reverseSwalButtons,
-            cancelButtonText: "I'll do it later",
-            showClass: {
-              popup: "animate__animated animate__zoomIn animate__faster",
-            },
-            hideClass: {
-              popup: "animate__animated animate__zoomOut animate__faster",
-            },
-          }).then(async (result) => {
-            if (result.isConfirmed) {
-              await openDropdownPrompt(null, "bf");
-              resolve(false);
-            } else {
-              resolve(true);
-            }
-          });
+          resolve(false);
         } else {
           notyf.dismiss(notification);
           notyf.open({
