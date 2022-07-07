@@ -1830,3 +1830,19 @@ body.swal2-shown > [aria-hidden="true"] {
   width: 300px;
   position: relative;
 }
+
+#gather-logs-btn {
+  background: var(--color-light-green);
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  width: 130px;
+  height: 38px;
+  border: none;
+  cursor: pointer !important;
+  border-radius: 4px;
+}
+
+#gather-logs-btn:hover {
+  box-shadow: 0 0 6px #b0b0b0;
+}

@@ -5,15 +5,33 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.6.1.0 - TBD
+
+## Feature additions:
+
+- The evolving SPARC Dataset Structure (SDS) all SPARC datasets must follow now includes additional mandatory metadata files. As such, in step 4 of the Organize dataset feature, found in the Prepare Datasets tab, the README.txt file is now mandatory.
+- Layout of the Prepare Metadata tab has been changed. Buttons are spread out more evenly and the Manifest files button received an icon change.
+- The Overview page has been overhauled to be more informative and visually stimulating.
+- Documentation and Contact Us tabs added to the navigation bar.
+- Contact Us tab will provide user information on how to reach out to the team for any issues or suggestions. As well as providing a Gather Logs button for the user to provide in an email for the team to look at any issues in depth.
+- Visual overhaul for the prompts that allow users to connect their Pennsieve account with SODA.
+- Simplified UI for adding a URL or DOI to a dataset_description.xlsx in the Prepare Metadata tab.
+
+## Bug fixes:
+
+- The option to upload duplicate files to an existing Pennsieve dataset through the Organize Datasets feature no longer causes an error while uploading.
+- Hidden files can now be imported except .DS_Store and Thumbs.db files.
+- The input for renaming or creating a new dataset no longer references undefined function in its HTML.
+
 ## v.6.0.0 - 2022-05-17
 
 ### Feature additions:
 
-- In Organize Dataset: Lazy loading is now a feature when viewing all imported items in a dataset. This will ease performance when datasets are large (over 500+ items) and can cause issues when rendering on older machines.
+- In Organize Dataset: Lazy loading is now a feature when viewing all imported items in a dataset. This will increase performance when rendering large datasets (over 500+ items).
 - Importing a local dataset will now be handled on the python end to increase performance. A progress bar is also included to show details about import to user.
 - In the Organize Datasets section importing files/folders will cause a toast to display on the bottom right to notify the user of a successful import.
-- SODA-for-SPARC now uses onefile builds for all OS!
-- SODA-for-SPARC uses .asar formatting for Mac and Linux builds!
+- SODA for SPARC now uses onefile builds for all OS!
+- SODA for SPARC uses .asar formatting for Mac and Linux builds!
 - Added the "Unknown" option for the "Sex" field in the subjects file generator.
 
 ### Bug fixes:

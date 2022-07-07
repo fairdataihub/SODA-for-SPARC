@@ -644,33 +644,50 @@ const nextPrev = (n) => {
     });
     // check if required metadata files are included
   } else if (n === 1 && x[currentTab].id === "metadata-files-tab") {
-    var requiredFiles = ["submission", "dataset_description", "subjects"];
-    if (
-      $(".metadata-button.button-generate-dataset.code-metadata").css(
-        "display"
-      ) === "block"
-    ) {
-      requiredFiles.push("code_description");
-    }
+    var requiredFiles = [
+      "submission",
+      "dataset_description",
+      "subjects",
+      "README",
+    ];
+    let missingFiles = [];
     var withoutExtMetadataArray = [];
     if (!("metadata-files" in sodaJSONObj)) {
       sodaJSONObj["metadata-files"] = {};
     }
-    Object.keys(sodaJSONObj["metadata-files"]).forEach((element) => {
-      if (!element.includes("-DELETED")) {
-        withoutExtMetadataArray.push(path.parse(element).name);
-      }
-    });
-    var subArrayBoolean = requiredFiles.every((val) =>
-      withoutExtMetadataArray.includes(val)
-    );
-    if (requiredFiles.includes("code_description")) {
-      var extraRequiredFile = "<li> code_description</li>";
-    } else {
-      var extraRequiredFile = "";
+    if (
+      Object.keys(sodaJSONObj["dataset-structure"]["folders"]).includes("code")
+    ) {
+      requiredFiles.push("code_description");
     }
-    if (!subArrayBoolean) {
-      var notIncludedMessage = `<div style='text-align: left'>You did not include all of the following required metadata files: <br><ol style='text-align: left'><li> submission</li><li> dataset_description</li> <li> subjects</li> ${extraRequiredFile} </ol>Are you sure you want to continue?</div>`;
+
+    if (Object.keys(sodaJSONObj["metadata-files"]).length > 0) {
+      Object.keys(sodaJSONObj["metadata-files"]).forEach((element) => {
+        let file_name = path.parse(element).name;
+        if (!element.includes("-DELETED")) {
+          withoutExtMetadataArray.push(path.parse(element).name);
+        }
+        if (requiredFiles.includes(file_name)) {
+          let element_index = requiredFiles.indexOf(file_name);
+          requiredFiles.splice(element_index, 1);
+          missingFiles = [];
+        }
+      });
+      for (let element in requiredFiles) {
+        let swal_element = `<li>${requiredFiles[element]}</li>`;
+        missingFiles.push(swal_element);
+      }
+    } else {
+      for (let element in requiredFiles) {
+        let swal_element = `<li>${requiredFiles[element]}</li>`;
+        missingFiles.push(swal_element);
+      }
+    }
+
+    if (missingFiles.length > 0) {
+      var notIncludedMessage = `<div style='text-align: left'>This dataset seems to have non SPARC folders and/or high-level metadata files: <br><ol style='text-align: left'>${missingFiles.join(
+        ""
+      )} </ol>Are you sure you want to continue?</div>`;
       Swal.fire({
         allowOutsideClick: false,
         allowEscapeKey: false,
@@ -1785,9 +1802,9 @@ const verify_sparc_folder = (root_folder_path, type) => {
         possible_metadata_files.includes(path.parse(item).name)
       ) {
         valid_dataset = true;
+        break;
       } else {
         valid_dataset = false;
-        break;
       }
     } else {
       if (
@@ -1796,9 +1813,9 @@ const verify_sparc_folder = (root_folder_path, type) => {
         item.substring(0, 1) != "."
       ) {
         valid_dataset = true;
+        break;
       } else {
         valid_dataset = false;
-        break;
       }
     }
   }
@@ -1872,7 +1889,7 @@ async function transitionSubQuestionsButton(
       $("#nextBtn").prop("disabled", true);
       $("#para-continue-bf-dataset-getting-started").text("");
       $("body").removeClass("waiting");
-      $("#bf-dataset-spinner").css("visibility", "hidden");
+      // $("#bf-dataset-spinner").css("visibility", "hidden");
       showHideDropdownButtons("dataset", "hide");
       $("#current-bf-dataset").text("None");
       $(datasetPermissionDiv)
@@ -3754,7 +3771,7 @@ $(document).ready(() => {
 
     if (section === "rename_existing_bf_dataset") {
       let rename_dataset_name = $("#rename_dataset_name").html();
-      if (rename_dataset_name != "None" && rename_dataset_name != "") {
+      if (rename_dataset_name.trim() != "None" && rename_dataset_name != "") {
         $("#bf-rename-dataset-name").val(rename_dataset_name);
       } else {
         $("#bf-rename-dataset-name").val("");

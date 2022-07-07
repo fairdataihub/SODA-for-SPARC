@@ -234,10 +234,11 @@ function initialize() {
         createWindow();
         var first_launch = nodeStorage.getItem("firstlaunch");
         if (first_launch == true || first_launch == undefined) {
+          console.log("first launch");
           mainWindow.reload();
           mainWindow.focus();
           nodeStorage.setItem("firstlaunch", false);
-          // run_pre_flight_checks();
+          run_pre_flight_checks();
         }
         run_pre_flight_checks();
         autoUpdater.checkForUpdatesAndNotify();

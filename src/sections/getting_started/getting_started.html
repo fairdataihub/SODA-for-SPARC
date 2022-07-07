@@ -2,96 +2,120 @@
 <template class="task-template">
   <section
     id="getting_started-section"
-    class="section js-section u-category-windows"
+    class="getting-started-overview section js-section u-category-windows is-shown fullShown"
   >
-    <header class="section-header">
-      <div
-        style="
-          display: inline-flex;
-          align-items: center;
-          flex-direction: row;
-          width: 94.5%;
-          padding-right: 20px;
-        "
-      >
-        <div
-          style="
-            width: 100%;
-            border-bottom: 3px solid #b80d49;
-            margin-bottom: -5px;
-          "
-        >
-          <h2
-            style="
-              font-size: 14px;
-              color: #222;
-              font-weight: 600;
-              padding: 10px 9px;
-              border: 1px solid transparent;
-            "
-          >
-            Overview - Getting started
-          </h2>
-        </div>
+    <div class="getting-started-header lg:mt-8">
+      <div class="front-page_logo">
+        <img
+          id="frontpage-logo"
+          style="width: 35%; height: 100%"
+          src="assets/img/logo-soda1024.png"
+          class="soda-can-welcome"
+        />
       </div>
-      <div class="tab-info">
-        <p class="tab-info-p" style="margin-bottom: 2em; width: 94.5%">
-          Welcome to SODA, your one-stop tool for curating SPARC datasets!
-          <br />
-          <br />
-          Watch the following video to familiarize yourself with the user
-          interface and learn how you can prepare and submit your SPARC datasets
-          easily with SODA.
-        </p>
-      </div>
-    </header>
-
-    <div class="demo">
-      <div class="demo-wrapper">
-        <button class="js-container-target demo-toggle-button">
-          Familiarize yourself with the user interface of SODA
-        </button>
-
-        <div class="demo-box">
-          <h5>Click to watch the video:</h5>
-          <p></p>
-          <div>
-            <div style="position: relative; padding-top: 56.25%">
-              <iframe
-                src="https://www.youtube.com/embed/Fyn9R0Tk_pU?rel=0"
-                frameborder="0"
-                allowfullscreen
-                style="
-                  position: absolute;
-                  top: 0;
-                  left: 0;
-                  width: 100%;
-                  height: 100%;
-                "
-              ></iframe>
-            </div>
-          </div>
-        </div>
-      </div>
+      <p class="header-text">
+        Your one-stop tool for curating and sharing SPARC datasets!<br />
+      </p>
     </div>
 
-    <div class="demo">
-      <div class="demo-wrapper">
-        <button class="js-container-target demo-toggle-button">
-          Follow our documentation for easily organizing and submitting SPARC
-          datasets
-        </button>
+    <div class="overview-card-layout grid h-auto w-full grid-cols-3 gap-6">
+      <div id="overview-column-1" class="overview-column">
+        <p class="overview_lottie_header">Curate</p>
 
-        <div class="demo-box">
-          <h5>
-            <a
-              href="https://docs.sodaforsparc.io/docs/getting-started/organize-and-submit-a-new-sparc-dataset-with-soda"
-            >
-              Click here and follow our intructions to organize and submit your
-              SPARC dataset rapidly in SODA via easy-to-perfom steps
-            </a>
-          </h5>
-        </div>
+        <div id="lottie1" class="overview-lottie"></div>
+        <p style="margin: 0">
+          Rapidly prepare your data and metadata according to the FAIR SPARC
+          data curation guidelines
+        </p>
+      </div>
+      <div id="overview-column-2" class="overview-column">
+        <p class="overview_lottie_header">Share</p>
+        <div id="lottie2" class="overview-lottie"></div>
+        <p style="margin: 0">
+          Easily upload your curated dataset on the SPARC data platform
+          Pennsieve
+        </p>
+      </div>
+      <div id="overview-column-3" class="overview-column">
+        <p class="overview_lottie_header">Relax</p>
+        <div id="lottie3" class="overview-lottie" style="width: 116"></div>
+        <p style="margin: 0">
+          SODA comes with intuitive user interfaces and automation that
+          streamline the process for you
+        </p>
+      </div>
+    </div>
+    <div class="getting-started-buttons grid h-auto w-full grid-cols-3 gap-6">
+      <button
+        id="sodaVideo-btn"
+        class="sodaVideo-button secondary-plain-button text-base"
+      >
+        <p class="interface-btn-txt">Learn about the interface</p>
+
+        <i class="fas fa-play"></i>
+      </button>
+      <button
+        id="direct-to-doc-button"
+        class="direct-to-doc-btn primary-plain-button text-base"
+      >
+        <i class="el-icon"
+          ><svg
+            class="icon"
+            width="200"
+            height="200"
+            viewBox="0 0 1024 1024"
+            xmlns="http://www.w3.org/2000/svg"
+            style="height: 2rem; width: 4rem"
+          >
+            <path
+              fill="currentColor"
+              d="M192 128v768h640V128H192zm-32-64h704a32 32 0 0132 32v832a32 32 0 01-32 32H160a32 32 0 01-32-32V96a32 32 0 0132-32z"
+            ></path>
+            <path
+              fill="currentColor"
+              d="M672 128h64v768h-64zM96 192h128q32 0 32 32t-32 32H96q-32 0-32-32t32-32zM96 384h128q32 0 32 32t-32 32H96q-32 0-32-32t32-32zM96 576h128q32 0 32 32t-32 32H96q-32 0-32-32t32-32zM96 768h128q32 0 32 32t-32 32H96q-32 0-32-32t32-32z"
+            ></path>
+          </svg>
+        </i>
+        <p style="line-height: inherit">
+          Read the step-by-step-guide for curating SPARC datasets
+        </p>
+      </button>
+      <button
+        id="getting-started-button"
+        class="getting-started-btn secondary-plain-button text-base"
+      >
+        <p class="getting-started-btn-txt">Getting Started</p>
+        <i class="el-icon icon-animate"
+          ><svg
+            class="icon"
+            width="200"
+            height="200"
+            viewBox="0 0 1024 1024"
+            xmlns="http://www.w3.org/2000/svg"
+            style="height: 2.2rem; width: 2.5rem"
+          >
+            <path
+              fill="currentColor"
+              d="M452.864 149.312a29.12 29.12 0 0141.728.064L826.24 489.664a32 32 0 010 44.672L494.592 874.624a29.12 29.12 0 01-41.728 0 30.592 30.592 0 010-42.752L764.736 512 452.864 192a30.592 30.592 0 010-42.688zm-256 0a29.12 29.12 0 0141.728.064L570.24 489.664a32 32 0 010 44.672L238.592 874.624a29.12 29.12 0 01-41.728 0 30.592 30.592 0 010-42.752L508.736 512 196.864 192a30.592 30.592 0 010-42.688z"
+            ></path>
+          </svg>
+        </i>
+      </button>
+    </div>
+    <div style="display: flex; justify-content: center">
+      <div
+        class="flex w-full items-center justify-center pb-2"
+        style="justify-content: center; display: flex; align-items: center"
+      >
+        <p class="mr-2" style="margin: 0">Made with</p>
+        <div id="heart_lottie" class="heart-lottie"></div>
+        <p class="ml-2">
+          by the
+          <a href="https://fairdataihub.org/" target="_blank"
+            >FAIR Data Innovations Hub</a
+          >
+        </p>
       </div>
     </div>
   </section>

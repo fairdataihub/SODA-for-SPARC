@@ -34,6 +34,9 @@ const ini = require("ini");
 const { homedir } = require("os");
 const cognitoClient = require("amazon-cognito-identity-js");
 const diskCheck = require("check-disk-space").default;
+const validator = require("validator");
+const doiRegex = require("doi-regex");
+const lottie = require("lottie-web");
 // TODO: Test with a build
 const {
   datasetUploadSession,
@@ -142,11 +145,142 @@ const appVersion = window.require("electron").remote.app.getVersion();
 log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
 
+// Here is where the splash screen lotties are created and loaded.
+// A mutation observer watches for when the overview tab element has
+// a class change to 'is-shown' to know when to load and unload the lotties
+let over_view_section = document.getElementById("getting_started-section");
+let column1 = document.getElementById("lottie1");
+let column2 = document.getElementById("lottie2");
+let column3 = document.getElementById("lottie3");
+let heart_lottie = document.getElementById("heart_lottie");
+
+var column1_lottie = lottie.loadAnimation({
+  container: column1,
+  animationData: column1Lottie /*(json js variable, (view src/assets/lotties)*/,
+  renderer: "svg",
+  loop: true /*controls looping*/,
+  autoplay: true,
+});
+var column2_lottie = lottie.loadAnimation({
+  container: column2,
+  animationData: column2Lottie /*(json js variable, (view src/assets/lotties)*/,
+  renderer: "svg",
+  loop: true /*controls looping*/,
+  autoplay: true,
+});
+var column3_lottie = lottie.loadAnimation({
+  container: column3,
+  animationData: column3Lottie,
+  renderer: "svg",
+  loop: true,
+  autoplay: true,
+});
+var heart_container = lottie.loadAnimation({
+  container: heart_lottie,
+  animationData: heartLottie,
+  renderer: "svg",
+  loop: true,
+  autoplay: true,
+});
+
+var overview_observer = new MutationObserver(function (mutations) {
+  mutations.forEach(function (mutation) {
+    var attributeValue = $(mutation.target).prop(mutation.attributeName);
+
+    if (attributeValue.includes("is-shown") == true) {
+      //add lotties
+      column1_lottie.play();
+      column2_lottie.play();
+      column3_lottie.play();
+      heart_container.play();
+    } else {
+      column1_lottie.stop();
+      column2_lottie.stop();
+      column3_lottie.stop();
+      heart_container.stop();
+    }
+  });
+});
+
+overview_observer.observe(over_view_section, {
+  attributes: true,
+  attributeFilter: ["class"],
+});
+document.getElementById("getting_starting_tab").click();
+
 //////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
 let client = new zerorpc.Client({ timeout: 300000 });
 client.connect("tcp://127.0.0.1:4242");
+client.invoke("echo", "server ready", (error, res) => {
+  if (error || res !== "server ready") {
+    log.error(error);
+    console.error(error);
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Establishing Python Connection",
+      error
+    );
+    Swal.fire({
+      icon: "error",
+      html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Restart now",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        app.relaunch();
+        app.exit();
+      }
+    });
+  } else {
+    console.log("Connected to Python back-end successfully");
+    log.info("Connected to Python back-end successfully");
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Establishing Python Connection"
+    );
+
+    // verify backend api versions
+    client.invoke("api_version_check", (error, res) => {
+      if (error || res !== appVersion) {
+        log.error(error);
+        console.error(error);
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Verifying App Version",
+          error
+        );
+
+        Swal.fire({
+          icon: "error",
+          html: `The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "Close now",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            app.exit();
+          }
+        });
+      } else {
+        ipcRenderer.send("track-event", "Success", "Verifying App Version");
+
+        //Load Default/global Pennsieve account if available
+        updateBfAccountList();
+        checkNewAppVersion(); // Added so that version will be displayed for new users
+      }
+    });
+  }
+});
 
 const notyf = new Notyf({
   position: { x: "right", y: "bottom" },
@@ -402,6 +536,7 @@ const run_pre_flight_checks = async (check_update = true) => {
 
     // Check the internet connection and if available check the rest.
     connection_response = await check_internet_connection();
+
     if (!connection_response) {
       await Swal.fire({
         title: "No Internet Connection",
@@ -447,20 +582,54 @@ const run_pre_flight_checks = async (check_update = true) => {
             cancelButtonText: "Skip for now",
           }).then(async (result) => {
             if (result.isConfirmed) {
-              [browser_download_url, latest_agent_version] =
-                await get_latest_agent_version();
-              shell.openExternal(browser_download_url);
-              shell.openExternal(
-                "https://docs.pennsieve.io/docs/the-pennsieve-agent"
-              );
+              try {
+                let [browser_download_url, latest_agent_version] =
+                  await get_latest_agent_version();
+                shell.openExternal(browser_download_url);
+                shell.openExternal(
+                  "https://docs.pennsieve.io/docs/the-pennsieve-agent"
+                );
+              } catch (e) {
+                await Swal.fire({
+                  icon: "error",
+                  text: "We are unable to get the latest version of the Pennsieve Agent. Please try again later. If this issue persists please contact the SODA team at help@fairdataihub.org",
+                  heightAuto: false,
+                  backdrop: "rgba(0,0,0, 0.4)",
+                  showCancelButton: true,
+                  confirmButtonText: "Ok",
+                  showClass: {
+                    popup: "animate__animated animate__zoomIn animate__faster",
+                  },
+                  hideClass: {
+                    popup: "animate__animated animate__zoomOut animate__faster",
+                  },
+                });
+              }
             }
           });
           resolve(false);
         } else {
           await wait(500);
           // Check the installed agent version. We aren't enforcing the min limit yet but is the python version starts enforcing it, we might have to.
-          [browser_download_url, latest_agent_version] =
-            await check_agent_installed_version(agent_version_response);
+          let browser_download_url,
+            latest_agent_version = "";
+          try {
+            [browser_download_url, latest_agent_version] =
+              await check_agent_installed_version(agent_version_response);
+          } catch (e) {
+            notyf.dismiss(notification);
+            notyf.open({
+              type: "error",
+              message:
+                "Unable to verify that your Pennsieve Agent is up to date.",
+            });
+            log.error(
+              "Unable to verify that your Pennsieve Agent is up to date."
+            );
+            console.log(error);
+            log.error(error);
+            return resolve(false);
+          }
           if (browser_download_url != "") {
             Swal.fire({
               icon: "warning",
@@ -479,13 +648,34 @@ const run_pre_flight_checks = async (check_update = true) => {
               },
             }).then(async (result) => {
               if (result.isConfirmed) {
-                // If there is a newer agent version, download the latest agent from Github and link to their docs for installation instrucations if needed.
-                [browser_download_url, latest_agent_version] =
-                  await get_latest_agent_version();
-                shell.openExternal(browser_download_url);
-                shell.openExternal(
-                  "https://docs.pennsieve.io/docs/the-pennsieve-agent"
-                );
+                try {
+                  // If there is a newer agent version, download the latest agent from Github and link to their docs for installation instrucations if needed.
+                  [browser_download_url, latest_agent_version] =
+                    await get_latest_agent_version();
+                  shell.openExternal(browser_download_url);
+                  shell.openExternal(
+                    "https://docs.pennsieve.io/docs/the-pennsieve-agent"
+                  );
+                } catch (e) {
+                  console.log(e);
+                  log.error(e);
+                  await Swal.fire({
+                    icon: "error",
+                    text: "We are unable to get the latest version of the Pennsieve Agent. Please try again later. If this issue persists please contact the SODA team at help@fairdataihub.org",
+                    heightAuto: false,
+                    backdrop: "rgba(0,0,0, 0.4)",
+                    showCancelButton: true,
+                    confirmButtonText: "Ok",
+                    showClass: {
+                      popup:
+                        "animate__animated animate__zoomIn animate__faster",
+                    },
+                    hideClass: {
+                      popup:
+                        "animate__animated animate__zoomOut animate__faster",
+                    },
+                  });
+                }
                 resolve(false);
               }
               if (result.isDismissed) {
@@ -736,6 +926,7 @@ const check_agent_installed_version = async (agent_version) => {
   let browser_download_url = "";
   [browser_download_url, latest_agent_version] =
     await get_latest_agent_version();
+
   if (latest_agent_version != agent_version) {
     notyf.dismiss(notification);
     notyf.open({
@@ -756,10 +947,10 @@ const check_agent_installed_version = async (agent_version) => {
   return [browser_download_url, latest_agent_version];
 };
 
-const get_latest_agent_version = async () => {
-  return new Promise((resolve) => {
-    $.getJSON("https://api.github.com/repos/Pennsieve/agent/releases").done(
-      (release_res) => {
+const get_latest_agent_version = () => {
+  return new Promise((resolve, reject) => {
+    $.getJSON("https://api.github.com/repos/Pennsieve/agent/releases")
+      .done((release_res) => {
         let release = release_res[0];
         let latest_agent_version = release.tag_name;
         if (process.platform == "darwin") {
@@ -794,8 +985,11 @@ const get_latest_agent_version = async () => {
         }
 
         resolve([browser_download_url, latest_agent_version]);
-      }
-    );
+      })
+      .fail((error) => {
+        console.log("Request failed: " + error);
+        reject();
+      });
   });
 };
 
@@ -2877,6 +3071,7 @@ const { waitForDebugger } = require("inspector");
 const { resolve } = require("path");
 const { background } = require("jimp");
 const { rename } = require("fs");
+const { createCipheriv } = require("crypto");
 var cropOptions = {
   aspectRatio: 1,
   movable: false,
@@ -3682,7 +3877,6 @@ function loadDefaultAccount() {
       log.error(error);
       console.error(error);
       confirm_click_account_function();
-      console.log("Could not get default account");
     } else {
       if (res.length > 0) {
         var myitemselect = res[0];
@@ -3699,7 +3893,7 @@ function loadDefaultAccount() {
   });
 }
 
-function updateBfAccountList() {
+function updateBfAccountList(api_key) {
   client.invoke("api_bf_account_list", (error, res) => {
     if (error) {
       log.error(error);
@@ -3714,7 +3908,9 @@ function updateBfAccountList() {
         option.value = myitemselect;
         var option2 = option.cloneNode(true);
       }
-      loadDefaultAccount();
+      if (api_key === undefined) {
+        loadDefaultAccount();
+      }
       if (res[0] === "Select" && res.length === 1) {
         // todo: no existing accounts to load
       }
@@ -4095,9 +4291,10 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
 function populateJSONObjFolder(action, jsonObject, folderPath) {
   var myitems = fs.readdirSync(folderPath);
   myitems.forEach((element) => {
+    //prevented here
     var statsObj = fs.statSync(path.join(folderPath, element));
     var addedElement = path.join(folderPath, element);
-    if (statsObj.isDirectory() && !/(^|\/)\.[^\/\.]/g.test(element)) {
+    if (statsObj.isDirectory() && !/(^|\/)\[^\/\.]/g.test(element)) {
       if (irregularFolderArray.includes(addedElement)) {
         var renamedFolderName = "";
         if (action !== "ignore" && action !== "") {
@@ -4210,62 +4407,29 @@ const pasteFromClipboard = (event, target_element) => {
     target_element == "bootbox-api-key" ||
     target_element == "bootbox-api-secret"
   ) {
-    const regex = new RegExp(
-      "^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$",
-      "i"
-    );
-    // "/^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i";
-    if (regex.test(key)) {
-      $(`#${target_element}`).val(key);
-    } else {
-      console.log("Invalid API Key");
-      log.error("Invalid API Key");
-    }
+    $(`#${target_element}`).val(key);
   }
 };
 
 var bfAddAccountBootboxMessage = `<form>
-    <div class="form-group row">
-      <label for="bootbox-key-name" class="col-sm-3 col-form-label">
-        Key name:
-      </label>
-      <div class="col-sm-9">
-        <input type="text" id="bootbox-key-name" class="form-control" />
+    <div class="form-group row" style="justify-content: center; margin-top: .5rem; margin-bottom: 2rem;">
+      <div style="display: flex; width: 100%">
+        <input placeholder="Enter key name" type="text" style="width: 100%; margin: 0;" id="bootbox-key-name" class="swal2-input" />
       </div>
     </div>
-    <div class="form-group row">
-      <label for="bootbox-api-key" class="col-sm-3 col-form-label">
-        API Key:
-      </label>
-      <div class="col-sm-9" style="display:flex">
-        <input id="bootbox-api-key" type="text" class="form-control" />
-        <button
-          class="ui left floated button"
-          style="height:auto; margin-left:3px"
-          onclick="pasteFromClipboard(event, 'bootbox-api-key')"
-        >
-          <i class="fas fa-paste"></i>
-        </button>
+    <div style="justify-content: center;">
+      <div style="display:flex; align-items: flex-end; width: 100%;">
+        <input placeholder="Enter API key" id="bootbox-api-key" type="text" class="swal2-input" style="width: 100%; margin: 0;" />
       </div>
     </div>
-    <div class="form-group row">
-      <label for="bootbox-api-secret" class="col-sm-3 col-form-label">
-        API Secret:
-      </label>
-      <div class="col-sm-9" style="display:flex">
-        <input id="bootbox-api-secret" class="form-control" type="text" />
-        <button
-          class="ui left floated button"
-          style="height:auto; margin-left:3px"
-          onclick="pasteFromClipboard(event, 'bootbox-api-secret')"
-        >
-          <i class="fas fa-paste"></i>
-        </button>
+    <div style="justify-content: center; margin-bottom: .5rem; margin-top: 2rem;">
+      <div style="display:flex; align-items: flex-end; width: 100%">
+        <input placeholder="Enter API secret" id="bootbox-api-secret" class="swal2-input" type="text" style="margin: 0; width: 100%" />
       </div>
     </div>
   </form>`;
 
-var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Pennsieve API key and secret below: <i class="fas fa-info-circle swal-popover"  id="add-bf-account-tooltip" rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
+var bfaddaccountTitle = `<h3 style="text-align:center">Connect your Pennsieve account using an API key</h3>`;
 
 // once connected to SODA get the user's accounts
 (async () => {
@@ -5028,7 +5192,7 @@ async function drop(ev) {
   }
 }
 
-function dropHelper(
+async function dropHelper(
   ev1,
   ev2,
   action,
@@ -5057,8 +5221,12 @@ function dropHelper(
       },
     ],
   });
+  let nonAllowedCharacterFiles = [];
   var folderPath = [];
   var duplicateFolders = [];
+  var hiddenFiles = [];
+  var nonAllowedFiles = [];
+
   for (var i = 0; i < ev1.length; i++) {
     /// Get all the file information
     var itemPath = ev1[i].path;
@@ -5077,8 +5245,24 @@ function dropHelper(
       var nonAllowedDuplicate = false;
       var originalFileName = path.parse(itemPath).base;
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+      const fileNameRegex = /[^-a-zA-z0-9]/g;
+
+      if (path.parse(itemPath).name.substr(0, 1) === ".") {
+        if (path.parse(itemPath).base === ".DS_Store") {
+          nonAllowedFiles.push(itemPath);
+          continue;
+        } else {
+          hiddenFiles.push(itemPath);
+          continue;
+        }
+      }
+      if (path.parse(itemPath).base === "Thumbs.db") {
+        nonAllowedFiles.push(itemPath);
+        continue;
+      }
+
       if (slashCount === 1) {
-        Swal.fire({
+        await Swal.fire({
           icon: "error",
           html: "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
           heightAuto: false,
@@ -5138,7 +5322,7 @@ function dropHelper(
       /// drop a folder
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
       if (slashCount === 1) {
-        Swal.fire({
+        await Swal.fire({
           icon: "error",
           text: "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
           heightAuto: false,
@@ -5185,10 +5369,137 @@ function dropHelper(
       }
     }
   }
+
+  if (hiddenFiles.length > 0) {
+    await Swal.fire({
+      title:
+        "The following files have an unexpected name starting with a period. How should we handle them?",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        hiddenFiles.join("</br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Remove characters",
+      denyButtonText: "Continue as is",
+      cancelButtonText: "Cancel",
+      didOpen: () => {
+        $(".swal-popover").popover();
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        //replace characters
+        //check for already imported
+        for (let i = 0; i < hiddenFiles.length; i++) {
+          let file_name = path.parse(hiddenFiles[i]).base;
+          let path_name = hiddenFiles[i];
+
+          if (Object.keys(myPath["files"]).length > 0) {
+            for (const objectKey in myPath["files"]) {
+              //tries finding duplicates with the same path
+              if (objectKey != undefined) {
+                nonAllowedDuplicate = false;
+                if (file_name.substr(1, file_name.length) === objectKey) {
+                  if (path_name === myPath["files"][objectKey]["path"]) {
+                    //same path and has not been renamed
+                    nonAllowedDuplicateFiles.push(path_name);
+                    nonAllowedDuplicate = true;
+                    continue;
+                  } else {
+                    //store in imported files
+                    importedFiles[file_name.substr(1, file_name.length)] = {
+                      path: path_name,
+                      basename: file_name.substr(1, file_name.length),
+                    };
+                  }
+                } else {
+                  //store in imported files
+                  importedFiles[file_name.substr(1, file_name.length)] = {
+                    path: path_name,
+                    basename: file_name.substr(1, file_name.length),
+                  };
+                }
+              }
+            }
+          } else {
+            //store in imported files
+            importedFiles[file_name.substr(1, file_name.length)] = {
+              path: path_name,
+              basename: file_name.substr(1, file_name.length),
+            };
+          }
+        }
+      } else if (result.isDenied) {
+        //leave as is
+
+        for (let i = 0; i < hiddenFiles.length; i++) {
+          let file_name = path.parse(hiddenFiles[i]).base;
+          let path_name = hiddenFiles[i];
+
+          if (Object.keys(myPath["files"]).length > 0) {
+            for (const objectKey in myPath["files"]) {
+              //tries finding duplicates with the same path
+              if (objectKey != undefined) {
+                nonAllowedDuplicate = false;
+                if (file_name === objectKey) {
+                  if (path_name === myPath["files"][objectKey]["path"]) {
+                    //same path and has not been renamed
+                    nonAllowedDuplicateFiles.push(path_name);
+                    nonAllowedDuplicate = true;
+                    continue;
+                  } else {
+                    //file path and object key path arent the same
+                    //check if the file name are the same
+                    //if so consider it as a duplicate
+
+                    //store in regular files
+                    importedFiles[file_name] = {
+                      path: path_name,
+                      basename: file_name,
+                    };
+                  }
+                } else {
+                  //store in regular files
+                  importedFiles[file_name] = {
+                    path: path_name,
+                    basename: file_name,
+                  };
+                }
+              }
+            }
+          } else {
+            //store in regular files
+            importedFiles[file_name] = {
+              path: path_name,
+              basename: file_name,
+            };
+          }
+        }
+      }
+    });
+  }
+
+  if (nonAllowedFiles.length > 0) {
+    await Swal.fire({
+      title:
+        "The following files are banned as per SPARC guidelines and will not be imported",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        nonAllowedFiles.join("</br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      confirmButtonText: "Okay",
+    });
+  }
+
   var listElements = showItemsAsListBootbox(duplicateFolders);
   var list = JSON.stringify(folderPath).replace(/"/g, "");
   if (duplicateFolders.length > 0) {
-    Swal.fire({
+    await Swal.fire({
       title: "Duplicate folder(s) detected",
       icon: "warning",
       showConfirmButton: false,
@@ -5233,7 +5544,7 @@ function dropHelper(
     }
     var listElements = showItemsAsListBootbox(baseName);
     var list = JSON.stringify(nonAllowedDuplicateFiles).replace(/"/g, "");
-    Swal.fire({
+    await Swal.fire({
       title: "Duplicate file(s) detected",
       icon: "warning",
       showConfirmButton: false,
@@ -5263,6 +5574,7 @@ function dropHelper(
     });
   }
   // // now append to UI files and folders
+
   if (Object.keys(importedFiles).length > 0) {
     for (var element in importedFiles) {
       myPath["files"][importedFiles[element]["basename"]] = {
@@ -6360,7 +6672,7 @@ ipcRenderer.on(
                   return;
                 }
 
-                var numb = document.querySelector(".number");
+                let numb = document.getElementById("local_dataset_number");
                 numb.innerText = "0%";
                 progressBar_rightSide = document.getElementById(
                   "left-side_less_than_50"
@@ -6412,30 +6724,34 @@ ipcRenderer.on(
 
                         if (finished === 1) {
                           progressBar_leftSide.style.transform = `rotate(180deg)`;
-                          numb.innerText = "100%";
-                          clearInterval(local_progress);
-                          progressBar_rightSide.classList.remove(
-                            "notransition"
-                          );
-                          populate_existing_folders(datasetStructureJSONObj);
-                          populate_existing_metadata(sodaJSONObj);
-                          $(
-                            "#para-continue-location-dataset-getting-started"
-                          ).text("Please continue below.");
-                          $("#nextBtn").prop("disabled", false);
-                          // log the success to analytics
-                          logMetadataForAnalytics(
-                            "Success",
-                            PrepareDatasetsAnalyticsPrefix.CURATE,
-                            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-                            Actions.EXISTING,
-                            Destinations.LOCAL
-                          );
-                          setTimeout(() => {
-                            document.getElementById(
-                              "loading_local_dataset"
-                            ).style.display = "none";
-                          }, 1000);
+                          let numb_change = new Promise((resolve) => {
+                            numb.innerText = "100%";
+                            resolve();
+                          }).then(() => {
+                            clearInterval(local_progress);
+                            progressBar_rightSide.classList.remove(
+                              "notransition"
+                            );
+                            populate_existing_folders(datasetStructureJSONObj);
+                            populate_existing_metadata(sodaJSONObj);
+                            $(
+                              "#para-continue-location-dataset-getting-started"
+                            ).text("Please continue below.");
+                            $("#nextBtn").prop("disabled", false);
+                            // log the success to analytics
+                            logMetadataForAnalytics(
+                              "Success",
+                              PrepareDatasetsAnalyticsPrefix.CURATE,
+                              AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+                              Actions.EXISTING,
+                              Destinations.LOCAL
+                            );
+                            setTimeout(() => {
+                              document.getElementById(
+                                "loading_local_dataset"
+                              ).style.display = "none";
+                            }, 1000);
+                          });
                         }
                       }
                     }
@@ -6471,7 +6787,7 @@ ipcRenderer.on(
               );
               progressBar_leftSide.style.transform = `rotate(0deg)`;
               progressBar_rightSide.style.transform = `rotate(0deg)`;
-              let numb = document.querySelector(".number");
+              let numb = document.getElementById("local_dataset_number");
               numb.innerText = "0%";
 
               action = "";
@@ -7584,33 +7900,80 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
   }
 });
 
-var bf_request_and_populate_dataset = (sodaJSONObj) => {
-  return new Promise((resolve, reject) => {
-    client.invoke(
-      "api_bf_get_dataset_files_folders",
-      sodaJSONObj,
-      (error, res) => {
-        if (error) {
-          reject(userError(error));
-          log.error(error);
-          console.error(error);
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Retrieve Dataset - Pennsieve",
-            defaultBfDatasetId
-          );
+var bf_request_and_populate_dataset = async (sodaJSONObj) => {
+  let progress_container = document.getElementById("loading_pennsieve_dataset");
+  let percentage_text = document.getElementById(
+    "pennsieve_loading_dataset_percentage"
+  );
+  let left_progress_bar = document.getElementById(
+    "pennsieve_left-side_less_than_50"
+  );
+  let right_progress_bar = document.getElementById(
+    "pennsieve_right-side_greater_than_50"
+  );
+  percentage_text.innerText = "0%";
+  progress_container.style.display = "block";
+  left_progress_bar.style.transform = `rotate(0deg)`;
+  right_progress_bar.style.transform = `rotate(0deg)`;
+  let pennsieve_progress = setInterval(progressReport, 500);
+  function progressReport() {
+    client.invoke("api_monitor_pennsieve_json_progress", (error, res) => {
+      if (error) {
+        console.log(error);
+      } else {
+        let percentage_amount = res[2].toFixed(2);
+        finished = res[3];
+        percentage_text.innerText = percentage_amount + "%";
+        if (percentage_amount <= 50) {
+          left_progress_bar.style.transform = `rotate(${
+            percentage_amount * 0.01 * 360
+          }deg)`;
         } else {
-          resolve(res);
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Retrieve Dataset - Pennsieve",
-            defaultBfDatasetId
-          );
+          left_progress_bar.style.transition = "";
+          left_progress_bar.classList.add("notransition");
+          left_progress_bar.style.transform = `rotate(180deg)`;
+          right_progress_bar.style.transform = `rotate(${
+            percentage_amount * 0.01 * 180
+          }deg)`;
+        }
+
+        if (finished === 1) {
+          percentage_text.innerText = "100%";
+          left_progress_bar.style.transform = `rotate(180deg)`;
+          right_progress_bar.style.transform = `rotate(180deg)`;
+          right_progress_bar.classList.remove("notransition");
+          clearInterval(pennsieve_progress);
+          setTimeout(() => {
+            progress_container.style.display = "none";
+          }, 1000);
         }
       }
-    );
+    });
+  }
+
+  return new Promise((resolve, reject) => {
+    client.invoke("api_import_pennsieve_dataset", sodaJSONObj, (error, res) => {
+      if (error) {
+        progress_container.style.display = "none";
+        reject(userError(error));
+        log.error(error);
+        console.error(error);
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Retrieve Dataset - Pennsieve",
+          defaultBfDatasetId
+        );
+      } else {
+        resolve(res);
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Retrieve Dataset - Pennsieve",
+          defaultBfDatasetId
+        );
+      }
+    });
   });
 };
 
@@ -7925,28 +8288,31 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
   }
 });
 
-function showBFAddAccountSweetalert() {
-  var bootb = Swal.fire({
+async function showBFAddAccountSweetalert() {
+  // let this_one = await get_access_token();
+  // console.log(this_one);
+  // try {
+  //   userInformation = get_api_key_and_secret_from_ini();
+  //   console.log(userInformation);
+  // } catch (e) {
+  //   throw e;
+  // }
+  await Swal.fire({
     title: bfaddaccountTitle,
     html: bfAddAccountBootboxMessage,
+    showLoaderOnConfirm: true,
     showCancelButton: true,
     focusCancel: true,
     cancelButtonText: "Cancel",
-    confirmButtonText: "Add Account",
-    customClass: "swal-wide",
+    confirmButtonText: "Connect to Pennsieve",
     reverseButtons: reverseSwalButtons,
     backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
     allowOutsideClick: false,
+    footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/manage-dataset/connect-your-pennsieve-account-with-soda#how-to-login-with-api-key" style="text-decoration: none;">Help me get an API key</a>`,
     didOpen: () => {
-      tippy("#add-bf-account-tooltip", {
-        allowHTML: true,
-        interactive: true,
-        placement: "right",
-        theme: "light",
-        content:
-          "See our dedicated <a target='_blank' href='https://docs.sodaforsparc.io/docs/manage-dataset/connect-your-pennsieve-account-with-soda'> help page </a>for generating API key and secret and setting up your Pennsieve account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Pennsieve accounts under the SPARC Consortium organization with SODA.",
-      });
+      let swal_container = document.getElementsByClassName("swal2-popup")[0];
+      swal_container.style.width = "43rem";
     },
     showClass: {
       popup: "animate__animated animate__fadeInDown animate__faster",
@@ -7954,90 +8320,115 @@ function showBFAddAccountSweetalert() {
     hideClass: {
       popup: "animate__animated animate__fadeOutUp animate__faster",
     },
-  }).then((result) => {
-    if (result.isConfirmed) {
-      addBFAccountInsideSweetalert(bootb);
-    }
-  });
-}
+    preConfirm: async (result) => {
+      if (result === true) {
+        var name = $("#bootbox-key-name").val();
+        var apiKey = $("#bootbox-api-key").val();
+        var apiSecret = $("#bootbox-api-secret").val();
+        return new Promise((resolve, reject) => {
+          client.invoke(
+            "api_bf_add_account_api_key",
+            name,
+            apiKey,
+            apiSecret,
+            (error, res) => {
+              if (error) {
+                if (String(error).includes("please check that key name")) {
+                  error =
+                    "Please check that your key name, key and api secret are entered properly";
+                } else if (
+                  String(error).includes("Please enter valid keyname")
+                ) {
+                  error = "Please enter valid keyname, key, and/or secret";
+                }
+                Swal.showValidationMessage(error);
+                document.getElementsByClassName(
+                  "swal2-actions"
+                )[0].children[1].disabled = false;
+                document.getElementsByClassName(
+                  "swal2-actions"
+                )[0].children[3].disabled = false;
+                document.getElementsByClassName(
+                  "swal2-actions"
+                )[0].children[0].style.display = "none";
+                document.getElementsByClassName(
+                  "swal2-actions"
+                )[0].children[1].style.display = "inline-block";
+                reject(false);
+                log.error(error);
+                console.error(error);
+              } else {
+                $("#bootbox-key-name").val("");
+                $("#bootbox-api-key").val("");
+                $("#bootbox-api-secret").val("");
+                bfAccountOptions[name] = name;
+                defaultBfAccount = name;
+                defaultBfDataset = "Select dataset";
+                return new Promise((resolve, reject) => {
+                  client.invoke(
+                    "api_bf_account_details",
+                    name,
+                    (error, res) => {
+                      if (error) {
+                        log.error(error);
+                        console.error(error);
+                        Swal.showValidationMessage(error);
+                        document.getElementsByClassName(
+                          "swal2-actions"
+                        )[0].children[1].disabled = false;
+                        document.getElementsByClassName(
+                          "swal2-actions"
+                        )[0].children[3].disabled = false;
+                        document.getElementsByClassName(
+                          "swal2-actions"
+                        )[0].children[0].style.display = "none";
+                        document.getElementsByClassName(
+                          "swal2-actions"
+                        )[0].children[1].style.display = "inline-block";
 
-function addBFAccountInsideSweetalert(myBootboxDialog) {
-  var name = $("#bootbox-key-name").val();
-  var apiKey = $("#bootbox-api-key").val();
-  var apiSecret = $("#bootbox-api-secret").val();
-  client.invoke(
-    "api_bf_add_account_api_key",
-    name,
-    apiKey,
-    apiSecret,
-    (error, res) => {
-      if (error) {
-        Swal.fire({
-          icon: "error",
-          html: "<span>" + error + "</span>",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0,0.4)",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            showBFAddAccountSweetalert();
-          }
-        });
-        log.error(error);
-        console.error(error);
-      } else {
-        $("#bootbox-key-name").val("");
-        $("#bootbox-api-key").val("");
-        $("#bootbox-api-secret").val("");
-        bfAccountOptions[name] = name;
-        defaultBfAccount = name;
-        defaultBfDataset = "Select dataset";
-        client.invoke("api_bf_account_details", name, (error, res) => {
-          if (error) {
-            log.error(error);
-            console.error(error);
-            Swal.fire({
-              icon: "error",
-              text: "Something went wrong!",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              footer:
-                '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
-            });
-            showHideDropdownButtons("account", "hide");
-            confirm_click_account_function();
-          } else {
-            $("#para-account-detail-curate").html(res);
-            $("#current-bf-account").text(name);
-            $("#current-bf-account-generate").text(name);
-            $("#create_empty_dataset_BF_account_span").text(name);
-            $(".bf-account-span").text(name);
-            $("#current-bf-dataset").text("None");
-            $("#current-bf-dataset-generate").text("None");
-            $(".bf-dataset-span").html("None");
-            $("#para-account-detail-curate-generate").html(res);
-            $("#para_create_empty_dataset_BF_account").html(res);
-            $(".bf-account-details-span").html(res);
-            $("#para-continue-bf-dataset-getting-started").text("");
-            showHideDropdownButtons("account", "show");
-            confirm_click_account_function();
-            updateBfAccountList();
-          }
-        });
-        Swal.fire({
-          icon: "success",
-          title: "Successfully added! <br/>Loading your account details...",
-          timer: 3000,
-          timerProgressBar: true,
-          allowEscapeKey: false,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          showConfirmButton: false,
+                        reject(false);
+                        showHideDropdownButtons("account", "hide");
+                        confirm_click_account_function();
+                      } else {
+                        $("#para-account-detail-curate").html(res);
+                        $("#current-bf-account").text(name);
+                        $("#current-bf-account-generate").text(name);
+                        $("#create_empty_dataset_BF_account_span").text(name);
+                        $(".bf-account-span").text(name);
+                        $("#current-bf-dataset").text("None");
+                        $("#current-bf-dataset-generate").text("None");
+                        $(".bf-dataset-span").html("None");
+                        $("#para-account-detail-curate-generate").html(res);
+                        $("#para_create_empty_dataset_BF_account").html(res);
+                        $(".bf-account-details-span").html(res);
+                        $("#para-continue-bf-dataset-getting-started").text("");
+                        showHideDropdownButtons("account", "show");
+                        confirm_click_account_function();
+                        updateBfAccountList(false);
+                      }
+                    }
+                  );
+                  Swal.fire({
+                    icon: "success",
+                    title:
+                      "Successfully added! <br/>Loading your account details...",
+                    timer: 3000,
+                    timerProgressBar: true,
+                    allowEscapeKey: false,
+                    heightAuto: false,
+                    backdrop: "rgba(0,0,0, 0.4)",
+                    showConfirmButton: false,
+                  });
+                  resolve();
+                });
+              }
+            }
+          );
         });
       }
-    }
-  );
+    },
+  });
 }
-
 /*
 ******************************************************
 ******************************************************
@@ -8458,10 +8849,7 @@ const get_api_key_and_secret_from_ini = () => {
   }
 
   // check that an api key and secret does ot exist
-  if (
-    !config["SODA-Pennsieve"]["api_secret"] ||
-    !config["SODA-Pennsieve"]["api_token"]
-  ) {
+  if (!config["global"]) {
     // throw an error
     throw new Error(
       "Error: User must connect their Pennsieve account to SODA in order to access this feature."
@@ -8469,7 +8857,8 @@ const get_api_key_and_secret_from_ini = () => {
   }
 
   // return the user's api key and secret
-  const { api_token, api_secret } = config["SODA-Pennsieve"];
+  let default_profile = config["global"]["default_profile"];
+  const { api_token, api_secret } = config[default_profile];
   return { api_token, api_secret };
 };
 
@@ -8692,7 +9081,6 @@ const update_dataset_tags = async (datasetIdOrName, tags) => {
 
   // grab the dataset's id
   const id = dataset["content"]["id"];
-
   // setup the request options
   let options = {
     method: "PUT",
@@ -8753,7 +9141,6 @@ const getDatasetReadme = async (datasetIdOrName) => {
 
   // pull out the id from the result
   const id = dataset["content"]["id"];
-
   // fetch the readme file from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
   let readmeResponse = await fetch(
     `https://api.pennsieve.io/datasets/${id}/readme`,
@@ -8825,7 +9212,6 @@ const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
 
   // get the id out of the dataset
   let id = dataset.content.id;
-
   // put the new readme data in the readme on Pennsieve
   options = {
     method: "PUT",
@@ -9014,7 +9400,6 @@ const submitDatasetForPublication = async (
     `https://api.pennsieve.io/datasets/${id}/publication/request` + queryString,
     options
   );
-
   // get the status code out of the response
   let statusCode = publicationResponse.status;
 
@@ -9098,12 +9483,10 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
     // add the required publication type
     queryString = `?publicationType=publication`;
   }
-
   let withdrawResponse = await fetch(
     `https://api.pennsieve.io/datasets/${id}/publication/cancel${queryString}`,
     options
   );
-
   // get the status code out of the response
   let statusCode = withdrawResponse.status;
 
@@ -9180,7 +9563,6 @@ const getDatasetBannerImageURL = async (datasetIdOrName) => {
   let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
 
   let { id } = dataset["content"];
-
   // fetch the banner url from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
   let bannerResponse = await fetch(
     `https://api.pennsieve.io/datasets/${id}/banner`,
@@ -9192,7 +9574,6 @@ const getDatasetBannerImageURL = async (datasetIdOrName) => {
       },
     }
   );
-
   // get the status code out of the response
   let statusCode = bannerResponse.status;
 
@@ -9250,13 +9631,11 @@ const getCurrentUserPermissions = async (datasetIdOrName) => {
 
   // get the id out of the dataset
   let id = dataset.content.id;
-
   // get the user's permissions
   let permissionsResponse = await fetch(
     `https://api.pennsieve.io/datasets/${id}/role`,
     { headers: { Authorization: `Bearer ${jwt}` } }
   );
-
   // get the status code out of the response
   let statusCode = permissionsResponse.status;
 
@@ -9457,7 +9836,6 @@ const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
       headers: { Authorization: `Bearer ${jwt}` },
     }
   );
-
   // get the status code
   let statusCode = excludedFilesResponse.status;
 
@@ -9523,7 +9901,6 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
     `https://api.pennsieve.io/datasets/${id}/ignore-files`,
     options
   );
-
   // check the status code
   let { status } = excludeFilesResponse;
   switch (status) {
@@ -9578,7 +9955,6 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
       headers: { Authorization: `Bearer ${jwt}` },
     }
   );
-
   // check the status code
   let { status } = datasetWithChildrenResponse;
   switch (status) {
@@ -9804,20 +10180,245 @@ $("#validate_dataset_bttn").on("click", async () => {
   } catch (error) {
     log.error(error);
     console.error(error);
-    // var emessage = userError(error);
     $("#dataset_validator_spinner").hide();
     $("#dataset_validator_status").html(
       `<span style='color: red;'> ${error}</span>`
     );
-    // ipcRenderer.send(
-    //   "track-event",
-    //   "Error",
-    //   "Validate Dataset",
-    //   defaultBfDataset
-    // );
   }
 
   create_validation_report(res);
   $("#dataset_validator_status").html("");
   $("#dataset_validator_spinner").hide();
+});
+
+function gatherLogs() {
+  //function will be used to gather all logs on all OS's
+  let homedir = os.homedir();
+  let file_path = "";
+  let log_path = "";
+  let log_files = ["main.log", "renderer.log", "out.log"];
+
+  if (os.type().includes("Darwin") === true) {
+    log_path = path.join(homedir, "/Library/Logs/SODA for SPARC/");
+  } else if (os.type().includes("Windows") === true) {
+    log_path = path.join(
+      homedir,
+      "AppData",
+      "Roaming",
+      "SODA for SPARC",
+      "logs"
+    );
+  } else {
+    log_path = path.join(homedir, ".config", "SODA for SPARC", "logs");
+  }
+
+  Swal.fire({
+    title: "Select a destination to create log folder",
+    html: `<div style="margin-bottom:1rem;"><p>Please note that any log files that are in your destination already will be overwritten.</p></div><input class="form-control" id="selected-log-destination" type="text" readonly="" placeholder="Select a destination">`,
+    heightAuto: false,
+    showCancelButton: true,
+    allowOutsideClick: false,
+    allowEscapeKey: true,
+    didOpen: () => {
+      let swal_alert_confirm = document.getElementsByClassName(
+        "swal2-confirm swal2-styled"
+      )[0];
+      swal_alert_confirm.setAttribute("disabled", true);
+
+      let log_destination_input = document.getElementById(
+        "selected-log-destination"
+      );
+      log_destination_input.addEventListener("click", function () {
+        ipcRenderer.send("open-file-dialog-log-destination");
+      });
+      ipcRenderer.on("selected-log-folder", (event, result) => {
+        file_path = result["filePaths"][0];
+        if (file_path != undefined) {
+          log_destination_input.value = file_path;
+          swal_alert_confirm.removeAttribute("disabled");
+        } else {
+          Swal.showValidationMessage(`Please enter a destination`);
+        }
+      });
+    },
+    preConfirm: () => {
+      let log_destination_input = document.getElementById(
+        "selected-log-destination"
+      );
+      if (
+        log_destination_input.value === "" ||
+        log_destination_input.value === undefined
+      ) {
+        Swal.showValidationMessage(`Please enter a destination`);
+      }
+    },
+  }).then((result) => {
+    if (result.isConfirmed === true) {
+      if (file_path !== undefined || file_path !== "") {
+        Swal.fire({
+          title: "Creating log folder",
+          html: "Please wait...",
+          // timer: 5000,
+          allowEscapeKey: false,
+          allowOutsideClick: false,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          timerProgressBar: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
+        let log_folder = path.join(file_path, "/SODA-For-SPARC-Logs/");
+        try {
+          fs.mkdirSync(log_folder, { recursive: true });
+          // destination will be created or overwritten by default.
+          for (let i = 0; i < log_files.length; i++) {
+            var log_file;
+            if (i === 2) {
+              log_file = path.join(homedir, ".pennsieve", log_files[i]);
+            } else {
+              log_file = path.join(log_path, log_files[i]);
+            }
+            let log_copy = path.join(log_folder, log_files[i]);
+
+            fs.copyFileSync(log_file, log_copy, (err) => {
+              if (err) throw err;
+            });
+          }
+          Swal.close();
+
+          Swal.fire({
+            title: "Success!",
+            text: `Successfully created SODA-For-SPARC-Logs in ${file_path}`,
+            icon: "success",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            didOpen: () => {
+              if (document.getElementsByClassName("swal2-loader").length > 0) {
+                document.getElementsByClassName(
+                  "swal2-loader"
+                )[0].style.display = "none";
+                document.getElementsByClassName(
+                  "swal2-confirm swal2-styled"
+                )[0].style.display = "block";
+              }
+            },
+          });
+        } catch (error) {
+          log.error(error);
+          console.log(error);
+          Swal.fire({
+            title: "Failed to create log folder!",
+            text: error,
+            icon: "error",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            didOpen: () => {
+              if (document.getElementsByClassName("swal2-loader").length > 0) {
+                document.getElementsByClassName(
+                  "swal2-loader"
+                )[0].style.display = "none";
+                document.getElementsByClassName(
+                  "swal2-confirm swal2-styled"
+                )[0].style.display = "block";
+              }
+            },
+          });
+        }
+      }
+    }
+  });
+}
+
+function gettingStarted() {
+  let getting_started = document.getElementById("main_tabs_view");
+  getting_started.click();
+}
+
+function sodaVideo() {
+  document.getElementById("overview-column-1").blur();
+  shell.openExternal(
+    "https://docs.sodaforsparc.io/docs/getting-started/user-interface"
+  );
+}
+
+function directToDocumentation() {
+  shell.openExternal(
+    "https://docs.sodaforsparc.io/docs/getting-started/organize-and-submit-sparc-datasets-with-soda"
+  );
+  document.getElementById("overview-column-2").blur();
+  // window.open('https://docs.sodaforsparc.io', '_blank');
+}
+document
+  .getElementById("doc-btn")
+  .addEventListener("click", directToDocumentation);
+document.getElementById("sodaVideo-btn").addEventListener("click", sodaVideo);
+document
+  .getElementById("direct-to-doc-button")
+  .addEventListener("click", directToDocumentation);
+document
+  .getElementById("getting-started-button")
+  .addEventListener("click", gettingStarted);
+
+let docu_lottie_section = document.getElementById("documentation-section");
+let doc_lottie = document.getElementById("documentation-lottie");
+
+let contact_section = document.getElementById("contact-us-section");
+let contact_lottie_container = document.getElementById("contact-us-lottie");
+
+var contact_lottie_animation = lottie.loadAnimation({
+  container: contact_lottie_container,
+  animationData:
+    contact_lottie /*(json js variable, (view src/assets/lotties)*/,
+  renderer: "svg",
+  loop: true /*controls looping*/,
+  autoplay: true,
+});
+contact_lottie_animation.pause();
+var documentation_lottie = lottie.loadAnimation({
+  container: doc_lottie,
+  animationData: docu_lottie /*(json js variable, (view src/assets/lotties)*/,
+  renderer: "svg",
+  loop: true /*controls looping*/,
+  autoplay: true,
+});
+documentation_lottie.pause();
+
+var documentation_lottie_observer = new MutationObserver(function (mutations) {
+  mutations.forEach(function (mutation) {
+    var attributeValue = $(mutation.target).prop(mutation.attributeName);
+    if (attributeValue.includes("is-shown") == true) {
+      //play lottie
+      documentation_lottie.play();
+    } else {
+      // lottie.stop(documentation_lottie);
+      documentation_lottie.stop();
+    }
+  });
+});
+
+var contact_us_lottie_observer = new MutationObserver(function (mutations) {
+  mutations.forEach(function (mutation) {
+    var attributeValue = $(mutation.target).prop(mutation.attributeName);
+    if (attributeValue.includes("is-shown") == true) {
+      //play lottie
+      contact_lottie_animation.play();
+    } else {
+      contact_lottie_animation.stop();
+      // lottie.stop(contact_lottie_animation);
+    }
+  });
+});
+
+documentation_lottie_observer.observe(docu_lottie_section, {
+  attributes: true,
+  attributeFilter: ["class"],
+});
+
+contact_us_lottie_observer.observe(contact_section, {
+  attributes: true,
+  attributeFilter: ["class"],
 });
