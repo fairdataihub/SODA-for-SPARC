@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - The evolving SPARC Dataset Structure (SDS) all SPARC datasets must follow now includes additional mandatory metadata files. As such, in step 4 of the Organize dataset feature, found in the Prepare Datasets tab, the README.txt file is now mandatory.
 - Layout of the Prepare Metadata tab has been changed. Buttons are spread out more evenly and the Manifest files button received an icon change.
-- The Overview page has been overhauled to be more informative and visually stimulating. 
+- The Overview page has been overhauled to be more informative and visually stimulating.
 - Documentation and Contact Us tabs added to the navigation bar.
 - Contact Us tab will provide user information on how to reach out to the team for any issues or suggestions. As well as providing a Gather Logs button for the user to provide in an email for the team to look at any issues in depth.
 - Visual overhaul for the prompts that allow users to connect their Pennsieve account with SODA.
