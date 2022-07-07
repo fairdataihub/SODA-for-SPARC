@@ -5291,75 +5291,70 @@ async function dropHelper(
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
       const fileNameRegex = /[^-a-zA-z0-9]/g;
 
-      if (fileNameRegex.test(path.parse(itemPath).name) === true) {
-        nonAllowedCharacterFiles.push(itemPath);
-        continue;
-      } else {
-        if (path.parse(itemPath).name.substr(0, 1) === ".") {
-          if (path.parse(itemPath).base === ".DS_Store") {
-            nonAllowedFiles.push(itemPath);
-            continue;
-          } else {
-            hiddenFiles.push(itemPath);
-            continue;
-          }
-        }
-        if (path.parse(itemPath).base === "Thumbs.db") {
+      if (path.parse(itemPath).name.substr(0, 1) === ".") {
+        if (path.parse(itemPath).base === ".DS_Store") {
           nonAllowedFiles.push(itemPath);
           continue;
-        }
-
-        if (slashCount === 1) {
-          await Swal.fire({
-            icon: "error",
-            html: "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-          break;
         } else {
-          if (
-            JSON.stringify(myPath["files"]) === "{}" &&
-            JSON.stringify(importedFiles) === "{}"
-          ) {
-            importedFiles[path.parse(itemPath).base] = {
-              path: itemPath,
-              basename: path.parse(itemPath).base,
-            };
+          hiddenFiles.push(itemPath);
+          continue;
+        }
+      }
+      if (path.parse(itemPath).base === "Thumbs.db") {
+        nonAllowedFiles.push(itemPath);
+        continue;
+      }
+
+      if (slashCount === 1) {
+        await Swal.fire({
+          icon: "error",
+          html: "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+        break;
+      } else {
+        if (
+          JSON.stringify(myPath["files"]) === "{}" &&
+          JSON.stringify(importedFiles) === "{}"
+        ) {
+          importedFiles[path.parse(itemPath).base] = {
+            path: itemPath,
+            basename: path.parse(itemPath).base,
+          };
+        } else {
+          //check if fileName is in to-be-imported object keys
+          if (importedFiles.hasOwnProperty(originalFileName)) {
+            nonAllowedDuplicate = true;
+            nonAllowedDuplicateFiles.push(itemPath);
+            continue;
           } else {
-            //check if fileName is in to-be-imported object keys
-            if (importedFiles.hasOwnProperty(originalFileName)) {
+            //check if filename is in already-imported object keys
+            if (myPath["files"].hasOwnProperty(originalFileName)) {
               nonAllowedDuplicate = true;
               nonAllowedDuplicateFiles.push(itemPath);
               continue;
             } else {
-              //check if filename is in already-imported object keys
-              if (myPath["files"].hasOwnProperty(originalFileName)) {
-                nonAllowedDuplicate = true;
-                nonAllowedDuplicateFiles.push(itemPath);
-                continue;
-              } else {
-                if (Object.keys(myPath["files"]).length === 0) {
-                  importedFiles[originalFileName] = {
-                    path: itemPath,
-                    basename: originalFileName,
-                  };
-                }
-                for (let objectKey in myPath["files"]) {
-                  if (objectKey !== undefined) {
-                    nonAllowedDuplicate = false;
-                    //just checking if paths are the same
-                    if (itemPath === myPath["files"][objectKey]["path"]) {
-                      nonAllowedDuplicateFiles.push(itemPath);
-                      nonAllowedDuplicate = true;
-                      continue;
-                    } else {
-                      //in neither so write
-                      importedFiles[originalFileName] = {
-                        path: itemPath,
-                        basename: originalFileName,
-                      };
-                    }
+              if (Object.keys(myPath["files"]).length === 0) {
+                importedFiles[originalFileName] = {
+                  path: itemPath,
+                  basename: originalFileName,
+                };
+              }
+              for (let objectKey in myPath["files"]) {
+                if (objectKey !== undefined) {
+                  nonAllowedDuplicate = false;
+                  //just checking if paths are the same
+                  if (itemPath === myPath["files"][objectKey]["path"]) {
+                    nonAllowedDuplicateFiles.push(itemPath);
+                    nonAllowedDuplicate = true;
+                    continue;
+                  } else {
+                    //in neither so write
+                    importedFiles[originalFileName] = {
+                      path: itemPath,
+                      basename: originalFileName,
+                    };
                   }
                 }
               }
