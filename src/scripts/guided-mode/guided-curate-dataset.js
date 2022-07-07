@@ -5290,11 +5290,20 @@ const setGuidedDatasetName = (datasetName) => {
   $(".guidedDatasetName").text(datasetName);
 };
 
-const openGuidedDatasetRenameSwal = () => {
+const openGuidedDatasetRenameSwal = async () => {
   const currentDatasetName = sodaJSONObj["digital-metadata"]["name"];
-  Swal.fire({
+  let existingDatasetNames;
+  try {
+    existingDatasetNames = await getExistingPennsieveDatasetNames();
+    console.log(existingDatasetNames);
+  } catch (error) {
+    console.log(error);
+  }
+
+  const { value: newDatasetName } = await Swal.fire({
     allowOutsideClick: false,
     allowEscapeKey: false,
+    backdrop: "rgba(0,0,0, 0.4)",
     title: "Rename your dataset",
     html: `<b>Current dataset name:</b> ${currentDatasetName}<br /><br />Enter a new name for your dataset below:`,
     input: "text",
@@ -5317,14 +5326,21 @@ const openGuidedDatasetRenameSwal = () => {
           "You need to enter a name for your dataset!"
         );
         return false;
+      } else {
+        if (existingDatasetNames.includes(inputValue)) {
+          Swal.showValidationMessage(
+            "A dataset with that name already exists!"
+          );
+          return false;
+        } else {
+          return inputValue;
+        }
       }
-      return true;
     },
-  }).then((result) => {
-    if (result.isConfirmed) {
-      setGuidedDatasetName(result.value);
-    }
   });
+  if (newDatasetName) {
+    setGuidedDatasetName(newDatasetName);
+  }
 };
 const getExistingPennsieveDatasetNames = async () => {
   // get the access token so the user can access the Pennsieve api
@@ -5341,7 +5357,18 @@ const getExistingPennsieveDatasetNames = async () => {
     "https://api.pennsieve.io/datasets/",
     options
   );
-  return datasetNamesResponse;
+
+  if (!datasetNamesResponse.ok) {
+    const message = `An error has occured: ${response.status}`;
+    throw new Error(message);
+  }
+
+  const datasetNamesResponseJSON = await datasetNamesResponse.json();
+
+  //return an array of existing dataset names
+  return datasetNamesResponseJSON.map((dataset) => {
+    return dataset.content.name;
+  });
 };
 const getGuidedDatasetName = () => {
   return sodaJSONObj["digital-metadata"]["name"];
@@ -9400,6 +9427,15 @@ $(document).ready(() => {
         if (
           buttonGenerateOnNewPennsieveDataset.classList.contains("selected")
         ) {
+          const existingDatasetNames = await getExistingPennsieveDatasetNames();
+          if (existingDatasetNames.includes(datasetName)) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "The dataset name you have chosen already exists on Pennsieve. Please choose a different name",
+            });
+            throw errorArray;
+          }
           sodaJSONObj["generate-dataset"]["destination"] = "bf";
           sodaJSONObj["generate-dataset"]["dataset-name"] = datasetName;
         }
