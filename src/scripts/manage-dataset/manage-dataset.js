@@ -379,7 +379,7 @@ $("#button-add-permission-pi").click(async () => {
         Swal.showValidationMessage("Please choose a valid user");
       }
     },
-  }).then((result) => {
+  }).then( async (result) => {
     if (result.isConfirmed) {
       log.info("Changing PI Owner of datset");
 
