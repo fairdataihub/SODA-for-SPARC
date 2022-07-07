@@ -528,7 +528,7 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
 
 //TODO: check for announcements here
 const checkForAnnouncements = async () => {
-  const url = `https://raw.githubusercontent.com/fairdataihub/SODA-For-SPARC/announcements/meta/announcements.json?timestamp=${new Date().getTime()}`;
+  const url = `https://raw.githubusercontent.com/fairdataihub/SODA-for-SPARC/announcements/src/scripts/meta/announcements.js?timestamp=${new Date().getTime()}`;
 
   const axiosInstance = axios.create({
     baseURL: url,
