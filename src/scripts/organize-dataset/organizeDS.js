@@ -1727,105 +1727,109 @@ async function addFilesfunction(
   var regularFiles = {};
   var hiddenFiles = [];
   var nonAllowedCharacterFiles = [];
+  const fileNameRegex = /[^-a-zA-z0-9]/g;
 
   for (var i = 0; i < fileArray.length; i++) {
     var fileName = fileArray[i];
 
-    if (path.parse(fileName).name.includes(nonAllowedCharacterFiles)) {
+    if (fileNameRegex.test(path.parse(fileName).name) === true) {
       nonAllowedCharacterFiles.push(fileName);
       continue;
-    }
-
-    if (path.parse(fileName).name.substr(0, 1) === ".") {
-      if (
-        path.parse(fileName).name === ".DS_Store" ||
-        path.parse(fileName).name === "Thumbs.db"
-      ) {
-        nonAllowedFiles.push(fileName);
-        continue;
-      } else {
-        hiddenFiles.push(fileName);
-        continue;
-      }
-    }
-    // check if dataset structure level is at high level folder
-    var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
-    if (slashCount === 1) {
-      Swal.fire({
-        icon: "error",
-        html: "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-      });
-      // log the error
-      logCurationForAnalytics(
-        "Error",
-        PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-        ["Step 3", "Import", "File"],
-        determineDatasetLocation()
-      );
-      break;
     } else {
-      if (
-        JSON.stringify(currentLocation["files"]) === "{}" &&
-        JSON.stringify(regularFiles) === "{}"
-      ) {
-        //regular files object key with path, and basename
-        regularFiles[path.parse(fileName).base] = {
-          path: fileName,
-          basename: path.parse(fileName).base,
-        };
-      } else {
-        //check file name in key of regular files (search for duplicate)
-        if (path.parse(fileName).base in regularFiles) {
-          nonAllowedDuplicateFiles.push(fileName);
-          nonAllowedDuplicate = true;
+      if (path.parse(fileName).name.substr(0, 1) === ".") {
+        if (path.parse(fileName).name === ".DS_Store") {
+          nonAllowedFiles.push(fileName);
           continue;
         } else {
-          //search for duplicate in currentlocation[files]
-          if (path.parse(fileName).base in currentLocation["files"]) {
+          hiddenFiles.push(fileName);
+          continue;
+        }
+      }
+
+      if (path.parse(fileName).base === "Thumbs.db") {
+        nonAllowedFiles.push(fileName);
+        continue;
+      }
+
+      // check if dataset structure level is at high level folder
+      var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+      if (slashCount === 1) {
+        Swal.fire({
+          icon: "error",
+          html: "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+        // log the error
+        logCurationForAnalytics(
+          "Error",
+          PrepareDatasetsAnalyticsPrefix.CURATE,
+          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          ["Step 3", "Import", "File"],
+          determineDatasetLocation()
+        );
+        break;
+      } else {
+        if (
+          JSON.stringify(currentLocation["files"]) === "{}" &&
+          JSON.stringify(regularFiles) === "{}"
+        ) {
+          //regular files object key with path, and basename
+          regularFiles[path.parse(fileName).base] = {
+            path: fileName,
+            basename: path.parse(fileName).base,
+          };
+        } else {
+          //check file name in key of regular files (search for duplicate)
+          if (path.parse(fileName).base in regularFiles) {
             nonAllowedDuplicateFiles.push(fileName);
             nonAllowedDuplicate = true;
             continue;
           } else {
-            //not in there or regular files so store?
-            regularFiles[path.parse(fileName).base] = {
-              path: fileName,
-              basename: path.parse(fileName).base,
-            };
-          }
-        }
-        for (const objectKey in currentLocation["files"]) {
-          //tries finding duplicates with the same path
-          if (objectKey != undefined) {
-            var nonAllowedDuplicate = false;
-            //if file already exist in json
-            if (fileName === currentLocation["files"][objectKey]["path"]) {
-              if (
-                currentLocation["files"][objectKey]["action"].includes(
-                  "renamed"
-                ) === false
-              ) {
-                //same path and has not been renamed
-                nonAllowedDuplicateFiles.push(fileName);
-                nonAllowedDuplicate = true;
-                continue;
-              }
+            //search for duplicate in currentlocation[files]
+            if (path.parse(fileName).base in currentLocation["files"]) {
+              nonAllowedDuplicateFiles.push(fileName);
+              nonAllowedDuplicate = true;
+              continue;
             } else {
-              //file path and object key path arent the same
-              //check if the file name are the same
-              //if so consider it as a duplicate
-              if (path.parse(fileName).base === objectKey) {
-                nonAllowedDuplicateFiles.push(fileName);
-                nonAllowedDuplicate = true;
-                continue;
+              //not in there or regular files so store?
+              regularFiles[path.parse(fileName).base] = {
+                path: fileName,
+                basename: path.parse(fileName).base,
+              };
+            }
+          }
+          for (const objectKey in currentLocation["files"]) {
+            //tries finding duplicates with the same path
+            if (objectKey != undefined) {
+              var nonAllowedDuplicate = false;
+              //if file already exist in json
+              if (fileName === currentLocation["files"][objectKey]["path"]) {
+                if (
+                  currentLocation["files"][objectKey]["action"].includes(
+                    "renamed"
+                  ) === false
+                ) {
+                  //same path and has not been renamed
+                  nonAllowedDuplicateFiles.push(fileName);
+                  nonAllowedDuplicate = true;
+                  continue;
+                }
               } else {
-                //store in regular files
-                regularFiles[path.parse(fileName).base] = {
-                  path: fileName,
-                  basename: path.parse(fileName).base,
-                };
+                //file path and object key path arent the same
+                //check if the file name are the same
+                //if so consider it as a duplicate
+                if (path.parse(fileName).base === objectKey) {
+                  nonAllowedDuplicateFiles.push(fileName);
+                  nonAllowedDuplicate = true;
+                  continue;
+                } else {
+                  //store in regular files
+                  regularFiles[path.parse(fileName).base] = {
+                    path: fileName,
+                    basename: path.parse(fileName).base,
+                  };
+                }
               }
             }
           }
@@ -1859,8 +1863,9 @@ async function addFilesfunction(
           let file_name = path.parse(nonAllowedCharacterFiles[i]).base;
           let path_name = nonAllowedCharacterFiles[i];
           file_name = file_name
-            .replace(/[^.a-zA-z0-9]/g, "")
-            .replace(/[-]/g, "");
+            .replace(/[^a-zA-z0-9|.]/g, "")
+            .replace(/[_|^]/g, "")
+            .replace(/\[|\]/g, "");
           console.log(file_name);
 
           if (Object.keys(currentLocation["files"]).length > 0) {

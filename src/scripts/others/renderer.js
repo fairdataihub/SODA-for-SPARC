@@ -5296,16 +5296,17 @@ async function dropHelper(
         continue;
       } else {
         if (path.parse(itemPath).name.substr(0, 1) === ".") {
-          if (
-            path.parse(itemPath).base === ".DS_Store" ||
-            path.parse(itemPath).base === "Thumbs.db"
-          ) {
+          if (path.parse(itemPath).base === ".DS_Store") {
             nonAllowedFiles.push(itemPath);
             continue;
           } else {
             hiddenFiles.push(itemPath);
             continue;
           }
+        }
+        if (path.parse(itemPath).base === "Thumbs.db") {
+          nonAllowedFiles.push(itemPath);
+          continue;
         }
 
         if (slashCount === 1) {
@@ -5443,8 +5444,9 @@ async function dropHelper(
           let file_name = path.parse(nonAllowedCharacterFiles[i]).base;
           let path_name = nonAllowedCharacterFiles[i];
           file_name = file_name
-            .replace(/[^.a-zA-z0-9]/g, "")
-            .replace(/[-]/g, "");
+            .replace(/[^a-zA-z0-9|.]/g, "") // replace everything but whitelisted chracters
+            .replace(/[_|^]/g, "") //replace _ ^ characters
+            .replace(/\[|\]/g, ""); // replaces [ ] brackets
 
           if (Object.keys(myPath["files"]).length > 0) {
             for (const objectKey in myPath["files"]) {
