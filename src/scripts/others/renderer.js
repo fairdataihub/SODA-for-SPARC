@@ -5265,6 +5265,7 @@ async function dropHelper(
       },
     ],
   });
+  let nonAllowedCharacterFiles = [];
   var folderPath = [];
   var duplicateFolders = [];
   var hiddenFiles = [];
@@ -5288,70 +5289,76 @@ async function dropHelper(
       var nonAllowedDuplicate = false;
       var originalFileName = path.parse(itemPath).base;
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+      const fileNameRegex = /[^-a-zA-z0-9]/g;
 
-      if (path.parse(itemPath).name.substr(0, 1) === ".") {
-        if (
-          path.parse(itemPath).base === ".DS_Store" ||
-          path.parse(itemPath).base === "Thumbs.db"
-        ) {
-          nonAllowedFiles.push(itemPath);
-          continue;
-        } else {
-          hiddenFiles.push(itemPath);
-          continue;
-        }
-      }
-
-      if (slashCount === 1) {
-        await Swal.fire({
-          icon: "error",
-          html: "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-        break;
+      if (fileNameRegex.test(path.parse(itemPath).name) === true) {
+        nonAllowedCharacterFiles.push(itemPath);
+        continue;
       } else {
-        if (
-          JSON.stringify(myPath["files"]) === "{}" &&
-          JSON.stringify(importedFiles) === "{}"
-        ) {
-          importedFiles[path.parse(itemPath).base] = {
-            path: itemPath,
-            basename: path.parse(itemPath).base,
-          };
-        } else {
-          //check if fileName is in to-be-imported object keys
-          if (importedFiles.hasOwnProperty(originalFileName)) {
-            nonAllowedDuplicate = true;
-            nonAllowedDuplicateFiles.push(itemPath);
+        if (path.parse(itemPath).name.substr(0, 1) === ".") {
+          if (
+            path.parse(itemPath).base === ".DS_Store" ||
+            path.parse(itemPath).base === "Thumbs.db"
+          ) {
+            nonAllowedFiles.push(itemPath);
             continue;
           } else {
-            //check if filename is in already-imported object keys
-            if (myPath["files"].hasOwnProperty(originalFileName)) {
+            hiddenFiles.push(itemPath);
+            continue;
+          }
+        }
+
+        if (slashCount === 1) {
+          await Swal.fire({
+            icon: "error",
+            html: "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+          break;
+        } else {
+          if (
+            JSON.stringify(myPath["files"]) === "{}" &&
+            JSON.stringify(importedFiles) === "{}"
+          ) {
+            importedFiles[path.parse(itemPath).base] = {
+              path: itemPath,
+              basename: path.parse(itemPath).base,
+            };
+          } else {
+            //check if fileName is in to-be-imported object keys
+            if (importedFiles.hasOwnProperty(originalFileName)) {
               nonAllowedDuplicate = true;
               nonAllowedDuplicateFiles.push(itemPath);
               continue;
             } else {
-              if (Object.keys(myPath["files"]).length === 0) {
-                importedFiles[originalFileName] = {
-                  path: itemPath,
-                  basename: originalFileName,
-                };
-              }
-              for (let objectKey in myPath["files"]) {
-                if (objectKey !== undefined) {
-                  nonAllowedDuplicate = false;
-                  //just checking if paths are the same
-                  if (itemPath === myPath["files"][objectKey]["path"]) {
-                    nonAllowedDuplicateFiles.push(itemPath);
-                    nonAllowedDuplicate = true;
-                    continue;
-                  } else {
-                    //in neither so write
-                    importedFiles[originalFileName] = {
-                      path: itemPath,
-                      basename: originalFileName,
-                    };
+              //check if filename is in already-imported object keys
+              if (myPath["files"].hasOwnProperty(originalFileName)) {
+                nonAllowedDuplicate = true;
+                nonAllowedDuplicateFiles.push(itemPath);
+                continue;
+              } else {
+                if (Object.keys(myPath["files"]).length === 0) {
+                  importedFiles[originalFileName] = {
+                    path: itemPath,
+                    basename: originalFileName,
+                  };
+                }
+                for (let objectKey in myPath["files"]) {
+                  if (objectKey !== undefined) {
+                    nonAllowedDuplicate = false;
+                    //just checking if paths are the same
+                    if (itemPath === myPath["files"][objectKey]["path"]) {
+                      nonAllowedDuplicateFiles.push(itemPath);
+                      nonAllowedDuplicate = true;
+                      continue;
+                    } else {
+                      //in neither so write
+                      importedFiles[originalFileName] = {
+                        path: itemPath,
+                        basename: originalFileName,
+                      };
+                    }
                   }
                 }
               }
@@ -5409,6 +5416,84 @@ async function dropHelper(
         }
       }
     }
+  }
+
+  if (nonAllowedCharacterFiles.length > 0) {
+    await Swal.fire({
+      title:
+        "The following files have an nonallowed characters. How should we handle them?",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        nonAllowedCharacterFiles.join("</br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Remove characters",
+      denyButtonText: "Skip Files",
+      cancelButtonText: "Cancel",
+      didOpen: () => {
+        $(".swal-popover").popover();
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        //remove nonallowedcharacters
+        for (let i = 0; i < nonAllowedCharacterFiles.length; i++) {
+          let file_name = path.parse(nonAllowedCharacterFiles[i]).base;
+          let path_name = nonAllowedCharacterFiles[i];
+          file_name = file_name
+            .replace(/[^.a-zA-z0-9]/g, "")
+            .replace(/[-]/g, "");
+
+          if (Object.keys(myPath["files"]).length > 0) {
+            for (const objectKey in myPath["files"]) {
+              //tries finding duplicates with the same path
+              if (objectKey != undefined) {
+                nonAllowedDuplicate = false;
+                if (file_name === objectKey) {
+                  //if file already exist in json
+                  if (path_name === myPath["files"][objectKey]["path"]) {
+                    //same path and has not been renamed
+                    nonAllowedDuplicateFiles.push(path_name);
+                    nonAllowedDuplicate = true;
+                    continue;
+                  } else {
+                    //file path and object key path arent the same
+                    //check if the file name are the same
+                    //if so consider it as a duplicate
+                    //store in regular files
+                    importedFiles[file_name] = {
+                      path: path_name,
+                      basename: file_name,
+                    };
+                  }
+                } else {
+                  //store in regular files
+                  importedFiles[file_name] = {
+                    path: path_name,
+                    basename: file_name,
+                  };
+                }
+              }
+            }
+          } else {
+            //store in regular files
+            importedFiles[file_name] = {
+              path: path_name,
+              basename: file_name,
+            };
+          }
+        }
+      }
+      if (result.isDenied) {
+        //Skip files prompt
+        handleDuplicateImports(
+          "skip",
+          JSON.stringify(nonAllowedCharacterFiles)
+        );
+      }
+    });
   }
 
   if (hiddenFiles.length > 0) {

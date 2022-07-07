@@ -1431,6 +1431,9 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             $("#dataset-loaded-message").hide();
 
             showHideDropdownButtons("dataset", "show");
+            document.getElementById(
+              "div-rename-bf-dataset"
+            ).children[0].style.display = "flex";
             // checkPrevDivForConfirmButton("dataset");
           } else if (result.isDismissed) {
             currentDatasetLicense.innerText = currentDatasetLicense.innerText;

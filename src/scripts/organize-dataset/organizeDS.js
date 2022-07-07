@@ -570,6 +570,8 @@ function renameFolder(
       didOpen: () => {
         $(".swal2-input").attr("id", "rename-folder-input");
         $(".swal2-confirm").attr("id", "rename-folder-button");
+        let swal_popup = document.getElementsByClassName("swal2-popup")[0];
+        swal_popup.style.width = "42rem";
         $("#rename-folder-input").keyup(function () {
           var val = $("#rename-folder-input").val();
           for (var char of nonAllowedCharacters) {
@@ -577,6 +579,10 @@ function renameFolder(
               Swal.showValidationMessage(
                 `The folder name cannot contains the following characters ${nonAllowedCharacters}, please rename to a different name!`
               );
+              let swal_message = document.getElementsByClassName(
+                "swal2-validation-message"
+              )[0];
+              swal_message.style.margin = "1rem";
               $("#rename-folder-button").attr("disabled", true);
               return;
             }
@@ -1720,9 +1726,15 @@ async function addFilesfunction(
   var nonAllowedFiles = [];
   var regularFiles = {};
   var hiddenFiles = [];
+  var nonAllowedCharacterFiles = [];
 
   for (var i = 0; i < fileArray.length; i++) {
     var fileName = fileArray[i];
+
+    if (path.parse(fileName).name.includes(nonAllowedCharacterFiles)) {
+      nonAllowedCharacterFiles.push(fileName);
+      continue;
+    }
 
     if (path.parse(fileName).name.substr(0, 1) === ".") {
       if (
@@ -1820,6 +1832,87 @@ async function addFilesfunction(
         }
       }
     }
+  }
+
+  if (nonAllowedCharacterFiles.length > 0) {
+    await Swal.fire({
+      title:
+        "The following files have an nonallowed characters. How should we handle them?",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        nonAllowedCharacterFiles.join("</br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Remove characters",
+      denyButtonText: "Skip Files",
+      cancelButtonText: "Cancel",
+      didOpen: () => {
+        $(".swal-popover").popover();
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        //remove nonallowedcharacters
+        for (let i = 0; i < nonAllowedCharacterFiles.length; i++) {
+          let file_name = path.parse(nonAllowedCharacterFiles[i]).base;
+          let path_name = nonAllowedCharacterFiles[i];
+          file_name = file_name
+            .replace(/[^.a-zA-z0-9]/g, "")
+            .replace(/[-]/g, "");
+          console.log(file_name);
+
+          if (Object.keys(currentLocation["files"]).length > 0) {
+            for (const objectKey in currentLocation["files"]) {
+              //tries finding duplicates with the same path
+              if (objectKey != undefined) {
+                nonAllowedDuplicate = false;
+                if (file_name === objectKey) {
+                  //if file already exist in json
+                  if (
+                    path_name === currentLocation["files"][objectKey]["path"]
+                  ) {
+                    //same path and has not been renamed
+                    nonAllowedDuplicateFiles.push(path_name);
+                    nonAllowedDuplicate = true;
+                    continue;
+                  } else {
+                    //file path and object key path arent the same
+                    //check if the file name are the same
+                    //if so consider it as a duplicate
+                    //store in regular files
+                    regularFiles[file_name] = {
+                      path: path_name,
+                      basename: file_name,
+                    };
+                  }
+                } else {
+                  //store in regular files
+                  regularFiles[file_name] = {
+                    path: path_name,
+                    basename: file_name,
+                  };
+                }
+              }
+            }
+          } else {
+            //store in regular files
+            regularFiles[file_name] = {
+              path: path_name,
+              basename: file_name,
+            };
+          }
+        }
+      }
+      if (result.isDenied) {
+        //Skip files prompt
+        handleDuplicateImports(
+          "skip",
+          JSON.stringify(nonAllowedCharacterFiles)
+        );
+      }
+    });
   }
 
   if (hiddenFiles.length > 0) {
