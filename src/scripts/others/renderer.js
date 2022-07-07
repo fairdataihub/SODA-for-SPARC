@@ -526,6 +526,22 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
   );
 });
 
+//TODO: check for announcements here
+const checkForAnnouncements = async () => {
+  const url = `https://raw.githubusercontent.com/fairdataihub/SODA-For-SPARC/announcements/meta/announcements.json?timestamp=${new Date().getTime()}`;
+
+  const axiosInstance = axios.create({
+    baseURL: url,
+    timeout: 0,
+  });
+
+  let res = axiosInstance.get().then((response) => {
+    console.log(response);
+  });
+};
+
+checkForAnnouncements();
+
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
   return new Promise(async (resolve) => {
