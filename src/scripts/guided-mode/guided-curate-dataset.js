@@ -1457,15 +1457,27 @@ const traverseToTab = (targetPageID) => {
       datasetSubtitleReviewText.innerHTML = datsetSubtitle;
       datasetPiOwnerReviewText.innerHTML = datasetPiOwner;
 
-      const datasetUserPermissionsString = datasetUserPermissions
-        .map((permission) => permission.userString)
-        .join("<br>");
-      datasetUserPermissionsReviewText.innerHTML = datasetUserPermissionsString;
+      if (datasetUserPermissions.length > 0) {
+        const datasetUserPermissionsString = datasetUserPermissions
+          .map((permission) => permission.userString)
+          .join("<br>");
+        datasetUserPermissionsReviewText.innerHTML =
+          datasetUserPermissionsString;
+      } else {
+        datasetUserPermissionsReviewText.innerHTML =
+          "No additional user permissions added";
+      }
 
-      const datasetTeamPermissionsString = datasetTeamPermissions
-        .map((permission) => permission.teamString)
-        .join("<br>");
-      datasetTeamPermissionsReviewText.innerHTML = datasetTeamPermissionsString;
+      if (datasetTeamPermissions.length > 0) {
+        const datasetTeamPermissionsString = datasetTeamPermissions
+          .map((permission) => permission.teamString)
+          .join("<br>");
+        datasetTeamPermissionsReviewText.innerHTML =
+          datasetTeamPermissionsString;
+      } else {
+        datasetTeamPermissionsReviewText.innerHTML =
+          "No additional team permissions added";
+      }
 
       datasetTagsReviewText.innerHTML = datasetTags;
       datasetLicenseReviewText.innerHTML = datasetLicense;
