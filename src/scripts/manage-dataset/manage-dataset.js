@@ -373,7 +373,13 @@ $("#button-add-permission-pi").click(async () => {
     hideClass: {
       popup: "animate__animated animate__zoomOut animate__faster",
     },
-  }).then(async (result) => {
+    preConfirm: () => {
+      let userVal = document.getElementById("bf_list_users_pi").value;
+      if (userVal === "Select PI") {
+        Swal.showValidationMessage("Please choose a valid user");
+      }
+    },
+  }).then((result) => {
     if (result.isConfirmed) {
       log.info("Changing PI Owner of datset");
 
@@ -2292,22 +2298,30 @@ const showCurrentLicense = async () => {
     });
     let { license } = bf_get_license.data;
     currentDatasetLicense.innerHTML = license;
+
+    let licenseContainer = document.getElementById("license-lottie-div");
+    if (licenseContainer.children.length < 1) {
+      // licenseContainer.removeChild(licenseContainer.children[1]);
+      lottie.loadAnimation({
+        container: licenseContainer,
+        animationData: licenseLottie,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+    }
+
     if (license === "Creative Commons Attribution") {
       $("#button-add-license").hide();
       $("#assign-a-license-header").hide();
-      if ($("#add_license-section").hasClass("is-shown")) {
-        Swal.fire({
-          title:
-            "You are all set. This dataset already has the correct license assigned.",
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          showConfirmButton: true,
-          icon: "success",
-        });
-      }
+
+      licenseContainer.style.display = "block";
+      document.getElementById("license-assigned").style.display = "block";
     } else {
       $("#button-add-license").show();
       $("#assign-a-license-header").show();
+      document.getElementById("license-assigned").style.display = "none";
+      licenseContainer.style.display = "none";
     }
   } catch (error) {
     clientError(error);
@@ -2848,6 +2862,10 @@ $("#button-submit-dataset").click(async () => {
           let didFail = detailsData["did_fail"];
           let didUpload = detailsData["did_upload"];
           uploadedFolders = detailsData["upload_folder_count"];
+
+          // analytics places values with matching action and label pairs into a single 'bucket/aggregate'
+          // so log the increase in size at every step to get the sum total size of the uploaded files
+          incrementInFileSize = uploadedFileSize - previousUploadedFileSize;
 
           // failed to upload a bucket, but did upload some files
           if (didFail && didUpload) {

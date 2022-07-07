@@ -17,7 +17,7 @@ dependencies:
   - configparser == 4.0.2
   - python-docx == 0.8.10
   - xlrd == 1.2.0
-  - biopython == 1.78
+  - biopython == 1.79
   - flask == 2.0.2
   - flask_restx
   - protobuf == 3.20.0
