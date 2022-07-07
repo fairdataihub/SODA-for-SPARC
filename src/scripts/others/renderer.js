@@ -535,8 +535,21 @@ const checkForAnnouncements = async () => {
     timeout: 0,
   });
 
-  let res = axiosInstance.get().then((response) => {
-    console.log(response);
+  axiosInstance.get().then((response) => {
+    let res = response.data;
+    console.log(res);
+
+    for (var key of Object.keys(res)) {
+      console.log(res[key]);
+      console.log(key);
+      if (res[key]["show"] === true) {
+        console.log("this is for show");
+        Swal.fire({
+          title: res[key]["title"],
+          text: res[key]["message"],
+        });
+      }
+    }
   });
 };
 
