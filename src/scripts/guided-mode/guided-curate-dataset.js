@@ -6673,11 +6673,11 @@ $(document).ready(() => {
     } else {
       datasetNameUploadText.innerHTML = `Successfully created dataset with name: ${dataset_name}`;
       datasetNameSubtitleText.innerHTML =
-        "Subtitle successfully added to dataset.";
+        "Subtitle successfully added to dataset";
       datasetNameLicenseText.innerHTML =
-        "License successfully added to dataset.";
+        "License successfully added to dataset";
       datasetNameTagsText.innerHTML =
-        "Dataset tags successfully added to dataset.";
+        "Dataset tags successfully added to dataset";
       guidedUploadStatusIcon("guided-dataset-name-upload-status", "success");
       guidedUploadStatusIcon(
         "guided-dataset-subtitle-upload-status",
@@ -6935,7 +6935,7 @@ $(document).ready(() => {
               "success"
             );
             bannerImageUploadText.innerHTML =
-              "Banner image successfully uploaded.";
+              "Banner image successfully uploaded";
             console.log("Banner image added + " + res);
             resolve(`Banner image added` + res);
           }
@@ -7548,6 +7548,7 @@ $(document).ready(() => {
               `guided-${readmeORchanges}-metadata-upload-status`,
               "error"
             );
+            datasetDescriptionMetadataUploadText.innerHTML = `Failed to upload ${readmeORchanges} metadata`;
             log.error(error);
             console.error(error);
             let emessage = userError(error);
@@ -7557,6 +7558,7 @@ $(document).ready(() => {
               `guided-${readmeORchanges}-metadata-upload-status`,
               "success"
             );
+            datasetDescriptionMetadataUploadText.innerHTML = `${readmeORchanges} metadata successfully uploaded`;
             console.log(`${readmeORchanges} metadata added` + res);
             resolve(`${readmeORchanges} metadata added` + res);
           }
@@ -7653,6 +7655,11 @@ $(document).ready(() => {
     const guidedChangesMetadata = sodaJSONObj["dataset-metadata"]["CHANGES"];
 
     try {
+      //Display the Pennsieve metadata upload table
+      unHideAndSmoothScrollToElement(
+        "guided-div-pennsieve-metadata-upload-status-table"
+      );
+
       //await create_dataset and then console log response
       let datasetUploadResponse = await create_dataset(
         guidedDatasetName,
@@ -7679,6 +7686,11 @@ $(document).ready(() => {
       );
       console.log(addDescriptionResponse);
 
+      //Display the Dataset metadata upload table
+      unHideAndSmoothScrollToElement(
+        "guided-div-dataset-metadata-upload-status-table"
+      );
+
       let addSubjectsMetadataResponse = await guidedUploadSubjectsMetadata(
         guidedBfAccount,
         guidedDatasetName,
@@ -7692,17 +7704,13 @@ $(document).ready(() => {
         guidedSamplesMetadata
       );
       console.log(addSamplesMetadataResponse);
-      try {
-        let addSubmissionMetadataResponse =
-          await guidedUploadSubmissionMetadata(
-            guidedBfAccount,
-            guidedDatasetName,
-            guidedSubmissionMetadataJSON
-          );
-        console.log(addSubmissionMetadataResponse);
-      } catch (error) {
-        console.log(error);
-      }
+
+      let addSubmissionMetadataResponse = await guidedUploadSubmissionMetadata(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedSubmissionMetadataJSON
+      );
+      console.log(addSubmissionMetadataResponse);
 
       let addDescriptionMetadataResponse =
         await guidedUploadDatasetDescriptionMetadata(
@@ -7731,12 +7739,15 @@ $(document).ready(() => {
           guidedChangesMetadata
         );
       console.log(addChangesMetadataResponse);
-      let addPIOwnerResponse = await guided_add_PI_owner(
+      /*let addPIOwnerResponse = await guided_add_PI_owner(
         guidedBfAccount,
         guidedDatasetName,
         guidedPIOwnerUUID
       );
-      console.log(addPIOwnerResponse);
+      console.log(addPIOwnerResponse);*/
+
+      //Display the main dataset upload progress bar
+      unHideAndSmoothScrollToElement("guided-div-dataset-upload-progress-bar");
 
       /*
       const mainCurationResponse = await guided_main_curate();

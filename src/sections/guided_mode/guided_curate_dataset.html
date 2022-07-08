@@ -5481,16 +5481,11 @@
             </button>
           </div>
           <div id="guided-dataset-generation-tab" class="guided--panel hidden">
-            <div class="guided--section mt-lg" style="width: 80%">
-              <progress
-                class="progresstrack"
-                id="guided-progress-bar-new-curate"
-                max="100"
-                value="0"
-              ></progress>
-            </div>
-            <div class="space-around" style="margin-top: 25px">
-              <table class="ui celled striped table" style="width: 450px">
+            <div
+              class="guided--section hidden mt-lg"
+              id="guided-div-pennsieve-metadata-upload-status-table"
+            >
+              <table class="ui celled striped table" style="width: 80%">
                 <thead>
                   <tr>
                     <th
@@ -5646,9 +5641,14 @@
                   </tr>
                 </tbody>
               </table>
+            </div>
+            <div
+              class="guided--section hidden mt-lg"
+              id="guided-div-dataset-metadata-upload-status-table"
+            >
               <table
                 class="ui celled striped table"
-                style="width: 450px; margin-top: 0px"
+                style="width: 80%; margin-top: 0px"
               >
                 <thead>
                   <tr>
@@ -5791,6 +5791,18 @@
                   </tr>
                 </tbody>
               </table>
+            </div>
+            <div
+              class="guided--section mt-lg hidden"
+              id="guided-div-dataset-upload-progress-bar"
+            >
+              <progress
+                class="progresstrack"
+                id="guided-progress-bar-new-curate"
+                style="width: 80%"
+                max="100"
+                value="0"
+              ></progress>
             </div>
           </div>
         </div>
