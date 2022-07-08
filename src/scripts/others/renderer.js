@@ -502,7 +502,7 @@ startupServerAndApiCheck();
 ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
   // run pre flight checks once the server connection is confirmed
   // wait until soda is connected to the backend server
-  console.log("run pre_flight starts here")
+  console.log("run pre_flight starts here");
   while (!sodaIsConnected || !apiVersionChecked) {
     await wait(1000);
   }
@@ -552,12 +552,12 @@ const checkForAnnouncements = async () => {
         //then if show = true then check platform
         //if platforms match up create announcement alert
         //testig yourself oiyt here
-        if(appVersion === key) {
+        if (appVersion === key) {
           if (res[key]["show"] === true) {
             console.log(res[key]);
             console.log(key);
             console.log(res[key]["platform"].includes(os.platform()));
-            if(res[key]["platform"].includes(os.platform())) {
+            if (res[key]["platform"].includes(os.platform())) {
               Swal.fire({
                 title: res[key]["title"],
                 html: `<p>${res[key]["message"]}</p>`,
@@ -571,7 +571,6 @@ const checkForAnnouncements = async () => {
             }
           }
         }
-
       }
     });
   } catch (error) {
