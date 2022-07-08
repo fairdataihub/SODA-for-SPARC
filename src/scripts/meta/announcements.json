@@ -1,21 +1,9 @@
 {
   "6.0.0": {
-    "darwin": {
+    "all": {
       "show": true,
       "title": "App version outdated",
-      "message": "Please manually update to the latest version of the SODA.",
-      "type": "warning"
-    },
-    "win32": {
-      "show": true,
-      "title": "App version outdated",
-      "message": "Please auto update SODA to the latest version.",
-      "type": "warning"
-    },
-    "linux": {
-      "show": true,
-      "title": "App version outdated",
-      "message": "Please auto update SODA to the latest version.",
+      "message": "Please update to the latest version of the SODA.",
       "type": "warning"
     }
   },

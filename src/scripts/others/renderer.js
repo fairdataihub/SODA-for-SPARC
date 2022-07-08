@@ -552,7 +552,7 @@ const checkForAnnouncements = async () => {
         //then if show = true then check platform
         //if platforms match up create announcement alert
         //testig yourself oiyt here
-        if (appVersion === key) {
+        if (os.platform === key) {
           if (res[key]["show"] === true) {
             console.log(res[key]);
             console.log(key);
@@ -569,6 +569,20 @@ const checkForAnnouncements = async () => {
                 allowEscapeKey: false,
               });
             }
+          }
+        } else {
+          //should be for all then
+          if(res[key]["show"] === true) {
+            Swal.fire({
+              title: res[key]["title"],
+              html: `<p>${res[key]["message"]}</p>`,
+              icon: res[key]["type"],
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              confirmButtonText: "Okay",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+            });
           }
         }
       }
