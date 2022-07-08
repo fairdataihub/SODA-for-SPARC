@@ -19,8 +19,8 @@
   },
   "6.1.0": {
     "show": true,
-    "title": "Test Title",
-    "message": "Some long message that should be truncated. ",
+    "title": "Welcome to version 6.1.0!",
+    "message": "New features have been added! You can now import hidden files to your dataset",
     "type": "warning"
   }
 }

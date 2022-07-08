@@ -488,6 +488,10 @@ const startupServerAndApiCheck = async () => {
   }
 
   apiVersionChecked = true;
+
+  //After everything has been checked then check for announcements
+  console.log("check here")
+  await checkForAnnouncements();
 };
 
 startupServerAndApiCheck();
@@ -548,6 +552,12 @@ const checkForAnnouncements = async () => {
           Swal.fire({
             title: res[key]["title"],
             text: res[key]["message"],
+            icon: res[key]["type"],
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            confirmButtonText: "Okay",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
           });
         }
       }
@@ -557,7 +567,6 @@ const checkForAnnouncements = async () => {
   }
 };
 
-checkForAnnouncements();
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
