@@ -11,19 +11,19 @@
   "6.1.0": {
     "win32": {
       "show": true,
-      "title": "Welcome to version 6.1.0!",
+      "title": "Welcome to version 6.1.0 for Windows!",
       "message": "New features have been added!<br> <li>You can now import hidden files to your dataset (.DS_Store files are not accepted). </li><li>README.txt is now a mandatory metadata file for all datasets.</li><li>The login prompts have been updated to look more appealing.</li>",
       "type": "info"
     },
     "linux": {
       "show": true,
-      "title": "Welcome to version 6.1.0!",
+      "title": "Welcome to version 6.1.0 for Linux!",
       "message": "New features have been added!<br> <li>You can now import hidden files to your dataset (.DS_Store files are not accepted). </li><li>README.txt is now a mandatory metadata file for all datasets.</li><li>The login prompts have been updated to look more appealing.</li>",
       "type": "info"
     },
     "darwin": {
       "show": true,
-      "title": "Welcome to version 6.1.0!",
+      "title": "Welcome to version 6.1.0 for MacOS!",
       "message": "New features have been added!<br> <li>You can now import hidden files to your dataset (.DS_Store files are not accepted). </li><li>README.txt is now a mandatory metadata file for all datasets.</li><li>The login prompts have been updated to look more appealing.</li>",
       "type": "info"
     }

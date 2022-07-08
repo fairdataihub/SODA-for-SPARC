@@ -547,21 +547,27 @@ const checkForAnnouncements = async () => {
       console.log(appVersion);
       console.log(res);
 
+      let platform = String(os.platform);
+      console.log(platform);
+
       for (var key of Object.keys(res)) {
         //look for key with current version of app
         //then if show = true then check platform
         //if platforms match up create announcement alert
         //testig yourself oiyt here
-        if (os.platform === key) {
-          if (res[key]["show"] === true) {
-            console.log(res[key]);
-            console.log(key);
-            console.log(res[key]["platform"].includes(os.platform()));
-            if (res[key]["platform"].includes(os.platform())) {
+        if (appVersion === key) {
+          //check for app version
+          console.log(Object.keys(res[key]));
+          console.log(Object.keys(res[key]).includes(platform))
+          if (Object.keys(res[key]).includes(platform)) {
+            //check for platform
+
+            if (res[key][platform]["show"] === true) {
+              //if platform found then use that object to create announcement
               Swal.fire({
-                title: res[key]["title"],
-                html: `<p>${res[key]["message"]}</p>`,
-                icon: res[key]["type"],
+                title: res[key][platform]["title"],
+                html: `<p>${res[key][platform]["message"]}</p>`,
+                icon: res[key][platform]["type"],
                 heightAuto: false,
                 backdrop: "rgba(0,0,0, 0.4)",
                 confirmButtonText: "Okay",
@@ -569,20 +575,20 @@ const checkForAnnouncements = async () => {
                 allowEscapeKey: false,
               });
             }
-          }
-        } else {
-          //should be for all then
-          if (res[key]["show"] === true) {
-            Swal.fire({
-              title: res[key]["title"],
-              html: `<p>${res[key]["message"]}</p>`,
-              icon: res[key]["type"],
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              confirmButtonText: "Okay",
-              allowOutsideClick: false,
-              allowEscapeKey: false,
-            });
+          } else {
+            //check if all is in json structure
+            if(Object.keys(res[key]).includes("all")) {
+              Swal.fire({
+                title: res[key]["all"]["title"],
+                html: `<p>${res[key]["all"]["message"]}</p>`,
+                icon: res[key]["all"]["type"],
+                heightAuto: false,
+                backdrop: "rgba(0,0,0, 0.4)",
+                confirmButtonText: "Okay",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+              });
+            }
           }
         }
       }
