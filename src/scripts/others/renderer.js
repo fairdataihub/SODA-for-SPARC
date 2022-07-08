@@ -543,25 +543,13 @@ const checkForAnnouncements = async () => {
   try {
     axiosInstance.get().then((response) => {
       let res = response.data;
-      console.log(os.platform);
-      console.log(appVersion);
-      console.log(res);
-
       let platform = String(os.platform);
-      console.log(platform);
 
       for (var key of Object.keys(res)) {
-        //look for key with current version of app
-        //then if show = true then check platform
-        //if platforms match up create announcement alert
-        //testig yourself oiyt here
         if (appVersion === key) {
           //check for app version
-          console.log(Object.keys(res[key]));
-          console.log(Object.keys(res[key]).includes(platform))
           if (Object.keys(res[key]).includes(platform)) {
             //check for platform
-
             if (res[key][platform]["show"] === true) {
               //if platform found then use that object to create announcement
               Swal.fire({
@@ -573,10 +561,15 @@ const checkForAnnouncements = async () => {
                 confirmButtonText: "Okay",
                 allowOutsideClick: false,
                 allowEscapeKey: false,
+                didOpen: () => {
+                  let swal_alert = document.getElementsByClassName("swal2-popup")[0];
+                  swal_alert.style.width = "40rem";
+                }
               });
             }
           } else {
             //check if all is in json structure
+            //announcements for all OS's
             if(Object.keys(res[key]).includes("all")) {
               Swal.fire({
                 title: res[key]["all"]["title"],
@@ -587,6 +580,10 @@ const checkForAnnouncements = async () => {
                 confirmButtonText: "Okay",
                 allowOutsideClick: false,
                 allowEscapeKey: false,
+                didOpen: () => {
+                  let swal_alert = document.getElementsByClassName("swal2-popup")[0];
+                  swal_alert.style.width = "40rem";
+                }
               });
             }
           }
@@ -594,7 +591,7 @@ const checkForAnnouncements = async () => {
       }
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 
