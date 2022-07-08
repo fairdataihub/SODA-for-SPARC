@@ -20,7 +20,7 @@
   "6.1.0": {
     "show": true,
     "title": "Welcome to version 6.1.0!",
-    "message": "<p>New features have been added! You can now import hidden files to your dataset (.DS_Store files are not accepted). <br>README.txt is now a mandatory metadata file for all datasets.<br>The login prompts have been updated to look more appealing.</p>",
+    "message": "New features have been added!<br> <li>You can now import hidden files to your dataset (.DS_Store files are not accepted). </li><li>README.txt is now a mandatory metadata file for all datasets.</li><li>The login prompts have been updated to look more appealing.</li>",
     "type": "info"
   }
 }

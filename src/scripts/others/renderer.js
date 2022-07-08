@@ -553,7 +553,7 @@ const checkForAnnouncements = async () => {
           console.log("this is for show");
           Swal.fire({
             title: res[key]["title"],
-            html: res[key]["message"],
+            html: `<p>${res[key]["message"]}</p>`,
             icon: res[key]["type"],
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
