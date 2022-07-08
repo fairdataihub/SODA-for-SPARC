@@ -570,6 +570,8 @@ function renameFolder(
       didOpen: () => {
         $(".swal2-input").attr("id", "rename-folder-input");
         $(".swal2-confirm").attr("id", "rename-folder-button");
+        let swal_popup = document.getElementsByClassName("swal2-popup")[0];
+        swal_popup.style.width = "42rem";
         $("#rename-folder-input").keyup(function () {
           var val = $("#rename-folder-input").val();
           for (var char of nonAllowedCharacters) {
@@ -577,6 +579,10 @@ function renameFolder(
               Swal.showValidationMessage(
                 `The folder name cannot contains the following characters ${nonAllowedCharacters}, please rename to a different name!`
               );
+              let swal_message = document.getElementsByClassName(
+                "swal2-validation-message"
+              )[0];
+              swal_message.style.margin = "1rem";
               $("#rename-folder-button").attr("disabled", true);
               return;
             }
@@ -1727,15 +1733,14 @@ async function addFilesfunction(
   var nonAllowedFiles = [];
   var regularFiles = {};
   var hiddenFiles = [];
+  var nonAllowedCharacterFiles = [];
+  const fileNameRegex = /[^-a-zA-z0-9]/g;
 
   for (var i = 0; i < fileArray.length; i++) {
     var fileName = fileArray[i];
 
     if (path.parse(fileName).name.substr(0, 1) === ".") {
-      if (
-        path.parse(fileName).name === ".DS_Store" ||
-        path.parse(fileName).name === "Thumbs.db"
-      ) {
+      if (path.parse(fileName).name === ".DS_Store") {
         nonAllowedFiles.push(fileName);
         continue;
       } else {
@@ -1743,6 +1748,12 @@ async function addFilesfunction(
         continue;
       }
     }
+
+    if (path.parse(fileName).base === "Thumbs.db") {
+      nonAllowedFiles.push(fileName);
+      continue;
+    }
+
     // check if dataset structure level is at high level folder
     var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
     if (slashCount === 1) {

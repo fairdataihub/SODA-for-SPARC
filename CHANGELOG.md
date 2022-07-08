@@ -9,16 +9,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Feature additions:
 
-- Step 4 in Prepare a Dataset. README.txt is now a mandatory metadata file in datasets.
-- Layout of Prepare Metadata tab has been changed. Buttons are spread out more evenly and Manifest file button received an icon change.
-- New landing page and additional tabs in the navigation bar (Documentation and Contact Us)
+- The evolving SPARC Dataset Structure (SDS) all SPARC datasets must follow now includes additional mandatory metadata files. As such, in step 4 of the Organize dataset feature, found in the Prepare Datasets tab, the README.txt file is now mandatory.
+- Layout of the Prepare Metadata tab has been changed. Buttons are spread out more evenly and the Manifest files button received an icon change.
+- The Overview page has been overhauled to be more informative and visually stimulating.
+- Documentation and Contact Us tabs added to the navigation bar.
 - Contact Us tab will provide user information on how to reach out to the team for any issues or suggestions. As well as providing a Gather Logs button for the user to provide in an email for the team to look at any issues in depth.
-- Main login prompt and API login prompt were modified in terms of styling.
+- Visual overhaul for the prompts that allow users to connect their Pennsieve account with SODA.
+- Simplified UI for adding a URL or DOI to a dataset_description.xlsx in the Prepare Metadata tab.
 
 ## Bug fixes:
 
 - The option to upload duplicate files to an existing Pennsieve dataset through the Organize Datasets feature no longer causes an error while uploading.
 - Hidden files can now be imported except .DS_Store and Thumbs.db files.
+- The input for renaming or creating a new dataset no longer references undefined function in its HTML.
 
 ## v.6.0.0 - 2022-05-17
 

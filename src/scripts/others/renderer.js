@@ -145,6 +145,10 @@ console.log("User OS:", os.type(), os.platform(), "version:", os.release());
 const appVersion = window.require("electron").remote.app.getVersion();
 log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
+
+// Here is where the splash screen lotties are created and loaded.
+// A mutation observer watches for when the overview tab element has
+// a class change to 'is-shown' to know when to load and unload the lotties
 let over_view_section = document.getElementById("getting_started-section");
 let column1 = document.getElementById("lottie1");
 let column2 = document.getElementById("lottie2");
@@ -485,7 +489,6 @@ const startupServerAndApiCheck = async () => {
   }
 
   apiVersionChecked = true;
-  console.log(apiVersionChecked);
 };
 
 startupServerAndApiCheck();
@@ -526,7 +529,6 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
-  console.log("preflight");
   return new Promise(async (resolve) => {
     let connection_response = "";
     let agent_installed_response = "";
@@ -581,21 +583,54 @@ const run_pre_flight_checks = async (check_update = true) => {
             cancelButtonText: "Skip for now",
           }).then(async (result) => {
             if (result.isConfirmed) {
-              let [browser_download_url, latest_agent_version] =
-                await get_latest_agent_version();
-              shell.openExternal(browser_download_url);
-              shell.openExternal(
-                "https://docs.pennsieve.io/docs/the-pennsieve-agent"
-              );
+              try {
+                let [browser_download_url, latest_agent_version] =
+                  await get_latest_agent_version();
+                shell.openExternal(browser_download_url);
+                shell.openExternal(
+                  "https://docs.pennsieve.io/docs/the-pennsieve-agent"
+                );
+              } catch (e) {
+                await Swal.fire({
+                  icon: "error",
+                  text: "We are unable to get the latest version of the Pennsieve Agent. Please try again later. If this issue persists please contact the SODA team at help@fairdataihub.org",
+                  heightAuto: false,
+                  backdrop: "rgba(0,0,0, 0.4)",
+                  showCancelButton: true,
+                  confirmButtonText: "Ok",
+                  showClass: {
+                    popup: "animate__animated animate__zoomIn animate__faster",
+                  },
+                  hideClass: {
+                    popup: "animate__animated animate__zoomOut animate__faster",
+                  },
+                });
+              }
             }
           });
           resolve(false);
         } else {
           await wait(500);
           // Check the installed agent version. We aren't enforcing the min limit yet but is the python version starts enforcing it, we might have to.
-          let [browser_download_url, latest_agent_version] =
-            await check_agent_installed_version(agent_version_response);
-
+          let browser_download_url,
+            latest_agent_version = "";
+          try {
+            [browser_download_url, latest_agent_version] =
+              await check_agent_installed_version(agent_version_response);
+          } catch (e) {
+            notyf.dismiss(notification);
+            notyf.open({
+              type: "error",
+              message:
+                "Unable to verify that your Pennsieve Agent is up to date.",
+            });
+            log.error(
+              "Unable to verify that your Pennsieve Agent is up to date."
+            );
+            console.log(error);
+            log.error(error);
+            return resolve(false);
+          }
           if (browser_download_url != "") {
             Swal.fire({
               icon: "warning",
@@ -614,13 +649,34 @@ const run_pre_flight_checks = async (check_update = true) => {
               },
             }).then(async (result) => {
               if (result.isConfirmed) {
-                // If there is a newer agent version, download the latest agent from Github and link to their docs for installation instrucations if needed.
-                [browser_download_url, latest_agent_version] =
-                  await get_latest_agent_version();
-                shell.openExternal(browser_download_url);
-                shell.openExternal(
-                  "https://docs.pennsieve.io/docs/the-pennsieve-agent"
-                );
+                try {
+                  // If there is a newer agent version, download the latest agent from Github and link to their docs for installation instrucations if needed.
+                  [browser_download_url, latest_agent_version] =
+                    await get_latest_agent_version();
+                  shell.openExternal(browser_download_url);
+                  shell.openExternal(
+                    "https://docs.pennsieve.io/docs/the-pennsieve-agent"
+                  );
+                } catch (e) {
+                  console.log(e);
+                  log.error(e);
+                  await Swal.fire({
+                    icon: "error",
+                    text: "We are unable to get the latest version of the Pennsieve Agent. Please try again later. If this issue persists please contact the SODA team at help@fairdataihub.org",
+                    heightAuto: false,
+                    backdrop: "rgba(0,0,0, 0.4)",
+                    showCancelButton: true,
+                    confirmButtonText: "Ok",
+                    showClass: {
+                      popup:
+                        "animate__animated animate__zoomIn animate__faster",
+                    },
+                    hideClass: {
+                      popup:
+                        "animate__animated animate__zoomOut animate__faster",
+                    },
+                  });
+                }
                 resolve(false);
               }
               if (result.isDismissed) {
@@ -804,29 +860,7 @@ const check_api_key = async () => {
         });
         log.error(error);
         console.error(error);
-        Swal.fire({
-          icon: "warning",
-          text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: "Yes",
-          showCancelButton: true,
-          reverseButtons: reverseSwalButtons,
-          cancelButtonText: "I'll do it later",
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
-        }).then(async (result) => {
-          if (result.isConfirmed) {
-            await openDropdownPrompt(null, "bf");
-            resolve(false);
-          } else {
-            resolve(true);
-          }
-        });
+        resolve(false);
       } else {
         console.log(res);
         log.info("Found a set of valid API keys");
@@ -837,29 +871,7 @@ const check_api_key = async () => {
             type: "error",
             message: "No account was found",
           });
-          Swal.fire({
-            icon: "warning",
-            text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            confirmButtonText: "Yes",
-            showCancelButton: true,
-            reverseButtons: reverseSwalButtons,
-            cancelButtonText: "I'll do it later",
-            showClass: {
-              popup: "animate__animated animate__zoomIn animate__faster",
-            },
-            hideClass: {
-              popup: "animate__animated animate__zoomOut animate__faster",
-            },
-          }).then(async (result) => {
-            if (result.isConfirmed) {
-              await openDropdownPrompt(null, "bf");
-              resolve(false);
-            } else {
-              resolve(true);
-            }
-          });
+          resolve(false);
         } else {
           notyf.dismiss(notification);
           notyf.open({
@@ -937,50 +949,49 @@ const check_agent_installed_version = async (agent_version) => {
   return [browser_download_url, latest_agent_version];
 };
 
-const get_latest_agent_version = async () => {
+const get_latest_agent_version = () => {
   return new Promise((resolve, reject) => {
-    $.getJSON("https://api.github.com/repos/Pennsieve/agent/releases").done(
-      (release_res, error) => {
-        if (error) {
-          reject(error);
-        } else {
-          let release = release_res[0];
-          let latest_agent_version = release.tag_name;
-          if (process.platform == "darwin") {
-            reverseSwalButtons = true;
-            release.assets.forEach((asset, index) => {
-              let file_name = asset.name;
-              if (path.extname(file_name) == ".pkg") {
-                browser_download_url = asset.browser_download_url;
-              }
-            });
-          }
-          if (process.platform == "win32") {
-            reverseSwalButtons = false;
-            release.assets.forEach((asset, index) => {
-              let file_name = asset.name;
-              if (
-                path.extname(file_name) == ".msi" ||
-                path.extname(file_name) == ".exe"
-              ) {
-                browser_download_url = asset.browser_download_url;
-              }
-            });
-          }
-          if (process.platform == "linux") {
-            reverseSwalButtons = false;
-            release.assets.forEach((asset, index) => {
-              let file_name = asset.name;
-              if (path.extname(file_name) == ".deb") {
-                browser_download_url = asset.browser_download_url;
-              }
-            });
-          }
-
-          resolve([browser_download_url, latest_agent_version]);
+    $.getJSON("https://api.github.com/repos/Pennsieve/agent/releases")
+      .done((release_res) => {
+        let release = release_res[0];
+        let latest_agent_version = release.tag_name;
+        if (process.platform == "darwin") {
+          reverseSwalButtons = true;
+          release.assets.forEach((asset, index) => {
+            let file_name = asset.name;
+            if (path.extname(file_name) == ".pkg") {
+              browser_download_url = asset.browser_download_url;
+            }
+          });
         }
-      }
-    );
+        if (process.platform == "win32") {
+          reverseSwalButtons = false;
+          release.assets.forEach((asset, index) => {
+            let file_name = asset.name;
+            if (
+              path.extname(file_name) == ".msi" ||
+              path.extname(file_name) == ".exe"
+            ) {
+              browser_download_url = asset.browser_download_url;
+            }
+          });
+        }
+        if (process.platform == "linux") {
+          reverseSwalButtons = false;
+          release.assets.forEach((asset, index) => {
+            let file_name = asset.name;
+            if (path.extname(file_name) == ".deb") {
+              browser_download_url = asset.browser_download_url;
+            }
+          });
+        }
+
+        resolve([browser_download_url, latest_agent_version]);
+      })
+      .fail((error) => {
+        console.log("Request failed: " + error);
+        reject();
+      });
   });
 };
 
@@ -3113,6 +3124,7 @@ const { waitForDebugger } = require("inspector");
 const { resolve } = require("path");
 const { background } = require("jimp");
 const { rename } = require("fs");
+const { createCipheriv } = require("crypto");
 var cropOptions = {
   aspectRatio: 1,
   movable: false,
@@ -5342,6 +5354,7 @@ async function dropHelper(
       },
     ],
   });
+  let nonAllowedCharacterFiles = [];
   var folderPath = [];
   var duplicateFolders = [];
   var hiddenFiles = [];
@@ -5365,18 +5378,20 @@ async function dropHelper(
       var nonAllowedDuplicate = false;
       var originalFileName = path.parse(itemPath).base;
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+      const fileNameRegex = /[^-a-zA-z0-9]/g;
 
       if (path.parse(itemPath).name.substr(0, 1) === ".") {
-        if (
-          path.parse(itemPath).base === ".DS_Store" ||
-          path.parse(itemPath).base === "Thumbs.db"
-        ) {
+        if (path.parse(itemPath).base === ".DS_Store") {
           nonAllowedFiles.push(itemPath);
           continue;
         } else {
           hiddenFiles.push(itemPath);
           continue;
         }
+      }
+      if (path.parse(itemPath).base === "Thumbs.db") {
+        nonAllowedFiles.push(itemPath);
+        continue;
       }
 
       if (slashCount === 1) {
@@ -8254,7 +8269,7 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
           clearInterval(pennsieve_progress);
           setTimeout(() => {
             progress_container.style.display = "none";
-          }, 2000);
+          }, 1000);
         }
       }
     });
@@ -9168,8 +9183,6 @@ const get_api_key_and_secret_from_ini = () => {
   // return the user's api key and secret
   let default_profile = config["global"]["default_profile"];
   const { api_token, api_secret } = config[default_profile];
-  // console.log(api_token);
-  // console.log(api_secret);
   return { api_token, api_secret };
 };
 

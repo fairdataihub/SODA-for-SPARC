@@ -207,7 +207,6 @@
                   placeholder="Type here"
                   data-alert-message='A Pennsieve dataset name cannot contain any of the following characters: " / : * ? < > \'
                   data-alert-type="danger"
-                  onkeyup="validateInput($(this))"
                 />
                 <div style="border-radius: 0.5rem; margin-top: 7px">
                   <p class="tip-content">
@@ -352,7 +351,7 @@
               <label style="font-size: 17px; color: var(--color-bg-plum)"
                 >Which Pennsieve dataset would you like to rename?
               </label>
-              <div class="field" style="margin: auto; width: 500px">
+              <div class="field" style="margin: auto; width: 550px">
                 <div
                   style="
                     display: flex;
@@ -516,7 +515,7 @@
         >
           <div
             class="ui form"
-            style="width: 510px !important; display: flex; align-self: center"
+            style="width: 550px !important; display: none; align-self: center"
           >
             <div class="grouped fields">
               <label
@@ -547,7 +546,6 @@
                   placeholder="Type here"
                   data-alert-message='A Pennsieve dataset name cannot contain any of the following characters: " / : * ? < > \'
                   data-alert-type="danger"
-                  onkeyup="validateInput($(this))"
                 />
                 <div style="border-radius: 0.5rem; margin-top: 7px">
                   <p class="tip-content">
@@ -1323,7 +1321,7 @@
           >
             <div class="grouped fields">
               <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Do you want to provide permissions to another user or teams?
+                >Do you want to provide permissions to another user or team?
               </label>
               <div
                 style="
@@ -2980,7 +2978,7 @@
                   >About</label
                 >
                 <p class="about-text">
-                  Use this feature to add a banner image to your datasaet on
+                  Use this feature to add a banner image to your dataset on
                   Pennsieve. This image will be used as a thumbnail once the
                   dataset is published on the SPARC data portal.
                 </p>
@@ -3829,8 +3827,8 @@
                   >About</label
                 >
                 <p class="about-text">
-                  With this feature, you can upload a data from your computer on
-                  to a Pennsieve dataset (with folder structure preserved)
+                  With this feature, you can upload data from your computer to a
+                  Pennsieve dataset (with folder structure preserved).
                 </p>
               </div>
               <label style="font-size: 17px; color: var(--color-bg-plum)"
