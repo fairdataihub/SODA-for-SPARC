@@ -3,6 +3,7 @@ from organizeDatasets import (
     bf_get_dataset_files_folders,
     create_soda_json_object_backend,
     monitor_local_json_progress,
+    monitor_pennsieve_json_progress
 )
 
 from namespaces import NamespaceEnum, get_namespace
@@ -136,5 +137,16 @@ class ImportDatasetOrganizeDatasetsProgress(Resource):
     def get(self):
         try: 
             return monitor_local_json_progress()
+        except Exception as e:
+            api.abort(500, str(e))
+
+
+@api.route('dataset_files_and_folders/progress')
+class ImportDatasetPennsieveProgress(Resource):
+    @api.marshal_with(model_import_dataset_organize_datasets_progress_response)
+    @api.doc(responses={200: "Success", 500: "Internal Server Error"}, description="Returns the progress of the current Pennsieve dataset import operation. Used in Organize Datasets.")
+    def get(self):
+        try: 
+            return monitor_pennsieve_json_progress()
         except Exception as e:
             api.abort(500, str(e))

@@ -7890,6 +7890,63 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
  * }
  */
 var bf_request_and_populate_dataset = async (sodaJSONObj) => {
+  let progress_container = document.getElementById("loading_pennsieve_dataset");
+  let percentage_text = document.getElementById(
+    "pennsieve_loading_dataset_percentage"
+  );
+  let left_progress_bar = document.getElementById(
+    "pennsieve_left-side_less_than_50"
+  );
+  let right_progress_bar = document.getElementById(
+    "pennsieve_right-side_greater_than_50"
+  );
+  percentage_text.innerText = "0%";
+  progress_container.style.display = "block";
+  left_progress_bar.style.transform = `rotate(0deg)`;
+  right_progress_bar.style.transform = `rotate(0deg)`;
+  let pennsieve_progress = setInterval(progressReport, 500);
+  function progressReport() {
+    try {
+    await client.get("organize_datasets/dataset_files_and_folders/progress", {})
+    } catch(error) {
+      clientError(error)
+    }
+    
+    (error, res) => {
+      if (error) {
+        console.log(error);
+      } else {
+        let percentage_amount = res[2].toFixed(2);
+        finished = res[3];
+        percentage_text.innerText = percentage_amount + "%";
+        if (percentage_amount <= 50) {
+          left_progress_bar.style.transform = `rotate(${
+            percentage_amount * 0.01 * 360
+          }deg)`;
+        } else {
+          left_progress_bar.style.transition = "";
+          left_progress_bar.classList.add("notransition");
+          left_progress_bar.style.transform = `rotate(180deg)`;
+          right_progress_bar.style.transform = `rotate(${
+            percentage_amount * 0.01 * 180
+          }deg)`;
+        }
+
+        if (finished === 1) {
+          percentage_text.innerText = "100%";
+          left_progress_bar.style.transform = `rotate(180deg)`;
+          right_progress_bar.style.transform = `rotate(180deg)`;
+          right_progress_bar.classList.remove("notransition");
+          console.log(percentage_text.innerText);
+          clearInterval(pennsieve_progress);
+          setTimeout(() => {
+            progress_container.style.display = "none";
+          }, 2000);
+        }
+      }
+    });
+  }
+
   try {
     let filesFoldersResponse = await client.get(
       `/organize_datasets/dataset_files_and_folders`,
@@ -7899,6 +7956,8 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
         },
       }
     );
+
+    clearInterval(pennsieve_progress);
 
     let data = filesFoldersResponse.data;
 
@@ -7911,6 +7970,8 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
 
     return data;
   } catch (error) {
+    clearInterval(pennsieve_progress);
+    progress_container.style.display = "none";
     clientError(error);
     ipcRenderer.send(
       "track-event",
