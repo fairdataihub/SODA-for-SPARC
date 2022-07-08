@@ -2059,7 +2059,10 @@ const setActiveSubPage = (pageIdToActivate) => {
       //If milestoneData exists in sodaJSONObj, add the milestones to the tagify input
       //If not, reset the tagify input
       if (milestoneData) {
-        guidedSubmissionTagsTagify.addTags(milestoneData);
+        const milestones = milestoneData.map((milestone) => {
+          return milestone["milestone"];
+        });
+        guidedSubmissionTagsTagify.addTags(milestones);
       } else {
         guidedSubmissionTagsTagify.removeAllTags();
       }
@@ -7323,7 +7326,7 @@ $(document).ready(() => {
     const subjectsMetadataUploadText = document.getElementById(
       "guided-subjects-metadata-upload-text"
     );
-    bannerImageUploadText.innerHTML = "Uploading subjects metadata...";
+    subjectsMetadataUploadText.innerHTML = "Uploading subjects metadata...";
     guidedUploadStatusIcon("guided-subjects-metadata-upload-status", "loading");
     return new Promise((resolve, reject) => {
       client.invoke(
@@ -7363,6 +7366,15 @@ $(document).ready(() => {
     datasetName,
     samplesTableData
   ) {
+    document
+      .getElementById("guided-samples-metadata-upload-tr")
+      .classList.remove("hidden");
+    const samplesMetadataUploadText = document.getElementById(
+      "guided-samples-metadata-upload-text"
+    );
+    samplesMetadataUploadText.innerHTML = "Uploading samples metadata...";
+    guidedUploadStatusIcon("guided-samples-metadata-upload-status", "loading");
+
     return new Promise((resolve, reject) => {
       client.invoke(
         "api_save_samples_file",
@@ -7377,6 +7389,7 @@ $(document).ready(() => {
               "guided-samples-metadata-upload-status",
               "error"
             );
+            samplesMetadataUploadText.innerHTML = `Failed to upload samples metadata`;
             log.error(error);
             console.error(error);
             let emessage = userError(error);
@@ -7386,6 +7399,7 @@ $(document).ready(() => {
               "guided-samples-metadata-upload-status",
               "success"
             );
+            samplesMetadataUploadText.innerHTML = `Samples metadata successfully uploaded`;
             console.log("samples metadata added + " + res);
             resolve(`samples metadata added` + res);
           }
@@ -7400,6 +7414,19 @@ $(document).ready(() => {
     guidedSubmissionMetadataJSON
   ) {
     return new Promise((resolve, reject) => {
+      document
+        .getElementById("guided-submission-metadata-upload-tr")
+        .classList.remove("hidden");
+      const submissionMetadataUploadText = document.getElementById(
+        "guided-submission-metadata-upload-text"
+      );
+      submissionMetadataUploadText.innerHTML =
+        "Uploading submission metadata...";
+      guidedUploadStatusIcon(
+        "guided-submission-metadata-upload-status",
+        "loading"
+      );
+
       client.invoke(
         "api_save_submission_file",
         true,
@@ -7413,6 +7440,7 @@ $(document).ready(() => {
               "guided-submission-metadata-upload-status",
               "error"
             );
+            submissionMetadataUploadText.innerHTML = `Failed to upload submission metadata`;
             log.error(error);
             console.error(error);
             let emessage = userError(error);
@@ -7422,6 +7450,7 @@ $(document).ready(() => {
               "guided-submission-metadata-upload-status",
               "success"
             );
+            submissionMetadataUploadText.innerHTML = `Submission metadata successfully uploaded`;
             console.log("Submission metadata added + " + res);
             resolve(`Submission metadata added` + res);
           }
@@ -7438,14 +7467,19 @@ $(document).ready(() => {
     guidedContributorInformation,
     guidedAdditionalLinks
   ) {
-    console.log(
-      bfAccount,
-      datasetName,
-      guidedDatasetInformation,
-      guidedStudyInformation,
-      guidedContributorInformation,
-      guidedAdditionalLinks
+    document
+      .getElementById("guided-dataset-description-metadata-upload-tr")
+      .classList.remove("hidden");
+    const datasetDescriptionMetadataUploadText = document.getElementById(
+      "guided-dataset-description-metadata-upload-text"
     );
+    datasetDescriptionMetadataUploadText.innerHTML =
+      "Uploading dataset-description metadata...";
+    guidedUploadStatusIcon(
+      "guided-dataset-description-metadata-upload-status",
+      "loading"
+    );
+
     return new Promise((resolve, reject) => {
       client.invoke(
         "api_save_ds_description_file",
@@ -7463,6 +7497,7 @@ $(document).ready(() => {
               "guided-dataset-description-metadata-upload-status",
               "error"
             );
+            datasetDescriptionMetadataUploadText.innerHTML = `Failed to upload dataset-description metadata`;
             log.error(error);
             console.error(error);
             let emessage = userError(error);
@@ -7472,6 +7507,8 @@ $(document).ready(() => {
               "guided-dataset-description-metadata-upload-status",
               "success"
             );
+            datasetDescriptionMetadataUploadText.innerHTML =
+              "Dataset-description metadata successfully uploaded";
             console.log("Description metadata added + " + res);
             resolve(`description metadata added` + res);
           }
@@ -7486,12 +7523,23 @@ $(document).ready(() => {
     readmeORchanges, //lowercase file type
     readmeOrChangesMetadata
   ) => {
-    const fileName = `${readmeORchanges}.txt`;
+    document
+      .getElementById(`guided-${readmeORchanges}-metadata-upload-tr`)
+      .classList.remove("hidden");
+    const datasetDescriptionMetadataUploadText = document.getElementById(
+      `guided-${readmeORchanges}-metadata-upload-text`
+    );
+    datasetDescriptionMetadataUploadText.innerHTML = `Uploading ${readmeORchanges} metadata...`;
+    guidedUploadStatusIcon(
+      `guided-${readmeORchanges}-metadata-upload-status`,
+      "loading"
+    );
+
     return new Promise((resolve, reject) => {
       client.invoke(
         "api_upload_RC_file",
         readmeOrChangesMetadata, //RC text to upload e.g. this dataset or changes...
-        fileName, //CHANGES.txt or README.txt
+        `${readmeORchanges}.txt`, //CHANGES.txt or README.txt
         bfAccount,
         datasetName,
         (error, res) => {
@@ -7644,13 +7692,17 @@ $(document).ready(() => {
         guidedSamplesMetadata
       );
       console.log(addSamplesMetadataResponse);
-
-      let addSubmissionMetadataResponse = await guidedUploadSubmissionMetadata(
-        guidedBfAccount,
-        guidedDatasetName,
-        guidedSubmissionMetadataJSON
-      );
-      console.log(addSubmissionMetadataResponse);
+      try {
+        let addSubmissionMetadataResponse =
+          await guidedUploadSubmissionMetadata(
+            guidedBfAccount,
+            guidedDatasetName,
+            guidedSubmissionMetadataJSON
+          );
+        console.log(addSubmissionMetadataResponse);
+      } catch (error) {
+        console.log(error);
+      }
 
       let addDescriptionMetadataResponse =
         await guidedUploadDatasetDescriptionMetadata(
