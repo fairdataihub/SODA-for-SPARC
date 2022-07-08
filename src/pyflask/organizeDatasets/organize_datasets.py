@@ -1179,4 +1179,23 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only=True)
 
 
 def monitor_pennsieve_json_progress():
-    return ""
+     """
+    Function for monitoring progress of soda_json object
+    Used for progress bar
+    """
+    global create_soda_json_completed
+    global create_soda_json_total_items
+    global create_soda_json_progress
+    if create_soda_json_progress != 0:
+        progress_percentage = (
+            create_soda_json_progress / create_soda_json_total_items
+        ) * 100
+    else:
+        progress_percentage = 0
+    res = [
+        create_soda_json_progress,
+        create_soda_json_total_items,
+        progress_percentage,
+        create_soda_json_completed,
+    ]
+    return res
