@@ -1254,6 +1254,8 @@ const traverseToTab = (targetPageID) => {
       const contributors =
         sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
 
+      //If contributors already existin in the sodaJSONObj, then show the contributors field
+      //and render a card for each contributor
       if (contributors) {
         document
           .getElementById("guided-div-contributors-imported-from-airtable")
@@ -2050,20 +2052,14 @@ const setActiveSubPage = (pageIdToActivate) => {
       //If not, refresh the input and enable it
       if (sparcAward) {
         sparcAwardInput.value = sparcAward;
-        sparcAwardInput.disabled = true;
       } else {
         sparcAwardInput.value = "";
-        sparcAwardInput.disabled = false;
       }
 
       //If milestoneData exists in sodaJSONObj, add the milestones to the tagify input
       //If not, reset the tagify input
       if (milestoneData) {
-        for (milestone of milestoneData) {
-          guidedSubmissionTagsTagify.addTags([
-            { value: milestone["milestone"], readonly: true },
-          ]);
-        }
+        guidedSubmissionTagsTagify.addTags(milestoneData);
       } else {
         guidedSubmissionTagsTagify.removeAllTags();
       }
@@ -2072,10 +2068,8 @@ const setActiveSubPage = (pageIdToActivate) => {
       //If not, refresh the input and enable it
       if (completionDate) {
         completionDateInput.value = completionDate;
-        completionDateInput.disabled = true;
       } else {
         completionDateInput.value = "";
-        completionDateInput.disabled = false;
       }
       break;
     }
@@ -6581,7 +6575,6 @@ $(document).ready(() => {
   //FETCH FUNCTIONS//
   //fetch
   const guidedUpdateUploadStatus = (uploadContainerElement, status) => {
-    i;
     if (status === "uploading") {
       uploadContainerElement.classList.add("uploading");
       uploadContainerElement.classList.remove("uploaded");
@@ -6619,6 +6612,41 @@ $(document).ready(() => {
         license: dataset_license,
       }),
     };
+    //Unhide create_dataset table rows, set the loading text, and start the loading animation
+    document
+      .getElementById("guided-dataset-name-upload-tr")
+      .classList.remove("hidden");
+    document
+      .getElementById("guided-dataset-subtitle-upload-tr")
+      .classList.remove("hidden");
+    document
+      .getElementById("guided-dataset-tags-upload-tr")
+      .classList.remove("hidden");
+    document
+      .getElementById("guided-dataset-license-upload-tr")
+      .classList.remove("hidden");
+
+    const datasetNameUploadText = document.getElementById(
+      "guided-dataset-name-upload-text"
+    );
+    const datasetNameSubtitleText = document.getElementById(
+      "guided-dataset-subtitle-upload-text"
+    );
+    const datasetNameLicenseText = document.getElementById(
+      "guided-dataset-license-upload-text"
+    );
+    const datasetNameTagsText = document.getElementById(
+      "guided-dataset-tags-upload-text"
+    );
+    datasetNameUploadText.innerHTML = "Creating dataset...";
+    datasetNameSubtitleText.innerHTML = "Creating dataset...";
+    datasetNameLicenseText.innerHTML = "Creating dataset...";
+    datasetNameTagsText.innerHTML = "Creating dataset...";
+
+    guidedUploadStatusIcon("guided-dataset-name-upload-status", "loading");
+    guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "loading");
+    guidedUploadStatusIcon("guided-dataset-license-upload-status", "loading");
+    guidedUploadStatusIcon("guided-dataset-tags-upload-status", "loading");
 
     const response = await fetch("https://api.pennsieve.io/datasets/", options);
 
@@ -6630,12 +6658,23 @@ $(document).ready(() => {
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
       });
+      datasetNameUploadText.innerHTML = "Failed to create a new dataset.";
+      datasetNameSubtitleText.innerHTML = "Failed to create a new dataset.";
+      datasetNameLicenseText.innerHTML = "Failed to create a new dataset.";
+      datasetNameTagsText.innerHTML = "Failed to create a new dataset.";
       guidedUploadStatusIcon("guided-dataset-name-upload-status", "error");
       guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "error");
       guidedUploadStatusIcon("guided-dataset-license-upload-status", "error");
       guidedUploadStatusIcon("guided-dataset-tags-upload-status", "error");
       throw new Error(response.status);
     } else {
+      datasetNameUploadText.innerHTML = `Successfully created dataset with name: ${dataset_name}`;
+      datasetNameSubtitleText.innerHTML =
+        "Subtitle successfully added to dataset.";
+      datasetNameLicenseText.innerHTML =
+        "License successfully added to dataset.";
+      datasetNameTagsText.innerHTML =
+        "Dataset tags successfully added to dataset.";
       guidedUploadStatusIcon("guided-dataset-name-upload-status", "success");
       guidedUploadStatusIcon(
         "guided-dataset-subtitle-upload-status",
@@ -6853,52 +6892,23 @@ $(document).ready(() => {
     });
   };
 
-  const guided_add_PI_owner = async (bfAccount, bfDataset, datasetPiOwner) => {
-    return new Promise((resolve) => {
-      log.info("Changing PI Owner of datset");
-      client.invoke(
-        "api_bf_add_permission",
-        bfAccount,
-        bfDataset,
-        datasetPiOwner,
-        "owner",
-        (error, res) => {
-          if (error) {
-            ipcRenderer.send(
-              "track-evefnt",
-              "Error",
-              "Manage Dataset - Change PI Owner",
-              bfDataset
-            );
-            log.error(error);
-            console.error(error);
-            let emessage = userError(error);
-            reject(error);
-          } else {
-            log.info("Changed PI Owner of datset");
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              "Manage Dataset - Change PI Owner",
-              bfDataset
-            );
-            notyf.open({
-              duration: "5000",
-              type: "success",
-              message: "Changed PI Owner",
-            });
-            resolve(res);
-          }
-        }
-      );
-    });
-  };
-
   const guided_add_banner_image = (
     bfAccount,
     datasetName,
     pathToCroppedImage
   ) => {
+    document
+      .getElementById("guided-dataset-banner-image-upload-tr")
+      .classList.remove("hidden");
+    const bannerImageUploadText = document.getElementById(
+      "guided-dataset-banner-image-upload-text"
+    );
+    bannerImageUploadText.innerHTML = "Uploading banner image...";
+    guidedUploadStatusIcon(
+      "guided-dataset-banner-image-upload-status",
+      "loading"
+    );
+
     return new Promise((resolve, reject) => {
       client.invoke(
         "api_bf_add_banner_image",
@@ -6911,6 +6921,7 @@ $(document).ready(() => {
               "guided-dataset-banner-image-upload-status",
               "error"
             );
+            bannerImageUploadText.innerHTML = "Failed to upload banner image.";
             log.error(error);
             console.error(error);
             let emessage = userError(error);
@@ -6920,6 +6931,8 @@ $(document).ready(() => {
               "guided-dataset-banner-image-upload-status",
               "success"
             );
+            bannerImageUploadText.innerHTML =
+              "Banner image successfully uploaded.";
             console.log("Banner image added + " + res);
             resolve(`Banner image added` + res);
           }
@@ -6928,9 +6941,87 @@ $(document).ready(() => {
     });
   };
 
-  const guided_add_user = (bfAccount, datasetName, userUUID, selectedRole) => {
+  const guided_add_PI_owner = async (
+    bfAccount,
+    bfDataset,
+    datasetPiOwnerUUID
+  ) => {
+    return new Promise((resolve, reject) => {
+      log.info("Changing PI Owner of datset");
+      client.invoke(
+        "api_bf_add_permission",
+        bfAccount,
+        bfDataset,
+        datasetPiOwnerUUID,
+        "owner",
+        (error, res) => {
+          if (error) {
+            guidedUploadStatusIcon(
+              "guided-dataset-pi-owner-upload-status",
+              "error"
+            );
+            ipcRenderer.send(
+              "track-event",
+              "Error",
+              "Manage Dataset - Change PI Owner",
+              bfDataset
+            );
+            log.error(error);
+            console.error(error);
+            let emessage = userError(error);
+            reject(error);
+          } else {
+            guidedUploadStatusIcon(
+              "guided-dataset-pi-owner-upload-status",
+              "success"
+            );
+            log.info("Changed PI Owner of datset");
+
+            resolve(res);
+          }
+        }
+      );
+    });
+  };
+
+  const guided_add_user = (
+    bfAccount,
+    datasetName,
+    userName,
+    userUUID,
+    selectedRole
+  ) => {
     return new Promise((resolve, reject) => {
       log.info("Adding a permission for a user on a dataset");
+
+      const userPermissionUploadElement = `
+        <tr id="guided-dataset-${userUUID}-permissions-upload-tr">
+          <td class="middle aligned" id="guided-dataset-${userUUID}-permissions-upload-text">
+            Granting ${userName} ${selectedRole} permissions.
+          </td>
+          <td class="middle aligned text-center collapsing border-left-0 p-0">
+            <div
+              class="guided--container-upload-status"
+              id="guided-dataset-${userUUID}-permissions-upload-status"
+            ></div>
+          </td>
+        </tr>
+      `;
+
+      //apend the upload element after tr with id guided-dataset-license-upload-tr
+      document
+        .getElementById("guided-dataset-license-upload-tr")
+        .insertAdjacentHTML("afterend", userPermissionUploadElement);
+
+      const userPermissionUploadStatusText = document.getElementById(
+        `guided-dataset-${userUUID}-permissions-upload-text`
+      );
+
+      guidedUploadStatusIcon(
+        `guided-dataset-${userUUID}-permissions-upload-status`,
+        "loading"
+      );
+
       client.invoke(
         "api_bf_add_permission",
         bfAccount,
@@ -6940,18 +7031,20 @@ $(document).ready(() => {
         (error, res) => {
           if (error) {
             guidedUploadStatusIcon(
-              "guided-dataset-user-permissions-upload-status",
+              `guided-dataset-${userUUID}-permissions-upload-status`,
               "error"
             );
+            userPermissionUploadStatusText.innerHTML = `Failed to grant ${userName} ${selectedRole} permissions`;
             log.error(error);
             console.error(error);
             let emessage = userError(error);
             reject(error);
           } else {
             guidedUploadStatusIcon(
-              "guided-dataset-user-permissions-upload-status",
+              `guided-dataset-${userUUID}-permissions-upload-status`,
               "success"
             );
+            userPermissionUploadStatusText.innerHTML = `Granted ${selectedRole} permissions to ${userName}`;
             log.info("Dataset permission added");
             console.log("permission added + " + res);
 
@@ -6972,6 +7065,35 @@ $(document).ready(() => {
   ) => {
     return new Promise((resolve, reject) => {
       log.info("Adding a permission for a team on a dataset");
+
+      const teamPermissionUploadElement = `
+        <tr id="guided-dataset-${teamString}-permissions-upload-tr">
+          <td class="middle aligned" id="guided-dataset-${teamString}-permissions-upload-text">
+            Granting ${teamString} ${selectedRole} permissions.
+          </td>
+          <td class="middle aligned text-center collapsing border-left-0 p-0">
+            <div
+              class="guided--container-upload-status"
+              id="guided-dataset-${teamString}-permissions-upload-status"
+            ></div>
+          </td>
+        </tr>
+      `;
+
+      //apend the upload element before tr with id guided-dataset-description-upload-tr
+      document
+        .getElementById("guided-dataset-description-upload-tr")
+        .insertAdjacentHTML("beforebegin", teamPermissionUploadElement);
+
+      const teamPermissionUploadStatusText = document.getElementById(
+        `guided-dataset-${teamString}-permissions-upload-text`
+      );
+
+      guidedUploadStatusIcon(
+        `guided-dataset-${teamString}-permissions-upload-status`,
+        "loading"
+      );
+
       client.invoke(
         "api_bf_add_permission_team",
         bfAccount,
@@ -6981,18 +7103,20 @@ $(document).ready(() => {
         (error, res) => {
           if (error) {
             guidedUploadStatusIcon(
-              "guided-dataset-team-permissions-upload-status",
+              `guided-dataset-${teamString}-permissions-upload-status`,
               "error"
             );
+            teamPermissionUploadStatusText.innerHTML = `Failed to grant ${teamString} ${selectedRole} permissions`;
             log.error(error);
             console.error(error);
             let emessage = userError(error);
             reject(error);
           } else {
             guidedUploadStatusIcon(
-              "guided-dataset-team-permissions-upload-status",
+              `guided-dataset-${teamString}-permissions-upload-status`,
               "success"
             );
+            teamPermissionUploadStatusText.innerHTML = `Granted ${selectedRole} permissions to ${teamString}`;
             log.info("Dataset permission added");
             console.log("permission added + " + res);
             resolve(
@@ -7013,6 +7137,7 @@ $(document).ready(() => {
       return guided_add_user(
         bfAccount,
         datasetName,
+        userPermission.userName,
         userPermission.UUID,
         userPermission.permission
       );
@@ -7057,6 +7182,19 @@ $(document).ready(() => {
 
   const guided_add_description = async (bfAccount, bfDataset, readMe) => {
     return new Promise((resolve, reject) => {
+      document
+        .getElementById("guided-dataset-description-upload-tr")
+        .classList.remove("hidden");
+      const datasetDescriptionUploadText = document.getElementById(
+        "guided-dataset-description-upload-text"
+      );
+      datasetDescriptionUploadText.innerHTML =
+        "Uploading dataset description...";
+      guidedUploadStatusIcon(
+        "guided-dataset-description-upload-status",
+        "loading"
+      );
+
       client.invoke(
         "api_bf_add_description",
         bfAccount,
@@ -7068,6 +7206,7 @@ $(document).ready(() => {
               "guided-dataset-description-upload-status",
               "error"
             );
+            datasetDescriptionUploadText.innerHTML = `Failed to upload dataset description`;
             log.error(error);
             console.error(error);
             reject(error);
@@ -7077,6 +7216,7 @@ $(document).ready(() => {
               "guided-dataset-description-upload-status",
               "success"
             );
+            datasetDescriptionUploadText.innerHTML = `Dataset description successfully uploaded`;
             console.log("added descr + " + res);
             resolve(`Description added to ${bfDataset}`);
           }
@@ -7177,6 +7317,14 @@ $(document).ready(() => {
     datasetName,
     subjectsTableData
   ) {
+    document
+      .getElementById("guided-subjects-metadata-upload-tr")
+      .classList.remove("hidden");
+    const subjectsMetadataUploadText = document.getElementById(
+      "guided-subjects-metadata-upload-text"
+    );
+    bannerImageUploadText.innerHTML = "Uploading subjects metadata...";
+    guidedUploadStatusIcon("guided-subjects-metadata-upload-status", "loading");
     return new Promise((resolve, reject) => {
       client.invoke(
         "api_save_subjects_file",
@@ -7191,6 +7339,7 @@ $(document).ready(() => {
               "guided-subjects-metadata-upload-status",
               "error"
             );
+            subjectsMetadataUploadText.innerHTML = `Failed to upload subjects metadata`;
             log.error(error);
             console.error(error);
             let emessage = userError(error);
@@ -7200,6 +7349,7 @@ $(document).ready(() => {
               "guided-subjects-metadata-upload-status",
               "success"
             );
+            subjectsMetadataUploadText.innerHTML = `Subjects metadata successfully uploaded`;
             console.log("Subjects metadata added + " + res);
             resolve(`Subjects metadata added` + res);
           }
@@ -7372,7 +7522,8 @@ $(document).ready(() => {
     const guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
     const guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
     const guidedUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
-    const guidedPIOwner = sodaJSONObj["digital-metadata"]["pi-owner"];
+    const guidedPIOwnerUUID =
+      sodaJSONObj["digital-metadata"]["pi-owner"]["UUID"];
     const guidedTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
     /*let guidedStudyPurpose = sodaJSONObj["digital-metadata"]["study-purpose"];
     let guidedDataCollection =
@@ -7402,16 +7553,17 @@ $(document).ready(() => {
     guidedSubmissionMetadataJSON.push({
       award: guidedSparcAward,
       date: guidedCompletionDate,
-      milestone: guidedMilestones[0].milestone,
+      milestone: guidedMilestones[0],
     });
     for (let i = 1; i < guidedMilestones.length; i++) {
       guidedSubmissionMetadataJSON.push({
         award: "",
         date: "",
-        milestone: guidedMilestones[i].milestone,
+        milestone: guidedMilestones[i],
       });
     }
     guidedSubmissionMetadataJSON = JSON.stringify(guidedSubmissionMetadataJSON);
+    console.log(guidedSubmissionMetadataJSON);
 
     //Dataset Description Metadata variables
     const guidedDatasetInformation = JSON.stringify(
@@ -7451,11 +7603,6 @@ $(document).ready(() => {
     //README and CHANGES Metadata variables
     const guidedReadMeMetadata = sodaJSONObj["dataset-metadata"]["README"];
     const guidedChangesMetadata = sodaJSONObj["dataset-metadata"]["CHANGES"];
-
-    console.log(guidedDatasetInformation);
-    console.log(guidedStudyInformation);
-    console.log(guidedContributorInformation);
-    console.log(guidedAdditionalLinks);
 
     try {
       //await create_dataset and then console log response
@@ -7532,6 +7679,16 @@ $(document).ready(() => {
           guidedChangesMetadata
         );
       console.log(addChangesMetadataResponse);
+      let addPIOwnerResponse = await guided_add_PI_owner(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedPIOwnerUUID
+      );
+      console.log(addPIOwnerResponse);
+
+      /*
+      const mainCurationResponse = await guided_main_curate();
+      console.log(mainCurationResponse);*/
     } catch (e) {
       console.error(e);
     }
@@ -7844,7 +8001,7 @@ $(document).ready(() => {
             : datasetLocation,
           file_counter
         );
-
+        //Update the dataset dropdown to refresh datasets user has access to
         client.invoke(
           "api_bf_dataset_account",
           defaultBfAccount,
@@ -7964,11 +8121,10 @@ $(document).ready(() => {
   const guided_main_curate = async () => {
     console.log(sodaJSONObj);
 
-    let supplementary_checks = await run_pre_flight_checks(false);
+    /*let supplementary_checks = await run_pre_flight_checks(false);
     if (!supplementary_checks) {
-      $("#sidebarCollapse").prop("disabled", false);
       return;
-    }
+    }*/
     updateJSONStructureDSstructure();
 
     client.invoke(
@@ -8145,198 +8301,6 @@ $(document).ready(() => {
 
     subjectSampleAdditionTableContainer.innerHTML = subjectSampleAdditionTables;
   });*/
-
-  //submission
-  $("#guided-button-save-checked-milestones").on("click", () => {
-    const checkedMilestoneData = getCheckedMilestones();
-    //if checkedMilestoneData is empty, create notyf
-    if (checkedMilestoneData.length === 0) {
-      notyf.error("Please select at least one milestone");
-      return;
-    }
-
-    // get a unique set of completionDates from checkedMilestoneData
-    const uniqueCompletionDates = Array.from(
-      new Set(checkedMilestoneData.map((milestone) => milestone.completionDate))
-    );
-
-    //reset accordion to default
-
-    const submissionAccordion = document.getElementById(
-      "guided-div-submission-accordion"
-    );
-    const guidedCompletionDateInput = document.getElementById(
-      "guided-submission-completion-date"
-    );
-    const guidedCompletionDateInstructionalText = document.getElementById(
-      "guided-completion-date-instructional-text"
-    );
-    const guidedCompletionDateContainer = document.getElementById(
-      "guided-div-completion-date-selection"
-    );
-    submissionAccordion.classList.add("hidden");
-    guidedCompletionDateContainer.classList.add("hidden");
-    guidedCompletionDateInput.disabled = false;
-    guidedCompletionDateInput.value = "";
-    guidedSubmissionTagsTagify.removeAllTags();
-
-    if (checkedMilestoneData.length === 1) {
-      const uniqueCompletionDate = uniqueCompletionDates[0];
-
-      guidedSubmissionTagsTagify.addTags([
-        { value: checkedMilestoneData[0]["milestone"], readonly: true },
-      ]);
-
-      document
-        .getElementById("guided-div-completion-date-selection")
-        .classList.add("hidden");
-      guidedCompletionDateInput.value = uniqueCompletionDate;
-      guidedCompletionDateInput.disabled = true;
-      unHideAndSmoothScrollToElement("guided-div-submission-accordion");
-    }
-
-    if (checkedMilestoneData.length > 1) {
-      for (milestone of checkedMilestoneData) {
-        guidedSubmissionTagsTagify.addTags([
-          { value: milestone["milestone"], readonly: true },
-        ]);
-      }
-      //filter value 'NA' from uniqueCompletionDates
-      const filteredUniqueCompletionDates = uniqueCompletionDates.filter(
-        (date) => date !== "NA"
-      );
-      if (filteredUniqueCompletionDates.length === 1) {
-        guidedCompletionDateInput.value = filteredUniqueCompletionDates[0];
-        guidedCompletionDateInput.disabled = true;
-        unHideAndSmoothScrollToElement("guided-div-submission-accordion");
-        return;
-      } else {
-        //set the text of guided-completion-date-instructional-text
-        guidedCompletionDateInstructionalText.innerHTML =
-          "Select the completion date for your submission";
-        const completionDates = [];
-        for (date of filteredUniqueCompletionDates) {
-          completionDates.push(date);
-        }
-
-        //create a radio button for each unique date
-        const completionDateCheckMarks = completionDates
-          .map((completionDate) => {
-            return createCompletionDateRadioElement(
-              "completion-date",
-              completionDate
-            );
-          })
-          .join("\n");
-        document.getElementById("guided-completion-date-container").innerHTML =
-          completionDateCheckMarks;
-        unHideAndSmoothScrollToElement("guided-div-completion-date-selection");
-      }
-    }
-    //set opacity and remove pointer events for table and show edit button
-    disableElementById("milestones-table");
-
-    //switch button from save to edit
-    document.getElementById(
-      "guided-button-save-checked-milestones"
-    ).style.display = "none";
-    document.getElementById(
-      "guided-button-edit-checked-milestones"
-    ).style.display = "flex";
-  });
-  $("#guided-button-edit-checked-milestones").on("click", () => {
-    //re-enable disabled elements and hide completion date selection div
-    enableElementById("milestones-table");
-    enableElementById("guided-completion-date-container");
-    document
-      .getElementById("guided-div-completion-date-selection")
-      .classList.add("hidden");
-    document
-      .getElementById("guided-div-submission-accordion")
-      .classList.add("hidden");
-
-    //switch button from edit to save
-    document.getElementById(
-      "guided-button-edit-checked-milestones"
-    ).style.display = "none";
-    document.getElementById(
-      "guided-button-save-checked-milestones"
-    ).style.display = "flex";
-    document.getElementById(
-      "guided-button-edit-checked-completion-date"
-    ).style.display = "none";
-    document.getElementById(
-      "guided-button-save-checked-completion-date"
-    ).style.display = "flex";
-  });
-
-  $("#guided-button-save-checked-completion-date").on("click", () => {
-    //function that checks is the input is a valid date yyyy-mm-dd
-    const isValidDate = (date) => {
-      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-      return dateRegex.test(date);
-    };
-
-    const guidedCompletionDateInput = document.getElementById(
-      "guided-submission-completion-date"
-    );
-
-    const customCompletionDateInput = document.getElementById(
-      "guided-input-custom-completion-date"
-    );
-
-    //check to see if customCompletionDateInput is not undefined or null
-    if (
-      customCompletionDateInput !== undefined &&
-      customCompletionDateInput !== null
-    ) {
-      if (isValidDate(customCompletionDateInput.value)) {
-        removeAlertMessageIfExists($("#guided-input-custom-completion-date"));
-        guidedCompletionDateInput.value = customCompletionDateInput.value;
-        guidedCompletionDateInput.disabled = true;
-        unHideAndSmoothScrollToElement("guided-div-submission-accordion");
-        return;
-      } else {
-        generateAlertMessage($("#guided-input-custom-completion-date"));
-        return;
-      }
-    }
-    const selectedCompletionDate = document.querySelector(
-      "input[name='completion-date']:checked"
-    );
-    if (selectedCompletionDate) {
-      const completionDate = selectedCompletionDate.value;
-      guidedCompletionDateInput.value = selectedCompletionDate.value;
-      guidedCompletionDateInput.disabled = true;
-      unHideAndSmoothScrollToElement("guided-div-submission-accordion");
-    } else {
-      notyf.error("Please select a completion date");
-      return;
-    }
-    disableElementById("guided-completion-date-container");
-    //switch button from save to edit
-    document.getElementById(
-      "guided-button-save-checked-completion-date"
-    ).style.display = "none";
-    document.getElementById(
-      "guided-button-edit-checked-completion-date"
-    ).style.display = "flex";
-  });
-  $("#guided-button-edit-checked-completion-date").on("click", () => {
-    //re-enable disabled elements and hide completion date selection div
-    enableElementById("guided-completion-date-container");
-    document
-      .getElementById("guided-div-submission-accordion")
-      .classList.add("hidden");
-
-    //switch button from edit to save
-    document.getElementById(
-      "guided-button-edit-checked-completion-date"
-    ).style.display = "none";
-    document.getElementById(
-      "guided-button-save-checked-completion-date"
-    ).style.display = "flex";
-  });
 
   const getCheckedContributors = () => {
     const checkedContributors = document.querySelectorAll(
@@ -9465,55 +9429,6 @@ $(document).ready(() => {
       }
 
       if (pageBeingLeftID === "guided-create-submission-metadata-tab") {
-        const award = $("#guided-submission-sparc-award").val();
-        const date = $("#guided-submission-completion-date").val();
-        const milestones = getTagsFromTagifyElement(guidedSubmissionTagsTagify);
-        //validate submission metadata
-        if (award === "") {
-          errorArray.push({
-            type: "notyf",
-            message:
-              "Please add a SPARC award number to your submission metadata",
-          });
-        }
-        if (date === "") {
-          errorArray.push({
-            type: "notyf",
-            message: "please add a completion date to your submission metadata",
-          });
-        }
-        if (milestones.length === 0) {
-          errorArray.push({
-            type: "notyf",
-            message:
-              "Please add at least one milestone to your submission metadata",
-          });
-        }
-        if (errorArray.length > 0) {
-          // throw errorArray;
-        }
-        // submission data validated, add to JSON
-        var json_arr = [];
-        json_arr.push({
-          award: award,
-          date: date,
-          milestone: milestones[0],
-        });
-        //loop through all milestones except the first one
-        //(already added in first milestone entry)
-        for (milestone of milestones.slice(1)) {
-          json_arr.push({
-            award: "",
-            date: "",
-            milestone: milestone,
-          });
-        }
-        json_str = JSON.stringify(json_arr);
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["json_str"] =
-          json_str;
-        // save the award string to JSONObj to be shared with other award inputs
-        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] =
-          award;
       }
       if (pageBeingLeftID === "guided-airtable-award-tab") {
         const buttonYesImportSparcAward = document.getElementById(
@@ -9561,14 +9476,16 @@ $(document).ready(() => {
       }
       if (pageBeingLeftID === "guided-contributors-tab") {
         ////////////////////////////////////////////////////////////////////////////////
-        const airTableContributorImportDiv = document.getElementById(
+        const contributorFieldSetDiv = document.getElementById(
           "guided-div-contributor-field-set"
         );
-        const contributorFieldSetDiv = document.getElementById(
+        const airTableContributorImportDiv = document.getElementById(
           "guided-div-contributors-imported-from-airtable"
         );
-        //case when user selects contributors from airTable
-        if (!airTableContributorImportDiv.classList.contains("hidden")) {
+        //case when user adds contributors manually
+        if (!contributorFieldSetDiv.classList.contains("hidden")) {
+          console.log("contributors from airtable open");
+
           let allInputsValid = true;
           let contributors = [];
           //get all contributor fields
@@ -9675,8 +9592,8 @@ $(document).ready(() => {
             "contributors"
           ] = contributors;
         } else {
-          //case when user adds contributors manually
-          if (!contributorFieldSetDiv.classList.contains("hidden")) {
+          //case when user selects contributors from airTable
+          if (!airTableContributorImportDiv.classList.contains("hidden")) {
             const checkedContributors = getCheckedContributors();
             //if checkedMilestoneData is empty, create notyf
             if (checkedContributors.length === 0) {
@@ -9698,8 +9615,7 @@ $(document).ready(() => {
             //replace last comma with closing bracket
             contributorInfoFilterString =
               contributorInfoFilterString.slice(0, -1) + ")";
-
-            //Select contributors where contributor first name is Jacob and contributor last name is Smith or contributor first name is John and contributor last name is Doe
+            console.log(contributorInfoFilterString);
             const contributorInfoResult = await base("sparc_members")
               .select({
                 filterByFormula: contributorInfoFilterString,
@@ -10524,16 +10440,6 @@ $(document).ready(() => {
             if (
               buttonNoEnterSubmissionDataManually.classList.contains("selected")
             ) {
-              //delete sodaJSONObj data from imported milestone data
-              delete sodaJSONObj["dataset-metadata"]["submission-metadata"][
-                "unselected-milestones"
-              ];
-              delete sodaJSONObj["dataset-metadata"]["submission-metadata"][
-                "milestones"
-              ];
-              delete sodaJSONObj["dataset-metadata"]["submission-metadata"][
-                "completion-date"
-              ];
               //skip to submission metadata page where user can enter milestones
               //and completion date manually
               setActiveSubPage("guided-submission-metadata-page");
@@ -10557,6 +10463,41 @@ $(document).ready(() => {
             break;
           }
           case "guided-submission-metadata-page": {
+            const award = $("#guided-submission-sparc-award").val();
+            const date = $("#guided-submission-completion-date").val();
+            const milestones = getTagsFromTagifyElement(
+              guidedSubmissionTagsTagify
+            );
+            //validate submission metadata
+            if (award === "") {
+              notyf.error(
+                "Please add a SPARC award number to your submission metadata"
+              );
+              return;
+            }
+            if (date === "") {
+              notyf.error(
+                "Please add a completion date to your submission metadata"
+              );
+              return;
+            }
+            if (milestones.length === 0) {
+              notyf.error(
+                "Please add at least one milestone to your submission metadata"
+              );
+              return;
+            }
+            // save the award string to JSONObj to be shared with other award inputs
+            sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] =
+              award;
+            //Save the data and milestones to the sodaJSONObj
+            sodaJSONObj["dataset-metadata"]["submission-metadata"][
+              "milestones"
+            ] = milestones;
+            sodaJSONObj["dataset-metadata"]["submission-metadata"][
+              "completion-date"
+            ] = date;
+
             hideSubNavAndShowMainNav("next");
             break;
           }

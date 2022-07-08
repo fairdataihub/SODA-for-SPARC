@@ -5481,13 +5481,15 @@
             </button>
           </div>
           <div id="guided-dataset-generation-tab" class="guided--panel hidden">
-            <progress
-              class="progresstrack"
-              id="guided-progress-bar-new-curate"
-              max="100"
-              value="0"
-            ></progress>
-            <div class="space-around" style="margin-top: 15px">
+            <div class="guided--section mt-lg" style="width: 80%">
+              <progress
+                class="progresstrack"
+                id="guided-progress-bar-new-curate"
+                max="100"
+                value="0"
+              ></progress>
+            </div>
+            <div class="space-around" style="margin-top: 25px">
               <table class="ui celled striped table" style="width: 450px">
                 <thead>
                   <tr>
@@ -5529,8 +5531,13 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td class="middle aligned">Dataset name</td>
+                  <tr class="hidden" id="guided-dataset-name-upload-tr">
+                    <td
+                      class="middle aligned"
+                      id="guided-dataset-name-upload-text"
+                    >
+                      Dataset name
+                    </td>
                     <td
                       class="middle aligned text-center collapsing border-left-0 p-0"
                     >
@@ -5540,8 +5547,13 @@
                       ></div>
                     </td>
                   </tr>
-                  <tr>
-                    <td class="middle aligned">Dataset subtitle</td>
+                  <tr class="hidden" id="guided-dataset-subtitle-upload-tr">
+                    <td
+                      class="middle aligned"
+                      id="guided-dataset-subtitle-upload-text"
+                    >
+                      Dataset subtitle
+                    </td>
                     <td
                       class="middle aligned text-center collapsing border-left-0 p-0"
                     >
@@ -5551,8 +5563,13 @@
                       ></div>
                     </td>
                   </tr>
-                  <tr>
-                    <td class="middle aligned">Dataset tags</td>
+                  <tr class="hidden" id="guided-dataset-tags-upload-tr">
+                    <td
+                      class="middle aligned"
+                      id="guided-dataset-tags-upload-text"
+                    >
+                      Dataset tags
+                    </td>
                     <td
                       class="middle aligned text-center collapsing border-left-0 p-0"
                     >
@@ -5562,8 +5579,13 @@
                       ></div>
                     </td>
                   </tr>
-                  <tr>
-                    <td class="middle aligned">Dataset license</td>
+                  <tr class="hidden" id="guided-dataset-license-upload-tr">
+                    <td
+                      class="middle aligned"
+                      id="guided-dataset-license-upload-text"
+                    >
+                      Dataset license
+                    </td>
                     <td
                       class="middle aligned text-center collapsing border-left-0 p-0"
                     >
@@ -5573,8 +5595,13 @@
                       ></div>
                     </td>
                   </tr>
-                  <tr>
-                    <td class="middle aligned">Dataset banner image</td>
+                  <tr class="hidden" id="guided-dataset-banner-image-upload-tr">
+                    <td
+                      class="middle aligned"
+                      id="guided-dataset-banner-image-upload-text"
+                    >
+                      Dataset banner image
+                    </td>
                     <td
                       class="middle aligned text-center collapsing border-left-0 p-0"
                     >
@@ -5584,30 +5611,14 @@
                       ></div>
                     </td>
                   </tr>
-                  <tr>
-                    <td class="middle aligned">Dataset user permissions</td>
+
+                  <tr class="hidden" id="guided-dataset-description-upload-tr">
                     <td
-                      class="middle aligned text-center collapsing border-left-0 p-0"
+                      class="middle aligned"
+                      id="guided-dataset-description-upload-text"
                     >
-                      <div
-                        class="guided--container-upload-status"
-                        id="guided-dataset-user-permissions-upload-status"
-                      ></div>
+                      Dataset description
                     </td>
-                  </tr>
-                  <tr>
-                    <td class="middle aligned">Dataset team permissions</td>
-                    <td
-                      class="middle aligned text-center collapsing border-left-0 p-0"
-                    >
-                      <div
-                        class="guided--container-upload-status"
-                        id="guided-dataset-team-permissions-upload-status"
-                      ></div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="middle aligned">Dataset description</td>
                     <td
                       class="middle aligned text-center collapsing border-left-0 p-0"
                     >
@@ -5617,8 +5628,13 @@
                       ></div>
                     </td>
                   </tr>
-                  <tr>
-                    <td class="middle aligned">Dataset PI Owner</td>
+                  <tr class="hidden" id="guided-dataset-pi-owner-upload-tr">
+                    <td
+                      class="middle aligned"
+                      id="guided-dataset-pi-owner-upload-text"
+                    >
+                      Dataset PI Owner
+                    </td>
                     <td
                       class="middle aligned text-center collapsing border-left-0 p-0"
                     >
@@ -5674,8 +5690,13 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td class="middle aligned">Subjects metadata</td>
+                  <tr class="hidden" id="guided-subjects-metadata-upload-tr">
+                    <td
+                      class="middle aligned"
+                      id="guided-subjects-metadata-upload-text"
+                    >
+                      Subjects metadata
+                    </td>
                     <td
                       class="middle aligned text-center collapsing border-left-0 p-0"
                     >
@@ -5685,8 +5706,13 @@
                       ></div>
                     </td>
                   </tr>
-                  <tr>
-                    <td class="middle aligned">Samples metadata</td>
+                  <tr class="hidden" id="guided-samples-metadata-upload-tr">
+                    <td
+                      class="middle aligned"
+                      id="guided-samples-metadata-upload-text"
+                    >
+                      Samples metadata
+                    </td>
                     <td
                       class="middle aligned text-center collapsing border-left-0 p-0"
                     >
@@ -5696,8 +5722,13 @@
                       ></div>
                     </td>
                   </tr>
-                  <tr>
-                    <td class="middle aligned">Submission metadata</td>
+                  <tr class="hidden" id="guided-submission-metadata-upload-tr">
+                    <td
+                      class="middle aligned"
+                      id="guided-submission-metadata-upload-text"
+                    >
+                      Submission metadata
+                    </td>
                     <td
                       class="middle aligned text-center collapsing border-left-0 p-0"
                     >
@@ -5707,8 +5738,16 @@
                       ></div>
                     </td>
                   </tr>
-                  <tr>
-                    <td class="middle aligned">Dataset description metadata</td>
+                  <tr
+                    class="hidden"
+                    id="guided-dataset-description-metadata-upload-tr"
+                  >
+                    <td
+                      class="middle aligned"
+                      id="guided-dataset-description-metadata-upload-text"
+                    >
+                      Dataset description metadata
+                    </td>
                     <td
                       class="middle aligned text-center collapsing border-left-0 p-0"
                     >
@@ -5718,8 +5757,13 @@
                       ></div>
                     </td>
                   </tr>
-                  <tr>
-                    <td class="middle aligned">README metadata</td>
+                  <tr class="hidden" id="guided-readme-metadata-upload-tr">
+                    <td
+                      class="middle aligned"
+                      id="guided-readme-metadata-upload-text"
+                    >
+                      README metadata
+                    </td>
                     <td
                       class="middle aligned text-center collapsing border-left-0 p-0"
                     >
@@ -5729,8 +5773,13 @@
                       ></div>
                     </td>
                   </tr>
-                  <tr>
-                    <td class="middle aligned">CHANGES metadata</td>
+                  <tr class="hidden" id="guided-changes-metadata-upload-tr">
+                    <td
+                      class="middle aligned"
+                      id="guided-changes-metadata-upload-text"
+                    >
+                      CHANGES metadata
+                    </td>
                     <td
                       class="middle aligned text-center collapsing border-left-0 p-0"
                     >
