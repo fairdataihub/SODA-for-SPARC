@@ -490,7 +490,7 @@ const startupServerAndApiCheck = async () => {
   apiVersionChecked = true;
 
   //After everything has been checked then check for announcements
-  console.log("check here")
+  console.log("check here");
   await checkForAnnouncements();
 };
 
@@ -568,7 +568,6 @@ const checkForAnnouncements = async () => {
     console.log(error);
   }
 };
-
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
