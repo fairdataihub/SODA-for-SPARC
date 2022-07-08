@@ -539,7 +539,7 @@ const checkForAnnouncements = async () => {
     axiosInstance.get().then((response) => {
       let res = response.data;
       console.log(res);
-  
+
       for (var key of Object.keys(res)) {
         console.log(res[key]);
         console.log(key);
