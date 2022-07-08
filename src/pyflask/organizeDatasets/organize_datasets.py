@@ -1414,34 +1414,32 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         "Data files under a valid high-level SPARC folders have been imported"
     )
     create_soda_json_completed = 1
-    return [
-        soda_json_structure,
-        success_message,
-        manifest_error_message,
-        create_soda_json_progress,
-        create_soda_json_total_items,
-    ]
-
-    # now that we have the user and account info pull the top layer
+    return {
+        "soda_object": soda_json_structure,
+        "success_message": success_message,
+        "manifest_error_message": manifest_error_message,
+        "import_progress": create_soda_json_progress,
+        "import_total_items": create_soda_json_total_items,
+    }
 
 def monitor_pennsieve_json_progress():
-     """
+    """
     Function for monitoring progress of soda_json object
     Used for progress bar
     """
     global create_soda_json_completed
     global create_soda_json_total_items
     global create_soda_json_progress
+
     if create_soda_json_progress != 0:
         progress_percentage = (
             create_soda_json_progress / create_soda_json_total_items
         ) * 100
     else:
         progress_percentage = 0
-    res = [
-        create_soda_json_progress,
-        create_soda_json_total_items,
-        progress_percentage,
-        create_soda_json_completed,
-    ]
-    return res
+    return {
+        "import_progress": create_soda_json_progress,
+        "import_total_items": create_soda_json_total_items,
+        "import_progress_percentage": progress_percentage,
+        "import_completed_items": create_soda_json_completed,
+    }

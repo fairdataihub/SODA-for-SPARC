@@ -7905,46 +7905,47 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
   left_progress_bar.style.transform = `rotate(0deg)`;
   right_progress_bar.style.transform = `rotate(0deg)`;
   let pennsieve_progress = setInterval(progressReport, 500);
-  function progressReport() {
+  async function progressReport() {
+    let progressResponse;
     try {
-    await client.get("organize_datasets/dataset_files_and_folders/progress", {})
-    } catch(error) {
-      clientError(error)
+      progressResponse = await client.get(
+        "/organize_datasets/dataset_files_and_folders/progress"
+      );
+    } catch (error) {
+      clientError(error);
+      clearInterval(pennsieve_progress);
+      return;
     }
-    
-    (error, res) => {
-      if (error) {
-        console.log(error);
-      } else {
-        let percentage_amount = res[2].toFixed(2);
-        finished = res[3];
-        percentage_text.innerText = percentage_amount + "%";
-        if (percentage_amount <= 50) {
-          left_progress_bar.style.transform = `rotate(${
-            percentage_amount * 0.01 * 360
-          }deg)`;
-        } else {
-          left_progress_bar.style.transition = "";
-          left_progress_bar.classList.add("notransition");
-          left_progress_bar.style.transform = `rotate(180deg)`;
-          right_progress_bar.style.transform = `rotate(${
-            percentage_amount * 0.01 * 180
-          }deg)`;
-        }
 
-        if (finished === 1) {
-          percentage_text.innerText = "100%";
-          left_progress_bar.style.transform = `rotate(180deg)`;
-          right_progress_bar.style.transform = `rotate(180deg)`;
-          right_progress_bar.classList.remove("notransition");
-          console.log(percentage_text.innerText);
-          clearInterval(pennsieve_progress);
-          setTimeout(() => {
-            progress_container.style.display = "none";
-          }, 2000);
-        }
-      }
-    });
+    let res = progressResponse.data;
+
+    let percentage_amount = res["import_progress_percentage"].toFixed(2);
+    finished = res["import_completed_items"];
+    percentage_text.innerText = percentage_amount + "%";
+    if (percentage_amount <= 50) {
+      left_progress_bar.style.transform = `rotate(${
+        percentage_amount * 0.01 * 360
+      }deg)`;
+    } else {
+      left_progress_bar.style.transition = "";
+      left_progress_bar.classList.add("notransition");
+      left_progress_bar.style.transform = `rotate(180deg)`;
+      right_progress_bar.style.transform = `rotate(${
+        percentage_amount * 0.01 * 180
+      }deg)`;
+    }
+
+    if (finished === 1) {
+      percentage_text.innerText = "100%";
+      left_progress_bar.style.transform = `rotate(180deg)`;
+      right_progress_bar.style.transform = `rotate(180deg)`;
+      right_progress_bar.classList.remove("notransition");
+      console.log(percentage_text.innerText);
+      clearInterval(pennsieve_progress);
+      setTimeout(() => {
+        progress_container.style.display = "none";
+      }, 2000);
+    }
   }
 
   try {
@@ -7956,8 +7957,6 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
         },
       }
     );
-
-    clearInterval(pennsieve_progress);
 
     let data = filesFoldersResponse.data;
 

@@ -3,7 +3,8 @@ from organizeDatasets import (
     bf_get_dataset_files_folders,
     create_soda_json_object_backend,
     monitor_local_json_progress,
-    monitor_pennsieve_json_progress
+    monitor_pennsieve_json_progress,
+    import_pennsieve_dataset
 )
 
 from namespaces import NamespaceEnum, get_namespace
@@ -48,7 +49,7 @@ class BfGetDatasetFilesFolders(Resource):
         sodajsonobject = json.loads(sodajsonobject)
 
         try:
-            return bf_get_dataset_files_folders(sodajsonobject)
+            return import_pennsieve_dataset(sodajsonobject)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
@@ -141,9 +142,8 @@ class ImportDatasetOrganizeDatasetsProgress(Resource):
             api.abort(500, str(e))
 
 
-@api.route('dataset_files_and_folders/progress')
+@api.route('/dataset_files_and_folders/progress')
 class ImportDatasetPennsieveProgress(Resource):
-    @api.marshal_with(model_import_dataset_organize_datasets_progress_response)
     @api.doc(responses={200: "Success", 500: "Internal Server Error"}, description="Returns the progress of the current Pennsieve dataset import operation. Used in Organize Datasets.")
     def get(self):
         try: 
