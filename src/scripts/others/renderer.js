@@ -558,7 +558,7 @@ const checkForAnnouncements = async () => {
         if (appVersion === key) {
           //check for app version
           console.log(Object.keys(res[key]));
-          console.log(Object.keys(res[key]).includes(platform))
+          console.log(Object.keys(res[key]).includes(platform));
           if (Object.keys(res[key]).includes(platform)) {
             //check for platform
 
@@ -577,7 +577,7 @@ const checkForAnnouncements = async () => {
             }
           } else {
             //check if all is in json structure
-            if(Object.keys(res[key]).includes("all")) {
+            if (Object.keys(res[key]).includes("all")) {
               Swal.fire({
                 title: res[key]["all"]["title"],
                 html: `<p>${res[key]["all"]["message"]}</p>`,
