@@ -502,6 +502,7 @@ startupServerAndApiCheck();
 ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
   // run pre flight checks once the server connection is confirmed
   // wait until soda is connected to the backend server
+  console.log("run pre_flight starts here")
   while (!sodaIsConnected || !apiVersionChecked) {
     await wait(1000);
   }
@@ -542,24 +543,35 @@ const checkForAnnouncements = async () => {
   try {
     axiosInstance.get().then((response) => {
       let res = response.data;
+      console.log(os.platform);
+      console.log(appVersion);
       console.log(res);
 
       for (var key of Object.keys(res)) {
-        console.log(res[key]);
-        console.log(key);
-        if (res[key]["show"] === true) {
-          console.log("this is for show");
-          Swal.fire({
-            title: res[key]["title"],
-            html: `<p>${res[key]["message"]}</p>`,
-            icon: res[key]["type"],
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            confirmButtonText: "Okay",
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-          });
+        //look for key with current version of app
+        //then if show = true then check platform
+        //if platforms match up create announcement alert
+        //testig yourself oiyt here
+        if(appVersion === key) {
+          if (res[key]["show"] === true) {
+            console.log(res[key]);
+            console.log(key);
+            console.log(res[key]["platform"].includes(os.platform()));
+            if(res[key]["platform"].includes(os.platform())) {
+              Swal.fire({
+                title: res[key]["title"],
+                html: `<p>${res[key]["message"]}</p>`,
+                icon: res[key]["type"],
+                heightAuto: false,
+                backdrop: "rgba(0,0,0, 0.4)",
+                confirmButtonText: "Okay",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+              });
+            }
+          }
         }
+
       }
     });
   } catch (error) {
