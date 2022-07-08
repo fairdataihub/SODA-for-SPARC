@@ -1947,7 +1947,9 @@ const setActiveSubPage = (pageIdToActivate) => {
       if (unselectedMilestones) {
         renderMilestoneSelectionTable(unselectedMilestones);
         const selectedMilestones =
-          sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
+          sodaJSONObj["dataset-metadata"]["submission-metadata"][
+            "selected-milestones"
+          ];
         if (selectedMilestones) {
           //Check the checkboxes for previously selected milestones
           const milestoneDescriptionsToCheck = selectedMilestones.map(
@@ -1975,13 +1977,17 @@ const setActiveSubPage = (pageIdToActivate) => {
     }
 
     case "guided-completion-date-selection-page": {
-      const milestoneData =
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
-      console.log(milestoneData);
+      const selectedMilestoneData =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"][
+          "selected-milestones"
+        ];
+      console.log(selectedMilestoneData);
 
       // get a unique set of completionDates from checkedMilestoneData
       const uniqueCompletionDates = Array.from(
-        new Set(milestoneData.map((milestone) => milestone.completionDate))
+        new Set(
+          selectedMilestoneData.map((milestone) => milestone.completionDate)
+        )
       );
       console.log(uniqueCompletionDates);
 
@@ -2034,8 +2040,10 @@ const setActiveSubPage = (pageIdToActivate) => {
     case "guided-submission-metadata-page": {
       const sparcAward =
         sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-      const milestoneData =
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
+      const selectedMilestoneData =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"][
+          "selected-milestones"
+        ];
       const completionDate =
         sodaJSONObj["dataset-metadata"]["submission-metadata"][
           "completion-date"
@@ -2056,10 +2064,10 @@ const setActiveSubPage = (pageIdToActivate) => {
         sparcAwardInput.value = "";
       }
 
-      //If milestoneData exists in sodaJSONObj, add the milestones to the tagify input
+      //If selectedMilestoneData exists in sodaJSONObj, add the milestones to the tagify input
       //If not, reset the tagify input
-      if (milestoneData) {
-        const milestones = milestoneData.map((milestone) => {
+      if (selectedMilestoneData) {
+        const milestones = selectedMilestoneData.map((milestone) => {
           return milestone["milestone"];
         });
         guidedSubmissionTagsTagify.addTags(milestones);
@@ -10496,7 +10504,7 @@ $(document).ready(() => {
               }
 
               sodaJSONObj["dataset-metadata"]["submission-metadata"][
-                "milestones"
+                "selected-milestones"
               ] = checkedMilestoneData;
               setActiveSubPage("guided-completion-date-selection-page");
             }
