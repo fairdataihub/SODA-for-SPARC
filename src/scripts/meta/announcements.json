@@ -1,26 +1,30 @@
 {
-  "5.0.0": {
+  "5.3.3": {
     "show": false,
     "title": "Outdated version",
     "message": "Please update to the latest version of the SODA.",
+    "platform": ["linux", "darwin", "win32"],
     "type": "warning"
   },
-  "5.1.0": {
+  "5.4.0": {
     "show": false,
     "title": "Outdated version",
     "message": "Please update to the latest version of the SODA.",
+    "platform": ["linux", "darwin", "win32"],
     "type": "warning"
   },
   "6.0.0": {
     "show": false,
     "title": "App version outdated",
     "message": "Please update to the latest version of the SODA.",
+    "platform": ["linux", "darwin", "win32"],
     "type": "warning"
   },
   "6.1.0": {
     "show": true,
     "title": "Welcome to version 6.1.0!",
     "message": "New features have been added!<br> <li>You can now import hidden files to your dataset (.DS_Store files are not accepted). </li><li>README.txt is now a mandatory metadata file for all datasets.</li><li>The login prompts have been updated to look more appealing.</li>",
+    "platform": ["linux", "darwin", "win32"],
     "type": "info"
   }
 }
