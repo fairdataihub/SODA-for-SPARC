@@ -528,29 +528,33 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
 
 //TODO: check for announcements here
 const checkForAnnouncements = async () => {
-  const url = `https://raw.githubusercontent.com/fairdataihub/SODA-for-SPARC/announcements/src/scripts/meta/announcements.js?timestamp=${new Date().getTime()}`;
+  const url = `https://raw.githubusercontent.com/fairdataihub/SODA-for-SPARC/announcements/src/scripts/meta/announcements.json?timestamp=${new Date().getTime()}`;
 
   const axiosInstance = axios.create({
     baseURL: url,
     timeout: 0,
   });
 
-  axiosInstance.get().then((response) => {
-    let res = response.data;
-    console.log(res);
-
-    for (var key of Object.keys(res)) {
-      console.log(res[key]);
-      console.log(key);
-      if (res[key]["show"] === true) {
-        console.log("this is for show");
-        Swal.fire({
-          title: res[key]["title"],
-          text: res[key]["message"],
-        });
+  try {
+    axiosInstance.get().then((response) => {
+      let res = response.data;
+      console.log(res);
+  
+      for (var key of Object.keys(res)) {
+        console.log(res[key]);
+        console.log(key);
+        if (res[key]["show"] === true) {
+          console.log("this is for show");
+          Swal.fire({
+            title: res[key]["title"],
+            text: res[key]["message"],
+          });
+        }
       }
-    }
-  });
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 checkForAnnouncements();
