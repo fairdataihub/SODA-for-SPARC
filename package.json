@@ -1,5 +1,24 @@
 {
-  "dependencies": {
-    "prettier": "^2.7.1"
+  "name": "soda-for-sparc",
+  "version": "1.0.0",
+  "description": "This file is only used for linting via Github actions",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fairdataihub/SODA-for-SPARC.git"
+  },
+  "author": "fairdataihub-bot",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fairdataihub/SODA-for-SPARC/issues"
+  },
+  "homepage": "https://fairdataihub.org/sodaforsparc",
+  "devDependencies": {
+    "prettier": "^2.3.2"
   }
 }
