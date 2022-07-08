@@ -572,7 +572,7 @@ const checkForAnnouncements = async () => {
           }
         } else {
           //should be for all then
-          if(res[key]["show"] === true) {
+          if (res[key]["show"] === true) {
             Swal.fire({
               title: res[key]["title"],
               html: `<p>${res[key]["message"]}</p>`,
