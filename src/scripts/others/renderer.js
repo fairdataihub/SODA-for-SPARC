@@ -562,15 +562,16 @@ const checkForAnnouncements = async () => {
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 didOpen: () => {
-                  let swal_alert = document.getElementsByClassName("swal2-popup")[0];
+                  let swal_alert =
+                    document.getElementsByClassName("swal2-popup")[0];
                   swal_alert.style.width = "40rem";
-                }
+                },
               });
             }
           } else {
             //check if all is in json structure
             //announcements for all OS's
-            if(Object.keys(res[key]).includes("all")) {
+            if (Object.keys(res[key]).includes("all")) {
               Swal.fire({
                 title: res[key]["all"]["title"],
                 html: `<p>${res[key]["all"]["message"]}</p>`,
@@ -581,9 +582,10 @@ const checkForAnnouncements = async () => {
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 didOpen: () => {
-                  let swal_alert = document.getElementsByClassName("swal2-popup")[0];
+                  let swal_alert =
+                    document.getElementsByClassName("swal2-popup")[0];
                   swal_alert.style.width = "40rem";
-                }
+                },
               });
             }
           }
