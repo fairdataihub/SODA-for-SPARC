@@ -1,26 +1,26 @@
 {
-  "1.0.0": {
+  "5.0.0": {
     "show": false,
     "title": "Outdated version",
-    "message": "Please update to the latest version of the application.",
+    "message": "Please update to the latest version of the SODA.",
     "type": "warning"
   },
-  "1.1.0": {
+  "5.1.0": {
     "show": false,
     "title": "Outdated version",
-    "message": "Please update to the latest version of the application.",
+    "message": "Please update to the latest version of the SODA.",
     "type": "warning"
   },
   "6.0.0": {
     "show": false,
-    "title": "Outdated version",
-    "message": "Please update to the latest version of the application.",
+    "title": "App version outdated",
+    "message": "Please update to the latest version of the SODA.",
     "type": "warning"
   },
   "6.1.0": {
     "show": true,
     "title": "Welcome to version 6.1.0!",
-    "message": "New features have been added! You can now import hidden files to your dataset",
+    "message": "<p>New features have been added! You can now import hidden files to your dataset (.DS_Store files are not accepted). <br>README.txt is now a mandatory metadata file for all datasets.<br>The login prompts have been updated to look more appealing.</p>",
     "type": "info"
   }
 }
