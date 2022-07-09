@@ -1,307 +1,56 @@
-<tr class="hidden" id="guided-dataset-team-permissions-upload-tr">
-  <td class="middle aligned" id="guided-dataset-team-permissions-upload-text">
-    Dataset team permissions
-  </td>
-  <td class="middle aligned text-center collapsing border-left-0 p-0">
-    <div
-      class="guided--container-upload-status"
-      id="guided-dataset-team-permissions-upload-status"
-    ></div>
-  </td>
-</tr>
-
-<div class="guided--panel" id="guided-add-sample-derivative-data">
-  <div class="guided--section">
-    <h1 class="guided--text-sub-step">
-      Specify your subject and sample derivative data in the intervace below
-    </h1>
-  </div>
-  <div class="guided--capsule-container-sub-page">
-    <div
-      class="guided--capsule-sub-page"
-      id="guided-derivative-samples-organization-page-capsule"
-    ></div>
-    <div
-      class="guided--capsule-sub-page"
-      id="guided-derivative-subjects-organization-page-capsule"
-    ></div>
-  </div>
-  <div
-    class="guided--panel mt-md sub-page"
-    id="guided-derivative-samples-organization-page"
-  >
-    <div class="guided--section" id="guided-derivative-samples-prompt">
-      <label class="guided--form-label centered">
-        Do you have derivative data for your samples?
-      </label>
-      <div class="guided--radio-button-container" style="margin-bottom: 7px">
-        <button
-          class="ui positive basic button guided--radio-button"
-          id="guided-button-add-sample-derivative-data"
-          data-next-element="guided-derivative-samples-file-explorer-container"
-        >
-          Yes
-        </button>
-        <button
-          class="ui negative basic button guided--radio-button"
-          id="guided-button-no-sample-derivative-data"
-        >
-          No
-        </button>
-      </div>
+<div class="guided--card-dataset-info">
+  <div class="guided--card-dataset-info">
+    <div class="guided--dataset-description-container" style="width: 40%">
+      <h5 class="guided--dataset-description">Upload progress:</h5>
     </div>
-    <div
-      class="guided--container-subject-samples mt-md hidden"
-      id="guided-derivative-samples-file-explorer-container"
-    >
-      <div class="guided--hlf-selection-container">
-        <label class="guided--form-label centered">Dataset samples: </label>
-        <aside
-          class="guided--hlf-selection-aside"
-          id="guided-derivative-samples-aside"
-        ></aside>
-      </div>
-      <div
-        id="guided-derivative-samples-file-explorer-intro"
-        class="guided--panel"
-        style="height: 475px; padding: 25px"
+    <div class="guided--dataset-content-container" style="width: 60%">
+      <h5
+        class="guided--dataset-content"
+        id="guided-review-dataset-user-permissions"
       >
-        <div class="guided--section" style="justify-content: flex-start">
-          <h1 class="guided--text-sub-step">
-            Select a sample on the left to add its derivative data.
-          </h1>
-          <div
-            id="derivative-samples-file-explorer-black-arrow-lottie-container"
-            class="black-arrow-lottie-container"
-          ></div>
-        </div>
-      </div>
+        No additional user permissions added
+      </h5>
     </div>
   </div>
-  <div
-    class="guided--panel mt-md sub-page hidden"
-    id="guided-derivative-subjects-organization-page"
-  >
-    <div class="guided--section" id="guided-derivative-subjects-prompt">
-      <label class="guided--form-label centered">
-        Do you have derivative data for your subjects?
-      </label>
-      <div class="guided--radio-button-container" style="margin-bottom: 7px">
-        <button
-          class="ui positive basic button guided--radio-button"
-          id="guided-button-add-subject-derivative-data"
-          data-next-element="guided-derivative-subjects-file-explorer-container"
-        >
-          Yes
-        </button>
-        <button
-          class="ui negative basic button guided--radio-button"
-          id="guided-button-no-subject-derivative-data"
-        >
-          No
-        </button>
-      </div>
-    </div>
-    <div
-      class="guided--container-subject-samples mt-md hidden"
-      id="guided-derivative-subjects-file-explorer-container"
-    >
-      <div class="guided--hlf-selection-container">
-        <label class="guided--form-label centered">Dataset subjects: </label>
-        <aside
-          class="guided--hlf-selection-aside"
-          id="guided-derivative-subjects-aside"
-        ></aside>
-      </div>
-      <div
-        id="guided-derivative-subjects-file-explorer-intro"
-        class="guided--panel"
-        style="height: 475px; padding: 25px"
-      >
-        <div class="guided--section" style="justify-content: flex-start">
-          <h1 class="guided--text-sub-step">
-            Select a subject on the left to add its derivative data.
-          </h1>
-          <div
-            id="derivative-subjects-file-explorer-black-arrow-lottie-container"
-            class="black-arrow-lottie-container"
-          ></div>
-        </div>
-      </div>
-    </div>
+  <div class="guided--dataset-content-container" style="width: 60%">
+    <h5
+      class="guided--dataset-content"
+      style="white-space: pre-wrap"
+      id="guided-review-dataset-tags"
+    ></h5>
   </div>
 </div>
-
-<div
-  class="guided--section mt-lg neumorphic guided-protocol-field-container"
-  style="position: relative"
->
-  <i
-    class="fas fa-times fa-2x"
-    style="
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      color: black;
-      cursor: pointer;
-    "
-    onclick="removeProtocolField(this)"
-  >
-  </i>
-  <h2 class="guided--text-sub-step">Enter protocol details</h2>
-  <label class="guided--form-label mt-lg">Protocol URL: </label>
-  <input
-    class="guided--input guided-protocol-url-input"
-    type="text"
-    placeholder="Enter protocol URL here"
-    onkeyup="validateInput($(this))"
-  />
-  <label class="guided--form-label mt-lg">Protocol description:</label>
-  <textarea
-    class="guided--input guided--text-area guided-protocol-description-input"
-    type="text"
-    placeholder="Enter protocol description here"
-    style="height: 7.5em; padding-bottom: 20px"
-    onkeyup="validateInput($(this))"
-  >
-The protocol used to generate this dataset</textarea
-  >
-</div>
-
-<div
-  id="guided-source-data-organization-tab"
-  class="guided--panel hidden guided-curate-new-dataset-branch-page"
->
-  <div class="guided--section w-100">
-    <h1 class="guided--text-sub-step">Source data for samples</h1>
-    <p class="guided--help-text w-100">
-      Source data refers to unaltered, raw files from an experiment, For
-      example, this may include the “truly” raw k-space data for a Magnetic
-      Resonance (MR) image that has not yet been reconstructed (in this case,
-      the reconstructed DICOM or NIFTI files would be found within the primary
-      folder).
-    </p>
+<div class="guided--card-dataset-info">
+  <div class="guided--card-dataset-info">
+    <div class="guided--dataset-description-container" style="width: 40%">
+      <h5 class="guided--dataset-description">Total size:</h5>
+    </div>
+    <div class="guided--dataset-content-container" style="width: 60%">
+      <h5 class="guided--dataset-content">
+        No additional user permissions added
+      </h5>
+    </div>
   </div>
-
-  <div class="guided--panel" id="guided-add-sample-source-data">
-    <div class="guided--section">
-      <h1 class="guided--text-sub-step">
-        Specify your subject and sample source data in the intervace below
-      </h1>
+  <div class="guided--dataset-content-container" style="width: 60%">
+    <h5
+      class="guided--dataset-content"
+      style="white-space: pre-wrap"
+      id="guided-review-dataset-tags"
+    ></h5>
+  </div>
+</div>
+<div class="guided--card-dataset-info">
+  <div class="guided--card-dataset-info">
+    <div class="guided--dataset-description-container" style="width: 40%">
+      <h5 class="guided--dataset-description">Elapsed time:</h5>
     </div>
-    <div class="guided--capsule-container-sub-page">
-      <div
-        class="guided--capsule-sub-page"
-        id="guided-source-samples-organization-page-capsule"
-      ></div>
-      <div
-        class="guided--capsule-sub-page"
-        id="guided-source-subjects-organization-page-capsule"
-      ></div>
+    <div class="guided--dataset-content-container" style="width: 60%">
+      <h5 class="guided--dataset-content">
+        No additional user permissions added
+      </h5>
     </div>
-    <div
-      class="guided--panel mt-md sub-page"
-      id="guided-source-samples-organization-page"
-    >
-      <div class="guided--section" id="guided-source-samples-prompt">
-        <label class="guided--form-label centered">
-          Do you have source data for your samples?
-        </label>
-        <div class="guided--radio-button-container" style="margin-bottom: 7px">
-          <button
-            class="ui positive basic button guided--radio-button"
-            id="guided-button-add-sample-source-data"
-            data-next-element="guided-source-samples-file-explorer-container"
-          >
-            Yes
-          </button>
-          <button
-            class="ui negative basic button guided--radio-button"
-            id="guided-button-no-sample-source-data"
-          >
-            No
-          </button>
-        </div>
-      </div>
-      <div
-        class="guided--container-subject-samples mt-md hidden"
-        id="guided-source-samples-file-explorer-container"
-      >
-        <div class="guided--hlf-selection-container">
-          <label class="guided--form-label centered">Dataset samples: </label>
-          <aside
-            class="guided--hlf-selection-aside"
-            id="guided-source-samples-aside"
-          ></aside>
-        </div>
-        <div
-          id="guided-source-samples-file-explorer-intro"
-          class="guided--panel"
-          style="height: 475px; padding: 25px"
-        >
-          <div class="guided--section" style="justify-content: flex-start">
-            <h1 class="guided--text-sub-step">
-              Select a sample on the left to add its source data.
-            </h1>
-            <div
-              id="source-samples-file-explorer-black-arrow-lottie-container"
-              class="black-arrow-lottie-container"
-            ></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div
-      class="guided--panel mt-md sub-page hidden"
-      id="guided-source-subjects-organization-page"
-    >
-      <div class="guided--section" id="guided-source-subjects-prompt">
-        <label class="guided--form-label centered">
-          Do you have source data for your subjects?
-        </label>
-        <div class="guided--radio-button-container" style="margin-bottom: 7px">
-          <button
-            class="ui positive basic button guided--radio-button"
-            id="guided-button-add-subject-source-data"
-            data-next-element="guided-source-subjects-file-explorer-container"
-          >
-            Yes
-          </button>
-          <button
-            class="ui negative basic button guided--radio-button"
-            id="guided-button-no-subject-source-data"
-          >
-            No
-          </button>
-        </div>
-      </div>
-      <div
-        class="guided--container-subject-samples mt-md hidden"
-        id="guided-source-subjects-file-explorer-container"
-      >
-        <div class="guided--hlf-selection-container">
-          <label class="guided--form-label centered">Dataset subjects: </label>
-          <aside
-            class="guided--hlf-selection-aside"
-            id="guided-source-subjects-aside"
-          ></aside>
-        </div>
-        <div
-          id="guided-source-subjects-file-explorer-intro"
-          class="guided--panel"
-          style="height: 475px; padding: 25px"
-        >
-          <div class="guided--section" style="justify-content: flex-start">
-            <h1 class="guided--text-sub-step">
-              Select a subject on the left to add its source data.
-            </h1>
-            <div
-              id="source-subjects-file-explorer-black-arrow-lottie-container"
-              class="black-arrow-lottie-container"
-            ></div>
-          </div>
-        </div>
-      </div>
-    </div>
+  </div>
+  <div class="guided--dataset-content-container" style="width: 60%">
+    <h5 class="guided--dataset-content" style="white-space: pre-wrap"></h5>
   </div>
 </div>

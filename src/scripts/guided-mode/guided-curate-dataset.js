@@ -1481,7 +1481,7 @@ const traverseToTab = (targetPageID) => {
           "No additional team permissions added";
       }
 
-      datasetTagsReviewText.innerHTML = datasetTags;
+      datasetTagsReviewText.innerHTML = datasetTags.join(", ");
       datasetLicenseReviewText.innerHTML = datasetLicense;
 
       const folderStructurePreview = document.getElementById(
@@ -7723,12 +7723,12 @@ $(document).ready(() => {
     //Add contributors from sodaJSONObj to guidedContributorInformation in the "contributors" key
     let contributors =
       sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+
+    guidedContributorInformation["contributors"] = contributors;
     //change the contributor's conRole property from an array to a comma seperated string
-    for (const contributor of contributors) {
+    for (const contributor of guidedContributorInformation["contributors"]) {
       contributor["conRole"] = contributor["conRole"].join(", ");
     }
-    guidedContributorInformation["contributors"] = contributors;
-
     guidedContributorInformation = JSON.stringify(guidedContributorInformation);
 
     const guidedAdditionalLinks = JSON.stringify(
@@ -7777,20 +7777,22 @@ $(document).ready(() => {
       unHideAndSmoothScrollToElement(
         "guided-div-dataset-metadata-upload-status-table"
       );
-
-      let addSubjectsMetadataResponse = await guidedUploadSubjectsMetadata(
-        guidedBfAccount,
-        guidedDatasetName,
-        guidedSubjectsMetadata
-      );
-      console.log(addSubjectsMetadataResponse);
-
-      let addSamplesMetadataResponse = await guidedUploadSamplesMetadata(
-        guidedBfAccount,
-        guidedDatasetName,
-        guidedSamplesMetadata
-      );
-      console.log(addSamplesMetadataResponse);
+      if (guidedSubjectsMetadata.length > 0) {
+        let addSubjectsMetadataResponse = await guidedUploadSubjectsMetadata(
+          guidedBfAccount,
+          guidedDatasetName,
+          guidedSubjectsMetadata
+        );
+        console.log(addSubjectsMetadataResponse);
+      }
+      if (guidedSamplesMetadata.length > 0) {
+        let addSamplesMetadataResponse = await guidedUploadSamplesMetadata(
+          guidedBfAccount,
+          guidedDatasetName,
+          guidedSamplesMetadata
+        );
+        console.log(addSamplesMetadataResponse);
+      }
 
       let addSubmissionMetadataResponse = await guidedUploadSubmissionMetadata(
         guidedBfAccount,
@@ -7836,89 +7838,18 @@ $(document).ready(() => {
       //Display the main dataset upload progress bar
       unHideAndSmoothScrollToElement("guided-div-dataset-upload-progress-bar");
 
-      /*
       const mainCurationResponse = await guided_main_curate();
-      console.log(mainCurationResponse);*/
+      console.log(mainCurationResponse);
     } catch (e) {
       console.error(e);
     }
-
-    /*create_dataset(
-      guidedDatasetName,
-      guidedDatasetSubtitle,
-      guidedTags,
-      guidedLicense
-    )
-      .then((res) => {
-        addPennsieveMetadata(
-          guidedBfAccount,
-          guidedDatasetName,
-          guidedBannerImagePath,
-          guidedUsers,
-          guidedTeams
-        );
-      })
-      .then((res) => {
-        guided_add_description(
-          guidedBfAccount,
-          guidedDatasetName,
-          guidedReadMe
-        );
-      })
-      .then((res) => {
-        guidedUploadSubjectsMetadata(
-          guidedBfAccount,
-          guidedDatasetName,
-          guidedSubjectsMetadata
-        );
-      })
-      .then((res) => {
-        guidedUploadSamplesMetadata(
-          guidedBfAccount,
-          guidedDatasetName,
-          guidedSamplesMetadata
-        );
-      })
-      .then(guided_main_curate())
-
-      .then(
-        guided_add_dataset_metadata(
-          guidedBfAccount,
-          guidedDatasetName,
-          guidedSubjectsMetadata,
-          guidedSamplesMetadata,
-          guidedSubmissionMetadataJSON
-        )
-      )
-      .then(guided_add_metadata(guidedBfAccount, guidedDatasetName))
-      
-      .then((res) => {
-        guided_add_PI_owner(guidedBfAccount, guidedDatasetName, guidedPIOwner);//this will need to change as PI owner obj changed
-      })
-      .catch((error) => {
-        console.log(error);
-        Swal.fire({
-          icon: "error",
-          text: error,
-          confirmButtonText: "OK",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-      });
-  };
-  /*
-  const guidedUpdateJSONStructureGenerate = () => {
-    sodaJSONObj["generate-dataset"] = {
-      destination: "bf",
-      "generate-option": "existing-bf",
-    };*/
   };
 
-  function guided_initiate_generate() {
+  const guided_initiate_generate = async () => {
     // Initiate curation by calling Python function
     let manifest_files_requested = false;
-    var main_curate_status = "Solving";
-    var main_total_generate_dataset_size;
+    let main_curate_status = "Solving";
+    let main_total_generate_dataset_size;
 
     if ("manifest-files" in sodaJSONObj) {
       if ("destination" in sodaJSONObj["manifest-files"]) {
@@ -7937,7 +7868,6 @@ $(document).ready(() => {
     sodaJSONObj["generate-dataset"]["destination"] = "bf";
     sodaJSONObj["generate-dataset"]["generate-option"] = "existing-bf";
     let dataset_destination = "Pennsieve";
-
     client.invoke("api_main_curate_function", sodaJSONObj, (error, res) => {
       if (error) {
         $("#sidebarCollapse").prop("disabled", false);
@@ -7945,79 +7875,7 @@ $(document).ready(() => {
         $("#guided-progress-bar-new-curate").attr("value", 0);
         log.error(error);
         console.error(error);
-        logCurationForAnalytics(
-          "Error",
-          PrepareDatasetsAnalyticsPrefix.CURATE,
-          AnalyticsGranularity.PREFIX,
-          [],
-          determineDatasetLocation()
-        );
-        logCurationForAnalytics(
-          "Error",
-          PrepareDatasetsAnalyticsPrefix.CURATE,
-          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-          ["Step 7", "Generate", "dataset", `${dataset_destination}`],
-          determineDatasetLocation()
-        );
 
-        file_counter = 0;
-        folder_counter = 0;
-        get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
-
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
-          "Size",
-          main_total_generate_dataset_size
-        );
-
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
-          main_total_generate_dataset_size
-        );
-
-        // get dataset id if available
-        let datasetLocation = determineDatasetLocation();
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Size`,
-          datasetLocation === "Pennsieve"
-            ? defaultBfDatasetId
-            : datasetLocation,
-          main_total_generate_dataset_size
-        );
-
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
-          "Number of Files",
-          file_counter
-        );
-
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
-          datasetLocation === "Pennsieve"
-            ? defaultBfDatasetId
-            : datasetLocation,
-          file_counter
-        );
-
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Number of Files`,
-          datasetLocation === "Pennsieve"
-            ? defaultBfDatasetId
-            : datasetLocation,
-          file_counter
-        );
         //refresh dropdowns user has access too
         client.invoke(
           "api_bf_dataset_account",
@@ -8034,123 +7892,10 @@ $(document).ready(() => {
           }
         );
       } else {
+        console.log("dataset upload function returned: " + res);
         main_total_generate_dataset_size = res[1];
         $("#sidebarCollapse").prop("disabled", false);
         log.info("Completed curate function");
-        if (manifest_files_requested) {
-          let high_level_folder_num = 0;
-          if ("dataset-structure" in sodaJSONObj) {
-            if ("folders" in sodaJSONObj["dataset-structure"]) {
-              for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
-                high_level_folder_num += 1;
-              }
-            }
-          }
-
-          // get dataset id if available
-          let datasetLocation = determineDatasetLocation();
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Prepare Datasets - Organize dataset - Step 7 - Generate - Manifest",
-            datasetLocation === "Pennsieve"
-              ? defaultBfDatasetId
-              : datasetLocation,
-            high_level_folder_num
-          );
-
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            `Prepare Datasets - Organize dataset - Step 7 - Generate - Manifest - ${dataset_destination}`,
-            datasetLocation === "Pennsieve"
-              ? defaultBfDatasetId
-              : datasetLocation,
-            high_level_folder_num
-          );
-        }
-
-        file_counter = 0;
-        folder_counter = 0;
-        get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
-
-        logCurationForAnalytics(
-          "Success",
-          PrepareDatasetsAnalyticsPrefix.CURATE,
-          AnalyticsGranularity.PREFIX,
-          [],
-          determineDatasetLocation()
-        );
-
-        // for tracking the total size of all datasets ever created on SODA
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
-          "Size",
-          main_total_generate_dataset_size
-        );
-
-        logCurationForAnalytics(
-          "Success",
-          PrepareDatasetsAnalyticsPrefix.CURATE,
-          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-          ["Step 7", "Generate", "Dataset", `${dataset_destination}`],
-          determineDatasetLocation()
-        );
-
-        let datasetLocation = determineDatasetLocation();
-        // for tracking the total size of all the "saved", "new", "Pennsieve", "local" datasets by category
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
-          datasetLocation === "Pennsieve"
-            ? defaultBfDatasetId
-            : datasetLocation,
-          main_total_generate_dataset_size
-        );
-
-        // tracks the total size of datasets that have been generated to Pennsieve and on the user machine
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Size`,
-          datasetLocation === "Pennsieve"
-            ? defaultBfDatasetId
-            : datasetLocation,
-          main_total_generate_dataset_size
-        );
-
-        // track amount of files for all datasets
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
-          "Number of Files",
-          file_counter
-        );
-
-        // track amount of files for datasets by ID or Local
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
-          datasetLocation === "Pennsieve"
-            ? defaultBfDatasetId
-            : datasetLocation,
-          file_counter
-        );
-
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Number of Files`,
-          datasetLocation === "Pennsieve"
-            ? defaultBfDatasetId
-            : datasetLocation,
-          file_counter
-        );
         //Update the dataset dropdown to refresh datasets user has access to
         client.invoke(
           "api_bf_dataset_account",
@@ -8170,7 +7915,6 @@ $(document).ready(() => {
     });
 
     // Progress tracking function for main curate
-    var countDone = 0;
     var timerProgress = setInterval(main_progressfunction, 1000);
     function main_progressfunction() {
       client.invoke("api_main_curate_function_progress", (error, res) => {
@@ -8179,45 +7923,57 @@ $(document).ready(() => {
           log.error(error);
           console.error(error);
         } else {
-          main_curate_status = res[0];
-          var start_generate = res[1];
-          var main_curate_progress_message = res[2];
-          main_total_generate_dataset_size = res[3];
-          var main_generated_dataset_size = res[4];
-          var elapsed_time_formatted = res[5];
+          let [
+            main_curate_status,
+            start_generate,
+            main_curate_progress_message,
+            main_total_generate_dataset_size,
+            main_generated_dataset_size,
+            elapsed_time_formatted,
+          ] = res;
+          console.log(main_curate_status);
+          console.log(start_generate);
+          console.log(main_curate_progress_message);
+          console.log(main_total_generate_dataset_size);
+          console.log(main_generated_dataset_size);
+          console.log(elapsed_time_formatted);
 
           if (start_generate === 1) {
             $("#guided-progress-bar-new-curate").css("display", "block");
+            //Case when the dataset upload is complete
             if (main_curate_progress_message.includes("Success: COMPLETED!")) {
               setGuidedProgressBarValue(100);
+              console.log("guided upload complete");
             } else {
-              var value =
+              const percentOfDatasetUploaded =
                 (main_generated_dataset_size /
                   main_total_generate_dataset_size) *
                 100;
-              setGuidedProgressBarValue(value);
+              setGuidedProgressBarValue(main_progressfunction);
+
+              let totalSizePrint;
               if (main_total_generate_dataset_size < displaySize) {
-                var totalSizePrint =
+                totalSizePrint =
                   main_total_generate_dataset_size.toFixed(2) + " B";
               } else if (
                 main_total_generate_dataset_size <
                 displaySize * displaySize
               ) {
-                var totalSizePrint =
+                totalSizePrint =
                   (main_total_generate_dataset_size / displaySize).toFixed(2) +
                   " KB";
               } else if (
                 main_total_generate_dataset_size <
                 displaySize * displaySize * displaySize
               ) {
-                var totalSizePrint =
+                totalSizePrint =
                   (
                     main_total_generate_dataset_size /
                     displaySize /
                     displaySize
                   ).toFixed(2) + " MB";
               } else {
-                var totalSizePrint =
+                totalSizePrint =
                   (
                     main_total_generate_dataset_size /
                     displaySize /
@@ -8225,21 +7981,83 @@ $(document).ready(() => {
                     displaySize
                   ).toFixed(2) + " GB";
               }
-              var progressMessage = "";
-              progressMessage += main_curate_progress_message + "<br>";
+              let progressMessage = `
+                <div class="guided--card-dataset-info">
+                  <div class="guided--card-dataset-info">
+                    <div class="guided--dataset-description-container" style="width: 40%">
+                      <h5 class="guided--dataset-description">Upload progress:</h5>
+                    </div>
+                    <div class="guided--dataset-content-container" style="width: 60%">
+                      <h5
+                        class="guided--dataset-content"
+                        id="guided-review-dataset-user-permissions"
+                      >
+                        ${percentOfDatasetUploaded.toFixed(2)}%
+                      </h5>
+                    </div>
+                  </div>
+                  <div class="guided--dataset-content-container" style="width: 60%">
+                    <h5
+                      class="guided--dataset-content"
+                      style="white-space: pre-wrap"
+                      id="guided-review-dataset-tags"
+                    ></h5>
+                  </div>
+                </div>
+                <div class="guided--card-dataset-info">
+                  <div class="guided--card-dataset-info">
+                    <div class="guided--dataset-description-container" style="width: 40%">
+                      <h5 class="guided--dataset-description">Total size:</h5>
+                    </div>
+                    <div class="guided--dataset-content-container" style="width: 60%">
+                      <h5 class="guided--dataset-content">
+                        ${totalSizePrint}
+                      </h5>
+                    </div>
+                  </div>
+                  <div class="guided--dataset-content-container" style="width: 60%">
+                    <h5
+                      class="guided--dataset-content"
+                      style="white-space: pre-wrap"
+                      id="guided-review-dataset-tags"
+                    ></h5>
+                  </div>
+                </div>
+                <div class="guided--card-dataset-info">
+                  <div class="guided--card-dataset-info">
+                    <div class="guided--dataset-description-container" style="width: 40%">
+                      <h5 class="guided--dataset-description">Elapsed time:</h5>
+                    </div>
+                    <div class="guided--dataset-content-container" style="width: 60%">
+                      <h5 class="guided--dataset-content">
+                        ${elapsed_time_formatted}
+                      </h5>
+                    </div>
+                  </div>
+                  <div class="guided--dataset-content-container" style="width: 60%">
+                    <h5 class="guided--dataset-content" style="white-space: pre-wrap"></h5>
+                  </div>
+                </div>
+              `;
+              /*progressMessage += main_curate_progress_message + "<br>";
               progressMessage +=
                 "Progress: " +
-                value.toFixed(2) +
+                percentOfDatasetUploaded.toFixed(2) +
                 "%" +
                 " (total size: " +
                 totalSizePrint +
                 ") " +
                 "<br>";
               progressMessage +=
-                "Elaspsed time: " + elapsed_time_formatted + "<br>";
-              document.getElementById(
-                "para-new-curate-progress-bar-status"
-              ).innerHTML = progressMessage;
+                "Elaspsed time: " + elapsed_time_formatted + "<br>";*/
+              //insert progressMessage after element with id guided-progress-bar-new-curate
+              const guidedProgressBar = document.getElementById(
+                "guided-progress-bar-new-curate"
+              );
+              guidedProgressBar.insertAdjacentHTML("afterend", ``);
+              guidedProgressBar.insertAdjacentHTML("afterend", progressMessage);
+
+              document.getElementById("guided-progress-bar-new-curate");
             }
           } else {
             document.getElementById(
@@ -8251,22 +8069,20 @@ $(document).ready(() => {
               elapsed_time_formatted +
               "<br>";
           }
+          //If the curate function is complete, clear the interval
+          if (main_curate_status === "Done") {
+            $("#sidebarCollapse").prop("disabled", false);
+            console.log("Dataset uploaded!");
+            log.info("Done curate track");
+            // then show the sidebar again
+            // forceActionSidebar("show");
+            clearInterval(timerProgress);
+            // electron.powerSaveBlocker.stop(prevent_sleep_id)
+          }
         }
       });
-
-      if (main_curate_status === "Done") {
-        $("#sidebarCollapse").prop("disabled", false);
-        countDone++;
-        if (countDone > 1) {
-          log.info("Done curate track");
-          // then show the sidebar again
-          // forceActionSidebar("show");
-          clearInterval(timerProgress);
-          // electron.powerSaveBlocker.stop(prevent_sleep_id)
-        }
-      }
     }
-  }
+  };
 
   const guided_main_curate = async () => {
     console.log(sodaJSONObj);
@@ -8322,12 +8138,14 @@ $(document).ready(() => {
               },
             }).then((result) => {
               if (result.isConfirmed) {
+                console.log("initiating dataset generation");
                 guided_initiate_generate();
               } else {
                 $("#sidebarCollapse").prop("disabled", false);
               }
             });
           } else {
+            console.log("initiating dataset generation");
             guided_initiate_generate();
           }
         }
