@@ -3,6 +3,8 @@
 ### Import required python modules
 from gevent import monkey
 import requests
+
+from pyflask.organizeDatasets.organize_datasets import import_pennsieve_dataset
 monkey.patch_all()
 import platform
 import os
@@ -2136,7 +2138,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     # the folderpath for all items in both dataset structures.
     namespace_logger.info("bf_update_existing_dataset step 3 get the status of all files currently on Pennsieve and create the folderpath for all items in both dataset structures")
     main_curate_progress_message = "Fetching files and folders from Pennsieve"
-    current_bf_dataset_files_folders = bf_get_dataset_files_folders(
+    current_bf_dataset_files_folders = import_pennsieve_dataset(
         soda_json_structure.copy()
     )["soda_object"]
     bfsd = current_bf_dataset_files_folders["dataset-structure"]

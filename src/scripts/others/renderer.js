@@ -3878,7 +3878,7 @@ async function updateBfAccountList() {
   try {
     responseObject = await client.get("manage_datasets/bf_account_list");
   } catch (error) {
-    // clientError(error);
+    clientError(error);
     confirm_click_account_function();
     refreshBfUsersList();
     refreshBfTeamsList(bfListTeams);
