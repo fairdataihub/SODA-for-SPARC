@@ -2119,10 +2119,8 @@ const setActiveSubPage = (pageIdToActivate) => {
     case "guided-submission-metadata-page": {
       const sparcAward =
         sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-      const selectedMilestoneData =
-        sodaJSONObj["dataset-metadata"]["submission-metadata"][
-          "selected-milestones"
-        ];
+      const milestones =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
       const completionDate =
         sodaJSONObj["dataset-metadata"]["submission-metadata"][
           "completion-date"
@@ -2145,10 +2143,7 @@ const setActiveSubPage = (pageIdToActivate) => {
 
       //If selectedMilestoneData exists in sodaJSONObj, add the milestones to the tagify input
       //If not, reset the tagify input
-      if (selectedMilestoneData) {
-        const milestones = selectedMilestoneData.map((milestone) => {
-          return milestone["milestone"];
-        });
+      if (milestones) {
         guidedSubmissionTagsTagify.addTags(milestones);
       } else {
         guidedSubmissionTagsTagify.removeAllTags();
@@ -7934,12 +7929,6 @@ $(document).ready(() => {
             main_generated_dataset_size,
             elapsed_time_formatted,
           ] = res;
-          console.log(main_curate_status);
-          console.log(start_generate);
-          console.log(main_curate_progress_message);
-          console.log(main_total_generate_dataset_size);
-          console.log(main_generated_dataset_size);
-          console.log(elapsed_time_formatted);
 
           if (start_generate === 1) {
             $("#guided-progress-bar-new-curate").css("display", "block");
@@ -7988,13 +7977,13 @@ $(document).ready(() => {
                 <div class="guided--card-dataset-info">
                   <div class="guided--card-dataset-info">
                     <div class="guided--dataset-description-container" style="width: 40%">
-                      <h5 class="guided--dataset-description">Upload progress:</h5>
+                      <h5 class="guided--dataset-description">Upload status:</h5>
                     </div>
                     <div class="guided--dataset-content-container" style="width: 60%">
                       <h5
                         class="guided--dataset-content"
                       >
-                        ${percentOfDatasetUploaded.toFixed(2)}%
+                        ${main_curate_progress_message}
                       </h5>
                     </div>
                   </div>
@@ -8008,11 +7997,13 @@ $(document).ready(() => {
                 <div class="guided--card-dataset-info">
                   <div class="guided--card-dataset-info">
                     <div class="guided--dataset-description-container" style="width: 40%">
-                      <h5 class="guided--dataset-description">Total size:</h5>
+                      <h5 class="guided--dataset-description">Upload completion percentage:</h5>
                     </div>
                     <div class="guided--dataset-content-container" style="width: 60%">
-                      <h5 class="guided--dataset-content">
-                        ${totalSizePrint}
+                      <h5
+                        class="guided--dataset-content"
+                      >
+                        ${percentOfDatasetUploaded.toFixed(2)}%
                       </h5>
                     </div>
                   </div>
@@ -8039,32 +8030,38 @@ $(document).ready(() => {
                   </div>
                 </div>
               `;
-              /*progressMessage += main_curate_progress_message + "<br>";
-              progressMessage +=
-                "Progress: " +
-                percentOfDatasetUploaded.toFixed(2) +
-                "%" +
-                " (total size: " +
-                totalSizePrint +
-                ") " +
-                "<br>";
-              progressMessage +=
-                "Elaspsed time: " + elapsed_time_formatted + "<br>";*/
-              //insert progressMessage after element with id guided-progress-bar-new-curate
-
               guidedUploadStatusContainer.innerHTML = progressMessage;
             }
           } else {
-            /*
-            document.getElementById(
-              "para-new-curate-progress-bar-status"
-            ).innerHTML =
-              main_curate_progress_message +
-              "<br>" +
-              "Elapsed time: " +
-              elapsed_time_formatted +
-              "<br>";*/
-            guidedUploadStatusContainer.innerHTML = `Preparing upload`;
+            const uploadStatusMessage = `
+              <div class="guided--card-dataset-info">
+                <div class="guided--card-dataset-info">
+                  <div class="guided--dataset-description-container" style="width: 40%">
+                    <h5 class="guided--dataset-description">Upload status:</h5>
+                  </div>
+                  <div class="guided--dataset-content-container" style="width: 60%">
+                    <h5 class="guided--dataset-content">${main_curate_progress_message}</h5>
+                  </div>
+                </div>
+                <div class="guided--dataset-content-container" style="width: 60%">
+                  <h5 class="guided--dataset-content" style="white-space: pre-wrap"></h5>
+                </div>
+              </div>
+              <div class="guided--card-dataset-info">
+                <div class="guided--card-dataset-info">
+                  <div class="guided--dataset-description-container" style="width: 40%">
+                    <h5 class="guided--dataset-description">Elapsed time:</h5>
+                  </div>
+                  <div class="guided--dataset-content-container" style="width: 60%">
+                    <h5 class="guided--dataset-content">${elapsed_time_formatted}</h5>
+                  </div>
+                </div>
+                <div class="guided--dataset-content-container" style="width: 60%">
+                  <h5 class="guided--dataset-content" style="white-space: pre-wrap"></h5>
+                </div>
+              </div>
+            `;
+            guidedUploadStatusContainer.innerHTML = uploadStatusMessage;
           }
           //If the curate function is complete, clear the interval
           if (main_curate_status === "Done") {
@@ -8075,6 +8072,22 @@ $(document).ready(() => {
             // forceActionSidebar("show");
             clearInterval(timerProgress);
             // electron.powerSaveBlocker.stop(prevent_sleep_id)
+            const uploadCompleteMessage = `
+              <div class="guided--card-dataset-info">
+                <div class="guided--card-dataset-info">
+                  <div class="guided--dataset-description-container" style="width: 40%">
+                    <h5 class="guided--dataset-description">Upload status:</h5>
+                  </div>
+                  <div class="guided--dataset-content-container" style="width: 60%">
+                    <h5 class="guided--dataset-content">Dataset successfully uploaded to Pennsieve!</h5>
+                  </div>
+                </div>
+                <div class="guided--dataset-content-container" style="width: 60%">
+                  <h5 class="guided--dataset-content" style="white-space: pre-wrap"></h5>
+                </div>
+              </div>
+            `;
+            guidedUploadStatusContainer.innerHTML = uploadCompleteMessage;
           }
         }
       });
