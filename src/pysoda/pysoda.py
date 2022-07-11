@@ -1892,7 +1892,13 @@ def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
     """
 
 
-def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_path, banner_image_name, delete_image_after_upload):
+def bf_add_banner_image(
+    selected_bfaccount,
+    selected_bfdataset,
+    banner_image_path,
+    banner_image_name,
+    delete_image_after_upload,
+):
 
     try:
         bf = Pennsieve(selected_bfaccount)
