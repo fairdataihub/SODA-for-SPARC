@@ -4,7 +4,6 @@
 from gevent import monkey
 import requests
 
-from pyflask.organizeDatasets.organize_datasets import import_pennsieve_dataset
 monkey.patch_all()
 import platform
 import os
@@ -39,7 +38,7 @@ from pysodaUtils import (
     bf_dataset_size,
 )
 
-from organizeDatasets import bf_get_dataset_files_folders
+from organizeDatasets import import_pennsieve_dataset
 
 from namespaces import NamespaceEnum, get_namespace_logger
 
