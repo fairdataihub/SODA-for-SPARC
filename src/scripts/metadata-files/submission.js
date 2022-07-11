@@ -655,8 +655,8 @@ async function generateSubmissionHelper(uploadBFBoolean) {
       logMetadataSizeForAnalytics(uploadBFBoolean, "submission.xlsx", size);
     })
     .catch((error) => {
-      clientError(error)
-      let emessage = userErrorMessage(error)
+      clientError(error);
+      let emessage = userErrorMessage(error);
       Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
@@ -664,7 +664,6 @@ async function generateSubmissionHelper(uploadBFBoolean) {
         html: emessage,
         title: "Failed to generate the submission file",
       });
-
 
       logMetadataForAnalytics(
         "Error",
@@ -753,7 +752,7 @@ function changeAirtableDiv(divHide, divShow, buttonHide, buttonShow) {
 function showExistingSubmissionFile(type) {
   if (
     $(`#existing-submission-file-destination`).prop("placeholder") !==
-    "Browse here" &&
+      "Browse here" &&
     $(`#Question-prepare-submission-2`).hasClass("show")
   ) {
     Swal.fire({
@@ -833,7 +832,7 @@ function importExistingSubmissionFile(type) {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       setTimeout(loadExistingSubmissionFile(filePath), 1000);
     }
   }
@@ -948,7 +947,7 @@ async function checkBFImportSubmission() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   let bfDataset = $("#bf_dataset_load_submission").text().trim();
   log.info(`Loading submission file from Pennsieve dataset: ${bfDataset}`);
   try {

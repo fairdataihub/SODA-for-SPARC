@@ -850,7 +850,6 @@ $(document).ready(async function () {
   $("#bf_list_roles_team").selectpicker("refresh");
 });
 
-
 const get_api_key = (login, password, key_name) => {
   return new Promise(async (resolve) => {
     try {
