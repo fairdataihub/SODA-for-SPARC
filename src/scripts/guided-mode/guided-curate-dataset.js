@@ -7923,6 +7923,9 @@ $(document).ready(() => {
           log.error(error);
           console.error(error);
         } else {
+          const guidedUploadStatusContainer = document.getElementById(
+            "guided-upload-status-container"
+          );
           let [
             main_curate_status,
             start_generate,
@@ -7949,7 +7952,7 @@ $(document).ready(() => {
                 (main_generated_dataset_size /
                   main_total_generate_dataset_size) *
                 100;
-              setGuidedProgressBarValue(main_progressfunction);
+              setGuidedProgressBarValue(percentOfDatasetUploaded);
 
               let totalSizePrint;
               if (main_total_generate_dataset_size < displaySize) {
@@ -7990,7 +7993,6 @@ $(document).ready(() => {
                     <div class="guided--dataset-content-container" style="width: 60%">
                       <h5
                         class="guided--dataset-content"
-                        id="guided-review-dataset-user-permissions"
                       >
                         ${percentOfDatasetUploaded.toFixed(2)}%
                       </h5>
@@ -8000,7 +8002,6 @@ $(document).ready(() => {
                     <h5
                       class="guided--dataset-content"
                       style="white-space: pre-wrap"
-                      id="guided-review-dataset-tags"
                     ></h5>
                   </div>
                 </div>
@@ -8019,7 +8020,6 @@ $(document).ready(() => {
                     <h5
                       class="guided--dataset-content"
                       style="white-space: pre-wrap"
-                      id="guided-review-dataset-tags"
                     ></h5>
                   </div>
                 </div>
@@ -8051,15 +8051,11 @@ $(document).ready(() => {
               progressMessage +=
                 "Elaspsed time: " + elapsed_time_formatted + "<br>";*/
               //insert progressMessage after element with id guided-progress-bar-new-curate
-              const guidedProgressBar = document.getElementById(
-                "guided-progress-bar-new-curate"
-              );
-              guidedProgressBar.insertAdjacentHTML("afterend", ``);
-              guidedProgressBar.insertAdjacentHTML("afterend", progressMessage);
 
-              document.getElementById("guided-progress-bar-new-curate");
+              guidedUploadStatusContainer.innerHTML = progressMessage;
             }
           } else {
+            /*
             document.getElementById(
               "para-new-curate-progress-bar-status"
             ).innerHTML =
@@ -8067,7 +8063,8 @@ $(document).ready(() => {
               "<br>" +
               "Elapsed time: " +
               elapsed_time_formatted +
-              "<br>";
+              "<br>";*/
+            guidedUploadStatusContainer.innerHTML = `Preparing upload`;
           }
           //If the curate function is complete, clear the interval
           if (main_curate_status === "Done") {
