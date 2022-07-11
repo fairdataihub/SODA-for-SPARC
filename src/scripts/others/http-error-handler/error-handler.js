@@ -42,7 +42,7 @@ function userErrorMessage(error) {
   if (error.response) {
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx
-    errorMessage = `${error.response.status} ${error.response.data.message}`;
+    errorMessage = `${error.response.data.message}`;
   } else if (error.request) {
     // The request was made but no response was received
     // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
