@@ -971,7 +971,7 @@ async function checkBFImportSubmission() {
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       icon: "error",
-      text: userErrorMessage(error),
+      text: error.response.data.message,
     });
     logMetadataForAnalytics(
       "Error",

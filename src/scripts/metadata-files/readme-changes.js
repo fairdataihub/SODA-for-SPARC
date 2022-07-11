@@ -106,7 +106,7 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
       );
     } catch (error) {
       clientError(error);
-      let emessage = userErrorMessage(error);
+      let emessage = error.response.data.message;
 
       Swal.fire({
         title: `Failed to generate the ${upperCaseLetters} file`,
@@ -587,7 +587,7 @@ const getRC = async (type) => {
 
     Swal.fire({
       title: `Failed to load existing ${type} file`,
-      text: userErrorMessage(error),
+      text: error.response.data.message,
       icon: "warning",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",

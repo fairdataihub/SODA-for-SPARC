@@ -2444,7 +2444,7 @@ async function checkBFImportSubjects() {
       backdrop: "rgba(0, 0, 0, 0.4)",
       heightAuto: false,
       icon: "error",
-      text: userErrorMessage(error),
+      text: error.response.data.message,
     });
 
     // log the error to analytics
@@ -2514,7 +2514,7 @@ async function checkBFImportSamples() {
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       icon: "error",
-      text: userErrorMessage(error),
+      text: error.response.data.message,
     });
 
     // log the error to analytics
