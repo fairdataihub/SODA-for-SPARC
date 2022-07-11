@@ -826,6 +826,15 @@ const check_api_key = async () => {
   // If no accounts are found, return false.
   let responseObject;
 
+  if(!hasConnectedAccountWithPennsieve()) {
+    notyf.dismiss(notification);
+    notyf.open({
+      type: "error",
+      message: "No account was found",
+    });
+    return false;
+  }
+
   try {
     responseObject = await client.get("manage_datasets/bf_account_list");
   } catch (e) {
@@ -4412,6 +4421,7 @@ async function retrieveBFAccounts() {
   bfAccountOptions = [];
   bfAccountOptionsStatus = "";
 
+  if(hasConnectedAccountWithPennsieve()) {
   client
     .get("manage_datasets/bf_account_list")
     .then((res) => {
@@ -4426,6 +4436,9 @@ async function retrieveBFAccounts() {
       // clientError(error)
       bfAccountOptionsStatus = error;
     });
+  } else {
+    bfAccountOptionsStatus = "No account connected";
+  }
   return [bfAccountOptions, bfAccountOptionsStatus];
 }
 
