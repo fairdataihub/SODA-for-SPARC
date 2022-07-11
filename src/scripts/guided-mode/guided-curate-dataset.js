@@ -174,6 +174,7 @@ const saveGuidedProgress = (guidedProgressFileName) => {
     guidedProgressFilePath,
     guidedProgressFileName + ".json"
   );
+  sodaJSONObj["progress-save-file-path"] = guidedFilePath;
   // delete sodaJSONObj["dataset-structure"] value that was added only for the Preview tree view
   if ("files" in sodaJSONObj["dataset-structure"]) {
     sodaJSONObj["dataset-structure"]["files"] = {};
@@ -2516,6 +2517,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["completed-tabs"] = [];
   sodaJSONObj["last-modified"] = "";
   sodaJSONObj["button-config"] = {};
+  sodaJSONObj["progress-save-file-path"] = "";
   datasetStructureJSONObj = { folders: {}, files: {} };
 };
 const attachGuidedMethodsToSodaJSONObj = () => {
@@ -5377,6 +5379,35 @@ const getTagsFromTagifyElement = (tagifyElement) => {
 //////////       GUIDED OBJECT ACCESSORS       //////////
 /////////////////////////////////////////////////////////
 const setGuidedDatasetName = (datasetName) => {
+  const previousDatasetName = sodaJSONObj["digital-metadata"]["name"];
+  //If updataing the dataset, update the old banner image path with a new one
+  if (previousDatasetName) {
+    const bannerImagePathToUpdate =
+      sodaJSONObj["digital-metadata"]["banner-image-path"];
+    if (bannerImagePathToUpdate) {
+      const newBannerImagePath = bannerImagePathToUpdate.replace(
+        previousDatasetName,
+        datasetName
+      );
+      //Rename the old banner image folder to the new dataset name
+      fs.renameSync(bannerImagePathToUpdate, newBannerImagePath);
+      //change the banner image path in the JSON obj
+      sodaJSONObj["digital-metadata"]["banner-image-path"] = newBannerImagePath;
+    }
+
+    const progressFilePathToUpdate = sodaJSONObj["progress-save-file-path"];
+    if (progressFilePathToUpdate) {
+      const newProgressFilePath = progressFilePathToUpdate.replace(
+        previousDatasetName,
+        datasetName
+      );
+      //Rename the old progress file to the new dataset name
+      fs.renameSync(progressFilePathToUpdate, newProgressFilePath);
+      //change the progress file path in the JSON obj
+      sodaJSONObj["progress-save-file-path"] = newProgressFilePath;
+    }
+  }
+
   sodaJSONObj["digital-metadata"]["name"] = datasetName;
   $(".guidedDatasetName").text(datasetName);
 };
@@ -8867,10 +8898,7 @@ $(document).ready(() => {
       imageType = "image/jpeg";
     }
     let datasetName = sodaJSONObj["digital-metadata"]["name"];
-    let imagePath = path.join(
-      imageFolder,
-      `${datasetName}-banner-image.` + imageExtension
-    );
+    let imagePath = path.join(imageFolder, `${datasetName}.` + imageExtension);
     let croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType);
 
     imageDataURI.outputFile(croppedImageDataURI, imagePath).then(() => {
