@@ -418,11 +418,11 @@ class SodaApi(object):
             raise e
 
     def api_bf_add_banner_image(
-        self, selected_bfaccount, selected_bfdataset, selected_banner_image
+        self, selected_bfaccount, selected_bfdataset, selected_banner_image, 
     ):
         try:
             return bf_add_banner_image(
-                selected_bfaccount, selected_bfdataset, selected_banner_image
+                selected_bfaccount, selected_bfdataset, selected_banner_image, 
             )
         except Exception as e:
             raise e

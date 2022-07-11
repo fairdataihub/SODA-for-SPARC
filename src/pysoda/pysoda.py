@@ -1892,7 +1892,7 @@ def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
     """
 
 
-def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_path):
+def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_path, banner_image_name, delete_image_after_upload):
 
     try:
         bf = Pennsieve(selected_bfaccount)
@@ -1933,7 +1933,7 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
             and ("guided-banner-images" not in image_folder)
         ):
             shutil.rmtree(image_folder, ignore_errors=True)
-        return "Uploaded!"
+        return banner_image_path
     except Exception as e:
         raise Exception(e)
 

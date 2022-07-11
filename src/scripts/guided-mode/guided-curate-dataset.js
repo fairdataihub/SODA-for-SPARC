@@ -7007,7 +7007,15 @@ $(document).ready(() => {
       "loading"
     );
 
+    /*//Create a temporary banner image copy file since the upload banner image API call deletes the banner image
+    const bannerImageCopyPath = path.join(
+      path.dirname(pathToCroppedImage),
+      "banner-image-copy.png"
+    );
+    fs.copyFileSync(pathToCroppedImage, bannerImageCopyPath);
+*/
     return new Promise((resolve, reject) => {
+      console.log(pathToCroppedImage);
       client.invoke(
         "api_bf_add_banner_image",
         bfAccount,
@@ -7735,7 +7743,7 @@ $(document).ready(() => {
     guidedContributorInformation["contributors"] = contributors.map(
       (contributor) => {
         return {
-          conAffiliation: contributor["conAffliation"],
+          conAffliation: contributor["conAffliation"],
           conID: contributor["conID"],
           conName: contributor["conName"],
           conRole: contributor["conRole"].join(", "),

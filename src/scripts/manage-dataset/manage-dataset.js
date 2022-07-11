@@ -1639,6 +1639,7 @@ const uploadBannerImage = () => {
         selectedBfAccount,
         selectedBfDataset,
         imagePath,
+        true,
         (error, res) => {
           if (error) {
             log.error(error);
