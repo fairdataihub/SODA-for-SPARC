@@ -6200,29 +6200,11 @@ $(document).ready(() => {
               setGuidedDatasetName(datasetNameInputValue);
               setGuidedDatasetSubtitle(datasetSubtitleInputValue);
               saveGuidedProgress(datasetNameInputValue);
-              //delete the old progress file
-              const progressFilePathToDelete = path.join(
-                guidedProgressFilePath,
-                datasetName + ".json"
-              );
-              //delete the progress file
-              fs.unlinkSync(progressFilePathToDelete, (err) => {
-                console.log(err);
-              });
             }
           } else {
             setGuidedDatasetName(datasetNameInputValue);
             setGuidedDatasetSubtitle(datasetSubtitleInputValue);
             saveGuidedProgress(datasetNameInputValue);
-            //delete the old progress file
-            const progressFilePathToDelete = path.join(
-              guidedProgressFilePath,
-              datasetName + ".json"
-            );
-            //delete the progress file
-            fs.unlinkSync(progressFilePathToDelete, (err) => {
-              console.log(err);
-            });
           }
         }
         //transition out of dataset name/subtitle page
@@ -7750,11 +7732,19 @@ $(document).ready(() => {
     let contributors =
       sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
 
-    guidedContributorInformation["contributors"] = contributors;
-    //change the contributor's conRole property from an array to a comma seperated string
-    for (const contributor of guidedContributorInformation["contributors"]) {
-      contributor["conRole"] = contributor["conRole"].join(", ");
-    }
+    guidedContributorInformation["contributors"] = contributors.map(
+      (contributor) => {
+        return {
+          conAffiliation: contributor["conAffliation"],
+          conID: contributor["conID"],
+          conName: contributor["conName"],
+          conRole: contributor["conRole"].join(", "),
+          contributorFirstName: contributor["contributorFirstName"],
+          contributorLastName: contributor["contributorLastName"],
+        };
+      }
+    );
+
     guidedContributorInformation = JSON.stringify(guidedContributorInformation);
 
     const guidedAdditionalLinks = JSON.stringify(
