@@ -770,6 +770,7 @@ const apiVersionsMatch = async () => {
   if (hasConnectedAccountWithPennsieve()) {
     updateBfAccountList();
   }
+
   checkNewAppVersion(); // Added so that version will be displayed for new users
 };
 
@@ -3741,7 +3742,6 @@ function userError(error) {
 
 function refreshBfUsersList() {
   var accountSelected = defaultBfAccount;
-  console.log("Default bf account is: ", defaultBfAccount);
 
   removeOptions(bfListUsers);
   var optionUser = document.createElement("option");
@@ -3870,11 +3870,10 @@ async function updateBfAccountList() {
   try {
     responseObject = await client.get("manage_datasets/bf_account_list");
   } catch (error) {
-    clientError(error);
+    // clientError(error);
     confirm_click_account_function();
     refreshBfUsersList();
     refreshBfTeamsList(bfListTeams);
-
     return;
   }
 
@@ -4407,7 +4406,7 @@ var bfaddaccountTitle = `<h3 style="text-align:center">Connect your Pennsieve ac
     await wait(1000);
   }
 
-  if(!hasConnectedAccountWithPennsieve()) return 
+  //if(!hasConnectedAccountWithPennsieve()) return 
   retrieveBFAccounts();
 })();
 
@@ -4429,7 +4428,7 @@ async function retrieveBFAccounts() {
       showDefaultBFAccount();
     })
     .catch((error) => {
-      clientError(error)
+      // clientError(error)
       bfAccountOptionsStatus = error;
     });
   return [bfAccountOptions, bfAccountOptionsStatus];
@@ -8318,7 +8317,6 @@ async function showBFAddAccountSweetalert() {
     hideClass: {
       popup: "animate__animated animate__fadeOutUp animate__faster",
     },
-    // TODO: Rewrite to Flask API calls
     preConfirm: (result) => {
       if (result === true) {
         var name = $("#bootbox-key-name").val();
