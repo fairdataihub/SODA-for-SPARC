@@ -892,12 +892,54 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         "inputs_metadata.xlsx",
         "outputs_metadata.xlsx",
     ]
+
+    double_extensions = [
+        ".ome.tiff",
+        ".ome.tif",
+        ".ome.tf2,",
+        ".ome.tf8",
+        ".ome.btf",
+        ".ome.xml",
+        ".brukertiff.gz",
+        ".mefd.gz",
+        ".moberg.gz",
+        ".nii.gz",
+        ".mgh.gz",
+        ".tar.gz",
+        ".bcl.gz",
+    ]
+
     global create_soda_json_completed
     global create_soda_json_total_items
     global create_soda_json_progress
     create_soda_json_progress = 0
     create_soda_json_total_items = 0
     create_soda_json_completed = 0
+
+    def verify_file_name(file_name, extension):
+        if extension == "":
+            return file_name
+
+        double_ext = False
+        for ext in double_extensions:
+            if file_name.find(ext) != -1:
+                double_ext = True
+                break
+                
+        extension_from_name = ""
+
+        if double_ext == False:
+            extension_from_name = os.path.splitext(file_name)[1]
+        else:
+            extension_from_name = (
+                os.path.splitext(os.path.splitext(file_name)[0])[1]
+                + os.path.splitext(file_name)[1]
+            )
+
+        if extension_from_name == ("." + extension):
+            return file_name
+        else:
+            return file_name + ("." + extension)
 
     def createFolderStructure(subfolder_json, pennsieve_account, manifest):
         # root level folder will pass subfolders into this function and will recursively check if there are subfolders while creating the json structure
@@ -915,6 +957,13 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                 if (
                     item_name[0:8] != "manifest"
                 ):  # manifest files are not being included json structure
+
+                    #verify file name first
+                    if("extension" not in children_content):
+                        item_name = verify_file_name(item_name, "")
+                    else:
+                        item_name = verify_file_name(item_name, children_content["extension"])
+                        
                     subfolder_json["files"][item_name] = {
                         "action": ["existing"],
                         "path": item_id,
