@@ -3,32 +3,32 @@
  */
 
 const hasConnectedAccountWithPennsieve = () => {
-    const ini = require("ini");
+  const ini = require("ini");
 
-    // get the path to home directory 
-    const homeDir = require("os").homedir();
-    const path = require("path");
-    const configFilePath = path.join(homeDir, ".pennsieve", "config.ini");
+  // get the path to home directory
+  const homeDir = require("os").homedir();
+  const path = require("path");
+  const configFilePath = path.join(homeDir, ".pennsieve", "config.ini");
 
-    // parse the config file
-    let config = ini.parse(require("fs").readFileSync(configFilePath, "utf-8"));
+  // parse the config file
+  let config = ini.parse(require("fs").readFileSync(configFilePath, "utf-8"));
 
-    // search for a default profile key in the config 
-    let globalProfile = config.global
-    if (!globalProfile) return false
+  // search for a default profile key in the config
+  let globalProfile = config.global;
+  if (!globalProfile) return false;
 
-    // check if default_profile has been set 
-    if (!globalProfile.default_profile) return false
+  // check if default_profile has been set
+  if (!globalProfile.default_profile) return false;
 
-    let defaultProfileKey = globalProfile.default_profile
-    if (!config[defaultProfileKey]) return false
+  let defaultProfileKey = globalProfile.default_profile;
+  if (!config[defaultProfileKey]) return false;
 
-    let defaultProfile = config[defaultProfileKey]
+  let defaultProfile = config[defaultProfileKey];
 
-    // check if the default profile has a token key and secret key 
-    if (!defaultProfile.api_token || !defaultProfile.api_secret) return false
+  // check if the default profile has a token key and secret key
+  if (!defaultProfile.api_token || !defaultProfile.api_secret) return false;
 
-    return true
-}
+  return true;
+};
 
 module.exports = { hasConnectedAccountWithPennsieve };
