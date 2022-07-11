@@ -2568,7 +2568,6 @@ function loadDataFrametoUI(type) {
 
 function loadDataFrametoUISamples(type) {
   // separate regular headers and custom headers
-  // console.log(samplesTableData[0]);
   const lowercasedHeaders = samplesTableData[0].map((header) =>
     header.toLowerCase()
   );

@@ -85,7 +85,6 @@ const createPyProc = () => {
   let port = "" + selectPort();
 
   log.info(script);
-  console.log(script);
   if (require("fs").existsSync(script)) {
     log.info("file exists");
   } else {
@@ -252,7 +251,6 @@ function initialize() {
         createWindow();
         var first_launch = nodeStorage.getItem("firstlaunch");
         if (first_launch == true || first_launch == undefined) {
-          console.log("first launch");
           mainWindow.reload();
           mainWindow.focus();
           nodeStorage.setItem("firstlaunch", false);

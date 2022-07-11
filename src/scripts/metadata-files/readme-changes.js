@@ -97,8 +97,6 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
         Destinations.PENNSIEVE
       );
 
-      console.log(`Generating metadata file readme changes response: ${res}`);
-
       const size = res["size"];
 
       logMetadataSizeForAnalytics(

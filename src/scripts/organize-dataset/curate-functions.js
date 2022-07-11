@@ -850,13 +850,10 @@ $(document).ready(async function () {
   $("#bf_list_roles_team").selectpicker("refresh");
 });
 
-// TODO: Test this function. Likely too many promises nested for no reason.
+
 const get_api_key = (login, password, key_name) => {
   return new Promise(async (resolve) => {
     try {
-      console.log(`The username is ${login}`);
-      console.log(`The password is ${password}`);
-      console.log(`The key name is ${key_name}`);
       let bf_get_pennsieve_secret_key = await client.post(
         `/manage_datasets/pennsieve_api_key_secret`,
         {
@@ -1229,7 +1226,6 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
         accountPresent = false;
       }
       if (accountPresent === false) {
-        console.log("No account found");
         //If there is no API key pair, warning will pop up allowing user to sign in
         await Swal.fire({
           icon: "warning",
@@ -1283,7 +1279,6 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
           }
 
           let result = responseObject.data.datasets;
-          console.log(result);
           datasetList = [];
           datasetList = result;
           refreshDatasetList();
@@ -1292,7 +1287,6 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       //after request check length again
       //if 0 then no datasets have been created
       if (datasetList.length === 0) {
-        console.log("Dont have a single stinking dataset twice");
         Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
           cancelButtonText: "Cancel",
@@ -1332,11 +1326,8 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
         );
       }
 
-      console.log("Dataset list is not 0");
       //datasets do exist so display popup with dataset options
       //else datasets have been created
-      console.log(datasetList);
-      console.log(`Dataset list length is: ${datasetList.length}`);
       if (datasetList.length > 0) {
         await Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",

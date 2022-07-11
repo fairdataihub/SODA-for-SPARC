@@ -3758,7 +3758,6 @@ function refreshBfUsersList() {
       .get(`manage_datasets/bf_get_users?selected_account=${accountSelected}`)
       .then((res) => {
         let users = res.data["users"];
-        // console.log("Get users response: ", users);
         // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
         $("#bf_list_users").selectpicker("refresh");
         $("#bf_list_users").find("option:not(:first)").remove();
@@ -3955,8 +3954,6 @@ async function showPublishingStatus(callback) {
           `/disseminate_datasets/datasets/${selectedBfDataset}/publishing_status?selected_account=${selectedBfAccount}`
         );
         let res = get_publishing_status.data;
-
-        console.log(res);
 
         try {
           //update the dataset's publication status and display
@@ -4422,8 +4419,7 @@ async function retrieveBFAccounts() {
       for (const myitem in accounts) {
         bfAccountOptions[accounts[myitem]] = accounts[myitem];
       }
-      console.log(`BF Accounts: `, bfAccountOptions);
-      console.log(`Accounts return value`, accounts);
+
       showDefaultBFAccount();
     })
     .catch((error) => {
@@ -6752,7 +6748,6 @@ ipcRenderer.on(
                   );
 
                   let { data } = monitorProgressResponse;
-                  console.log(data);
                   percentage_amount = data["progress_percentage"].toFixed(2);
                   finished = data["create_soda_json_completed"];
                   progressBar_rightSide = document.getElementById(
@@ -6781,8 +6776,6 @@ ipcRenderer.on(
 
                     clearInterval(local_progress);
                     progressBar_rightSide.classList.remove("notransition");
-                    console.log("Dataset structure json: ");
-                    console.log(datasetStructureJSONObj);
                     populate_existing_folders(datasetStructureJSONObj);
                     populate_existing_metadata(sodaJSONObj);
                     $("#para-continue-location-dataset-getting-started").text(
@@ -7465,7 +7458,6 @@ async function initiate_generate() {
 
     let { data } = mainCurationProgressResponse;
 
-    console.log("Progress data is: ", data);
     main_curate_status = data["main_curate_status"];
     var start_generate = data["start_generate"];
     var main_curate_progress_message = data["main_curate_progress_message"];
@@ -7942,7 +7934,6 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
       left_progress_bar.style.transform = `rotate(180deg)`;
       right_progress_bar.style.transform = `rotate(180deg)`;
       right_progress_bar.classList.remove("notransition");
-      console.log(percentage_text.innerText);
       clearInterval(pennsieve_progress);
       setTimeout(() => {
         progress_container.style.display = "none";
@@ -7988,7 +7979,6 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
 const curation_consortium_check = async (mode = "") => {
   let selected_account = defaultBfAccount;
   let selected_dataset = defaultBfDataset;
-  console.log(selected_account);
 
   $(".spinner.post-curation").show();
   $("#curation-team-unshare-btn").hide();
@@ -9100,7 +9090,6 @@ $("#validate_dataset_bttn").on("click", async () => {
 
 function openFeedbackForm() {
   let feedback_btn = document.getElementById("feedback-btn");
-  console.log(feedback_btn.classList);
   if (!feedback_btn.classList.contains("is-open")) {
     feedback_btn.click();
   }

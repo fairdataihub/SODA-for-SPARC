@@ -2850,8 +2850,6 @@ $("#button-submit-dataset").click(async () => {
       .then((detailsResponse) => {
         let detailsData = detailsResponse.data;
 
-        console.log(`detailsData: ${JSON.stringify(detailsData)}`);
-
         if (
           detailsData["uploaded_files"] > 0 &&
           detailsData["upload_folder_count" > uploadedFolders]

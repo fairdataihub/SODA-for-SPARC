@@ -2237,7 +2237,6 @@ async function transitionFreeFormMode(
   $("#para-submit_prepublishing_review-status").text("");
 
   if (ev.getAttribute("data-next") === "div_make_pi_owner_permissions") {
-    console.log("selection made here");
     let nodeStorage = new JSONStorage(app.getPath("userData"));
     let previous_choice = nodeStorage.getItem("previously_selected_PI");
     if ($(`#bf_list_users_pi option[value='${previous_choice}']`).length > 0) {

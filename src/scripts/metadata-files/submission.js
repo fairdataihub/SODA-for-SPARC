@@ -1,6 +1,7 @@
 /*
 This file contains all of the functions related to the submission.xlsx file
 */
+
 /// save airtable api key
 const addAirtableKeyBtn = document.getElementById("button-add-airtable-key");
 
@@ -654,42 +655,16 @@ async function generateSubmissionHelper(uploadBFBoolean) {
       logMetadataSizeForAnalytics(uploadBFBoolean, "submission.xlsx", size);
     })
     .catch((error) => {
-      if (error.response) {
-        console.log(error.response);
-        const message = error.response.data.message;
-        console.log(error.response.status);
-        Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          icon: "error",
-          html: message,
-          title: "Failed to generate the submission file",
-        });
-      } else if (error.request) {
-        console.log("Request");
-        console.log(error.request);
-        Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          icon: "error",
-          html: error.request.responsText,
-          title: "Failed to generate the submission file",
-        });
-      } else {
-        console.log("Else");
-        console.log("Error", error.message);
-        Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          icon: "error",
-          html: error.message,
-          title: "Failed to generate the submission file",
-        });
-      }
-      // console.log(error)
-      // console.log(error.message)
-      // log.error(error);
-      // //console.error(error);
+      clientError(error)
+      let emessage = userErrorMessage(error)
+      Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        icon: "error",
+        html: emessage,
+        title: "Failed to generate the submission file",
+      });
+
 
       logMetadataForAnalytics(
         "Error",
@@ -778,7 +753,7 @@ function changeAirtableDiv(divHide, divShow, buttonHide, buttonShow) {
 function showExistingSubmissionFile(type) {
   if (
     $(`#existing-submission-file-destination`).prop("placeholder") !==
-      "Browse here" &&
+    "Browse here" &&
     $(`#Question-prepare-submission-2`).hasClass("show")
   ) {
     Swal.fire({
@@ -858,7 +833,7 @@ function importExistingSubmissionFile(type) {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       setTimeout(loadExistingSubmissionFile(filePath), 1000);
     }
   }
@@ -973,7 +948,7 @@ async function checkBFImportSubmission() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   let bfDataset = $("#bf_dataset_load_submission").text().trim();
   log.info(`Loading submission file from Pennsieve dataset: ${bfDataset}`);
   try {
