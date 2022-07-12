@@ -88,7 +88,7 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
     try:
         res = bf_get_doi(selected_bfaccount, selected_bfdataset)
         if res["doi"] != "None":
-            abort(400, "Error: A DOI has already been reserved for this dataset")
+            abort(400, "A DOI has already been reserved for this dataset")
     except Exception as e:
         raise e
 

@@ -795,11 +795,11 @@ def load_existing_submission_file(filepath):
 
     except Exception as e:
         if is_file_not_found_exception(e):
-            abort(400, "Error: Local submission file not found")
+            abort(400, "Local submission file not found")
 
         # TODO: TEST check if error can indicate if file is not in the correct format TEST
         if is_invalid_file_exception(e):
-            abort(400, "Error: Local submission file is not in the correct format")
+            abort(400, "Local submission file is not in the correct format")
 
         raise Exception(
             "SODA cannot read this submission.xlsx file. If you are trying to retrieve a submission.xlsx file from Pennsieve, please make sure you are signed in with your Pennsieve account on SODA."
@@ -857,12 +857,12 @@ def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
     try: 
         bf = Pennsieve(bfaccount)
     except Exception:
-        abort(400, "Error: Please select a valid Pennsieve account.")
+        abort(400, "Please select a valid Pennsieve account.")
 
     try: 
         myds = bf.get_dataset(bfdataset)
     except Exception:
-        abort(400, "Error: Please select a valid Pennsieve dataset.")
+        abort(400, "Please select a valid Pennsieve dataset.")
     
 
     for i in range(len(myds.items)):
@@ -897,12 +897,12 @@ def import_bf_RC(bfaccount, bfdataset, file_type):
     try:
         bf = Pennsieve(bfaccount)
     except Exception:
-        abort(400, "Error: Please select a valid Pennsieve account.")
+        abort(400, "Please select a valid Pennsieve account.")
 
     try:
         myds = bf.get_dataset(bfdataset)
     except Exception:
-        abort(400, "Error: Please select a valid Pennsieve dataset.")
+        abort(400, "Please select a valid Pennsieve dataset.")
 
     for i in range(len(myds.items)):
 
@@ -916,7 +916,7 @@ def import_bf_RC(bfaccount, bfdataset, file_type):
             response = requests.get(url)
             return {"text": response.text}
 
-    abort (400, f"Error: no {file_type} file was found at the root of the dataset provided.")
+    abort (400, f"No {file_type} file was found at the root of the dataset provided.")
 
 
 # path to local SODA folder for saving manifest files
