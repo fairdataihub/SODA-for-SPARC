@@ -1,4 +1,4 @@
-name: env-proton-python
+name: env-electron-python
 channels:
   - defaults
   - conda-forge

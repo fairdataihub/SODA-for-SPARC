@@ -6800,6 +6800,7 @@ $(document).ready(() => {
     const result = await Promise.allSettled(promises);
     return result;
   };
+
   $("#guided-button-preview-folder-structure").on("click", () => {
     Swal.fire({
       title: "Dataset folder structure preview",
