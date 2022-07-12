@@ -24,16 +24,21 @@ const nodeStorage = new JSONStorage(app.getPath("userData"));
  * Python Process
  *************************************************************/
 
-const PY_DIST_FOLDER = "pysodadist";
-const PY_FOLDER = "pysoda";
-const PY_MODULE = "api"; // without .py suffix
+// flask setup environment variables
+const PY_FLASK_DIST_FOLDER = "pyflaskdist";
+const PY_FLASK_FOLDER = "pyflask";
+const PY_FLASK_MODULE = "app";
+let PORT = "4242";
+let pyflaskProcess = null;
 
-let pyProc = null;
-let pyPort = null;
-
+/**
+ * Determine if the application is running from a packaged version or from a dev version.
+ * The resources path is used for Linux and Mac builds and the app.getAppPath() is used for Windows builds.
+ * @returns {boolean} True if the app is packaged, false if it is running from a dev version.
+ */
 const guessPackaged = () => {
-  const windowsPath = path.join(__dirname, PY_DIST_FOLDER);
-  const unixPath = path.join(process.resourcesPath, PY_MODULE);
+  const windowsPath = path.join(__dirname, PY_FLASK_DIST_FOLDER);
+  const unixPath = path.join(process.resourcesPath, PY_FLASK_MODULE);
 
   if (process.platform === "darwin" || process.platform === "linux") {
     if (require("fs").existsSync(unixPath)) {
@@ -52,24 +57,30 @@ const guessPackaged = () => {
   }
 };
 
+/**
+ * Get the system path to the api server script.
+ * The script is located in the resources folder for packaged Linux and Mac builds and in the app.getAppPath() for Windows builds.
+ * It is relative to the main.js file directory when in dev mode.
+ * @returns {string} The path to the api server script that needs to be executed to start the Python server
+ */
 const getScriptPath = () => {
   if (!guessPackaged()) {
-    return path.join(__dirname, PY_FOLDER, PY_MODULE + ".py");
+    return path.join(__dirname, PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py");
   }
 
   if (process.platform === "win32") {
-    return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE + ".exe");
+    return path.join(__dirname, PY_FLASK_DIST_FOLDER, PY_FLASK_MODULE + ".exe");
   } else {
-    return path.join(process.resourcesPath, PY_MODULE);
+    return path.join(process.resourcesPath, PY_FLASK_MODULE);
   }
 };
 
 const selectPort = () => {
-  pyPort = 4242;
-  return pyPort;
+  PORT = 4242;
+  return PORT;
 };
 
-const createPyProc = async () => {
+const createPyProc = () => {
   let script = getScriptPath();
   let port = "" + selectPort();
 
@@ -81,48 +92,51 @@ const createPyProc = async () => {
   }
   if (guessPackaged()) {
     log.info("execFile");
-    pyProc = require("child_process").execFile(script, [port], {
+    pyflaskProcess = require("child_process").execFile(script, [port], {
       stdio: "ignore",
     });
   } else {
     log.info("spawn");
-    pyProc = require("child_process").spawn("python", [script, port], {
+    pyflaskProcess = require("child_process").spawn("python", [script, port], {
       stdio: "ignore",
     });
   }
 
-  log.info(pyProc);
-  if (pyProc != null) {
+  if (pyflaskProcess != null) {
     console.log("child process success on port " + port);
     log.info("child process success on port " + port);
   } else {
-    console.error("child process failed to start on port" + port);
+    console.error("child process failed to start on port" + PORT);
   }
 };
 
+/**
+ * Kill the python server process. Needs to be called before SODA closes.
+ */
 const exitPyProc = () => {
+  // Windows does not properly shut off the python server process. This ensures it is killed.
+  const killPythonProcess = () => {
+    // kill pyproc with command line
+    const cmd = require("child_process").spawnSync("taskkill", [
+      "/pid",
+      pyflaskProcess.pid,
+      "/f",
+      "/t",
+    ]);
+  };
+
   // check if the platform is Windows
   if (process.platform === "win32") {
     killPythonProcess();
-    pyProc = null;
-    pyPort = null;
+    pyflaskProcess = null;
+    PORT = null;
   } else {
     // kill signal to pyProc
-    pyProc.kill();
-    pyProc = null;
-    pyPort = null;
+    pyflaskProcess.kill();
+    pyflaskProcess = null;
+    PORT = null;
   }
 };
-
-function killPythonProcess() {
-  // kill pyproc with command line
-  const cmd = require("child_process").spawnSync("taskkill", [
-    "/pid",
-    pyProc.pid,
-    "/f",
-    "/t",
-  ]);
-}
 
 // 5.4.1 change: We call createPyProc in a spearate ready event
 // app.on("ready", createPyProc);
@@ -186,6 +200,7 @@ function initialize() {
   }
 
   const quit_app = () => {
+    console.log("Quit app called");
     app.showExitPrompt = false;
     mainWindow.close();
     /// feedback form iframe prevents closing gracefully
@@ -195,8 +210,10 @@ function initialize() {
     }
   };
 
-  app.on("ready", async () => {
-    await createPyProc();
+  app.on("ready", () => {
+    createPyProc();
+
+    console.log("Creating py proc");
 
     const windowOptions = {
       minWidth: 1121,
@@ -234,7 +251,6 @@ function initialize() {
         createWindow();
         var first_launch = nodeStorage.getItem("firstlaunch");
         if (first_launch == true || first_launch == undefined) {
-          console.log("first launch");
           mainWindow.reload();
           mainWindow.focus();
           nodeStorage.setItem("firstlaunch", false);
@@ -274,6 +290,7 @@ function initialize() {
   });
 
   app.on("will-quit", () => {
+    console.log("About to quit");
     exitPyProc();
   });
 }

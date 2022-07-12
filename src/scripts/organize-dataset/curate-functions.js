@@ -245,89 +245,95 @@ const checkAvailableSpace = () => {
     .getElementById("input-destination-generate-dataset-locally")
     .getAttribute("placeholder");
 
-  checkDiskSpace(location).then((diskSpace) => {
+  checkDiskSpace(location).then(async (diskSpace) => {
+    log.info(`Checking available disk space for ${location}`);
     let freeMemory = diskSpace.free; //returns in bytes
     let freeMemoryMB = roundToHundredth(freeMemory / 1024 ** 2);
 
-    client.invoke("api_check_JSON_size", sodaJSONObj, (error, res) => {
-      if (error) {
-        console.error(error);
-      } else {
-        let tempFolderSize = res;
-        let folderSizeMB = roundToHundredth(tempFolderSize / 1024 ** 2);
-        let warningText =
+    let datasetSizeResponse;
+    try {
+      datasetSizeResponse = await client.get("/curate_datasets/dataset_size", {
+        params: {
+          soda_json_structure: sodaJSONObj,
+        },
+      });
+
+      let tempFolderSize = datasetSizeResponse.data.dataset_size;
+      let folderSizeMB = roundToHundredth(tempFolderSize / 1024 ** 2);
+      let warningText =
+        "Please free up " +
+        roundToHundredth(folderSizeMB) +
+        "MB " +
+        "or consider uploading directly to Pennsieve.";
+
+      //converted to MB/GB/TB for user readability
+      if (folderSizeMB > 1000) {
+        //if bigger than a gb then convert to that
+        folderSizeMB = roundToHundredth(folderSizeMB / 1024);
+        freeMemoryMB = roundToHundredth(freeMemoryMB / 1024);
+        warningText =
           "Please free up " +
           roundToHundredth(folderSizeMB) +
-          "MB " +
+          "GB " +
           "or consider uploading directly to Pennsieve.";
-
-        //converted to MB/GB/TB for user readability
+        //if bigger than a tb then convert to that
         if (folderSizeMB > 1000) {
-          //if bigger than a gb then convert to that
           folderSizeMB = roundToHundredth(folderSizeMB / 1024);
           freeMemoryMB = roundToHundredth(freeMemoryMB / 1024);
           warningText =
             "Please free up " +
             roundToHundredth(folderSizeMB) +
-            "GB " +
+            "TB " +
             "or consider uploading directly to Pennsieve.";
-          //if bigger than a tb then convert to that
-          if (folderSizeMB > 1000) {
-            folderSizeMB = roundToHundredth(folderSizeMB / 1024);
-            freeMemoryMB = roundToHundredth(freeMemoryMB / 1024);
-            warningText =
-              "Please free up " +
-              roundToHundredth(folderSizeMB) +
-              "TB " +
-              "or consider uploading directly to Pennsieve.";
-          }
         }
+      }
 
-        //comparison is done in bytes
-        if (freeMemory < tempFolderSize) {
-          $("#div-confirm-destination-locally button").hide();
-          $("#Question-generate-dataset-choose-ds-name").css("display", "none");
-          document.getElementById(
-            "input-destination-generate-dataset-locally"
-          ).placeholder = "Browse here";
+      //comparison is done in bytes
+      if (freeMemory < tempFolderSize) {
+        $("#div-confirm-destination-locally button").hide();
+        $("#Question-generate-dataset-choose-ds-name").css("display", "none");
+        document.getElementById(
+          "input-destination-generate-dataset-locally"
+        ).placeholder = "Browse here";
 
-          Swal.fire({
-            backdrop: "rgba(0,0,0, 0.4)",
-            confirmButtonText: "OK",
-            heightAuto: false,
-            icon: "warning",
-            showCancelButton: false,
-            title: "Not enough space in storage device",
-            text: warningText,
-            showClass: {
-              popup: "animate__animated animate__zoomIn animate__faster",
-            },
-            hideClass: {
-              popup: "animate__animated animate__zoomOut animate__faster",
-            },
-          });
-
-          logCurationForAnalytics(
-            "Error",
-            PrepareDatasetsAnalyticsPrefix.CURATE,
-            AnalyticsGranularity.ACTION_WITH_DESTINATION,
-            ["Step 6", "Check Storage Space", determineDatasetLocation()],
-            determineDatasetLocation()
-          );
-
-          // return to avoid logging that the user passed the storage space check
-          return;
-        }
+        Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "OK",
+          heightAuto: false,
+          icon: "warning",
+          showCancelButton: false,
+          title: "Not enough space in storage device",
+          text: warningText,
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        });
 
         logCurationForAnalytics(
-          "Success",
+          "Error",
           PrepareDatasetsAnalyticsPrefix.CURATE,
           AnalyticsGranularity.ACTION_WITH_DESTINATION,
           ["Step 6", "Check Storage Space", determineDatasetLocation()],
           determineDatasetLocation()
         );
+
+        // return to avoid logging that the user passed the storage space check
+        return;
       }
-    });
+
+      logCurationForAnalytics(
+        "Success",
+        PrepareDatasetsAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION_WITH_DESTINATION,
+        ["Step 6", "Check Storage Space", determineDatasetLocation()],
+        determineDatasetLocation()
+      );
+    } catch (error) {
+      clientError(error);
+    }
   });
 };
 const btnConfirmLocalDatasetGeneration = document.getElementById(
@@ -429,7 +435,7 @@ const importDatasetStructure = (object) => {
   }
 };
 
-const importGenerateDatasetStep = (object) => {
+const importGenerateDatasetStep = async (object) => {
   if ("generate-dataset" in sodaJSONObj) {
     // Step 1: Where to generate the dataset
     if (sodaJSONObj["generate-dataset"]["destination"] === "local") {
@@ -463,22 +469,26 @@ const importGenerateDatasetStep = (object) => {
         }
         $("#current-bf-account-generate").text(bfAccountSelected);
         $("#para-account-detail-curate").html("");
-        client.invoke(
-          "api_bf_account_details",
-          bfAccountSelected,
-          (error, res) => {
-            if (error) {
-              log.error(error);
-              console.error(error);
-              showHideDropdownButtons("account", "hide");
-            } else {
-              $("#para-account-detail-curate").html(res);
-              updateBfAccountList();
-              // checkPrevDivForConfirmButton("account");
+
+        try {
+          log.info(`Loading account details for ${bfAccountSelected}`);
+          let dataset_request = await client.get(
+            `/manage_datasets/bf_account_details`,
+            {
+              params: {
+                selected_account: bfAccountSelected,
+              },
             }
-          }
-        );
-        // $("#div-bf-account-btns").css("display", "flex");
+          );
+          $("#para-account-detail-curate").html(
+            dataset_request.data.account_details
+          );
+          updateBfAccountList();
+        } catch (error) {
+          clientError(error);
+          showHideDropdownButtons("account", "hide");
+        }
+
         $("#btn-bf-account").trigger("click");
         // Step 3: choose to generate on an existing or new dataset
         if (
@@ -826,26 +836,22 @@ const importOrganizeProgressPrompt = () => {
   }
 };
 
-$(document).ready(function () {
+$(document).ready(async function () {
   var accountDetails = $("#para-account-detail-curate");
   //Observe the paragraph
   this.observer = new MutationObserver(
-    function (mutations) {
-      client.invoke(
-        "api_bf_dataset_account",
-        defaultBfAccount,
-        (error, result) => {
-          if (error) {
-            log.error(error);
-            console.log(error);
-            var emessage = error;
-          } else {
-            datasetList = [];
-            datasetList = result;
-            refreshDatasetList();
-          }
-        }
-      );
+    async function (mutations) {
+      let datasets;
+      try {
+        datasets = await api.getDatasetsForAccount(defaultBfAccount);
+      } catch (error) {
+        clientError(error);
+        return;
+      }
+
+      datasetList = [];
+      datasetList = datasets;
+      refreshDatasetList();
     }.bind(this)
   );
   this.observer.observe(accountDetails.get(0), {
@@ -872,6 +878,7 @@ $(document).ready(function () {
   $("#guided_bf_list_users_and_teams").selectpicker("refresh");
 });
 
+<<<<<<< HEAD
 const get_api_key = async (login, password, key_name) => {
   return new Promise((resolve) => {
     client.invoke(
@@ -887,9 +894,25 @@ const get_api_key = async (login, password, key_name) => {
         } else {
           console.log(res);
           resolve(res);
+=======
+const get_api_key = (login, password, key_name) => {
+  return new Promise(async (resolve) => {
+    try {
+      let bf_get_pennsieve_secret_key = await client.post(
+        `/manage_datasets/pennsieve_api_key_secret`,
+        {
+          username: login,
+          password: password,
+          api_key: key_name,
+>>>>>>> origin/flask-conversion-staging
         }
-      }
-    );
+      );
+      let res = bf_get_pennsieve_secret_key.data;
+      resolve(res);
+    } catch (error) {
+      clientError(error);
+      resolve(["failed", userErrorMessage(error)]);
+    }
   });
 };
 
@@ -954,6 +977,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
         $(".bf-dataset-span").html("None");
         showHideDropdownButtons("dataset", "hide");
 
+<<<<<<< HEAD
         $("#guided-bf-account").html("None");
         $("#guided-account-details").html("");
         client.invoke("api_bf_account_details", bfacct, (error, res) => {
@@ -992,12 +1016,56 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
                 datasetList = [];
                 datasetList = result;
                 refreshDatasetList();
+=======
+        try {
+          let bf_account_details_req = await client.get(
+            `/manage_datasets/bf_account_details`,
+            {
+              params: {
+                selected_account: bfacct,
+              },
+            }
+          );
+          let accountDetails = bf_account_details_req.data.account_details;
+          $("#para-account-detail-curate").html(accountDetails);
+          $("#current-bf-account").text(bfacct);
+          $("#current-bf-account-generate").text(bfacct);
+          $("#create_empty_dataset_BF_account_span").text(bfacct);
+          $(".bf-account-span").text(bfacct);
+          updateBfAccountList();
+
+          try {
+            let responseObject = await client.get(
+              `manage_datasets/bf_dataset_account`,
+              {
+                params: {
+                  selected_account: bfacct,
+                },
+>>>>>>> origin/flask-conversion-staging
               }
-            });
-            showHideDropdownButtons("account", "hide");
-            // checkPrevDivForConfirmButton("account");
+            );
+
+            datasetList = [];
+            datasetList = responseObject.data.datasets;
+            refreshDatasetList();
+          } catch (error) {
+            clientError(error);
+            document.getElementById("para-filter-datasets-status-2").innerHTML =
+              "<span style='color: red'>" + userErrorMessage(error) + "</span>";
+            return;
           }
-        });
+        } catch (error) {
+          clientError(error);
+          Swal.fire({
+            backdrop: "rgba(0,0,0, 0.4)",
+            heightAuto: false,
+            icon: "error",
+            text: userErrorMessage(error),
+            footer:
+              "<a href='https://docs.pennsieve.io/docs/configuring-the-client-credentials'>Why do I have this issue?</a>",
+          });
+          showHideDropdownButtons("account", "hide");
+        }
       } else {
         Swal.showValidationMessage("Please select an account!");
       }
@@ -1083,16 +1151,16 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
               document.getElementById(
                 "swal2-validation-message"
               ).style.flexDirection = "column";
-            } else if (response[0] == "success") {
+            } else if (response["success"] == "success") {
               return {
-                key: response[1],
-                secret: response[2],
-                name: response[3],
+                key: response["key"],
+                secret: response["secret"],
+                name: response["name"],
               };
             }
           }
         },
-      }).then((result) => {
+      }).then(async (result) => {
         if (result.isConfirmed) {
           Swal.fire({
             allowEscapeKey: false,
@@ -1107,6 +1175,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
           let key_name = result.value.name;
           let apiKey = result.value.key;
           let apiSecret = result.value.secret;
+<<<<<<< HEAD
           client.invoke(
             "api_bf_add_account_username",
             key_name,
@@ -1181,11 +1250,84 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
                     "Successfully added! <br/>Loading your account details...",
                   didOpen: () => {
                     Swal.showLoading();
+=======
+          //needs to be replaced
+          try {
+            await client.put(`/manage_datasets/account/username`, {
+              keyname: key_name,
+              key: apiKey,
+              secret: apiSecret,
+            });
+            bfAccountOptions[key_name] = key_name;
+            defaultBfAccount = key_name;
+            defaultBfDataset = "Select dataset";
+
+            try {
+              let bf_account_details_req = await client.get(
+                `/manage_datasets/bf_account_details`,
+                {
+                  params: {
+                    selected_account: defaultBfAccount,
+>>>>>>> origin/flask-conversion-staging
                   },
-                });
-              }
+                }
+              );
+              let result = bf_account_details_req.data.account_details;
+              $("#para-account-detail-curate").html(result);
+              $("#current-bf-account").text(key_name);
+              $("#current-bf-account-generate").text(key_name);
+              $("#create_empty_dataset_BF_account_span").text(key_name);
+              $(".bf-account-span").text(key_name);
+              $("#current-bf-dataset").text("None");
+              $("#current-bf-dataset-generate").text("None");
+              $(".bf-dataset-span").html("None");
+              $("#para-account-detail-curate-generate").html(result);
+              $("#para_create_empty_dataset_BF_account").html(result);
+              $(".bf-account-details-span").html(result);
+              $("#para-continue-bf-dataset-getting-started").text("");
+
+              $("#current_curation_team_status").text("None");
+              $("#curation-team-share-btn").hide();
+              $("#curation-team-unshare-btn").hide();
+              $("#current_sparc_consortium_status").text("None");
+              $("#sparc-consortium-share-btn").hide();
+              $("#sparc-consortium-unshare-btn").hide();
+
+              showHideDropdownButtons("account", "show");
+              confirm_click_account_function();
+              updateBfAccountList();
+            } catch (error) {
+              clientError(error);
+              Swal.fire({
+                backdrop: "rgba(0,0,0, 0.4)",
+                heightAuto: false,
+                icon: "error",
+                text: "Something went wrong!",
+                footer:
+                  '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
+              });
+              showHideDropdownButtons("account", "hide");
+              confirm_click_account_function();
             }
-          );
+
+            Swal.fire({
+              allowEscapeKey: false,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              icon: "success",
+              showConfirmButton: false,
+              timer: 3000,
+              timerProgressBar: true,
+              title: "Successfully added! <br/>Loading your account details...",
+              didOpen: () => {
+                Swal.showLoading();
+              },
+            });
+          } catch (error) {
+            clientError(error);
+            Swal.showValidationMessage(userErrorMessage(error));
+            Swal.close();
+          }
         }
       });
     }
@@ -1196,6 +1338,8 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
     $(".svg-change-current-account.dataset").css("display", "none");
     $("#div-permission-list-2").css("display", "none");
     $(".ui.active.green.inline.loader.small").css("display", "block");
+
+    console.log("Dropdown prompt in dataset section");
 
     setTimeout(async function () {
       // disable the Continue btn first
@@ -1282,68 +1426,69 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
         //account is signed in but no datasets have been fetched or created
         //invoke dataset request to ensure no datasets have been created
         if (datasetList.length === 0) {
-          const fetchData = new Promise((resolve, reject) => {
-            client.invoke(
-              "api_bf_dataset_account",
-              defaultBfAccount,
-              (error, result) => {
-                if (error) {
-                  log.error(error);
-                  console.log(error);
-                  var emessage = error;
-                  reject(emessage);
-                } else {
-                  datasetList = [];
-                  datasetList = result;
-                  refreshDatasetList();
-                  resolve();
-                }
+          let responseObject;
+          try {
+            responseObject = await client.get(
+              `manage_datasets/bf_dataset_account`,
+              {
+                params: {
+                  selected_account: defaultBfAccount,
+                },
               }
             );
-          });
-        }
-        //after request check length again
-        //if 0 then no datasets have been created
-        if (datasetList.length === 0) {
-          Swal.fire({
-            backdrop: "rgba(0,0,0, 0.4)",
-            cancelButtonText: "Cancel",
-            confirmButtonText: "Create new dataset",
-            focusCancel: false,
-            focusConfirm: true,
-            showCloseButton: true,
-            showCancelButton: true,
-            heightAuto: false,
-            allowOutsideClick: false,
-            allowEscapeKey: true,
-            title:
-              "<h3 style='margin-bottom:20px !important'>No dataset found</h3>",
-            html: "It appears that your don't have any datasets on Pennsieve with owner or manage permission.<br><br>Please create one to get started.",
-            showClass: {
-              popup: "animate__animated animate__fadeInDown animate__faster",
-            },
-            hideClass: {
-              popup:
-                "animate__animated animate__fadeOutUp animate__faster animate_fastest",
-            },
-            didOpen: () => {
-              $(".ui.active.green.inline.loader.small").css("display", "none");
-              $(".svg-change-current-account.dataset").css("display", "block");
-            },
-          }).then((result) => {
-            if (result.isConfirmed) {
-              $("#create_new_bf_dataset_btn").click();
-            }
-          });
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Selecting dataset",
-            "User has not created any datasets",
-            1
-          );
+          } catch (error) {
+            clientError(error);
+            return;
+          }
+
+          let result = responseObject.data.datasets;
+          datasetList = [];
+          datasetList = result;
+          refreshDatasetList();
         }
       }
+      //after request check length again
+      //if 0 then no datasets have been created
+      if (datasetList.length === 0) {
+        Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          cancelButtonText: "Cancel",
+          confirmButtonText: "Create new dataset",
+          focusCancel: false,
+          focusConfirm: true,
+          showCloseButton: true,
+          showCancelButton: true,
+          heightAuto: false,
+          allowOutsideClick: false,
+          allowEscapeKey: true,
+          title:
+            "<h3 style='margin-bottom:20px !important'>No dataset found</h3>",
+          html: "It appears that your don't have any datasets on Pennsieve with owner or manage permission.<br><br>Please create one to get started.",
+          showClass: {
+            popup: "animate__animated animate__fadeInDown animate__faster",
+          },
+          hideClass: {
+            popup:
+              "animate__animated animate__fadeOutUp animate__faster animate_fastest",
+          },
+          didOpen: () => {
+            $(".ui.active.green.inline.loader.small").css("display", "none");
+            $(".svg-change-current-account.dataset").css("display", "block");
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $("#create_new_bf_dataset_btn").click();
+          }
+        });
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Selecting dataset",
+          "User has not created any datasets",
+          1
+        );
+      }
+
       //datasets do exist so display popup with dataset options
       //else datasets have been created
       if (datasetList.length > 0) {

@@ -685,7 +685,7 @@ function populateRRID(strain, type, curationMode) {
       $(`#${curationModeSelectorPrefix}bootbox-${type}-strain-RRID`).val("");
       Swal.fire({
         title: `Failed to retrieve the RRID for "${strain}" from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
-        text: "Please check your Internet Connection or contact us at sodasparc@gmail.com",
+        text: "Please check your Internet Connection or contact us at help@fairdataihub.org",
         showCancelButton: false,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
@@ -1955,7 +1955,7 @@ function loadSamplesDataToTable() {
   } else {
     Swal.fire({
       title: "Loaded successfully!",
-      html: 'Add or edit your sample_id(s) in the following table. <br><br><b>Note</b>:: Any value that does not follow SPARC standards (For example: Values for the fields: "Sample type", "Laterality", and "Plane of section") will be not be imported by SODA.',
+      html: 'Add or edit your sample_id(s) in the following table. <br><br><b>Note</b>: Any value that does not follow SPARC standards (For example: Values for the fields: "Sample type", "Laterality", and "Plane of section") will be not be imported by SODA.',
       icon: "success",
       showConfirmButton: true,
       heightAuto: false,
@@ -2624,7 +2624,7 @@ function importExistingSubjectsFile() {
           Swal.showLoading();
         },
       }).then((result) => {});
-      setTimeout(loadSubjectsFileToDataframe(filePath), 1000);
+      setTimeout(loadSubjectsFileToDataframe, 1000, filePath);
     }
   }
 }
@@ -2683,7 +2683,7 @@ function importExistingSamplesFile() {
   }
 }
 
-function checkBFImportSubjects() {
+async function checkBFImportSubjects() {
   Swal.fire({
     title: "Importing the subjects.xlsx file",
     html: "Please wait...",
@@ -2704,49 +2704,56 @@ function checkBFImportSubjects() {
     .find(".subjects-form-entry")) {
     fieldEntries.push(field.name.toLowerCase());
   }
-  client.invoke(
-    "api_import_bf_metadata_file",
-    "subjects.xlsx",
-    fieldEntries,
-    defaultBfAccount,
-    $("#bf_dataset_load_subjects").text().trim(),
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          icon: "error",
-          html: emessage,
-        });
+  let bfDataset = document
+    .getElementById("bf_dataset_load_subjects")
+    .innerText.trim();
 
-        // log the error to analytics
-        logMetadataForAnalytics(
-          "Error",
-          MetadataAnalyticsPrefix.SUBJECTS,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Existing",
-          Destinations.PENNSIEVE
-        );
-      } else {
-        // log the success to analytics
-        logMetadataForAnalytics(
-          "Success",
-          MetadataAnalyticsPrefix.SUBJECTS,
-          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-          "Existing",
-          Destinations.PENNSIEVE
-        );
-        subjectsTableData = res;
-        loadDataFrametoUI("bf");
+  log.info(`Getting subjects.xlsx for dataset ${bfDataset} from Pennsieve.`);
+  try {
+    let import_metadata_file = await client.get(
+      `/prepare_metadata/import_metadata_file`,
+      {
+        params: {
+          selected_account: defaultBfAccount,
+          selected_dataset: bfDataset,
+          file_type: "subjects.xlsx",
+          ui_fields: fieldEntries.toString(),
+        },
       }
-    }
-  );
+    );
+    let res = import_metadata_file.data.subject_file_rows;
+
+    // log the success to analytics
+    logMetadataForAnalytics(
+      "Success",
+      MetadataAnalyticsPrefix.SUBJECTS,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      "Existing",
+      Destinations.PENNSIEVE
+    );
+    subjectsTableData = res;
+    loadDataFrametoUI("bf");
+  } catch (error) {
+    clientError(error);
+    Swal.fire({
+      backdrop: "rgba(0, 0, 0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      text: error.response.data.message,
+    });
+
+    // log the error to analytics
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.SUBJECTS,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.PENNSIEVE
+    );
+  }
 }
 
-function checkBFImportSamples() {
+async function checkBFImportSamples() {
   Swal.fire({
     title: "Importing the samples.xlsx file",
     html: "Please wait...",
@@ -2767,46 +2774,53 @@ function checkBFImportSamples() {
     .find(".samples-form-entry")) {
     fieldEntries.push(field.name.toLowerCase());
   }
-  client.invoke(
-    "api_import_bf_metadata_file",
-    "samples.xlsx",
-    fieldEntries,
-    defaultBfAccount,
-    $("#bf_dataset_load_samples").text().trim(),
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          icon: "error",
-          html: emessage,
-        });
 
-        // log the error to analytics
-        logMetadataForAnalytics(
-          "Error",
-          MetadataAnalyticsPrefix.SAMPLES,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Existing",
-          Destinations.PENNSIEVE
-        );
-      } else {
-        // log the success to analytics
-        logMetadataForAnalytics(
-          "Success",
-          MetadataAnalyticsPrefix.SAMPLES,
-          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-          "Existing",
-          Destinations.PENNSIEVE
-        );
-        samplesTableData = res;
-        loadDataFrametoUISamples("bf");
+  let bfDataset = document.getElementById("bf_dataset_load_samples").innerText;
+
+  log.info(`Getting samples.xlsx for dataset ${bfDataset} from Pennsieve.`);
+  try {
+    let importMetadataResponse = await client.get(
+      `/prepare_metadata/import_metadata_file`,
+      {
+        params: {
+          file_type: "samples.xlsx",
+          selected_account: defaultBfAccount,
+          selected_dataset: bfDataset,
+          ui_fields: fieldEntries.toString(),
+        },
       }
-    }
-  );
+    );
+
+    let res = importMetadataResponse.data.sample_file_rows;
+
+    // log the success to analytics
+    logMetadataForAnalytics(
+      "Success",
+      MetadataAnalyticsPrefix.SAMPLES,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      "Existing",
+      Destinations.PENNSIEVE
+    );
+    samplesTableData = res;
+    loadDataFrametoUISamples("bf");
+  } catch (error) {
+    clientError(error);
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      text: error.response.data.message,
+    });
+
+    // log the error to analytics
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.SAMPLES,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.PENNSIEVE
+    );
+  }
 }
 
 function loadDataFrametoUI(type) {

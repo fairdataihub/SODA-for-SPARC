@@ -7,69 +7,38 @@ from gevent import monkey
 monkey.patch_all()
 import platform
 import os
-from os import listdir, stat, makedirs, mkdir, walk, remove, pardir
 from os.path import (
     isdir,
-    isfile,
     join,
-    splitext,
-    getmtime,
-    basename,
-    normpath,
     exists,
     expanduser,
-    split,
-    dirname,
     getsize,
-    abspath,
 )
 import pandas as pd
 import csv
-import io
-import time
-from time import strftime, localtime
 import shutil
-from shutil import copy2
-from configparser import ConfigParser
 import numpy as np
 from collections import defaultdict
-import subprocess
-from websocket import create_connection
-import socket
-import errno
-import re
-import gevent
 from pennsieve import Pennsieve
-from pennsieve.log import get_logger
-from pennsieve.api.agent import agent_cmd
-from pennsieve.api.agent import AgentError, check_port, socket_address
-from urllib.request import urlopen
-import json
-import collections
-from threading import Thread
-import pathlib
 import requests
+from errorHandlers import is_file_not_found_exception, is_invalid_file_exception, InvalidDeliverablesDocument
 
 from string import ascii_uppercase
 import itertools
 import tempfile
 
 from openpyxl import load_workbook
-from openpyxl import Workbook
 from openpyxl.styles import PatternFill, Font
-from openpyxl.styles.colors import Color
 from docx import Document
 
-from datetime import datetime, timezone
+from flask import abort 
 
-from Bio import Entrez
-
-from pysoda import (
+from manageDatasets import (
     bf_get_current_user_permission,
-    agent_running,
 )
-
 from curate import create_high_level_manifest_files_existing_bf_starting_point
+
+from pysodaUtils import agent_running
 
 userpath = expanduser("~")
 METADATA_UPLOAD_BF_PATH = join(userpath, "SODA", "METADATA")
@@ -78,7 +47,12 @@ TEMPLATE_PATH = ""
 ### Sets the TEMPLATE_PATH using SODA-for-SPARC's basepath so that the prepare_metadata section can find
 ### the templates stored in file_templates direcotory
 def set_template_path(soda_base_path, soda_resources_path):
+    """
+    Sets the TEMPLATE_PATH using SODA-for-SPARC's basepath so that the prepare_metadata section can find
+    the templates stored in file_templates direcotory.
+    """
     global TEMPLATE_PATH
+
 
     # once pysoda has been packaged with pyinstaller
     # it creates an archive that slef extracts to an OS-specific temp directory.
@@ -87,20 +61,19 @@ def set_template_path(soda_base_path, soda_resources_path):
     TEMPLATE_PATH = join(soda_base_path, "file_templates")
 
     # check if os is Darwin/Linux
-    if platform.system() == "Darwin" or platform.system() == "Linux":
-        # check if the TEMPLATE_PATH exists
-        if not exists(TEMPLATE_PATH):
-            # we are in production and we need to use the Resources folder for the file_templates folder
-            TEMPLATE_PATH = join(soda_resources_path, "file_templates")
+    if platform.system() in ["Darwin", "Linux"] and not exists(TEMPLATE_PATH):
+        # we are in production and we need to use the Resources folder for the file_templates folder
+        TEMPLATE_PATH = join(soda_resources_path, "file_templates")
 
 
-# custom Exception class for when a DDD file is in an invalid form
-class InvalidDeliverablesDocument(Exception):
-    pass
+
 
 
 ### Import Data Deliverables document
 def import_milestone(filepath):
+    """
+        Import Data Deliverables document
+    """
     doc = Document(filepath)
     try:
         table = doc.tables[0]
@@ -146,27 +119,22 @@ def extract_milestone_info(datalist):
 
 
 ### Create submission file
-def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_str):
+def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, val_arr):
 
     font_submission = Font(name="Calibri", size=14, bold=False)
 
     source = join(TEMPLATE_PATH, "submission.xlsx")
 
-    if upload_boolean:
-        destination = join(METADATA_UPLOAD_BF_PATH, "submission.xlsx")
+    destination = join(METADATA_UPLOAD_BF_PATH, "submission.xlsx") if upload_boolean else filepath
 
-    else:
-        destination = filepath
+    try:
+        shutil.copyfile(source, destination)
+    except FileNotFoundError as e:
+        raise e
 
-    shutil.copyfile(source, destination)
-
-    # json array to python list
-    val_arr = json.loads(json_str)
     # write to excel file
     wb = load_workbook(destination)
     ws1 = wb["Sheet1"]
-    # date_obj = datetime.strptime(val_arr[2], "%Y-%m")
-    # date_new = date_obj.strftime("%m-%Y")
     for column, arr in zip(excel_columns(start_index=2), val_arr):
         ws1[column + "2"] = arr["award"]
         ws1[column + "3"] = arr["milestone"]
@@ -187,7 +155,7 @@ def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_st
     if upload_boolean:
         upload_metadata_file("submission.xlsx", bfaccount, bfdataset, destination)
 
-    return size
+    return {"size": size}
 
 
 # this function saves and uploads the README/CHANGES to Pennsieve, just when users choose to generate onto Pennsieve
@@ -203,43 +171,43 @@ def upload_RC_file(text_string, file_type, bfaccount, bfdataset):
 
     upload_metadata_file(file_type, bfaccount, bfdataset, file_path)
 
-    return size, file_path
+    return { "size": size, "filepath": file_path }
 
 
 def upload_metadata_file(file_type, bfaccount, bfdataset, file_path):
     ## check if agent is running in the background
     agent_running()
 
-    bf = Pennsieve(bfaccount)
-
+    try:
+        bf = Pennsieve(bfaccount)
+    except Exception:
+        abort(400, "Please select a valid Pennsieve account.")
+    
     # check that the Pennsieve dataset is valid
     try:
         myds = bf.get_dataset(bfdataset)
+    except Exception:
+        abort(400, "Please select a valid Pennsieve dataset.")
 
-    except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
 
-    else:
-        # check that the user has permissions for uploading and modifying the dataset
-        role = bf_get_current_user_permission(bf, myds)
-        if role not in ["owner", "manager", "editor"]:
-            error = "Error: You don't have permissions for uploading to this Pennsieve dataset."
-            raise Exception(error)
+    # check that the user has permissions for uploading and modifying the dataset
+    role = bf_get_current_user_permission(bf, myds)
+    if role not in ["owner", "manager", "editor"]:
+        abort(403, "You don't have permissions for uploading to this Pennsieve dataset.")
 
-        # handle duplicates on Pennsieve: first, obtain the existing file ID
-        for i in range(len(myds.items)):
+    # handle duplicates on Pennsieve: first, obtain the existing file ID
+    for i in range(len(myds.items)):
 
-            if myds.items[i].name == file_type:
+        if myds.items[i].name == file_type:
 
-                item_id = myds.items[i].id
+            item_id = myds.items[i].id
 
-                # then, delete it using Pennsieve method delete(id)
-                bf.delete(item_id)
+            # then, delete it using Pennsieve method delete(id)
+            bf.delete(item_id)
 
-        myds.upload(file_path)
-        # delete the local file that was created for the purpose of uploading to Pennsieve
-        os.remove(file_path)
+    myds.upload(file_path)
+    # delete the local file that was created for the purpose of uploading to Pennsieve
+    os.remove(file_path)
 
 
 def excel_columns(start_index=0):
@@ -317,17 +285,17 @@ def fillColor(color, cell):
 ### Prepare dataset-description file
 
 
-def populate_dataset_info(workbook, val_obj):
+def populate_dataset_info(ws, val_obj):
     ## name, description, type, samples, subjects
-    workbook["D5"] = val_obj["name"]
-    workbook["D6"] = val_obj["description"]
-    workbook["D3"] = val_obj["type"]
-    workbook["D29"] = val_obj["number of subjects"]
-    workbook["D30"] = val_obj["number of samples"]
+    ws["D5"] = val_obj["name"]
+    ws["D6"] = val_obj["description"]
+    ws["D3"] = val_obj["type"]
+    ws["D29"] = val_obj["number of subjects"]
+    ws["D30"] = val_obj["number of samples"]
 
     ## keywords
     for i, column in zip(range(len(val_obj["keywords"])), excel_columns(start_index=3)):
-        workbook[column + "7"] = val_obj["keywords"][i]
+        ws[column + "7"] = val_obj["keywords"][i]
 
     return val_obj["keywords"]
 
@@ -419,10 +387,10 @@ def save_ds_description_file(
     shutil.copyfile(source, destination)
 
     # json array to python list
-    val_obj_study = json.loads(study_str)
-    val_obj_ds = json.loads(dataset_str)
-    val_arr_con = json.loads(con_str)
-    val_arr_related_info = json.loads(related_info_str)
+    val_obj_study = study_str
+    val_obj_ds = dataset_str
+    val_arr_con = con_str
+    val_arr_related_info = related_info_str
 
     # write to excel file
     wb = load_workbook(destination)
@@ -473,7 +441,7 @@ def save_ds_description_file(
             "dataset_description.xlsx", bfaccount, bfdataset, destination
         )
 
-    return size
+    return {"size": size}
 
 
 subjectsTemplateHeaderList = [
@@ -671,7 +639,7 @@ def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastruct
     if upload_boolean:
         upload_metadata_file("samples.xlsx", bfaccount, bfdataset, destination)
 
-    return size
+    return {"size": size}
 
 
 # check for non-empty fields (cells)
@@ -694,33 +662,33 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
 
     if type == "subjects":
         if "subject id" not in list(subjects_df.columns.values):
-            raise Exception(
+            abort(
+                400, 
                 "The header 'subject id' is required to import an existing subjects file. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/subjects.xlsx'>template</a> of the subjects file."
             )
 
-        else:
-            if checkEmptyColumn(subjects_df["subject id"]):
-                raise Exception(
-                    "At least 1 'subject id' is required to import an existing subjects file"
-                )
+        elif checkEmptyColumn(subjects_df["subject id"]):
+            abort(
+                400,
+                "At least 1 'subject id' is required to import an existing subjects file"
+            )
 
         templateHeaderList = subjectsTemplateHeaderList
 
     else:
-        if "subject id" not in list(
-            subjects_df.columns.values
-        ) or "sample id" not in list(subjects_df.columns.values):
-            raise Exception(
+        if "subject id" not in list(subjects_df.columns.values) or "sample id" not in list(subjects_df.columns.values):
+            abort(
+                400,
                 "The headers 'subject id' and 'sample id' are required to import an existing samples file. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/samples.xlsx'>template</a> of the samples file."
             )
 
-        else:
-            if checkEmptyColumn(subjects_df["sample id"]) or checkEmptyColumn(
-                subjects_df["sample id"]
-            ):
-                raise Exception(
-                    "At least 1 'subject id' and 'sample id' pair is required to import an existing samples file"
-                )
+        if checkEmptyColumn(subjects_df["sample id"]) or checkEmptyColumn(
+            subjects_df["sample id"]
+        ):
+            abort(
+                400,
+                "At least 1 'subject id' and 'sample id' pair is required to import an existing samples file"
+            )
 
         templateHeaderList = samplesTemplateHeaderList
 
@@ -747,7 +715,7 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
 
     sortMatrix = sortedSubjectsTableData(transpose, ui_fields)
 
-    return transposeMatrix(sortMatrix)
+    return {"sample_file_rows": transposeMatrix(sortMatrix)} if type in ["samples.xlsx", "samples"] else {"subject_file_rows": transposeMatrix(sortMatrix)}
 
 
 ### function to read existing Pennsieve manifest files and load info into a dictionary
@@ -773,6 +741,7 @@ def checkEmptyColumn(column):
 def sortedSubjectsTableData(matrix, fields):
     sortedMatrix = []
     customHeaderMatrix = []
+
 
     for field in fields:
         for column in matrix:
@@ -806,24 +775,6 @@ def processMetadataCustomFields(matrix):
     return refined_matrix
 
 
-# use Entrez library to load the scientific name for a species
-def load_taxonomy_species(animalList):
-    animalDict = {}
-    for animal in animalList:
-        handle = Entrez.esearch(db="Taxonomy", term=animal)
-        record = Entrez.read(handle)
-        if len(record["IdList"]) > 0:
-            id = record["IdList"][0]
-            handle = Entrez.efetch(db="Taxonomy", id=id)
-            result = Entrez.read(handle)
-            animalDict[animal] = {
-                "ScientificName": result[0]["ScientificName"],
-                "OtherNames": result[0]["OtherNames"],
-            }
-
-    return animalDict
-
-
 ## check if any whole column from Excel sheet is empty
 def checkEmptyColumn(column):
     for element in column:
@@ -831,6 +782,7 @@ def checkEmptyColumn(column):
             break
         return True
     return False
+
 
 
 ## load/import an existing local or Pennsieve submission.xlsx file
@@ -841,10 +793,17 @@ def load_existing_submission_file(filepath):
             filepath, engine="openpyxl", usecols=column_check, header=0
         )
 
-    except:
+    except Exception as e:
+        if is_file_not_found_exception(e):
+            abort(400, "Error: Local submission file not found")
+
+        # TODO: TEST check if error can indicate if file is not in the correct format TEST
+        if is_invalid_file_exception(e):
+            abort(400, "Error: Local submission file is not in the correct format")
+
         raise Exception(
             "SODA cannot read this submission.xlsx file. If you are trying to retrieve a submission.xlsx file from Pennsieve, please make sure you are signed in with your Pennsieve account on SODA."
-        )
+        ) from e
 
     DD_df = DD_df.dropna(axis=0, how="all")
     DD_df = DD_df.replace(np.nan, "", regex=True)
@@ -864,14 +823,16 @@ def load_existing_submission_file(filepath):
 
     for key in basicColumns:
         if key not in DD_df_lower:
-            raise Exception(
+            abort(
+                400,
                 "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/submission.xlsx'>template</a> of the submission."
             )
 
     for header_name in basicHeaders:
         submissionItems = [x.lower() for x in DD_df["Submission Item"]]
         if header_name not in set(submissionItems):
-            raise Exception(
+            abort(
+                400,
                 "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/submission.xlsx'>template</a> of the submission."
             )
 
@@ -879,14 +840,10 @@ def load_existing_submission_file(filepath):
     milestones = [DD_df["Value"][1]]
 
     for i in range(3, len(DD_df.columns)):
-        value = DD_df["Value " + str(i - 1)]
+        value = DD_df[f"Value {str(i - 1)}"]
         milestones.append(value[1])
 
-    if DD_df["Value"][2]:
-        date = DD_df["Value"][2]
-
-    else:
-        date = ""
+    date = DD_df["Value"][2] or ""
 
     return {
         "SPARC Award number": awardNo,
@@ -897,8 +854,16 @@ def load_existing_submission_file(filepath):
 
 # import existing metadata files except Readme and Changes from Pennsieve
 def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
-    bf = Pennsieve(bfaccount)
-    myds = bf.get_dataset(bfdataset)
+    try: 
+        bf = Pennsieve(bfaccount)
+    except Exception:
+        abort(400, "Error: Please select a valid Pennsieve account.")
+
+    try: 
+        myds = bf.get_dataset(bfdataset)
+    except Exception:
+        abort(400, "Error: Please select a valid Pennsieve dataset.")
+    
 
     for i in range(len(myds.items)):
 
@@ -919,17 +884,29 @@ def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
             elif file_type == "samples.xlsx":
                 return convert_subjects_samples_file_to_df("samples", url, ui_fields)
 
-    raise Exception(
+    abort(400, 
         f"No {file_type} file was found at the root of the dataset provided."
     )
 
 
 # import readme or changes file from Pennsieve
 def import_bf_RC(bfaccount, bfdataset, file_type):
-    bf = Pennsieve(bfaccount)
-    myds = bf.get_dataset(bfdataset)
+
+    file_type = file_type + ".txt"
+
+    try:
+        bf = Pennsieve(bfaccount)
+    except Exception:
+        abort(400, "Error: Please select a valid Pennsieve account.")
+
+    try:
+        myds = bf.get_dataset(bfdataset)
+    except Exception:
+        abort(400, "Error: Please select a valid Pennsieve dataset.")
 
     for i in range(len(myds.items)):
+
+        print(myds.items[i].name)
 
         if myds.items[i].name == file_type:
 
@@ -937,13 +914,9 @@ def import_bf_RC(bfaccount, bfdataset, file_type):
             url = returnFileURL(bf, item_id)
 
             response = requests.get(url)
-            data = response.text
+            return {"text": response.text}
 
-            return data
-
-    raise Exception(
-        f"No {file_type} file was found at the root of the dataset provided."
-    )
+    abort (400, f"Error: no {file_type} file was found at the root of the dataset provided.")
 
 
 # path to local SODA folder for saving manifest files
@@ -1119,26 +1092,26 @@ def load_existing_DD_file(import_type, filepath):
     # check if Metadata Element a.k.a Header column exists
     for key in ["Metadata element", "Description", "Example", "Value"]:
         if key not in DD_df:
-            raise Exception(
+            abort(400, 
                 "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/dataset_description.xlsx'>template</a> of the dataset_description."
             )
 
-    if not "Metadata element" in DD_df:
-        raise Exception(
+    if "Metadata element" not in DD_df:
+        abort(400, 
             "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/dataset_description.xlsx'>template</a> of the dataset_description."
         )
 
     else:
         for header_name in header_list:
             if header_name not in set(DD_df["Metadata element"]):
-                raise Exception(
+                abort(400, 
                     "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/dataset_description.xlsx'>template</a> of the dataset_description."
                 )
 
     # check for at least 1 value is included
     non_empty_1st_value = checkEmptyColumn(DD_df["Value"])
     if non_empty_1st_value:
-        raise Exception(
+        abort(400, 
             "At least 1 value is required to import an existing dataset_description file"
         )
 
@@ -1167,15 +1140,13 @@ def load_existing_DD_file(import_type, filepath):
         if array[0] in relatedInfoHeaders:
             relatedInfoSection.append(array)
 
-    transformedObj = {
+    return {
         "Basic information": basicInfoSection,
         "Study information": studyInfoSection,
         "Contributor information": transposeMatrix(conInfoSection),
         "Award information": awardInfoSection,
         "Related information": transposeMatrix(relatedInfoSection),
     }
-
-    return transformedObj
 
 
 def delete_manifest_dummy_folders(userpath_list):
