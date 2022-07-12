@@ -2540,9 +2540,9 @@ async function switchMetadataManifestQuestion() {
       try {
         await client.delete(`prepare_metadata/manifest_dummy_folders`, {
           // Axios delete API specifies config as the second parameter; which is why we use the data keyword here.
-          data: { 
-            paths: [userpath1, userpath2]
-          }
+          data: {
+            paths: [userpath1, userpath2],
+          },
         });
 
         sodaJSONObj = {
