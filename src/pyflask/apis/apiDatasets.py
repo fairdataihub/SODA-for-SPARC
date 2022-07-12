@@ -56,3 +56,6 @@ class Dataset(Resource):
       if notBadRequestException(e):
         api.abort(500, str(e))
       raise e
+
+  def create_dataset(self, dataset_id):
+    pass

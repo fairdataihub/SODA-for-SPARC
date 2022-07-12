@@ -1763,17 +1763,6 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
         Success or error message
     """
 
-<<<<<<< HEAD:src/pysoda/pysoda.py
-
-def bf_add_banner_image(
-    selected_bfaccount,
-    selected_bfdataset,
-    banner_image_path,
-    banner_image_name,
-):
-
-=======
->>>>>>> origin/flask-conversion-staging:src/pyflask/manageDatasets/manage_datasets.py
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
@@ -1809,11 +1798,7 @@ def bf_add_banner_image(
             and ("guided-banner-images" not in image_folder)
         ):
             shutil.rmtree(image_folder, ignore_errors=True)
-<<<<<<< HEAD:src/pysoda/pysoda.py
-        return banner_image_path
-=======
         return {"message": "Uploaded!"}
->>>>>>> origin/flask-conversion-staging:src/pyflask/manageDatasets/manage_datasets.py
     except Exception as e:
         raise Exception(e)
 
