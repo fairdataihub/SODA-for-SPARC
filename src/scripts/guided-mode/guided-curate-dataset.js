@@ -7632,7 +7632,7 @@ $(document).ready(() => {
     const datasetDescriptionMetadataUploadText = document.getElementById(
       `guided-${readmeORchanges}-metadata-upload-text`
     );
-    datasetDescriptionMetadataUploadText.innerHTML = `Uploading ${readmeORchanges} metadata...`;
+    datasetDescriptionMetadataUploadText.innerHTML = `Uploading ${readmeORchanges.toUpperCase()} metadata...`;
     guidedUploadStatusIcon(
       `guided-${readmeORchanges}-metadata-upload-status`,
       "loading"
@@ -7651,7 +7651,7 @@ $(document).ready(() => {
               `guided-${readmeORchanges}-metadata-upload-status`,
               "error"
             );
-            datasetDescriptionMetadataUploadText.innerHTML = `Failed to upload ${readmeORchanges} metadata`;
+            datasetDescriptionMetadataUploadText.innerHTML = `Failed to upload ${readmeORchanges.toUpperCase()} metadata`;
             log.error(error);
             console.error(error);
             let emessage = userError(error);
@@ -7661,7 +7661,7 @@ $(document).ready(() => {
               `guided-${readmeORchanges}-metadata-upload-status`,
               "success"
             );
-            datasetDescriptionMetadataUploadText.innerHTML = `${readmeORchanges} metadata successfully uploaded`;
+            datasetDescriptionMetadataUploadText.innerHTML = `${readmeORchanges.toUpperCase()} metadata successfully uploaded`;
             console.log(`${readmeORchanges} metadata added` + res);
             resolve(`${readmeORchanges} metadata added` + res);
           }
