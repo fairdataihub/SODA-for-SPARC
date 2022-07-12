@@ -1897,7 +1897,6 @@ def bf_add_banner_image(
     selected_bfdataset,
     banner_image_path,
     banner_image_name,
-    delete_image_after_upload,
 ):
 
     try:
