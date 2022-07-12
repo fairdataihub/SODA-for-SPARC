@@ -2176,10 +2176,12 @@ const setActiveSubPage = (pageIdToActivate) => {
 
       //If completionDate exists in sodaJSONObj, set and disable completion date input
       //If not, refresh the input and enable it
+      //remove options from completionDateInput besides the default one
+      completionDateInput.innerHTML = `<option value="Enter my own date">Enter my own date</option>`;
       if (completionDate) {
+        completionDateInput.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
+        //select the completion date that was added
         completionDateInput.value = completionDate;
-      } else {
-        completionDateInput.value = "";
       }
       break;
     }
@@ -5399,6 +5401,60 @@ const getTagsFromTagifyElement = (tagifyElement) => {
   });
 };
 
+$("#guided-submission-completion-date").change(function () {
+  const text = $("#guided-submission-completion-date").val();
+  if (text == "Enter my own date") {
+    Swal.fire({
+      allowOutsideClick: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Confirm",
+      showCloseButton: true,
+      focusConfirm: true,
+      heightAuto: false,
+      reverseButtons: reverseSwalButtons,
+      showCancelButton: false,
+      title: `<span style="text-align:center"> Enter your Milestone completion date </span>`,
+      html: `<input type="date" id="milestone_date_picker" >`,
+      showClass: {
+        popup: "animate__animated animate__fadeInDown animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__fadeOutUp animate__faster",
+      },
+      didOpen: () => {
+        document.getElementById("milestone_date_picker").valueAsDate =
+          new Date();
+      },
+      preConfirm: async () => {
+        const input_date = document.getElementById(
+          "milestone_date_picker"
+        ).value;
+        return {
+          date: input_date,
+        };
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const input_date = result.value.date;
+        //remove options from dropdown that already have input_date as value
+        $("#guided-submission-completion-date option").each(function () {
+          if (this.value == input_date) {
+            $(this).remove();
+          }
+        });
+        $("#guided-submission-completion-date").append(
+          $("<option>", {
+            value: input_date,
+            text: input_date,
+          })
+        );
+        var $option = $("#guided-submission-completion-date").children().last();
+        $option.prop("selected", true);
+      }
+    });
+  }
+});
 /////////////////////////////////////////////////////////
 //////////       GUIDED OBJECT ACCESSORS       //////////
 /////////////////////////////////////////////////////////
@@ -10357,7 +10413,7 @@ $(document).ready(() => {
               );
               return;
             }
-            if (date === "") {
+            if (date === "Enter my own date") {
               notyf.error(
                 "Please add a completion date to your submission metadata"
               );
