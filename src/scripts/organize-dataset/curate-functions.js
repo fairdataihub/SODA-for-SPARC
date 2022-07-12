@@ -878,23 +878,6 @@ $(document).ready(async function () {
   $("#guided_bf_list_users_and_teams").selectpicker("refresh");
 });
 
-<<<<<<< HEAD
-const get_api_key = async (login, password, key_name) => {
-  return new Promise((resolve) => {
-    client.invoke(
-      "api_get_pennsieve_api_key_secret",
-      login,
-      password,
-      key_name,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-          resolve(["failed", error]);
-        } else {
-          console.log(res);
-          resolve(res);
-=======
 const get_api_key = (login, password, key_name) => {
   return new Promise(async (resolve) => {
     try {
@@ -904,7 +887,6 @@ const get_api_key = (login, password, key_name) => {
           username: login,
           password: password,
           api_key: key_name,
->>>>>>> origin/flask-conversion-staging
         }
       );
       let res = bf_get_pennsieve_secret_key.data;
@@ -977,46 +959,6 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
         $(".bf-dataset-span").html("None");
         showHideDropdownButtons("dataset", "hide");
 
-<<<<<<< HEAD
-        $("#guided-bf-account").html("None");
-        $("#guided-account-details").html("");
-        client.invoke("api_bf_account_details", bfacct, (error, res) => {
-          if (error) {
-            log.error(error);
-            console.error(error);
-            Swal.fire({
-              backdrop: "rgba(0,0,0, 0.4)",
-              heightAuto: false,
-              icon: "error",
-              text: error,
-              footer:
-                "<a href='https://docs.pennsieve.io/docs/configuring-the-client-credentials'>Why do I have this issue?</a>",
-            });
-            showHideDropdownButtons("account", "hide");
-          } else {
-            $("#para-account-detail-curate").html(res);
-            $("#current-bf-account").text(bfacct);
-            $("#current-bf-account-generate").text(bfacct);
-            $("#create_empty_dataset_BF_account_span").text(bfacct);
-            $(".bf-account-span").text(bfacct);
-
-            $("#guided-bf-account").text(bfacct);
-
-            updateBfAccountList();
-            client.invoke("api_bf_dataset_account", bfacct, (error, result) => {
-              if (error) {
-                log.error(error);
-                console.log(error);
-                var emessage = error;
-                document.getElementById(
-                  "para-filter-datasets-status-2"
-                ).innerHTML =
-                  "<span style='color: red'>" + emessage + "</span>";
-              } else {
-                datasetList = [];
-                datasetList = result;
-                refreshDatasetList();
-=======
         try {
           let bf_account_details_req = await client.get(
             `/manage_datasets/bf_account_details`,
@@ -1041,7 +983,6 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
                 params: {
                   selected_account: bfacct,
                 },
->>>>>>> origin/flask-conversion-staging
               }
             );
 
@@ -1175,82 +1116,6 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
           let key_name = result.value.name;
           let apiKey = result.value.key;
           let apiSecret = result.value.secret;
-<<<<<<< HEAD
-          client.invoke(
-            "api_bf_add_account_username",
-            key_name,
-            apiKey,
-            apiSecret,
-            (error, res) => {
-              if (error) {
-                log.error(error);
-                console.error(error);
-                Swal.showValidationMessage(userError(error));
-                Swal.close();
-              } else {
-                bfAccountOptions[key_name] = key_name;
-                defaultBfAccount = key_name;
-                defaultBfDataset = "Select dataset";
-                client.invoke(
-                  "api_bf_account_details",
-                  key_name,
-                  (error, res) => {
-                    if (error) {
-                      log.error(error);
-                      console.error(error);
-                      Swal.fire({
-                        backdrop: "rgba(0,0,0, 0.4)",
-                        heightAuto: false,
-                        icon: "error",
-                        text: "Something went wrong!",
-                        footer:
-                          '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
-                      });
-                      showHideDropdownButtons("account", "hide");
-                      confirm_click_account_function();
-                    } else {
-                      $("#para-account-detail-curate").html(res);
-                      $("#current-bf-account").text(key_name);
-                      $("#current-bf-account-generate").text(key_name);
-                      $("#create_empty_dataset_BF_account_span").text(key_name);
-                      $(".bf-account-span").text(key_name);
-                      $("#current-bf-dataset").text("None");
-                      $("#current-bf-dataset-generate").text("None");
-                      $(".bf-dataset-span").html("None");
-                      $("#para-account-detail-curate-generate").html(res);
-                      $("#para_create_empty_dataset_BF_account").html(res);
-                      $(".bf-account-details-span").html(res);
-                      $("#para-continue-bf-dataset-getting-started").text("");
-
-                      $("#current_curation_team_status").text("None");
-                      $("#curation-team-share-btn").hide();
-                      $("#curation-team-unshare-btn").hide();
-                      $("#current_sparc_consortium_status").text("None");
-                      $("#sparc-consortium-share-btn").hide();
-                      $("#sparc-consortium-unshare-btn").hide();
-
-                      $("#guided-bf-account").html(key_name);
-                      $("#guided-account-details").html(res);
-
-                      showHideDropdownButtons("account", "show");
-                      confirm_click_account_function();
-                      updateBfAccountList();
-                    }
-                  }
-                );
-                Swal.fire({
-                  allowEscapeKey: false,
-                  heightAuto: false,
-                  backdrop: "rgba(0,0,0, 0.4)",
-                  icon: "success",
-                  showConfirmButton: false,
-                  timer: 3000,
-                  timerProgressBar: true,
-                  title:
-                    "Successfully added! <br/>Loading your account details...",
-                  didOpen: () => {
-                    Swal.showLoading();
-=======
           //needs to be replaced
           try {
             await client.put(`/manage_datasets/account/username`, {
@@ -1268,7 +1133,6 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
                 {
                   params: {
                     selected_account: defaultBfAccount,
->>>>>>> origin/flask-conversion-staging
                   },
                 }
               );

@@ -788,23 +788,6 @@ async function generateDDFile(uploadBFBoolean) {
   studyInfoValueObject["study technique"] = studyTechniqueArr;
   studyInfoValueObject["study approach"] = studyApproachesArr;
 
-<<<<<<< HEAD
-  ///////////// stringify JSON objects //////////////////////
-  console.log(datasetInfoValueObj);
-  console.log(studyInfoValueObject);
-  console.log(contributorObj);
-  console.log(relatedInfoArr);
-  json_str_ds = JSON.stringify(datasetInfoValueObj);
-  json_str_study = JSON.stringify(studyInfoValueObject);
-  json_str_con = JSON.stringify(contributorObj);
-  json_str_related_info = JSON.stringify(relatedInfoArr);
-  console.log(json_str_con);
-  console.log(json_str_study);
-  console.log(json_str_con);
-  console.log(json_str_related_info);
-
-=======
->>>>>>> origin/flask-conversion-staging
   /// get current, selected Pennsieve account
   var bfaccountname = $("#current-bf-account").text();
   let bf_dataset = document
@@ -813,34 +796,6 @@ async function generateDDFile(uploadBFBoolean) {
 
   log.info(`Generating a dataset description file.`);
   /// call python function to save file
-<<<<<<< HEAD
-  client.invoke(
-    "api_save_ds_description_file",
-    uploadBFBoolean,
-    defaultBfAccount,
-    $("#bf_dataset_load_dd").text().trim(),
-    ddDestinationPath,
-    json_str_ds,
-    json_str_study,
-    json_str_con,
-    json_str_related_info,
-    async (error, res) => {
-      console.log(json_str_ds);
-      console.log(json_str_study);
-      console.log(json_str_con);
-      console.log(json_str_related_info);
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        Swal.fire({
-          title: "Failed to generate the dataset_description file",
-          html: emessage,
-          icon: "warning",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-=======
   try {
     let save_ds_desc_file = await client.post(
       `/prepare_metadata/dataset_description_file`,
@@ -859,7 +814,6 @@ async function generateDDFile(uploadBFBoolean) {
         },
       }
     );
->>>>>>> origin/flask-conversion-staging
 
     let res = save_ds_desc_file.data.size;
 

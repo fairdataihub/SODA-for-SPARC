@@ -60,14 +60,9 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
     },
   }).then((result) => {});
   var textValue = $(`#textarea-create-${fileType}`).val().trim();
-<<<<<<< HEAD
-  console.log(textValue);
-  console.log(upperCaseLetters);
-=======
   let bfDataset = document
     .getElementById(`bf_dataset_load_${fileType}`)
     .innerText.trim();
->>>>>>> origin/flask-conversion-staging
   if (uploadBFBoolean) {
     try {
       let upload_rc_file = await client.post(

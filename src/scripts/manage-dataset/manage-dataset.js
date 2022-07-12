@@ -136,17 +136,6 @@ $("#button-create-bf-new-dataset").click(async () => {
       },
     });
 
-<<<<<<< HEAD
-    const foo = client.invoke(
-      "api_bf_new_dataset_folder",
-      bfNewDatasetName,
-      selectedbfaccount,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-          let emessage = userError(error);
-=======
     try {
       let bf_new_dataset = await client.post(
         `/manage_datasets/datasets`,
@@ -160,7 +149,6 @@ $("#button-create-bf-new-dataset").click(async () => {
         }
       );
       let res = bf_new_dataset.data.id;
->>>>>>> origin/flask-conversion-staging
 
       Swal.fire({
         title: `Dataset ${bfNewDatasetName} was created successfully`,
@@ -228,14 +216,6 @@ $("#button-create-bf-new-dataset").click(async () => {
 
       $("#button-create-bf-new-dataset").prop("disabled", false);
 
-<<<<<<< HEAD
-          $(".confirm-button").click();
-          $("#bf-new-dataset-name").val("");
-        }
-      }
-    );
-    console.log(foo);
-=======
       ipcRenderer.send(
         "track-event",
         "Error",
@@ -243,7 +223,6 @@ $("#button-create-bf-new-dataset").click(async () => {
         bfNewDatasetName
       );
     }
->>>>>>> origin/flask-conversion-staging
   }, delayAnimation);
 });
 
