@@ -2539,7 +2539,10 @@ async function switchMetadataManifestQuestion() {
       // deleting manifest file folders in user/SODA path that were generated half-way before users switch.
       try {
         await client.delete(`prepare_metadata/manifest_dummy_folders`, {
-          paths: [userpath1, userpath2],
+          // Axios delete API specifies config as the second parameter; which is why we use the data keyword here.
+          data: { 
+            paths: [userpath1, userpath2]
+          }
         });
 
         sodaJSONObj = {
