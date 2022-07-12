@@ -3347,7 +3347,7 @@ const addContributorField = () => {
     ],
     enforceWhitelist: true,
     dropdown: {
-      enabled: 1,
+      enabled: 0,
       closeOnSelect: true,
       position: "auto",
     },
@@ -3510,7 +3510,7 @@ const renderContributorFields = (contributionMembersArray) => {
       ],
       enforceWhitelist: true,
       dropdown: {
-        enabled: 1,
+        enabled: 0,
         closeOnSelect: true,
         position: "auto",
       },
