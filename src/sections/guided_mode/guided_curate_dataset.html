@@ -1555,6 +1555,7 @@
                 <button
                   class="ui negative basic button guided--radio-button"
                   id="guided-button-enter-sparc-award-manually"
+                  data-next-element="guided-div-SPARC-award-manual-input"
                   data-button-config-value="SPARC-award-imported"
                   data-button-config-value-state="no"
                 >
@@ -1589,6 +1590,24 @@
                     disabled
                   />
                 </div>
+              </div>
+            </div>
+            <div
+              class="guided--section hidden"
+              id="guided-div-SPARC-award-manual-input"
+            >
+              <div class="guided--section">
+                <label class="guided--form-label">SPARC award: </label>
+                <input
+                  class="guided--input"
+                  id="guided-input-sparc-award"
+                  type="text"
+                  name="guided-sparc-award-input"
+                  placeholder="Enter SPARC award here"
+                />
+                <p class="guided--text-input-instructions mb-0">
+                  Enter the SPARC award associatied with the dataset.
+                </p>
               </div>
             </div>
           </div>

@@ -1237,12 +1237,36 @@ const traverseToTab = (targetPageID) => {
     }
 
     if (targetPageID === "guided-airtable-award-tab") {
-      const airTableAward =
+      const sparcAwardImportedFromAirtable =
+        sodaJSONObj["dataset-metadata"]["shared-metadata"][
+          "imported-sparc-award"
+        ];
+      const sparcAward =
         sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-      if (airTableAward) {
-        guidedSetImportedSPARCAward(airTableAward);
+
+      //If a sparc award has been imported from Airtable, show the imported award
+      //If not, reset the HTML
+      if (sparcAwardImportedFromAirtable) {
+        guidedSetImportedSPARCAward(sparcAwardImportedFromAirtable);
       } else {
-        guidedUnSetImportedSparcAward();
+        //hide the imported div
+        document
+          .getElementById("guided-div-imported-SPARC-award")
+          .classList.add("hidden");
+        document.getElementById(
+          "guided-button-import-airtable-award"
+        ).innerHTML = "Import award information from Airtable";
+      }
+
+      const sparcAwardInput = document.getElementById(
+        "guided-input-sparc-award"
+      );
+      //If a sparc award exists, set the sparc award input
+      //If not, reset the input
+      if (sparcAward) {
+        sparcAwardInput.value = sparcAward;
+      } else {
+        sparcAwardInput.value = "";
       }
     }
 
@@ -8562,70 +8586,6 @@ $(document).ready(() => {
     guidedSaveRCFile("changes");
   });
 
-  const guidedSaveDescriptionFile = () => {
-    let datasetInfoValueObj = getGuidedDatasetInformation();
-    console.log(datasetInfoValueObj);
-    let studyInfoValueObject = getGuidedDatasetStudyInformation();
-    let contributorObj = getGuidedDatasetContributorInformation();
-    let relatedInfoArr = guidedCombineLinkSections();
-
-    let json_str_ds = JSON.stringify(datasetInfoValueObj);
-    let json_str_study = JSON.stringify(studyInfoValueObject);
-    let json_str_con = JSON.stringify(contributorObj);
-    let json_str_related_info = JSON.stringify(relatedInfoArr);
-    console.log(json_str_ds);
-    console.log(json_str_study);
-    console.log(json_str_con);
-    console.log(json_str_related_info);
-
-    let descriptionFileDestination = path.join(
-      $("#guided-dataset-path").text().trim(),
-      "description.xlsx"
-    );
-    if ($("#guided-dataset-path").text().trim() == "") {
-      Swal.fire({
-        title: "Please select a destination folder",
-        icon: "warning",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-      });
-    } else {
-      client.invoke(
-        "api_save_ds_description_file",
-        false,
-        "None",
-        "None",
-        descriptionFileDestination,
-        json_str_ds,
-        json_str_study,
-        json_str_con,
-        json_str_related_info,
-        async (error, res) => {
-          if (error) {
-            var emessage = userError(error);
-            log.error(error);
-            console.error(error);
-            Swal.fire({
-              title: "Failed to generate the dataset_description file",
-              html: emessage,
-              icon: "warning",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
-          } else {
-            let successMessage =
-              "Successfully generated the dataset_description.xlsx file at the specified location.";
-            Swal.fire({
-              title: successMessage,
-              icon: "success",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
-          }
-        }
-      );
-    }
-  };
   const guidedSaveDescriptionDatasetInformation = () => {
     const title = sodaJSONObj["digital-metadata"]["name"];
     const subtitle = sodaJSONObj["digital-metadata"]["subtitle"];
@@ -8749,106 +8709,13 @@ $(document).ready(() => {
       acknowledgment: acknowledgements,
     };
   };
-  const getGuidedDatasetInformation = () => {
-    const title = sodaJSONObj["digital-metadata"]["name"];
-    const description = sodaJSONObj["digital-metadata"]["subtitle"];
-    //get the value of the checked radio button with the name dataset-relation and store as type
-    const type = document.querySelector(
-      "input[name='dataset-relation']:checked"
-    ).value;
-    const keywordArray = keywordTagify.value;
 
-    //Get the count of all subjects in and outside of pools
-    const [subjectsInPools, subjectsOutsidePools] =
-      sodaJSONObj.getAllSubjects();
-    const numSubjects = [...subjectsInPools, ...subjectsOutsidePools].length;
-
-    const [samplesInPools, samplesOutsidePools] =
-      sodaJSONObj.getAllSamplesFromSubjects();
-    //Combine sample data from samples in and out of pools
-    const numSamples = [...samplesInPools, ...samplesOutsidePools].length;
-
-    return {
-      name: title,
-      description: description,
-      type: type,
-      keywords: keywordArray,
-      "number of samples": numSamples,
-      "number of subjects": numSubjects,
-    };
-  };
-  const getGuidedDatasetStudyInformation = () => {};
-  const getGuidedDatasetContributorInformation = () => {
-    var funding = document.getElementById(
-      "guided-ds-description-award-input"
-    ).value;
-    var acknowledgment = document.getElementById(
-      "guided-ds-description-acknowledgments"
-    ).value;
-
-    var fundingArray = [];
-    if (funding === "") {
-      fundingArray = [""];
-    } else {
-      fundingArray = [funding];
-    }
-    /// other funding sources
-    var otherFunding = getTagsFromTagifyElement(
-      guidedOtherFundingsourcesTagify
-    );
-    for (var i = 0; i < otherFunding.length; i++) {
-      fundingArray.push(otherFunding[i]);
-    }
-
-    var contributorInfo = {};
-    contributorInfo["funding"] = fundingArray;
-    contributorInfo["acknowledgment"] = acknowledgment;
-    contributorInfo["contributors"] = contributorArray;
-    return contributorInfo;
-  };
-  const getGuidedAdditionalLinkSection = () => {
-    var table = document.getElementById("guided-other-link-table-dd");
-    var rowcountLink = table.rows.length;
-    var additionalLinkInfo = [];
-    for (i = 1; i < rowcountLink; i++) {
-      var additionalLink = {
-        link: table.rows[i].cells[1].innerText,
-        type: table.rows[i].cells[2].innerText,
-        relation: table.rows[i].cells[3].innerText,
-        description: table.rows[i].cells[4].innerText,
-      };
-      additionalLinkInfo.push(additionalLink);
-    }
-    return additionalLinkInfo;
-  };
-  const getGuidedProtocolSection = () => {
-    var table = document.getElementById("guided-protocol-link-table-dd");
-    var rowcountLink = table.rows.length;
-    var protocolLinkInfo = [];
-    for (i = 1; i < rowcountLink; i++) {
-      var protocol = {
-        link: table.rows[i].cells[1].innerText,
-        type: table.rows[i].cells[2].innerText,
-        relation: table.rows[i].cells[3].innerText,
-        description: table.rows[i].cells[4].innerText,
-      };
-      protocolLinkInfo.push(protocol);
-    }
-    return protocolLinkInfo;
-  };
   const guidedCombineLinkSections = () => {
     var protocolLinks = getGuidedProtocolSection();
     var otherLinks = getGuidedAdditionalLinkSection();
     protocolLinks.push.apply(protocolLinks, otherLinks);
     return protocolLinks;
   };
-  $("#guided-generate-description-file").on("click", () => {
-    try {
-      guidedSaveDescriptionFile();
-    } catch (error) {
-      console.log(error);
-    }
-  });
 
   const guidedSaveParticipantInformation = () => {
     let numSubjects = $("#guided-ds-samples-no").val();
@@ -8867,11 +8734,6 @@ $(document).ready(() => {
       sodaJSONObj["dataset-metadata"]["description-metadata"]["numSamples"] =
         numSamples;
     }
-  };
-
-  //Award & Contributor Information functions
-  const guidedSaveAwardAndContrinbutorInformation = () => {
-    sparcAwardNumber = $("#guided-ds-description-award-input").val();
   };
 
   $("#guided-generate-dataset-button").on("click", async function () {
@@ -9456,11 +9318,12 @@ $(document).ready(() => {
           throw errorArray;
         }
 
-        const sparcAward =
-          sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-
         if (buttonYesImportSparcAward.classList.contains("selected")) {
-          if (!sparcAward) {
+          const sparcAwardImportedFromAirtable =
+            sodaJSONObj["dataset-metadata"]["shared-metadata"][
+              "imported-sparc-award"
+            ];
+          if (!sparcAwardImportedFromAirtable) {
             errorArray.push({
               type: "notyf",
               message:
@@ -9468,14 +9331,29 @@ $(document).ready(() => {
             });
             throw errorArray;
           }
-          if (buttonNoEnterSparcAwardManually.classList.contains("selected")) {
-            //if A SPARC award exists, delete it.
-            if (sparcAward) {
-              delete sodaJSONObj["dataset-metadata"]["shared-metadata"][
-                "sparc-award"
-              ];
-            }
+          //Set the sparc award to the imported sparc award's value
+          sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] =
+            sparcAwardImportedFromAirtable;
+        }
+
+        if (buttonNoEnterSparcAwardManually.classList.contains("selected")) {
+          const sparcAwardInput = document.getElementById(
+            "guided-input-sparc-award"
+          );
+          if (sparcAwardInput.value.trim() === "") {
+            errorArray.push({
+              type: "notyf",
+              message: "Please enter a SPARC award",
+            });
+            throw errorArray;
           }
+
+          sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] =
+            sparcAwardInput.value.trim();
+          //Delete the imported SPARC award as the user entered the award manually.
+          delete sodaJSONObj["dataset-metadata"]["shared-metadata"][
+            "imported-sparc-award"
+          ];
         }
       }
       if (pageBeingLeftID === "guided-contributors-tab") {

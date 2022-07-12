@@ -1131,37 +1131,17 @@ function addAdditionalLinktoTableDD(
 
 const guidedSetImportedSPARCAward = (awardString) => {
   // save the award string to JSONObj to be shared with other award inputs
-  sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] =
+  sodaJSONObj["dataset-metadata"]["shared-metadata"]["imported-sparc-award"] =
     awardString;
 
   $("#guided-input-submission-sparc-award-import").val(awardString);
-  $("#guided-submission-sparc-award").val(awardString);
-  $("#guided-submission-sparc-award").prop("disabled", true);
-  $("#guided-ds-description-award-input").val(awardString);
+
   document
     .getElementById("guided-div-imported-SPARC-award")
     .classList.remove("hidden");
   //change the button text of guided-button-import-airtable-award
   document.getElementById("guided-button-import-airtable-award").innerHTML =
     "Edit award information from Airtable";
-};
-
-const guidedUnSetImportedSparcAward = () => {
-  // remove the award string from JSONObj
-  if (sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"]) {
-    delete sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-  }
-
-  $("#guided-input-submission-sparc-award-import").val("");
-  $("#guided-submission-sparc-award").val("");
-  $("#guided-submission-sparc-award").prop("disabled", false);
-  $("#guided-ds-description-award-input").val("");
-  document
-    .getElementById("guided-div-imported-SPARC-award")
-    .classList.add("hidden");
-  //change the button text of guided-button-import-airtable-award
-  document.getElementById("guided-button-import-airtable-award").innerHTML =
-    "Import award information from Airtable";
 };
 
 async function helpSPARCAward(filetype, curationMode) {
