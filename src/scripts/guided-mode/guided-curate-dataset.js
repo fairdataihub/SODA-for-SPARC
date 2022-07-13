@@ -8775,11 +8775,8 @@ $(document).ready(() => {
     } else {
       studyPrimaryConclusion = studyPrimaryConclusionInput.value.trim();
     }
-    if (!studyCollectionTitleInput.value.trim()) {
-      throw "Please add a study collection title";
-    } else {
-      studyCollectionTitle = studyCollectionTitleInput.value.trim();
-    }
+
+    studyCollectionTitle = studyCollectionTitleInput.value.trim();
 
     //After validation, add the study information to the JSON object
     sodaJSONObj["dataset-metadata"]["description-metadata"][
@@ -9762,16 +9759,9 @@ $(document).ready(() => {
         const changesTextArea = document.getElementById(
           "guided-textarea-create-changes"
         );
-        if (changesTextArea.value.trim() === "") {
-          errorArray.push({
-            type: "notyf",
-            message: "Please enter CHANGES for your dataset",
-          });
-          throw errorArray;
-        } else {
-          const changes = changesTextArea.value.trim();
-          sodaJSONObj["dataset-metadata"]["CHANGES"] = changes;
-        }
+
+        const changes = changesTextArea.value.trim();
+        sodaJSONObj["dataset-metadata"]["CHANGES"] = changes;
       }
 
       console.log(sodaJSONObj);

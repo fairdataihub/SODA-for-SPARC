@@ -3636,9 +3636,11 @@
             <div class="guided--section">
               <h1 class="guided--text-sub-step">Create a CHANGES.txt file</h1>
               <p class="guided--help-text w-100 text-left">
-                The CHANGES file is a plain text file <b>required</b> if a new
-                version of the dataset is uploaded to document any changes from
-                the previous version.
+                The CHANGES file is a <b>conditional</b> plain text file that is
+                uploaded to document any changes from the previous version of
+                your dataset. If this is your first upload, or no changes have
+                been made since your previous upload, you can leave the text
+                area blank.
               </p>
               <div class="guided--input-container">
                 <h2 class="guided--text-sub-step">
@@ -5100,12 +5102,11 @@
                 style="margin-bottom: 7px"
               >
                 <button
-                  class="ui primary basic button guided--radio-button coming-soon-div"
+                  class="ui primary basic button"
                   id="guided-button-pennsieve-generate-existing"
-                  data-content="Coming soon..."
-                  rel="popover"
-                  data-placement="bottom"
-                  data-trigger="hover"
+                  data-toggle="popover"
+                  data-placement="top"
+                  data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus."
                   data-next-element="guided-generate-dataset-existing-panel"
                   data-button-config-value="pennsieve-generation-location"
                   data-button-config-value-state="existing"
