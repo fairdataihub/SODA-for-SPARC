@@ -2360,9 +2360,17 @@
                 </div>
               </div>
               <div id="guided-form-add-a-subject" class="guided--panel hidden">
-                <label class="guided--form-label centered"
-                  >Subject ID: <span id="guided-metadata-subject-id"></span>
-                </label>
+                <div class="guided--section neumorphic mt-xl hidden">
+                  <label class="guided--form-label mt-xl">Subject ID:</label>
+                  <input
+                    class="guided--input subjects-form-entry"
+                    id="guided-bootbox-subject-pool-id"
+                    name="subject id"
+                    type="text"
+                    placeholder="Enter Subject ID here"
+                    readonly
+                  />
+                </div>
                 <div class="guided--section neumorphic mt-xl">
                   <h2 class="guided--text-sub-step mt-0">Experimental Setup</h2>
 
@@ -5106,7 +5114,7 @@
                   id="guided-button-pennsieve-generate-existing"
                   data-toggle="popover"
                   data-placement="top"
-                  data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus."
+                  data-content="Coming soon!"
                   data-next-element="guided-generate-dataset-existing-panel"
                   data-button-config-value="pennsieve-generation-location"
                   data-button-config-value-state="existing"

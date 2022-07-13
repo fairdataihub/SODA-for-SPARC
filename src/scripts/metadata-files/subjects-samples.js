@@ -761,9 +761,6 @@ function addSubjectMetadataEntriesIntoJSON(curationMode) {
       }
     }
     if (curationMode === "guided") {
-      let subjectID = $("#guided-metadata-subject-id").text();
-      subjectsTableData[0].unshift("subject id");
-      valuesArr.unshift(subjectID);
       //Check to see if the subject ID is already in the table
       //If so, set duplicateSubjectIndex as the index of matching subject id
       let duplicateSubjectIndex = null;
@@ -1057,6 +1054,7 @@ function populateForms(subjectID, type, curationMode) {
   //based on curationMode passed in as parameter
   let fieldArr;
   let curationModeSelectorPrefix;
+  let infoJson;
 
   if (curationMode === "free-form") {
     curationModeSelectorPrefix = "";
@@ -1077,9 +1075,7 @@ function populateForms(subjectID, type, curationMode) {
     if (subjectsTableData.length > 1) {
       for (var i = 1; i < subjectsTableData.length; i++) {
         if (subjectsTableData[i][0] === subjectID) {
-          //Create a copy of matched table element as infoJson and remove the first element
-          infoJson = subjectsTableData[i].slice();
-          infoJson.shift();
+          infoJson = subjectsTableData[i];
           break;
         }
       }

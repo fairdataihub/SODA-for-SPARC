@@ -3922,7 +3922,8 @@ const renderSubjectsMetadataTable = (subjects) => {
 };
 const guidedLoadSubjectMetadataIfExists = (subjectMetadataId) => {
   //loop through all subjectsTableData elements besides the first one
-  for (let i = 1; i < subjectsTableData.length; i++) {
+  for (const tableDataElement of subjectsTableData) {
+    //check through elements of tableData to find a subject ID match
     if (subjectsTableData[i][0] === subjectMetadataId) {
       //if the id matches, load the metadata into the form
       populateForms(subjectMetadataId, "", "guided");
@@ -3952,7 +3953,6 @@ const guidedLoadSampleMetadataIfExists = (
 };
 const openModifySubjectMetadataPage = (subjectMetadataID) => {
   guidedLoadSubjectMetadataIfExists(subjectMetadataID);
-  $("#guided-metadata-subject-id").text(subjectMetadataID);
 };
 const openModifySampleMetadataPage = (
   sampleMetadataID,
@@ -9759,7 +9759,6 @@ $(document).ready(() => {
         const changesTextArea = document.getElementById(
           "guided-textarea-create-changes"
         );
-
         const changes = changesTextArea.value.trim();
         sodaJSONObj["dataset-metadata"]["CHANGES"] = changes;
       }
