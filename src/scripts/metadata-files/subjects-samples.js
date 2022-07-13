@@ -2668,6 +2668,16 @@ function protocolAccountQuestion(type, changeAccountBoolean) {
                 Swal.showValidationMessage(`Please enter a short description!`);
               }
 
+              var duplicate = checkLinkDuplicate(
+                link,
+                document.getElementById("protocol-link-table-dd")
+              );
+              if (duplicate) {
+                Swal.showValidationMessage(
+                  "Duplicate URL/DOI. The URL/DOI you entered is already added."
+                );
+              }
+
               if (link === "") {
                 Swal.showValidationMessage(`Please enter a link!`);
               } else {
