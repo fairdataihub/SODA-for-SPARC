@@ -3149,7 +3149,16 @@ const generateContributorField = (
     ? contributorRoles.join(",")
     : "";
   return `
-      <div class="guided--section mt-lg neumorphic guided-contributor-field-container" style="position: relative">
+      <div
+        class="guided--section mt-lg neumorphic guided-contributor-field-container"
+        data-contributor-first-name="${
+          contributorFirstName ? contributorFirstName : ""
+        }"
+        data-contributor-last-name="${
+          contributorLastName ? contributorLastName : ""
+        }"
+        style="position: relative"
+      >
         <i 
           class="fas fa-times fa-2x"
           style="
@@ -3237,6 +3246,43 @@ const generateContributorField = (
 
 const removeContributorField = (contributorDeleteButton) => {
   const contributorField = contributorDeleteButton.parentElement;
+  const contributorFirstName = contributorField.dataset.contributorFirstName;
+  const contributorLastName = contributorField.dataset.contributorLastName;
+
+  const contributorsBeforeDelete =
+    sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+  const filteredContributors = contributorsBeforeDelete.filter(
+    (contributor) => {
+      //remove contributors with matching first and last name
+      return !(
+        contributor.contributorFirstName == contributorFirstName &&
+        contributor.contributorLastName == contributorLastName
+      );
+    }
+  );
+
+  sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] =
+    filteredContributors;
+  //delete the contributor from the json obj with matching first and last names
+  for (const contributor of sodaJSONObj["dataset-metadata"][
+    "description-metadata"
+  ]["contributors"]) {
+    console.log(contributor);
+    if (
+      contributor.contributorLastName == contributorFirstName &&
+      contributor.contributorFirstName == contributorLastName
+    ) {
+      sodaJSONObj["dataset-metadata"]["description-metadata"][
+        "contributors"
+      ].splice(
+        sodaJSONObj["dataset-metadata"]["description-metadata"][
+          "contributors"
+        ].indexOf(contributor),
+        1
+      );
+    }
+  }
+
   contributorField.remove();
 };
 
@@ -7923,15 +7969,16 @@ $(document).ready(() => {
         guidedReadMeMetadata
       );
       console.log(addReadMeMetadataResponse);
-
-      let addChangesMetadataResponse =
-        await guidedUploadREADMEorCHANGESMetadata(
-          guidedBfAccount,
-          guidedDatasetName,
-          "changes",
-          guidedChangesMetadata
-        );
-      console.log(addChangesMetadataResponse);
+      if (guidedChangesMetadata) {
+        let addChangesMetadataResponse =
+          await guidedUploadREADMEorCHANGESMetadata(
+            guidedBfAccount,
+            guidedDatasetName,
+            "changes",
+            guidedChangesMetadata
+          );
+        console.log(addChangesMetadataResponse);
+      }
       /*let addPIOwnerResponse = await guided_add_PI_owner(
         guidedBfAccount,
         guidedDatasetName,
@@ -9545,47 +9592,62 @@ $(document).ready(() => {
             const airKeyContent = parseJson(airtableConfigPath);
             const airKeyInput = airKeyContent["api-key"];
             const base = Airtable.base("appiYd1Tz9Sv857GZ");
+            const sparcAward =
+              sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
             // Create a filter string to select every entry with first and last names that match the checked contributors
             let contributorInfoFilterString = "OR(";
             for (const contributor of checkedContributors) {
-              contributorInfoFilterString += `AND({First_name} = "${contributor["contributorFirstName"]}", {Last_name} = "${contributor["contributorLastName"]}"),`;
+              contributorInfoFilterString += `AND({First_name} = "${contributor["contributorFirstName"]}", {Last_name} = "${contributor["contributorLastName"]}", {SPARC_Award_#} = "${sparcAward}"),`;
             }
             //replace last comma with closing bracket
             contributorInfoFilterString =
               contributorInfoFilterString.slice(0, -1) + ")";
             console.log(contributorInfoFilterString);
-            const contributorInfoResult = await base("sparc_members")
-              .select({
-                filterByFormula: contributorInfoFilterString,
-              })
-              .all();
-            console.log(contributorInfoResult);
+            try {
+              const contributorInfoResult = await base("sparc_members")
+                .select({
+                  filterByFormula: contributorInfoFilterString,
+                })
+                .all();
+              console.log(contributorInfoResult);
 
-            const contributorInfo = contributorInfoResult.map((contributor) => {
-              return {
-                contributorLastName: contributor.fields["Last_name"],
-                contributorFirstName: contributor.fields["First_name"],
-                conName: `${contributor.fields["Last_name"]}, ${contributor.fields["First_name"]}`,
-                conID: contributor.fields["ORCID"],
-                conAffliation: contributor.fields["Institution"],
-                conRole: contributor.fields["NIH_Project_Role"],
-              };
-            });
-            sodaJSONObj["dataset-metadata"]["description-metadata"][
-              "contributors"
-            ] = contributorInfo;
+              const contributorInfo = contributorInfoResult.map(
+                (contributor) => {
+                  return {
+                    contributorLastName: contributor.fields["Last_name"],
+                    contributorFirstName: contributor.fields["First_name"],
+                    conName: `${contributor.fields["Last_name"]}, ${contributor.fields["First_name"]}`,
+                    conID: contributor.fields["ORCID"],
+                    conAffliation: contributor.fields["Institution"],
+                    conRole: contributor.fields["NIH_Project_Role"],
+                  };
+                }
+              );
+              sodaJSONObj["dataset-metadata"]["description-metadata"][
+                "contributors"
+              ] = contributorInfo;
 
-            renderContributorFields(contributorInfo);
+              renderContributorFields(contributorInfo);
 
-            document
-              .getElementById("guided-div-contributors-imported-from-airtable")
-              .classList.add("hidden");
-            document
-              .getElementById("guided-div-contributor-field-set")
-              .classList.remove("hidden");
+              airTableContributorImportDiv.classList.add("hidden");
+              contributorFieldSetDiv.classList.remove("hidden");
 
-            $(this).removeClass("loading");
+              $(this).removeClass("loading");
+            } catch (error) {
+              //If there's an error getting the data from Airtable, create an empty contributor
+              airTableContributorImportDiv.classList.add("hidden");
+              contributorFieldSetDiv.classList.remove("hidden");
+              document.getElementById("contributors-container").innerHTML = "";
+              //add an empty contributor information fieldset
+              addContributorField();
+              notyf.error(
+                "Unable to import contributor information from airtable"
+              );
+              $(this).removeClass("loading");
+              return;
+            }
             return;
+            console.log("baz");
           }
         }
       }

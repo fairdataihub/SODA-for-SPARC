@@ -1482,7 +1482,7 @@ const loadContributorInfofromAirtable = async (award, curationMode) => {
         .getElementById("guided-div-contributor-field-set")
         .classList.remove("hidden");
 
-      document.getElementById("contributors-container").innerHTML === "";
+      document.getElementById("contributors-container").innerHTML = "";
       //add an empty contributor information fieldset
       addContributorField();
       return;
