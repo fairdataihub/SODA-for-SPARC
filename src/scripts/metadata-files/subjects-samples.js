@@ -2658,37 +2658,49 @@ function protocolAccountQuestion(type, changeAccountBoolean) {
             allowOutsideClick: false,
             html:
               '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL">' +
-              '<label>Protocol Type: <i class="fas fa-info-circle swal-popover" data-content="This will state whether your protocol is a \'URL\' or \'DOI\' item. Use one of those two items to reference the type of protocol." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-select" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
-              '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="A prespecified list of relations for common protocols used in SPARC datasets. </br>  The value in this field must be read as the \'relationship that this dataset has to the specified protocol\'." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsProtocolFor">IsProtocolFor</option><option value="HasProtocol">HasProtocol</option><option value="IsSoftwareFor">IsSoftwareFor</option><option value="HasSoftware">HasSoftware</option></select>' +
               '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description"></textarea>',
             focusConfirm: false,
             preConfirm: () => {
-              if ($("#DD-protocol-link").val() === "") {
-                Swal.showValidationMessage(`Please enter a link!`);
-              }
-              if ($("#DD-protocol-link-select").val() === "Select") {
-                Swal.showValidationMessage(`Please choose a link type!`);
-              }
-              if ($("#DD-protocol-link-relation").val() === "Select") {
-                Swal.showValidationMessage(`Please choose a link relation!`);
-              }
+              var link = $("#DD-protocol-link").val();
+              let protocolLink = "";
+
               if ($("#DD-protocol-description").val() === "") {
                 Swal.showValidationMessage(`Please enter a short description!`);
               }
+
+              if (link === "") {
+                Swal.showValidationMessage(`Please enter a link!`);
+              } else {
+                if (doiRegex.declared({ exact: true }).test(link) === true) {
+                  protocolLink = "DOI";
+                } else {
+                  //check if link is valid
+                  if (validator.isURL(link) != true) {
+                    Swal.showValidationMessage(`Please enter a valid link`);
+                  } else {
+                    //link is valid url and check for 'doi' in link
+                    if (link.includes("doi")) {
+                      protocolLink = "DOI";
+                    } else {
+                      protocolLink = "URL";
+                    }
+                  }
+                }
+              }
               return [
                 $("#DD-protocol-link").val(),
-                $("#DD-protocol-link-select").val(),
-                $("#DD-protocol-link-relation").val(),
+                protocolLink,
+                "IsProtocolFor",
                 $("#DD-protocol-description").val(),
               ];
             },
           });
-          if (formValues) {
+          if (formValue) {
             addProtocolLinktoTableDD(
-              formValues[0],
-              formValues[1],
-              formValues[2],
-              formValues[3]
+              formValue[0],
+              formValue[1],
+              formValue[2],
+              formValue[3]
             );
           }
         }
