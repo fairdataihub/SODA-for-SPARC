@@ -8405,8 +8405,8 @@ async function showBFAddAccountSweetalert() {
               });
             })
             .catch((error) => {
-              clientError(error)
-              Swal.showValidationMessage(userErrorMessage(error))
+              clientError(error);
+              Swal.showValidationMessage(userErrorMessage(error));
               document.getElementsByClassName(
                 "swal2-actions"
               )[0].children[1].disabled = false;
