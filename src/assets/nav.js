@@ -13,7 +13,6 @@ function forceActionSidebar(action) {
   }
 }
 
-
 document.body.addEventListener("click", (event) => {
   if (event.target.dataset.section) {
     handleSectionTrigger(event);
