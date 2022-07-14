@@ -98,6 +98,7 @@
     "@tarekraafat/autocomplete.js": "^10.2.6",
     "@toast-ui/editor": "^2.5.1",
     "@yaireo/tagify": "^3.23.1",
+    "@electron/remote": "2.0.8",
     "airtable": "^0.8.1",
     "amazon-cognito-identity-js": "^5.2.0",
     "animate.css": "^4.1.1",
@@ -114,7 +115,7 @@
     "electron-context-menu": "^0.13.0",
     "electron-log": "^4.3.5",
     "electron-notarize": "^1.2.1",
-    "electron-settings": "^3.2.0",
+    "electron-settings": "^4.0.2",
     "electron-shortcut-normalizer": "^1.0.0",
     "electron-updater": "4.3.9",
     "excel4node": "^1.7.2",
@@ -147,7 +148,7 @@
     "validator": "^13.7.0"
   },
   "devDependencies": {
-    "electron": "6.1.9",
+    "electron": "16.0.0",
     "electron-builder": "22.10.5",
     "electron-packager": "^14.0.6",
     "electron-rebuild": "^1.11.0",
