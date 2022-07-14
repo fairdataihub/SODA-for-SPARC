@@ -7,6 +7,7 @@ const os = require("os");
 const path = require("path");
 const { ipcRenderer, BrowserWindow } = require("electron");
 const Editor = require("@toast-ui/editor");
+const $ = require("jquery")
 const remote = require("@electron/remote");
 const { Notyf } = require("notyf");
 const imageDataURI = require("image-data-uri");
@@ -15,7 +16,6 @@ const Airtable = require("airtable");
 require("v8-compile-cache");
 const Tagify = require("@yaireo/tagify");
 const https = require("https");
-const $ = require("jquery");
 const electron = require("electron");
 const bootbox = require("bootbox");
 const DragSelect = require("dragselect");
@@ -56,7 +56,7 @@ const axios = require("axios").default;
 
 const DatePicker = require("tui-date-picker"); /* CommonJS */
 const excel4node = require("excel4node");
-
+const Swal = require("sweetalert2");
 const { backOff } = require("exponential-backoff");
 
 const app = remote.app;
@@ -3070,7 +3070,6 @@ function postCurationListChange() {
 
 // upload banner image //
 const Cropper = require("cropperjs");
-const { default: Swal } = require("sweetalert2");
 const { waitForDebugger } = require("inspector");
 const { resolve } = require("path");
 const { background } = require("jimp");

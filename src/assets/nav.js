@@ -1,4 +1,5 @@
 const settings = require("electron-settings");
+const $ = require("jquery")
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
 
 // function to hide the sidebar and disable the sidebar expand button

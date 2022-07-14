@@ -78,14 +78,14 @@
     />
 
     <link rel="import" href="sections/getting_started/getting_started.html" />
-    <!-- <link rel="import" href="sections/manage_datasets/manage_datasets.html" />
+    <link rel="import" href="sections/manage_datasets/manage_datasets.html" />
     <link rel="import" href="sections/post_curation/post_curation.html" />
     <link rel="import" href="sections/prepare_metadata/prepare_metadata.html" />
     <link rel="import" href="sections/curate/curate.html" />
     <link rel="import" href="sections/main_tabs/main_tabs.html" />
     <link rel="import" href="sections/documentation/documentation.html" />
     <link rel="import" href="sections/validate/validate_dataset.html" />
-    <link rel="import" href="sections/contact-us/contact_us.html" /> -->
+    <link rel="import" href="sections/contact-us/contact_us.html" />
     <script
       src="./assets/lotties/license-lottie.js"
       type="text/javascript"
@@ -358,6 +358,7 @@
     </script>
 
     <script>
+      const $ = require("jquery")
       $(document).ready(() => {
         $("#sidebarCollapse").on("click", function () {
           $("#main-nav").toggleClass("active");
@@ -374,11 +375,16 @@
     </script>
 
     <script src="scripts/others/popper.min.js"></script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="/dist/semantic.min.js"></script>
     <script src="node_modules/fomantic-ui/dist/components/accordion.js"></script>
+
+
     <script src="node_modules/jstree/dist/jstree.min.js"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="node_modules/@tarekraafat/autocomplete.js/dist/autoComplete.js"></script>
-    <script src="node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
     <script src="https://jsuites.net/v4/jsuites.js"></script>
     <script src="https://bossanova.uk/jspreadsheet/v4/jexcel.js"></script>
     <script src="./scripts/others/renderer.js" type="module"></script>
