@@ -846,10 +846,12 @@ function addSampleMetadataEntriesIntoJSON(curationMode) {
     }
   }
   if (curationMode === "guided") {
-    let subjectID = $("#guided-metadata-sample-subject-id").text();
-    let sampleID = $("#guided-metadata-sample-id").text();
-    samplesTableData[0].unshift("subject id", "sample id");
-    valuesArr.unshift(subjectID, sampleID);
+    let subjectID = document.getElementById(
+      "guided-bootbox-subject-id-samples"
+    ).value;
+    let sampleID = document.getElementById("guided-bootbox-sample-id").value;
+    //ASDFsamplesTableData[0].unshift("subject id", "sample id");
+    //ASDFvaluesArr.unshift(subjectID, sampleID);
     let duplicateSampleIndex = null;
     for (let i = 1; i < samplesTableData.length; i++) {
       if (samplesTableData[i][1] === sampleID) {

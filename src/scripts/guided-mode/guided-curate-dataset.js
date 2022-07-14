@@ -1592,14 +1592,9 @@ const traverseToTab = (targetPageID) => {
     if (targetPageID === "guided-create-subjects-metadata-tab") {
       //remove custom fields that may have existed from a previous session
       document.getElementById("guided-accordian-custom-fields").innerHTML = "";
-      if (!subjectsTableData) {
-        subjectsTableData = [];
-      }
       console.log(subjectsTableData);
-
       renderSubjectsMetadataAsideItems();
       console.log(subjectsTableData);
-
       const subjectsMetadataBlackArrowLottieContainer = document.getElementById(
         "subjects-metadata-black-arrow-lottie-container"
       );
@@ -1614,7 +1609,13 @@ const traverseToTab = (targetPageID) => {
     }
 
     if (targetPageID === "guided-create-samples-metadata-tab") {
+      //remove custom fields that may have existed from a previous session
+      document.getElementById(
+        "guided-accordian-custom-fields-samples"
+      ).innerHTML = "";
+      console.log(samplesTableData);
       renderSamplesMetadataAsideItems();
+      console.log(samplesTableData);
       const samplesMetadataBlackArrowLottieContainer = document.getElementById(
         "samples-metadata-black-arrow-lottie-container"
       );
@@ -3910,9 +3911,6 @@ const guidedLoadSampleMetadataIfExists = (
   subjectMetadataId
 ) => {
   //loop through all samplesTableData elemenents besides the first one
-  console.log(samplesTableData);
-  console.log(sampleMetadataId);
-  console.log(subjectMetadataId);
   for (let i = 1; i < samplesTableData.length; i++) {
     if (
       samplesTableData[i][0] === subjectMetadataId &&
@@ -3934,9 +3932,8 @@ const openModifySampleMetadataPage = (
   sampleMetadataPoolID
 ) => {
   guidedLoadSampleMetadataIfExists(sampleMetadataID, sampleMetadataSubjectID);
-  $("#guided-metadata-sample-id").text(sampleMetadataID);
-  $("#guided-metadata-sample-subject-id").text(sampleMetadataSubjectID);
-  document.getElementById("guided-bootbox-wasDerivedFromSample").value =
+  document.getElementById("guided-bootbox-sample-id").value = sampleMetadataID;
+  document.getElementById("guided-bootbox-subject-id-samples").value =
     sampleMetadataSubjectID;
   document.getElementById("guided-bootbox-sample-pool-id").value =
     sampleMetadataPoolID;
@@ -6037,6 +6034,59 @@ const renderSamplesMetadataAsideItems = () => {
   //Combine sample data from samples in and out of pools
   let samples = [...samplesInPools, ...samplesOutsidePools];
 
+  const samplesFormEntries = guidedSamplesFormDiv.querySelectorAll(
+    ".samples-form-entry"
+  );
+
+  //Create an array of samplesFormEntries name attribute
+  const samplesFormNames = [...samplesFormEntries].map((entry) => {
+    return entry.name;
+  });
+
+  if (samplesTableData.length == 0) {
+    console.log("samples table empty");
+    //Get items with class "samples-form-entry" from samplesForDiv
+    samplesTableData[0] = samplesFormNames;
+    for (const sample of samples) {
+      const sampleDataArray = [];
+      sampleDataArray.push(sample.subjectName);
+      sampleDataArray.push(sample.sampleName);
+      //Push an empty string for was derived from
+      sampleDataArray.push("");
+      sampleDataArray.push(sample.poolName ? sample.poolName : "N/A");
+      for (let i = 0; i < samplesFormNames.length - 4; i++) {
+        sampleDataArray.push("");
+      }
+      samplesTableData.push(sampleDataArray);
+    }
+    console.log(samplesTableData);
+  } else {
+    console.log("samples table not empty");
+    console.log(samplesTableData);
+    //Add samples that have not yet been added to the table to the table
+    for (const sample of samples) {
+      let sampleAlreadyInTable = false;
+      for (let i = 0; i < samplesTableData.length; i++) {
+        if (samplesTableData[i][1] == sample.sampleName) {
+          sampleAlreadyInTable = true;
+        }
+      }
+      if (!sampleAlreadyInTable) {
+        console.log("sample not in array");
+        const sampleDataArray = [];
+        sampleDataArray.push(sample.subjectName);
+        sampleDataArray.push(sample.sampleName);
+        //Push an empty string for was derived from
+        sampleDataArray.push("");
+        sampleDataArray.push(sample.poolName ? sample.poolName : "N/A");
+        for (let i = 0; i < samplesTableData[0].length - 4; i++) {
+          sampleDataArray.push("");
+        }
+        samplesTableData.push(sampleDataArray);
+      }
+    }
+  }
+
   //Create the HTML for the samples
   const sampleItems = samples
     .map((sample) => {
@@ -6061,7 +6111,6 @@ const renderSamplesMetadataAsideItems = () => {
   const selectionAsideItems = document.querySelectorAll(
     `a.samples-metadata-aside-item`
   );
-
   selectionAsideItems.forEach((item) => {
     item.addEventListener("click", (e) => {
       //Hide intro and show metadata fields if intro is open
@@ -6083,12 +6132,12 @@ const renderSamplesMetadataAsideItems = () => {
           item.classList.remove("is-selected");
         }
       });
-
+      //Get sample's subject and pool from rendered HTML
       const samplesSubject = e.target.getAttribute("data-samples-subject-name");
       const samplesPool = e.target.getAttribute("data-samples-pool-id");
 
       //Set the subject id field based of clicked elements data-subject-id attribute
-      document.getElementById("guided-bootbox-wasDerivedFromSample").value =
+      document.getElementById("guided-bootbox-subject-id-samples").value =
         samplesSubject;
 
       //Set the pool id field based of clicked elements data-pool-id attribute
@@ -6096,8 +6145,8 @@ const renderSamplesMetadataAsideItems = () => {
         samplesPool;
 
       previousSample = document.getElementById(
-        "guided-metadata-sample-id"
-      ).innerHTML;
+        "guided-bootbox-sample-id"
+      ).value;
 
       //check to see if previousSample is empty
       if (previousSample) {

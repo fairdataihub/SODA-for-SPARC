@@ -2360,7 +2360,7 @@
                 </div>
               </div>
               <div id="guided-form-add-a-subject" class="guided--panel hidden">
-                <div class="guided--section neumorphic mt-xl">
+                <div class="guided--section neumorphic mt-xl hidden">
                   <label class="guided--form-label mt-xl">Subject ID:</label>
                   <input
                     class="guided--input subjects-form-entry"
@@ -3046,13 +3046,27 @@
                 </div>
               </div>
               <div id="guided-form-add-a-sample" class="guided--panel hidden">
-                <label class="guided--form-label centered"
-                  >Subject ID:
-                  <span id="guided-metadata-sample-subject-id"></span>
-                </label>
-                <label class="guided--form-label centered"
-                  >Sample ID: <span id="guided-metadata-sample-id"></span>
-                </label>
+                <div class="guided--section neumorphic mt-xl">
+                  <label class="guided--form-label mt-xl">Subject ID:</label>
+                  <input
+                    class="guided--input samples-form-entry"
+                    id="guided-bootbox-subject-id-samples"
+                    name="subject id"
+                    type="text"
+                    placeholder="Enter sample's subject ID here"
+                    type="text"
+                    readonly
+                  /><label class="guided--form-label mt-xl">Sample ID:</label>
+                  <input
+                    class="guided--input samples-form-entry"
+                    id="guided-bootbox-sample-id"
+                    name="sample id"
+                    type="text"
+                    placeholder="Enter sample id here"
+                    type="text"
+                    readonly
+                  />
+                </div>
 
                 <div class="guided--section neumorphic mt-xl">
                   <h2 class="guided--text-sub-step mt-0">Experimental Setup</h2>
