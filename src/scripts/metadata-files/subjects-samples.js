@@ -563,7 +563,7 @@ function populateRRID(strain, type) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   https.get(rridInfo, (res) => {
     if (res.statusCode === 200) {
       let data = "";
@@ -756,6 +756,7 @@ async function edit_current_protocol_id(ev) {
       desc +
       "</textarea>",
     focusConfirm: false,
+    width: "38rem",
     showCancelButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
@@ -2328,7 +2329,7 @@ function importExistingSubjectsFile() {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       setTimeout(loadSubjectsFileToDataframe, 1000, filePath);
     }
   }
@@ -2382,7 +2383,7 @@ function importExistingSamplesFile() {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       setTimeout(loadSamplesFileToDataframe(filePath), 1000);
     }
   }
@@ -2402,7 +2403,7 @@ async function checkBFImportSubjects() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   var fieldEntries = [];
   for (var field of $("#form-add-a-subject")
     .children()
@@ -2472,7 +2473,7 @@ async function checkBFImportSamples() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   var fieldEntries = [];
   for (var field of $("#form-add-a-sample")
     .children()
@@ -2653,6 +2654,7 @@ function protocolAccountQuestion(type, changeAccountBoolean) {
             showCancelButton: true,
             confirmButtonText: "Add",
             cancelButtonText: "Cancel",
+            width: "38rem",
             showCancelButton: true,
             allowEscapeKey: false,
             allowOutsideClick: false,
@@ -2674,7 +2676,7 @@ function protocolAccountQuestion(type, changeAccountBoolean) {
               );
               if (duplicate) {
                 Swal.showValidationMessage(
-                  "Duplicate URL/DOI. The URL/DOI you entered is already added."
+                  "Duplicate protocol. The protocol you entered is already added."
                 );
               }
 
@@ -2912,6 +2914,7 @@ async function showProtocolCredentials(email, filetype) {
         showCancelButton: true,
         reverseButtons: reverseSwalButtons,
         heightAuto: false,
+        width: "38rem",
         backdrop: "rgba(0,0,0, 0.4)",
         didOpen: () => {
           $(".swal-popover").popover();
@@ -2989,6 +2992,7 @@ async function addAdditionalLink() {
     cancelButtonText: "Cancel",
     customClass: "swal-content-additional-link",
     showCancelButton: true,
+    width: "38rem",
     reverseButtons: reverseSwalButtons,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
@@ -3032,7 +3036,7 @@ async function addAdditionalLink() {
       );
       if (duplicate) {
         Swal.showValidationMessage(
-          "Duplicate URL/DOI. The URL/DOI you entered is already added."
+          `Duplicate ${protocolLink}. The ${protocolLink} you entered is already added.`
         );
       }
 
