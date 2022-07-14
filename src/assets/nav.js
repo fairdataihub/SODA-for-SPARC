@@ -1,6 +1,19 @@
 const settings = require("electron-settings");
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
 
+// function to hide the sidebar and disable the sidebar expand button
+function forceActionSidebar(action) {
+  if (action === "show") {
+    $("#sidebarCollapse").removeClass("active");
+    $("#main-nav").removeClass("active");
+  } else {
+    $("#sidebarCollapse").addClass("active");
+    $("#main-nav").addClass("active");
+    // $("#sidebarCollapse").prop("disabled", false);
+  }
+}
+
+
 document.body.addEventListener("click", (event) => {
   if (event.target.dataset.section) {
     handleSectionTrigger(event);
