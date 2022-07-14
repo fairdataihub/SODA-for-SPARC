@@ -7,7 +7,8 @@ const os = require("os");
 const path = require("path");
 const { ipcRenderer, BrowserWindow } = require("electron");
 const Editor = require("@toast-ui/editor");
-const remote = require("electron").remote;
+const remote = require("@electron/remote")
+//const remote = require("electron").remote;
 const { Notyf } = require("notyf");
 const imageDataURI = require("image-data-uri");
 const log = require("electron-log");
@@ -64,7 +65,7 @@ const excel4node = require("excel4node");
 const { backOff } = require("exponential-backoff");
 
 // const prevent_sleep_id = "";
-const electron_app = electron.app;
+const electron_app = remote.app;
 const app = remote.app;
 const shell = electron.shell;
 const Clipboard = electron.clipboard;
@@ -147,7 +148,7 @@ log.info("User OS:", os.type(), os.platform(), "version:", os.release());
 console.log("User OS:", os.type(), os.platform(), "version:", os.release());
 
 // Check current app version //
-const appVersion = window.require("electron").remote.app.getVersion();
+const appVersion = remote.app.getVersion();
 log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
 
