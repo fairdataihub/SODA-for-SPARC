@@ -1590,7 +1590,16 @@ const traverseToTab = (targetPageID) => {
     }
 
     if (targetPageID === "guided-create-subjects-metadata-tab") {
+      //remove custom fields that may have existed from a previous session
+      document.getElementById("guided-accordian-custom-fields").innerHTML = "";
+      if (!subjectsTableData) {
+        subjectsTableData = [];
+      }
+      console.log(subjectsTableData);
+
       renderSubjectsMetadataAsideItems();
+      console.log(subjectsTableData);
+
       const subjectsMetadataBlackArrowLottieContainer = document.getElementById(
         "subjects-metadata-black-arrow-lottie-container"
       );
@@ -2177,7 +2186,10 @@ const setActiveSubPage = (pageIdToActivate) => {
       //If completionDate exists in sodaJSONObj, set and disable completion date input
       //If not, refresh the input and enable it
       //remove options from completionDateInput besides the default one
-      completionDateInput.innerHTML = `<option value="Enter my own date">Enter my own date</option>`;
+      completionDateInput.innerHTML = `
+        <option value="Select a completion date">Select a completion date</option>
+        <option value="Enter my own date">Enter my own date</option>
+      `;
       if (completionDate) {
         completionDateInput.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
         //select the completion date that was added
@@ -3882,47 +3894,9 @@ const renderSubjectSampleAdditionTable = (subject) => {
   `;
 };
 
-const renderSubjectsMetadataTable = (subjects) => {
-  let subjectMetadataRows = subjects
-    .map((subject, index) => {
-      let tableIndex = index + 1;
-      return `
-      <tr>
-        <td class="middle aligned collapsing text-center">
-          <span class="subject-metadata-table-index">${tableIndex}</span>
-        </td>
-        <td class="middle aligned subject-metadata-id-cell">
-          <span class="subject-metadata-id">${subject}</span>
-        </td>
-        <td class="middle aligned collapsing text-center" style="min-width: 130px">
-          <button
-            type="button"
-            class="btn btn-primary btn-sm"
-            style="background-color: var(--color-light-green) !important; margin-right: 5px"
-            onclick="openModifySubjectMetadataPage($(this))"
-          >
-            Edit metadata
-          </button>
-          <button
-            type="button"
-            class="btn btn-primary btn-sm"
-            onclick="openCopySubjectMetadataPopup($(this))"
-          >
-            Copy metadata
-          </button>
-        </td>
-      </tr>
-    `;
-    })
-    .join("\n");
-  let subjectsMetadataContainer = document.getElementById(
-    "subjects-metadata-table-container"
-  );
-  //subjectsMetadataContainer.innerHTML = subjectMetadataRows;
-};
 const guidedLoadSubjectMetadataIfExists = (subjectMetadataId) => {
   //loop through all subjectsTableData elements besides the first one
-  for (const tableDataElement of subjectsTableData) {
+  for (let i = 0; i < subjectsTableData.length; i++) {
     //check through elements of tableData to find a subject ID match
     if (subjectsTableData[i][0] === subjectMetadataId) {
       //if the id matches, load the metadata into the form
@@ -3969,51 +3943,47 @@ const openModifySampleMetadataPage = (
 };
 
 const openCopySubjectMetadataPopup = async () => {
-  const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
-  //Combine sample data from subjects in and out of pools
-  let subjectsArray = [...subjectsInPools, ...subjectsOutsidePools];
+  //save current subject metadata entered in the form
+  addSubject("guided");
 
-  subjectsArray = subjectsArray.map((subject) => subject.subjectName);
+  let copyFromMetadata = ``;
+  let copyToMetadata = ``;
 
-  const copyFromMetadata = subjectsArray
-    .map((subject) => {
-      return `
+  for (let i = 1; i < subjectsTableData.length; i++) {
+    const subjectID = subjectsTableData[i][0];
+    copyFromMetadata += `
       <div class="field text-left">
         <div class="ui radio checkbox">
-          <input type="radio" name="copy-from" value="${subject}">
-          <label>${subject}</label>
+          <input type="radio" name="copy-from" value="${subjectID}">
+          <label>${subjectID}</label>
         </div>
-      </div>`;
-    })
-    .join("\n");
-
-  const copyToMetadata = subjectsArray
-    .map((subject) => {
-      return `
+      </div>
+    `;
+    copyToMetadata += `
       <div class="field text-left">
         <div class="ui checkbox">
-          <input type="checkbox" name="copy-to" value="${subject}">
-          <label>${subject}</label>
+          <input type="checkbox" name="copy-to" value="${subjectID}">
+          <label>${subjectID}</label>
         </div>
-      </div>`;
-    })
-    .join("\n");
+      </div>
+    `;
+  }
 
   const copyMetadataElement = `
-  <div class="space-between">
-    <div class="ui form">
-      <div class="grouped fields">
-        <label class="guided--form-label med text-left">Which subject would you like to copy metadata from?</label>
-        ${copyFromMetadata}
+    <div class="space-between">
+      <div class="ui form">
+        <div class="grouped fields">
+          <label class="guided--form-label med text-left">Which subject would you like to copy metadata from?</label>
+          ${copyFromMetadata}
+        </div>
+      </div>
+      <div class="ui form">
+        <div class="grouped fields">
+          <label class="guided--form-label med text-left">Which subjects would you like to copy metadata to?</label>
+          ${copyToMetadata}
+        </div>
       </div>
     </div>
-    <div class="ui form">
-      <div class="grouped fields">
-        <label class="guided--form-label med text-left">Which subjects would you like to copy metadata to?</label>
-        ${copyToMetadata}
-      </div>
-    </div>
-  </div>
   `;
   swal
     .fire({
@@ -4035,31 +4005,28 @@ const openCopySubjectMetadataPopup = async () => {
         $("input[name='copy-to']:checked").each(function () {
           selectedCopyToSubjects.push($(this).val());
         });
-
         let copyFromSubjectData = [];
         for (var i = 1; i < subjectsTableData.length; i++) {
           if (subjectsTableData[i][0] === selectedCopyFromSubject) {
-            //copy all elements from matching array except the first one
+            //copy all elements from matching array except the first two
             copyFromSubjectData = subjectsTableData[i].slice(2);
           }
         }
+        console.log(subjectsTableData);
         for (subject of selectedCopyToSubjects) {
-          //initialize copyToSubjectHasMetadata as false, set to True if the subject being copied to has existing metadata
-          //If not, add the subject to the subjectsTable and add metadata being copied
-          let copyToSubjectHasMetadata = false;
-          subjectsTableData.forEach((subjectData, index) => {
-            if (subjectData[0] === subject) {
-              copyToSubjectHasMetadata = true;
-              subjectData = [subjectData[0], subjectData[1]];
-              subjectData = subjectData.concat(copyFromSubjectData);
-              subjectsTableData[index] = subjectData;
+          //loop through all subjectsTableData elements besides the first one
+          for (let i = 1; i < subjectsTableData.length; i++) {
+            //check through elements of tableData to find a subject ID match
+            if (subjectsTableData[i][0] === subject) {
+              subjectsTableData[i] = [
+                subjectsTableData[i][0],
+                subjectsTableData[i][1],
+                ...copyFromSubjectData,
+              ];
             }
-          });
-          if (!copyToSubjectHasMetadata) {
-            newSubjectData = [subject].concat(copyFromSubjectData);
-            subjectsTableData.push(newSubjectData);
           }
         }
+        console.log(subjectsTableData);
         saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       }
     });
@@ -5927,10 +5894,68 @@ const renderSubjectsMetadataAsideItems = () => {
   asideElement.innerHTML = "";
 
   const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+
   //Combine sample data from subjects in and out of pools
   let subjects = [...subjectsInPools, ...subjectsOutsidePools];
 
-  console.log(subjects);
+  const subjectsFormEntries = guidedSubjectsFormDiv.querySelectorAll(
+    ".subjects-form-entry"
+  );
+  //Create an array of subjectFormEntries name attribute
+  const subjectsFormNames = [...subjectsFormEntries].map((entry) => {
+    return entry.name;
+  });
+
+  if (subjectsTableData.length == 0) {
+    console.log("subjects table empty");
+    //Get items with class "subjects-form-entry" from subjectsForDiv
+
+    subjectsTableData[0] = subjectsFormNames;
+    for (const subject of subjects) {
+      const subjectDataArray = [];
+      subjectDataArray.push(subject.subjectName);
+      subjectDataArray.push(subject.poolName ? subject.poolName : "N/A");
+
+      for (let i = 0; i < subjectsFormNames.length - 2; i++) {
+        subjectDataArray.push("");
+      }
+      console.log(subjectDataArray);
+      subjectsTableData.push(subjectDataArray);
+    }
+    console.log(subjectsTableData);
+  } else {
+    console.log("subjects table not empty");
+    console.log(subjectsTableData);
+    //Add subjects that have not yet been added to the table to the table
+    for (const subject of subjects) {
+      let subjectAlreadyInTable = false;
+      for (let i = 0; i < subjectsTableData.length; i++) {
+        if (subjectsTableData[i][0] == subject.subjectName) {
+          subjectAlreadyInTable = true;
+        }
+      }
+      if (!subjectAlreadyInTable) {
+        console.log("subject not in array");
+        const subjectDataArray = [];
+        subjectDataArray.push(subject.subjectName);
+        subjectDataArray.push(subject.poolName ? subject.poolName : "N/A");
+        for (let i = 0; i < subjectsTableData[0].length - 2; i++) {
+          subjectDataArray.push("");
+        }
+        subjectsTableData.push(subjectDataArray);
+      }
+    }
+    console.log(subjectsTableData);
+
+    //If custom fields have been added to the subjectsTableData, create a field for each custom field
+    //added
+    for (let i = 0; i < subjectsTableData[0].length; i++) {
+      if (!subjectsFormNames.includes(subjectsTableData[0][i])) {
+        addCustomHeader("subjects", subjectsTableData[0][i], "guided");
+      }
+    }
+    console.log(subjectsTableData);
+  }
 
   //Create the HTML for the subjects
   const subjectItems = subjects
@@ -5965,8 +5990,8 @@ const renderSubjectsMetadataAsideItems = () => {
       }
       //Save the subject metadata from the previous subject being worked on
       previousSubject = document.getElementById(
-        "guided-metadata-subject-id"
-      ).innerHTML;
+        "guided-bootbox-subject-id"
+      ).value;
       //check to see if previousSubject is empty
       if (previousSubject) {
         addSubject("guided");
@@ -5985,6 +6010,9 @@ const renderSubjectsMetadataAsideItems = () => {
           item.classList.remove("is-selected");
         }
       });
+
+      document.getElementById("guided-bootbox-subject-id").value =
+        e.target.innerText;
       //Set the pool id field based of clicked elements data-pool-id attribute
       document.getElementById("guided-bootbox-subject-pool-id").value =
         e.target.getAttribute("data-pool-id");

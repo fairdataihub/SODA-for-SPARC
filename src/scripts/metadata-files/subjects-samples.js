@@ -455,15 +455,29 @@ function clearAllSubjectFormFields(form) {
   $(form).find(".content").removeClass("active");
 
   // hide Strains and Species
-  if (form === subjectsFormDiv) {
-    var keyword = "subject";
-    $("#bootbox-" + keyword + "-species").css("display", "none");
-    $("#bootbox-" + keyword + "-strain").css("display", "none");
+  if (form === subjectsFormDiv || form === guidedSubjectsFormDiv) {
+    let curationModeSelectorPrefix = "";
+    if (form === subjectsFormDiv) {
+      curationModeSelectorPrefix = "";
+    }
+    if (form === guidedSubjectsFormDiv) {
+      curationModeSelectorPrefix = "guided-";
+    }
 
-    $("#button-add-species-" + keyword + "").html(
+    var keyword = "subject";
+    $(`#${curationModeSelectorPrefix}bootbox-${keyword}-species`).css(
+      "display",
+      "none"
+    );
+    $(`#${curationModeSelectorPrefix}bootbox-${keyword}-strain`).css(
+      "display",
+      "none"
+    );
+
+    $(`#${curationModeSelectorPrefix}button-add-species-${keyword}`).html(
       `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
     );
-    $("#button-add-strain-" + keyword + "").html(
+    $(`#${curationModeSelectorPrefix}button-add-strain-${keyword}`).html(
       `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
     );
   }
@@ -695,10 +709,9 @@ function populateRRID(strain, type, curationMode) {
 }
 
 function addSubjectMetadataEntriesIntoJSON(curationMode) {
-  let curationModeSelectorPrefix = "";
+  let curationModeSelectorPrefix;
   let dataLength = subjectsTableData.length;
-  console.log(subjectsTableData);
-  console.log(dataLength);
+
   if (curationMode === "free-form") {
     curationModeSelectorPrefix = "";
   }
@@ -761,28 +774,16 @@ function addSubjectMetadataEntriesIntoJSON(curationMode) {
       }
     }
     if (curationMode === "guided") {
-      //Check to see if the subject ID is already in the table
-      //If so, set duplicateSubjectIndex as the index of matching subject id
-      let duplicateSubjectIndex = null;
+      let subjectID = document.getElementById(
+        "guided-bootbox-subject-id"
+      ).value;
+      //Overwrite existing subject data with new subject data
       for (let i = 1; i < subjectsTableData.length; i++) {
         if (subjectsTableData[i][0] === subjectID) {
-          duplicateSubjectIndex = i;
+          subjectsTableData[i] = valuesArr;
         }
       }
-      if (duplicateSubjectIndex !== null) {
-        //If the subject ID is already in the table, update old subject metadata with new
-        subjectsTableData[duplicateSubjectIndex] = valuesArr;
-      } else {
-        console.log(subjectsTableData);
-        console.log(valuesArr);
-        console.log(dataLength);
-        console.log(subjectsTableData[dataLength]);
-        if (subjectsTableData[dataLength] !== undefined) {
-          subjectsTableData[dataLength + 1] = valuesArr;
-        } else {
-          subjectsTableData[dataLength] = valuesArr;
-        }
-      }
+
       console.log(subjectsTableData);
     }
   }
@@ -1120,7 +1121,7 @@ function populateForms(subjectID, type, curationMode) {
             // manipulate the Add Strains/Species UI accordingly
             switchSpeciesStrainInput("species", "edit", curationMode);
           } else if (field.name === "Strain" && infoJson[i] !== "") {
-            $(`#${curationModeSelectorPrefix}bootbox-subject-species`).val(
+            $(`#${curationModeSelectorPrefix}bootbox-subject-strain`).val(
               infoJson[i]
             );
             switchSpeciesStrainInput("strain", "edit", curationMode);
@@ -2142,6 +2143,9 @@ async function addCustomField(type, curationMode) {
     });
     if (customField) {
       addCustomHeader("subjects", customField, curationMode);
+      if (curationMode == "guided") {
+        subjectsTableData[0].push(customField);
+      }
     }
   } else if (type === "samples") {
     var lowercaseCasedArray = $.map(samplesHeaderArray, function (item, index) {
@@ -2197,13 +2201,14 @@ function addCustomHeader(type, customHeaderValue, curationMode) {
         subId.push("");
       }
     }
-    if (curationMode == "guided") {
+
+    /*if (curationMode == "guided") {
       guidedHeadersArrSubjects.push(customName);
       // add empty entries for all of the other sub_ids to normalize the size of matrix
       for (var subId of subjectsTableData.slice(1, subjectsTableData.length)) {
         subId.push("");
       }
-    }
+    }*/
   } else if (type === "samples") {
     var divElement =
       '<div class="div-dd-info"><div class="demo-controls-head"><div style="width: 100%;"><font color="black">' +
