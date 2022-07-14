@@ -8,7 +8,6 @@ const path = require("path");
 const { ipcRenderer, BrowserWindow } = require("electron");
 const Editor = require("@toast-ui/editor");
 const remote = require("@electron/remote");
-//const remote = require("electron").remote;
 const { Notyf } = require("notyf");
 const imageDataURI = require("image-data-uri");
 const log = require("electron-log");
@@ -17,9 +16,6 @@ require("v8-compile-cache");
 const Tagify = require("@yaireo/tagify");
 const https = require("https");
 const $ = require("jquery");
-// const PDFDocument = require("pdfkit");
-// const html2canvas = require("html2canvas");
-// const removeMd = require("remove-markdown");
 const electron = require("electron");
 const bootbox = require("bootbox");
 const DragSelect = require("dragselect");
@@ -36,7 +32,6 @@ const diskCheck = require("check-disk-space").default;
 const validator = require("validator");
 const doiRegex = require("doi-regex");
 const lottie = require("lottie-web");
-// TODO: Test with a build
 const {
   datasetUploadSession,
 } = require("./scripts/others/analytics/upload-session-tracker");
@@ -64,8 +59,6 @@ const excel4node = require("excel4node");
 
 const { backOff } = require("exponential-backoff");
 
-// const prevent_sleep_id = "";
-const electron_app = remote.app;
 const app = remote.app;
 const shell = electron.shell;
 const Clipboard = electron.clipboard;
