@@ -3275,18 +3275,21 @@ const removeContributorField = (contributorDeleteButton) => {
 
   const contributorsBeforeDelete =
     sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
-  const filteredContributors = contributorsBeforeDelete.filter(
-    (contributor) => {
-      //remove contributors with matching first and last name
-      return !(
-        contributor.contributorFirstName == contributorFirstName &&
-        contributor.contributorLastName == contributorLastName
-      );
-    }
-  );
 
-  sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] =
-    filteredContributors;
+  if (contributorFirstName && contributorLastName) {
+    const filteredContributors = contributorsBeforeDelete.filter(
+      (contributor) => {
+        //remove contributors with matching first and last name
+        return !(
+          contributor.contributorFirstName == contributorFirstName &&
+          contributor.contributorLastName == contributorLastName
+        );
+      }
+    );
+
+    sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] =
+      filteredContributors;
+  }
   //delete the contributor from the json obj with matching first and last names
   for (const contributor of sodaJSONObj["dataset-metadata"][
     "description-metadata"
