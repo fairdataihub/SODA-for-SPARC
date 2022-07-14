@@ -10,8 +10,6 @@ var samplesTableData = [];
 var samplesFileData = [];
 var headersArrSubjects = [];
 var headersArrSamples = [];
-let guidedHeadersArrSubjects = [];
-let guidedHeadersArrSamples = [];
 let guidedSamplesTableData = [];
 
 function showForm(type, editBoolean) {
@@ -836,6 +834,8 @@ function addSampleMetadataEntriesIntoJSON(curationMode) {
     valuesArr.push(field.value);
   }
   samplesTableData[0] = headersArrSamples;
+  console.log(headersArrSamples);
+  console.log(valuesArr);
   if (valuesArr !== undefined && valuesArr.length !== 0) {
     if (curationMode === "free-form") {
       if (samplesTableData[dataLength] !== undefined) {
@@ -850,22 +850,15 @@ function addSampleMetadataEntriesIntoJSON(curationMode) {
       "guided-bootbox-subject-id-samples"
     ).value;
     let sampleID = document.getElementById("guided-bootbox-sample-id").value;
-    //ASDFsamplesTableData[0].unshift("subject id", "sample id");
-    //ASDFvaluesArr.unshift(subjectID, sampleID);
-    let duplicateSampleIndex = null;
+    console.log(subjectID, sampleID, samplesTableData);
     for (let i = 1; i < samplesTableData.length; i++) {
-      if (samplesTableData[i][1] === sampleID) {
-        duplicateSampleIndex = i;
-      }
-    }
-    if (duplicateSampleIndex !== null) {
-      //If the sample ID is already in the table, update old sample metadata with new
-      samplesTableData[duplicateSampleIndex] = valuesArr;
-    } else {
-      if (samplesTableData[dataLength] !== undefined) {
-        samplesTableData[dataLength + 1] = valuesArr;
-      } else {
-        samplesTableData[dataLength] = valuesArr;
+      if (
+        samplesTableData[i][0] === subjectID &&
+        samplesTableData[i][1] === sampleID
+      ) {
+        console.log("overwriting samples table data");
+        samplesTableData[i] = valuesArr;
+        break;
       }
     }
   }
@@ -1062,25 +1055,17 @@ function populateForms(subjectID, type, curationMode) {
   if (curationMode === "free-form") {
     curationModeSelectorPrefix = "";
     fieldArr = $(subjectsFormDiv).children().find(".subjects-form-entry");
-
-    if (subjectsTableData.length > 1) {
-      for (var i = 1; i < subjectsTableData.length; i++) {
-        if (subjectsTableData[i][0] === subjectID) {
-          infoJson = subjectsTableData[i];
-          break;
-        }
-      }
-    }
   }
   if (curationMode === "guided") {
     curationModeSelectorPrefix = "guided-";
     fieldArr = $(guidedSubjectsFormDiv).children().find(".subjects-form-entry");
-    if (subjectsTableData.length > 1) {
-      for (var i = 1; i < subjectsTableData.length; i++) {
-        if (subjectsTableData[i][0] === subjectID) {
-          infoJson = subjectsTableData[i];
-          break;
-        }
+  }
+
+  if (subjectsTableData.length > 1) {
+    for (var i = 1; i < subjectsTableData.length; i++) {
+      if (subjectsTableData[i][0] === subjectID) {
+        infoJson = subjectsTableData[i];
+        break;
       }
     }
   }
@@ -1151,45 +1136,35 @@ function populateForms(subjectID, type, curationMode) {
 }
 
 function populateFormsSamples(subjectID, sampleID, type, curationMode) {
+  console.log(subjectID, sampleID, type, curationMode);
   //Initialize variables shared between different curation modes and set them
   //based on curationMode passed in as parameter
   let fieldArr;
   let curationModeSelectorPrefix;
+  let infoJson;
 
   if (curationMode === "free-form") {
     curationModeSelectorPrefix = "";
     fieldArr = $(samplesFormDiv).children().find(".samples-form-entry");
-
-    if (samplesTableData.length > 1) {
-      for (var i = 1; i < samplesTableData.length; i++) {
-        if (
-          samplesTableData[i][0] === subjectID &&
-          samplesTableData[i][1] === sampleID
-        ) {
-          infoJson = samplesTableData[i];
-          break;
-        }
-      }
-    }
   }
   if (curationMode === "guided") {
     curationModeSelectorPrefix = "guided-";
     fieldArr = $(guidedSamplesFormDiv).children().find(".samples-form-entry");
-    if (samplesTableData.length > 1) {
-      for (var i = 1; i < samplesTableData.length; i++) {
-        if (
-          samplesTableData[i][0] === subjectID &&
-          samplesTableData[i][1] === sampleID
-        ) {
-          //Create a copy of matched table element as infoJson and remove the first 2 elements
-          infoJson = samplesTableData[i].slice();
-          infoJson.shift();
-          infoJson.shift();
-          break;
-        }
+  }
+  console.log(fieldArr);
+  if (samplesTableData.length > 1) {
+    for (var i = 1; i < samplesTableData.length; i++) {
+      if (
+        samplesTableData[i][0] === subjectID &&
+        samplesTableData[i][1] === sampleID
+      ) {
+        infoJson = samplesTableData[i];
+        break;
       }
     }
   }
+  console.log(infoJson);
+  console.log(fieldArr);
 
   if (sampleID !== "clear" && sampleID.trim() !== "") {
     // populate form
@@ -1227,6 +1202,7 @@ function populateFormsSamples(subjectID, sampleID, type, curationMode) {
                 field.value = infoJson[i];
               }
             } else {
+              console.log(`setting ${field.name} to ${infoJson[i]}`);
               field.value = infoJson[i];
             }
           }
@@ -2115,10 +2091,12 @@ async function addCustomField(type, curationMode) {
     subjectsHeaderArray = headersArrSubjects;
     samplesHeaderArray = headersArrSamples;
   }
+
   if (curationMode == "guided") {
-    subjectsHeaderArray = guidedHeadersArrSubjects;
-    samplesHeaderArray = guidedHeadersArrSamples;
+    subjectsHeaderArray = subjectsTableData[0];
+    samplesHeaderArray = samplesTableData[0];
   }
+
   if (type === "subjects") {
     var lowercaseCasedArray = $.map(
       subjectsHeaderArray,
@@ -2147,6 +2125,9 @@ async function addCustomField(type, curationMode) {
       addCustomHeader("subjects", customField, curationMode);
       if (curationMode == "guided") {
         subjectsTableData[0].push(customField);
+        for (let i = 1; i < subjectsTableData.length; i++) {
+          subjectsTableData[i].push("");
+        }
       }
     }
   } else if (type === "samples") {
@@ -2171,6 +2152,12 @@ async function addCustomField(type, curationMode) {
       },
     });
     if (customField) {
+      if (curationMode == "guided") {
+        samplesTableData[0].push(customField);
+        for (let i = 1; i < samplesTableData.length; i++) {
+          samplesTableData[i].push("");
+        }
+      }
       addCustomHeader("samples", customField, curationMode);
     }
   }
@@ -2183,16 +2170,30 @@ function addCustomHeader(type, customHeaderValue, curationMode) {
   }
   var customName = customHeaderValue.trim();
   if (type === "subjects") {
-    var divElement =
-      '<div class="div-dd-info"><div class="demo-controls-head"><div style="width: 100%;"><font color="black">' +
-      customName +
-      ':</font></div></div><div class="demo-controls-body"><div class="ui input modified"><input class="subjects-form-entry" type="text" placeholder="Type here..." id="bootbox-subject-' +
-      customName +
-      '" name="' +
-      customName +
-      '"></input></div></div><div class="tooltipnew demo-controls-end"><svg onclick="deleteCustomField(this, \'' +
-      customName +
-      '\', 0)" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></div></div>';
+    var divElement = `
+      <div class="div-dd-info">
+        <div class="demo-controls-head">
+          <div style="width: 100%;">
+            <font color="black">
+              ${customName}
+            </font>
+          </div>
+        </div>
+        <div class="demo-controls-body">
+          <div class="ui input modified">
+            <input class="subjects-form-entry" type="text" placeholder="Type here..." id="bootbox-subject-${customName}" name="${customName}">
+            </input>
+          </div>
+        </div>
+        <div class="tooltipnew demo-controls-end">
+          <svg onclick="deleteCustomField(this,'${customName}',0,'${curationMode}')" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16">
+            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+          </svg>
+        </div>
+      </div>
+    `;
+
     $(`#${curationModeSelectorPrefix}accordian-custom-fields`).append(
       divElement
     );
@@ -2203,25 +2204,30 @@ function addCustomHeader(type, customHeaderValue, curationMode) {
         subId.push("");
       }
     }
-
-    /*if (curationMode == "guided") {
-      guidedHeadersArrSubjects.push(customName);
-      // add empty entries for all of the other sub_ids to normalize the size of matrix
-      for (var subId of subjectsTableData.slice(1, subjectsTableData.length)) {
-        subId.push("");
-      }
-    }*/
   } else if (type === "samples") {
-    var divElement =
-      '<div class="div-dd-info"><div class="demo-controls-head"><div style="width: 100%;"><font color="black">' +
-      customName +
-      ':</font></div></div><div class="demo-controls-body"><div class="ui input modified"><input class="samples-form-entry" type="text" placeholder="Type here..." id="bootbox-subject-' +
-      customName +
-      '" name="' +
-      customName +
-      '"></input></div></div><div class="tooltipnew demo-controls-end"><svg onclick="deleteCustomField(this, \'' +
-      customName +
-      '\', 1)" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></div></div>';
+    var divElement = `
+        <div class="div-dd-info">
+          <div class="demo-controls-head">
+            <div style="width: 100%;">
+              <font color="black">
+                ${customName}
+              </font>
+            </div>
+          </div>
+          <div class="demo-controls-body">
+            <div class="ui input modified">
+              <input class="samples-form-entry" type="text" placeholder="Type here..." id="bootbox-subject-${customName}" name="${customName}">
+              </input>
+            </div>
+          </div>
+          <div class="tooltipnew demo-controls-end">
+            <svg onclick="deleteCustomField(this,'${customName}',1,'${curationMode}')" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16">
+              <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+              <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+            </svg>
+          </div>
+        </div>
+      `;
     $(`#${curationModeSelectorPrefix}accordian-custom-fields-samples`).append(
       divElement
     );
@@ -2232,20 +2238,12 @@ function addCustomHeader(type, customHeaderValue, curationMode) {
         sampleId.push("");
       }
     }
-    if (curationMode == "guided") {
-      guidedHeadersArrSamples.push(customName);
-      for (var sampleId of guidedSamplesTableData.slice(
-        1,
-        guidedSamplesTableData.length
-      )) {
-        sampleId.push("");
-      }
-    }
   }
 }
 
-function deleteCustomField(ev, customField, category) {
-  //  category 0 => subjects;
+function deleteCustomField(ev, customField, category, curationMode) {
+  console.log(customField, category, curationMode);
+  // category 0 => subjects;
   // category 1 => samples
   Swal.fire({
     text: "Are you sure you want to delete this custom field?",
@@ -2257,46 +2255,96 @@ function deleteCustomField(ev, customField, category) {
     confirmButtonText: "Yes",
   }).then((result) => {
     if (result.isConfirmed) {
+      if (curationMode == "free-form") {
+        $(ev).parents()[1].remove();
+        if (category === 0) {
+          if (headersArrSubjects.includes(customField)) {
+            headersArrSubjects.splice(
+              headersArrSubjects.indexOf(customField),
+              1
+            );
+          }
+        } else {
+          if (headersArrSamples.includes(customField)) {
+            headersArrSamples.splice(headersArrSamples.indexOf(customField), 1);
+          }
+        }
+      }
+    }
+    if (curationMode == "guided") {
       $(ev).parents()[1].remove();
       if (category === 0) {
-        if (headersArrSubjects.includes(customField)) {
-          headersArrSubjects.splice(headersArrSubjects.indexOf(customField), 1);
+        // get the index of the custom field in the subjectsTableData
+        const indexToRemove = subjectsTableData[0].indexOf(customField);
+        // remove the element at indexToRemove for each element in subjectsTableData
+        for (let i = 0; i < subjectsTableData.length; i++) {
+          subjectsTableData[i].splice(indexToRemove, 1);
         }
-      } else {
-        if (headersArrSamples.includes(customField)) {
-          headersArrSamples.splice(headersArrSamples.indexOf(customField), 1);
-        }
+      }
+    }
+    if (category === 1) {
+      // get the index of the custom field in the samplesTableData
+      const indexToRemove = samplesTableData[0].indexOf(customField);
+      // remove the element at indexToRemove for each element in samplesTableData
+      for (let i = 0; i < samplesTableData.length; i++) {
+        samplesTableData[i].splice(indexToRemove, 1);
       }
     }
   });
 }
 
 function addExistingCustomHeader(customName) {
-  var divElement =
-    '<div class="div-dd-info"><div class="demo-controls-head"><div style="width: 100%;"><font color="black">' +
-    customName +
-    ':</font></div></div><div class="demo-controls-body"><div class="ui input"><input class="subjects-form-entry" type="text" placeholder="Type here..." id="bootbox-subject-' +
-    customName +
-    '" name="' +
-    customName +
-    '"></input></div></div><div class="tooltipnew demo-controls-end"><svg onclick="deleteCustomField(this, \'' +
-    customName +
-    '\', 0)" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></div></div>';
+  var divElement = `
+    <div class="div-dd-info">
+      <div class="demo-controls-head">
+        <div style="width: 100%;">
+          <font color="black">
+            ${customName}
+          </font>
+        </div>
+      </div>
+      <div class="demo-controls-body">
+        <div class="ui input modified">
+          <input class="subjects-form-entry" type="text" placeholder="Type here..." id="bootbox-subject-${customName}" name="${customName}">
+          </input>
+        </div>
+      </div>
+      <div class="tooltipnew demo-controls-end">
+        <svg onclick="deleteCustomField(this,'${customName}',0,'free-form')" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16">
+          <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+          <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+        </svg>
+      </div>
+    </div>
+  `;
   $("#accordian-custom-fields").append(divElement);
   headersArrSubjects.push(customName);
 }
 
 function addExistingCustomHeaderSamples(customName) {
-  var divElement =
-    '<div class="div-dd-info"><div class="demo-controls-head"><div style="width: 100%;"><font color="black">' +
-    customName +
-    ':</font></div></div><div class="demo-controls-body"><div class="ui input"><input class="samples-form-entry" type="text" placeholder="Type here..." id="bootbox-subject-' +
-    customName +
-    '" name="' +
-    customName +
-    '"></input></div></div><div class="tooltipnew demo-controls-end"><svg onclick="deleteCustomField(this, \'' +
-    customName +
-    '\', 1)" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></div></div>';
+  var divElement = `
+    <div class="div-dd-info">
+      <div class="demo-controls-head">
+        <div style="width: 100%;">
+          <font color="black">
+            ${customName}
+          </font>
+        </div>
+      </div>
+      <div class="demo-controls-body">
+        <div class="ui input modified">
+          <input class="samples-form-entry" type="text" placeholder="Type here..." id="bootbox-subject-${customName}" name="${customName}">
+          </input>
+        </div>
+      </div>
+      <div class="tooltipnew demo-controls-end">
+        <svg onclick="deleteCustomField(this,'${customName}',0,'free-form')" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16">
+          <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+          <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+        </svg>
+      </div>
+    </div>
+  `;
   $("#accordian-custom-fields-samples").append(divElement);
   headersArrSamples.push(customName);
 }

@@ -1592,6 +1592,7 @@ const traverseToTab = (targetPageID) => {
     if (targetPageID === "guided-create-subjects-metadata-tab") {
       //remove custom fields that may have existed from a previous session
       document.getElementById("guided-accordian-custom-fields").innerHTML = "";
+      document.getElementById("guided-bootbox-subject-id").value = "";
       console.log(subjectsTableData);
       renderSubjectsMetadataAsideItems();
       console.log(subjectsTableData);
@@ -1606,6 +1607,10 @@ const traverseToTab = (targetPageID) => {
         loop: true,
         autoplay: true,
       });
+      switchElementVisibility(
+        "guided-form-add-a-subject",
+        "guided-form-add-a-subject-intro"
+      );
     }
 
     if (targetPageID === "guided-create-samples-metadata-tab") {
@@ -1613,6 +1618,8 @@ const traverseToTab = (targetPageID) => {
       document.getElementById(
         "guided-accordian-custom-fields-samples"
       ).innerHTML = "";
+      document.getElementById("guided-bootbox-subject-id-samples").value = "";
+      document.getElementById("guided-bootbox-sample-id").value = "";
       console.log(samplesTableData);
       renderSamplesMetadataAsideItems();
       console.log(samplesTableData);
@@ -1627,6 +1634,10 @@ const traverseToTab = (targetPageID) => {
         loop: true,
         autoplay: true,
       });
+      switchElementVisibility(
+        "guided-form-add-a-sample",
+        "guided-form-add-a-sample-intro"
+      );
     }
     if (targetPageID === "guided-add-code-metadata-tab") {
       const codeMetadata = sodaJSONObj["dataset-metadata"]["code-metadata"];
@@ -3931,6 +3942,7 @@ const openModifySampleMetadataPage = (
   sampleMetadataSubjectID,
   sampleMetadataPoolID
 ) => {
+  console.log(sampleMetadataID, sampleMetadataSubjectID, sampleMetadataPoolID);
   guidedLoadSampleMetadataIfExists(sampleMetadataID, sampleMetadataSubjectID);
   document.getElementById("guided-bootbox-sample-id").value = sampleMetadataID;
   document.getElementById("guided-bootbox-subject-id-samples").value =
@@ -4024,44 +4036,45 @@ const openCopySubjectMetadataPopup = async () => {
           }
         }
         console.log(subjectsTableData);
+        const currentSubjectOpenInView = document.getElementById(
+          "guided-bootbox-subject-id"
+        ).value;
+        if (currentSubjectOpenInView) {
+          //If a subject was open in the UI, update it with the new metadata
+          openModifySubjectMetadataPage(currentSubjectOpenInView);
+        }
+
         saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       }
     });
 };
 
 const openCopySampleMetadataPopup = async () => {
-  const [samplesInPools, samplesOutsidePools] =
-    sodaJSONObj.getAllSamplesFromSubjects();
-  //Combine sample data from samples in and out of pools
-  let samples = [...samplesInPools, ...samplesOutsidePools];
+  addSample("guided");
 
-  //sort samples object by sampleName property alphabetically
-  samples = samples.map((sample) => sample.sampleName);
+  let copyFromMetadata = ``;
+  let copyToMetadata = ``;
 
-  const copyFromMetadata = samples
-    .map((sample) => {
-      return `
-        <div class="field text-left">
-          <div class="ui radio checkbox">
-            <input type="radio" name="copy-from" value="${sample}">
-            <label>${sample}</label>
-          </div>
-        </div>`;
-    })
-    .join("\n");
+  for (let i = 1; i < samplesTableData.length; i++) {
+    const sampleID = samplesTableData[i][1];
 
-  const copyToMetadata = samples
-    .map((sample) => {
-      return `
-        <div class="field text-left">
-          <div class="ui checkbox">
-          <input type="checkbox" name="copy-to" value="${sample}">
-          <label>${sample}</label>
-          </div>
+    copyFromMetadata += `
+      <div class="field text-left">
+        <div class="ui radio checkbox">
+          <input type="radio" name="copy-from" value="${sampleID}">
+          <label>${sampleID}</label>
         </div>
-      `;
-    })
-    .join("\n");
+      </div>
+    `;
+    copyToMetadata += `
+      <div class="field text-left">
+        <div class="ui checkbox">
+        <input type="checkbox" name="copy-to" value="${sampleID}">
+        <label>${sampleID}</label>
+        </div>
+      </div>
+    `;
+  }
 
   const copyMetadataElement = `
     <div class="space-between">
@@ -4100,26 +4113,30 @@ const openCopySampleMetadataPopup = async () => {
           selectedCopyToSamples.push($(this).val());
         });
 
-        let copyFromSampleData = []; //["input1","input"]
+        let copyFromSampleData = [];
+        //Create a variable for the third entry ("was derived from") to make it easier to copy into the
+        //middle of the array
+        let wasDerivedFrom = "";
+
         //Add the data from the selected copy fro sample to cpoyFromSampleData array
         for (var i = 1; i < samplesTableData.length; i++) {
           if (samplesTableData[i][1] === selectedCopyFromSample) {
+            console.log(samplesTableData[i]);
             //copy all elements from matching array except the first one
+            wasDerivedFrom = samplesTableData[i][2];
             copyFromSampleData = samplesTableData[i].slice(4);
             console.log(copyFromSampleData);
           }
         }
         for (sample of selectedCopyToSamples) {
-          let copyToSampleHasMetadata = false;
           samplesTableData.forEach((sampleData, index) => {
             console.log(sampleData);
             if (sampleData[1] === sample) {
               console.log(samplesTableData);
-              copyToSampleHasMetadata = true;
               sampleData = [
                 sampleData[0],
                 sampleData[1],
-                sampleData[2],
+                wasDerivedFrom,
                 sampleData[3],
               ];
               sampleData = sampleData.concat(copyFromSampleData);
@@ -4127,14 +4144,25 @@ const openCopySampleMetadataPopup = async () => {
               console.log(samplesTableData);
             }
           });
-          if (!copyToSampleHasMetadata) {
-            console.log(samplesTableData);
+        }
+        const currentSampleOpenInView = document.getElementById(
+          "guided-bootbox-sample-id"
+        ).value;
 
-            newsampleData = [guidedGetSamplesSubject(sample), sample].concat(
-              copyFromSampleData
-            );
-            samplesTableData.push(newsampleData);
-          }
+        //If a sample was open in the UI, update it with the new metadata
+        if (currentSampleOpenInView) {
+          const currentSampleSubjectOpenInView = document.getElementById(
+            "guided-bootbox-subject-id-samples"
+          ).value;
+          const currentSamplePoolOpenInView = document.getElementById(
+            "guided-bootbox-sample-pool-id"
+          ).value;
+
+          openModifySampleMetadataPage(
+            currentSampleOpenInView,
+            currentSampleSubjectOpenInView,
+            currentSamplePoolOpenInView
+          );
         }
         saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       }
@@ -6084,8 +6112,18 @@ const renderSamplesMetadataAsideItems = () => {
         }
         samplesTableData.push(sampleDataArray);
       }
+      console.log(samplesTableData);
     }
   }
+
+  //If custom fields have been added to the samplesTableData, create a field for each custom field
+  //added
+  for (let i = 0; i < samplesTableData[0].length; i++) {
+    if (!samplesFormNames.includes(samplesTableData[0][i])) {
+      addCustomHeader("samples", samplesTableData[0][i], "guided");
+    }
+  }
+  console.log(samplesTableData);
 
   //Create the HTML for the samples
   const sampleItems = samples
@@ -6124,6 +6162,15 @@ const renderSamplesMetadataAsideItems = () => {
         );
       }
 
+      previousSample = document.getElementById(
+        "guided-bootbox-sample-id"
+      ).value;
+
+      //check to see if previousSample is empty
+      if (previousSample) {
+        addSample("guided");
+      }
+
       //add selected class to clicked element
       e.target.classList.add("is-selected");
       //remove selected class from all other elements
@@ -6144,14 +6191,6 @@ const renderSamplesMetadataAsideItems = () => {
       document.getElementById("guided-bootbox-sample-pool-id").value =
         samplesPool;
 
-      previousSample = document.getElementById(
-        "guided-bootbox-sample-id"
-      ).value;
-
-      //check to see if previousSample is empty
-      if (previousSample) {
-        addSample("guided");
-      }
       //clear all sample form fields
       clearAllSubjectFormFields(guidedSamplesFormDiv);
 
