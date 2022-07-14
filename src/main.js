@@ -1,5 +1,5 @@
 const { app, BrowserWindow, dialog, shell } = require("electron");
-require('@electron/remote/main').initialize()
+require("@electron/remote/main").initialize();
 app.showExitPrompt = true;
 const path = require("path");
 const glob = require("glob");
@@ -13,7 +13,6 @@ const { JSONStorage } = require("node-localstorage");
 const { trackEvent } = require("./scripts/others/analytics/analytics");
 const { fstat } = require("fs");
 const { resolve } = require("path");
-
 
 log.transports.console.level = false;
 log.transports.file.level = "debug";
@@ -233,7 +232,7 @@ function initialize() {
     };
 
     mainWindow = new BrowserWindow(windowOptions);
-    require("@electron/remote/main").enable(mainWindow.webContents)
+    require("@electron/remote/main").enable(mainWindow.webContents);
     mainWindow.loadURL(path.join("file://", __dirname, "/index.html"));
 
     const splash = new BrowserWindow({
@@ -407,7 +406,7 @@ ipcMain.on("orcid", (event, url) => {
     },
     // modal: true,
     parent: mainWindow,
-    closable: true
+    closable: true,
   };
 
   let pennsieveModal = new BrowserWindow(windowOptions);
