@@ -1394,22 +1394,33 @@ const traverseToTab = (targetPageID) => {
         "guided-pennsieve-study-primary-conclusion"
       );
 
-      const studyInformation =
+      const studyInformationFromDescriptionMetadata =
         sodaJSONObj["dataset-metadata"]["description-metadata"][
           "study-information"
         ];
-      if (studyInformation) {
-        studyPurposeInput.value = studyInformation["study purpose"];
-        studyDataCollectionInput.value =
-          studyInformation["study data collection"];
+
+      const descriptionMetadata =
+        sodaJSONObj["digital-metadata"]["description"];
+
+      if (Object.keys(descriptionMetadata).length > 0) {
+        studyPurposeInput.value = descriptionMetadata["study-purpose"];
+        studyDataCollectionInput.value = descriptionMetadata["data-collection"];
         studyPrimaryConclusionInput.value =
-          studyInformation["study primary conclusion"];
+          descriptionMetadata["primary-conclusion"];
+      } else if (studyInformationFromDescriptionMetadata) {
+        studyPurposeInput.value =
+          studyInformationFromDescriptionMetadata["study purpose"];
+        studyDataCollectionInput.value =
+          studyInformationFromDescriptionMetadata["study data collection"];
+        studyPrimaryConclusionInput.value =
+          studyInformationFromDescriptionMetadata["study primary conclusion"];
       } else {
         studyPurposeInput.value = "";
         studyDataCollectionInput.value = "";
         studyPrimaryConclusionInput.value = "";
       }
     }
+
     if (targetPageID === "guided-add-tags-tab") {
       const descriptionMetadata =
         sodaJSONObj["dataset-metadata"]["description-metadata"][
@@ -1425,6 +1436,8 @@ const traverseToTab = (targetPageID) => {
         if (descriptionMetadata["keywords"]) {
           guidedDatasetTagsTagify.addTags(descriptionMetadata["keywords"]);
         }
+      } else {
+        guidedDatasetTagsTagify.removeAllTags();
       }
     }
 
@@ -2571,6 +2584,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["dataset-metadata"]["README"] = "";
   sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
   sodaJSONObj["digital-metadata"] = {};
+  sodaJSONObj["digital-metadata"]["description"] = {};
   sodaJSONObj["digital-metadata"]["user-permissions"] = [];
   sodaJSONObj["digital-metadata"]["team-permissions"] = [];
   sodaJSONObj["completed-tabs"] = [];
@@ -9371,14 +9385,11 @@ $(document).ready(() => {
         if (errorArray.length > 0) {
           throw errorArray;
         } else {
-          sodaJSONObj["digital-metadata"]["study-purpose"] =
-            studyPurposeInput.value.trim();
-
-          sodaJSONObj["digital-metadata"]["data-collection"] =
-            studyDataCollectionInput.value.trim();
-
-          sodaJSONObj["digital-metadata"]["primary-conclusion"] =
-            studyPrimaryConclusionInput.value.trim();
+          sodaJSONObj["digital-metadata"]["description"] = {
+            "study-purpose": studyPurposeInput.value.trim(),
+            "data-collection": studyDataCollectionInput.value.trim(),
+            "primary-conclusion": studyPrimaryConclusionInput.value.trim(),
+          };
         }
       }
       if (pageBeingLeftID === "guided-add-tags-tab") {
