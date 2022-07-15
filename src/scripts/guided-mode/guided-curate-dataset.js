@@ -2165,6 +2165,10 @@ const setActiveSubPage = (pageIdToActivate) => {
     case "guided-submission-metadata-page": {
       const sparcAward =
         sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+      const selectedMilestones =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"][
+          "selected-milestones"
+        ];
       const milestones =
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
       const completionDate =
@@ -2191,6 +2195,11 @@ const setActiveSubPage = (pageIdToActivate) => {
       //If not, reset the tagify input
       if (milestones) {
         guidedSubmissionTagsTagify.addTags(milestones);
+      } else if (selectedMilestones) {
+        const uniqueMilestones = Array.from(
+          new Set(selectedMilestones.map((milestone) => milestone.milestone))
+        );
+        guidedSubmissionTagsTagify.addTags(uniqueMilestones);
       } else {
         guidedSubmissionTagsTagify.removeAllTags();
       }
@@ -3275,7 +3284,8 @@ const removeContributorField = (contributorDeleteButton) => {
 
   const contributorsBeforeDelete =
     sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
-
+  //If the contributor has data-first-name and data-last-name, then it is a contributor that
+  //already been added. Delete it from the contributors array.
   if (contributorFirstName && contributorLastName) {
     const filteredContributors = contributorsBeforeDelete.filter(
       (contributor) => {
@@ -3289,25 +3299,6 @@ const removeContributorField = (contributorDeleteButton) => {
 
     sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] =
       filteredContributors;
-  }
-  //delete the contributor from the json obj with matching first and last names
-  for (const contributor of sodaJSONObj["dataset-metadata"][
-    "description-metadata"
-  ]["contributors"]) {
-    console.log(contributor);
-    if (
-      contributor.contributorLastName == contributorFirstName &&
-      contributor.contributorFirstName == contributorLastName
-    ) {
-      sodaJSONObj["dataset-metadata"]["description-metadata"][
-        "contributors"
-      ].splice(
-        sodaJSONObj["dataset-metadata"]["description-metadata"][
-          "contributors"
-        ].indexOf(contributor),
-        1
-      );
-    }
   }
 
   contributorField.remove();
