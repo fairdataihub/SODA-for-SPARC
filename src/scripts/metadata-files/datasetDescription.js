@@ -951,6 +951,7 @@ async function addProtocol(curationMode) {
     showCancelButton: true,
     reverseButtons: reverseSwalButtons,
     heightAuto: false,
+    width: "38rem",
     backdrop: "rgba(0,0,0, 0.4)",
     didOpen: () => {
       $(".swal-popover").popover();

@@ -780,7 +780,7 @@ class BfAddAccountApiKey(Resource):
   parser_add_api_key.add_argument('secret', type=str, required=True, location='json', help="The API secret the user generated on Pennsieve.")
 
   @api.expect(parser_add_api_key)
-  @api.doc(responses={500: "Internal Server Error", 400: "Bad Request", 401: "Unauthenticated", 403: "Forbidden"}, description="Adds account to the Pennsieve configuration file.")
+  @api.doc(responses={500: "Internal Server Error", 400: "Bad Request", 401: "Unauthenticated", 403: "Forbidden"}, description="Adds account to the Pennsieve configuration file. Used when connecting account to Pennsieve with an API key and secret.")
   @api.marshal_with(successMessage, 200, False)
   def put(self):
 

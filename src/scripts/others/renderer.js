@@ -8631,7 +8631,7 @@ async function showBFAddAccountSweetalert() {
         var name = $("#bootbox-key-name").val();
         var apiKey = $("#bootbox-api-key").val();
         var apiSecret = $("#bootbox-api-secret").val();
-        return new Promise((resolve, reject) => {
+        return new Promise(() => {
           client
             .put("/manage_datasets/account/api_key", {
               keyname: name,
@@ -8675,8 +8675,7 @@ async function showBFAddAccountSweetalert() {
                     updateBfAccountList(false);
                   })
                   .catch((error) => {
-                    userErrorMessage(error);
-                    Swal.showValidationMessage(error);
+                    Swal.showValidationMessage(userErrorMessage(error));
                     document.getElementsByClassName(
                       "swal2-actions"
                     )[0].children[1].disabled = false;
@@ -8689,8 +8688,6 @@ async function showBFAddAccountSweetalert() {
                     document.getElementsByClassName(
                       "swal2-actions"
                     )[0].children[1].style.display = "inline-block";
-
-                    reject(false);
                     showHideDropdownButtons("account", "hide");
                     confirm_click_account_function();
                   });
@@ -8706,17 +8703,11 @@ async function showBFAddAccountSweetalert() {
                   backdrop: "rgba(0,0,0, 0.4)",
                   showConfirmButton: false,
                 });
-                resolve();
               });
             })
             .catch((error) => {
-              if (String(error).includes("please check that key name")) {
-                error =
-                  "Please check that your key name, key and api secret are entered properly";
-              } else if (String(error).includes("Please enter valid keyname")) {
-                error = "Please enter valid keyname, key, and/or secret";
-              }
-              Swal.showValidationMessage(error);
+              clientError(error);
+              Swal.showValidationMessage(userErrorMessage(error));
               document.getElementsByClassName(
                 "swal2-actions"
               )[0].children[1].disabled = false;
@@ -8729,8 +8720,6 @@ async function showBFAddAccountSweetalert() {
               document.getElementsByClassName(
                 "swal2-actions"
               )[0].children[1].style.display = "inline-block";
-              userErrorMessage(error);
-              reject(false);
             });
         });
       }
