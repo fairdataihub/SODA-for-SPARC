@@ -1501,6 +1501,8 @@ const traverseToTab = (targetPageID) => {
 
     if (targetPageID === "guided-dataset-generation-confirmation-tab") {
       const datsetName = sodaJSONObj["digital-metadata"]["name"];
+      const pennsieveDatasetName =
+        sodaJSONObj["digital-metadata"]["pennsieve-dataset-name"];
       const datsetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
       const datasetPiOwner =
         sodaJSONObj["digital-metadata"]["pi-owner"]["userString"];
@@ -1513,6 +1515,9 @@ const traverseToTab = (targetPageID) => {
 
       const datasetNameReviewText = document.getElementById(
         "guided-review-dataset-name"
+      );
+      const pennsieveDatasetNameReviewText = document.getElementById(
+        "guided-review-pennsieve-dataset-name"
       );
       const datasetSubtitleReviewText = document.getElementById(
         "guided-review-dataset-subtitle"
@@ -1534,6 +1539,7 @@ const traverseToTab = (targetPageID) => {
       );
 
       datasetNameReviewText.innerHTML = datsetName;
+      pennsieveDatasetNameReviewText.innerHTML = pennsieveDatasetName;
       datasetSubtitleReviewText.innerHTML = datsetSubtitle;
       datasetPiOwnerReviewText.innerHTML = datasetPiOwner;
 
@@ -5664,7 +5670,6 @@ const getGuidedDatasetName = () => {
 
 const setGuidedDatasetSubtitle = (datasetSubtitle) => {
   sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitle;
-  $(".guidedDatasetSubtitle").text(datasetSubtitle);
 };
 const getGuidedDatasetSubtitle = () => {
   return sodaJSONObj["digital-metadata"]["subtitle"];
@@ -6289,7 +6294,6 @@ $(document).ready(() => {
         .getElementById("guided-dataset-subtitle-input")
         .value.trim();
       //temp bypass stuff
-      datasetSubtitle = makeid("10");
       if (datasetName != "" && datasetSubtitle != "") {
         //get names of existing progress saves
         const existingProgressNames = fs.readdirSync(guidedProgressFilePath);
@@ -6452,8 +6456,6 @@ $(document).ready(() => {
         "guided-dataset-subtitle-input"
       ).value;
 
-      console.log(datasetName);
-
       if (datasetNameInputValue != "" && datasetSubtitleInputValue != "") {
         if (
           datasetName === datasetNameInputValue &&
@@ -6488,11 +6490,14 @@ $(document).ready(() => {
             });
             if (result.isConfirmed) {
               setGuidedDatasetName(datasetNameInputValue);
+              console.log(datasetSubtitleInputValue);
               setGuidedDatasetSubtitle(datasetSubtitleInputValue);
               saveGuidedProgress(datasetNameInputValue);
             }
           } else {
             setGuidedDatasetName(datasetNameInputValue);
+            console.log(datasetSubtitleInputValue);
+
             setGuidedDatasetSubtitle(datasetSubtitleInputValue);
             saveGuidedProgress(datasetNameInputValue);
           }
@@ -7996,19 +8001,6 @@ $(document).ready(() => {
         "guided-div-pennsieve-metadata-upload-status-table"
       );
 
-      let bf_new_dataset = await client.post(
-        `/manage_datasets/datasets`,
-        {
-          input_dataset_name: bfNewDatasetName,
-        },
-        {
-          params: {
-            selected_account: selectedbfaccount,
-          },
-        }
-      );
-      let res = bf_new_dataset.data.id;
-
       let datasetUploadResponse = await guidedCreateDataset(
         guidedBfAccount,
         guidedDatasetName
@@ -9486,7 +9478,6 @@ $(document).ready(() => {
           sodaJSONObj["digital-metadata"]["pennsieve-dataset-name"] =
             confirmDatasetGenerationNameinput.value.trim();
           sodaJSONObj["generate-dataset"]["destination"] = "bf";
-          sodaJSONObj["generate-dataset"]["dataset-name"] = datasetName;
         }
         //Hide the next button for the last page
         $(this).css("visibility", "hidden");
@@ -9962,8 +9953,14 @@ $(document).ready(() => {
       const datasetSubtitleInputElement = document.getElementById(
         "guided-dataset-subtitle-input"
       );
+      const datasetSubtitleCharacterCountText = document.getElementById(
+        "guided-subtitle-char-count"
+      );
       datasetNameInputElement.value = datasetName;
       datasetSubtitleInputElement.value = datasetSubtitle;
+      datasetSubtitleCharacterCountText.innerHTML = `${
+        256 - datasetSubtitle.length
+      } characters remaining`;
 
       //switch the create new / modify existing buttons
       $("#guided-modify-dataset-name-subtitle").show();
