@@ -1237,12 +1237,36 @@ const traverseToTab = (targetPageID) => {
     }
 
     if (targetPageID === "guided-airtable-award-tab") {
-      const airTableAward =
+      const sparcAwardImportedFromAirtable =
+        sodaJSONObj["dataset-metadata"]["shared-metadata"][
+          "imported-sparc-award"
+        ];
+      const sparcAward =
         sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-      if (airTableAward) {
-        guidedSetImportedSPARCAward(airTableAward);
+
+      //If a sparc award has been imported from Airtable, show the imported award
+      //If not, reset the HTML
+      if (sparcAwardImportedFromAirtable) {
+        guidedSetImportedSPARCAward(sparcAwardImportedFromAirtable);
       } else {
-        guidedUnSetImportedSparcAward();
+        //hide the imported div
+        document
+          .getElementById("guided-div-imported-SPARC-award")
+          .classList.add("hidden");
+        document.getElementById(
+          "guided-button-import-airtable-award"
+        ).innerHTML = "Import award information from Airtable";
+      }
+
+      const sparcAwardInput = document.getElementById(
+        "guided-input-sparc-award"
+      );
+      //If a sparc award exists, set the sparc award input
+      //If not, reset the input
+      if (sparcAward) {
+        sparcAwardInput.value = sparcAward;
+      } else {
+        sparcAwardInput.value = "";
       }
     }
 
@@ -1370,22 +1394,33 @@ const traverseToTab = (targetPageID) => {
         "guided-pennsieve-study-primary-conclusion"
       );
 
-      const studyInformation =
+      const studyInformationFromDescriptionMetadata =
         sodaJSONObj["dataset-metadata"]["description-metadata"][
           "study-information"
         ];
-      if (studyInformation) {
-        studyPurposeInput.value = studyInformation["study purpose"];
-        studyDataCollectionInput.value =
-          studyInformation["study data collection"];
+
+      const descriptionMetadata =
+        sodaJSONObj["digital-metadata"]["description"];
+
+      if (Object.keys(descriptionMetadata).length > 0) {
+        studyPurposeInput.value = descriptionMetadata["study-purpose"];
+        studyDataCollectionInput.value = descriptionMetadata["data-collection"];
         studyPrimaryConclusionInput.value =
-          studyInformation["study primary conclusion"];
+          descriptionMetadata["primary-conclusion"];
+      } else if (studyInformationFromDescriptionMetadata) {
+        studyPurposeInput.value =
+          studyInformationFromDescriptionMetadata["study purpose"];
+        studyDataCollectionInput.value =
+          studyInformationFromDescriptionMetadata["study data collection"];
+        studyPrimaryConclusionInput.value =
+          studyInformationFromDescriptionMetadata["study primary conclusion"];
       } else {
         studyPurposeInput.value = "";
         studyDataCollectionInput.value = "";
         studyPrimaryConclusionInput.value = "";
       }
     }
+
     if (targetPageID === "guided-add-tags-tab") {
       const descriptionMetadata =
         sodaJSONObj["dataset-metadata"]["description-metadata"][
@@ -1401,6 +1436,8 @@ const traverseToTab = (targetPageID) => {
         if (descriptionMetadata["keywords"]) {
           guidedDatasetTagsTagify.addTags(descriptionMetadata["keywords"]);
         }
+      } else {
+        guidedDatasetTagsTagify.removeAllTags();
       }
     }
 
@@ -1566,7 +1603,12 @@ const traverseToTab = (targetPageID) => {
     }
 
     if (targetPageID === "guided-create-subjects-metadata-tab") {
+      //remove custom fields that may have existed from a previous session
+      document.getElementById("guided-accordian-custom-fields").innerHTML = "";
+      document.getElementById("guided-bootbox-subject-id").value = "";
+      console.log(subjectsTableData);
       renderSubjectsMetadataAsideItems();
+      console.log(subjectsTableData);
       const subjectsMetadataBlackArrowLottieContainer = document.getElementById(
         "subjects-metadata-black-arrow-lottie-container"
       );
@@ -1578,10 +1620,22 @@ const traverseToTab = (targetPageID) => {
         loop: true,
         autoplay: true,
       });
+      switchElementVisibility(
+        "guided-form-add-a-subject",
+        "guided-form-add-a-subject-intro"
+      );
     }
 
     if (targetPageID === "guided-create-samples-metadata-tab") {
+      //remove custom fields that may have existed from a previous session
+      document.getElementById(
+        "guided-accordian-custom-fields-samples"
+      ).innerHTML = "";
+      document.getElementById("guided-bootbox-subject-id-samples").value = "";
+      document.getElementById("guided-bootbox-sample-id").value = "";
+      console.log(samplesTableData);
       renderSamplesMetadataAsideItems();
+      console.log(samplesTableData);
       const samplesMetadataBlackArrowLottieContainer = document.getElementById(
         "samples-metadata-black-arrow-lottie-container"
       );
@@ -1593,6 +1647,10 @@ const traverseToTab = (targetPageID) => {
         loop: true,
         autoplay: true,
       });
+      switchElementVisibility(
+        "guided-form-add-a-sample",
+        "guided-form-add-a-sample-intro"
+      );
     }
     if (targetPageID === "guided-add-code-metadata-tab") {
       const codeMetadata = sodaJSONObj["dataset-metadata"]["code-metadata"];
@@ -2120,6 +2178,10 @@ const setActiveSubPage = (pageIdToActivate) => {
     case "guided-submission-metadata-page": {
       const sparcAward =
         sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+      const selectedMilestones =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"][
+          "selected-milestones"
+        ];
       const milestones =
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
       const completionDate =
@@ -2146,16 +2208,26 @@ const setActiveSubPage = (pageIdToActivate) => {
       //If not, reset the tagify input
       if (milestones) {
         guidedSubmissionTagsTagify.addTags(milestones);
+      } else if (selectedMilestones) {
+        const uniqueMilestones = Array.from(
+          new Set(selectedMilestones.map((milestone) => milestone.milestone))
+        );
+        guidedSubmissionTagsTagify.addTags(uniqueMilestones);
       } else {
         guidedSubmissionTagsTagify.removeAllTags();
       }
 
       //If completionDate exists in sodaJSONObj, set and disable completion date input
       //If not, refresh the input and enable it
+      //remove options from completionDateInput besides the default one
+      completionDateInput.innerHTML = `
+        <option value="Select a completion date">Select a completion date</option>
+        <option value="Enter my own date">Enter my own date</option>
+      `;
       if (completionDate) {
+        completionDateInput.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
+        //select the completion date that was added
         completionDateInput.value = completionDate;
-      } else {
-        completionDateInput.value = "";
       }
       break;
     }
@@ -2512,6 +2584,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["dataset-metadata"]["README"] = "";
   sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
   sodaJSONObj["digital-metadata"] = {};
+  sodaJSONObj["digital-metadata"]["description"] = {};
   sodaJSONObj["digital-metadata"]["user-permissions"] = [];
   sodaJSONObj["digital-metadata"]["team-permissions"] = [];
   sodaJSONObj["completed-tabs"] = [];
@@ -3123,7 +3196,16 @@ const generateContributorField = (
     ? contributorRoles.join(",")
     : "";
   return `
-      <div class="guided--section mt-lg neumorphic guided-contributor-field-container" style="position: relative">
+      <div
+        class="guided--section mt-lg neumorphic guided-contributor-field-container"
+        data-contributor-first-name="${
+          contributorFirstName ? contributorFirstName : ""
+        }"
+        data-contributor-last-name="${
+          contributorLastName ? contributorLastName : ""
+        }"
+        style="position: relative"
+      >
         <i 
           class="fas fa-times fa-2x"
           style="
@@ -3211,6 +3293,28 @@ const generateContributorField = (
 
 const removeContributorField = (contributorDeleteButton) => {
   const contributorField = contributorDeleteButton.parentElement;
+  const contributorFirstName = contributorField.dataset.contributorFirstName;
+  const contributorLastName = contributorField.dataset.contributorLastName;
+
+  const contributorsBeforeDelete =
+    sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+  //If the contributor has data-first-name and data-last-name, then it is a contributor that
+  //already been added. Delete it from the contributors array.
+  if (contributorFirstName && contributorLastName) {
+    const filteredContributors = contributorsBeforeDelete.filter(
+      (contributor) => {
+        //remove contributors with matching first and last name
+        return !(
+          contributor.contributorFirstName == contributorFirstName &&
+          contributor.contributorLastName == contributorLastName
+        );
+      }
+    );
+
+    sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] =
+      filteredContributors;
+  }
+
   contributorField.remove();
 };
 
@@ -3321,7 +3425,7 @@ const addContributorField = () => {
     ],
     enforceWhitelist: true,
     dropdown: {
-      enabled: 1,
+      enabled: 0,
       closeOnSelect: true,
       position: "auto",
     },
@@ -3484,7 +3588,7 @@ const renderContributorFields = (contributionMembersArray) => {
       ],
       enforceWhitelist: true,
       dropdown: {
-        enabled: 1,
+        enabled: 0,
         closeOnSelect: true,
         position: "auto",
       },
@@ -3810,47 +3914,10 @@ const renderSubjectSampleAdditionTable = (subject) => {
   `;
 };
 
-const renderSubjectsMetadataTable = (subjects) => {
-  let subjectMetadataRows = subjects
-    .map((subject, index) => {
-      let tableIndex = index + 1;
-      return `
-      <tr>
-        <td class="middle aligned collapsing text-center">
-          <span class="subject-metadata-table-index">${tableIndex}</span>
-        </td>
-        <td class="middle aligned subject-metadata-id-cell">
-          <span class="subject-metadata-id">${subject}</span>
-        </td>
-        <td class="middle aligned collapsing text-center" style="min-width: 130px">
-          <button
-            type="button"
-            class="btn btn-primary btn-sm"
-            style="background-color: var(--color-light-green) !important; margin-right: 5px"
-            onclick="openModifySubjectMetadataPage($(this))"
-          >
-            Edit metadata
-          </button>
-          <button
-            type="button"
-            class="btn btn-primary btn-sm"
-            onclick="openCopySubjectMetadataPopup($(this))"
-          >
-            Copy metadata
-          </button>
-        </td>
-      </tr>
-    `;
-    })
-    .join("\n");
-  let subjectsMetadataContainer = document.getElementById(
-    "subjects-metadata-table-container"
-  );
-  //subjectsMetadataContainer.innerHTML = subjectMetadataRows;
-};
 const guidedLoadSubjectMetadataIfExists = (subjectMetadataId) => {
   //loop through all subjectsTableData elements besides the first one
-  for (let i = 1; i < subjectsTableData.length; i++) {
+  for (let i = 0; i < subjectsTableData.length; i++) {
+    //check through elements of tableData to find a subject ID match
     if (subjectsTableData[i][0] === subjectMetadataId) {
       //if the id matches, load the metadata into the form
       populateForms(subjectMetadataId, "", "guided");
@@ -3863,9 +3930,6 @@ const guidedLoadSampleMetadataIfExists = (
   subjectMetadataId
 ) => {
   //loop through all samplesTableData elemenents besides the first one
-  console.log(samplesTableData);
-  console.log(sampleMetadataId);
-  console.log(subjectMetadataId);
   for (let i = 1; i < samplesTableData.length; i++) {
     if (
       samplesTableData[i][0] === subjectMetadataId &&
@@ -3880,68 +3944,63 @@ const guidedLoadSampleMetadataIfExists = (
 };
 const openModifySubjectMetadataPage = (subjectMetadataID) => {
   guidedLoadSubjectMetadataIfExists(subjectMetadataID);
-  $("#guided-metadata-subject-id").text(subjectMetadataID);
 };
 const openModifySampleMetadataPage = (
   sampleMetadataID,
   sampleMetadataSubjectID,
   sampleMetadataPoolID
 ) => {
+  console.log(sampleMetadataID, sampleMetadataSubjectID, sampleMetadataPoolID);
   guidedLoadSampleMetadataIfExists(sampleMetadataID, sampleMetadataSubjectID);
-  $("#guided-metadata-sample-id").text(sampleMetadataID);
-  $("#guided-metadata-sample-subject-id").text(sampleMetadataSubjectID);
-  document.getElementById("guided-bootbox-wasDerivedFromSample").value =
+  document.getElementById("guided-bootbox-sample-id").value = sampleMetadataID;
+  document.getElementById("guided-bootbox-subject-id-samples").value =
     sampleMetadataSubjectID;
   document.getElementById("guided-bootbox-sample-pool-id").value =
     sampleMetadataPoolID;
 };
 
 const openCopySubjectMetadataPopup = async () => {
-  const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
-  //Combine sample data from subjects in and out of pools
-  let subjectsArray = [...subjectsInPools, ...subjectsOutsidePools];
+  //save current subject metadata entered in the form
+  addSubject("guided");
 
-  subjectsArray = subjectsArray.map((subject) => subject.subjectName);
+  let copyFromMetadata = ``;
+  let copyToMetadata = ``;
 
-  const copyFromMetadata = subjectsArray
-    .map((subject) => {
-      return `
+  for (let i = 1; i < subjectsTableData.length; i++) {
+    const subjectID = subjectsTableData[i][0];
+    copyFromMetadata += `
       <div class="field text-left">
         <div class="ui radio checkbox">
-          <input type="radio" name="copy-from" value="${subject}">
-          <label>${subject}</label>
+          <input type="radio" name="copy-from" value="${subjectID}">
+          <label>${subjectID}</label>
         </div>
-      </div>`;
-    })
-    .join("\n");
-
-  const copyToMetadata = subjectsArray
-    .map((subject) => {
-      return `
+      </div>
+    `;
+    copyToMetadata += `
       <div class="field text-left">
         <div class="ui checkbox">
-          <input type="checkbox" name="copy-to" value="${subject}">
-          <label>${subject}</label>
+          <input type="checkbox" name="copy-to" value="${subjectID}">
+          <label>${subjectID}</label>
         </div>
-      </div>`;
-    })
-    .join("\n");
+      </div>
+    `;
+  }
 
   const copyMetadataElement = `
-  <div class="space-between">
-    <div class="ui form">
-      <div class="grouped fields">
-        <label class="guided--form-label med text-left">Which subject would you like to copy metadata from?</label>
-        ${copyFromMetadata}
+    <div class="space-between">
+      <div class="ui form">
+        <div class="grouped fields">
+          <label class="guided--form-label med text-left">Which subject would you like to copy metadata from?</label>
+          ${copyFromMetadata}
+        </div>
+      </div>
+      <div class="ui form">
+        <div class="grouped fields">
+          <label class="guided--form-label med text-left">Which subjects would you like to copy metadata to?</label>
+          ${copyToMetadata}
+        </div>
       </div>
     </div>
-    <div class="ui form">
-      <div class="grouped fields">
-        <label class="guided--form-label med text-left">Which subjects would you like to copy metadata to?</label>
-        ${copyToMetadata}
-      </div>
-    </div>
-  </div>
   `;
   swal
     .fire({
@@ -3963,69 +4022,67 @@ const openCopySubjectMetadataPopup = async () => {
         $("input[name='copy-to']:checked").each(function () {
           selectedCopyToSubjects.push($(this).val());
         });
-
         let copyFromSubjectData = [];
         for (var i = 1; i < subjectsTableData.length; i++) {
           if (subjectsTableData[i][0] === selectedCopyFromSubject) {
-            //copy all elements from matching array except the first one
+            //copy all elements from matching array except the first two
             copyFromSubjectData = subjectsTableData[i].slice(2);
           }
         }
+        console.log(subjectsTableData);
         for (subject of selectedCopyToSubjects) {
-          //initialize copyToSubjectHasMetadata as false, set to True if the subject being copied to has existing metadata
-          //If not, add the subject to the subjectsTable and add metadata being copied
-          let copyToSubjectHasMetadata = false;
-          subjectsTableData.forEach((subjectData, index) => {
-            if (subjectData[0] === subject) {
-              copyToSubjectHasMetadata = true;
-              subjectData = [subjectData[0], subjectData[1]];
-              subjectData = subjectData.concat(copyFromSubjectData);
-              subjectsTableData[index] = subjectData;
+          //loop through all subjectsTableData elements besides the first one
+          for (let i = 1; i < subjectsTableData.length; i++) {
+            //check through elements of tableData to find a subject ID match
+            if (subjectsTableData[i][0] === subject) {
+              subjectsTableData[i] = [
+                subjectsTableData[i][0],
+                subjectsTableData[i][1],
+                ...copyFromSubjectData,
+              ];
             }
-          });
-          if (!copyToSubjectHasMetadata) {
-            newSubjectData = [subject].concat(copyFromSubjectData);
-            subjectsTableData.push(newSubjectData);
           }
         }
+        console.log(subjectsTableData);
+        const currentSubjectOpenInView = document.getElementById(
+          "guided-bootbox-subject-id"
+        ).value;
+        if (currentSubjectOpenInView) {
+          //If a subject was open in the UI, update it with the new metadata
+          openModifySubjectMetadataPage(currentSubjectOpenInView);
+        }
+
         saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       }
     });
 };
 
 const openCopySampleMetadataPopup = async () => {
-  const [samplesInPools, samplesOutsidePools] =
-    sodaJSONObj.getAllSamplesFromSubjects();
-  //Combine sample data from samples in and out of pools
-  let samples = [...samplesInPools, ...samplesOutsidePools];
+  addSample("guided");
 
-  //sort samples object by sampleName property alphabetically
-  samples = samples.map((sample) => sample.sampleName);
+  let copyFromMetadata = ``;
+  let copyToMetadata = ``;
 
-  const copyFromMetadata = samples
-    .map((sample) => {
-      return `
-        <div class="field text-left">
-          <div class="ui radio checkbox">
-            <input type="radio" name="copy-from" value="${sample}">
-            <label>${sample}</label>
-          </div>
-        </div>`;
-    })
-    .join("\n");
+  for (let i = 1; i < samplesTableData.length; i++) {
+    const sampleID = samplesTableData[i][1];
 
-  const copyToMetadata = samples
-    .map((sample) => {
-      return `
-        <div class="field text-left">
-          <div class="ui checkbox">
-          <input type="checkbox" name="copy-to" value="${sample}">
-          <label>${sample}</label>
-          </div>
+    copyFromMetadata += `
+      <div class="field text-left">
+        <div class="ui radio checkbox">
+          <input type="radio" name="copy-from" value="${sampleID}">
+          <label>${sampleID}</label>
         </div>
-      `;
-    })
-    .join("\n");
+      </div>
+    `;
+    copyToMetadata += `
+      <div class="field text-left">
+        <div class="ui checkbox">
+        <input type="checkbox" name="copy-to" value="${sampleID}">
+        <label>${sampleID}</label>
+        </div>
+      </div>
+    `;
+  }
 
   const copyMetadataElement = `
     <div class="space-between">
@@ -4064,26 +4121,30 @@ const openCopySampleMetadataPopup = async () => {
           selectedCopyToSamples.push($(this).val());
         });
 
-        let copyFromSampleData = []; //["input1","input"]
+        let copyFromSampleData = [];
+        //Create a variable for the third entry ("was derived from") to make it easier to copy into the
+        //middle of the array
+        let wasDerivedFrom = "";
+
         //Add the data from the selected copy fro sample to cpoyFromSampleData array
         for (var i = 1; i < samplesTableData.length; i++) {
           if (samplesTableData[i][1] === selectedCopyFromSample) {
+            console.log(samplesTableData[i]);
             //copy all elements from matching array except the first one
+            wasDerivedFrom = samplesTableData[i][2];
             copyFromSampleData = samplesTableData[i].slice(4);
             console.log(copyFromSampleData);
           }
         }
         for (sample of selectedCopyToSamples) {
-          let copyToSampleHasMetadata = false;
           samplesTableData.forEach((sampleData, index) => {
             console.log(sampleData);
             if (sampleData[1] === sample) {
               console.log(samplesTableData);
-              copyToSampleHasMetadata = true;
               sampleData = [
                 sampleData[0],
                 sampleData[1],
-                sampleData[2],
+                wasDerivedFrom,
                 sampleData[3],
               ];
               sampleData = sampleData.concat(copyFromSampleData);
@@ -4091,14 +4152,25 @@ const openCopySampleMetadataPopup = async () => {
               console.log(samplesTableData);
             }
           });
-          if (!copyToSampleHasMetadata) {
-            console.log(samplesTableData);
+        }
+        const currentSampleOpenInView = document.getElementById(
+          "guided-bootbox-sample-id"
+        ).value;
 
-            newsampleData = [guidedGetSamplesSubject(sample), sample].concat(
-              copyFromSampleData
-            );
-            samplesTableData.push(newsampleData);
-          }
+        //If a sample was open in the UI, update it with the new metadata
+        if (currentSampleOpenInView) {
+          const currentSampleSubjectOpenInView = document.getElementById(
+            "guided-bootbox-subject-id-samples"
+          ).value;
+          const currentSamplePoolOpenInView = document.getElementById(
+            "guided-bootbox-sample-pool-id"
+          ).value;
+
+          openModifySampleMetadataPage(
+            currentSampleOpenInView,
+            currentSampleSubjectOpenInView,
+            currentSamplePoolOpenInView
+          );
         }
         saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       }
@@ -5375,6 +5447,60 @@ const getTagsFromTagifyElement = (tagifyElement) => {
   });
 };
 
+$("#guided-submission-completion-date").change(function () {
+  const text = $("#guided-submission-completion-date").val();
+  if (text == "Enter my own date") {
+    Swal.fire({
+      allowOutsideClick: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Confirm",
+      showCloseButton: true,
+      focusConfirm: true,
+      heightAuto: false,
+      reverseButtons: reverseSwalButtons,
+      showCancelButton: false,
+      title: `<span style="text-align:center"> Enter your Milestone completion date </span>`,
+      html: `<input type="date" id="milestone_date_picker" >`,
+      showClass: {
+        popup: "animate__animated animate__fadeInDown animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__fadeOutUp animate__faster",
+      },
+      didOpen: () => {
+        document.getElementById("milestone_date_picker").valueAsDate =
+          new Date();
+      },
+      preConfirm: async () => {
+        const input_date = document.getElementById(
+          "milestone_date_picker"
+        ).value;
+        return {
+          date: input_date,
+        };
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const input_date = result.value.date;
+        //remove options from dropdown that already have input_date as value
+        $("#guided-submission-completion-date option").each(function () {
+          if (this.value == input_date) {
+            $(this).remove();
+          }
+        });
+        $("#guided-submission-completion-date").append(
+          $("<option>", {
+            value: input_date,
+            text: input_date,
+          })
+        );
+        var $option = $("#guided-submission-completion-date").children().last();
+        $option.prop("selected", true);
+      }
+    });
+  }
+});
 /////////////////////////////////////////////////////////
 //////////       GUIDED OBJECT ACCESSORS       //////////
 /////////////////////////////////////////////////////////
@@ -5801,10 +5927,68 @@ const renderSubjectsMetadataAsideItems = () => {
   asideElement.innerHTML = "";
 
   const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+
   //Combine sample data from subjects in and out of pools
   let subjects = [...subjectsInPools, ...subjectsOutsidePools];
 
-  console.log(subjects);
+  const subjectsFormEntries = guidedSubjectsFormDiv.querySelectorAll(
+    ".subjects-form-entry"
+  );
+  //Create an array of subjectFormEntries name attribute
+  const subjectsFormNames = [...subjectsFormEntries].map((entry) => {
+    return entry.name;
+  });
+
+  if (subjectsTableData.length == 0) {
+    console.log("subjects table empty");
+    //Get items with class "subjects-form-entry" from subjectsForDiv
+
+    subjectsTableData[0] = subjectsFormNames;
+    for (const subject of subjects) {
+      const subjectDataArray = [];
+      subjectDataArray.push(subject.subjectName);
+      subjectDataArray.push(subject.poolName ? subject.poolName : "N/A");
+
+      for (let i = 0; i < subjectsFormNames.length - 2; i++) {
+        subjectDataArray.push("");
+      }
+      console.log(subjectDataArray);
+      subjectsTableData.push(subjectDataArray);
+    }
+    console.log(subjectsTableData);
+  } else {
+    console.log("subjects table not empty");
+    console.log(subjectsTableData);
+    //Add subjects that have not yet been added to the table to the table
+    for (const subject of subjects) {
+      let subjectAlreadyInTable = false;
+      for (let i = 0; i < subjectsTableData.length; i++) {
+        if (subjectsTableData[i][0] == subject.subjectName) {
+          subjectAlreadyInTable = true;
+        }
+      }
+      if (!subjectAlreadyInTable) {
+        console.log("subject not in array");
+        const subjectDataArray = [];
+        subjectDataArray.push(subject.subjectName);
+        subjectDataArray.push(subject.poolName ? subject.poolName : "N/A");
+        for (let i = 0; i < subjectsTableData[0].length - 2; i++) {
+          subjectDataArray.push("");
+        }
+        subjectsTableData.push(subjectDataArray);
+      }
+    }
+    console.log(subjectsTableData);
+
+    //If custom fields have been added to the subjectsTableData, create a field for each custom field
+    //added
+    for (let i = 0; i < subjectsTableData[0].length; i++) {
+      if (!subjectsFormNames.includes(subjectsTableData[0][i])) {
+        addCustomHeader("subjects", subjectsTableData[0][i], "guided");
+      }
+    }
+    console.log(subjectsTableData);
+  }
 
   //Create the HTML for the subjects
   const subjectItems = subjects
@@ -5839,8 +6023,8 @@ const renderSubjectsMetadataAsideItems = () => {
       }
       //Save the subject metadata from the previous subject being worked on
       previousSubject = document.getElementById(
-        "guided-metadata-subject-id"
-      ).innerHTML;
+        "guided-bootbox-subject-id"
+      ).value;
       //check to see if previousSubject is empty
       if (previousSubject) {
         addSubject("guided");
@@ -5859,6 +6043,9 @@ const renderSubjectsMetadataAsideItems = () => {
           item.classList.remove("is-selected");
         }
       });
+
+      document.getElementById("guided-bootbox-subject-id").value =
+        e.target.innerText;
       //Set the pool id field based of clicked elements data-pool-id attribute
       document.getElementById("guided-bootbox-subject-pool-id").value =
         e.target.getAttribute("data-pool-id");
@@ -5882,6 +6069,69 @@ const renderSamplesMetadataAsideItems = () => {
     sodaJSONObj.getAllSamplesFromSubjects();
   //Combine sample data from samples in and out of pools
   let samples = [...samplesInPools, ...samplesOutsidePools];
+
+  const samplesFormEntries = guidedSamplesFormDiv.querySelectorAll(
+    ".samples-form-entry"
+  );
+
+  //Create an array of samplesFormEntries name attribute
+  const samplesFormNames = [...samplesFormEntries].map((entry) => {
+    return entry.name;
+  });
+
+  if (samplesTableData.length == 0) {
+    console.log("samples table empty");
+    //Get items with class "samples-form-entry" from samplesForDiv
+    samplesTableData[0] = samplesFormNames;
+    for (const sample of samples) {
+      const sampleDataArray = [];
+      sampleDataArray.push(sample.subjectName);
+      sampleDataArray.push(sample.sampleName);
+      //Push an empty string for was derived from
+      sampleDataArray.push("");
+      sampleDataArray.push(sample.poolName ? sample.poolName : "N/A");
+      for (let i = 0; i < samplesFormNames.length - 4; i++) {
+        sampleDataArray.push("");
+      }
+      samplesTableData.push(sampleDataArray);
+    }
+    console.log(samplesTableData);
+  } else {
+    console.log("samples table not empty");
+    console.log(samplesTableData);
+    //Add samples that have not yet been added to the table to the table
+    for (const sample of samples) {
+      let sampleAlreadyInTable = false;
+      for (let i = 0; i < samplesTableData.length; i++) {
+        if (samplesTableData[i][1] == sample.sampleName) {
+          sampleAlreadyInTable = true;
+        }
+      }
+      if (!sampleAlreadyInTable) {
+        console.log("sample not in array");
+        const sampleDataArray = [];
+        sampleDataArray.push(sample.subjectName);
+        sampleDataArray.push(sample.sampleName);
+        //Push an empty string for was derived from
+        sampleDataArray.push("");
+        sampleDataArray.push(sample.poolName ? sample.poolName : "N/A");
+        for (let i = 0; i < samplesTableData[0].length - 4; i++) {
+          sampleDataArray.push("");
+        }
+        samplesTableData.push(sampleDataArray);
+      }
+      console.log(samplesTableData);
+    }
+  }
+
+  //If custom fields have been added to the samplesTableData, create a field for each custom field
+  //added
+  for (let i = 0; i < samplesTableData[0].length; i++) {
+    if (!samplesFormNames.includes(samplesTableData[0][i])) {
+      addCustomHeader("samples", samplesTableData[0][i], "guided");
+    }
+  }
+  console.log(samplesTableData);
 
   //Create the HTML for the samples
   const sampleItems = samples
@@ -5907,7 +6157,6 @@ const renderSamplesMetadataAsideItems = () => {
   const selectionAsideItems = document.querySelectorAll(
     `a.samples-metadata-aside-item`
   );
-
   selectionAsideItems.forEach((item) => {
     item.addEventListener("click", (e) => {
       //Hide intro and show metadata fields if intro is open
@@ -5921,6 +6170,15 @@ const renderSamplesMetadataAsideItems = () => {
         );
       }
 
+      previousSample = document.getElementById(
+        "guided-bootbox-sample-id"
+      ).value;
+
+      //check to see if previousSample is empty
+      if (previousSample) {
+        addSample("guided");
+      }
+
       //add selected class to clicked element
       e.target.classList.add("is-selected");
       //remove selected class from all other elements
@@ -5929,26 +6187,18 @@ const renderSamplesMetadataAsideItems = () => {
           item.classList.remove("is-selected");
         }
       });
-
+      //Get sample's subject and pool from rendered HTML
       const samplesSubject = e.target.getAttribute("data-samples-subject-name");
       const samplesPool = e.target.getAttribute("data-samples-pool-id");
 
       //Set the subject id field based of clicked elements data-subject-id attribute
-      document.getElementById("guided-bootbox-wasDerivedFromSample").value =
+      document.getElementById("guided-bootbox-subject-id-samples").value =
         samplesSubject;
 
       //Set the pool id field based of clicked elements data-pool-id attribute
       document.getElementById("guided-bootbox-sample-pool-id").value =
         samplesPool;
 
-      previousSample = document.getElementById(
-        "guided-metadata-sample-id"
-      ).innerHTML;
-
-      //check to see if previousSample is empty
-      if (previousSample) {
-        addSample("guided");
-      }
       //clear all sample form fields
       clearAllSubjectFormFields(guidedSamplesFormDiv);
 
@@ -7844,15 +8094,16 @@ $(document).ready(() => {
         guidedReadMeMetadata
       );
       console.log(addReadMeMetadataResponse);
-
-      let addChangesMetadataResponse =
-        await guidedUploadREADMEorCHANGESMetadata(
-          guidedBfAccount,
-          guidedDatasetName,
-          "changes",
-          guidedChangesMetadata
-        );
-      console.log(addChangesMetadataResponse);
+      if (guidedChangesMetadata) {
+        let addChangesMetadataResponse =
+          await guidedUploadREADMEorCHANGESMetadata(
+            guidedBfAccount,
+            guidedDatasetName,
+            "changes",
+            guidedChangesMetadata
+          );
+        console.log(addChangesMetadataResponse);
+      }
       /*let addPIOwnerResponse = await guided_add_PI_owner(
         guidedBfAccount,
         guidedDatasetName,
@@ -8563,70 +8814,6 @@ $(document).ready(() => {
     guidedSaveRCFile("changes");
   });
 
-  const guidedSaveDescriptionFile = () => {
-    let datasetInfoValueObj = getGuidedDatasetInformation();
-    console.log(datasetInfoValueObj);
-    let studyInfoValueObject = getGuidedDatasetStudyInformation();
-    let contributorObj = getGuidedDatasetContributorInformation();
-    let relatedInfoArr = guidedCombineLinkSections();
-
-    let json_str_ds = JSON.stringify(datasetInfoValueObj);
-    let json_str_study = JSON.stringify(studyInfoValueObject);
-    let json_str_con = JSON.stringify(contributorObj);
-    let json_str_related_info = JSON.stringify(relatedInfoArr);
-    console.log(json_str_ds);
-    console.log(json_str_study);
-    console.log(json_str_con);
-    console.log(json_str_related_info);
-
-    let descriptionFileDestination = path.join(
-      $("#guided-dataset-path").text().trim(),
-      "description.xlsx"
-    );
-    if ($("#guided-dataset-path").text().trim() == "") {
-      Swal.fire({
-        title: "Please select a destination folder",
-        icon: "warning",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-      });
-    } else {
-      client.invoke(
-        "api_save_ds_description_file",
-        false,
-        "None",
-        "None",
-        descriptionFileDestination,
-        json_str_ds,
-        json_str_study,
-        json_str_con,
-        json_str_related_info,
-        async (error, res) => {
-          if (error) {
-            var emessage = userError(error);
-            log.error(error);
-            console.error(error);
-            Swal.fire({
-              title: "Failed to generate the dataset_description file",
-              html: emessage,
-              icon: "warning",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
-          } else {
-            let successMessage =
-              "Successfully generated the dataset_description.xlsx file at the specified location.";
-            Swal.fire({
-              title: successMessage,
-              icon: "success",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
-          }
-        }
-      );
-    }
-  };
   const guidedSaveDescriptionDatasetInformation = () => {
     const title = sodaJSONObj["digital-metadata"]["name"];
     const subtitle = sodaJSONObj["digital-metadata"]["subtitle"];
@@ -8713,11 +8900,8 @@ $(document).ready(() => {
     } else {
       studyPrimaryConclusion = studyPrimaryConclusionInput.value.trim();
     }
-    if (!studyCollectionTitleInput.value.trim()) {
-      throw "Please add a study collection title";
-    } else {
-      studyCollectionTitle = studyCollectionTitleInput.value.trim();
-    }
+
+    studyCollectionTitle = studyCollectionTitleInput.value.trim();
 
     //After validation, add the study information to the JSON object
     sodaJSONObj["dataset-metadata"]["description-metadata"][
@@ -8750,106 +8934,13 @@ $(document).ready(() => {
       acknowledgment: acknowledgements,
     };
   };
-  const getGuidedDatasetInformation = () => {
-    const title = sodaJSONObj["digital-metadata"]["name"];
-    const description = sodaJSONObj["digital-metadata"]["subtitle"];
-    //get the value of the checked radio button with the name dataset-relation and store as type
-    const type = document.querySelector(
-      "input[name='dataset-relation']:checked"
-    ).value;
-    const keywordArray = keywordTagify.value;
 
-    //Get the count of all subjects in and outside of pools
-    const [subjectsInPools, subjectsOutsidePools] =
-      sodaJSONObj.getAllSubjects();
-    const numSubjects = [...subjectsInPools, ...subjectsOutsidePools].length;
-
-    const [samplesInPools, samplesOutsidePools] =
-      sodaJSONObj.getAllSamplesFromSubjects();
-    //Combine sample data from samples in and out of pools
-    const numSamples = [...samplesInPools, ...samplesOutsidePools].length;
-
-    return {
-      name: title,
-      description: description,
-      type: type,
-      keywords: keywordArray,
-      "number of samples": numSamples,
-      "number of subjects": numSubjects,
-    };
-  };
-  const getGuidedDatasetStudyInformation = () => {};
-  const getGuidedDatasetContributorInformation = () => {
-    var funding = document.getElementById(
-      "guided-ds-description-award-input"
-    ).value;
-    var acknowledgment = document.getElementById(
-      "guided-ds-description-acknowledgments"
-    ).value;
-
-    var fundingArray = [];
-    if (funding === "") {
-      fundingArray = [""];
-    } else {
-      fundingArray = [funding];
-    }
-    /// other funding sources
-    var otherFunding = getTagsFromTagifyElement(
-      guidedOtherFundingsourcesTagify
-    );
-    for (var i = 0; i < otherFunding.length; i++) {
-      fundingArray.push(otherFunding[i]);
-    }
-
-    var contributorInfo = {};
-    contributorInfo["funding"] = fundingArray;
-    contributorInfo["acknowledgment"] = acknowledgment;
-    contributorInfo["contributors"] = contributorArray;
-    return contributorInfo;
-  };
-  const getGuidedAdditionalLinkSection = () => {
-    var table = document.getElementById("guided-other-link-table-dd");
-    var rowcountLink = table.rows.length;
-    var additionalLinkInfo = [];
-    for (i = 1; i < rowcountLink; i++) {
-      var additionalLink = {
-        link: table.rows[i].cells[1].innerText,
-        type: table.rows[i].cells[2].innerText,
-        relation: table.rows[i].cells[3].innerText,
-        description: table.rows[i].cells[4].innerText,
-      };
-      additionalLinkInfo.push(additionalLink);
-    }
-    return additionalLinkInfo;
-  };
-  const getGuidedProtocolSection = () => {
-    var table = document.getElementById("guided-protocol-link-table-dd");
-    var rowcountLink = table.rows.length;
-    var protocolLinkInfo = [];
-    for (i = 1; i < rowcountLink; i++) {
-      var protocol = {
-        link: table.rows[i].cells[1].innerText,
-        type: table.rows[i].cells[2].innerText,
-        relation: table.rows[i].cells[3].innerText,
-        description: table.rows[i].cells[4].innerText,
-      };
-      protocolLinkInfo.push(protocol);
-    }
-    return protocolLinkInfo;
-  };
   const guidedCombineLinkSections = () => {
     var protocolLinks = getGuidedProtocolSection();
     var otherLinks = getGuidedAdditionalLinkSection();
     protocolLinks.push.apply(protocolLinks, otherLinks);
     return protocolLinks;
   };
-  $("#guided-generate-description-file").on("click", () => {
-    try {
-      guidedSaveDescriptionFile();
-    } catch (error) {
-      console.log(error);
-    }
-  });
 
   const guidedSaveParticipantInformation = () => {
     let numSubjects = $("#guided-ds-samples-no").val();
@@ -8868,11 +8959,6 @@ $(document).ready(() => {
       sodaJSONObj["dataset-metadata"]["description-metadata"]["numSamples"] =
         numSamples;
     }
-  };
-
-  //Award & Contributor Information functions
-  const guidedSaveAwardAndContrinbutorInformation = () => {
-    sparcAwardNumber = $("#guided-ds-description-award-input").val();
   };
 
   $("#guided-generate-dataset-button").on("click", async function () {
@@ -9300,14 +9386,11 @@ $(document).ready(() => {
         if (errorArray.length > 0) {
           throw errorArray;
         } else {
-          sodaJSONObj["digital-metadata"]["study-purpose"] =
-            studyPurposeInput.value.trim();
-
-          sodaJSONObj["digital-metadata"]["data-collection"] =
-            studyDataCollectionInput.value.trim();
-
-          sodaJSONObj["digital-metadata"]["primary-conclusion"] =
-            studyPrimaryConclusionInput.value.trim();
+          sodaJSONObj["digital-metadata"]["description"] = {
+            "study-purpose": studyPurposeInput.value.trim(),
+            "data-collection": studyDataCollectionInput.value.trim(),
+            "primary-conclusion": studyPrimaryConclusionInput.value.trim(),
+          };
         }
       }
       if (pageBeingLeftID === "guided-add-tags-tab") {
@@ -9457,11 +9540,12 @@ $(document).ready(() => {
           throw errorArray;
         }
 
-        const sparcAward =
-          sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-
         if (buttonYesImportSparcAward.classList.contains("selected")) {
-          if (!sparcAward) {
+          const sparcAwardImportedFromAirtable =
+            sodaJSONObj["dataset-metadata"]["shared-metadata"][
+              "imported-sparc-award"
+            ];
+          if (!sparcAwardImportedFromAirtable) {
             errorArray.push({
               type: "notyf",
               message:
@@ -9469,14 +9553,29 @@ $(document).ready(() => {
             });
             throw errorArray;
           }
-          if (buttonNoEnterSparcAwardManually.classList.contains("selected")) {
-            //if A SPARC award exists, delete it.
-            if (sparcAward) {
-              delete sodaJSONObj["dataset-metadata"]["shared-metadata"][
-                "sparc-award"
-              ];
-            }
+          //Set the sparc award to the imported sparc award's value
+          sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] =
+            sparcAwardImportedFromAirtable;
+        }
+
+        if (buttonNoEnterSparcAwardManually.classList.contains("selected")) {
+          const sparcAwardInput = document.getElementById(
+            "guided-input-sparc-award"
+          );
+          if (sparcAwardInput.value.trim() === "") {
+            errorArray.push({
+              type: "notyf",
+              message: "Please enter a SPARC award",
+            });
+            throw errorArray;
           }
+
+          sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] =
+            sparcAwardInput.value.trim();
+          //Delete the imported SPARC award as the user entered the award manually.
+          delete sodaJSONObj["dataset-metadata"]["shared-metadata"][
+            "imported-sparc-award"
+          ];
         }
       }
       if (pageBeingLeftID === "guided-contributors-tab") {
@@ -9612,47 +9711,62 @@ $(document).ready(() => {
             const airKeyContent = parseJson(airtableConfigPath);
             const airKeyInput = airKeyContent["api-key"];
             const base = Airtable.base("appiYd1Tz9Sv857GZ");
+            const sparcAward =
+              sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
             // Create a filter string to select every entry with first and last names that match the checked contributors
             let contributorInfoFilterString = "OR(";
             for (const contributor of checkedContributors) {
-              contributorInfoFilterString += `AND({First_name} = "${contributor["contributorFirstName"]}", {Last_name} = "${contributor["contributorLastName"]}"),`;
+              contributorInfoFilterString += `AND({First_name} = "${contributor["contributorFirstName"]}", {Last_name} = "${contributor["contributorLastName"]}", {SPARC_Award_#} = "${sparcAward}"),`;
             }
             //replace last comma with closing bracket
             contributorInfoFilterString =
               contributorInfoFilterString.slice(0, -1) + ")";
             console.log(contributorInfoFilterString);
-            const contributorInfoResult = await base("sparc_members")
-              .select({
-                filterByFormula: contributorInfoFilterString,
-              })
-              .all();
-            console.log(contributorInfoResult);
+            try {
+              const contributorInfoResult = await base("sparc_members")
+                .select({
+                  filterByFormula: contributorInfoFilterString,
+                })
+                .all();
+              console.log(contributorInfoResult);
 
-            const contributorInfo = contributorInfoResult.map((contributor) => {
-              return {
-                contributorLastName: contributor.fields["Last_name"],
-                contributorFirstName: contributor.fields["First_name"],
-                conName: `${contributor.fields["Last_name"]}, ${contributor.fields["First_name"]}`,
-                conID: contributor.fields["ORCID"],
-                conAffliation: contributor.fields["Institution"],
-                conRole: contributor.fields["NIH_Project_Role"],
-              };
-            });
-            sodaJSONObj["dataset-metadata"]["description-metadata"][
-              "contributors"
-            ] = contributorInfo;
+              const contributorInfo = contributorInfoResult.map(
+                (contributor) => {
+                  return {
+                    contributorLastName: contributor.fields["Last_name"],
+                    contributorFirstName: contributor.fields["First_name"],
+                    conName: `${contributor.fields["Last_name"]}, ${contributor.fields["First_name"]}`,
+                    conID: contributor.fields["ORCID"],
+                    conAffliation: contributor.fields["Institution"],
+                    conRole: contributor.fields["NIH_Project_Role"],
+                  };
+                }
+              );
+              sodaJSONObj["dataset-metadata"]["description-metadata"][
+                "contributors"
+              ] = contributorInfo;
 
-            renderContributorFields(contributorInfo);
+              renderContributorFields(contributorInfo);
 
-            document
-              .getElementById("guided-div-contributors-imported-from-airtable")
-              .classList.add("hidden");
-            document
-              .getElementById("guided-div-contributor-field-set")
-              .classList.remove("hidden");
+              airTableContributorImportDiv.classList.add("hidden");
+              contributorFieldSetDiv.classList.remove("hidden");
 
-            $(this).removeClass("loading");
+              $(this).removeClass("loading");
+            } catch (error) {
+              //If there's an error getting the data from Airtable, create an empty contributor
+              airTableContributorImportDiv.classList.add("hidden");
+              contributorFieldSetDiv.classList.remove("hidden");
+              document.getElementById("contributors-container").innerHTML = "";
+              //add an empty contributor information fieldset
+              addContributorField();
+              notyf.error(
+                "Unable to import contributor information from airtable"
+              );
+              $(this).removeClass("loading");
+              return;
+            }
             return;
+            console.log("baz");
           }
         }
       }
@@ -9767,16 +9881,8 @@ $(document).ready(() => {
         const changesTextArea = document.getElementById(
           "guided-textarea-create-changes"
         );
-        if (changesTextArea.value.trim() === "") {
-          errorArray.push({
-            type: "notyf",
-            message: "Please enter CHANGES for your dataset",
-          });
-          throw errorArray;
-        } else {
-          const changes = changesTextArea.value.trim();
-          sodaJSONObj["dataset-metadata"]["CHANGES"] = changes;
-        }
+        const changes = changesTextArea.value.trim();
+        sodaJSONObj["dataset-metadata"]["CHANGES"] = changes;
       }
 
       console.log(sodaJSONObj);
@@ -10480,7 +10586,7 @@ $(document).ready(() => {
               );
               return;
             }
-            if (date === "") {
+            if (date === "Enter my own date") {
               notyf.error(
                 "Please add a completion date to your submission metadata"
               );
@@ -10911,4 +11017,5 @@ $(document).ready(() => {
       });
     }
   });*/
+  $("#guided-button-generate-dataset-locally").popover();
 });
