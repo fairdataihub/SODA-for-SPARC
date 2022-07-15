@@ -1150,6 +1150,9 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
               $(".bf-account-details-span").html(result);
               $("#para-continue-bf-dataset-getting-started").text("");
 
+              $("#guided-bf-account").html(key_name);
+              $("#guided-account-details").html(result);
+
               $("#current_curation_team_status").text("None");
               $("#curation-team-share-btn").hide();
               $("#curation-team-unshare-btn").hide();

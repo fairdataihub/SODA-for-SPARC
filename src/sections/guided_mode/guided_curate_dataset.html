@@ -5130,13 +5130,11 @@
                 <button
                   class="ui primary basic button"
                   id="guided-button-pennsieve-generate-existing"
-                  data-toggle="popover"
-                  data-placement="top"
-                  data-content="Coming soon!"
-                  data-next-element="guided-generate-dataset-existing-panel"
-                  data-button-config-value="pennsieve-generation-location"
-                  data-button-config-value-state="existing"
-                  style="width: 280px"
+                  data-content="Coming soon..."
+                  rel="popover"
+                  data-placement="bottom"
+                  data-trigger="hover"
+                  style="width: 280px; opacity: 0.5; cursor: default !important"
                 >
                   Update an existing Pennsieve dataset
                 </button>
@@ -5159,34 +5157,22 @@
                   id="guided-generate-dataset-new-panel"
                   class="guided--panel hidden"
                 >
-                  <div class="guided--input-container">
-                    <h4 class="ui header guided--prompt-continue">
-                      Please modify or confirm your dataset name:
-                    </h4>
-                    <div class="guided--container-data-display">
-                      <div class="guided--card-dataset-info">
-                        <div class="guided--dataset-description-container">
-                          <h5 class="guided--dataset-description">
-                            Current name:
-                          </h5>
-                        </div>
-                        <div
-                          class="guided--dataset-content-container"
-                          onclick="openGuidedDatasetRenameSwal()"
-                        >
-                          <h5
-                            id="guided-confirm-dataset-name"
-                            class="guided--dataset-content guidedDatasetName"
-                          >
-                            None
-                          </h5>
-                          <i
-                            class="far fa-edit jump-back"
-                            style="color: #000"
-                          ></i>
-                        </div>
-                      </div>
-                    </div>
+                  <div class="guided--section mt-md">
+                    <label class="guided--form-label"
+                      >Pennsieve dataset name:
+                    </label>
+                    <input
+                      class="guided--input"
+                      id="guided-input-pennsieve-dataset-name"
+                      type="text"
+                      placeholder="Enter Pennsieve dataset name here"
+                    />
+                    <p class="guided--text-input-instructions mb-0">
+                      <b
+                        >Enter the name that you would like to upload your
+                        dataset to Pennsieve under</b
+                      >
+                    </p>
                   </div>
                 </div>
                 <div
