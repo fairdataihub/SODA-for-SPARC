@@ -11,37 +11,52 @@ function docReady(fn) {
   }
 }
 
-/**
- * @param {String} HTML representing a single element
- * @return {Element}
- */
-function htmlToElement(html) {
-  var template = document.createElement("template");
-  html = html.trim(); // Never return a text node of whitespace as the result
-  template.innerHTML = html;
-  return template;
-}
-
-document.addEventListener("DOMContentLoaded", function (e) {
+// adds the apps HTML pages to the DOM
+document.addEventListener("DOMContentLoaded", async function () {
   const links = document.querySelectorAll('link[rel="import"]');
 
-  let contentDocumentFragment = new DocumentFragment()
+  let contentIndex = document.querySelector("#content");
 
   // Import and add each page to the DOM
-  Array.prototype.forEach.call(links, async (link) => {
+  for (let linkIdx = 0; linkIdx < links.length; linkIdx++) {
+    let link = links[linkIdx];
+
     let doc = await fetch(link.href, {
       headers: {
         "Content-Type": "text/html",
       },
     });
+
     let content = await doc.text();
-    contentDocumentFragment.innerHTML += content;
-    console.log("The document fragment is: ")
-    console.log(contentDocumentFragment)
-    let template = htmlToElement(content);
-    let clone = template.content.cloneNode(true);
-    document.querySelector("#content").appendChild(clone);
-  });
+
+    var range = document.createRange()
+    range.setStart(contentIndex, 0)
+    contentIndex.appendChild(
+      range.createContextualFragment(content)
+    )
+
+  }
+
+  // insert the script tags
+  insertScript()
 
 
 });
+
+const insertScript = () => {
+  const script = document.createElement("script");
+  script.src = "./scripts/others/renderer.js"; 
+  script.defer = true;
+  script.type = "text/javascript";
+  document.body.appendChild(script);
+
+  const scriptDD = document.createElement("script");
+  scriptDD.src = "./scripts/metadata-files/datasetDescription.js"; 
+  scriptDD.defer = true;
+  scriptDD.type = "text/javascript";
+  document.body.appendChild(scriptDD);
+
+  
+}
+
+

@@ -1,3 +1,4 @@
+console.log("Excecuted DSD")
 // Prepare Dataset Description File
 const dsAwardArray = document.getElementById("ds-description-award-list");
 const dsContributorArrayLast1 = document.getElementById(
@@ -22,6 +23,45 @@ const addAdditionalLinkBtn = document.getElementById("button-ds-add-link");
 const datasetDescriptionFileDataset = document.getElementById("ds-name");
 const parentDSDropdown = document.getElementById("input-parent-ds");
 
+$(currentConTable).mousedown(function (e) {
+  var length = currentConTable.rows.length - 1;
+  var tr = $(e.target).closest("tr"),
+    sy = e.pageY,
+    drag;
+  if ($(e.target).is("tr")) tr = $(e.target);
+  var index = tr.index();
+  $(tr).addClass("grabbed");
+  function move(e) {
+    if (!drag && Math.abs(e.pageY - sy) < 10) return;
+    drag = true;
+    tr.siblings().each(function () {
+      var s = $(this),
+        i = s.index(),
+        y = s.offset().top;
+      if (e.pageY >= y && e.pageY < y + s.outerHeight()) {
+        if (i !== 0) {
+          if ($(e.target).closest("tr")[0].rowIndex !== length) {
+            if (i < tr.index()) {
+              s.insertAfter(tr);
+            } else {
+              s.insertBefore(tr);
+            }
+            return false;
+          }
+        }
+      }
+    });
+  }
+  function up(e) {
+    if (drag && index != tr.index() && tr.index() !== length) {
+      drag = false;
+    }
+    $(document).unbind("mousemove", move).unbind("mouseup", up);
+    $(tr).removeClass("grabbed");
+  }
+  $(document).mousemove(move).mouseup(up);
+});
+
 // Main function to check Airtable status upon loading soda
 ///// config and load live data from Airtable
 var sparcAwards = [];
@@ -39,39 +79,7 @@ $(document).ready(function () {
       $(this).text("Add contributors not listed above");
     }
   });
-  // ipcRenderer.on(
-  //   "selected-metadata-ds-description",
-  //   (event, dirpath, filename) => {
-  //     if (dirpath.length > 0) {
-  //       var destinationPath = path.join(dirpath[0], filename);
-  //       if (fs.existsSync(destinationPath)) {
-  //         var emessage =
-  //           "File '" +
-  //           filename +
-  //           "' already exists in " +
-  //           dirpath[0] +
-  //           ". Do you want to replace it?";
-  //         Swal.fire({
-  //           icon: "warning",
-  //           title: "Metadata file already exists",
-  //           text: `${emessage}`,
-  //           heightAuto: false,
-  //           backdrop: "rgba(0,0,0, 0.4)",
-  //           showConfirmButton: true,
-  //           showCancelButton: true,
-  //           cancelButtonText: "No",
-  //           confirmButtonText: "Yes",
-  //         }).then((result) => {
-  //           if (result.isConfirmed) {
-  //             generateDDFile(false);
-  //           }
-  //         });
-  //       } else {
-  //         generateDDFile(false);
-  //       }
-  //     }
-  //   }
-  // );
+
   checkAirtableStatus("");
   ipcRenderer.on("show-missing-items-ds-description", (event, index) => {
     if (index === 0) {
