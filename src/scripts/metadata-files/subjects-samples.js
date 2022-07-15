@@ -3363,6 +3363,11 @@ async function addAdditionalLink(curationMode) {
           "Duplicate URL/DOI. The URL/DOI you entered is already added."
         );
       }
+
+      if ($("#DD-other-link-relation").val() === "Select") {
+        Swal.showValidationMessage("Please select a link relation");
+      }
+
       return [
         $("#DD-other-link").val(),
         protocolLink,

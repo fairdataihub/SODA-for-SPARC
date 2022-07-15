@@ -9422,9 +9422,11 @@ function gatherLogs() {
   let serverLogsPath = path.join(homedir, "SODA", "logs");
   let logFiles = ["main.log", "renderer.log", "out.log", "api.log"];
 
-  if (os.type() === "Darwin") {
+  console.log(os.type());
+
+  if (os.platform() === "darwin") {
     clientLogsPath = path.join(homedir, "/Library/Logs/SODA for SPARC/");
-  } else if (os.type() === "Windows") {
+  } else if (os.platform() === "win32") {
     clientLogsPath = path.join(
       homedir,
       "AppData",

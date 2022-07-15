@@ -685,7 +685,7 @@ const nextPrev = (n) => {
     }
 
     if (missingFiles.length > 0) {
-      var notIncludedMessage = `<div style='text-align: left'>This dataset seems to have non SPARC folders and/or high-level metadata files: <br><ol style='text-align: left'>${missingFiles.join(
+      var notIncludedMessage = `<div style='text-align: left'>You did not include the following metadata files that are typically expected for all SPARC datasets: <br><ol style='text-align: left'>${missingFiles.join(
         ""
       )} </ol>Are you sure you want to continue?</div>`;
       Swal.fire({
@@ -2326,6 +2326,7 @@ async function transitionFreeFormMode(
     document.getElementById(parentDiv).scrollTop =
       document.getElementById(parentDiv).scrollHeight;
     if (ev.getAttribute("data-next") === "Question-prepare-submission-2") {
+      console.log("here we go");
       onboardingSubmission();
     }
   }
@@ -2539,7 +2540,10 @@ async function switchMetadataManifestQuestion() {
       // deleting manifest file folders in user/SODA path that were generated half-way before users switch.
       try {
         await client.delete(`prepare_metadata/manifest_dummy_folders`, {
-          paths: [userpath1, userpath2],
+          // Axios delete API specifies config as the second parameter; which is why we use the data keyword here.
+          data: {
+            paths: [userpath1, userpath2],
+          },
         });
 
         sodaJSONObj = {

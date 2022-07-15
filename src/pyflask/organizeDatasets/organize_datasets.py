@@ -89,14 +89,14 @@ initial_bfdataset_size_submit = 0
 forbidden_characters = '<>:"/\|?*'
 forbidden_characters_bf = '\/:*?"<>'
 
-## these subsequent CheckLeafValue and traverseForLeafNodes functions check for the validity of file paths,
-## and folder and file size
+
 
 ### Internal functions
 def TZLOCAL():
     return datetime.now(timezone.utc).astimezone().tzinfo
 
-
+## these subsequent CheckLeafValue and traverseForLeafNodes functions check for the validity of file paths,
+## and folder and file size
 def checkLeafValue(leafName, leafNodeValue):
 
     error, c = "", 0
@@ -217,13 +217,13 @@ def generate_dataset_locally(destinationdataset, pathdataset, newdatasetname, js
     if destinationdataset == "create new":
         if not isdir(pathdataset):
             curatestatus = "Done"
-            abort(400, "Error: Please select a valid folder for new dataset")
+            abort(400, "Please select a valid folder for new dataset")
         if not newdatasetname:
             curatestatus = "Done"
-            abort(400, "Error: Please enter a valid name for new dataset folder")
+            abort(400, "Please enter a valid name for new dataset folder")
         if check_forbidden_characters(newdatasetname):
             curatestatus = "Done"
-            abort(400,  "Error: A folder name cannot contain any of the following characters " + forbidden_characters)
+            abort(400,  "A folder name cannot contain any of the following characters " + forbidden_characters)
 
     total_dataset_size = 1
 
@@ -1033,7 +1033,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     try:
         bf = Pennsieve(bf_account_name)
     except Exception as e:
-        error.append("Error: Please select a valid Pennsieve account")
+        error.append("Please select a valid Pennsieve account")
         raise Exception(error)
 
     # check that the Pennsieve dataset is valid
@@ -1045,7 +1045,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         myds = bf.get_dataset(bf_dataset_name)
         dataset_id = myds.id
     except Exception as e:
-        error.append("Error: Please select a valid Pennsieve dataset")
+        error.append("Please select a valid Pennsieve dataset")
         raise Exception(error)
 
     # check that the user has permission to edit this dataset
@@ -1054,7 +1054,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         if role not in ["owner", "manager", "editor"]:
             curatestatus = "Done"
             error.append(
-                "Error: You don't have permissions for uploading to this Pennsieve dataset"
+                "You don't have permissions for uploading to this Pennsieve dataset"
             )
             raise Exception(error)
     except Exception as e:
