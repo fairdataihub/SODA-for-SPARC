@@ -29,34 +29,25 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     let content = await doc.text();
 
-    var range = document.createRange()
-    range.setStart(contentIndex, 0)
-    contentIndex.appendChild(
-      range.createContextualFragment(content)
-    )
-
+    var range = document.createRange();
+    range.setStart(contentIndex, 0);
+    contentIndex.appendChild(range.createContextualFragment(content));
   }
 
   // insert the script tags
-  insertScript()
-
-
+  insertScript();
 });
 
 const insertScript = () => {
   const script = document.createElement("script");
-  script.src = "./scripts/others/renderer.js"; 
+  script.src = "./scripts/others/renderer.js";
   script.defer = true;
   script.type = "text/javascript";
   document.body.appendChild(script);
 
   const scriptDD = document.createElement("script");
-  scriptDD.src = "./scripts/metadata-files/datasetDescription.js"; 
+  scriptDD.src = "./scripts/metadata-files/datasetDescription.js";
   scriptDD.defer = true;
   scriptDD.type = "text/javascript";
   document.body.appendChild(scriptDD);
-
-
-}
-
-
+};

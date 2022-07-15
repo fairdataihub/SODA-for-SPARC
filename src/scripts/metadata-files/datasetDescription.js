@@ -1,4 +1,4 @@
-console.log("Excecuted DSD")
+console.log("Excecuted DSD");
 // Prepare Dataset Description File
 const dsAwardArray = document.getElementById("ds-description-award-list");
 const dsContributorArrayLast1 = document.getElementById(
