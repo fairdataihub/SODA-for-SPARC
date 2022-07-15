@@ -11016,4 +11016,5 @@ $(document).ready(() => {
       });
     }
   });*/
+  $("#guided-button-generate-dataset-locally").popover();
 });
