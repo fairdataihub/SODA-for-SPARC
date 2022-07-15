@@ -6501,6 +6501,9 @@ $(document).ready(() => {
             setGuidedDatasetSubtitle(datasetSubtitleInputValue);
             saveGuidedProgress(datasetNameInputValue);
           }
+        } else {
+          setGuidedDatasetSubtitle(datasetSubtitleInputValue);
+          saveGuidedProgress(datasetNameInputValue);
         }
         //transition out of dataset name/subtitle page
         guidedTransitionFromDatasetNameSubtitlePage();
