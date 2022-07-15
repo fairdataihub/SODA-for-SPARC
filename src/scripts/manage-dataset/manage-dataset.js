@@ -236,6 +236,30 @@ const addNewDatasetToList = (newDataset) => {
   datasetList.push({ name: newDataset, role: "owner" });
 };
 
+//Add/remove dataset from collection
+$("#button-bf-collection").click(() => {
+  setTimeout(() => {
+    let selectedAccount = defaultBfAccount;
+    let selectedDataset = defaultBfDataset;
+
+    Swal.fire({
+      title: `Adding dataset ${currentDatasetName} to collection`,
+      html: "Please wait...",
+      // timer: 5000,
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    log.info(`Adding dataset '${currentDatasetName}' to Collection'`);
+  }, delayAnimation);
+});
+
 // Rename dataset on bf //
 $("#button-rename-dataset").click(() => {
   setTimeout(function () {

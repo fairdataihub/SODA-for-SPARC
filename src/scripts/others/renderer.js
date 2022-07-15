@@ -1340,6 +1340,8 @@ var datasetTagsInput = document.getElementById("tagify-dataset-tags"),
   // initialize Tagify on the above input node reference
   datasetTagsTagify = new Tagify(datasetTagsInput);
 
+var collectionTagsInput = document.getElementById("tagify-collection-tags"),
+  collectionTagsTagify = new Tagify(collectionTagsInput);
 ///////////////////// Airtable Authentication /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 

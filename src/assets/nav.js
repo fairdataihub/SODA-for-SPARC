@@ -2,7 +2,9 @@ const settings = require("electron-settings");
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
 
 document.body.addEventListener("click", (event) => {
+  console.log("uhh");
   if (event.target.dataset.section) {
+    console.log(event);
     handleSectionTrigger(event);
   } else if (event.target.dataset.modal) {
     handleModalTrigger(event);
@@ -19,14 +21,18 @@ function handleSectionTrigger(event) {
   hideAllSectionsAndDeselectButtons();
 
   if (event.detail.target) {
+    console.log(event.detail.target);
+    console.log(event.detail.target.dataset.section);
     let previous_section = `${event.detail.target.dataset.section}-section`;
     document.getElementById(previous_section).classList.add("is-shown");
     forceActionSidebar("show");
     return;
   }
 
+  console.log(event.target);
   event.target.classList.add("is-selected");
   // Display the current section
+  console.log(event.target.dataset.section);
   const sectionId = `${event.target.dataset.section}-section`;
 
   document.getElementById(sectionId).classList.add("is-shown");

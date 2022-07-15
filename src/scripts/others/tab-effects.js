@@ -2247,6 +2247,8 @@ async function transitionFreeFormMode(
       $("#bf_list_users_pi").selectpicker("refresh");
     }
   }
+  //TODO: See how transitionFreeFormMode works
+  console.log(ev);
 
   if (ev.getAttribute("data-next") === "div-rename-bf-dataset") {
     let dataset_name = $("#rename_dataset_name").text();
@@ -3767,7 +3769,17 @@ $(document).ready(() => {
 
   $(".ui.accordion").accordion();
   $(".content-button").click(function () {
+    console.log("clicked here");
     let section = $(this).data("section");
+
+    if (section === "add_edit_bf_dataset_collection") {
+      let rename_dataset_name = $("#rename_dataset_name").html();
+      if (rename_dataset_name.trim() != "None" && rename_dataset_name != "") {
+        $("#bf-rename-dataset-name").val(rename_dataset_name);
+      } else {
+        $("#bf-rename-dataset-name").val("");
+      }
+    }
 
     if (section === "rename_existing_bf_dataset") {
       let rename_dataset_name = $("#rename_dataset_name").html();
