@@ -25,7 +25,7 @@ function htmlToElement(html) {
 document.addEventListener("DOMContentLoaded", function (e) {
   const links = document.querySelectorAll('link[rel="import"]');
 
-  let contentDocumentFragment = new DocumentFragment()
+  let contentDocumentFragment = new DocumentFragment();
 
   // Import and add each page to the DOM
   Array.prototype.forEach.call(links, async (link) => {
@@ -36,12 +36,10 @@ document.addEventListener("DOMContentLoaded", function (e) {
     });
     let content = await doc.text();
     contentDocumentFragment.innerHTML += content;
-    console.log("The document fragment is: ")
-    console.log(contentDocumentFragment)
+    console.log("The document fragment is: ");
+    console.log(contentDocumentFragment);
     let template = htmlToElement(content);
     let clone = template.content.cloneNode(true);
     document.querySelector("#content").appendChild(clone);
   });
-
-
 });

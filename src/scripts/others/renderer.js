@@ -153,7 +153,7 @@ const wait = async (delay) => {
 // wait until the document is ready to begin adding/enacting DOM actions/listeners
 // TODO: Make it more robust by utilizing document ready states instead of solely this
 setTimeout(() => {
-  console.log("Document ready and renderer going")
+  console.log("Document ready and renderer going");
   // Here is where the splash screen lotties are created and loaded.
   // A mutation observer watches for when the overview tab element has
   // a class change to 'is-shown' to know when to load and unload the lotties
@@ -165,14 +165,16 @@ setTimeout(() => {
 
   var column1_lottie = lottie.loadAnimation({
     container: column1,
-    animationData: column1Lottie /*(json js variable, (view src/assets/lotties)*/,
+    animationData:
+      column1Lottie /*(json js variable, (view src/assets/lotties)*/,
     renderer: "svg",
     loop: true /*controls looping*/,
     autoplay: true,
   });
   var column2_lottie = lottie.loadAnimation({
     container: column2,
-    animationData: column2Lottie /*(json js variable, (view src/assets/lotties)*/,
+    animationData:
+      column2Lottie /*(json js variable, (view src/assets/lotties)*/,
     renderer: "svg",
     loop: true /*controls looping*/,
     autoplay: true,
@@ -414,7 +416,11 @@ setTimeout(() => {
 
     console.log("Connected to Python back-end successfully");
     log.info("Connected to Python back-end successfully");
-    ipcRenderer.send("track-event", "Success", "Establishing Python Connection");
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Establishing Python Connection"
+    );
 
     // inform observers that the app is connected to the server
     sodaIsConnected = true;
@@ -544,10 +550,12 @@ setTimeout(() => {
                     showCancelButton: true,
                     confirmButtonText: "Ok",
                     showClass: {
-                      popup: "animate__animated animate__zoomIn animate__faster",
+                      popup:
+                        "animate__animated animate__zoomIn animate__faster",
                     },
                     hideClass: {
-                      popup: "animate__animated animate__zoomOut animate__faster",
+                      popup:
+                        "animate__animated animate__zoomOut animate__faster",
                     },
                   });
                 }
@@ -1075,7 +1083,9 @@ setTimeout(() => {
   const homePathButton = document.getElementById("home-path");
   const menuFolder = document.querySelector(".menu.reg-folder");
   const menuFile = document.querySelector(".menu.file");
-  const menuHighLevelFolders = document.querySelector(".menu.high-level-folder");
+  const menuHighLevelFolders = document.querySelector(
+    ".menu.high-level-folder"
+  );
   const organizeNextStepBtn = document.getElementById(
     "button-organize-confirm-create"
   );
@@ -1104,7 +1114,9 @@ setTimeout(() => {
   const currentDatasetReportBtn = document.getElementById(
     "button-generate-report-current-ds"
   );
-  const validateLocalDSBtn = document.getElementById("button-validate-local-ds");
+  const validateLocalDSBtn = document.getElementById(
+    "button-validate-local-ds"
+  );
   const validateLocalDatasetReport = document.querySelector(
     "#textarea-validate-local-dataset"
   );
@@ -1206,7 +1218,8 @@ setTimeout(() => {
     "protocol",
     "source",
   ];
-  const smileyCan = '<img class="message-icon" src="assets/img/can-smiley.png">';
+  const smileyCan =
+    '<img class="message-icon" src="assets/img/can-smiley.png">';
   const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">';
   const delayAnimation = 250;
 
@@ -1414,11 +1427,14 @@ setTimeout(() => {
   downloadManifest.addEventListener("click", (event) => {
     ipcRenderer.send("open-folder-dialog-save-metadata", templateArray[4]);
   });
-  ipcRenderer.on("selected-metadata-download-folder", (event, path, filename) => {
-    if (path.length > 0) {
-      downloadTemplates(filename, path[0]);
+  ipcRenderer.on(
+    "selected-metadata-download-folder",
+    (event, path, filename) => {
+      if (path.length > 0) {
+        downloadTemplates(filename, path[0]);
+      }
     }
-  });
+  );
 
   ipcRenderer.on("selected-DDD-download-folder", (event, path, filename) => {
     if (path.length > 0) {
@@ -1482,7 +1498,7 @@ setTimeout(() => {
                 didOpen: () => {
                   Swal.showLoading();
                 },
-              }).then((result) => { });
+              }).then((result) => {});
               generateSubjectsFileHelper(false);
             }
           });
@@ -1498,7 +1514,7 @@ setTimeout(() => {
             didOpen: () => {
               Swal.showLoading();
             },
-          }).then((result) => { });
+          }).then((result) => {});
           generateSubjectsFileHelper(false);
         }
       }
@@ -1552,7 +1568,7 @@ setTimeout(() => {
       didOpen: () => {
         Swal.showLoading();
       },
-    }).then((result) => { });
+    }).then((result) => {});
 
     let bfdataset = document
       .getElementById("bf_dataset_load_subjects")
@@ -1655,7 +1671,7 @@ setTimeout(() => {
                 didOpen: () => {
                   Swal.showLoading();
                 },
-              }).then((result) => { });
+              }).then((result) => {});
               generateSamplesFileHelper(uploadBFBoolean);
             }
           });
@@ -1671,7 +1687,7 @@ setTimeout(() => {
             didOpen: () => {
               Swal.showLoading();
             },
-          }).then((result) => { });
+          }).then((result) => {});
           generateSamplesFileHelper(uploadBFBoolean);
         }
       }
@@ -1725,7 +1741,7 @@ setTimeout(() => {
       didOpen: () => {
         Swal.showLoading();
       },
-    }).then((result) => { });
+    }).then((result) => {});
 
     try {
       let samplesFileResponse = await client.post(
@@ -1784,11 +1800,14 @@ setTimeout(() => {
   }
 
   // import Primary folder
-  ipcRenderer.on("selected-local-primary-folder", (event, primaryFolderPath) => {
-    if (primaryFolderPath.length > 0) {
-      importPrimaryFolderSubjects(primaryFolderPath[0]);
+  ipcRenderer.on(
+    "selected-local-primary-folder",
+    (event, primaryFolderPath) => {
+      if (primaryFolderPath.length > 0) {
+        importPrimaryFolderSubjects(primaryFolderPath[0]);
+      }
     }
-  });
+  );
   ipcRenderer.on(
     "selected-local-primary-folder-samples",
     (event, primaryFolderPath) => {
@@ -2247,7 +2266,7 @@ setTimeout(() => {
       didOpen: () => {
         Swal.showLoading();
       },
-    }).then((result) => { });
+    }).then((result) => {});
     try {
       let load_taxonomy_species = await client.get(`/taxonomy/species`, {
         params: {
@@ -2371,7 +2390,11 @@ setTimeout(() => {
     }
     if (dsContributorArrayFirst1) {
       removeOptions(dsContributorArrayFirst1);
-      addOption(dsContributorArrayFirst1, "Select an option", "Select an option");
+      addOption(
+        dsContributorArrayFirst1,
+        "Select an option",
+        "Select an option"
+      );
     }
 
     currentContributorsLastNames = [];
@@ -2383,7 +2406,8 @@ setTimeout(() => {
     for (
       var i = 0;
       i <
-      document.getElementById("table-current-contributors").rows[1].cells.length;
+      document.getElementById("table-current-contributors").rows[1].cells
+        .length;
       i++
     ) {
       $(
@@ -2764,7 +2788,8 @@ setTimeout(() => {
   });
 
   $("#contributor-table-dd").mousedown(function (e) {
-    var length = document.getElementById("contributor-table-dd").rows.length - 1;
+    var length =
+      document.getElementById("contributor-table-dd").rows.length - 1;
     var tr = $(e.target).closest("tr"),
       sy = e.pageY,
       drag;
@@ -2848,7 +2873,8 @@ setTimeout(() => {
   });
 
   $("#additional-link-table-dd").mousedown(function (e) {
-    var length = document.getElementById("additional-link-table-dd").rows.length;
+    var length = document.getElementById("additional-link-table-dd").rows
+      .length;
     var tr = $(e.target).closest("tr"),
       sy = e.pageY,
       drag;
@@ -2964,9 +2990,9 @@ setTimeout(() => {
     var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
     var emptyMessageArray = [
       "- Missing required fields under Dataset Info section: " +
-      dsEmptyField.join(", "),
+        dsEmptyField.join(", "),
       "- Missing required fields under Contributor Info section: " +
-      conEmptyField.join(", "),
+        conEmptyField.join(", "),
       "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
     ];
     var allFieldsSatisfied = true;
@@ -3801,7 +3827,9 @@ setTimeout(() => {
 
     if (accountSelected !== "Select") {
       client
-        .get(`/manage_datasets/bf_get_teams?selected_account=${accountSelected}`)
+        .get(
+          `/manage_datasets/bf_get_teams?selected_account=${accountSelected}`
+        )
         .then((res) => {
           let teams = res.data["teams"];
           // The removeoptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
@@ -4569,8 +4597,9 @@ setTimeout(() => {
   ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
     if (filepath.length > 0) {
       if (filepath != null) {
-        document.getElementById("para-organize-datasets-loading").style.display =
-          "block";
+        document.getElementById(
+          "para-organize-datasets-loading"
+        ).style.display = "block";
         document.getElementById("para-organize-datasets-loading").innerHTML =
           "<span>Please wait...</span>";
 
@@ -4584,8 +4613,9 @@ setTimeout(() => {
             soda_json_directory_structure: datasetStructureJSONObj,
           });
 
-          document.getElementById("para-organize-datasets-error").style.display =
-            "none";
+          document.getElementById(
+            "para-organize-datasets-error"
+          ).style.display = "none";
           document.getElementById(
             "para-organize-datasets-success"
           ).style.display = "block";
@@ -4596,8 +4626,9 @@ setTimeout(() => {
           document.getElementById(
             "para-organize-datasets-success"
           ).style.display = "none";
-          document.getElementById("para-organize-datasets-error").style.display =
-            "block";
+          document.getElementById(
+            "para-organize-datasets-error"
+          ).style.display = "block";
           document.getElementById("para-organize-datasets-error").innerHTML =
             "<span> " + userErrorMessage(error) + "</span>";
         }
@@ -4739,7 +4770,10 @@ setTimeout(() => {
                   "ui large active inline loader icon-wrapper"
                 );
                 background.setAttribute("class", "loading-items-background");
-                background.setAttribute("id", "loading-items-background-overlay");
+                background.setAttribute(
+                  "id",
+                  "loading-items-background-overlay"
+                );
 
                 spinner_container.append(spinner_icon);
                 document.body.prepend(background);
@@ -4786,7 +4820,10 @@ setTimeout(() => {
                   "ui large active inline loader icon-wrapper"
                 );
                 background.setAttribute("class", "loading-items-background");
-                background.setAttribute("id", "loading-items-background-overlay");
+                background.setAttribute(
+                  "id",
+                  "loading-items-background-overlay"
+                );
 
                 spinner_container.append(spinner_icon);
                 document.body.prepend(background);
@@ -4856,11 +4893,18 @@ setTimeout(() => {
               pathElement,
               myPath
             );
-            document.getElementById("loading-items-background-overlay").remove();
+            document
+              .getElementById("loading-items-background-overlay")
+              .remove();
             document.getElementById("items_loading_container").remove();
           });
         } else {
-          await addFoldersfunction("", irregularFolderArray, pathElement, myPath);
+          await addFoldersfunction(
+            "",
+            irregularFolderArray,
+            pathElement,
+            myPath
+          );
         }
       }
     }
@@ -5044,7 +5088,12 @@ setTimeout(() => {
           });
         }
         hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-        hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
+        hideMenu(
+          "high-level-folder",
+          menuFolder,
+          menuHighLevelFolders,
+          menuFile
+        );
 
         // log the success
         logCurationForAnalytics(
@@ -5135,7 +5184,9 @@ setTimeout(() => {
           action = "remove";
           if (irregularFolderArray.length > 0) {
             for (let i = 0; i < irregularFolderArray.length; i++) {
-              renamedFolderName = removeIrregularFolders(irregularFolderArray[i]);
+              renamedFolderName = removeIrregularFolders(
+                irregularFolderArray[i]
+              );
               replaced.push(renamedFolderName);
             }
           }
@@ -5221,7 +5272,8 @@ setTimeout(() => {
       if (statsObj.isFile()) {
         var nonAllowedDuplicate = false;
         var originalFileName = path.parse(itemPath).base;
-        var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+        var slashCount =
+          organizeDSglobalPath.value.trim().split("/").length - 1;
         const fileNameRegex = /[^-a-zA-z0-9]/g;
 
         if (path.parse(itemPath).name.substr(0, 1) === ".") {
@@ -5297,7 +5349,8 @@ setTimeout(() => {
         }
       } else if (statsObj.isDirectory()) {
         /// drop a folder
-        var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+        var slashCount =
+          organizeDSglobalPath.value.trim().split("/").length - 1;
         if (slashCount === 1) {
           await Swal.fire({
             icon: "error",
@@ -5865,7 +5918,12 @@ setTimeout(() => {
         }
         // Hide it AFTER the action was triggered
         hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-        hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
+        hideMenu(
+          "high-level-folder",
+          menuFolder,
+          menuHighLevelFolders,
+          menuFile
+        );
         hideFullName();
       });
 
@@ -5896,7 +5954,12 @@ setTimeout(() => {
         }
         // Hide it AFTER the action was triggered
         hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-        hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
+        hideMenu(
+          "high-level-folder",
+          menuFolder,
+          menuHighLevelFolders,
+          menuFile
+        );
         hideFullName();
       });
     /// hide both menus after an option is clicked
@@ -6528,8 +6591,9 @@ setTimeout(() => {
 
     if (newName !== "") {
       if (check_forbidden_characters_bf(newName)) {
-        document.getElementById("div-confirm-inputNewNameDataset").style.display =
-          "none";
+        document.getElementById(
+          "div-confirm-inputNewNameDataset"
+        ).style.display = "none";
         $("#btn-confirm-new-dataset-name").hide();
         document.getElementById("para-new-name-dataset-message").innerHTML =
           "Error: A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.";
@@ -6587,8 +6651,9 @@ setTimeout(() => {
             sodaJSONObj["starting-point"]["local-path"] == ""
           ) {
             valid_dataset = verify_sparc_folder(
-              document.getElementById("input-destination-getting-started-locally")
-                .placeholder,
+              document.getElementById(
+                "input-destination-getting-started-locally"
+              ).placeholder,
               "local"
             );
             if (valid_dataset == true) {
@@ -6645,7 +6710,9 @@ setTimeout(() => {
                       "input-destination-getting-started-locally"
                     ).placeholder = "Browse here";
                     sodaJSONObj["starting-point"]["local-path"] = "";
-                    $("#para-continue-location-dataset-getting-started").text("");
+                    $("#para-continue-location-dataset-getting-started").text(
+                      ""
+                    );
                     return;
                   }
 
@@ -6659,8 +6726,9 @@ setTimeout(() => {
                   );
                   progressBar_rightSide.style.transform = `rotate(0deg)`;
                   progressBar_leftSide.style.transform = `rotate(0deg)`;
-                  document.getElementById("loading_local_dataset").style.display =
-                    "block";
+                  document.getElementById(
+                    "loading_local_dataset"
+                  ).style.display = "block";
                   sodaJSONObj["starting-point"]["local-path"] = filepath[0];
 
                   let root_folder_path = $(
@@ -6675,7 +6743,8 @@ setTimeout(() => {
                       );
 
                       let { data } = monitorProgressResponse;
-                      percentage_amount = data["progress_percentage"].toFixed(2);
+                      percentage_amount =
+                        data["progress_percentage"].toFixed(2);
                       finished = data["create_soda_json_completed"];
 
                       progressBar_rightSide = document.getElementById(
@@ -6687,14 +6756,16 @@ setTimeout(() => {
 
                       numb.innerText = percentage_amount + "%";
                       if (percentage_amount <= 50) {
-                        progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
-                          }deg)`;
+                        progressBar_rightSide.style.transform = `rotate(${
+                          percentage_amount * 0.01 * 360
+                        }deg)`;
                       } else {
                         progressBar_rightSide.style.transition = "";
                         progressBar_rightSide.classList.add("notransition");
                         progressBar_rightSide.style.transform = `rotate(180deg)`;
-                        progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
-                          }deg)`;
+                        progressBar_leftSide.style.transform = `rotate(${
+                          percentage_amount * 0.01 * 180
+                        }deg)`;
                       }
 
                       if (finished === 1) {
@@ -6704,9 +6775,9 @@ setTimeout(() => {
                         progressBar_rightSide.classList.remove("notransition");
                         populate_existing_folders(datasetStructureJSONObj);
                         populate_existing_metadata(sodaJSONObj);
-                        $("#para-continue-location-dataset-getting-started").text(
-                          "Please continue below."
-                        );
+                        $(
+                          "#para-continue-location-dataset-getting-started"
+                        ).text("Please continue below.");
                         $("#nextBtn").prop("disabled", false);
                         // log the success to analytics
                         logMetadataForAnalytics(
@@ -6769,14 +6840,16 @@ setTimeout(() => {
 
                     numb.innerText = percentage_amount + "%";
                     if (percentage_amount <= 50) {
-                      progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
-                        }deg)`;
+                      progressBar_rightSide.style.transform = `rotate(${
+                        percentage_amount * 0.01 * 360
+                      }deg)`;
                     } else {
                       progressBar_rightSide.style.transition = "";
                       progressBar_rightSide.classList.add("notransition");
                       progressBar_rightSide.style.transform = `rotate(180deg)`;
-                      progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
-                        }deg)`;
+                      progressBar_leftSide.style.transform = `rotate(${
+                        percentage_amount * 0.01 * 180
+                      }deg)`;
                     }
                     if (finished === 1) {
                       progressBar_leftSide.style.transform = `rotate(180deg)`;
@@ -6932,7 +7005,8 @@ setTimeout(() => {
           "flex";
         document.getElementById("prevBtn").style.display = "inline";
         document.getElementById("nextBtn").style.display = "inline";
-        document.getElementById("start-over-btn").style.display = "inline-block";
+        document.getElementById("start-over-btn").style.display =
+          "inline-block";
         showParentTab(currentTab, 1);
         if (
           sodaJSONObj["starting-point"]["type"] == "new" &&
@@ -6945,11 +7019,15 @@ setTimeout(() => {
 
   /// MAIN CURATE NEW ///
 
-  const progressBarNewCurate = document.getElementById("progress-bar-new-curate");
+  const progressBarNewCurate = document.getElementById(
+    "progress-bar-new-curate"
+  );
   const divGenerateProgressBar = document.getElementById(
     "div-new-curate-meter-progress"
   );
-  const generateProgressBar = document.getElementById("progress-bar-new-curate");
+  const generateProgressBar = document.getElementById(
+    "progress-bar-new-curate"
+  );
   var progressStatus = document.getElementById(
     "para-new-curate-progress-bar-status"
   );
@@ -6964,7 +7042,8 @@ setTimeout(() => {
       document.getElementById("para-please-wait-new-curate").innerHTML = "";
       document.getElementById("prevBtn").style.display = "none";
       document.getElementById("start-over-btn").style.display = "none";
-      document.getElementById("div-vertical-progress-bar").style.display = "none";
+      document.getElementById("div-vertical-progress-bar").style.display =
+        "none";
       document.getElementById("div-generate-comeback").style.display = "none";
       document.getElementById("generate-dataset-progress-tab").style.display =
         "flex";
@@ -7028,9 +7107,11 @@ setTimeout(() => {
       for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
         if (
           "manifest.xlsx" in
-          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+            sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
+              "files"
+            ] &&
           sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-          "manifest.xlsx"
+            "manifest.xlsx"
           ]["forTreeview"]
         ) {
           delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
@@ -7054,7 +7135,8 @@ setTimeout(() => {
         let emessage = userErrorMessage(error);
         document.getElementById(
           "para-new-curate-progress-bar-error-status"
-        ).innerHTML = "<span style='color: red;'> Error: " + emessage + "</span>";
+        ).innerHTML =
+          "<span style='color: red;'> Error: " + emessage + "</span>";
         document.getElementById("para-please-wait-new-curate").innerHTML = "";
         $("#sidebarCollapse").prop("disabled", false);
         return;
@@ -7123,9 +7205,9 @@ setTimeout(() => {
         "manifest.xlsx" in
         sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]
       ) {
-        delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-          "manifest.xlsx"
-        ];
+        delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
+          "files"
+        ]["manifest.xlsx"];
       }
     }
   };
@@ -7213,7 +7295,8 @@ setTimeout(() => {
       $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
       document.getElementById("prevBtn").style.display = "none";
       document.getElementById("start-over-btn").style.display = "none";
-      document.getElementById("div-vertical-progress-bar").style.display = "none";
+      document.getElementById("div-vertical-progress-bar").style.display =
+        "none";
       document.getElementById("div-generate-comeback").style.display = "none";
       document.getElementById("generate-dataset-progress-tab").style.display =
         "flex";
@@ -7234,7 +7317,9 @@ setTimeout(() => {
     //dissmisButton.addEventListener("click", dismiss('status-bar-curate-progress'));
     if ("manifest-files" in sodaJSONObj) {
       if ("destination" in sodaJSONObj["manifest-files"]) {
-        if (sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
+        if (
+          sodaJSONObj["manifest-files"]["destination"] === "generate-dataset"
+        ) {
           manifest_files_requested = true;
           delete_imported_manifest();
         }
@@ -7348,7 +7433,8 @@ setTimeout(() => {
         });
         progressStatus.innerHTML = "";
         statusText.innerHTML = "";
-        document.getElementById("div-new-curate-progress").style.display = "none";
+        document.getElementById("div-new-curate-progress").style.display =
+          "none";
         generateProgressBar.value = 0;
 
         try {
@@ -7457,7 +7543,8 @@ setTimeout(() => {
       main_curate_status = data["main_curate_status"];
       var start_generate = data["start_generate"];
       var main_curate_progress_message = data["main_curate_progress_message"];
-      main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
+      main_total_generate_dataset_size =
+        data["main_total_generate_dataset_size"];
       var main_generated_dataset_size = data["main_generated_dataset_size"];
       var elapsed_time_formatted = data["elapsed_time_formatted"];
 
@@ -7483,7 +7570,8 @@ setTimeout(() => {
             displaySize * displaySize
           ) {
             var totalSizePrint =
-              (main_total_generate_dataset_size / displaySize).toFixed(2) + " KB";
+              (main_total_generate_dataset_size / displaySize).toFixed(2) +
+              " KB";
           } else if (
             main_total_generate_dataset_size <
             displaySize * displaySize * displaySize
@@ -7507,7 +7595,8 @@ setTimeout(() => {
           var statusProgressMessage = "";
           progressMessage += main_curate_progress_message + "<br>";
           statusProgressMessage += main_curate_progress_message + "<br>";
-          statusProgressMessage += "Progress: " + value.toFixed(2) + "%" + "<br>";
+          statusProgressMessage +=
+            "Progress: " + value.toFixed(2) + "%" + "<br>";
           progressMessage +=
             "Progress: " +
             value.toFixed(2) +
@@ -7615,13 +7704,16 @@ setTimeout(() => {
         increaseInFileSize = uploadedFilesSize - previousUploadedFileSize;
 
         // log the aggregate file count and size values when uploading to Pennsieve
-        if (dataset_destination === "bf" || dataset_destination === "Pennsieve") {
+        if (
+          dataset_destination === "bf" ||
+          dataset_destination === "Pennsieve"
+        ) {
           // use the session id as the label -- this will help with aggregating the number of files uploaded per session
           ipcRenderer.send(
             "track-event",
             "Success",
             PrepareDatasetsAnalyticsPrefix.CURATE +
-            " - Step 7 - Generate - Dataset - Number of Files",
+              " - Step 7 - Generate - Dataset - Number of Files",
             `${datasetUploadSession.id}`,
             uploadedFiles
           );
@@ -7631,7 +7723,7 @@ setTimeout(() => {
             "track-event",
             "Success",
             PrepareDatasetsAnalyticsPrefix.CURATE +
-            " - Step 7 - Generate - Dataset - Size",
+              " - Step 7 - Generate - Dataset - Size",
             `${datasetUploadSession.id}`,
             increaseInFileSize
           );
@@ -7880,7 +7972,9 @@ setTimeout(() => {
    * }
    */
   var bf_request_and_populate_dataset = async (sodaJSONObj) => {
-    let progress_container = document.getElementById("loading_pennsieve_dataset");
+    let progress_container = document.getElementById(
+      "loading_pennsieve_dataset"
+    );
     let percentage_text = document.getElementById(
       "pennsieve_loading_dataset_percentage"
     );
@@ -7913,14 +8007,16 @@ setTimeout(() => {
       finished = res["import_completed_items"];
       percentage_text.innerText = percentage_amount + "%";
       if (percentage_amount <= 50) {
-        left_progress_bar.style.transform = `rotate(${percentage_amount * 0.01 * 360
-          }deg)`;
+        left_progress_bar.style.transform = `rotate(${
+          percentage_amount * 0.01 * 360
+        }deg)`;
       } else {
         left_progress_bar.style.transition = "";
         left_progress_bar.classList.add("notransition");
         left_progress_bar.style.transform = `rotate(180deg)`;
-        right_progress_bar.style.transform = `rotate(${percentage_amount * 0.01 * 180
-          }deg)`;
+        right_progress_bar.style.transform = `rotate(${
+          percentage_amount * 0.01 * 180
+        }deg)`;
       }
 
       if (finished === 1) {
@@ -8232,11 +8328,13 @@ setTimeout(() => {
 
       if ("manifest-files" in sodaJSONObj) {
         manifest_state = sodaJSONObj["manifest-files"];
-        sodaJSONObj["manifest-files"]["local-destination"] = manifest_destination;
+        sodaJSONObj["manifest-files"]["local-destination"] =
+          manifest_destination;
       } else {
         manifest_state = {};
         sodaJSONObj["manifest-files"] = {};
-        sodaJSONObj["manifest-files"]["local-destination"] = manifest_destination;
+        sodaJSONObj["manifest-files"]["local-destination"] =
+          manifest_destination;
       }
 
       delete_imported_manifest();
@@ -8585,7 +8683,8 @@ setTimeout(() => {
 
   const DisseminateDatasetsAnalyticsPrefix = {
     DISSEMINATE_REVIEW: "Disseminate Datasets - Pre-publishing Review",
-    DISSEMINATE_CURATION_TEAM: "Disseminate Datasets - Share with Curation Team",
+    DISSEMINATE_CURATION_TEAM:
+      "Disseminate Datasets - Share with Curation Team",
     DISSEMINATE_SPARC_CONSORTIUM:
       "Disseminate Datasets - Share with SPARC Consortium",
   };
@@ -8785,7 +8884,10 @@ setTimeout(() => {
     // set the subtitle's status
     statuses.subtitle = description && description.length ? true : false;
 
-    let readme = await api.getDatasetReadme(defaultBfAccount, defaultBfDatasetId);
+    let readme = await api.getDatasetReadme(
+      defaultBfAccount,
+      defaultBfDatasetId
+    );
 
     // set the readme's status
     statuses.readme = readme && readme.length >= 1 ? true : false;
@@ -9193,7 +9295,9 @@ setTimeout(() => {
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
               didOpen: () => {
-                if (document.getElementsByClassName("swal2-loader").length > 0) {
+                if (
+                  document.getElementsByClassName("swal2-loader").length > 0
+                ) {
                   document.getElementsByClassName(
                     "swal2-loader"
                   )[0].style.display = "none";
@@ -9213,7 +9317,9 @@ setTimeout(() => {
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
               didOpen: () => {
-                if (document.getElementsByClassName("swal2-loader").length > 0) {
+                if (
+                  document.getElementsByClassName("swal2-loader").length > 0
+                ) {
                   document.getElementsByClassName(
                     "swal2-loader"
                   )[0].style.display = "none";
@@ -9283,7 +9389,9 @@ setTimeout(() => {
   });
   documentation_lottie.pause();
 
-  var documentation_lottie_observer = new MutationObserver(function (mutations) {
+  var documentation_lottie_observer = new MutationObserver(function (
+    mutations
+  ) {
     mutations.forEach(function (mutation) {
       var attributeValue = $(mutation.target).prop(mutation.attributeName);
       if (attributeValue.includes("is-shown") == true) {
@@ -9318,4 +9426,4 @@ setTimeout(() => {
     attributes: true,
     attributeFilter: ["class"],
   });
-}, 1000)
+}, 1000);
