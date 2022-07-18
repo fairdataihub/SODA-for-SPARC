@@ -1295,6 +1295,36 @@ var otherFundingInput = document.getElementById("ds-other-funding"),
     duplicates: false,
   });
 
+var collectionDatasetInput = document.getElementById("tagify-collection-tags"),
+  collectionDatasetTags = new Tagify(collectionDatasetInput, {
+    whitelist: [
+      "autonomic ganglion",
+      "brain",
+      "colon",
+      "heart",
+      "intestine",
+      "kidney",
+      "large intestine",
+      "liver",
+      "lower urinary tract",
+      "lung",
+      "nervous system",
+      "pancreas",
+      "peripheral nervous system",
+      "small intestine",
+      "spinal cord",
+      "spleen",
+      "stomach",
+      "sympathetic nervous system",
+      "urinary bladder",
+    ],
+    duplicates: false,
+    dropdown: {
+      enabled: 0,
+      closeOnSelect: true,
+    },
+  });
+
 var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
   studyOrganSystemsTagify = new Tagify(studyOrganSystemsInput, {
     whitelist: [
@@ -1340,8 +1370,6 @@ var datasetTagsInput = document.getElementById("tagify-dataset-tags"),
   // initialize Tagify on the above input node reference
   datasetTagsTagify = new Tagify(datasetTagsInput);
 
-var collectionTagsInput = document.getElementById("tagify-collection-tags"),
-  collectionTagsTagify = new Tagify(collectionTagsInput);
 ///////////////////// Airtable Authentication /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
