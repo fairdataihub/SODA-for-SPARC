@@ -35,23 +35,19 @@ const doiRegex = require("doi-regex");
 const lottie = require("lottie-web");
 const {
   datasetUploadSession,
-} = require("./scripts/others/analytics/upload-session-tracker");
+} = require("./analytics/upload-session-tracker.js");
 
 const {
   logCurationErrorsToAnalytics,
   logCurationSuccessToAnalytics,
-} = require("./scripts/others/analytics/curation-analytics");
-const {
-  determineDatasetLocation,
-} = require("./scripts/others/analytics/analytics-utils");
+} = require("./analytics/curation-analytics");
+const { determineDatasetLocation } = require("./analytics/analytics-utils");
 const {
   clientError,
   userErrorMessage,
-} = require("./scripts/others/http-error-handler/error-handler");
-const {
-  hasConnectedAccountWithPennsieve,
-} = require("./scripts/others/authentication/auth");
-const api = require("./scripts/others/api/api");
+} = require("./http-error-handler/error-handler");
+const { hasConnectedAccountWithPennsieve } = require("./authentication/auth");
+const api = require("./api/api");
 
 const axios = require("axios").default;
 

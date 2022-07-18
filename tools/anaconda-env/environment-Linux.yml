@@ -6,7 +6,6 @@ dependencies:
 - python = 3.9
 - PyInstaller = 4.7
 - nodejs = 16.13.0
-- libgcc = 7.2.0
 - git = 2.20.1
 - pip
 - pip:
