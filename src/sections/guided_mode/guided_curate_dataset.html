@@ -1440,7 +1440,7 @@
                       style="margin-right: 7px"
                       width="1em"
                       height=".9em"
-                      viewBox="0 0 16 16"
+                      viewbox="0 0 16 16"
                       class="bi bi-upload"
                       fill="currentColor"
                       xmlns="http://www.w3.org/2000/svg"
@@ -1465,7 +1465,7 @@
                       style="margin-right: 7px"
                       width="1em"
                       height=".9em"
-                      viewBox="0 0 16 16"
+                      viewbox="0 0 16 16"
                       class="bi bi-upload"
                       fill="currentColor"
                       xmlns="http://www.w3.org/2000/svg"
@@ -2460,7 +2460,7 @@
                           height="14"
                           fill="currentColor"
                           class="bi bi-plus"
-                          viewBox="0 0 16 16"
+                          viewbox="0 0 16 16"
                         >
                           <path
                             d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
@@ -2504,7 +2504,7 @@
                           height="14"
                           fill="currentColor"
                           class="bi bi-plus"
-                          viewBox="0 0 16 16"
+                          viewbox="0 0 16 16"
                         >
                           <path
                             d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
@@ -2991,7 +2991,7 @@
                       height="18"
                       fill="currentColor"
                       class="bi bi-plus"
-                      viewBox="0 0 16 16"
+                      viewbox="0 0 16 16"
                     >
                       <path
                         d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
@@ -3060,7 +3060,6 @@
                     name="subject id"
                     type="text"
                     placeholder="Enter sample's subject ID here"
-                    type="text"
                     readonly
                   /><label class="guided--form-label mt-xl">Sample ID:</label>
                   <input
@@ -3069,7 +3068,6 @@
                     name="sample id"
                     type="text"
                     placeholder="Enter sample id here"
-                    type="text"
                     readonly
                   />
                 </div>
@@ -3451,7 +3449,7 @@
                       height="18"
                       fill="currentColor"
                       class="bi bi-plus"
-                      viewBox="0 0 16 16"
+                      viewbox="0 0 16 16"
                     >
                       <path
                         d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
@@ -3810,11 +3808,7 @@
                       </div>
 
                       <div class="row mandatory">
-                        <div
-                          class="col"
-                          style="padding: 0"
-                          style="width: fit-content"
-                        >
+                        <div class="col" style="padding: 0; width: fit-content">
                           <div
                             class="div-dd-info subjects"
                             style="margin-bottom: 20px"
@@ -5072,7 +5066,7 @@
                         </div>
                         <div
                           class="guided--dataset-content-container"
-                          onClick="openDropdownPrompt(this, 'bf')"
+                          onclick="openDropdownPrompt(this, 'bf')"
                         >
                           <h5
                             id="guided-bf-account"
@@ -5094,7 +5088,7 @@
                         </div>
                         <div
                           class="guided--dataset-content-container"
-                          onClick="openDropdownPrompt(this, 'bf')"
+                          onclick="openDropdownPrompt(this, 'bf')"
                         >
                           <h5
                             class="guided--dataset-content guidedBfAccountDetails"
@@ -5232,7 +5226,7 @@
                                 width="18"
                                 height="18"
                                 fill="#000"
-                                viewBox="0 0 16 16"
+                                viewbox="0 0 16 16"
                               >
                                 <path
                                   d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
@@ -5576,7 +5570,7 @@
                     </th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody id="guided-tbody-pennsieve-metadata-upload">
                   <tr class="hidden" id="guided-dataset-name-upload-tr">
                     <td
                       class="middle aligned"
@@ -5609,35 +5603,20 @@
                       ></div>
                     </td>
                   </tr>
-                  <tr class="hidden" id="guided-dataset-tags-upload-tr">
+
+                  <tr class="hidden" id="guided-dataset-description-upload-tr">
                     <td
                       class="middle aligned"
-                      id="guided-dataset-tags-upload-text"
+                      id="guided-dataset-description-upload-text"
                     >
-                      Dataset tags
+                      Dataset description
                     </td>
                     <td
                       class="middle aligned text-center collapsing border-left-0 p-0"
                     >
                       <div
                         class="guided--container-upload-status"
-                        id="guided-dataset-tags-upload-status"
-                      ></div>
-                    </td>
-                  </tr>
-                  <tr class="hidden" id="guided-dataset-license-upload-tr">
-                    <td
-                      class="middle aligned"
-                      id="guided-dataset-license-upload-text"
-                    >
-                      Dataset license
-                    </td>
-                    <td
-                      class="middle aligned text-center collapsing border-left-0 p-0"
-                    >
-                      <div
-                        class="guided--container-upload-status"
-                        id="guided-dataset-license-upload-status"
+                        id="guided-dataset-description-upload-status"
                       ></div>
                     </td>
                   </tr>
@@ -5657,20 +5636,35 @@
                       ></div>
                     </td>
                   </tr>
-
-                  <tr class="hidden" id="guided-dataset-description-upload-tr">
+                  <tr class="hidden" id="guided-dataset-license-upload-tr">
                     <td
                       class="middle aligned"
-                      id="guided-dataset-description-upload-text"
+                      id="guided-dataset-license-upload-text"
                     >
-                      Dataset description
+                      Dataset license
                     </td>
                     <td
                       class="middle aligned text-center collapsing border-left-0 p-0"
                     >
                       <div
                         class="guided--container-upload-status"
-                        id="guided-dataset-description-upload-status"
+                        id="guided-dataset-license-upload-status"
+                      ></div>
+                    </td>
+                  </tr>
+                  <tr class="hidden" id="guided-dataset-tags-upload-tr">
+                    <td
+                      class="middle aligned"
+                      id="guided-dataset-tags-upload-text"
+                    >
+                      Dataset tags
+                    </td>
+                    <td
+                      class="middle aligned text-center collapsing border-left-0 p-0"
+                    >
+                      <div
+                        class="guided--container-upload-status"
+                        id="guided-dataset-tags-upload-status"
                       ></div>
                     </td>
                   </tr>

@@ -7043,22 +7043,86 @@ $(document).ready(() => {
       guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "error");
     }
   };
-  const guidedAddDatasetTags = async (bfAccount, datasetName, datasetTags) => {
+
+  const guidedAddDatasetDescription = async (
+    bfAccount,
+    datasetName,
+    studyPurpose,
+    dataCollection,
+    dataConclusion
+  ) => {
+    document
+      .getElementById("guided-dataset-description-upload-tr")
+      .classList.remove("hidden");
+    const datasetDescriptionUploadText = document.getElementById(
+      "guided-dataset-description-upload-text"
+    );
+    datasetDescriptionUploadText.innerHTML = "Adding dataset description...";
+    guidedUploadStatusIcon(
+      "guided-dataset-description-upload-status",
+      "loading"
+    );
+
+    let requiredFields = [];
+    if (studyPurpose) {
+      requiredFields.push("**Study Purpose:** " + studyPurpose + "\n\n");
+    }
+    if (dataCollection) {
+      requiredFields.push("**Data Collection:** " + dataCollection + "\n\n");
+    }
+    if (dataConclusion) {
+      requiredFields.push("**Data Conclusion:** " + dataConclusion + "\n\n");
+    }
+
+    const description = requiredFields.join("");
+    console.log(description);
+
+    try {
+      console.log("updating dataset description");
+      await client.put(
+        `/manage_datasets/datasets/${datasetName}/readme`,
+        { updated_readme: description },
+        { params: { selected_account: bfAccount } }
+      );
+      datasetDescriptionUploadText.innerHTML = `Successfully added dataset description!`;
+      guidedUploadStatusIcon(
+        "guided-dataset-description-upload-status",
+        "success"
+      );
+    } catch (error) {
+      console.error(error);
+      let emessage = userErrorMessage(error);
+      datasetDescriptionUploadText.innerHTML =
+        "Failed to add a dataset description.";
+      guidedUploadStatusIcon(
+        "guided-dataset-description-upload-status",
+        "error"
+      );
+    }
+  };
+  const guidedAddDatasetBannerImage = async (
+    bfAccount,
+    datasetName,
+    bannerImagePath
+  ) => {
     document
 
-      .getElementById("guided-dataset-tags-upload-tr")
+      .getElementById("guided-dataset-banner-image-upload-tr")
       .classList.remove("hidden");
-    const datasetTagsUploadText = document.getElementById(
-      "guided-dataset-tags-upload-text"
+    const datasetBannerImageUploadText = document.getElementById(
+      "guided-dataset-banner-image-upload-text"
     );
-    datasetTagsUploadText.innerHTML = "Adding dataset tags...";
-    guidedUploadStatusIcon("guided-dataset-tags-upload-status", "loading");
+    datasetBannerImageUploadText.innerHTML = "Adding dataset banner image...";
+    guidedUploadStatusIcon(
+      "guided-dataset-banner-image-upload-status",
+      "loading"
+    );
 
     try {
       await client.put(
-        `/manage_datasets/bf_dataset_tags`,
+        `/manage_datasets/bf_banner_image`,
         {
-          input_tags: datasetTags,
+          input_banner_image_path: bannerImagePath,
         },
         {
           params: {
@@ -7067,14 +7131,272 @@ $(document).ready(() => {
           },
         }
       );
-      datasetTagsUploadText.innerHTML = `Successfully added dataset tags: ${datasetTags}`;
+      datasetBannerImageUploadText.innerHTML = `Successfully added dataset banner image!`;
+      guidedUploadStatusIcon(
+        "guided-dataset-banner-image-upload-status",
+        "success"
+      );
+    } catch (error) {
+      console.error(error);
+      let emessage = userErrorMessage(error);
+      datasetBannerImageUploadText.innerHTML =
+        "Failed to add a dataset banner image.";
+      guidedUploadStatusIcon(
+        "guided-dataset-banner-image-upload-status",
+        "error"
+      );
+    }
+  };
+  const guidedAddDatasetLicense = async (
+    bfAccount,
+    datasetName,
+    datasetLicense
+  ) => {
+    document
+
+      .getElementById("guided-dataset-license-upload-tr")
+      .classList.remove("hidden");
+    const datasetLicenseUploadText = document.getElementById(
+      "guided-dataset-license-upload-text"
+    );
+    datasetLicenseUploadText.innerHTML = "Adding dataset license...";
+    guidedUploadStatusIcon("guided-dataset-license-upload-status", "loading");
+
+    try {
+      await client.put(
+        `/manage_datasets/bf_license`,
+        {
+          input_license: datasetLicense,
+        },
+        {
+          params: {
+            selected_account: bfAccount,
+            selected_dataset: datasetName,
+          },
+        }
+      );
+      datasetLicenseUploadText.innerHTML = `Successfully added dataset license: ${datasetLicense}`;
+      guidedUploadStatusIcon("guided-dataset-license-upload-status", "success");
+    } catch (error) {
+      console.error(error);
+      let emessage = userErrorMessage(error);
+      datasetLicenseUploadText.innerHTML = "Failed to add a dataset license.";
+      guidedUploadStatusIcon("guided-dataset-license-upload-status", "error");
+    }
+  };
+
+  const guidedAddDatasetTags = async (bfAccount, datasetName, tags) => {
+    document
+      .getElementById("guided-dataset-tags-upload-tr")
+      .classList.remove("hidden");
+    const datasetTagsUploadText = document.getElementById(
+      "guided-dataset-tags-upload-text"
+    );
+    datasetTagsUploadText.innerHTML = "Adding dataset tags...";
+    guidedUploadStatusIcon("guided-dataset-tags-upload-status", "loading");
+    console.log(bfAccount, datasetName, tags);
+
+    try {
+      await client.put(
+        `/manage_datasets/datasets/${datasetName}/tags`,
+        { tags },
+        {
+          params: {
+            selected_account: bfAccount,
+          },
+        }
+      );
+
+      datasetTagsUploadText.innerHTML = `Successfully added dataset tags: ${tags.join(
+        ", "
+      )}`;
       guidedUploadStatusIcon("guided-dataset-tags-upload-status", "success");
     } catch (error) {
       console.error(error);
       let emessage = userErrorMessage(error);
-      datasetTagsUploadText.innerHTML = "Failed to add a dataset tags.";
+      datasetTagsUploadText.innerHTML = "Failed to add dataset tags.";
       guidedUploadStatusIcon("guided-dataset-tags-upload-status", "error");
     }
+  };
+  const guidedGrantUserPermission = async (
+    bfAccount,
+    datasetName,
+    userName,
+    userUUID,
+    selectedRole
+  ) => {
+    log.info("Adding a permission for a user on a dataset");
+
+    const userPermissionUploadElement = `
+        <tr id="guided-dataset-${userUUID}-permissions-upload-tr">
+          <td class="middle aligned" id="guided-dataset-${userUUID}-permissions-upload-text">
+            Granting ${userName} ${selectedRole} permissions...
+          </td>
+          <td class="middle aligned text-center collapsing border-left-0 p-0">
+            <div
+              class="guided--container-upload-status"
+              id="guided-dataset-${userUUID}-permissions-upload-status"
+            ></div>
+          </td>
+        </tr>
+      `;
+
+    //apend the upload element to the end of the table body
+    document
+      .getElementById("guided-tbody-pennsieve-metadata-upload")
+      .insertAdjacentHTML("beforeend", userPermissionUploadElement);
+
+    const userPermissionUploadStatusText = document.getElementById(
+      `guided-dataset-${userUUID}-permissions-upload-text`
+    );
+
+    guidedUploadStatusIcon(
+      `guided-dataset-${userUUID}-permissions-upload-status`,
+      "loading"
+    );
+
+    try {
+      let bf_add_permission = await client.patch(
+        `/manage_datasets/bf_dataset_permissions`,
+        {
+          input_role: selectedRole,
+        },
+        {
+          params: {
+            selected_account: bfAccount,
+            selected_dataset: datasetName,
+            scope: "user",
+            name: userUUID,
+          },
+        }
+      );
+      guidedUploadStatusIcon(
+        `guided-dataset-${userUUID}-permissions-upload-status`,
+        "success"
+      );
+      userPermissionUploadStatusText.innerHTML = `${selectedRole} permissions granted to user: ${userName}`;
+      log.info(`${selectedRole} permissions granted to ${userName}`);
+    } catch (error) {
+      guidedUploadStatusIcon(
+        `guided-dataset-${userUUID}-permissions-upload-status`,
+        "error"
+      );
+      userPermissionUploadStatusText.innerHTML = `Failed to grant ${selectedRole} permissions to ${userName}`;
+      log.error(error);
+      console.error(error);
+      let emessage = userError(error);
+      throw error;
+    }
+  };
+  const guidedAddUserPermissions = async (
+    bfAccount,
+    datasetName,
+    userPermissionsArray
+  ) => {
+    const promises = userPermissionsArray.map((userPermission) => {
+      return guidedGrantUserPermission(
+        bfAccount,
+        datasetName,
+        userPermission.userName,
+        userPermission.UUID,
+        userPermission.permission
+      );
+    });
+    const result = await Promise.allSettled(promises);
+    console.log(result.map((promise) => promise.status));
+  };
+
+  const guidedGrantTeamPermission = async (
+    bfAccount,
+    datasetName,
+    teamUUID,
+    teamString,
+    selectedRole
+  ) => {
+    console.log(`bf account: ${bfAccount}`);
+    console.log(`dataset name: ${datasetName}`);
+    console.log(`team UUID: ${teamUUID}`);
+    console.log(`team string: ${teamString}`);
+    console.log(`permission: ${selectedRole}`);
+
+    const teamPermissionUploadElement = `
+      <tr id="guided-dataset-${teamString}-permissions-upload-tr">
+        <td class="middle aligned" id="guided-dataset-${teamString}-permissions-upload-text">
+          Granting ${teamString} ${selectedRole} permissions.
+        </td>
+        <td class="middle aligned text-center collapsing border-left-0 p-0">
+          <div
+            class="guided--container-upload-status"
+            id="guided-dataset-${teamString}-permissions-upload-status"
+          ></div>
+        </td>
+      </tr>
+    `;
+
+    //apend the upload element to the end of the table body
+    document
+      .getElementById("guided-tbody-pennsieve-metadata-upload")
+      .insertAdjacentHTML("beforeend", teamPermissionUploadElement);
+
+    const teamPermissionUploadStatusText = document.getElementById(
+      `guided-dataset-${teamString}-permissions-upload-text`
+    );
+    guidedUploadStatusIcon(
+      `guided-dataset-${teamString}-permissions-upload-status`,
+      "loading"
+    );
+
+    try {
+      let bf_add_permission = await client.patch(
+        `/manage_datasets/bf_dataset_permissions`,
+        {
+          input_role: selectedRole,
+        },
+        {
+          params: {
+            selected_account: bfAccount,
+            selected_dataset: datasetName,
+            scope: "team",
+            name: teamUUID,
+          },
+        }
+      );
+      guidedUploadStatusIcon(
+        `guided-dataset-${teamString}-permissions-upload-status`,
+        "success"
+      );
+      teamPermissionUploadStatusText.innerHTML = `${selectedRole} permissions granted to team: ${teamString}`;
+      log.info(`${selectedRole} permissions granted to ${teamString}`);
+    } catch (error) {
+      guidedUploadStatusIcon(
+        `guided-dataset-${teamString}-permissions-upload-status`,
+        "error"
+      );
+      teamPermissionUploadStatusText.innerHTML = `Failed to grant ${selectedRole} permissions to ${teamString}`;
+      log.error(error);
+      console.error(error);
+      let emessage = userError(error);
+      throw error;
+    }
+  };
+
+  const guidedAddTeamPermissions = async (
+    bfAccount,
+    datasetName,
+    teamPermissionsArray
+  ) => {
+    const promises = teamPermissionsArray.map((teamPermission) => {
+      console.log(teamPermission);
+      return guidedGrantTeamPermission(
+        bfAccount,
+        datasetName,
+        teamPermission.UUID,
+        teamPermission.teamString,
+        teamPermission.permission
+      );
+    });
+    const result = await Promise.allSettled(promises);
+    console.log(result.map((promise) => promise.status));
   };
 
   const addPennsieveMetadata = async (
@@ -7377,79 +7699,6 @@ $(document).ready(() => {
             log.info("Changed PI Owner of datset");
 
             resolve(res);
-          }
-        }
-      );
-    });
-  };
-
-  const guided_add_user = (
-    bfAccount,
-    datasetName,
-    userName,
-    userUUID,
-    selectedRole
-  ) => {
-    return new Promise((resolve, reject) => {
-      log.info("Adding a permission for a user on a dataset");
-
-      const userPermissionUploadElement = `
-        <tr id="guided-dataset-${userUUID}-permissions-upload-tr">
-          <td class="middle aligned" id="guided-dataset-${userUUID}-permissions-upload-text">
-            Granting ${userName} ${selectedRole} permissions.
-          </td>
-          <td class="middle aligned text-center collapsing border-left-0 p-0">
-            <div
-              class="guided--container-upload-status"
-              id="guided-dataset-${userUUID}-permissions-upload-status"
-            ></div>
-          </td>
-        </tr>
-      `;
-
-      //apend the upload element after tr with id guided-dataset-license-upload-tr
-      document
-        .getElementById("guided-dataset-license-upload-tr")
-        .insertAdjacentHTML("afterend", userPermissionUploadElement);
-
-      const userPermissionUploadStatusText = document.getElementById(
-        `guided-dataset-${userUUID}-permissions-upload-text`
-      );
-
-      guidedUploadStatusIcon(
-        `guided-dataset-${userUUID}-permissions-upload-status`,
-        "loading"
-      );
-
-      client.invoke(
-        "api_bf_add_permission",
-        bfAccount,
-        datasetName,
-        userUUID,
-        selectedRole,
-        (error, res) => {
-          if (error) {
-            guidedUploadStatusIcon(
-              `guided-dataset-${userUUID}-permissions-upload-status`,
-              "error"
-            );
-            userPermissionUploadStatusText.innerHTML = `Failed to grant ${userName} ${selectedRole} permissions`;
-            log.error(error);
-            console.error(error);
-            let emessage = userError(error);
-            reject(error);
-          } else {
-            guidedUploadStatusIcon(
-              `guided-dataset-${userUUID}-permissions-upload-status`,
-              "success"
-            );
-            userPermissionUploadStatusText.innerHTML = `Granted ${selectedRole} permissions to ${userName}`;
-            log.info("Dataset permission added");
-            console.log("permission added + " + res);
-
-            resolve(
-              `${userUUID} added as ${selectedRole} to ${datasetName} dataset`
-            );
           }
         }
       );
@@ -7855,7 +8104,7 @@ $(document).ready(() => {
     });
   }
 
-  async function guidedUploadDatasetDescriptionMetadata(
+  async function guidedAddDatasetDescriptionMetadata(
     bfAccount,
     datasetName,
     guidedDatasetInformation,
@@ -7972,11 +8221,12 @@ $(document).ready(() => {
     const guidedPIOwnerUUID =
       sodaJSONObj["digital-metadata"]["pi-owner"]["UUID"];
     const guidedTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
-    /*let guidedStudyPurpose = sodaJSONObj["digital-metadata"]["study-purpose"];
-    let guidedDataCollection =
+    let guidedPennsieveStudyPurpose =
+      sodaJSONObj["digital-metadata"]["study-purpose"];
+    let guidedPennsieveDataCollection =
       sodaJSONObj["digital-metadata"]["data-collection"];
-    let guidedPrimaryConclusion =
-      sodaJSONObj["digital-metadata"]["primary-conclusion"];*/
+    let guidedPennsievePrimaryConclusion =
+      sodaJSONObj["digital-metadata"]["primary-conclusion"];
     const guidedReadMe = sodaJSONObj["dataset-metadata"]["README"];
     const guidedTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
     const guidedLicense = sodaJSONObj["digital-metadata"]["license"];
@@ -8079,33 +8329,53 @@ $(document).ready(() => {
       );
       console.log(datasetSubtitleUploadResponse);
 
-      let datasetDescriptionResponse = await guidedUploadDatasetDescription(
+      let datasetDescriptionResponse = await guidedAddDatasetDescription(
         guidedBfAccount,
         guidedDatasetName,
-        guidedDatasetDescription
+        guidedPennsieveStudyPurpose,
+        guidedPennsieveDataCollection,
+        guidedPennsievePrimaryConclusion
       );
       console.log(datasetDescriptionResponse);
 
-      let addPennsieveMetadataResponse = await addPennsieveMetadata(
+      let datasetBannerImageResponse = await guidedAddDatasetBannerImage(
         guidedBfAccount,
         guidedDatasetName,
-        guidedBannerImagePath,
-        guidedUsers,
+        guidedBannerImagePath
+      );
+      console.log(datasetBannerImageResponse);
+
+      let datasetLicenseResponse = await guidedAddDatasetLicense(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedLicense
+      );
+      console.log(datasetLicenseResponse);
+
+      let datasetTagsResponse = await guidedAddDatasetTags(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedTags
+      );
+      console.log(datasetTagsResponse);
+
+      let datasetUsersResponse = await guidedAddUserPermissions(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedUsers
+      );
+      console.log(datasetUsersResponse);
+      let datasetTeamsResponse = await guidedAddTeamPermissions(
+        guidedBfAccount,
+        guidedDatasetName,
         guidedTeams
       );
-      console.log(addPennsieveMetadataResponse);
-
-      let addDescriptionResponse = await guided_add_description(
-        guidedBfAccount,
-        guidedDatasetName,
-        guidedReadMe
-      );
-      console.log(addDescriptionResponse);
 
       //Display the Dataset metadata upload table
       unHideAndSmoothScrollToElement(
         "guided-div-dataset-metadata-upload-status-table"
       );
+      /*
       if (guidedSubjectsMetadata.length > 0) {
         let addSubjectsMetadataResponse = await guidedUploadSubjectsMetadata(
           guidedBfAccount,
@@ -8131,7 +8401,7 @@ $(document).ready(() => {
       console.log(addSubmissionMetadataResponse);
 
       let addDescriptionMetadataResponse =
-        await guidedUploadDatasetDescriptionMetadata(
+        await guidedAddDatasetDescriptionMetadata(
           guidedBfAccount,
           guidedDatasetName,
           guidedDatasetInformation,
@@ -8168,8 +8438,8 @@ $(document).ready(() => {
       //Display the main dataset upload progress bar
       unHideAndSmoothScrollToElement("guided-div-dataset-upload-progress-bar");
 
-      const mainCurationResponse = await guided_main_curate();
-      console.log(mainCurationResponse);
+      //const mainCurationResponse = await guided_main_curate();
+      //console.log(mainCurationResponse);
     } catch (e) {
       console.error(e);
     }
