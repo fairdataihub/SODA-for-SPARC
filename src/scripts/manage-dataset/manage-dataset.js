@@ -260,6 +260,22 @@ $("#button-bf-collection").click(() => {
   }, delayAnimation);
 });
 
+const removePlaceHolder = (e) => {
+  console.log(e);
+  console.log(typeof e.target.value);
+  console.log(e.target.value);
+  if(e.target.value === "") {
+    e.placeholder = "Enter collection name";
+  } else {
+    e.placeholder = "";
+  }
+}
+
+document
+  .getElementById("tagify-collection-tags")
+  .addEventListener("change", removePlaceHolder);
+
+
 // Rename dataset on bf //
 $("#button-rename-dataset").click(() => {
   setTimeout(function () {

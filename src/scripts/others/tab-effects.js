@@ -2103,6 +2103,10 @@ async function transitionFreeFormMode(
   button,
   category
 ) {
+  console.log(currentDiv);
+  console.log(parentDiv);
+  console.log(button);
+  console.log(category);
   let continueProgressRC = true;
   let continueProgressDD = true;
 
@@ -2257,6 +2261,7 @@ async function transitionFreeFormMode(
 
   // first, handle target or the next div to show
   var target = document.getElementById(ev.getAttribute("data-next"));
+  console.log(target);
   // hide related previous divs
   hidePrevDivs(currentDiv, category);
   // display the target tab (data-next tab)
@@ -2294,6 +2299,7 @@ async function transitionFreeFormMode(
       }
     }, delay);
   } else {
+    console.log(ev.getAttribute("data-next"));
     if (
       $(".bf-dataset-span")
         .html()
