@@ -5,7 +5,7 @@ const {
   userErrorMessage,
 } = require("../others/http-error-handler/error-handler");
 
-const api = require("../others/api/api")
+const api = require("../others/api/api");
 
 var metadataFile = "";
 var jstreePreview = document.getElementById("div-dataset-tree-preview");
@@ -2494,4 +2494,4 @@ function determineDatasetDestination(dataset_name, dataset_destination) {
   return [dataset_name, dataset_destination];
 }
 
-module.exports = {showHideDropdownButtons, confirm_click_account_function}
+module.exports = { showHideDropdownButtons, confirm_click_account_function };

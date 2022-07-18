@@ -49,10 +49,11 @@ const {
   userErrorMessage,
 } = require("./http-error-handler/error-handler");
 const { hasConnectedAccountWithPennsieve } = require("./authentication/auth");
-const {showHideDropdownButtons, confirm_click_account_function} = require("../organize-dataset/curate-functions")
+const {
+  showHideDropdownButtons,
+  confirm_click_account_function,
+} = require("../organize-dataset/curate-functions");
 const api = require("./api/api");
-
-
 
 const axios = require("axios").default;
 

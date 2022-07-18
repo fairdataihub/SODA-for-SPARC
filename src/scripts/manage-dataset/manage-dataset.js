@@ -903,8 +903,6 @@ const requiredSections = {
   invalidText: "invalid text",
 };
 
-
-
 // fires whenever a user selects a dataset, from any card
 const showCurrentDescription = async () => {
   var selectedBfAccount = defaultBfAccount;
