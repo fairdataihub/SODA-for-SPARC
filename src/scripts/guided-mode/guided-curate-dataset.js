@@ -5584,58 +5584,6 @@ const setGuidedDatasetName = (datasetName) => {
   $(".guidedDatasetName").text(datasetName);
 };
 
-const openGuidedDatasetRenameSwal = async () => {
-  const currentDatasetName = sodaJSONObj["digital-metadata"]["name"];
-  let existingDatasetNames;
-  try {
-    existingDatasetNames = await getExistingPennsieveDatasetNames();
-    console.log(existingDatasetNames);
-  } catch (error) {
-    console.log(error);
-  }
-
-  const { value: newDatasetName } = await Swal.fire({
-    allowOutsideClick: false,
-    allowEscapeKey: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    title: "Rename your dataset",
-    html: `<b>Current dataset name:</b> ${currentDatasetName}<br /><br />Enter a new name for your dataset below:`,
-    input: "text",
-    inputPlaceholder: "Enter a new name for your dataset",
-    inputAttributes: {
-      autocapitalize: "off",
-    },
-    showCancelButton: true,
-    confirmButtonText: "Rename",
-    confirmButtonColor: "#3085d6 !important",
-    showClass: {
-      popup: "animate__animated animate__zoomIn animate__faster",
-    },
-    hideClass: {
-      popup: "animate__animated animate__zoomOut animate__faster",
-    },
-    preConfirm: (inputValue) => {
-      if (inputValue === "") {
-        Swal.showValidationMessage(
-          "You need to enter a name for your dataset!"
-        );
-        return false;
-      } else {
-        if (existingDatasetNames.includes(inputValue)) {
-          Swal.showValidationMessage(
-            "A dataset with that name already exists!"
-          );
-          return false;
-        } else {
-          return inputValue;
-        }
-      }
-    },
-  });
-  if (newDatasetName) {
-    setGuidedDatasetName(newDatasetName);
-  }
-};
 const getExistingPennsieveDatasetNames = async () => {
   // get the access token so the user can access the Pennsieve api
   let jwt = await get_access_token();
@@ -6993,6 +6941,9 @@ $(document).ready(() => {
       "guided-dataset-name-upload-text"
     );
     datasetNameUploadText.innerHTML = "Creating dataset...";
+
+    guidedUploadStatusIcon("guided-dataset-name-upload-status", "loading");
+
     try {
       let bf_new_dataset = await client.post(
         `/manage_datasets/datasets`,
@@ -7006,14 +6957,50 @@ $(document).ready(() => {
         }
       );
       let res = bf_new_dataset.data.id;
+      console.log(res);
       datasetNameUploadText.innerHTML = `Successfully created dataset with name: ${datasetName}`;
       refreshDatasetList();
       addNewDatasetToList(datasetName);
     } catch (error) {
-      datasetNameUploadText.innerHTML = "Failed to create a new dataset.";
       console.error(error);
-      throw error;
+      let emessage = userErrorMessage(error);
+
+      datasetNameUploadText.innerHTML = "Failed to create a new dataset.";
+
+      if (emessage == "Dataset name already exists") {
+        datasetNameUploadText.innerHTML = `A dataset with the name <b>${datasetName}</b> already exists on Pennsieve.<br />
+          Please rename your dataset and try again.`;
+        document.getElementById(
+          "guided-dataset-name-upload-status"
+        ).innerHTML = `
+          <button
+            class="ui positive button guided--button"
+            id="guided-button-rename-pennsieve-dataset-name"
+            style="
+              margin: 5px !important;
+              background-color: var(--color-light-green) !important;
+              width: 140px !important;
+            "
+          >
+            Rename dataset
+          </button>
+        `;
+        //add an on-click handler to the added button
+        $("#guided-button-rename-pennsieve-dataset-name").on("click", () => {
+          openGuidedDatasetRenameSwal();
+        });
+      }
     }
+    Swal.fire({
+      title: `Failed to create a new dataset.`,
+      text: emessage,
+      showCancelButton: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      icon: "error",
+    });
+
+    throw emessage;
   };
 
   const addPennsieveMetadata = async (
@@ -8098,7 +8085,50 @@ $(document).ready(() => {
       console.error(e);
     }
   };
+  const openGuidedDatasetRenameSwal = async () => {
+    const currentPennsieveDatasetUploadName =
+      sodaJSONObj["digital-metadata"]["pennsieve-dataset-name"];
 
+    const { value: newDatasetName } = await Swal.fire({
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      title: "Rename your dataset",
+      html: `<b>Current dataset name:</b> ${currentPennsieveDatasetUploadName}<br /><br />Enter a new name for your dataset below:`,
+      input: "text",
+      inputPlaceholder: "Enter a new name for your dataset",
+      inputAttributes: {
+        autocapitalize: "off",
+      },
+      inputValue: currentPennsieveDatasetUploadName,
+      showCancelButton: true,
+      confirmButtonText: "Rename",
+      confirmButtonColor: "#3085d6 !important",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+      preConfirm: (inputValue) => {
+        if (inputValue === "") {
+          Swal.showValidationMessage("Please enter a name for your dataset!");
+          return false;
+        }
+        if (inputValue === currentPennsieveDatasetUploadName) {
+          Swal.showValidationMessage(
+            "Please enter a new name for your dataset!"
+          );
+          return false;
+        }
+      },
+    });
+    if (newDatasetName) {
+      sodaJSONObj["digital-metadata"]["pennsieve-dataset-name"] =
+        newDatasetName;
+      guidedPennsieveDatasetUpload();
+    }
+  };
   const guided_initiate_generate = async () => {
     // Initiate curation by calling Python function
     let manifest_files_requested = false;
