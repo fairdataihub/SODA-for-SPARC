@@ -9,7 +9,7 @@ document.body.addEventListener("click", (event) => {
     console.log(event);
   } else if (event.target.dataset.modal) {
     console.log("dataset modal");
-    console.log(event)
+    console.log(event);
     handleModalTrigger(event);
   } else if (event.target.classList.contains("modal-hide")) {
     console.log("modal-hide");
