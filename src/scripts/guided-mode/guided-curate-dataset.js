@@ -6957,8 +6957,8 @@ $(document).ready(() => {
         }
       );
       let res = bf_new_dataset.data.id;
-      console.log(res);
       datasetNameUploadText.innerHTML = `Successfully created dataset with name: ${datasetName}`;
+      guidedUploadStatusIcon("guided-dataset-name-upload-status", "success");
       refreshDatasetList();
       addNewDatasetToList(datasetName);
     } catch (error) {
@@ -6990,17 +6990,17 @@ $(document).ready(() => {
           openGuidedDatasetRenameSwal();
         });
       }
-    }
-    Swal.fire({
-      title: `Failed to create a new dataset.`,
-      text: emessage,
-      showCancelButton: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      icon: "error",
-    });
+      Swal.fire({
+        title: `Failed to create a new dataset.`,
+        text: emessage,
+        showCancelButton: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        icon: "error",
+      });
 
-    throw emessage;
+      throw emessage;
+    }
   };
 
   const addPennsieveMetadata = async (
