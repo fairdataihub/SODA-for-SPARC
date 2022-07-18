@@ -49,15 +49,4 @@ def get_dataset_by_id(dataset_id):
 
 
 
-  
-
-def get_pennsieve_dataset_names(pennsieve_account):
-  ps = get_authenticated_ps(pennsieve_account)
-
-  r = ps._api._get("/datasets")
-
-  return r["datasets"]
-
-
-
 

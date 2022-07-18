@@ -6933,6 +6933,7 @@ $(document).ready(() => {
       uploadContainerElement.classList.remove("uploaded");
     }
   };
+
   const guidedCreateDataset = async (bfAccount, datasetName) => {
     document
       .getElementById("guided-dataset-name-upload-tr")
@@ -7000,6 +7001,79 @@ $(document).ready(() => {
       });
 
       throw emessage;
+    }
+  };
+
+  const guidedAddDatasetSubtitle = async (
+    bfAccount,
+    datasetName,
+    datasetSubtitle
+  ) => {
+    document
+      .getElementById("guided-dataset-subtitle-upload-tr")
+      .classList.remove("hidden");
+    const datasetSubtitleUploadText = document.getElementById(
+      "guided-dataset-subtitle-upload-text"
+    );
+    datasetSubtitleUploadText.innerHTML = "Adding dataset subtitle...";
+    guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "loading");
+
+    try {
+      await client.put(
+        `/manage_datasets/bf_dataset_subtitle`,
+        {
+          input_subtitle: datasetSubtitle,
+        },
+        {
+          params: {
+            selected_account: bfAccount,
+            selected_dataset: datasetName,
+          },
+        }
+      );
+      datasetSubtitleUploadText.innerHTML = `Successfully added dataset subtitle: ${datasetSubtitle}`;
+      guidedUploadStatusIcon(
+        "guided-dataset-subtitle-upload-status",
+        "success"
+      );
+    } catch (error) {
+      console.error(error);
+      let emessage = userErrorMessage(error);
+      datasetSubtitleUploadText.innerHTML = "Failed to add a dataset subtitle.";
+      guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "error");
+    }
+  };
+  const guidedAddDatasetTags = async (bfAccount, datasetName, datasetTags) => {
+    document
+
+      .getElementById("guided-dataset-tags-upload-tr")
+      .classList.remove("hidden");
+    const datasetTagsUploadText = document.getElementById(
+      "guided-dataset-tags-upload-text"
+    );
+    datasetTagsUploadText.innerHTML = "Adding dataset tags...";
+    guidedUploadStatusIcon("guided-dataset-tags-upload-status", "loading");
+
+    try {
+      await client.put(
+        `/manage_datasets/bf_dataset_tags`,
+        {
+          input_tags: datasetTags,
+        },
+        {
+          params: {
+            selected_account: bfAccount,
+            selected_dataset: datasetName,
+          },
+        }
+      );
+      datasetTagsUploadText.innerHTML = `Successfully added dataset tags: ${datasetTags}`;
+      guidedUploadStatusIcon("guided-dataset-tags-upload-status", "success");
+    } catch (error) {
+      console.error(error);
+      let emessage = userErrorMessage(error);
+      datasetTagsUploadText.innerHTML = "Failed to add a dataset tags.";
+      guidedUploadStatusIcon("guided-dataset-tags-upload-status", "error");
     }
   };
 
@@ -7996,6 +8070,21 @@ $(document).ready(() => {
         guidedDatasetName
       );
       console.log(datasetUploadResponse);
+
+      //upload dataset subtitle
+      let datasetSubtitleUploadResponse = await guidedAddDatasetSubtitle(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedDatasetSubtitle
+      );
+      console.log(datasetSubtitleUploadResponse);
+
+      let datasetDescriptionResponse = await guidedUploadDatasetDescription(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedDatasetDescription
+      );
+      console.log(datasetDescriptionResponse);
 
       let addPennsieveMetadataResponse = await addPennsieveMetadata(
         guidedBfAccount,
