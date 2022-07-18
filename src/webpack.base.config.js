@@ -18,19 +18,19 @@ const envToMode = (env) => {
   return "development";
 };
 
-module.exports = env => {
+module.exports = (env) => {
   return {
     target: "electron-renderer",
     mode: envToMode(env),
     node: {
       __dirname: false,
-      __filename: false
+      __filename: false,
     },
     externals: [nodeExternals()],
     resolve: {
       alias: {
-        env: path.resolve(__dirname, `../config/env_${envName(env)}.json`)
-      }
+        env: path.resolve(__dirname, `../config/env_${envName(env)}.json`),
+      },
     },
     devtool: "source-map",
     module: {
@@ -38,13 +38,13 @@ module.exports = env => {
         {
           test: /\.js$/,
           exclude: /node_modules/,
-          use: ["babel-loader"]
+          use: ["babel-loader"],
         },
         {
           test: /\.css$/,
-          use: ["style-loader", "css-loader"]
-        }
-      ]
+          use: ["style-loader", "css-loader"],
+        },
+      ],
     },
   };
 };
