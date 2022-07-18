@@ -1,3 +1,5 @@
+const log = require("electron-log");
+
 /**
  * Logs an error object to the console and SODA logs. Handles general errors and Axios errors.
  *

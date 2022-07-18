@@ -19,6 +19,7 @@
   },
   "homepage": "https://fairdataihub.org/sodaforsparc",
   "devDependencies": {
-    "prettier": "^2.3.2"
+    "prettier": "^2.3.2",
+    "webpack-cli": "^4.10.0"
   }
 }

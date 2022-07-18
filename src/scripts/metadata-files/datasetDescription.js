@@ -1,4 +1,5 @@
 console.log("Excecuted DSD");
+const {parseJson} = require("../others/renderer")
 // Prepare Dataset Description File
 const dsAwardArray = document.getElementById("ds-description-award-list");
 const dsContributorArrayLast1 = document.getElementById(

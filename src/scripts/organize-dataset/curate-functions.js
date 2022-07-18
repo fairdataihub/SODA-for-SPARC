@@ -1,5 +1,12 @@
 const checkDiskSpace = require("check-disk-space").default;
 
+const {
+  clientError,
+  userErrorMessage,
+} = require("../others/http-error-handler/error-handler");
+
+const api = require("../others/api/api")
+
 var metadataFile = "";
 var jstreePreview = document.getElementById("div-dataset-tree-preview");
 const nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
@@ -2487,4 +2494,4 @@ function determineDatasetDestination(dataset_name, dataset_destination) {
   return [dataset_name, dataset_destination];
 }
 
-// module.exports = {determineDatasetDestination}
+module.exports = {showHideDropdownButtons, confirm_click_account_function}

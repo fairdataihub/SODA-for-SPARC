@@ -40,14 +40,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 const insertScript = () => {
   const script = document.createElement("script");
-  script.src = "./scripts/others/renderer.js";
+  script.src = "./bundleRenderer.js";
   script.defer = true;
   script.type = "text/javascript";
   document.body.appendChild(script);
 
-  const scriptDD = document.createElement("script");
-  scriptDD.src = "./scripts/metadata-files/datasetDescription.js";
-  scriptDD.defer = true;
-  scriptDD.type = "text/javascript";
-  document.body.appendChild(scriptDD);
 };

@@ -33,6 +33,8 @@ const diskCheck = require("check-disk-space").default;
 const validator = require("validator");
 const doiRegex = require("doi-regex");
 const lottie = require("lottie-web");
+
+// non-thrid party modules
 const {
   datasetUploadSession,
 } = require("./analytics/upload-session-tracker.js");
@@ -47,7 +49,10 @@ const {
   userErrorMessage,
 } = require("./http-error-handler/error-handler");
 const { hasConnectedAccountWithPennsieve } = require("./authentication/auth");
+const {showHideDropdownButtons, confirm_click_account_function} = require("../organize-dataset/curate-functions")
 const api = require("./api/api");
+
+
 
 const axios = require("axios").default;
 
@@ -732,6 +737,7 @@ const apiVersionsMatch = async () => {
   let serverAppVersion = responseObject.data.version;
 
   log.info(`Server version is ${serverAppVersion}`);
+  log.info(`App version is ${appVersion}`);
 
   if (serverAppVersion !== appVersion) {
     log.info("Server version does not match client version");
@@ -1348,7 +1354,7 @@ function sendHTTPsRequestAirtable(options, varSuccess) {
 loadAwardData();
 
 /////////////////////// Download Metadata Templates ////////////////////////////
-templateArray = [
+let templateArray = [
   "submission.xlsx",
   "dataset_description.xlsx",
   "subjects.xlsx",
@@ -2012,7 +2018,7 @@ async function loadSamplesFileToDataframe(filePath) {
 }
 
 // load and parse json file
-function parseJson(path) {
+export function parseJson(path) {
   if (!fs.existsSync(path)) {
     return {};
   }
