@@ -28,36 +28,7 @@ document.querySelector("#change-current-account-new-ds-name").addEventListener("
 })
 
 
-// per change event of current dataset span text
-function confirm_click_function() {
-  let temp = $(".bf-dataset-span").html();
-  if (
-    $(".bf-dataset-span").html() == "None" ||
-    $(".bf-dataset-span").html() == ""
-  ) {
-    $($(this).parents().find(".field").find(".div-confirm-button")).css(
-      "display",
-      "none"
-    );
-    $("#para-review-dataset-info-disseminate").text("None");
-  } else {
-    $($(this).parents().find(".field").find(".div-confirm-button")).css(
-      "display",
-      "flex"
-    );
-    if ($($(this).parents().find(".field").find(".synced-progress")).length) {
-      if (
-        $($(this).parents().find(".field").find(".synced-progress")).css(
-          "display"
-        ) === "none"
-      ) {
-        $(".confirm-button").click();
-      }
-    } else {
-      $(".confirm-button").click();
-    }
-  }
-}
+
 
 $(".button-individual-metadata.remove").click(function () {
   var metadataFileStatus = $($(this).parents()[1]).find(

@@ -38,7 +38,8 @@ document.addEventListener("DOMContentLoaded", async function () {
   insertScript();
 });
 
-const insertScript = () => {
+// TODO: Enhance this to call next script once one is done. Additionally, ensure it is called when the DOM is ready if not doing so already.
+const insertScript = async () => {
   const preload = document.createElement("script");
   preload.src = "./preload.js";
   preload.defer = true;
@@ -51,9 +52,29 @@ const insertScript = () => {
   script.type = "text/javascript";
   document.body.appendChild(script);
 
+  await ws(500)
+
   const tabEffects = document.createElement("script");
   tabEffects.src = "./scripts/others/tab-effects.js";
   tabEffects.defer = true;
   tabEffects.type = "text/javascript";
   document.body.appendChild(tabEffects);
+
+  await ws(500)
+
+  const manageDatasets = document.createElement("script");
+  manageDatasets.src = "./scripts/manage-dataset/manage-dataset.js";
+  manageDatasets.defer = true;
+  manageDatasets.type = "text/javascript";
+  document.body.appendChild(manageDatasets);
+
 };
+
+
+const ws = (ms) => {
+  return new Promise((resolve) =>
+    setTimeout(() => {
+      resolve()
+  }, ms)
+  )
+}
