@@ -82,9 +82,9 @@ let introStatus = {
   samples: false,
 };
 
-console.log(globals.defaultBfAccount)
-globals.defaultBfAccount = "Sarnia"
-console.log(globals.defaultBfAccount)
+console.log(globals.defaultBfAccount);
+globals.defaultBfAccount = "Sarnia";
+console.log(globals.defaultBfAccount);
 
 /**
  * Clear the Pennsieve Agent's upload queue. Should be run after pre_rlight_checks have passed.
