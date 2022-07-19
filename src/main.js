@@ -1,4 +1,5 @@
 const { app, BrowserWindow, dialog, shell } = require("electron");
+require("@electron/remote/main").initialize();
 app.showExitPrompt = true;
 const path = require("path");
 const glob = require("glob");
@@ -226,10 +227,14 @@ function initialize() {
       webPreferences: {
         nodeIntegration: true,
         enableRemoteModule: true,
+        contextIsolation: false,
+        sandbox: false,
+        // preload: path.join(__dirname, "preload.js"),
       },
     };
 
     mainWindow = new BrowserWindow(windowOptions);
+    require("@electron/remote/main").enable(mainWindow.webContents);
     mainWindow.loadURL(path.join("file://", __dirname, "/index.html"));
 
     const splash = new BrowserWindow({

@@ -1,12 +1,49 @@
-const links = document.querySelectorAll('link[rel="import"]');
+function docReady(fn) {
+  // see if DOM is already available
+  if (
+    document.readyState === "complete" ||
+    document.readyState === "interactive"
+  ) {
+    // call on next available tick
+    setTimeout(fn, 1);
+  } else {
+    document.addEventListener("DOMContentLoaded", fn);
+  }
+}
 
-// Import and add each page to the DOM
-Array.prototype.forEach.call(links, (link) => {
-  let template = link.import.querySelector(".task-template");
-  let clone = document.importNode(template.content, true);
-  //if (link.href.match('about.html')) {
-  //  document.querySelector('body').appendChild(clone)
-  //} else {
-  document.querySelector(".content").appendChild(clone);
-  //}
+// adds the apps HTML pages to the DOM
+document.addEventListener("DOMContentLoaded", async function () {
+  const links = document.querySelectorAll('link[rel="import"]');
+
+  let contentIndex = document.querySelector("#content");
+
+  // Import and add each page to the DOM
+  for (let linkIdx = 0; linkIdx < links.length; linkIdx++) {
+    let link = links[linkIdx];
+
+    let doc = await fetch(link.href, {
+      headers: {
+        "Content-Type": "text/html",
+      },
+    });
+
+    let content = await doc.text();
+
+    var range = document.createRange();
+    range.setStart(contentIndex, 0);
+    contentIndex.appendChild(range.createContextualFragment(content));
+  }
+
+  // insert the script tags
+  insertScript();
 });
+
+const insertScript = () => {
+  const script = document.createElement("script");
+  script.src = "./scripts/others/renderer.js";
+  script.defer = true;
+  script.type = "text/javascript";
+  document.body.appendChild(script);
+
+  
+};
