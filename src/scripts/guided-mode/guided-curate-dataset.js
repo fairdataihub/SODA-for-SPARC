@@ -8353,7 +8353,7 @@ $(document).ready(() => {
         "guided-div-dataset-metadata-upload-status-table"
       );
 
-      if (guidedSubjectsMetadata.length > 0) {
+      /*if (guidedSubjectsMetadata.length > 0) {
         await guidedUploadSubjectsMetadata(
           guidedBfAccount,
           guidedDatasetName,
@@ -8401,15 +8401,15 @@ $(document).ready(() => {
           guidedChangesMetadata
         );
         console.log(changesMetadataRes);
-      }
+      }*/
 
       //Display the main dataset upload progress bar
       unHideAndSmoothScrollToElement("guided-div-dataset-upload-progress-bar");
 
       //Upload the dataset files
 
-      //const mainCurationResponse = await guided_main_curate();
-      //console.log(mainCurationResponse);
+      const mainCurationResponse = await guided_main_curate();
+      console.log(mainCurationResponse);
     } catch (e) {
       console.error(e);
     }
@@ -8475,12 +8475,64 @@ $(document).ready(() => {
       }
     }
 
-    let dataset_name = sodaJSONObj["digital-metadata"]["name"];
-    sodaJSONObj["bf-dataset-selected"] = {};
-    sodaJSONObj["bf-dataset-selected"]["dataset-name"] = dataset_name;
-    sodaJSONObj["generate-dataset"]["destination"] = "bf";
-    sodaJSONObj["generate-dataset"]["generate-option"] = "existing-bf";
-    let dataset_destination = "Pennsieve";
+    let dataset_name;
+    let dataset_destination;
+
+    if (sodaJSONObj["generate-dataset"]["destination"] == "bf") {
+      //sodaJSONObj["generate-dataset"]["generate-option"] = "new";
+      //Replace files and folders since guided mode always uploads to an existing Pennsieve dataset
+      sodaJSONObj["generate-dataset"]["if-existing"] = "replace";
+      sodaJSONObj["generate-dataset"]["if-existing-files"] = "replace";
+      dataset_name = sodaJSONObj["digital-metadata"]["pennsieve-dataset-name"];
+      sodaJSONObj["bf-dataset-selected"] = {};
+      sodaJSONObj["bf-dataset-selected"]["dataset-name"] = dataset_name;
+      sodaJSONObj["bf-account-selected"]["account-name"] = defaultBfAccount;
+      dataset_destination = "Pennsieve";
+    }
+    // determine where the dataset will be generated/uploaded
+
+    // clear the Pennsieve Queue (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
+    clearQueue();
+
+    try {
+      const curationRes = await client.post(`/curate_datasets/curation`, {
+        soda_json_structure: sodaJSONObj,
+      });
+      main_total_generate_dataset_size =
+        curationRes["main_total_generate_dataset_size"];
+      uploadedFiles = curationRes["main_curation_uploaded_files"];
+
+      $("#sidebarCollapse").prop("disabled", false);
+      log.info("Completed curate function");
+      console.log("BAZINGA!!!!!");
+
+      // log relevant curation details about the dataset generation/Upload to Google Analytics
+      logCurationSuccessToAnalytics(
+        manifest_files_requested,
+        main_total_generate_dataset_size,
+        dataset_name,
+        dataset_destination,
+        uploadedFiles
+      );
+
+      try {
+        let responseObject = await client.get(
+          `manage_datasets/bf_dataset_account`,
+          {
+            params: {
+              selected_account: defaultBfAccount,
+            },
+          }
+        );
+        datasetList = [];
+        datasetList = responseObject.data.datasets;
+      } catch (error) {
+        clientError(error);
+      }
+    } catch (e) {
+      clientError(e);
+    }
+
     client.invoke("api_main_curate_function", sodaJSONObj, (error, res) => {
       if (error) {
         $("#sidebarCollapse").prop("disabled", false);
@@ -8719,10 +8771,6 @@ $(document).ready(() => {
       "guided-upload-status-container"
     );
 
-    /*let supplementary_checks = await run_pre_flight_checks(false);
-    if (!supplementary_checks) {
-      return;
-    }*/
     updateJSONStructureDSstructure();
 
     let emptyFilesFoldersResponse;
@@ -8828,65 +8876,6 @@ $(document).ready(() => {
       console.log("No file warnings, initiating dataset generation");
       guided_initiate_generate();
     }
-
-    /*client.invoke(
-      "api_check_empty_files_folders",
-      sodaJSONObj,
-      (error, res) => {
-        if (error) {
-          var emessage = userError(error);
-          console.error(error);
-          $("#sidebarCollapse").prop("disabled", false);
-          reject(error);
-        } else {
-          log.info("Continue with curate");
-          var message = "";
-          error_files = res[0];
-          error_folders = res[1];
-          if (error_files.length > 0) {
-            var error_message_files =
-              backend_to_frontend_warning_message(error_files);
-            message += error_message_files;
-          }
-          if (error_folders.length > 0) {
-            var error_message_folders =
-              backend_to_frontend_warning_message(error_folders);
-            message += error_message_folders;
-          }
-          if (message) {
-            message += "Would you like to continue?";
-            message = "<div style='text-align: left'>" + message + "</div>";
-            Swal.fire({
-              icon: "warning",
-              html: message,
-              showCancelButton: true,
-              cancelButtonText: "No, I want to review my files",
-              focusCancel: true,
-              confirmButtonText: "Yes, Continue",
-              backdrop: "rgba(0,0,0, 0.4)",
-              reverseButtons: reverseSwalButtons,
-              heightAuto: false,
-              showClass: {
-                popup: "animate__animated animate__zoomIn animate__faster",
-              },
-              hideClass: {
-                popup: "animate__animated animate__zoomOut animate__faster",
-              },
-            }).then((result) => {
-              if (result.isConfirmed) {
-                console.log("initiating dataset generation");
-                guided_initiate_generate();
-              } else {
-                $("#sidebarCollapse").prop("disabled", false);
-              }
-            });
-          } else {
-            console.log("initiating dataset generation");
-            guided_initiate_generate();
-          }
-        }
-      }
-    );*/
   };
   const guided_add_dataset_metadata = async (
     guidedBfAccount,
@@ -9880,7 +9869,10 @@ $(document).ready(() => {
 
         if (buttonGenerateOnPennsieve.classList.contains("selected")) {
           const accountName = document.getElementById("guided-bf-account");
-          if (accountName.innerHTML.trim() === "None") {
+          if (
+            accountName.innerHTML.trim() === "None" ||
+            accountName.innerHTML.trim() === ""
+          ) {
             errorArray.push({
               type: "notyf",
               message:
@@ -9888,14 +9880,6 @@ $(document).ready(() => {
             });
             throw errorArray;
           }
-          sodaJSONObj["generate-dataset"]["destination"] = "bf";
-          sodaJSONObj["bf-account-selected"]["account-name"] =
-            accountName.value;
-        }
-        if ($("#guided-generate-dataset-local-card").hasClass("checked")) {
-          sodaJSONObj["generate-dataset"]["destination"] = "local";
-        }
-        if ($("#guided-generate-dataset-pennsieve-card").hasClass("checked")) {
           sodaJSONObj["generate-dataset"]["destination"] = "bf";
         }
       }
@@ -9921,17 +9905,15 @@ $(document).ready(() => {
           });
           throw errorArray;
         }
+
         if (
           buttonGenerateOnExistingPennsieveDataset.classList.contains(
             "selected"
           )
         ) {
           sodaJSONObj["generate-dataset"]["destination"] = "local";
-          sodaJSONObj["generate-dataset"]["generate-option"] = "new";
-          sodaJSONObj["generate-dataset"]["if-existing"] = "create-duplicate";
-          sodaJSONObj["generate-dataset"]["if-existing-files"] =
-            "create-duplicate";
         }
+
         if (
           buttonGenerateOnNewPennsieveDataset.classList.contains("selected")
         ) {
@@ -9953,17 +9935,6 @@ $(document).ready(() => {
         $(this).css("visibility", "hidden");
       }
 
-      if (pageBeingLeftID === "guided-dataset-generation-tab") {
-        if ($("#generate-dataset-local-card").hasClass("checked")) {
-          sodaJSONObj["generate-dataset"]["destination"] = "local";
-        }
-        if ($("#generate-dataset-pennsieve-card").hasClass("checked")) {
-          sodaJSONObj["generate-dataset"]["destination"] = "bf";
-        }
-      }
-
-      if (pageBeingLeftID === "guided-create-submission-metadata-tab") {
-      }
       if (pageBeingLeftID === "guided-airtable-award-tab") {
         const buttonYesImportSparcAward = document.getElementById(
           "guided-button-import-sparc-award"
