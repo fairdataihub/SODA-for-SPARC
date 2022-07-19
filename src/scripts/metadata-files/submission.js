@@ -830,8 +830,11 @@ async function generateSubmissionHelper(uploadBFBoolean) {
 
   let datasetName = $("#bf_dataset_load_submission").text().trim();
   console.log(`json_arr: ${JSON.stringify(json_arr)}`);
+  console.log(typeof json_arr);
   console.log(`Destination: ${submissionDestinationPath}`);
+  console.log(typeof submissionDestinationPath);
   console.log(`Upload bf boolean: ${uploadBFBoolean}`);
+  console.log(typeof uploadBFBoolean);
   client
     .post(
       `/prepare_metadata/submission_file`,

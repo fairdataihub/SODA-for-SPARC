@@ -7960,11 +7960,12 @@ $(document).ready(() => {
     });
   };
 
-  async function guidedUploadSubjectsMetadata(
+  const guidedUploadSubjectsMetadata = async (
     bfAccount,
     datasetName,
     subjectsTableData
-  ) {
+  ) => {
+    console.log(subjectsTableData);
     document
       .getElementById("guided-subjects-metadata-upload-tr")
       .classList.remove("hidden");
@@ -7973,6 +7974,7 @@ $(document).ready(() => {
     );
     subjectsMetadataUploadText.innerHTML = "Uploading subjects metadata...";
     guidedUploadStatusIcon("guided-subjects-metadata-upload-status", "loading");
+    console.log(`subjectsTableData: ${subjectsTableData}`);
     try {
       await client.post(
         `/prepare_metadata/submission_file`,
@@ -7993,7 +7995,6 @@ $(document).ready(() => {
         "success"
       );
       subjectsMetadataUploadText.innerHTML = `Subjects metadata successfully uploaded`;
-      console.log("Subjects metadata added + " + res);
     } catch (error) {
       guidedUploadStatusIcon("guided-subjects-metadata-upload-status", "error");
       subjectsMetadataUploadText.innerHTML = `Failed to upload subjects metadata`;
@@ -8001,7 +8002,7 @@ $(document).ready(() => {
       console.error(error);
       let emessage = userError(error);
     }
-  }
+  };
 
   async function guidedUploadSamplesMetadata(
     bfAccount,
@@ -8234,7 +8235,9 @@ $(document).ready(() => {
     const guidedSubjectsMetadata = sodaJSONObj["subjects-table-data"];
 
     //Samples Metadata variables
-    const guidedSamplesMetadata = sodaJSONObj["samples-table-data"];
+    const guidedSamplesMetadata = JSON.stringify(
+      sodaJSONObj["samples-table-data"]
+    );
 
     //Submission Metadata variables
     const guidedSparcAward =
@@ -8257,7 +8260,6 @@ $(document).ready(() => {
       });
     }
     guidedSubmissionMetadataJSON = JSON.stringify(guidedSubmissionMetadataJSON);
-    console.log(guidedSubmissionMetadataJSON);
 
     //Dataset Description Metadata variables
     const guidedDatasetInformation = JSON.stringify(
@@ -8374,12 +8376,11 @@ $(document).ready(() => {
       );
 
       if (guidedSubjectsMetadata.length > 0) {
-        let addSubjectsMetadataResponse = await guidedUploadSubjectsMetadata(
+        await guidedUploadSubjectsMetadata(
           guidedBfAccount,
           guidedDatasetName,
           guidedSubjectsMetadata
         );
-        console.log(addSubjectsMetadataResponse);
       } /*
       if (guidedSamplesMetadata.length > 0) {
         let addSamplesMetadataResponse = await guidedUploadSamplesMetadata(
