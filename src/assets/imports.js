@@ -39,7 +39,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 });
 
 const insertScript = () => {
-
   const preload = document.createElement("script");
   preload.src = "./preload.js";
   preload.defer = true;

@@ -4,8 +4,6 @@ var metadataFile = "";
 var jstreePreview = document.getElementById("div-dataset-tree-preview");
 const nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
 
-
-
 // per change event of current dataset span text
 function confirm_click_function() {
   let temp = $(".bf-dataset-span").html();
@@ -1583,10 +1581,6 @@ function checkPrevDivForConfirmButton(category) {
     }
   }
 }
-
-
-
-
 
 function create_child_node(
   oldFormatNode,
