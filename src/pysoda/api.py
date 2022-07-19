@@ -142,7 +142,7 @@ class SodaApi(object):
         )
 
     def api_getCollections(self, account):
-        return getCollections(account);
+        return getCollections(account)
 
     def api_convert_subjects_samples_file_to_df(self, type, filepath, fields):
         return convert_subjects_samples_file_to_df(type, filepath, fields)
