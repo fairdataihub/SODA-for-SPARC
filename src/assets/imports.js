@@ -44,6 +44,4 @@ const insertScript = () => {
   script.defer = true;
   script.type = "text/javascript";
   document.body.appendChild(script);
-
-  
 };

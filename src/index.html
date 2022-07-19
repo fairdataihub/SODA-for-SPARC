@@ -1,257 +1,390 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="UTF-8" />
 
-<head>
-  <meta charset="UTF-8" />
+    <title>SODA - Keep Calm and Curate</title>
 
-  <title>SODA - Keep Calm and Curate</title>
+    <link rel="stylesheet" href="assets/css/variables.css" />
+    <link rel="stylesheet" href="assets/css/nativize.css" />
+    <link rel="stylesheet" href="assets/css/global.css" />
+    <link rel="stylesheet" href="assets/css/nav.css" />
+    <link rel="stylesheet" href="assets/css/section.css" />
+    <link rel="stylesheet" href="assets/css/demo.css" />
+    <link rel="stylesheet" href="assets/css/individualtab.css" />
+    <link rel="stylesheet" href="assets/css/main_tabs.css" />
+    <link rel="stylesheet" href="node_modules/cropperjs/dist/cropper.css" />
+    <link rel="stylesheet" href="node_modules/notyf/notyf.min.css" />
+    <link rel="stylesheet" href="assets/css/spur.css" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="node_modules/@fortawesome/fontawesome-free/css/all.css"
+    />
+    <link
+      rel="stylesheet"
+      href="node_modules/@toast-ui/editor/dist/toastui-editor.css"
+    />
+    <link
+      rel="stylesheet"
+      href="node_modules/tui-date-picker/dist/tui-date-picker.css"
+    />
+    <link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css" />
+    <link rel="stylesheet" href="node_modules/@yaireo/tagify/dist/tagify.css" />
+    <link
+      rel="stylesheet"
+      href="node_modules/fomantic-ui/dist/semantic.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="node_modules/fomantic-ui/dist/components/accordion.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="node_modules/@tarekraafat/autocomplete.js/dist/css/autoComplete.02.css"
+    />
+    <link
+      rel="stylesheet"
+      href="node_modules/@sweetalert2/theme-bulma/bulma.css"
+    />
+    <link
+      rel="stylesheet"
+      href="node_modules/bootstrap-select/dist/css/bootstrap-select.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="node_modules/jstree/dist/themes/default/style.min.css"
+    />
+    <link rel="stylesheet" href="node_modules/tippy.js/dist/tippy.css" />
+    <link rel="stylesheet" href="node_modules/tippy.js/themes/light.css" />
+    <link
+      rel="stylesheet"
+      href="node_modules/intro.js/minified/introjs.min.css"
+    />
 
-  <link rel="stylesheet" href="assets/css/variables.css" />
-  <link rel="stylesheet" href="assets/css/nativize.css" />
-  <link rel="stylesheet" href="assets/css/global.css" />
-  <link rel="stylesheet" href="assets/css/nav.css" />
-  <link rel="stylesheet" href="assets/css/section.css" />
-  <link rel="stylesheet" href="assets/css/demo.css" />
-  <link rel="stylesheet" href="assets/css/individualtab.css" />
-  <link rel="stylesheet" href="assets/css/main_tabs.css" />
-  <link rel="stylesheet" href="node_modules/cropperjs/dist/cropper.css" />
-  <link rel="stylesheet" href="node_modules/notyf/notyf.min.css" />
-  <link rel="stylesheet" href="assets/css/spur.css" />
-  <link rel="stylesheet" href="assets/css/main.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-  <link rel="stylesheet" href="node_modules/@fortawesome/fontawesome-free/css/all.css" />
-  <link rel="stylesheet" href="node_modules/@toast-ui/editor/dist/toastui-editor.css" />
-  <link rel="stylesheet" href="node_modules/tui-date-picker/dist/tui-date-picker.css" />
-  <link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css" />
-  <link rel="stylesheet" href="node_modules/@yaireo/tagify/dist/tagify.css" />
-  <link rel="stylesheet" href="node_modules/fomantic-ui/dist/semantic.min.css" />
-  <link rel="stylesheet" href="node_modules/fomantic-ui/dist/components/accordion.min.css" />
-  <link rel="stylesheet" href="node_modules/@tarekraafat/autocomplete.js/dist/css/autoComplete.02.css" />
-  <link rel="stylesheet" href="node_modules/@sweetalert2/theme-bulma/bulma.css" />
-  <link rel="stylesheet" href="node_modules/bootstrap-select/dist/css/bootstrap-select.min.css" />
-  <link rel="stylesheet" href="node_modules/jstree/dist/themes/default/style.min.css" />
-  <link rel="stylesheet" href="node_modules/tippy.js/dist/tippy.css" />
-  <link rel="stylesheet" href="node_modules/tippy.js/themes/light.css" />
-  <link rel="stylesheet" href="node_modules/intro.js/minified/introjs.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://jsuites.net/v4/jsuites.css"
+      type="text/css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://bossanova.uk/jspreadsheet/v4/jexcel.css"
+      type="text/css"
+    />
 
-  <link rel="stylesheet" href="https://jsuites.net/v4/jsuites.css" type="text/css" />
-  <link rel="stylesheet" href="https://bossanova.uk/jspreadsheet/v4/jexcel.css" type="text/css" />
+    <link rel="import" href="sections/getting_started/getting_started.html" />
+    <link rel="import" href="sections/manage_datasets/manage_datasets.html" />
+    <link rel="import" href="sections/post_curation/post_curation.html" />
+    <link rel="import" href="sections/prepare_metadata/prepare_metadata.html" />
+    <link rel="import" href="sections/curate/curate.html" />
+    <link rel="import" href="sections/main_tabs/main_tabs.html" />
+    <link rel="import" href="sections/documentation/documentation.html" />
+    <link rel="import" href="sections/validate/validate_dataset.html" />
+    <link rel="import" href="sections/contact-us/contact_us.html" />
+    <script
+      src="./assets/lotties/license-lottie.js"
+      type="text/javascript"
+    ></script>
+    <script
+      src="./assets/lotties/overview-lotties.js"
+      type="text/javascript"
+    ></script>
+    <script
+      src="./assets/lotties/documentation-lotties.js"
+      type="text/javascript"
+    ></script>
+    <script
+      src="./assets/lotties//contact-us-lotties.js"
+      type="text/javascript"
+    ></script>
 
-  <link rel="import" href="sections/getting_started/getting_started.html" />
-  <link rel="import" href="sections/manage_datasets/manage_datasets.html" />
-  <link rel="import" href="sections/post_curation/post_curation.html" />
-  <link rel="import" href="sections/prepare_metadata/prepare_metadata.html" />
-  <link rel="import" href="sections/curate/curate.html" />
-  <link rel="import" href="sections/main_tabs/main_tabs.html" />
-  <link rel="import" href="sections/documentation/documentation.html" />
-  <link rel="import" href="sections/validate/validate_dataset.html" />
-  <link rel="import" href="sections/contact-us/contact_us.html" />
-  <script src="./assets/lotties/license-lottie.js" type="text/javascript"></script>
-  <script src="./assets/lotties/overview-lotties.js" type="text/javascript"></script>
-  <script src="./assets/lotties/documentation-lotties.js" type="text/javascript"></script>
-  <script src="./assets/lotties//contact-us-lotties.js" type="text/javascript"></script>
+    <style>
+      #notification {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 288px;
+        padding: 20px;
+        z-index: 10000000;
+        border-radius: 5px;
+        background-color: white;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+      }
 
-  <style>
-    #notification {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 288px;
-      padding: 20px;
-      z-index: 10000000;
-      border-radius: 5px;
-      background-color: white;
-      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    }
+      #version {
+        white-space: nowrap;
+      }
 
-    #version {
-      white-space: nowrap;
-    }
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
 
-    .hidden {
-      display: none;
-    }
-  </style>
-</head>
-
-<body>
-  <button type="button" id="sidebarCollapse" class="navbar-btn">
-    <span></span>
-    <span></span>
-    <span></span>
-  </button>
-  <nav id="main-nav" class="nav js-nav">
-    <div id="nav-items" class="nav-item u-category-windows">
-      <!-- Sidebar Header -->
-      <div class="sidebar-header">
-        <div style="display: block" id="SODA-logo">
-          <img id="button-soda-big-icon" class="nav-center-logo-image" src="assets/img/logo-new-green.png" />
-          <h3 style="
+  <body>
+    <button type="button" id="sidebarCollapse" class="navbar-btn">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <nav id="main-nav" class="nav js-nav">
+      <div id="nav-items" class="nav-item u-category-windows">
+        <!-- Sidebar Header -->
+        <div class="sidebar-header">
+          <div style="display: block" id="SODA-logo">
+            <img
+              id="button-soda-big-icon"
+              class="nav-center-logo-image"
+              src="assets/img/logo-new-green.png"
+            />
+            <h3
+              style="
                 font-size: 1.5rem;
                 color: var(--color-light-green);
                 width: auto;
                 text-align: center;
                 margin-top: 3px;
-              ">
-            SODA<br />
-            <span id="version" style="font-size: 14px"></span>
-          </h3>
-        </div>
-        <!-- Sidebar Links -->
-        <ul class="list-unstyled components">
-          <li>
-            <a href="#" data-section="getting_started" id="getting_starting_tab">
-              <svg data-section="getting_started" style="margin-right: 30px; margin-bottom: -5px" width="20px"
-                height="20px" viewBox="0 0 16 16" class="bi bi-caret-right-square-fill" fill="white"
-                xmlns="http://www.w3.org/2000/svg">
-                <path data-section="getting_started" fill-rule="evenodd"
-                  d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm5.5 10a.5.5 0 0 0 .832.374l4.5-4a.5.5 0 0 0 0-.748l-4.5-4A.5.5 0 0 0 5.5 4v8z">
-                </path>
-              </svg>
-              Overview
-            </a>
-          </li>
+              "
+            >
+              SODA<br />
+              <span id="version" style="font-size: 14px"></span>
+            </h3>
+          </div>
+          <!-- Sidebar Links -->
+          <ul class="list-unstyled components">
+            <li>
+              <a
+                href="#"
+                data-section="getting_started"
+                id="getting_starting_tab"
+              >
+                <svg
+                  data-section="getting_started"
+                  style="margin-right: 30px; margin-bottom: -5px"
+                  width="20px"
+                  height="20px"
+                  viewBox="0 0 16 16"
+                  class="bi bi-caret-right-square-fill"
+                  fill="white"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    data-section="getting_started"
+                    fill-rule="evenodd"
+                    d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm5.5 10a.5.5 0 0 0 .832.374l4.5-4a.5.5 0 0 0 0-.748l-4.5-4A.5.5 0 0 0 5.5 4v8z"
+                  ></path>
+                </svg>
+                Overview
+              </a>
+            </li>
 
-          <li>
-            <a href="#" data-section="main_tabs" id="main_tabs_view">
-              <svg style="margin-right: 30px; margin-bottom: -5px" width="20px" height="20px" viewBox="0 0 16 16"
-                class="bi bi-kanban-fill" fill="white" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M2.5 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2h-11zm5 2h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm-5 1a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V3zm9-1h1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z">
-                </path>
-              </svg>
-              Free Form Mode
-            </a>
-          </li>
+            <li>
+              <a href="#" data-section="main_tabs" id="main_tabs_view">
+                <svg
+                  style="margin-right: 30px; margin-bottom: -5px"
+                  width="20px"
+                  height="20px"
+                  viewBox="0 0 16 16"
+                  class="bi bi-kanban-fill"
+                  fill="white"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M2.5 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2h-11zm5 2h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm-5 1a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V3zm9-1h1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"
+                  ></path>
+                </svg>
+                Free Form Mode
+              </a>
+            </li>
 
-          <li class="coming-soon-div" data-content="Coming soon..." rel="popover" data-placement="right"
-            data-trigger="hover" data-original-title="" title="">
-            <a href="#" data-section="guided_mode" class="coming-soon-div" data-content="Coming soon..." rel="popover"
-              data-placement="right" data-trigger="hover" data-original-title="" title="">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="white" class="bi bi-compass-fill"
-                viewBox="0 0 16 16" style="margin-right: 30px; margin-bottom: -5px">
-                <path
-                  d="M8 16.016a7.5 7.5 0 0 0 1.962-14.74A1 1 0 0 0 9 0H7a1 1 0 0 0-.962 1.276A7.5 7.5 0 0 0 8 16.016zm6.5-7.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z">
-                </path>
-                <path d="M6.94 7.44l4.95-2.83-2.83 4.95-4.949 2.83 2.828-4.95z"></path>
-              </svg>
-              Guided Mode
-            </a>
-          </li>
+            <li
+              class="coming-soon-div"
+              data-content="Coming soon..."
+              rel="popover"
+              data-placement="right"
+              data-trigger="hover"
+              data-original-title=""
+              title=""
+            >
+              <a
+                href="#"
+                data-section="guided_mode"
+                class="coming-soon-div"
+                data-content="Coming soon..."
+                rel="popover"
+                data-placement="right"
+                data-trigger="hover"
+                data-original-title=""
+                title=""
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20px"
+                  height="20px"
+                  fill="white"
+                  class="bi bi-compass-fill"
+                  viewBox="0 0 16 16"
+                  style="margin-right: 30px; margin-bottom: -5px"
+                >
+                  <path
+                    d="M8 16.016a7.5 7.5 0 0 0 1.962-14.74A1 1 0 0 0 9 0H7a1 1 0 0 0-.962 1.276A7.5 7.5 0 0 0 8 16.016zm6.5-7.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z"
+                  ></path>
+                  <path
+                    d="M6.94 7.44l4.95-2.83-2.83 4.95-4.949 2.83 2.828-4.95z"
+                  ></path>
+                </svg>
+                Guided Mode
+              </a>
+            </li>
 
-          <li>
-            <a href="#" data-section="documentation" id="documentation-view">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" height="20px" width="20px"
-                style="margin-right: 30px; margin-bottom: -5px">
-                <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
-                <path
-                  d="M448 336v-288C448 21.49 426.5 0 400 0H96C42.98 0 0 42.98 0 96v320c0 53.02 42.98 96 96 96h320c17.67 0 32-14.33 32-31.1c0-11.72-6.607-21.52-16-27.1v-81.36C441.8 362.8 448 350.2 448 336zM143.1 128h192C344.8 128 352 135.2 352 144C352 152.8 344.8 160 336 160H143.1C135.2 160 128 152.8 128 144C128 135.2 135.2 128 143.1 128zM143.1 192h192C344.8 192 352 199.2 352 208C352 216.8 344.8 224 336 224H143.1C135.2 224 128 216.8 128 208C128 199.2 135.2 192 143.1 192zM384 448H96c-17.67 0-32-14.33-32-32c0-17.67 14.33-32 32-32h288V448z">
-                </path>
-              </svg>Documentation</a>
-          </li>
-          <li>
-            <a href="#" data-section="contact-us" id="contact-us-view">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" height="20px" width="20px"
-                style="margin-right: 30px; margin-bottom: -5px">
-                <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
-                <path
-                  d="M511.1 63.1v287.1c0 35.25-28.75 63.1-64 63.1h-144l-124.9 93.68c-7.875 5.75-19.12 .0497-19.12-9.7v-83.98h-96c-35.25 0-64-28.75-64-63.1V63.1c0-35.25 28.75-63.1 64-63.1h384C483.2 0 511.1 28.75 511.1 63.1z">
-                </path>
-              </svg>Contact Us</a>
-          </li>
-        </ul>
+            <li>
+              <a href="#" data-section="documentation" id="documentation-view">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 448 512"
+                  height="20px"
+                  width="20px"
+                  style="margin-right: 30px; margin-bottom: -5px"
+                >
+                  <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+                  <path
+                    d="M448 336v-288C448 21.49 426.5 0 400 0H96C42.98 0 0 42.98 0 96v320c0 53.02 42.98 96 96 96h320c17.67 0 32-14.33 32-31.1c0-11.72-6.607-21.52-16-27.1v-81.36C441.8 362.8 448 350.2 448 336zM143.1 128h192C344.8 128 352 135.2 352 144C352 152.8 344.8 160 336 160H143.1C135.2 160 128 152.8 128 144C128 135.2 135.2 128 143.1 128zM143.1 192h192C344.8 192 352 199.2 352 208C352 216.8 344.8 224 336 224H143.1C135.2 224 128 216.8 128 208C128 199.2 135.2 192 143.1 192zM384 448H96c-17.67 0-32-14.33-32-32c0-17.67 14.33-32 32-32h288V448z"
+                  ></path></svg
+                >Documentation</a
+              >
+            </li>
+            <li>
+              <a href="#" data-section="contact-us" id="contact-us-view">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  height="20px"
+                  width="20px"
+                  style="margin-right: 30px; margin-bottom: -5px"
+                >
+                  <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+                  <path
+                    d="M511.1 63.1v287.1c0 35.25-28.75 63.1-64 63.1h-144l-124.9 93.68c-7.875 5.75-19.12 .0497-19.12-9.7v-83.98h-96c-35.25 0-64-28.75-64-63.1V63.1c0-35.25 28.75-63.1 64-63.1h384C483.2 0 511.1 28.75 511.1 63.1z"
+                  ></path></svg
+                >Contact Us</a
+              >
+            </li>
+          </ul>
 
-        <div class="help-section">
-          <ul class="list-unstyled components" style="
+          <div class="help-section">
+            <ul
+              class="list-unstyled components"
+              style="
                 height: 50px;
                 margin-bottom: 0;
                 margin-left: 35px;
                 display: flex;
                 flex-direction: row;
                 justify-content: center;
-              "></ul>
+              "
+            ></ul>
+          </div>
+        </div>
+        <div>
+          <div id="sparc-logo-container" class="sparc-logo">
+            <h4
+              style="text-align-last: center; color: black; margin-bottom: 4px"
+            >
+              For
+            </h4>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink"
+              viewBox="0 0 170.5327 84.5895"
+              style="cursor: pointer"
+            >
+              <a href="https://sparc.science/">
+                <defs>
+                  <linearGradient
+                    id="linear-gradient"
+                    y1="42.7643"
+                    x2="170.5327"
+                    y2="42.7643"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop offset="0" stop-color="#0b00bf"></stop>
+                    <stop offset="1" stop-color="#bc00fc"></stop>
+                  </linearGradient>
+                </defs>
+                <title>For Sparc</title>
+                <g id="primary-logo">
+                  <path
+                    d="M169.0691,57.0889l-60.922-1.5a2.8941,2.8941,0,0,0-2.7225,1.7374l-.0289.0665L99.327,71.3508,87.0724,4.2313l-.0045-.03a3.9867,3.9867,0,0,0-7.8393-.0051L69.6429,55.6522,1.4623,57.3835a1.5,1.5,0,0,0,.0125,3l70.6845,1.2053a2.9235,2.9235,0,0,0,2.9-2.2814l.0259-.1154L83.01,23.8779,95.2029,82.1654l.0113.0551a3,3,0,0,0,5.684.5645l9.237-21.2451,58.9339-1.451a1.5,1.5,0,0,0,0-3Z"
+                    style="fill: url(#linear-gradient)"
+                  ></path>
+                  <path
+                    d="M11.3962.9629c6.9756,0,11.2637,4.48,11.2637,11.583V16.77H16.0681V12.5459c0-3.2637-1.7285-5.2471-4.6719-5.2471-3.0078,0-4.7353,1.9834-4.7353,5.2471a6.6109,6.6109,0,0,0,2.4316,5.0557L17.86,25.8574c2.8154,2.6875,5.3115,5.6319,5.3115,10.56,0,7.1035-4.416,11.583-11.5195,11.583-7.167,0-11.583-4.48-11.583-11.583V32.1924H6.6609V36.417c0,3.2637,1.792,5.2471,4.9912,5.2471,3.1357,0,4.9277-1.9834,4.9277-5.2471a7.4448,7.4448,0,0,0-2.6875-5.44l-8.96-8.3828C1.3494,19.2656.0691,16.45.0691,12.3545.0691,5.4424,4.3572.9629,11.3962.9629Z"
+                  ></path>
+                  <path
+                    d="M44.2927,31.9365V47.5518H37.7009V1.4111H48.9636c7.1035,0,11.583,4.48,11.583,11.583v7.3594c0,7.168-4.4795,11.583-11.583,11.583ZM48.9,25.73c3.1993,0,5.0557-1.92,5.0557-5.1836V12.8027c0-3.2-1.8564-5.1845-5.0557-5.1845H44.2927V25.73Z"
+                  ></path>
+                  <path
+                    d="M116.6443,47.5518h-6.5918V1.4111h11.583c7.1035,0,11.583,4.48,11.583,11.583v6.2715a11.1941,11.1941,0,0,1-5.0557,9.8555c1.8565,5.6318,4.48,13.3115,6.1436,18.4307h-6.72l-5.5674-16.7666h-5.375Zm4.9267-22.9747c3.2,0,5.0557-1.92,5.0557-5.1191V12.8027c0-3.2-1.8555-5.1845-5.0557-5.1845h-4.9267V24.5771Z"
+                  ></path>
+                  <path
+                    d="M170.4656,32.1924V36.417c0,7.1035-4.4151,11.583-11.5186,11.583-7.1679,0-11.583-4.48-11.583-11.583V12.5459c0-7.1035,4.4151-11.583,11.583-11.583,7.1035,0,11.5186,4.48,11.5186,11.583V16.77h-6.5908V12.5459c0-3.2637-1.792-5.2471-4.9278-5.2471-3.2,0-4.9922,1.9834-4.9922,5.2471V36.417c0,3.2637,1.792,5.2471,4.9922,5.2471,3.1358,0,4.9278-1.9834,4.9278-5.2471V32.1924Z"
+                  ></path>
+                </g>
+              </a>
+            </svg>
+          </div>
         </div>
       </div>
-      <div>
-        <div id="sparc-logo-container" class="sparc-logo">
-          <h4 style="text-align-last: center; color: black; margin-bottom: 4px">
-            For
-          </h4>
-          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-            viewBox="0 0 170.5327 84.5895" style="cursor: pointer">
-            <a href="https://sparc.science/">
-              <defs>
-                <linearGradient id="linear-gradient" y1="42.7643" x2="170.5327" y2="42.7643"
-                  gradientUnits="userSpaceOnUse">
-                  <stop offset="0" stop-color="#0b00bf"></stop>
-                  <stop offset="1" stop-color="#bc00fc"></stop>
-                </linearGradient>
-              </defs>
-              <title>For Sparc</title>
-              <g id="primary-logo">
-                <path
-                  d="M169.0691,57.0889l-60.922-1.5a2.8941,2.8941,0,0,0-2.7225,1.7374l-.0289.0665L99.327,71.3508,87.0724,4.2313l-.0045-.03a3.9867,3.9867,0,0,0-7.8393-.0051L69.6429,55.6522,1.4623,57.3835a1.5,1.5,0,0,0,.0125,3l70.6845,1.2053a2.9235,2.9235,0,0,0,2.9-2.2814l.0259-.1154L83.01,23.8779,95.2029,82.1654l.0113.0551a3,3,0,0,0,5.684.5645l9.237-21.2451,58.9339-1.451a1.5,1.5,0,0,0,0-3Z"
-                  style="fill: url(#linear-gradient)"></path>
-                <path
-                  d="M11.3962.9629c6.9756,0,11.2637,4.48,11.2637,11.583V16.77H16.0681V12.5459c0-3.2637-1.7285-5.2471-4.6719-5.2471-3.0078,0-4.7353,1.9834-4.7353,5.2471a6.6109,6.6109,0,0,0,2.4316,5.0557L17.86,25.8574c2.8154,2.6875,5.3115,5.6319,5.3115,10.56,0,7.1035-4.416,11.583-11.5195,11.583-7.167,0-11.583-4.48-11.583-11.583V32.1924H6.6609V36.417c0,3.2637,1.792,5.2471,4.9912,5.2471,3.1357,0,4.9277-1.9834,4.9277-5.2471a7.4448,7.4448,0,0,0-2.6875-5.44l-8.96-8.3828C1.3494,19.2656.0691,16.45.0691,12.3545.0691,5.4424,4.3572.9629,11.3962.9629Z">
-                </path>
-                <path
-                  d="M44.2927,31.9365V47.5518H37.7009V1.4111H48.9636c7.1035,0,11.583,4.48,11.583,11.583v7.3594c0,7.168-4.4795,11.583-11.583,11.583ZM48.9,25.73c3.1993,0,5.0557-1.92,5.0557-5.1836V12.8027c0-3.2-1.8564-5.1845-5.0557-5.1845H44.2927V25.73Z">
-                </path>
-                <path
-                  d="M116.6443,47.5518h-6.5918V1.4111h11.583c7.1035,0,11.583,4.48,11.583,11.583v6.2715a11.1941,11.1941,0,0,1-5.0557,9.8555c1.8565,5.6318,4.48,13.3115,6.1436,18.4307h-6.72l-5.5674-16.7666h-5.375Zm4.9267-22.9747c3.2,0,5.0557-1.92,5.0557-5.1191V12.8027c0-3.2-1.8555-5.1845-5.0557-5.1845h-4.9267V24.5771Z">
-                </path>
-                <path
-                  d="M170.4656,32.1924V36.417c0,7.1035-4.4151,11.583-11.5186,11.583-7.1679,0-11.583-4.48-11.583-11.583V12.5459c0-7.1035,4.4151-11.583,11.583-11.583,7.1035,0,11.5186,4.48,11.5186,11.583V16.77h-6.5908V12.5459c0-3.2637-1.792-5.2471-4.9278-5.2471-3.2,0-4.9922,1.9834-4.9922,5.2471V36.417c0,3.2637,1.792,5.2471,4.9922,5.2471,3.1358,0,4.9278-1.9834,4.9278-5.2471V32.1924Z">
-                </path>
-              </g>
-            </a>
-          </svg>
-        </div>
-      </div>
+    </nav>
+
+    <div
+      class="dash-app"
+      style="background: #fff; border-top: 1px solid #c3c3c3"
+    >
+      <main id="content" class="content js-content"></main>
     </div>
-  </nav>
 
-  <div class="dash-app" style="background: #fff; border-top: 1px solid #c3c3c3">
-    <main id="content" class="content js-content"></main>
-  </div>
+    <script>
+      window.$ = window.jQuery = require("jquery");
+      require("./assets/imports"); // Imports html files into app
+      require("./assets/ex-links"); // Opens url into external chrome tab instead of in the app
+      require("./assets/nav"); // Side navigation menu control
+      require("./assets/demo-btns");
+      require("./assets/normalize-shortcuts"); // For normalizing shortcuts across OS
+    </script>
 
-  <script>
-    window.$ = window.jQuery = require('jquery');
-    require("./assets/imports"); // Imports html files into app
-    require("./assets/ex-links"); // Opens url into external chrome tab instead of in the app
-    require("./assets/nav"); // Side navigation menu control
-    require("./assets/demo-btns");
-    require("./assets/normalize-shortcuts"); // For normalizing shortcuts across OS
-  </script>
-
-  <script>
-    $(document).ready(() => {
-      $("#sidebarCollapse").on("click", function () {
-        $("#main-nav").toggleClass("active");
-        $(this).toggleClass("active");
-        $(".section").toggleClass("fullShown");
+    <script>
+      $(document).ready(() => {
+        $("#sidebarCollapse").on("click", function () {
+          $("#main-nav").toggleClass("active");
+          $(this).toggleClass("active");
+          $(".section").toggleClass("fullShown");
+        });
       });
-    });
-    $(document).ready(() => {
-      $("a").on("click", function () {
-        $($(this).parents()[1]).find("a").removeClass("is-selected");
-        $(this).addClass("is-selected");
+      $(document).ready(() => {
+        $("a").on("click", function () {
+          $($(this).parents()[1]).find("a").removeClass("is-selected");
+          $(this).addClass("is-selected");
+        });
       });
-    });
-  </script>
+    </script>
 
-  <script src="scripts/others/popper.min.js"></script>
-  <script src="node_modules/fomantic-ui/dist/components/accordion.js"></script>
-  <script src="node_modules/jstree/dist/jstree.min.js"></script>
-  <!-- <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script> -->
-  <script src="node_modules/@tarekraafat/autocomplete.js/dist/autoComplete.js"></script>
-  <script src="node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
-  <script src="https://jsuites.net/v4/jsuites.js"></script>
-  <script src="https://bossanova.uk/jspreadsheet/v4/jexcel.js"></script>
-  <!-- <script src="./scripts/others/renderer.js" type="text/javascript"></script> -->
-  <!-- <script src="./scripts/manage-dataset/manage-dataset.js" type="text/javascript"></script> -->
-  <!-- <script
+    <script src="scripts/others/popper.min.js"></script>
+    <script src="node_modules/fomantic-ui/dist/components/accordion.js"></script>
+    <script src="node_modules/jstree/dist/jstree.min.js"></script>
+    <!-- <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script> -->
+    <script src="node_modules/@tarekraafat/autocomplete.js/dist/autoComplete.js"></script>
+    <script src="node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
+    <script src="https://jsuites.net/v4/jsuites.js"></script>
+    <script src="https://bossanova.uk/jspreadsheet/v4/jexcel.js"></script>
+    <!-- <script src="./scripts/others/renderer.js" type="text/javascript"></script> -->
+    <!-- <script src="./scripts/manage-dataset/manage-dataset.js" type="text/javascript"></script> -->
+    <!-- <script
     src="./scripts/disseminate/disseminate.js"
     type="text/javascript"
   ></script>
@@ -275,14 +408,13 @@
     src="./scripts/metadata-files/manifest.js"
     type="text/javascript"
   ></script>  -->
-  
-  <!-- <script src="node_modules/jstree/dist/jstree.min.js"></script>
+
+    <!-- <script src="node_modules/jstree/dist/jstree.min.js"></script>
   
   <script src="./scripts/organize-dataset/organizeDS.js" type="text/javascript"></script>
   <script src="./scripts/others/tab-effects.js" type="text/javascript"></script>
   <script src="./scripts/organize-dataset/curate-functions.js" type="text/javascript"></script>  -->
 
-  <script src="./assets/lotties.js" type="text/javascript"></script>
-</body>
-
+    <script src="./assets/lotties.js" type="text/javascript"></script>
+  </body>
 </html>
