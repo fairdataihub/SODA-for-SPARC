@@ -954,10 +954,6 @@ function checkPrevDivForConfirmButton(category) {
   }
 }
 
-
-
-
-
 function create_child_node(
   oldFormatNode,
   nodeName,

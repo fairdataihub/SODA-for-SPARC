@@ -1,72 +1,67 @@
 // Purpose: Will become preload.js in the future. For now it is a place to put global variables/functions that are defined in javascript files
 //          needed by the renderer process in order to run.
 
-
 // Contributors table for the dataset description editing page
 const currentConTable = document.getElementById("table-current-contributors");
 
-
-
 // function to show dataset or account Confirm buttons
 const showHideDropdownButtons = (category, action) => {
-    if (category === "dataset") {
-        if (action === "show") {
-            // btn under Step 6
-            $($("#button-confirm-bf-dataset").parents()[0]).css("display", "flex");
-            $("#button-confirm-bf-dataset").show();
-            // btn under Step 1
-            $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css(
-                "display",
-                "flex"
-            );
-            $("#button-confirm-bf-dataset-getting-started").show();
-        } else {
-            // btn under Step 6
-            $($("#button-confirm-bf-dataset").parents()[0]).css("display", "none");
-            $("#button-confirm-bf-dataset").hide();
-            // btn under Step 1
-            $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css(
-                "display",
-                "none"
-            );
-            $("#button-confirm-bf-dataset-getting-started").hide();
-        }
-    } else if (category === "account") {
-        if (action === "show") {
-            // btn under Step 6
-            $("#div-bf-account-btns").css("display", "flex");
-            $("#div-bf-account-btns button").show();
-            // btn under Step 1
-            $("#div-bf-account-btns-getting-started").css("display", "flex");
-            $("#div-bf-account-btns-getting-started button").show();
-        } else {
-            // btn under Step 6
-            $("#div-bf-account-btns").css("display", "none");
-            $("#div-bf-account-btns button").hide();
-            // btn under Step 1
-            $("#div-bf-account-btns-getting-started").css("display", "none");
-            $("#div-bf-account-btns-getting-started button").hide();
-        }
+  if (category === "dataset") {
+    if (action === "show") {
+      // btn under Step 6
+      $($("#button-confirm-bf-dataset").parents()[0]).css("display", "flex");
+      $("#button-confirm-bf-dataset").show();
+      // btn under Step 1
+      $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css(
+        "display",
+        "flex"
+      );
+      $("#button-confirm-bf-dataset-getting-started").show();
+    } else {
+      // btn under Step 6
+      $($("#button-confirm-bf-dataset").parents()[0]).css("display", "none");
+      $("#button-confirm-bf-dataset").hide();
+      // btn under Step 1
+      $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css(
+        "display",
+        "none"
+      );
+      $("#button-confirm-bf-dataset-getting-started").hide();
     }
+  } else if (category === "account") {
+    if (action === "show") {
+      // btn under Step 6
+      $("#div-bf-account-btns").css("display", "flex");
+      $("#div-bf-account-btns button").show();
+      // btn under Step 1
+      $("#div-bf-account-btns-getting-started").css("display", "flex");
+      $("#div-bf-account-btns-getting-started button").show();
+    } else {
+      // btn under Step 6
+      $("#div-bf-account-btns").css("display", "none");
+      $("#div-bf-account-btns button").hide();
+      // btn under Step 1
+      $("#div-bf-account-btns-getting-started").css("display", "none");
+      $("#div-bf-account-btns-getting-started button").hide();
+    }
+  }
 };
-
 
 // Function to clear the confirm options in the curate feature
 const confirm_click_account_function = () => {
-    let temp = $(".bf-account-span")
-        .html()
-        .replace(/^\s+|\s+$/g, "");
-    if (temp == "None" || temp == "") {
-        $("#div-create_empty_dataset-account-btns").css("display", "none");
-        $("#div-bf-account-btns-getting-started").css("display", "none");
-        $("#div-bf-account-btns-getting-started button").hide();
-    } else {
-        $("#div-create_empty_dataset-account-btns").css("display", "flex");
-        $("#div-bf-account-btns-getting-started").css("display", "flex");
-        $("#div-bf-account-btns-getting-started button").show();
-    }
+  let temp = $(".bf-account-span")
+    .html()
+    .replace(/^\s+|\s+$/g, "");
+  if (temp == "None" || temp == "") {
+    $("#div-create_empty_dataset-account-btns").css("display", "none");
+    $("#div-bf-account-btns-getting-started").css("display", "none");
+    $("#div-bf-account-btns-getting-started button").hide();
+  } else {
+    $("#div-create_empty_dataset-account-btns").css("display", "flex");
+    $("#div-bf-account-btns-getting-started").css("display", "flex");
+    $("#div-bf-account-btns-getting-started button").show();
+  }
 };
-
 
 /// helper function to refresh live search dropdowns per dataset permission on change event
 const initializeBootstrapSelect = (dropdown, action) => {

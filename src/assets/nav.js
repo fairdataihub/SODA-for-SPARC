@@ -99,7 +99,7 @@ function hideAllSectionsAndDeselectButtons() {
 //}
 
 // Default to the view that was active the last time the app was open
-const sectionId = "s"//settings.get("activeSectionButtonId");
+const sectionId = "s"; //settings.get("activeSectionButtonId");
 if (sectionId) {
   showMainContent();
   // const section = document.getElementById(sectionId)
