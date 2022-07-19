@@ -37,8 +37,6 @@ document
     openDropdownPrompt(this, "dataset");
   });
 
-
-
 $(".button-individual-metadata.remove").click(function () {
   var metadataFileStatus = $($(this).parents()[1]).find(
     ".para-metadata-file-status"

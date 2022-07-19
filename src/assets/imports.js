@@ -52,7 +52,7 @@ const insertScript = async () => {
   script.type = "text/javascript";
   document.body.appendChild(script);
 
-  await ws(500)
+  await ws(500);
 
   const tabEffects = document.createElement("script");
   tabEffects.src = "./scripts/others/tab-effects.js";
@@ -60,21 +60,19 @@ const insertScript = async () => {
   tabEffects.type = "text/javascript";
   document.body.appendChild(tabEffects);
 
-  await ws(500)
+  await ws(500);
 
   const manageDatasets = document.createElement("script");
   manageDatasets.src = "./scripts/manage-dataset/manage-dataset.js";
   manageDatasets.defer = true;
   manageDatasets.type = "text/javascript";
   document.body.appendChild(manageDatasets);
-
 };
-
 
 const ws = (ms) => {
   return new Promise((resolve) =>
     setTimeout(() => {
-      resolve()
-  }, ms)
-  )
-}
+      resolve();
+    }, ms)
+  );
+};

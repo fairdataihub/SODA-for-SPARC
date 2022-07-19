@@ -1,15 +1,17 @@
 // event listeners for opening dataset or account selection dropdown
-document.querySelectorAll(".ds-dd").forEach(dropdownElement => {
-  dropdownElement.addEventListener("click", function() {
-    openDropdownPrompt(this, 'dataset')
-})
-})
+document.querySelectorAll(".ds-dd").forEach((dropdownElement) => {
+  dropdownElement.addEventListener("click", function () {
+    openDropdownPrompt(this, "dataset");
+  });
+});
 
-document.querySelectorAll("change-current-account").forEach(dropdownElement => {
-  dropdownElement.addEventListener("click", function() {
-    openDropdownPrompt(this, 'bf')
-})
-})
+document
+  .querySelectorAll("change-current-account")
+  .forEach((dropdownElement) => {
+    dropdownElement.addEventListener("click", function () {
+      openDropdownPrompt(this, "bf");
+    });
+  });
 
 var forbidden_characters_bf = '/:*?"<>';
 
