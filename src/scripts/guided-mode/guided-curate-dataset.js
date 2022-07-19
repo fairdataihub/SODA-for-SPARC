@@ -7977,16 +7977,16 @@ $(document).ready(() => {
     console.log(`subjectsTableData: ${subjectsTableData}`);
     try {
       await client.post(
-        `/prepare_metadata/submission_file`,
+        `/prepare_metadata/subjects_file`,
         {
-          submission_file_rows: subjectsTableData,
           filepath: "",
-          upload_boolean: true,
+          selected_account: bfAccount,
+          selected_dataset: datasetName,
+          subjects_header_row: subjectsTableData,
         },
         {
           params: {
-            selected_account: bfAccount,
-            selected_dataset: datasetName,
+            upload_boolean: true,
           },
         }
       );
@@ -7998,17 +7998,15 @@ $(document).ready(() => {
     } catch (error) {
       guidedUploadStatusIcon("guided-subjects-metadata-upload-status", "error");
       subjectsMetadataUploadText.innerHTML = `Failed to upload subjects metadata`;
-      log.error(error);
-      console.error(error);
-      let emessage = userError(error);
+      clientError(error);
     }
   };
-
-  async function guidedUploadSamplesMetadata(
+  const guidedUploadSamplesMetadata = async (
     bfAccount,
     datasetName,
     samplesTableData
-  ) {
+  ) => {
+    console.log(samplesTableData);
     document
       .getElementById("guided-samples-metadata-upload-tr")
       .classList.remove("hidden");
@@ -8017,90 +8015,137 @@ $(document).ready(() => {
     );
     samplesMetadataUploadText.innerHTML = "Uploading samples metadata...";
     guidedUploadStatusIcon("guided-samples-metadata-upload-status", "loading");
-
-    return new Promise((resolve, reject) => {
-      client.invoke(
-        "api_save_samples_file",
-        true,
-        bfAccount,
-        datasetName,
-        undefined,
-        samplesTableData,
-        (error, res) => {
-          if (error) {
-            guidedUploadStatusIcon(
-              "guided-samples-metadata-upload-status",
-              "error"
-            );
-            samplesMetadataUploadText.innerHTML = `Failed to upload samples metadata`;
-            log.error(error);
-            console.error(error);
-            let emessage = userError(error);
-            reject(error);
-          } else {
-            guidedUploadStatusIcon(
-              "guided-samples-metadata-upload-status",
-              "success"
-            );
-            samplesMetadataUploadText.innerHTML = `Samples metadata successfully uploaded`;
-            console.log("samples metadata added + " + res);
-            resolve(`samples metadata added` + res);
-          }
+    console.log(`samplesTableData: ${samplesTableData}`);
+    try {
+      await client.post(
+        `/prepare_metadata/samples_file`,
+        {
+          filepath: "",
+          selected_account: bfAccount,
+          selected_dataset: datasetName,
+          samples_str: samplesTableData,
+        },
+        {
+          params: {
+            upload_boolean: true,
+          },
         }
       );
-    });
-  }
-
-  async function guidedUploadSubmissionMetadata(
+      guidedUploadStatusIcon(
+        "guided-samples-metadata-upload-status",
+        "success"
+      );
+      samplesMetadataUploadText.innerHTML = `Samples metadata successfully uploaded`;
+    } catch (error) {
+      guidedUploadStatusIcon("guided-samples-metadata-upload-status", "error");
+      samplesMetadataUploadText.innerHTML = `Failed to upload samples metadata`;
+      clientError(error);
+    }
+  };
+  const guidedUploadSubmissionMetadata = async (
     bfAccount,
     datasetName,
-    guidedSubmissionMetadataJSON
-  ) {
-    return new Promise((resolve, reject) => {
-      document
-        .getElementById("guided-submission-metadata-upload-tr")
-        .classList.remove("hidden");
-      const submissionMetadataUploadText = document.getElementById(
-        "guided-submission-metadata-upload-text"
-      );
-      submissionMetadataUploadText.innerHTML =
-        "Uploading submission metadata...";
-      guidedUploadStatusIcon(
-        "guided-submission-metadata-upload-status",
-        "loading"
-      );
-
-      client.invoke(
-        "api_save_submission_file",
-        true,
-        bfAccount,
-        datasetName,
-        undefined,
-        guidedSubmissionMetadataJSON,
-        (error, res) => {
-          if (error) {
-            guidedUploadStatusIcon(
-              "guided-submission-metadata-upload-status",
-              "error"
-            );
-            submissionMetadataUploadText.innerHTML = `Failed to upload submission metadata`;
-            log.error(error);
-            console.error(error);
-            let emessage = userError(error);
-            reject(error);
-          } else {
-            guidedUploadStatusIcon(
-              "guided-submission-metadata-upload-status",
-              "success"
-            );
-            submissionMetadataUploadText.innerHTML = `Submission metadata successfully uploaded`;
-            console.log("Submission metadata added + " + res);
-            resolve(`Submission metadata added` + res);
-          }
+    submissionMetadataJSON
+  ) => {
+    console.log(submissionMetadataJSON);
+    document
+      .getElementById("guided-submission-metadata-upload-tr")
+      .classList.remove("hidden");
+    const submissionMetadataUploadText = document.getElementById(
+      "guided-submission-metadata-upload-text"
+    );
+    submissionMetadataUploadText.innerHTML = "Uploading submission metadata...";
+    guidedUploadStatusIcon(
+      "guided-submission-metadata-upload-status",
+      "loading"
+    );
+    console.log(`submissionMetadataJSON: ${submissionMetadataJSON}`);
+    try {
+      await client.post(
+        `/prepare_metadata/submission_file`,
+        {
+          submission_file_rows: submissionMetadataJSON,
+          filepath: "",
+          upload_boolean: true,
+        },
+        {
+          params: {
+            selected_account: bfAccount,
+            selected_dataset: datasetName,
+          },
         }
       );
-    });
-  }
+      guidedUploadStatusIcon(
+        "guided-submission-metadata-upload-status",
+        "success"
+      );
+      submissionMetadataUploadText.innerHTML = `Submission metadata successfully uploaded`;
+    } catch (error) {
+      guidedUploadStatusIcon(
+        "guided-submission-metadata-upload-status",
+        "error"
+      );
+      submissionMetadataUploadText.innerHTML = `Failed to upload submission metadata`;
+      clientError(error);
+    }
+  };
+
+  const guidedUploadDatasetDescriptionMetadata = async (
+    bfAccount,
+    datasetName,
+    datasetInformation,
+    studyInformation,
+    contributorInformation,
+    additionalLinks
+  ) => {
+    console.log(datasetInformation);
+    document
+
+      .getElementById("guided-dataset-description-metadata-upload-tr")
+      .classList.remove("hidden");
+    const datasetDescriptionMetadataUploadText = document.getElementById(
+      "guided-dataset-description-metadata-upload-text"
+    );
+    datasetDescriptionMetadataUploadText.innerHTML =
+      "Uploading dataset description metadata...";
+    guidedUploadStatusIcon(
+      "guided-dataset-description-metadata-upload-status",
+      "loading"
+    );
+    console.log(`datasetInformation: ${datasetInformation}`);
+    try {
+      await client.post(
+        `/prepare_metadata/dataset_description_file`,
+        {
+          selected_account: bfAccount,
+          selected_dataset: datasetName,
+          filepath: "",
+          dataset_str: datasetInformation,
+          study_str: studyInformation,
+          contributor_str: contributorInformation,
+          related_info_str: additionalLinks,
+        },
+        {
+          params: {
+            upload_boolean: true,
+          },
+        }
+      );
+      guidedUploadStatusIcon(
+        "guided-dataset-description-metadata-upload-status",
+        "success"
+      );
+      datasetDescriptionMetadataUploadText.innerHTML =
+        "Dataset description metadata successfully uploaded";
+    } catch (error) {
+      guidedUploadStatusIcon(
+        "guided-dataset-description-metadata-upload-status",
+        "error"
+      );
+      datasetDescriptionMetadataUploadText.innerHTML = `Failed to upload dataset description metadata`;
+      clientError(error);
+    }
+  };
 
   async function guidedAddDatasetDescriptionMetadata(
     bfAccount,
@@ -8235,9 +8280,7 @@ $(document).ready(() => {
     const guidedSubjectsMetadata = sodaJSONObj["subjects-table-data"];
 
     //Samples Metadata variables
-    const guidedSamplesMetadata = JSON.stringify(
-      sodaJSONObj["samples-table-data"]
-    );
+    const guidedSamplesMetadata = sodaJSONObj["samples-table-data"];
 
     //Submission Metadata variables
     const guidedSparcAward =
@@ -8259,20 +8302,17 @@ $(document).ready(() => {
         milestone: guidedMilestones[i],
       });
     }
-    guidedSubmissionMetadataJSON = JSON.stringify(guidedSubmissionMetadataJSON);
 
     //Dataset Description Metadata variables
-    const guidedDatasetInformation = JSON.stringify(
+    const guidedDatasetInformation =
       sodaJSONObj["dataset-metadata"]["description-metadata"][
         "dataset-information"
-      ]
-    );
+      ];
 
-    const guidedStudyInformation = JSON.stringify(
+    const guidedStudyInformation =
       sodaJSONObj["dataset-metadata"]["description-metadata"][
         "study-information"
-      ]
-    );
+      ];
 
     let guidedContributorInformation =
       sodaJSONObj["dataset-metadata"]["description-metadata"][
@@ -8296,13 +8336,12 @@ $(document).ready(() => {
       }
     );
 
-    guidedContributorInformation = JSON.stringify(guidedContributorInformation);
+    guidedContributorInformation = guidedContributorInformation;
 
-    const guidedAdditionalLinks = JSON.stringify(
+    const guidedAdditionalLinks =
       sodaJSONObj["dataset-metadata"]["description-metadata"][
         "additional-links"
-      ]
-    );
+      ];
 
     //README and CHANGES Metadata variables
     const guidedReadMeMetadata = sodaJSONObj["dataset-metadata"]["README"];
@@ -8381,7 +8420,33 @@ $(document).ready(() => {
           guidedDatasetName,
           guidedSubjectsMetadata
         );
-      } /*
+      }
+      if (guidedSamplesMetadata.length > 0) {
+        await guidedUploadSamplesMetadata(
+          guidedBfAccount,
+          guidedDatasetName,
+          guidedSamplesMetadata
+        );
+      }
+
+      let submissionMetadataRes = await guidedUploadSubmissionMetadata(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedSubmissionMetadataJSON
+      );
+      console.log(submissionMetadataRes);
+
+      let descriptionMetadataRes = await guidedUploadDatasetDescriptionMetadata(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedDatasetInformation,
+        guidedStudyInformation,
+        guidedContributorInformation,
+        guidedAdditionalLinks
+      );
+      console.log(descriptionMetadataRes);
+
+      /*
       if (guidedSamplesMetadata.length > 0) {
         let addSamplesMetadataResponse = await guidedUploadSamplesMetadata(
           guidedBfAccount,
