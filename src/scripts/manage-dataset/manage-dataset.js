@@ -6,7 +6,7 @@ document.querySelectorAll(".ds-dd").forEach((dropdownElement) => {
 });
 
 document
-  .querySelectorAll("change-current-account")
+  .querySelectorAll("[class='change-current-account']")
   .forEach((dropdownElement) => {
     dropdownElement.addEventListener("click", function () {
       openDropdownPrompt(this, "bf");
