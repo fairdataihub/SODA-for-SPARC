@@ -8147,64 +8147,6 @@ $(document).ready(() => {
     }
   };
 
-  async function guidedAddDatasetDescriptionMetadata(
-    bfAccount,
-    datasetName,
-    guidedDatasetInformation,
-    guidedStudyInformation,
-    guidedContributorInformation,
-    guidedAdditionalLinks
-  ) {
-    document
-      .getElementById("guided-dataset-description-metadata-upload-tr")
-      .classList.remove("hidden");
-    const datasetDescriptionMetadataUploadText = document.getElementById(
-      "guided-dataset-description-metadata-upload-text"
-    );
-    datasetDescriptionMetadataUploadText.innerHTML =
-      "Uploading dataset-description metadata...";
-    guidedUploadStatusIcon(
-      "guided-dataset-description-metadata-upload-status",
-      "loading"
-    );
-
-    return new Promise((resolve, reject) => {
-      client.invoke(
-        "api_save_ds_description_file",
-        true,
-        bfAccount,
-        datasetName,
-        undefined,
-        guidedDatasetInformation,
-        guidedStudyInformation,
-        guidedContributorInformation,
-        guidedAdditionalLinks,
-        (error, res) => {
-          if (error) {
-            guidedUploadStatusIcon(
-              "guided-dataset-description-metadata-upload-status",
-              "error"
-            );
-            datasetDescriptionMetadataUploadText.innerHTML = `Failed to upload dataset-description metadata`;
-            log.error(error);
-            console.error(error);
-            let emessage = userError(error);
-            reject(error);
-          } else {
-            guidedUploadStatusIcon(
-              "guided-dataset-description-metadata-upload-status",
-              "success"
-            );
-            datasetDescriptionMetadataUploadText.innerHTML =
-              "Dataset-description metadata successfully uploaded";
-            console.log("Description metadata added + " + res);
-            resolve(`description metadata added` + res);
-          }
-        }
-      );
-    });
-  }
-
   const guidedUploadREADMEorCHANGESMetadata = async (
     bfAccount,
     datasetName,
@@ -8222,37 +8164,34 @@ $(document).ready(() => {
       `guided-${readmeORchanges}-metadata-upload-status`,
       "loading"
     );
-
-    return new Promise((resolve, reject) => {
-      client.invoke(
-        "api_upload_RC_file",
-        readmeOrChangesMetadata, //RC text to upload e.g. this dataset or changes...
-        `${readmeORchanges}.txt`, //CHANGES.txt or README.txt
-        bfAccount,
-        datasetName,
-        (error, res) => {
-          if (error) {
-            guidedUploadStatusIcon(
-              `guided-${readmeORchanges}-metadata-upload-status`,
-              "error"
-            );
-            datasetDescriptionMetadataUploadText.innerHTML = `Failed to upload ${readmeORchanges.toUpperCase()} metadata`;
-            log.error(error);
-            console.error(error);
-            let emessage = userError(error);
-            reject(error);
-          } else {
-            guidedUploadStatusIcon(
-              `guided-${readmeORchanges}-metadata-upload-status`,
-              "success"
-            );
-            datasetDescriptionMetadataUploadText.innerHTML = `${readmeORchanges.toUpperCase()} metadata successfully uploaded`;
-            console.log(`${readmeORchanges} metadata added` + res);
-            resolve(`${readmeORchanges} metadata added` + res);
-          }
+    console.log(`readmeOrChangesMetadata: ${readmeOrChangesMetadata}`);
+    try {
+      await client.post(
+        "/prepare_metadata/readme_changes_file",
+        {
+          text: readmeOrChangesMetadata,
+        },
+        {
+          params: {
+            file_type: readmeORchanges,
+            selected_account: bfAccount,
+            selected_dataset: datasetName,
+          },
         }
       );
-    });
+      guidedUploadStatusIcon(
+        `guided-${readmeORchanges}-metadata-upload-status`,
+        "success"
+      );
+      datasetDescriptionMetadataUploadText.innerHTML = `${readmeORchanges.toUpperCase()} metadata successfully uploaded`;
+    } catch (error) {
+      guidedUploadStatusIcon(
+        `guided-${readmeORchanges}-metadata-upload-status`,
+        "error"
+      );
+      datasetDescriptionMetadataUploadText.innerHTML = `Failed to upload ${readmeORchanges.toUpperCase()} metadata`;
+      clientError(error);
+    }
   };
 
   const guidedPennsieveDatasetUpload = async () => {
@@ -8446,57 +8385,23 @@ $(document).ready(() => {
       );
       console.log(descriptionMetadataRes);
 
-      /*
-      if (guidedSamplesMetadata.length > 0) {
-        let addSamplesMetadataResponse = await guidedUploadSamplesMetadata(
-          guidedBfAccount,
-          guidedDatasetName,
-          guidedSamplesMetadata
-        );
-        console.log(addSamplesMetadataResponse);
-      }
-
-      let addSubmissionMetadataResponse = await guidedUploadSubmissionMetadata(
-        guidedBfAccount,
-        guidedDatasetName,
-        guidedSubmissionMetadataJSON
-      );
-      console.log(addSubmissionMetadataResponse);
-
-      let addDescriptionMetadataResponse =
-        await guidedAddDatasetDescriptionMetadata(
-          guidedBfAccount,
-          guidedDatasetName,
-          guidedDatasetInformation,
-          guidedStudyInformation,
-          guidedContributorInformation,
-          guidedAdditionalLinks
-        );
-      console.log(addDescriptionMetadataResponse);
-
-      let addReadMeMetadataResponse = await guidedUploadREADMEorCHANGESMetadata(
+      let readMeMetadataRes = await guidedUploadREADMEorCHANGESMetadata(
         guidedBfAccount,
         guidedDatasetName,
         "readme",
         guidedReadMeMetadata
       );
-      console.log(addReadMeMetadataResponse);
-      if (guidedChangesMetadata) {
-        let addChangesMetadataResponse =
-          await guidedUploadREADMEorCHANGESMetadata(
-            guidedBfAccount,
-            guidedDatasetName,
-            "changes",
-            guidedChangesMetadata
-          );
-        console.log(addChangesMetadataResponse);
+      console.log(readMeMetadataRes);
+
+      if (guidedChangesMetadata.length > 0) {
+        let changesMetadataRes = await guidedUploadREADMEorCHANGESMetadata(
+          guidedBfAccount,
+          guidedDatasetName,
+          "changes",
+          guidedChangesMetadata
+        );
+        console.log(changesMetadataRes);
       }
-      /*let addPIOwnerResponse = await guided_add_PI_owner(
-        guidedBfAccount,
-        guidedDatasetName,
-        guidedPIOwnerUUID
-      );
-      console.log(addPIOwnerResponse);*/
 
       //Display the main dataset upload progress bar
       unHideAndSmoothScrollToElement("guided-div-dataset-upload-progress-bar");
