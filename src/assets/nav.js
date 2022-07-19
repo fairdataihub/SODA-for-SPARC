@@ -1,4 +1,4 @@
-const settings = require("electron-settings");
+//const settings = require("electron-settings");
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
 
 document.body.addEventListener("click", (event) => {
@@ -50,7 +50,7 @@ function handleSectionTrigger(event) {
 
   // Save currently active button in localStorage
   const buttonId = event.target.getAttribute("id");
-  settings.set("activeSectionButtonId", buttonId);
+  //settings.set("activeSectionButtonId", buttonId);
 }
 
 function considerNextBtn() {
@@ -99,7 +99,7 @@ function hideAllSectionsAndDeselectButtons() {
 //}
 
 // Default to the view that was active the last time the app was open
-const sectionId = settings.get("activeSectionButtonId");
+const sectionId = "s"//settings.get("activeSectionButtonId");
 if (sectionId) {
   showMainContent();
   // const section = document.getElementById(sectionId)

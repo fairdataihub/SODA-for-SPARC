@@ -93,6 +93,7 @@
   "author": "SODA Team",
   "license": "MIT",
   "dependencies": {
+    "@electron/remote": "2.0.8",
     "@fortawesome/fontawesome-free": "^5.15.3",
     "@sweetalert2/theme-bulma": "^4.0.3",
     "@tarekraafat/autocomplete.js": "^10.2.6",
@@ -103,6 +104,7 @@
     "animate.css": "^4.1.1",
     "axios": "^0.19.2",
     "bootbox": "^5.5.2",
+    "bootstrap": "^4.0.0",
     "bootstrap-icons": "^1.5.0",
     "bootstrap-select": "^1.13.18",
     "check-disk-space": "^3.2.0",
@@ -135,6 +137,7 @@
     "node-localstorage": "^2.1.6",
     "notyf": "^3.9.0",
     "pdfkit": "^0.11.0",
+    "popper.js": "^1.16.1",
     "prop-types": "^15.7.2",
     "remove-markdown": "^0.3.0",
     "spur-template": "^1.1.0",
@@ -144,8 +147,7 @@
     "universal-analytics": "^0.4.23",
     "uuid": "^8.3.1",
     "v8-compile-cache": "^2.3.0",
-    "validator": "^13.7.0",
-    "@electron/remote": "2.0.8"
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "electron": "16.0.0",

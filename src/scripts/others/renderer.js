@@ -15,7 +15,6 @@ const Airtable = require("airtable");
 require("v8-compile-cache");
 const Tagify = require("@yaireo/tagify");
 const https = require("https");
-const $ = require("jquery");
 const electron = require("electron");
 const bootbox = require("bootbox");
 const DragSelect = require("dragselect");

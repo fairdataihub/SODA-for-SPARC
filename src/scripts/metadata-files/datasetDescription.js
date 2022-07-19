@@ -16,7 +16,6 @@ const addCurrentContributorsBtn = document.getElementById(
   "button-ds-add-contributor"
 );
 const contactPerson = document.getElementById("ds-contact-person");
-const currentConTable = document.getElementById("table-current-contributors");
 const generateDSBtn = document.getElementById("button-generate-ds-description");
 const addAdditionalLinkBtn = document.getElementById("button-ds-add-link");
 const datasetDescriptionFileDataset = document.getElementById("ds-name");
