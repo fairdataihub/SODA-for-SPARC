@@ -8406,6 +8406,8 @@ $(document).ready(() => {
       //Display the main dataset upload progress bar
       unHideAndSmoothScrollToElement("guided-div-dataset-upload-progress-bar");
 
+      //Upload the dataset files
+
       //const mainCurationResponse = await guided_main_curate();
       //console.log(mainCurationResponse);
     } catch (e) {
@@ -8713,13 +8715,121 @@ $(document).ready(() => {
   const guided_main_curate = async () => {
     console.log(sodaJSONObj);
 
+    const guidedUploadStatusContainer = document.getElementById(
+      "guided-upload-status-container"
+    );
+
     /*let supplementary_checks = await run_pre_flight_checks(false);
     if (!supplementary_checks) {
       return;
     }*/
     updateJSONStructureDSstructure();
 
-    client.invoke(
+    let emptyFilesFoldersResponse;
+    try {
+      emptyFilesFoldersResponse = await client.get(
+        `/curate_datasets/empty_files_and_folders`,
+        {
+          params: {
+            soda_json_structure: JSON.stringify(sodaJSONObj),
+          },
+        }
+      );
+    } catch (error) {
+      clientError(error);
+      let emessage = userErrorMessage(error);
+
+      const checkFileErrorMessage = `
+        <div class="guided--card-dataset-info">
+          <div class="guided--card-dataset-info">
+            <div class="guided--dataset-description-container" style="width: 40%">
+              <h5 class="guided--dataset-description">Upload status:</h5>
+            </div>
+            <div class="guided--dataset-content-container" style="width: 60%">
+              <h5
+                class="guided--dataset-content"
+              >
+                ${emessage}
+              </h5>
+            </div>
+          </div>
+        </div>
+      `;
+      guidedUploadStatusContainer.innerHTML = checkFileErrorMessage;
+      $("#sidebarCollapse").prop("disabled", false);
+      return;
+    }
+
+    let { data } = emptyFilesFoldersResponse;
+
+    //bring duplicate outside
+    error_files = data["empty_files"];
+    error_folders = data["empty_folders"];
+
+    let errorMessage = "";
+
+    if (error_files.length > 0) {
+      const error_message_files =
+        backend_to_frontend_warning_message(error_files);
+      errorMessage += error_message_files;
+    }
+
+    if (error_folders.length > 0) {
+      const error_message_folders =
+        backend_to_frontend_warning_message(error_folders);
+      errorMessage += error_message_folders;
+    }
+
+    if (errorMessage) {
+      errorMessage += "Would you like to continue?";
+      errorMessage = "<div style='text-align: left'>" + errorMessage + "</div>";
+      Swal.fire({
+        icon: "warning",
+        html: errorMessage,
+        showCancelButton: true,
+        cancelButtonText: "No, I want to review my files",
+        focusCancel: true,
+        confirmButtonText: "Yes, Continue",
+        backdrop: "rgba(0,0,0, 0.4)",
+        reverseButtons: reverseSwalButtons,
+        heightAuto: false,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          console.log("Ignoring file warnings, initiating dataset generation");
+          guided_initiate_generate();
+        } else {
+          $("#sidebarCollapse").prop("disabled", false);
+          const errorMessageElement = `
+            <div class="guided--card-dataset-info">
+              <div class="guided--card-dataset-info">
+                <div class="guided--dataset-description-container" style="width: 40%">
+                  <h5 class="guided--dataset-description">Upload status:</h5>
+                </div>
+                <div class="guided--dataset-content-container" style="width: 60%">
+                  <h5
+                    class="guided--dataset-content"
+                  >
+                    User to go back and review files and folders.
+                  </h5>
+                </div>
+              </div>
+            </div>
+          `;
+          guidedUploadStatusContainer.innerHTML = errorMessageElement;
+        }
+      });
+    } else {
+      console.log("No file warnings, initiating dataset generation");
+      guided_initiate_generate();
+    }
+
+    /*client.invoke(
       "api_check_empty_files_folders",
       sodaJSONObj,
       (error, res) => {
@@ -8776,7 +8886,7 @@ $(document).ready(() => {
           }
         }
       }
-    );
+    );*/
   };
   const guided_add_dataset_metadata = async (
     guidedBfAccount,
