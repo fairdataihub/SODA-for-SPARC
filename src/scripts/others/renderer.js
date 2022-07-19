@@ -1,7 +1,6 @@
 //////////////////////////////////
 // Import required modules
 //////////////////////////////////
-console.log("In Renderer");
 
 const fs = require("fs-extra");
 const os = require("os");
@@ -82,6 +81,10 @@ let introStatus = {
   subjects: false,
   samples: false,
 };
+
+console.log(globals.defaultBfAccount)
+globals.defaultBfAccount = "Sarnia"
+console.log(globals.defaultBfAccount)
 
 /**
  * Clear the Pennsieve Agent's upload queue. Should be run after pre_rlight_checks have passed.
