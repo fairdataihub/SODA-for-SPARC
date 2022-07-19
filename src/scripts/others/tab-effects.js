@@ -2288,6 +2288,9 @@ async function transitionFreeFormMode(
           document.getElementById(parentDiv).scrollTop =
             document.getElementById(parentDiv).scrollHeight;
         }
+        if (ev.getAttribute("data-next") == "div-collection-bf-dataset") {
+          //get collection during transition freeform mode
+        }
       }, delay);
     }
     setTimeout(function () {

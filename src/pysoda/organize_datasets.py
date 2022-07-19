@@ -1452,3 +1452,20 @@ def monitor_pennsieve_json_progress():
         create_soda_json_completed,
     ]
     return res
+
+
+def getCollections(account):
+    """
+    Function used to get the collections that belong to an organization
+    """
+
+    error = []
+    try:
+        bf = Pennsieve(account)
+    except Exception as e:
+        error.append("Error: Please select a valid Pennsieve account")
+        raise Exception(error)
+
+    collection_names = bf._api._get("/collections/")
+
+    return collection_names

@@ -1297,33 +1297,37 @@ var otherFundingInput = document.getElementById("ds-other-funding"),
 
 var collectionDatasetInput = document.getElementById("tagify-collection-tags"),
   collectionDatasetTags = new Tagify(collectionDatasetInput, {
-    whitelist: [
-      "autonomic ganglion",
-      "brain",
-      "colon",
-      "heart",
-      "intestine",
-      "kidney",
-      "large intestine",
-      "liver",
-      "lower urinary tract",
-      "lung",
-      "nervous system",
-      "pancreas",
-      "peripheral nervous system",
-      "small intestine",
-      "spinal cord",
-      "spleen",
-      "stomach",
-      "sympathetic nervous system",
-      "urinary bladder",
-    ],
+    whitelist: [],
     duplicates: false,
     dropdown: {
       enabled: 0,
       closeOnSelect: true,
     },
   });
+
+// collectionDatasetTags.on("input", collectionTags);
+
+function collectionTags(e) {
+  let value = e.detail.value;
+  let updated_list = [];
+  collectionDatasetTags.white = null; //reset the whitelist
+
+  //show loading animation and hide the suggestions drop down
+  collectionDatasetTags.loading(true).dropdown.hide();
+
+  client.invoke("api_getCollections", defaultBfAccount, (error, res) => {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log(res);
+      for (let i = 0; i < res.length; i++) {
+        updated_list.append(res[i]["name"]);
+      }
+      collectionDatasetTags.whitelist = updated_list; //update white list array in place
+      collectionDatasetTags.loading(false).dropdown.show(value); //render the suggestions dropdown
+    }
+  });
+}
 
 var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
   studyOrganSystemsTagify = new Tagify(studyOrganSystemsInput, {

@@ -236,6 +236,21 @@ const addNewDatasetToList = (newDataset) => {
   datasetList.push({ name: newDataset, role: "owner" });
 };
 
+$("#testing-call").click(() => {
+  let updated_list = [];
+  client.invoke("api_getCollections", defaultBfAccount, (error, res) => {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log(res);
+      for (let i = 0; i < res.length; i++) {
+        updated_list.push(res[i]["name"]);
+      }
+      collectionDatasetTags.whitelist = updated_list;
+    }
+  });
+});
+
 //Add/remove dataset from collection
 $("#button-bf-collection").click(() => {
   setTimeout(() => {
