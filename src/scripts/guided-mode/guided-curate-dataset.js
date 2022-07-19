@@ -7973,37 +7973,34 @@ $(document).ready(() => {
     );
     subjectsMetadataUploadText.innerHTML = "Uploading subjects metadata...";
     guidedUploadStatusIcon("guided-subjects-metadata-upload-status", "loading");
-    return new Promise((resolve, reject) => {
-      client.invoke(
-        "api_save_subjects_file",
-        true,
-        bfAccount,
-        datasetName,
-        undefined,
-        subjectsTableData,
-        (error, res) => {
-          if (error) {
-            guidedUploadStatusIcon(
-              "guided-subjects-metadata-upload-status",
-              "error"
-            );
-            subjectsMetadataUploadText.innerHTML = `Failed to upload subjects metadata`;
-            log.error(error);
-            console.error(error);
-            let emessage = userError(error);
-            reject(error);
-          } else {
-            guidedUploadStatusIcon(
-              "guided-subjects-metadata-upload-status",
-              "success"
-            );
-            subjectsMetadataUploadText.innerHTML = `Subjects metadata successfully uploaded`;
-            console.log("Subjects metadata added + " + res);
-            resolve(`Subjects metadata added` + res);
-          }
+    try {
+      await client.post(
+        `/prepare_metadata/submission_file`,
+        {
+          submission_file_rows: subjectsTableData,
+          filepath: "",
+          upload_boolean: true,
+        },
+        {
+          params: {
+            selected_account: bfAccount,
+            selected_dataset: datasetName,
+          },
         }
       );
-    });
+      guidedUploadStatusIcon(
+        "guided-subjects-metadata-upload-status",
+        "success"
+      );
+      subjectsMetadataUploadText.innerHTML = `Subjects metadata successfully uploaded`;
+      console.log("Subjects metadata added + " + res);
+    } catch (error) {
+      guidedUploadStatusIcon("guided-subjects-metadata-upload-status", "error");
+      subjectsMetadataUploadText.innerHTML = `Failed to upload subjects metadata`;
+      log.error(error);
+      console.error(error);
+      let emessage = userError(error);
+    }
   }
 
   async function guidedUploadSamplesMetadata(
@@ -8375,7 +8372,7 @@ $(document).ready(() => {
       unHideAndSmoothScrollToElement(
         "guided-div-dataset-metadata-upload-status-table"
       );
-      /*
+
       if (guidedSubjectsMetadata.length > 0) {
         let addSubjectsMetadataResponse = await guidedUploadSubjectsMetadata(
           guidedBfAccount,
@@ -8383,7 +8380,7 @@ $(document).ready(() => {
           guidedSubjectsMetadata
         );
         console.log(addSubjectsMetadataResponse);
-      }
+      } /*
       if (guidedSamplesMetadata.length > 0) {
         let addSamplesMetadataResponse = await guidedUploadSamplesMetadata(
           guidedBfAccount,
