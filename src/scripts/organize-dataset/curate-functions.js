@@ -4,29 +4,38 @@ var metadataFile = "";
 var jstreePreview = document.getElementById("div-dataset-tree-preview");
 const nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
 
+// Event listeners for opening the dropdown prompt
+document
+  .querySelector("#Question-getting-started-BF-account .change-current-account")
+  .addEventListener("click", function () {
+    openDropdownPrompt(this, "bf");
+  });
 
+document
+  .querySelector("#Question-getting-started-BF-dataset .change-current-account")
+  .addEventListener("click", function () {
+    openDropdownPrompt(this, "dataset", false);
+  });
 
-// Event listeners for opening the dropdown prompt 
-document.querySelector("#Question-getting-started-BF-account .change-current-account").addEventListener("click", function() {
-  openDropdownPrompt(this, 'bf')
-})
+document
+  .querySelector(
+    "#Question-generate-dataset-BF-account .change-current-account"
+  )
+  .addEventListener("click", function () {
+    openDropdownPrompt(this, "bf");
+  });
 
-document.querySelector("#Question-getting-started-BF-dataset .change-current-account").addEventListener("click", function() {
-  openDropdownPrompt(this, 'dataset', false)
-})
+document
+  .querySelector("#svg-change-current-account-generate-dropdown")
+  .addEventListener("click", function () {
+    openDropdownPrompt(this, "bf");
+  });
 
-document.querySelector("#Question-generate-dataset-BF-account .change-current-account").addEventListener("click", function() {
-  openDropdownPrompt(this, 'bf')
-})
-
-document.querySelector("#svg-change-current-account-generate-dropdown").addEventListener("click", function() {
-  openDropdownPrompt(this, 'bf')
-})
-
-document.querySelector("#change-current-account-new-ds-name").addEventListener("click", function() {
-  openDropdownPrompt(this, 'dataset')
-})
-
+document
+  .querySelector("#change-current-account-new-ds-name")
+  .addEventListener("click", function () {
+    openDropdownPrompt(this, "dataset");
+  });
 
 
 
@@ -848,8 +857,6 @@ const get_api_key = (login, password, key_name) => {
     }
   });
 };
-
-
 
 $("#select-permission-list-2").change((e) => {
   // updateDatasetList(defaultBfAccount);
