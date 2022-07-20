@@ -2346,16 +2346,11 @@ const showCurrentLicense = async () => {
   }
 };
 
-
-
 // verify the dataset is valid before allowing a user to upload
 const handleSelectedSubmitDirectory = async (filepath) => {
   if (filepath.length > 0) {
     if (filepath != null) {
-      $("#selected-local-dataset-submit").attr(
-        "placeholder",
-        `${filepath[0]}`
-      );
+      $("#selected-local-dataset-submit").attr("placeholder", `${filepath[0]}`);
 
       valid_dataset = verify_sparc_folder(filepath[0], "pennsieve");
 
@@ -2411,11 +2406,12 @@ const handleSelectedSubmitDirectory = async (filepath) => {
       }
     }
   }
-}
+};
 
-
-$("#selected-local-dataset-submit").click( async () => {
-  let datasetDirectory = await ipcRenderer.invoke("open-file-dialog-submit-dataset");
+$("#selected-local-dataset-submit").click(async () => {
+  let datasetDirectory = await ipcRenderer.invoke(
+    "open-file-dialog-submit-dataset"
+  );
   handleSelectedSubmitDirectory(datasetDirectory);
 });
 
