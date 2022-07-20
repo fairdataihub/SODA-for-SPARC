@@ -388,6 +388,23 @@ ipcMain.on("open-file-dialog-newdataset", (event) => {
   );
 });
 
+ipcMain.handle("open-file-dialog-data-deliverables", async (event) => {
+  let mainWindow = BrowserWindow.getFocusedWindow();
+
+  let dddFile = await dialog.showOpenDialog(
+    mainWindow,
+    {
+      properties: ["openFile"],
+      filters: [{ name: "DOCX", extensions: ["docx"] }],
+    })
+
+  if (dddFile) {
+    return dddFile.filePaths;
+  }
+
+  return []
+})
+
 ipcMain.handle("open-file-dialog-submit-dataset", async (event) => {
   let mainWindow = BrowserWindow.getFocusedWindow();
 

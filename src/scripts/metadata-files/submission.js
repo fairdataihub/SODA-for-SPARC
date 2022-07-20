@@ -161,6 +161,7 @@ async function helpMilestoneSubmission() {
         Swal.close();
 
         const filepath = result.value.filepath;
+        console.log(filepath)
         var award = $("#submission-sparc-award");
         log.info(`Importing Data Deliverables document: ${filepath}`);
         try {
@@ -206,36 +207,24 @@ async function helpMilestoneSubmission() {
   });
 }
 
-function openDDDimport() {
-  const dialog = require("electron").remote.dialog;
-  const BrowserWindow = require("electron").remote.BrowserWindow;
+async function openDDDimport() {
+  let filepath = await ipcRenderer.invoke("open-file-dialog-data-deliverables")
 
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
-    {
-      properties: ["openFile"],
-      filters: [{ name: "DOCX", extensions: ["docx"] }],
-    },
-    (filepath) => {
-      if (filepath) {
-        if (filepath.length > 0) {
-          if (filepath != null) {
-            document.getElementById("input-milestone-select").placeholder =
-              filepath[0];
+  console.log(filepath)
 
-            // log the successful attempt to import a data deliverables document from the user's computer
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              "Prepare Metadata - submission - import-DDD",
-              "Data Deliverables Document",
-              1
-            );
-          }
-        }
-      }
-    }
-  );
+  if (filepath.length > 0) {
+    document.getElementById("input-milestone-select").placeholder =
+      filepath[0];
+
+    // log the successful attempt to import a data deliverables document from the user's computer
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Prepare Metadata - submission - import-DDD",
+      "Data Deliverables Document",
+      1
+    );
+  }
 }
 
 // onboarding for submission file
@@ -769,7 +758,7 @@ function changeAirtableDiv(divHide, divShow, buttonHide, buttonShow) {
 function showExistingSubmissionFile(type) {
   if (
     $(`#existing-submission-file-destination`).prop("placeholder") !==
-      "Browse here" &&
+    "Browse here" &&
     $(`#Question-prepare-submission-2`).hasClass("show")
   ) {
     Swal.fire({
@@ -849,7 +838,7 @@ function importExistingSubmissionFile(type) {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       setTimeout(loadExistingSubmissionFile(filePath), 1000);
     }
   }
@@ -964,7 +953,7 @@ async function checkBFImportSubmission() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   let bfDataset = $("#bf_dataset_load_submission").text().trim();
   log.info(`Loading submission file from Pennsieve dataset: ${bfDataset}`);
   try {
