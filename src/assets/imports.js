@@ -60,8 +60,7 @@ const insertScript = async () => {
   tabEffects.type = "text/javascript";
   document.body.appendChild(tabEffects);
 
-  await ws(500)
-
+  await ws(500);
 
   const prePublishingReview = document.createElement("script");
   prePublishingReview.src = "./scripts/disseminate/prePublishingReview.js";
