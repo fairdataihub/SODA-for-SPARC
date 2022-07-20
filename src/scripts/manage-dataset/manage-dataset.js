@@ -1818,7 +1818,7 @@ $("#save-banner-image").click((event) => {
 
 $(document).ready(() => {
   ipcRenderer.on("selected-banner-image", async (event, path) => {
-    console.log("received selected-banner-image go brrr")
+    console.log("received selected-banner-image go brrr");
     console.log("The path is: " + path);
     if (path.length > 0) {
       let original_image_path = path[0];

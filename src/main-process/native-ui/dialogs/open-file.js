@@ -404,9 +404,9 @@ ipcMain.on("open-file-dialog-submit-dataset", (event) => {
 
 // Pennsieve metadata
 ipcMain.on("open-file-dialog-import-banner-image", async (event) => {
-  console.log("Dialog in main going brrr")
+  console.log("Dialog in main going brrr");
 
-  let mainWindow = BrowserWindow.getFocusedWindow()
+  let mainWindow = BrowserWindow.getFocusedWindow();
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openFile"],
     filters: [
