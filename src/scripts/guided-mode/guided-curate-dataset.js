@@ -8441,34 +8441,7 @@ $(document).ready(() => {
       guided_initiate_generate();
     }
   };
-  const guided_add_dataset_metadata = async (
-    guidedBfAccount,
-    guidedDatasetName,
-    guidedSubjectsMetadata,
-    guidedSamplesMetadata,
-    guidedSubmissionMetadataJSON
-  ) => {
-    const promises = [
-      /*guidedUploadSubmissionMetadata(
-        guidedBfAccount,
-        guidedDatasetName,
-        guidedSubmissionMetadataJSON
-      ),*/
-      guidedUploadSubjectsMetadata(
-        guidedBfAccount,
-        guidedDatasetName,
-        guidedSubjectsMetadata
-      ),
-      guidedUploadSamplesMetadata(
-        guidedBfAccount,
-        guidedDatasetName,
-        guidedSamplesMetadata
-      ),
-    ];
-    const result = await Promise.allSettled(promises);
-    console.log(result);
-    return result;
-  };
+
   $("#guided-add-subject-button").on("click", () => {
     $("#guided-subjects-intro").hide();
     $("#guided-add-subject-div").show();
