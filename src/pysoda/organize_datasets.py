@@ -1469,3 +1469,50 @@ def getCollections(account):
     collection_names = bf._api._get("/collections/")
 
     return collection_names
+
+def getCurrentCollectionTags(account, dataset):
+    """
+    Function used to get collection names of the current dataset
+    """
+    error = []
+    try:
+        bf = Pennsieve(account)
+    except Exception as error:
+        error.append("Error: Please select a valid Pennsieve account")
+        raise Exception(error)
+
+    try:
+        myds = bf.get_dataset(dataset)
+        dataset_id = myds.id
+    except Exception as e:
+        error.append("Error: Please select a valid Pennsieve dataset")
+        raise Exception(error)
+
+    currentCollectionTags = bf._api._get("/datasets/" + str(dataset_id) + "/collections")
+    return currentCollectionTags
+
+def uploadCollectionTags(account, dataset, tags):
+    """
+    Function used to upload the collection tags of a dataset to Pennsieve
+    """
+
+    error = []
+    statusResponses = []
+    try:
+        bf = Pennsieve(account)
+    except Exception as e:
+        error.append("Error: Please select a valid Pennsieve account")
+        raise Exception(error)
+
+    try:
+        myds = bf.get_dataset(dataset)
+        dataset_id = myds.id
+    except Exception as e:
+        error.append("Error: Please select a valid Pennsieve dataset")
+        raise Exception(error)
+
+    for tag in tags:
+        result = bf._api._post("/datasets/" + str(dataset_id) + "/collections?collectionId=" + str(tag))
+        statusResponses.append(result)
+
+    return statusResponses

@@ -86,6 +86,8 @@ from organize_datasets import (
     monitor_pennsieve_json_progress,
     import_pennsieve_dataset,
     getCollections,
+    getCurrentCollectionTags,
+    uploadCollectionTags,
 )
 
 import sys
@@ -142,7 +144,13 @@ class SodaApi(object):
         )
 
     def api_getCollections(self, account):
-        return getCollections(account);
+        return getCollections(account)
+
+    def api_getCurrentCollectionTags(self, account, dataset):
+        return getCurrentCollectionTags(account, dataset)
+
+    def api_uploadCollectionTags(self, account, dataset, tags):
+        return uploadCollectionTags(account, dataset, tags)
 
     def api_convert_subjects_samples_file_to_df(self, type, filepath, fields):
         return convert_subjects_samples_file_to_df(type, filepath, fields)

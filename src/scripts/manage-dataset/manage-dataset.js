@@ -236,29 +236,17 @@ const addNewDatasetToList = (newDataset) => {
   datasetList.push({ name: newDataset, role: "owner" });
 };
 
-$("#testing-call").click(() => {
-  let updated_list = [];
-  client.invoke("api_getCollections", defaultBfAccount, (error, res) => {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log(res);
-      for (let i = 0; i < res.length; i++) {
-        updated_list.push(res[i]["name"]);
-      }
-      collectionDatasetTags.whitelist = updated_list;
-    }
-  });
-});
-
 //Add/remove dataset from collection
-$("#button-bf-collection").click(() => {
-  setTimeout(() => {
+$("#button-bf-collection").click(async () => {
+  setTimeout(async () => {
     let selectedAccount = defaultBfAccount;
     let selectedDataset = defaultBfDataset;
+    let newCollectionTags = [];
+    let uploadTags = [];
+    let removeTags = [];
 
     Swal.fire({
-      title: `Adding dataset ${currentDatasetName} to collection`,
+      title: `Adding dataset ${selectedDataset} to collection`,
       html: "Please wait...",
       // timer: 5000,
       allowEscapeKey: false,
@@ -271,9 +259,53 @@ $("#button-bf-collection").click(() => {
       },
     });
 
-    log.info(`Adding dataset '${currentDatasetName}' to Collection'`);
+    console.log(collectionDatasetTags.value);
+    for (let i = 0; i < collectionDatasetTags.value.length; i++) {
+      console.log(collectionDatasetTags.value[i]["value"]);
+      newCollectionTags.push(collectionDatasetTags.value[i]["value"]);
+    }
+    // console.log(currentCollectionTags); //compare old tags with new, if any are missing send remove call
+    //then post the current tags
+    // console.log(newCollectionTags);
+
+    if (newCollectionTags === currentCollectionTags) {
+      console.log("they match");
+      //no need to upload
+    } else {
+      for (let i = 0; i < newCollectionTags.length; i++) {
+        if (!currentCollectionTags.includes(newCollectionTags[i])) {
+          //new value in old tags
+          //old collection tags still there
+          uploadTags.push(newCollectionTags[i]);
+        }
+      }
+    }
+    await uploadCollectionTags(uploadTags);
+    console.log(removeTags);
+    Swal.close();
+
+    log.info(`Adding dataset '${selectedDataset}' to Collection'`);
   }, delayAnimation);
 });
+
+async function uploadCollectionTags(tags) {
+  //tags that will be uploaded
+  return new Promise((resolve, reject) => {
+    client.invoke(
+      "api_uploadCollectionTags",
+      defaultBfAccount,
+      defaultBfDataset,
+      tags,
+      (error, res) => {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log(res);
+        }
+      }
+    );
+  });
+}
 
 const removePlaceHolder = (e) => {
   console.log(e);

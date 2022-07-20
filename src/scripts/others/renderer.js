@@ -1302,30 +1302,95 @@ var collectionDatasetInput = document.getElementById("tagify-collection-tags"),
     dropdown: {
       enabled: 0,
       closeOnSelect: true,
+      enforceWhitelist: true,
+      maxItems: 100,
+    },
+    autoComplete: {
+      enabled: true,
+      rightKey: true,
     },
   });
 
-// collectionDatasetTags.on("input", collectionTags);
+//TODO: create object with both id and name of collection tags
+//handle data accordingly
+var currentCollectionTags = [];
+$("#button-collection-dataset-confirm").click(async () => {
+  //get collection names when clicked
+  //will click when dataset is selected
+  let collection_section = document.getElementById(
+    "add_edit_bf_dataset_collection-section"
+  );
+  if (collection_section.classList.contains("is-shown")) {
+    Swal.fire({
+      title: `Getting collection tags of dataset: ${defaultBfDataset}`,
+      html: "Please wait...",
+      // timer: 5000,
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+  }
 
-function collectionTags(e) {
-  let value = e.detail.value;
-  let updated_list = [];
-  collectionDatasetTags.white = null; //reset the whitelist
+  let collection_list = await getAllCollectionTags(); //gets all collection names for org
+  let current_tags = await getCurrentCollectionTags(); //get all collections names that belongs to current dataset
 
-  //show loading animation and hide the suggestions drop down
-  collectionDatasetTags.loading(true).dropdown.hide();
+  let collectionNames = Object.keys(collection_list);
+  let collectionIds = Object.values(collection_list);
+  current_tags.sort();
+  collectionNames.sort();
 
-  client.invoke("api_getCollections", defaultBfAccount, (error, res) => {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log(res);
-      for (let i = 0; i < res.length; i++) {
-        updated_list.append(res[i]["name"]);
+  collectionDatasetTags.settings.whitelist = collectionNames;
+  currentCollectionTags = current_tags;
+  collectionDatasetTags.addTags(current_tags);
+
+  //if on collection section show sweet alert
+  if (collection_section.classList.contains("is-shown")) Swal.close();
+});
+
+async function getCurrentCollectionTags() {
+  let currentTags = [];
+  return new Promise((resolve, reject) => {
+    client.invoke(
+      "api_getCurrentCollectionTags",
+      defaultBfAccount,
+      defaultBfDataset,
+      (error, res) => {
+        if (error) {
+          console.log(error);
+          reject(error);
+        } else {
+          for (let i = 0; i < res.length; i++) {
+            currentTags.push(res[i]["name"]);
+          }
+          console.log(res);
+          resolve(currentTags);
+        }
       }
-      collectionDatasetTags.whitelist = updated_list; //update white list array in place
-      collectionDatasetTags.loading(false).dropdown.show(value); //render the suggestions dropdown
-    }
+    );
+  });
+}
+
+async function getAllCollectionTags() {
+  let updated_list = {};
+  return new Promise((resolve, reject) => {
+    client.invoke("api_getCollections", defaultBfAccount, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      } else {
+        for (let i = 0; i < res.length; i++) {
+          let name = res[i]["name"];
+          let id = res[i]["id"];
+          updated_list[name] = id;
+        }
+        resolve(updated_list);
+      }
+    });
   });
 }
 
