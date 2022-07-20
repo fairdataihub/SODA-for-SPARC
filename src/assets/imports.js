@@ -102,6 +102,14 @@ const insertScript = async () => {
 
   await ws(500);
 
+  const organizeDataset = document.createElement("script");
+  organizeDataset.src = "./scripts/organize-dataset/organizeDS.js";
+  organizeDataset.defer = true;
+  organizeDataset.type = "text/javascript";
+  document.body.appendChild(organizeDataset);
+
+  await ws(500);
+
   const manifest = document.createElement("script");
   manifest.src = "./scripts/metadata-files/manifest.js";
   manifest.defer = true;
