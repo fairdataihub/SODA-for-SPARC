@@ -88,9 +88,7 @@ function hideAllSectionsAndDeselectButtons() {
   });
 }
 
-
-showMainContent()
-
+showMainContent();
 
 // Set of functions for the footer shortcuts between sections
 // only required for when switching between section where the menu needs to change
