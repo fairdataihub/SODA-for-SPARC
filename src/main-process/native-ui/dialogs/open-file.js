@@ -420,7 +420,7 @@ ipcMain.handle("open-file-dialog-import-banner-image", async (event) => {
     return []
   }
 
-  return files.filePaths
+  return files.filePaths;
 });
 
 
