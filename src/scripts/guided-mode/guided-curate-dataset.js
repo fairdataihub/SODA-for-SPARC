@@ -5238,6 +5238,7 @@ const renderSampleMetadataTables = () => {
 
 const removePermission = (clickedPermissionRemoveButton) => {
   let permissionElementToRemove = clickedPermissionRemoveButton.closest("tr");
+  let permissionEntityType = permissionElementToRemove.attr("data-entity-type");
   let permissionNameToRemove = permissionElementToRemove
     .find(".permission-name-cell")
     .text();
@@ -5245,15 +5246,43 @@ const removePermission = (clickedPermissionRemoveButton) => {
     .find(".permission-type-cell")
     .text();
 
-  //remove the permission from the datasetStructureJSONObj
-  //TODOASDF
-  //Remove permission from the dom
+  if (permissionEntityType === "owner") {
+    notyf.open({
+      duration: "6000",
+      type: "error",
+      message:
+        "You can not modify the owner on this step. To do so, please return to the owner selection page",
+    });
+    return;
+  }
+  if (permissionEntityType === "user") {
+    const currentUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
+    const filteredUsers = currentUsers.filter((user) => {
+      return !(
+        user.userString == permissionNameToRemove &&
+        user.permission == permissionTypeToRemove
+      );
+    });
+    sodaJSONObj["digital-metadata"]["user-permissions"] = filteredUsers;
+  }
+  if (permissionEntityType === "team") {
+    const currentTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
+    const filteredTeams = currentTeams.filter((team) => {
+      return !(
+        team.teamString == permissionNameToRemove &&
+        team.permission == permissionTypeToRemove
+      );
+    });
+    sodaJSONObj["digital-metadata"]["team-permissions"] = filteredTeams;
+  }
+
+  //remove the element from the DOM
   permissionElementToRemove.remove();
 };
 
-const createPermissionsTableRowElement = (name, permission) => {
+const createPermissionsTableRowElement = (entityType, name, permission) => {
   return `
-    <tr>
+    <tr data-entity-type=${entityType}>
       <td class="middle aligned permission-name-cell">${name}</td>
       <td class="middle aligned remove-left-border permission-type-cell">${permission}</td>
       <td class="middle aligned text-center remove-left-border" style="width: 20px">
@@ -5272,16 +5301,24 @@ const renderPermissionsTable = () => {
   const users = sodaJSONObj["digital-metadata"]["user-permissions"];
   const teams = sodaJSONObj["digital-metadata"]["team-permissions"];
   permissionsTableElements.push(
-    createPermissionsTableRowElement(owner, "owner")
+    createPermissionsTableRowElement("owner", owner, "owner")
   );
   for (user of users) {
     permissionsTableElements.push(
-      createPermissionsTableRowElement(user["userString"], user["permission"])
+      createPermissionsTableRowElement(
+        "user",
+        user["userString"],
+        user["permission"]
+      )
     );
   }
   for (team of teams) {
     permissionsTableElements.push(
-      createPermissionsTableRowElement(team["teamString"], team["permission"])
+      createPermissionsTableRowElement(
+        "team",
+        team["teamString"],
+        team["permission"]
+      )
     );
   }
 
@@ -9238,8 +9275,7 @@ $(document).ready(() => {
           }
         }
       }
-      if (pageBeingLeftID === "guided-designate-permissions-tab") {
-      }
+
       if (pageBeingLeftID === "guided-add-description-tab") {
         const studyPurposeInput = document.getElementById(
           "guided-pennsieve-study-purpose"
@@ -9287,8 +9323,7 @@ $(document).ready(() => {
         datasetTags = [...new Set(datasetTags)];
         sodaJSONObj["digital-metadata"]["dataset-tags"] = datasetTags;
       }
-      if (pageBeingLeftID === "guided-designate-permissions-tab") {
-      }
+
       if (pageBeingLeftID === "guided-assign-license-tab") {
         if (isPageValid(pageBeingLeftID)) {
           setGuidedLicense("Creative Commons Attribution (CC-BY)");
