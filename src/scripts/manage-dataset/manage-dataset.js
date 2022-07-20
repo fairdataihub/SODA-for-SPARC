@@ -1645,6 +1645,7 @@ $("#edit_banner_image_button").click(async () => {
 
 // Action when user click on "Import image" button for banner image
 $("#button-import-banner-image").click(() => {
+  console.log("Clicked on import banner image button");
   $("#para-dataset-banner-image-status").html("");
   ipcRenderer.send("open-file-dialog-import-banner-image");
 });
@@ -1817,6 +1818,8 @@ $("#save-banner-image").click((event) => {
 
 $(document).ready(() => {
   ipcRenderer.on("selected-banner-image", async (event, path) => {
+    console.log("received selected-banner-image go brrr")
+    console.log("The path is: " + path);
     if (path.length > 0) {
       let original_image_path = path[0];
       let image_path = original_image_path;

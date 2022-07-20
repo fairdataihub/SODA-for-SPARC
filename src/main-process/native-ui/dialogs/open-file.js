@@ -403,21 +403,21 @@ ipcMain.on("open-file-dialog-submit-dataset", (event) => {
 });
 
 // Pennsieve metadata
-ipcMain.on("open-file-dialog-import-banner-image", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
-    {
-      properties: ["openFile"],
-      filters: [
-        { name: "Image", extensions: ["jpg", "png", "jpeg", "tiff", "tif"] },
-      ],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send("selected-banner-image", files);
-      }
-    }
-  );
+ipcMain.on("open-file-dialog-import-banner-image", async (event) => {
+  console.log("Dialog in main going brrr")
+
+  let mainWindow = BrowserWindow.getFocusedWindow()
+  let files = await dialog.showOpenDialog(mainWindow, {
+    properties: ["openFile"],
+    filters: [
+      { name: "Image", extensions: ["jpg", "png", "jpeg", "tiff", "tif"] },
+    ],
+  });
+
+  if (files) {
+    console.log("Sending files");
+    mainWindow.webContents.send("selected-banner-image", files.filePaths);
+  }
 });
 
 /// Validate import local dataset
