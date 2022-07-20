@@ -161,7 +161,7 @@ async function helpMilestoneSubmission() {
         Swal.close();
 
         const filepath = result.value.filepath;
-        console.log(filepath)
+        console.log(filepath);
         var award = $("#submission-sparc-award");
         log.info(`Importing Data Deliverables document: ${filepath}`);
         try {
@@ -208,13 +208,12 @@ async function helpMilestoneSubmission() {
 }
 
 async function openDDDimport() {
-  let filepath = await ipcRenderer.invoke("open-file-dialog-data-deliverables")
+  let filepath = await ipcRenderer.invoke("open-file-dialog-data-deliverables");
 
-  console.log(filepath)
+  console.log(filepath);
 
   if (filepath.length > 0) {
-    document.getElementById("input-milestone-select").placeholder =
-      filepath[0];
+    document.getElementById("input-milestone-select").placeholder = filepath[0];
 
     // log the successful attempt to import a data deliverables document from the user's computer
     ipcRenderer.send(
@@ -758,7 +757,7 @@ function changeAirtableDiv(divHide, divShow, buttonHide, buttonShow) {
 function showExistingSubmissionFile(type) {
   if (
     $(`#existing-submission-file-destination`).prop("placeholder") !==
-    "Browse here" &&
+      "Browse here" &&
     $(`#Question-prepare-submission-2`).hasClass("show")
   ) {
     Swal.fire({
@@ -838,7 +837,7 @@ function importExistingSubmissionFile(type) {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       setTimeout(loadExistingSubmissionFile(filePath), 1000);
     }
   }
@@ -953,7 +952,7 @@ async function checkBFImportSubmission() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   let bfDataset = $("#bf_dataset_load_submission").text().trim();
   log.info(`Loading submission file from Pennsieve dataset: ${bfDataset}`);
   try {
