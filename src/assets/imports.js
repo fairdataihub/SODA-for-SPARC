@@ -76,7 +76,7 @@ const insertScript = async () => {
   prePublishingReview.type = "text/javascript";
   document.body.appendChild(prePublishingReview);
 
-  await ws(500)
+  await ws(500);
 
   const manageDatasets = document.createElement("script");
   manageDatasets.src = "./scripts/manage-dataset/manage-dataset.js";
@@ -84,7 +84,7 @@ const insertScript = async () => {
   manageDatasets.type = "text/javascript";
   document.body.appendChild(manageDatasets);
 
-  await ws(500)
+  await ws(500);
 
   const datasetDescription = document.createElement("script");
   datasetDescription.src = "./scripts/metadata-files/datasetDescription.js";
@@ -92,7 +92,7 @@ const insertScript = async () => {
   datasetDescription.type = "text/javascript";
   document.body.appendChild(datasetDescription);
 
-  await ws(500)
+  await ws(500);
 
   const curateFunctions = document.createElement("script");
   curateFunctions.src = "./scripts/organize-dataset/curate-functions.js";
@@ -100,7 +100,7 @@ const insertScript = async () => {
   curateFunctions.type = "text/javascript";
   document.body.appendChild(curateFunctions);
 
-  await ws(500)
+  await ws(500);
 
   const manifest = document.createElement("script");
   manifest.src = "./scripts/metadata-files/manifest.js";
@@ -108,7 +108,7 @@ const insertScript = async () => {
   manifest.type = "text/javascript";
   document.body.appendChild(manifest);
 
-  await ws(500)
+  await ws(500);
 
   const readmeChanges = document.createElement("script");
   readmeChanges.src = "./scripts/metadata-files/readme-changes.js";
@@ -116,7 +116,7 @@ const insertScript = async () => {
   readmeChanges.type = "text/javascript";
   document.body.appendChild(readmeChanges);
 
-  await ws(500)
+  await ws(500);
 
   const subjectsSamples = document.createElement("script");
   subjectsSamples.src = "./scripts/metadata-files/subjects-samples.js";
@@ -124,15 +124,13 @@ const insertScript = async () => {
   subjectsSamples.type = "text/javascript";
   document.body.appendChild(subjectsSamples);
 
-  await ws(500)
+  await ws(500);
 
   const submission = document.createElement("script");
   submission.src = "./scripts/metadata-files/submission.js";
   submission.defer = true;
   submission.type = "text/javascript";
   document.body.appendChild(submission);
-
-
 };
 
 const ws = (ms) => {
