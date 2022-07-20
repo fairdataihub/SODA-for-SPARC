@@ -3,19 +3,21 @@ This file contains all of the functions related to the submission.xlsx file
 */
 
 // event listeners for opendropdown prompt
-document.querySelectorAll(".submission-change-current-account").forEach(element => {
-  element.addEventListener("click", function() {
-    openDropdownPrompt(null, 'bf')
-  })
-})
+document
+  .querySelectorAll(".submission-change-current-account")
+  .forEach((element) => {
+    element.addEventListener("click", function () {
+      openDropdownPrompt(null, "bf");
+    });
+  });
 
-document.querySelectorAll(".submission-change-current-ds").forEach(element => {
-  element.addEventListener("click", function() {
-    openDropdownPrompt(null, 'dataset')
-  })
-})
-
-
+document
+  .querySelectorAll(".submission-change-current-ds")
+  .forEach((element) => {
+    element.addEventListener("click", function () {
+      openDropdownPrompt(null, "dataset");
+    });
+  });
 
 /// save airtable api key
 const addAirtableKeyBtn = document.getElementById("button-add-airtable-key");

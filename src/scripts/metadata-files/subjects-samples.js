@@ -1,27 +1,31 @@
 // event listeners for open dropdown prompt
-document.querySelectorAll(".subjects-change-current-account").forEach(element => {
-  element.addEventListener("click", function() {
-    openDropdownPrompt(null, 'bf')
-  })
-})
+document
+  .querySelectorAll(".subjects-change-current-account")
+  .forEach((element) => {
+    element.addEventListener("click", function () {
+      openDropdownPrompt(null, "bf");
+    });
+  });
 
-document.querySelectorAll(".subjects-change-current-ds").forEach(element => {
-  element.addEventListener("click", function() {
-    openDropdownPrompt(null, 'dataset')
-  })
-})
+document.querySelectorAll(".subjects-change-current-ds").forEach((element) => {
+  element.addEventListener("click", function () {
+    openDropdownPrompt(null, "dataset");
+  });
+});
 
-document.querySelectorAll(".samples-change-current-account").forEach(element => {
-  element.addEventListener("click", function() {
-    openDropdownPrompt(null, 'bf')
-  })
-})
+document
+  .querySelectorAll(".samples-change-current-account")
+  .forEach((element) => {
+    element.addEventListener("click", function () {
+      openDropdownPrompt(null, "bf");
+    });
+  });
 
-document.querySelectorAll(".samples-change-current-ds").forEach(element => {
-  element.addEventListener("click", function() {
-    openDropdownPrompt(null, 'dataset')
-  })
-})
+document.querySelectorAll(".samples-change-current-ds").forEach((element) => {
+  element.addEventListener("click", function () {
+    openDropdownPrompt(null, "dataset");
+  });
+});
 
 var subjectsFormDiv = document.getElementById("form-add-a-subject");
 var samplesFormDiv = document.getElementById("form-add-a-sample");
