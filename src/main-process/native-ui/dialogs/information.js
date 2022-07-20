@@ -92,7 +92,6 @@ ipcMain.on("warning-no-internet-connection", (event) => {
 //   });
 // });
 
-
 // ipcMain.on("open-info-upload-limitations", (event) => {
 //   const options = {
 //     type: "info",

@@ -404,7 +404,6 @@ ipcMain.on("open-file-dialog-submit-dataset", (event) => {
 
 // Pennsieve metadata
 ipcMain.handle("open-file-dialog-import-banner-image", async (event) => {
-
   let mainWindow = BrowserWindow.getFocusedWindow();
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openFile"],
@@ -414,10 +413,10 @@ ipcMain.handle("open-file-dialog-import-banner-image", async (event) => {
   });
 
   if (!files) {
-    return []    
+    return [];
   }
 
-  return files.filePaths
+  return files.filePaths;
 });
 
 /// Validate import local dataset
