@@ -13,7 +13,7 @@ let guidedStudyOrganSystemsTagify = null;
 let guidedOtherFundingsourcesTagify = null;
 
 //main nav variables initialized to first page of guided mode
-let CURRENT_PAGE = $("#guided-dataset-starting-point-tab");
+let CURRENT_PAGE;
 
 /////////////////////////////////////////////////////////
 /////////////       Util functions      /////////////////
@@ -161,6 +161,8 @@ const guidedTransitionFromDatasetNameSubtitlePage = () => {
         .click();
     }
   }
+  //Set the current page to the guided curation page
+  CURRENT_PAGE = $("#guided-dataset-starting-point-tab");
 };
 
 const saveGuidedProgress = (guidedProgressFileName) => {
@@ -9860,6 +9862,8 @@ $(document).ready(() => {
       //switch the create new / modify existing buttons
       $("#guided-modify-dataset-name-subtitle").show();
       $("#guided-create-new-dataset").hide();
+
+      CURRENT_PAGE = null;
 
       return;
     }
