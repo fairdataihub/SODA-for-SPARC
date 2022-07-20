@@ -1,5 +1,9 @@
 const { parseJSON } = require("jquery");
 
+const guidedUploadStatusContainer = document.getElementById(
+  "guided-upload-status-container"
+);
+
 //Initialize description tagify variables as null
 //to make them accessible to functions outside of $(document).ready
 let guidedDatasetKeywordsTagify = null;
@@ -1428,6 +1432,8 @@ const traverseToTab = (targetPageID) => {
         ];
       const datasetTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
 
+      guidedDatasetTagsTagify.removeAllTags();
+
       //Try to add tags from a previous session if they exist
       //If not, try to populate the keywords entered during description metadata addition
       if (datasetTags) {
@@ -1436,8 +1442,6 @@ const traverseToTab = (targetPageID) => {
         if (descriptionMetadata["keywords"]) {
           guidedDatasetTagsTagify.addTags(descriptionMetadata["keywords"]);
         }
-      } else {
-        guidedDatasetTagsTagify.removeAllTags();
       }
     }
 
@@ -1500,6 +1504,44 @@ const traverseToTab = (targetPageID) => {
     }
 
     if (targetPageID === "guided-dataset-generation-confirmation-tab") {
+      //Reset the dataset upload UI
+      const pennsieveMetadataUploadTable = document.getElementById(
+        "guided-tbody-pennsieve-metadata-upload"
+      );
+      const pennsieveMetadataUploadTableRows =
+        pennsieveMetadataUploadTable.children;
+      for (const row of pennsieveMetadataUploadTableRows) {
+        if (row.classList.contains("permissions-upload-tr")) {
+          //delete the row to reset permissions UI
+          row.remove();
+        } else {
+          row.classList.add("hidden");
+        }
+      }
+      document
+        .getElementById("guided-div-pennsieve-metadata-upload-status-table")
+        .classList.add("hidden");
+
+      const datasetMetadataUploadTable = document.getElementById(
+        "guided-tbody-dataset-metadata-upload"
+      );
+      const datasetMetadataUploadTableRows =
+        datasetMetadataUploadTable.children;
+      for (const row of datasetMetadataUploadTableRows) {
+        row.classList.add("hidden");
+      }
+      document
+        .getElementById("guided-div-dataset-metadata-upload-status-table")
+        .classList.add("hidden");
+
+      document
+        .getElementById("guided-div-dataset-upload-progress-bar")
+        .classList.add("hidden");
+
+      //reset the progress bar to 0
+      setGuidedProgressBarValue(0);
+      guidedUploadStatusContainer.innerHTML = "";
+
       const datsetName = sodaJSONObj["digital-metadata"]["name"];
       const pennsieveDatasetName =
         sodaJSONObj["digital-metadata"]["pennsieve-dataset-name"];
@@ -1805,17 +1847,29 @@ const traverseToTab = (targetPageID) => {
     setActiveCapsule(targetPageID);
     setActiveProgressionTab(targetPageID);
 
+    const guidedBody = document.getElementById("guided-body");
+
     //Check to see if target element has the same parent as current sub step
     if (currentParentTab.attr("id") === targetPageParentTab.attr("id")) {
       CURRENT_PAGE.hide();
       CURRENT_PAGE = targetPage;
       CURRENT_PAGE.css("display", "flex");
+      //smooth scroll to top of guidedBody
+      guidedBody.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     } else {
       CURRENT_PAGE.hide();
       currentParentTab.hide();
       targetPageParentTab.show();
       CURRENT_PAGE = targetPage;
       CURRENT_PAGE.css("display", "flex");
+      //smooth scroll to top of guidedBody
+      guidedBody.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     }
   } catch (error) {
     console.log(error);
@@ -5691,7 +5745,6 @@ const guidedAddTeamPermission = (newTeamPermissionObj) => {
 const guidedRemoveTeamPermission = (teamParentElement) => {};
 
 const setGuidedLicense = (newLicense) => {
-  $(".guidedBfLicense").text(newLicense);
   sodaJSONObj["digital-metadata"]["license"] = "Creative Commons Attribution";
 };
 
@@ -7228,7 +7281,7 @@ $(document).ready(() => {
     log.info("Adding a permission for a user on a dataset");
 
     const userPermissionUploadElement = `
-        <tr id="guided-dataset-${userUUID}-permissions-upload-tr">
+        <tr id="guided-dataset-${userUUID}-permissions-upload-tr" class="permissions-upload-tr">
           <td class="middle aligned" id="guided-dataset-${userUUID}-permissions-upload-text">
             Granting ${userName} ${selectedRole} permissions...
           </td>
@@ -7320,7 +7373,7 @@ $(document).ready(() => {
     console.log(`permission: ${selectedRole}`);
 
     const teamPermissionUploadElement = `
-      <tr id="guided-dataset-${teamString}-permissions-upload-tr">
+      <tr id="guided-dataset-${teamString}-permissions-upload-tr" class="permissions-upload-tr">
         <td class="middle aligned" id="guided-dataset-${teamString}-permissions-upload-text">
           Granting ${teamString} ${selectedRole} permissions.
         </td>
@@ -7514,197 +7567,6 @@ $(document).ready(() => {
 
   //********************************************************************************************************
 
-  const guided_guidedCreateDataset = (bfAccount, datasetName) => {
-    console.log(bfAccount);
-    console.log(datasetName);
-    return new Promise((resolve, reject) => {
-      log.info(`Creating a new dataset with the name: ${datasetName}`);
-      client.invoke(
-        "api_bf_new_dataset_folder",
-        datasetName,
-        bfAccount,
-        (error, res) => {
-          if (error) {
-            notyf.open({
-              duration: "5000",
-              type: "error",
-              message: "Failed to create new datsaet",
-            });
-            log.error(error);
-            let emessage = userError(error);
-            ipcRenderer.send(
-              "track-event",
-              "Error",
-              "Manage Dataset - Create Empty Dataset",
-              datasetName
-            );
-            reject(error);
-          } else {
-            notyf.open({
-              duration: "5000",
-              type: "success",
-              message: `Dataset ${datasetName} was created successfully`,
-            });
-            log.info(`Created dataset successfully`);
-            guidedIncreaseCurateProgressBar(5);
-            console.log("added dataset + " + res);
-            resolve(res);
-          }
-        }
-      );
-    });
-  };
-
-  const guided_add_subtitle = (bfAccount, datasetName, datasetSubtitle) => {
-    return new Promise((resolve, reject) => {
-      console.log("adding subtitle");
-      log.info("Adding subtitle to dataset");
-      log.info(datasetSubtitle);
-      client.invoke(
-        "api_bf_add_subtitle",
-        bfAccount,
-        datasetName,
-        datasetSubtitle,
-        (error, res) => {
-          if (error) {
-            notyf.open({
-              duration: "5000",
-              type: "error",
-              message: "Failed to add subtitle",
-            });
-            log.error(error);
-            console.error(error);
-            let emessage = userError(error);
-            ipcRenderer.send(
-              "track-event",
-              "Error",
-              "Manage Dataset - Add/Edit Subtitle",
-              defaultBfDataset
-            );
-            reject(error);
-          } else {
-            notyf.open({
-              duration: "5000",
-              type: "success",
-              message: "Added subtitle to dataset",
-            });
-            log.info("Added subtitle to dataset");
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              "Manage Dataset - Add/Edit Subtitle",
-              defaultBfDataset
-            );
-            guidedIncreaseCurateProgressBar(5);
-            console.log("added subtitle + " + res);
-
-            resolve(`Subtitle added to ${datasetName}`);
-          }
-        }
-      );
-    });
-  };
-
-  const guided_add_banner_image = (
-    bfAccount,
-    datasetName,
-    pathToCroppedImage
-  ) => {
-    document
-      .getElementById("guided-dataset-banner-image-upload-tr")
-      .classList.remove("hidden");
-    const bannerImageUploadText = document.getElementById(
-      "guided-dataset-banner-image-upload-text"
-    );
-    bannerImageUploadText.innerHTML = "Uploading banner image...";
-    guidedUploadStatusIcon(
-      "guided-dataset-banner-image-upload-status",
-      "loading"
-    );
-
-    /*//Create a temporary banner image copy file since the upload banner image API call deletes the banner image
-    const bannerImageCopyPath = path.join(
-      path.dirname(pathToCroppedImage),
-      "banner-image-copy.png"
-    );
-    fs.copyFileSync(pathToCroppedImage, bannerImageCopyPath);
-*/
-    return new Promise((resolve, reject) => {
-      console.log(pathToCroppedImage);
-      client.invoke(
-        "api_bf_add_banner_image",
-        bfAccount,
-        datasetName,
-        pathToCroppedImage,
-        (error, res) => {
-          if (error) {
-            guidedUploadStatusIcon(
-              "guided-dataset-banner-image-upload-status",
-              "error"
-            );
-            bannerImageUploadText.innerHTML = "Failed to upload banner image.";
-            log.error(error);
-            console.error(error);
-            let emessage = userError(error);
-            reject(error);
-          } else {
-            guidedUploadStatusIcon(
-              "guided-dataset-banner-image-upload-status",
-              "success"
-            );
-            bannerImageUploadText.innerHTML =
-              "Banner image successfully uploaded";
-            console.log("Banner image added + " + res);
-            resolve(`Banner image added` + res);
-          }
-        }
-      );
-    });
-  };
-
-  const guided_add_PI_owner = async (
-    bfAccount,
-    bfDataset,
-    datasetPiOwnerUUID
-  ) => {
-    return new Promise((resolve, reject) => {
-      log.info("Changing PI Owner of datset");
-      client.invoke(
-        "api_bf_add_permission",
-        bfAccount,
-        bfDataset,
-        datasetPiOwnerUUID,
-        "owner",
-        (error, res) => {
-          if (error) {
-            guidedUploadStatusIcon(
-              "guided-dataset-pi-owner-upload-status",
-              "error"
-            );
-            ipcRenderer.send(
-              "track-event",
-              "Error",
-              "Manage Dataset - Change PI Owner",
-              bfDataset
-            );
-            log.error(error);
-            console.error(error);
-            let emessage = userError(error);
-            reject(error);
-          } else {
-            guidedUploadStatusIcon(
-              "guided-dataset-pi-owner-upload-status",
-              "success"
-            );
-            log.info("Changed PI Owner of datset");
-
-            resolve(res);
-          }
-        }
-      );
-    });
-  };
-
   const guided_add_team = (
     bfAccount,
     datasetName,
@@ -7873,40 +7735,6 @@ $(document).ready(() => {
     });
   };
 
-  const guided_add_metadata = async (bfAccount, bfDataset) => {
-    return new Promise((resolve, reject) => {
-      client.invoke(
-        "api_bf_add_description",
-        bfAccount,
-        bfDataset,
-        readMe,
-        (error, res) => {
-          if (error) {
-            notyf.open({
-              duration: "5000",
-              type: "error",
-              message: "Failed to add description",
-            });
-            log.error(error);
-            console.error(error);
-            let emessage = userError(error);
-            reject(error);
-          } else {
-            console.log(res);
-            notyf.open({
-              duration: "5000",
-              type: "success",
-              message: "Added description to dataset",
-            });
-            guidedIncreaseCurateProgressBar(5);
-            console.log("added descr + " + res);
-            resolve(`Description added to ${bfDataset}`);
-          }
-        }
-      );
-    });
-  };
-
   const guided_add_tags = async (bfDataset, tagsArray) => {
     // Add tags to dataset
     try {
@@ -7929,35 +7757,6 @@ $(document).ready(() => {
       // halt execution
       return;
     }
-  };
-
-  const guided_add_license = async (bfAccount, bfDataset, license) => {
-    return new Promise((resolve, reject) => {
-      client.invoke(
-        "api_bf_add_license",
-        bfAccount,
-        bfDataset,
-        license,
-        (error, res) => {
-          if (error) {
-            notyf.open({
-              duration: "5000",
-              type: "error",
-              message: "Failed to add license",
-            });
-            reject(error);
-          } else {
-            notyf.open({
-              duration: "5000",
-              type: "success",
-              message: "License successfully added to dataset",
-            });
-            console.log("added license + " + res);
-            resolve(`Added ${license} to ${datasetName}`);
-          }
-        }
-      );
-    });
   };
 
   const guidedUploadSubjectsMetadata = async (
@@ -8493,283 +8292,256 @@ $(document).ready(() => {
 
     // clear the Pennsieve Queue (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
     clearQueue();
-
-    try {
-      const curationRes = await client.post(`/curate_datasets/curation`, {
+    client
+      .post(`/curate_datasets/curation`, {
         soda_json_structure: sodaJSONObj,
-      });
-      main_total_generate_dataset_size =
-        curationRes["main_total_generate_dataset_size"];
-      uploadedFiles = curationRes["main_curation_uploaded_files"];
-
-      $("#sidebarCollapse").prop("disabled", false);
-      log.info("Completed curate function");
-      console.log("BAZINGA!!!!!");
-
-      // log relevant curation details about the dataset generation/Upload to Google Analytics
-      logCurationSuccessToAnalytics(
-        manifest_files_requested,
-        main_total_generate_dataset_size,
-        dataset_name,
-        dataset_destination,
-        uploadedFiles
-      );
-
-      try {
-        let responseObject = await client.get(
-          `manage_datasets/bf_dataset_account`,
-          {
-            params: {
-              selected_account: defaultBfAccount,
-            },
-          }
-        );
-        datasetList = [];
-        datasetList = responseObject.data.datasets;
-      } catch (error) {
-        clientError(error);
-      }
-    } catch (e) {
-      clientError(e);
-    }
-
-    client.invoke("api_main_curate_function", sodaJSONObj, (error, res) => {
-      if (error) {
-        $("#sidebarCollapse").prop("disabled", false);
-        var emessage = userError(error);
-        $("#guided-progress-bar-new-curate").attr("value", 0);
-        log.error(error);
-        console.error(error);
-
-        //refresh dropdowns user has access too
-        client.invoke(
-          "api_bf_dataset_account",
-          defaultBfAccount,
-          (error, result) => {
-            if (error) {
-              log.error(error);
-              console.log(error);
-              var emessage = error;
-            } else {
-              datasetList = [];
-              datasetList = result;
-            }
-          }
-        );
-      } else {
-        console.log("dataset upload function returned: " + res);
-        main_total_generate_dataset_size = res[1];
+      })
+      .then(async (curationRes) => {
+        main_total_generate_dataset_size =
+          curationRes["main_total_generate_dataset_size"];
+        uploadedFiles = curationRes["main_curation_uploaded_files"];
         $("#sidebarCollapse").prop("disabled", false);
         log.info("Completed curate function");
-        //Update the dataset dropdown to refresh datasets user has access to
-        client.invoke(
-          "api_bf_dataset_account",
-          defaultBfAccount,
-          (error, result) => {
-            if (error) {
-              log.error(error);
-              console.log(error);
-              var emessage = error;
-            } else {
-              datasetList = [];
-              datasetList = result;
-            }
-          }
-        );
-      }
-    });
 
-    // Progress tracking function for main curate
-    var timerProgress = setInterval(main_progressfunction, 1000);
-    function main_progressfunction() {
-      client.invoke("api_main_curate_function_progress", (error, res) => {
-        if (error) {
-          var emessage = userError(error);
-          log.error(error);
-          console.error(error);
-        } else {
-          const guidedUploadStatusContainer = document.getElementById(
-            "guided-upload-status-container"
+        try {
+          let responseObject = await client.get(
+            `manage_datasets/bf_dataset_account`,
+            {
+              params: {
+                selected_account: defaultBfAccount,
+              },
+            }
           );
-          let [
-            main_curate_status,
-            start_generate,
-            main_curate_progress_message,
-            main_total_generate_dataset_size,
-            main_generated_dataset_size,
-            elapsed_time_formatted,
-          ] = res;
-
-          if (start_generate === 1) {
-            $("#guided-progress-bar-new-curate").css("display", "block");
-            //Case when the dataset upload is complete
-            if (main_curate_progress_message.includes("Success: COMPLETED!")) {
-              setGuidedProgressBarValue(100);
-              console.log("guided upload complete");
-            } else {
-              const percentOfDatasetUploaded =
-                (main_generated_dataset_size /
-                  main_total_generate_dataset_size) *
-                100;
-              setGuidedProgressBarValue(percentOfDatasetUploaded);
-
-              let totalSizePrint;
-              if (main_total_generate_dataset_size < displaySize) {
-                totalSizePrint =
-                  main_total_generate_dataset_size.toFixed(2) + " B";
-              } else if (
-                main_total_generate_dataset_size <
-                displaySize * displaySize
-              ) {
-                totalSizePrint =
-                  (main_total_generate_dataset_size / displaySize).toFixed(2) +
-                  " KB";
-              } else if (
-                main_total_generate_dataset_size <
-                displaySize * displaySize * displaySize
-              ) {
-                totalSizePrint =
-                  (
-                    main_total_generate_dataset_size /
-                    displaySize /
-                    displaySize
-                  ).toFixed(2) + " MB";
-              } else {
-                totalSizePrint =
-                  (
-                    main_total_generate_dataset_size /
-                    displaySize /
-                    displaySize /
-                    displaySize
-                  ).toFixed(2) + " GB";
-              }
-              let progressMessage = `
-                <div class="guided--card-dataset-info">
-                  <div class="guided--card-dataset-info">
-                    <div class="guided--dataset-description-container" style="width: 40%">
-                      <h5 class="guided--dataset-description">Upload status:</h5>
-                    </div>
-                    <div class="guided--dataset-content-container" style="width: 60%">
-                      <h5
-                        class="guided--dataset-content"
-                      >
-                        ${main_curate_progress_message}
-                      </h5>
-                    </div>
-                  </div>
-                  <div class="guided--dataset-content-container" style="width: 60%">
-                    <h5
-                      class="guided--dataset-content"
-                      style="white-space: pre-wrap"
-                    ></h5>
-                  </div>
-                </div>
-                <div class="guided--card-dataset-info">
-                  <div class="guided--card-dataset-info">
-                    <div class="guided--dataset-description-container" style="width: 40%">
-                      <h5 class="guided--dataset-description">Upload completion percentage:</h5>
-                    </div>
-                    <div class="guided--dataset-content-container" style="width: 60%">
-                      <h5
-                        class="guided--dataset-content"
-                      >
-                        ${percentOfDatasetUploaded.toFixed(2)}%
-                      </h5>
-                    </div>
-                  </div>
-                  <div class="guided--dataset-content-container" style="width: 60%">
-                    <h5
-                      class="guided--dataset-content"
-                      style="white-space: pre-wrap"
-                    ></h5>
-                  </div>
-                </div>
-                <div class="guided--card-dataset-info">
-                  <div class="guided--card-dataset-info">
-                    <div class="guided--dataset-description-container" style="width: 40%">
-                      <h5 class="guided--dataset-description">Elapsed time:</h5>
-                    </div>
-                    <div class="guided--dataset-content-container" style="width: 60%">
-                      <h5 class="guided--dataset-content">
-                        ${elapsed_time_formatted}
-                      </h5>
-                    </div>
-                  </div>
-                  <div class="guided--dataset-content-container" style="width: 60%">
-                    <h5 class="guided--dataset-content" style="white-space: pre-wrap"></h5>
-                  </div>
-                </div>
-              `;
-              guidedUploadStatusContainer.innerHTML = progressMessage;
-            }
-          } else {
-            const uploadStatusMessage = `
-              <div class="guided--card-dataset-info">
-                <div class="guided--card-dataset-info">
-                  <div class="guided--dataset-description-container" style="width: 40%">
-                    <h5 class="guided--dataset-description">Upload status:</h5>
-                  </div>
-                  <div class="guided--dataset-content-container" style="width: 60%">
-                    <h5 class="guided--dataset-content">${main_curate_progress_message}</h5>
-                  </div>
-                </div>
-                <div class="guided--dataset-content-container" style="width: 60%">
-                  <h5 class="guided--dataset-content" style="white-space: pre-wrap"></h5>
-                </div>
-              </div>
-              <div class="guided--card-dataset-info">
-                <div class="guided--card-dataset-info">
-                  <div class="guided--dataset-description-container" style="width: 40%">
-                    <h5 class="guided--dataset-description">Elapsed time:</h5>
-                  </div>
-                  <div class="guided--dataset-content-container" style="width: 60%">
-                    <h5 class="guided--dataset-content">${elapsed_time_formatted}</h5>
-                  </div>
-                </div>
-                <div class="guided--dataset-content-container" style="width: 60%">
-                  <h5 class="guided--dataset-content" style="white-space: pre-wrap"></h5>
-                </div>
-              </div>
-            `;
-            guidedUploadStatusContainer.innerHTML = uploadStatusMessage;
-          }
-          //If the curate function is complete, clear the interval
-          if (main_curate_status === "Done") {
-            $("#sidebarCollapse").prop("disabled", false);
-            console.log("Dataset uploaded!");
-            log.info("Done curate track");
-            // then show the sidebar again
-            // forceActionSidebar("show");
-            clearInterval(timerProgress);
-            // electron.powerSaveBlocker.stop(prevent_sleep_id)
-            const uploadCompleteMessage = `
-              <div class="guided--card-dataset-info">
-                <div class="guided--card-dataset-info">
-                  <div class="guided--dataset-description-container" style="width: 40%">
-                    <h5 class="guided--dataset-description">Upload status:</h5>
-                  </div>
-                  <div class="guided--dataset-content-container" style="width: 60%">
-                    <h5 class="guided--dataset-content">Dataset successfully uploaded to Pennsieve!</h5>
-                  </div>
-                </div>
-                <div class="guided--dataset-content-container" style="width: 60%">
-                  <h5 class="guided--dataset-content" style="white-space: pre-wrap"></h5>
-                </div>
-              </div>
-            `;
-            guidedUploadStatusContainer.innerHTML = uploadCompleteMessage;
-          }
+          datasetList = [];
+          datasetList = responseObject.data.datasets;
+        } catch (error) {
+          clientError(error);
         }
+      })
+      .catch(async (error) => {
+        clientError(error);
+
+        try {
+          let responseObject = await client.get(
+            `manage_datasets/bf_dataset_account`,
+            {
+              params: {
+                selected_account: defaultBfAccount,
+              },
+            }
+          );
+          datasetList = [];
+          datasetList = responseObject.data.datasets;
+        } catch (error) {
+          clientError(error);
+        }
+
+        // wait to see if the uploaded files or size will grow once the client has time to ask for the updated information
+        // if they stay zero that means nothing was uploaded
+        if (uploadedFiles === 0 || uploadedFilesSize === 0) {
+          await wait(2000);
+        }
+
+        // log the curation errors to Google Analytics
+        logCurationErrorsToAnalytics(
+          uploadedFiles,
+          uploadedFilesSize,
+          dataset_destination,
+          main_total_generate_dataset_size,
+          increaseInFileSize,
+          datasetUploadSession
+        );
       });
-    }
+
+    const guidedUpdateUploadStatus = async () => {
+      let mainCurationProgressResponse;
+      try {
+        mainCurationProgressResponse = await client.get(
+          `/curate_datasetscuration/progress`
+        );
+      } catch (error) {
+        clientError(error);
+        let emessage = userErrorMessage(error);
+        console.error(error);
+        //Clear the interval to stop the generation of new sweet alerts after intitial error
+        clearInterval(timerProgress);
+        return;
+      }
+
+      let { data } = mainCurationProgressResponse;
+
+      main_curate_status = data["main_curate_status"];
+      const start_generate = data["start_generate"];
+      const main_curate_progress_message = data["main_curate_progress_message"];
+      main_total_generate_dataset_size =
+        data["main_total_generate_dataset_size"];
+      const main_generated_dataset_size = data["main_generated_dataset_size"];
+      const elapsed_time_formatted = data["elapsed_time_formatted"];
+
+      if (start_generate === 1) {
+        $("#guided-progress-bar-new-curate").css("display", "block");
+        //Case when the dataset upload is complete
+        if (main_curate_progress_message.includes("Success: COMPLETED!")) {
+          setGuidedProgressBarValue(100);
+          console.log("guided upload complete");
+        } else {
+          const percentOfDatasetUploaded =
+            (main_generated_dataset_size / main_total_generate_dataset_size) *
+            100;
+          setGuidedProgressBarValue(percentOfDatasetUploaded);
+
+          let totalSizePrint;
+          if (main_total_generate_dataset_size < displaySize) {
+            totalSizePrint = main_total_generate_dataset_size.toFixed(2) + " B";
+          } else if (
+            main_total_generate_dataset_size <
+            displaySize * displaySize
+          ) {
+            totalSizePrint =
+              (main_total_generate_dataset_size / displaySize).toFixed(2) +
+              " KB";
+          } else if (
+            main_total_generate_dataset_size <
+            displaySize * displaySize * displaySize
+          ) {
+            totalSizePrint =
+              (
+                main_total_generate_dataset_size /
+                displaySize /
+                displaySize
+              ).toFixed(2) + " MB";
+          } else {
+            totalSizePrint =
+              (
+                main_total_generate_dataset_size /
+                displaySize /
+                displaySize /
+                displaySize
+              ).toFixed(2) + " GB";
+          }
+          let progressMessage = `
+            <div class="guided--card-dataset-info">
+              <div class="guided--card-dataset-info">
+                <div class="guided--dataset-description-container" style="width: 40%">
+                  <h5 class="guided--dataset-description">Upload status:</h5>
+                </div>
+                <div class="guided--dataset-content-container" style="width: 60%">
+                  <h5
+                    class="guided--dataset-content"
+                  >
+                    ${main_curate_progress_message}
+                  </h5>
+                </div>
+              </div>
+              <div class="guided--dataset-content-container" style="width: 60%">
+                <h5
+                  class="guided--dataset-content"
+                  style="white-space: pre-wrap"
+                ></h5>
+              </div>
+            </div>
+            <div class="guided--card-dataset-info">
+              <div class="guided--card-dataset-info">
+                <div class="guided--dataset-description-container" style="width: 40%">
+                  <h5 class="guided--dataset-description">Upload completion percentage:</h5>
+                </div>
+                <div class="guided--dataset-content-container" style="width: 60%">
+                  <h5
+                    class="guided--dataset-content"
+                  >
+                    ${percentOfDatasetUploaded.toFixed(2)}%
+                  </h5>
+                </div>
+              </div>
+              <div class="guided--dataset-content-container" style="width: 60%">
+                <h5
+                  class="guided--dataset-content"
+                  style="white-space: pre-wrap"
+                ></h5>
+              </div>
+            </div>
+            <div class="guided--card-dataset-info">
+              <div class="guided--card-dataset-info">
+                <div class="guided--dataset-description-container" style="width: 40%">
+                  <h5 class="guided--dataset-description">Elapsed time:</h5>
+                </div>
+                <div class="guided--dataset-content-container" style="width: 60%">
+                  <h5 class="guided--dataset-content">
+                    ${elapsed_time_formatted}
+                  </h5>
+                </div>
+              </div>
+              <div class="guided--dataset-content-container" style="width: 60%">
+                <h5 class="guided--dataset-content" style="white-space: pre-wrap"></h5>
+              </div>
+            </div>
+          `;
+          guidedUploadStatusContainer.innerHTML = progressMessage;
+        }
+      } else {
+        const uploadStatusMessage = `
+          <div class="guided--card-dataset-info">
+            <div class="guided--card-dataset-info">
+              <div class="guided--dataset-description-container" style="width: 40%">
+                <h5 class="guided--dataset-description">Upload status:</h5>
+              </div>
+              <div class="guided--dataset-content-container" style="width: 60%">
+                <h5 class="guided--dataset-content">${main_curate_progress_message}</h5>
+              </div>
+            </div>
+            <div class="guided--dataset-content-container" style="width: 60%">
+              <h5 class="guided--dataset-content" style="white-space: pre-wrap"></h5>
+            </div>
+          </div>
+          <div class="guided--card-dataset-info">
+            <div class="guided--card-dataset-info">
+              <div class="guided--dataset-description-container" style="width: 40%">
+                <h5 class="guided--dataset-description">Elapsed time:</h5>
+              </div>
+              <div class="guided--dataset-content-container" style="width: 60%">
+                <h5 class="guided--dataset-content">${elapsed_time_formatted}</h5>
+              </div>
+            </div>
+            <div class="guided--dataset-content-container" style="width: 60%">
+              <h5 class="guided--dataset-content" style="white-space: pre-wrap"></h5>
+            </div>
+          </div>
+        `;
+        guidedUploadStatusContainer.innerHTML = uploadStatusMessage;
+      }
+      //If the curate function is complete, clear the interval
+      if (main_curate_status === "Done") {
+        $("#sidebarCollapse").prop("disabled", false);
+        console.log("Dataset uploaded!");
+        log.info("Done curate track");
+        // then show the sidebar again
+        // forceActionSidebar("show");
+        clearInterval(timerProgress);
+        // electron.powerSaveBlocker.stop(prevent_sleep_id)
+        const uploadCompleteMessage = `
+          <div class="guided--card-dataset-info">
+            <div class="guided--card-dataset-info">
+              <div class="guided--dataset-description-container" style="width: 40%">
+                <h5 class="guided--dataset-description">Upload status:</h5>
+              </div>
+              <div class="guided--dataset-content-container" style="width: 60%">
+                <h5 class="guided--dataset-content">Dataset successfully uploaded to Pennsieve!</h5>
+              </div>
+            </div>
+            <div class="guided--dataset-content-container" style="width: 60%">
+              <h5 class="guided--dataset-content" style="white-space: pre-wrap"></h5>
+            </div>
+          </div>
+        `;
+        guidedUploadStatusContainer.innerHTML = uploadCompleteMessage;
+      }
+    };
+    // Progress tracking function for main curate
+    var timerProgress = setInterval(guidedUpdateUploadStatus, 1000);
   };
 
   const guided_main_curate = async () => {
     console.log(sodaJSONObj);
-
-    const guidedUploadStatusContainer = document.getElementById(
-      "guided-upload-status-container"
-    );
 
     updateJSONStructureDSstructure();
 
@@ -9829,6 +9601,8 @@ $(document).ready(() => {
       }
       if (pageBeingLeftID === "guided-add-tags-tab") {
         let datasetTags = getTagsFromTagifyElement(guidedDatasetTagsTagify);
+        //remove duplicates from datasetTags
+        datasetTags = [...new Set(datasetTags)];
         sodaJSONObj["digital-metadata"]["dataset-tags"] = datasetTags;
       }
       if (pageBeingLeftID === "guided-designate-permissions-tab") {
