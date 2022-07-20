@@ -1470,6 +1470,7 @@ def getCollections(account):
 
     return collection_names
 
+
 def getCurrentCollectionTags(account, dataset):
     """
     Function used to get collection names of the current dataset
@@ -1488,8 +1489,11 @@ def getCurrentCollectionTags(account, dataset):
         error.append("Error: Please select a valid Pennsieve dataset")
         raise Exception(error)
 
-    currentCollectionTags = bf._api._get("/datasets/" + str(dataset_id) + "/collections")
+    currentCollectionTags = bf._api._get(
+        "/datasets/" + str(dataset_id) + "/collections"
+    )
     return currentCollectionTags
+
 
 def uploadCollectionTags(account, dataset, tags):
     """
@@ -1512,7 +1516,9 @@ def uploadCollectionTags(account, dataset, tags):
         raise Exception(error)
 
     for tag in tags:
-        result = bf._api._post("/datasets/" + str(dataset_id) + "/collections?collectionId=" + str(tag))
+        result = bf._api._post(
+            "/datasets/" + str(dataset_id) + "/collections?collectionId=" + str(tag)
+        )
         statusResponses.append(result)
 
     return statusResponses
