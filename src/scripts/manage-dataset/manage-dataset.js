@@ -2346,74 +2346,77 @@ const showCurrentLicense = async () => {
   }
 };
 
-$("#selected-local-dataset-submit").click(() => {
-  ipcRenderer.send("open-file-dialog-submit-dataset");
-});
 
-$(document).ready(() => {
-  ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
-    if (filepath.length > 0) {
-      if (filepath != null) {
-        $("#selected-local-dataset-submit").attr(
-          "placeholder",
-          `${filepath[0]}`
-        );
 
-        valid_dataset = verify_sparc_folder(filepath[0], "pennsieve");
+// verify the dataset is valid before allowing a user to upload
+const handleSelectedSubmitDirectory = async (filepath) => {
+  if (filepath.length > 0) {
+    if (filepath != null) {
+      $("#selected-local-dataset-submit").attr(
+        "placeholder",
+        `${filepath[0]}`
+      );
 
-        if (valid_dataset == true) {
-          $("#button_upload_local_folder_confirm").click();
-          $("#button-submit-dataset").show();
-          $("#button-submit-dataset").addClass("pulse-blue");
+      valid_dataset = verify_sparc_folder(filepath[0], "pennsieve");
 
-          // remove pulse class after 4 seconds
-          // pulse animation lasts 2 seconds => 2 pulses
-          setTimeout(() => {
-            $(".pulse-blue").removeClass("pulse-blue");
-          }, 4000);
-        } else {
-          Swal.fire({
-            icon: "warning",
-            text: "This folder does not seem to be a SPARC dataset folder. Are you sure you want to proceed?",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            showCancelButton: true,
-            focusCancel: true,
-            confirmButtonText: "Yes",
-            cancelButtonText: "Cancel",
-            reverseButtons: reverseSwalButtons,
-            showClass: {
-              popup: "animate__animated animate__zoomIn animate__faster",
-            },
-            hideClass: {
-              popup: "animate__animated animate__zoomOut animate__faster",
-            },
-          }).then((result) => {
-            if (result.isConfirmed) {
-              $("#button_upload_local_folder_confirm").click();
-              $("#button-submit-dataset").show();
-              $("#button-submit-dataset").addClass("pulse-blue");
+      if (valid_dataset == true) {
+        $("#button_upload_local_folder_confirm").click();
+        $("#button-submit-dataset").show();
+        $("#button-submit-dataset").addClass("pulse-blue");
 
-              // remove pulse class after 4 seconds
-              // pulse animation lasts 2 seconds => 2 pulses
-              setTimeout(() => {
-                $(".pulse-blue").removeClass("pulse-blue");
-              }, 4000);
-            } else {
-              $("#input-destination-getting-started-locally").attr(
-                "placeholder",
-                "Browse here"
-              );
-              $("#selected-local-dataset-submit").attr(
-                "placeholder",
-                "Browse here"
-              );
-            }
-          });
-        }
+        // remove pulse class after 4 seconds
+        // pulse animation lasts 2 seconds => 2 pulses
+        setTimeout(() => {
+          $(".pulse-blue").removeClass("pulse-blue");
+        }, 4000);
+      } else {
+        Swal.fire({
+          icon: "warning",
+          text: "This folder does not seem to be a SPARC dataset folder. Are you sure you want to proceed?",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showCancelButton: true,
+          focusCancel: true,
+          confirmButtonText: "Yes",
+          cancelButtonText: "Cancel",
+          reverseButtons: reverseSwalButtons,
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $("#button_upload_local_folder_confirm").click();
+            $("#button-submit-dataset").show();
+            $("#button-submit-dataset").addClass("pulse-blue");
+
+            // remove pulse class after 4 seconds
+            // pulse animation lasts 2 seconds => 2 pulses
+            setTimeout(() => {
+              $(".pulse-blue").removeClass("pulse-blue");
+            }, 4000);
+          } else {
+            $("#input-destination-getting-started-locally").attr(
+              "placeholder",
+              "Browse here"
+            );
+            $("#selected-local-dataset-submit").attr(
+              "placeholder",
+              "Browse here"
+            );
+          }
+        });
       }
     }
-  });
+  }
+}
+
+
+$("#selected-local-dataset-submit").click( async () => {
+  let datasetDirectory = await ipcRenderer.invoke("open-file-dialog-submit-dataset");
+  handleSelectedSubmitDirectory(datasetDirectory);
 });
 
 function walk(directory, filepaths = []) {

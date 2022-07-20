@@ -388,23 +388,26 @@ ipcMain.on("open-file-dialog-newdataset", (event) => {
   );
 });
 
-ipcMain.on("open-file-dialog-submit-dataset", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
+ipcMain.handle("open-file-dialog-submit-dataset", async (event) => {
+  let mainWindow = BrowserWindow.getFocusedWindow();
+
+  let datasetDirectory = await dialog.showOpenDialog(
+    mainWindow,
     {
       properties: ["openDirectory"],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send("selected-submit-dataset", files);
-      }
     }
-  );
-});
+  )
+
+  if (datasetDirectory) {
+    return datasetDirectory.filePaths
+  } 
+
+  return []
+})
+
 
 // Pennsieve metadata
 ipcMain.handle("open-file-dialog-import-banner-image", async (event) => {
-
   let mainWindow = BrowserWindow.getFocusedWindow();
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openFile"],
@@ -414,11 +417,12 @@ ipcMain.handle("open-file-dialog-import-banner-image", async (event) => {
   });
 
   if (!files) {
-    return []    
+    return []
   }
 
   return files.filePaths
 });
+
 
 /// Validate import local dataset
 ipcMain.on("open-file-dialog-validate-local-ds", (event) => {
