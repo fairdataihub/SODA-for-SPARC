@@ -1,3 +1,16 @@
+// opendropdown event listeners
+document.querySelectorAll(".dd-change-current-account").forEach(element => {
+  element.addEventListener("click", function() {
+    openDropdownPrompt(null, 'bf')
+  })
+})
+
+document.querySelectorAll(".dd-change-current-ds").forEach(element => {
+  element.addEventListener("click", function() {
+    openDropdownPrompt(null, 'dataset')
+  })
+})
+
 // Prepare Dataset Description File
 const dsAwardArray = document.getElementById("ds-description-award-list");
 const dsContributorArrayLast1 = document.getElementById(

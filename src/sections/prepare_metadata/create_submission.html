@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+
+<section
+  id="create_submission-section"
+  class="section js-section u-category-windows"
+  style="padding-left: 15px; overflow-y: hidden"
+>
+  <header class="section-header">
+    <div
+      style="
+        display: inline-flex;
+        align-items: center;
+        flex-direction: row;
+        width: 94.5%;
+        padding-right: 20px;
+        margin-bottom: 50px;
+      "
+    >
+      <div
+        style="
+          width: 100%;
+          border-bottom: 3px solid #b80d49;
+          margin-bottom: -5px;
+        "
+      >
+        <div class="need-help-div">
+          <h2>Prepare Metadata - Create submission.xlsx</h2>
+          <a
+            target="_blank"
+            href="https://docs.sodaforsparc.io/docs/prepare-metadata/create-submission"
+            >Need help?</a
+          >
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div
+    class="main-tabs show"
+    id="create_submission-tab"
+    style="
+      height: calc(100% - 143px);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      margin-left: -70px;
+    "
+  >
+    <div
+      class="individual-question prepare-submission show"
+      id="Question-prepare-submission-1"
+    >
+      <div class="ui form" style="width: 100%">
+        <div class="grouped fields">
+          <label style="font-size: 17px; color: var(--color-bg-plum)"
+            >Please select an option below:
+          </label>
+          <div
+            style="display: flex; flex-direction: row; justify-content: center"
+          >
+            <div style="margin: 15px 0">
+              <div
+                class="option-card radio-button"
+                id="Question-prepare-submission-1-new"
+                data-current="Question-prepare-submission-1"
+                data-next="Question-prepare-submission-2"
+                onclick="transitionFreeFormMode(this, 'Question-prepare-submission-1', 'create_submission-tab', '', 'individual-question prepare-submission')"
+                style="
+                  max-width: 180px;
+                  height: 220px !important;
+                  width: 180px !important;
+                "
+              >
+                <div class="card-head">
+                  <div class="folder-checkbox">
+                    <input
+                      class="folder-input-check"
+                      name="submission-1"
+                      type="radio"
+                      id="submission-1-B"
+                    />
+                    <label for="submission-1-B"></label>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="40px"
+                    height="40px"
+                    fill="var(--color-accent)"
+                    class="bi bi-file-earmark-plus"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+                    />
+                    <path
+                      d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"
+                    />
+                  </svg>
+                  <h2>I want to start a new submission.xlsx file</h2>
+                </div>
+              </div>
+            </div>
+            <div style="margin: 15px 0">
+              <div
+                class="option-card radio-button"
+                data-current="Question-prepare-submission-1"
+                data-next="Question-prepare-submission-3"
+                onclick="transitionFreeFormMode(this, 'Question-prepare-submission-1', 'create_submission-tab', '', 'individual-question prepare-submission')"
+                style="
+                  max-width: 180px;
+                  height: 220px !important;
+                  width: 180px !important;
+                "
+              >
+                <div class="card-head">
+                  <div class="folder-checkbox">
+                    <input
+                      class="folder-input-check"
+                      name="submission-1"
+                      type="radio"
+                      id="submission-1-A"
+                    />
+                    <label for="submission-1-A"></label>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <i
+                    class="far fa-save"
+                    style="color: var(--color-bg-orange)"
+                  ></i>
+                  <h2>
+                    I want to continue working on an existing submission.xlsx
+                    file
+                  </h2>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="individual-question prepare-submission"
+      id="Question-prepare-submission-3"
+    >
+      <div class="ui form" style="width: 100%">
+        <div class="grouped fields">
+          <label style="font-size: 17px; color: var(--color-bg-plum)"
+            >Where is the existing submission.xlsx file located?
+          </label>
+          <div
+            style="display: flex; flex-direction: row; justify-content: center"
+          >
+            <div style="margin: 15px 0">
+              <div
+                class="option-card radio-button"
+                id="Question-prepare-submission-3-new"
+                data-current="Question-prepare-submission-3"
+                data-next="Question-prepare-submission-4"
+                onclick="transitionFreeFormMode(this, 'Question-prepare-submission-3', 'create_submission-tab', '', 'individual-question prepare-submission')"
+                style="
+                  max-width: 180px;
+                  height: 220px !important;
+                  width: 180px !important;
+                "
+              >
+                <div class="card-head">
+                  <div class="folder-checkbox">
+                    <input
+                      class="folder-input-check"
+                      name="submission-3"
+                      type="radio"
+                      id="submission-3-B"
+                    />
+                    <label for="submission-3-B"></label>
+                  </div>
+                </div>
+                <div class="card-body metadata">
+                  <svg
+                    width="40px"
+                    height="40px"
+                    viewBox="0 0 16 16"
+                    class="bi bi-laptop"
+                    fill="var(--color-bg-plum)"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M13.5 3h-11a.5.5 0 0 0-.5.5V11h12V3.5a.5.5 0 0 0-.5-.5zm-11-1A1.5 1.5 0 0 0 1 3.5V12h14V3.5A1.5 1.5 0 0 0 13.5 2h-11z"
+                    />
+                    <path
+                      d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z"
+                    />
+                  </svg>
+                  <h2>On my computer</h2>
+                </div>
+              </div>
+            </div>
+            <div style="margin: 15px 0">
+              <div
+                class="option-card radio-button"
+                data-current="Question-prepare-submission-3"
+                data-next="Question-prepare-submission-5"
+                onclick="transitionFreeFormMode(this, 'Question-prepare-submission-3', 'create_submission-tab', '', 'individual-question prepare-submission')"
+                style="
+                  max-width: 180px;
+                  height: 220px !important;
+                  width: 180px !important;
+                "
+              >
+                <div class="card-head">
+                  <div class="folder-checkbox">
+                    <input
+                      class="folder-input-check"
+                      name="submission-3"
+                      type="radio"
+                      id="submission-3-A"
+                    />
+                    <label for="submission-3-A"></label>
+                  </div>
+                </div>
+                <div class="card-body metadata">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="50px"
+                    height="50px"
+                    fill="var(--tagify-dd-color-primary)"
+                    class="bi bi-cloud-check"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10.354 6.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708 0z"
+                    />
+                    <path
+                      d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"
+                    />
+                  </svg>
+                  <h2>On Pennsieve</h2>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="individual-question prepare-submission"
+      id="Question-prepare-submission-5"
+    >
+      <div class="ui form" style="width: 100%">
+        <div class="grouped fields">
+          <label style="font-size: 17px; color: var(--color-bg-plum)"
+            >Which Pennsieve dataset is the submission.xlsx located at?
+          </label>
+          <div
+            class="field"
+            style="margin: 0 auto !important; width: 500px !important"
+          >
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                margin-top: 15px;
+                height: auto;
+                box-shadow: 0px 0px 10px #d5d5d5;
+                padding: 15px 25px;
+                border-radius: 5px;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;
+                "
+              >
+                <div class="card-container prepare-submission">
+                  <div style="width: 100%">
+                    <h5
+                      class="card-left"
+                      style="text-align: right; padding-right: 5px"
+                    >
+                      Current account:
+                    </h5>
+                    <div
+                      class="change-current-account submission-change-current-account"
+                    >
+                      <h5 class="card-right bf-account-span">None</h5>
+
+                      <svg
+                        class="svg-change-current-account bi bi-pencil-fill"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        fill="#000"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                style="display: flex; flex-direction: row; margin-bottom: 15px"
+              >
+                <div class="card-container prepare-submission">
+                  <div>
+                    <h5
+                      class="card-left"
+                      style="text-align: right; padding-right: 5px"
+                    >
+                      Account details:
+                    </h5>
+                    <h5 class="card-right bf-account-details-span">None</h5>
+                  </div>
+                </div>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;
+                "
+              >
+                <div class="card-container prepare-submission">
+                  <div style="width: 100%">
+                    <h5
+                      class="card-left"
+                      style="text-align: right; padding-right: 5px"
+                    >
+                      Current dataset:
+                    </h5>
+                    <div
+                      class="change-current-account submission-change-current-ds"
+                    >
+                      <h5
+                        id="bf_dataset_load_submission"
+                        class="card-right bf-dataset-span"
+                      >
+                        None
+                      </h5>
+
+                      <svg
+                        class="svg-change-current-account dataset bi bi-pencil-fill"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        fill="#000"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="ui active green inline loader small"
+                  style="display: none"
+                ></div>
+              </div>
+            </div>
+            <div
+              style="
+                display: none;
+                flex-direction: row;
+                justify-content: center;
+                margin: 10px auto;
+              "
+              id="div-check-bf-import-submission"
+            >
+              <button
+                onclick="checkBFImportSubmission()"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                "
+              >
+                Confirm
+              </button>
+              <button
+                onclick="transitionFreeFormMode(this, 'Question-prepare-submission-5', 'create_submission-tab', '', 'individual-question prepare-submission')"
+                data-next="Question-prepare-submission-2"
+                id="button-fake-confirm-existing-bf-submission-file-load"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                  display: none;
+                "
+              >
+                Fake Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Question 4: Ask for existing submission.xlsx file -->
+    <div
+      class="individual-question prepare-submission"
+      id="Question-prepare-submission-4"
+      style="width: 85%"
+    >
+      <div class="ui form" style="width: 450px">
+        <div class="grouped fields">
+          <label
+            style="
+              font-size: 17px;
+              color: var(--color-bg-plum);
+              text-align: center;
+            "
+            >Browse for your <i>submission.xlsx</i> file below:
+          </label>
+          <div
+            class="field"
+            style="margin: 15px auto; display: flex; justify-content: center"
+          >
+            <input
+              class="form-control"
+              style="width: 450px !important"
+              onclick="showExistingSubmissionFile()"
+              id="existing-submission-file-destination"
+              type="text"
+              readonly
+              placeholder="Browse here"
+            />
+          </div>
+          <div
+            style="
+              display: none;
+              flex-direction: row;
+              justify-content: center;
+              margin: 10px auto;
+            "
+            id="div-confirm-existing-submission-import"
+          >
+            <button
+              onclick="importExistingSubmissionFile()"
+              style="
+                cursor: pointer;
+                border-radius: 8px;
+                margin: 10px auto;
+                width: 100px;
+                height: 30px;
+                background: var(--color-light-green);
+                color: #fff;
+                font-weight: 600;
+                border: none;
+                font-size: 13px;
+              "
+            >
+              Confirm
+            </button>
+            <button
+              onclick="transitionFreeFormMode(this, 'Question-prepare-submission-4', 'create_submission-tab', '', 'individual-question prepare-submission')"
+              data-next="Question-prepare-submission-2"
+              id="button-fake-confirm-existing-submission-file-load"
+              style="
+                cursor: pointer;
+                border-radius: 8px;
+                margin: 10px auto;
+                width: 100px;
+                height: 30px;
+                background: var(--color-light-green);
+                color: #fff;
+                font-weight: 600;
+                border: none;
+                font-size: 13px;
+                display: none;
+              "
+            >
+              Fake Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="individual-question prepare-submission"
+      id="Question-prepare-submission-2"
+      style="margin-top: 20px"
+    >
+      <div class="ui form" style="width: 100%">
+        <div class="field">
+          <label
+            style="
+              font-size: 17px;
+              color: var(--color-bg-plum);
+              margin-bottom: 20px;
+              text-align: center;
+            "
+            >Fill out the sections below and generate your submission file
+          </label>
+          <div class="ui styled accordion" style="width: 100% !important">
+            <div
+              id="submission-title-accordion"
+              class="title active"
+              style="background: var(--color-bg-light-green-button)"
+            >
+              <i class="dropdown icon"></i>
+              Award and milestone information
+            </div>
+            <div class="content active" id="submission-accordion">
+              <div
+                style="
+                  display: block;
+                  width: 90%;
+                  margin: 0 auto;
+                  font-size: 13px;
+                "
+              >
+                <div>
+                  <div
+                    class="div-dd-info"
+                    style="
+                      margin-top: 10px;
+                      margin-bottom: 15px;
+                      flex-direction: column;
+                    "
+                  >
+                    <div
+                      class="demo-controls-head"
+                      style="text-align: left; width: 90%; margin-bottom: 5px"
+                    >
+                      <div style="width: 100%">
+                        <font style="font-weight: 600; color: #090909">
+                          SPARC Award number:
+                        </font>
+                        <i
+                          class="fas fa-info-circle popover-tooltip"
+                          data-content="SPARC award associated with the dataset."
+                          rel="popover"
+                          data-placement="right"
+                          data-html="true"
+                          data-trigger="hover"
+                          style="margin-left: 5px; color: black"
+                        ></i>
+                      </div>
+                    </div>
+
+                    <div class="demo-controls-body" style="width: 90%">
+                      <div class="ui input modified">
+                        <input
+                          type="text"
+                          id="submission-sparc-award"
+                          name="dataset name"
+                          placeholder="Type here..."
+                          style="font-size: 14px"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      style="
+                        display: flex;
+                        justify-content: center;
+                        margin: 0 auto;
+                        text-decoration: none;
+                        text-align: center;
+                        font-size: 14px;
+                        margin-top: 10px;
+                        padding-bottom: 20px;
+                      "
+                    >
+                      <a
+                        onclick="helpSPARCAward('submission')"
+                        target="_blank"
+                        id="a-help-submission-Airtable"
+                      >
+                        Click here to import my SPARC award from Airtable
+                      </a>
+                      <div
+                        id="select-sparc-award-submission-spinner"
+                        class="ui active green inline loader sparc-award small"
+                        style="display: none; margin-left: 10px"
+                      ></div>
+                    </div>
+                  </div>
+
+                  <div
+                    class="div-dd-info"
+                    style="
+                      margin-top: 10px;
+                      margin-bottom: 15px;
+                      flex-direction: column;
+                    "
+                  >
+                    <div
+                      class="demo-controls-head"
+                      style="text-align: left; width: 90%; margin-bottom: 5px"
+                    >
+                      <div style="width: 100%">
+                        <font style="font-weight: 600; color: #090909">
+                          Enter the milestone(s):
+                        </font>
+                        <i
+                          class="fas fa-info-circle popover-tooltip"
+                          data-content="Manually enter milestone(s) for your SPARC award. Enter 'Not specified in the Data Deliverables document' if this dataset isn't associated with any milestone initially planned.
+                                  <br/><br/>
+                                  Hit 'Enter' to register it."
+                          rel="popover"
+                          data-placement="right"
+                          data-html="true"
+                          data-trigger="hover"
+                          style="margin-left: 5px; color: black"
+                        ></i>
+                      </div>
+                    </div>
+                    <div class="demo-controls-body" style="width: 90%">
+                      <div class="ui input modified">
+                        <textarea
+                          id="selected-milestone-1"
+                          class="form-container-input-bf"
+                          placeholder="Type here and hit 'Enter' after each keyword."
+                        ></textarea>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="div-dd-info"
+                  style="
+                    margin-top: 10px;
+                    margin-bottom: 15px;
+                    flex-direction: column;
+                  "
+                >
+                  <div
+                    class="demo-controls-head"
+                    style="text-align: left; width: 90%; margin-bottom: 5px"
+                  >
+                    <div style="width: 100%">
+                      <font style="font-weight: 600; color: #090909"
+                        >Completion date:
+                      </font>
+                      <i
+                        class="fas fa-info-circle popover-tooltip"
+                        data-content="Enter the completion date for your milestone(s) specified above."
+                        rel="popover"
+                        data-placement="right"
+                        data-html="true"
+                        data-trigger="hover"
+                        style="margin-left: 5px; color: black"
+                      ></i>
+                    </div>
+                  </div>
+                  <div class="demo-controls-body" style="width: 90%">
+                    <div class="ui input modified">
+                      <!-- <input
+                              type="date"
+                              id="submission-completion-date"
+                            /> -->
+                      <select id="submission-completion-date">
+                        <option value="Select" selected>
+                          Select an option
+                        </option>
+                        <option value="Enter my own date">
+                          Enter my own date
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: center;
+                    margin: 0 auto;
+                    text-decoration: underline;
+                    text-align: center;
+                    font-size: 14px;
+                    margin-top: 25px;
+                    padding-bottom: 20px;
+                  "
+                >
+                  <a
+                    onclick="helpMilestoneSubmission()"
+                    id="a-help-submission-milestones"
+                  >
+                    Click here to import milestones from my Data Deliverables
+                    document
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            style="
+              display: flex;
+              flex-direction: row;
+              justify-content: center;
+              margin: 10px auto;
+            "
+          >
+            <button
+              id="button-generate-submission"
+              type="button"
+              class="btn_animated popover-tooltip"
+              data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+              rel="popover"
+              data-placement="top"
+              data-trigger="hover"
+              data-next="Question-prepare-submission-6"
+              data-current="Generate-submission"
+              onclick="transitionFreeFormMode(this, 'Question-prepare-submission-2', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
+              style="
+                margin: 10px;
+                width: 140px;
+                border: none !important;
+                overflow: visible !important;
+              "
+              data-original-title=""
+              title=""
+            >
+              Generate
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="individual-question prepare-submission"
+      id="Question-prepare-submission-6"
+    >
+      <div class="ui form" style="width: 100%">
+        <div class="grouped fields">
+          <label
+            style="
+              font-size: 17px;
+              color: var(--color-bg-plum);
+              text-align: center;
+            "
+            >Where would you like to generate your submission.xlsx file?
+            <br />
+            <p class="sub-text">Please select one:</p></label
+          >
+
+          <div
+            style="display: flex; flex-direction: row; justify-content: center"
+          >
+            <div style="margin: 15px 0">
+              <div
+                class="option-card radio-button"
+                data-next="Question-prepare-submission-7"
+                onclick="transitionFreeFormMode(this, 'Question-prepare-submission-6', 'create_submission-tab', '', 'prepare-submission')"
+              >
+                <div class="card-head">
+                  <div class="folder-checkbox">
+                    <input
+                      class="folder-input-check"
+                      name="generate-submission-1"
+                      id="prepare-submission-local"
+                      type="radio"
+                    />
+                    <label for="prepare-submission-local"></label>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <svg
+                    width="40px"
+                    height="40px"
+                    viewBox="0 0 16 16"
+                    class="bi bi-laptop"
+                    fill="var(--color-bg-plum)"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M13.5 3h-11a.5.5 0 0 0-.5.5V11h12V3.5a.5.5 0 0 0-.5-.5zm-11-1A1.5 1.5 0 0 0 1 3.5V12h14V3.5A1.5 1.5 0 0 0 13.5 2h-11z"
+                    />
+                    <path
+                      d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z"
+                    />
+                  </svg>
+                  <h2>Generate on my computer</h2>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin: 15px 0">
+              <div
+                class="option-card radio-button"
+                data-next="Question-prepare-submission-8"
+                onclick="transitionFreeFormMode(this, 'Question-prepare-submission-6', 'create_submission-tab', '', 'prepare-submission')"
+              >
+                <div class="card-head">
+                  <div class="folder-checkbox">
+                    <input
+                      class="folder-input-check"
+                      name="generate-submission-1"
+                      id="prepare-submission-pennsieve"
+                      type="radio"
+                    />
+                    <label for="prepare-submission-pennsieve"></label>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <svg
+                    width="50px"
+                    height="50px"
+                    viewBox="0 0 16 16"
+                    class="bi bi-cloud-arrow-up"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"
+                      fill="#565E6B"
+                    />
+                    <path
+                      fill-rule="evenodd"
+                      d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2z"
+                      fill="#B80D49"
+                    />
+                  </svg>
+                  <h2>Generate directly on Pennsieve</h2>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="individual-question prepare-submission"
+      id="Question-prepare-submission-7"
+    >
+      <div class="ui form" style="width: 450px">
+        <div class="grouped fields">
+          <label
+            style="
+              font-size: 17px;
+              color: var(--color-bg-plum);
+              text-align: center;
+            "
+            >At which location should we generate the submission.xlsx
+            file?</label
+          >
+          <div
+            class="field"
+            style="margin: 15px auto; display: flex; justify-content: center"
+          >
+            <input
+              class="form-control"
+              style="width: 450px !important"
+              onclick="openFileBrowserDestination('submission')"
+              id="input-destination-generate-submission-locally"
+              type="text"
+              readonly
+              placeholder="Browse here"
+            />
+          </div>
+        </div>
+        <div
+          id="div-confirm-destination-submission-locally"
+          style="
+            display: none;
+            flex-direction: row;
+            justify-content: center;
+            margin: 10px auto;
+          "
+        >
+          <button
+            id="btn-confirm-local-submission-destination"
+            onclick="generateSubmissionHelper(false)"
+            type="button"
+            class="btn_animated popover-tooltip"
+            data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+            rel="popover"
+            data-placement="top"
+            data-trigger="hover"
+            style="
+              margin: 10px;
+              width: 140px;
+              border: none !important;
+              overflow: visible !important;
+            "
+          >
+            Generate
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="individual-question prepare-submission"
+      id="Question-prepare-submission-8"
+    >
+      <div class="ui form" style="width: 100%">
+        <div class="grouped fields">
+          <label style="font-size: 17px; color: var(--color-bg-plum)"
+            >Is this the Pennsieve dataset you want to upload the
+            submission.xlsx to?
+          </label>
+          <div
+            class="field"
+            style="margin: 0 auto !important; width: 500px !important"
+          >
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                margin-top: 15px;
+                height: auto;
+                box-shadow: 0px 0px 10px #d5d5d5;
+                padding: 15px 25px;
+                border-radius: 5px;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;
+                "
+              >
+                <div class="card-container prepare-submission">
+                  <div style="width: 100%">
+                    <h5
+                      class="card-left"
+                      style="text-align: right; padding-right: 5px"
+                    >
+                      Current account:
+                    </h5>
+                    <div
+                      class="change-current-account submission-change-current-account"
+                    >
+                      <h5 class="card-right bf-account-span">None</h5>
+
+                      <svg
+                        class="svg-change-current-account bi bi-pencil-fill"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        fill="#000"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                style="display: flex; flex-direction: row; margin-bottom: 15px"
+              >
+                <div class="card-container prepare-submission">
+                  <div>
+                    <h5
+                      class="card-left"
+                      style="text-align: right; padding-right: 5px"
+                    >
+                      Account details:
+                    </h5>
+                    <h5 class="card-right bf-account-details-span">None</h5>
+                  </div>
+                </div>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;
+                "
+              >
+                <div class="card-container prepare-submission">
+                  <div style="width: 100%">
+                    <h5
+                      class="card-left"
+                      style="text-align: right; padding-right: 5px"
+                    >
+                      Current dataset:
+                    </h5>
+                    <div
+                      class="change-current-account submission-change-current-ds"
+                    >
+                      <h5
+                        id="bf_dataset_generate_submission"
+                        class="card-right bf-dataset-span"
+                      >
+                        None
+                      </h5>
+
+                      <svg
+                        class="svg-change-current-account dataset bi bi-pencil-fill"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        fill="#000"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="ui active green inline loader small"
+                  style="display: none"
+                ></div>
+              </div>
+            </div>
+            <div
+              style="
+                display: none;
+                flex-direction: row;
+                justify-content: center;
+                margin: 10px auto;
+              "
+              id="div-check-bf-generate-submission"
+            >
+              <button
+                onclick="generateSubmissionHelper(true)"
+                type="button"
+                class="btn_animated popover-tooltip"
+                data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+                rel="popover"
+                data-placement="top"
+                data-trigger="hover"
+                style="
+                  margin: 10px;
+                  width: 140px;
+                  border: none !important;
+                  overflow: visible !important;
+                "
+              >
+                Generate
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-div">
+    <button type="button" class="transition-btn prev" data-section="main_tabs">
+      <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
+    </button>
+    <button
+      onclick="resetSubmission()"
+      class="start-over"
+      style="
+        margin: 0;
+        position: absolute;
+        left: 48%;
+        transform: translateX(-55%);
+      "
+    >
+      <i
+        class="fas fa-sync-alt"
+        style="margin-right: 10px; font-size: inherit"
+      ></i>
+      Start over
+    </button>
+    <button
+      type="button"
+      class="transition-btn prev"
+      data-section="create_dataset_description"
+      style="width: auto"
+    >
+      Create dataset_description.xlsx<i
+        class="fas fa-arrow-right"
+        style="margin-left: 10px"
+      ></i>
+    </button>
+  </div>
+</section>
