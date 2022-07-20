@@ -92,20 +92,6 @@ ipcMain.on("warning-no-internet-connection", (event) => {
 //   });
 // });
 
-// ipcMain.on("warning-banner-image-below-1024", (event, currentSize) => {
-//   const options = {
-//     type: "info",
-//     title: "Warning",
-//     message:
-//       "Although not mandatory, it is highly recommended to upload a banner image with display size of at least 1024 px. Your cropped image is " +
-//       currentSize +
-//       " px. Would you like to continue?",
-//     buttons: ["Yes", "No"],
-//   };
-//   dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
-//     event.sender.send("show-banner-image-below-1024", index);
-//   });
-// });
 
 // ipcMain.on("open-info-upload-limitations", (event) => {
 //   const options = {
