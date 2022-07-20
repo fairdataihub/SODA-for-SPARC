@@ -40,6 +40,8 @@ function handleSectionTrigger(event) {
     $(".shared-folder-structure-element").appendTo(
       $("#guided-folder-structure-container")
     );
+    dataset_path = document.getElementById("input-global-path");
+    scroll_box = document.querySelector("#organize-dataset-tab");
   }
   // move the folder structuring elements back to free-form mode if they were borrowed
   // for guided mode
