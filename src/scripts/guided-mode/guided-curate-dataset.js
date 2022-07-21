@@ -308,8 +308,10 @@ const renderProgressCards = (progressFileJSONdata) => {
     const progressFileName = progressFile["digital-metadata"]["name"] || "";
     const progressFileSubtitle =
       progressFile["digital-metadata"]["subtitle"] || "No designated subtitle";
+    console.log(progressFile);
+    console.log(progressFile["digital-metadata"]);
     let progressFileOwnerName =
-      progressFile["digital-metadata"]["pi-owner"]["name"];
+      progressFile?.["digital-metadata"]?.["pi-owner"]?.["name"] || "";
 
     const progressFileLastModified = progressFile["last-modified"];
 
