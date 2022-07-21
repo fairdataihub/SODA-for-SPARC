@@ -179,7 +179,7 @@ async function helpMilestoneSubmission() {
           var informationJson = {};
           informationJson = parseJson(milestonePath);
           informationJson[award] = milestoneObj;
-          console.log(informationJson)
+          console.log(informationJson);
           fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
           Swal.fire({
             backdrop: "rgba(0,0,0, 0.4)",
@@ -298,7 +298,7 @@ function changeAwardInput() {
 
   /// when DD is provided
   if (award in informationJson) {
-    console.log("Found award number")
+    console.log("Found award number");
     ddBolean = true;
     var milestoneObj = informationJson[award];
     console.log(milestoneObj);
