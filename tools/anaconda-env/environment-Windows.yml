@@ -21,6 +21,7 @@ dependencies:
   - biopython == 1.79
   - gevent == 21.12.0
   - flask == 2.0.2
+  - werkzeug == 2.0.2
   - flask_restx
   - protobuf == 3.20.0
   - PyInstaller == 4.7
