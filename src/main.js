@@ -130,6 +130,13 @@ const exitPyProc = () => {
     killPythonProcess();
     pyflaskProcess = null;
     PORT = null;
+  } else if (process.platform === "darwin") {
+    const cmd = require("child_process").spawnSync("kill", [
+      "-9",
+      pyflaskProcess.pid,
+    ]);
+    pyflaskProcess = null;
+    PORT = null;
   } else {
     // kill signal to pyProc
     pyflaskProcess.kill();
