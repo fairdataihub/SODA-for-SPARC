@@ -449,10 +449,10 @@
                   class="guided--panel hidden"
                   id="guided-div-warning-before-deleting-pool-sub-sam-structure"
                 >
-                  <h1 class="guided--text-sub-step">
+                  <h2 class="guided--text-sub-step">
                     Click Next to confirm that your dataset does not contain
                     human or non-human subjects
-                  </h1>
+                  </h2>
                   <p class="guided--help-text">
                     Please note that clicking next will skip the steps where you
                     specify your subject and sample structure. You will be able
@@ -683,10 +683,10 @@
                   id="guided-warning-before-deleting-primary-samples-container"
                 >
                   <div class="guided--section w-100">
-                    <h1 class="guided--text-sub-step">
+                    <h2 class="guided--text-sub-step">
                       Click Next to confirm you have no primary data for your
                       samples.
-                    </h1>
+                    </h2>
                     <p class="guided--help-text">
                       Please note that clicking next will remove all primary
                       sample data from your dataset.
@@ -770,10 +770,10 @@
                   id="guided-warning-before-deleting-primary-pools-and-subjects-container"
                 >
                   <div class="guided--section w-100">
-                    <h1 class="guided--text-sub-step">
+                    <h2 class="guided--text-sub-step">
                       Click Next to confirm you have no primary data for your
                       subjects or samples.
-                    </h1>
+                    </h2>
                     <p class="guided--help-text">
                       Please note that clicking next will remove all primary
                       sample data added in the previous step as well as any data
@@ -890,10 +890,10 @@
                   id="guided-warning-before-deleting-source-samples-container"
                 >
                   <div class="guided--section w-100">
-                    <h1 class="guided--text-sub-step">
+                    <h2 class="guided--text-sub-step">
                       Click Next to confirm you have no source data for your
                       samples.
-                    </h1>
+                    </h2>
                     <p class="guided--help-text">
                       Please note that clicking next will remove all source
                       sample data from your dataset.
@@ -974,10 +974,10 @@
                   id="guided-warning-before-deleting-source-pools-and-subjects-container"
                 >
                   <div class="guided--section w-100">
-                    <h1 class="guided--text-sub-step">
+                    <h2 class="guided--text-sub-step">
                       Click Next to confirm you have no source data for your
                       subjects or samples.
-                    </h1>
+                    </h2>
                     <p class="guided--help-text">
                       Please note that clicking next will remove all source
                       sample data added in the previous step as well as any data
@@ -993,12 +993,14 @@
             class="guided--panel hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
           >
             <div class="guided--section w-100">
-              <h1 class="guided--text-sub-step">Derivative data for samples</h1>
+              <h1 class="guided--text-sub-step">
+                Specify your dataset's derivative data
+              </h1>
               <p class="guided--help-text w-100">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry. Lorem Ipsum has been the industry's standard dummy
-                text ever since the 1500s, when an unknown printer took a galley
-                of type and scrambled it to make a type specimen book.
+                Derivative data is any data products derived from the original
+                data. Derivative data includes data such as measurements from
+                images, 3d reconstructions from serial sections, or file
+                conversions.
               </p>
             </div>
 
@@ -1096,10 +1098,10 @@
                   id="guided-warning-before-deleting-derivative-samples-container"
                 >
                   <div class="guided--section w-100">
-                    <h1 class="guided--text-sub-step">
+                    <h2 class="guided--text-sub-step">
                       Click Next to confirm you have no derivative data for your
                       samples.
-                    </h1>
+                    </h2>
                     <p class="guided--help-text">
                       Please note that clicking next will remove all derivative
                       sample data from your dataset.
@@ -1183,10 +1185,10 @@
                   id="guided-warning-before-deleting-derivative-pools-and-subjects-container"
                 >
                   <div class="guided--section w-100">
-                    <h1 class="guided--text-sub-step">
+                    <h2 class="guided--text-sub-step">
                       Click Next to confirm you have no derivative data for your
                       subjects or samples.
-                    </h1>
+                    </h2>
                     <p class="guided--help-text">
                       Please note that clicking next will remove all derivative
                       sample data added in the previous step as well as any data
@@ -1203,17 +1205,19 @@
             class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
           >
             <div class="guided--section w-100">
-              <h1 class="guided--text-sub-step">Code data</h1>
+              <h1 class="guided--text-sub-step">
+                Specify your dataset's code data
+              </h1>
               <p class="guided--help-text w-100">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry. Lorem Ipsum has been the industry's standard dummy
-                text ever since the 1500s, when an unknown printer took a galley
-                of type and scrambled it to make a type specimen book.
+                Code data is <b>required if</b> code was used in the generation
+                of your dataset. If code was used in the generation of your
+                dataset, your code folder should contain the source code and any
+                supporting code.
               </p>
             </div>
             <div class="guided--section">
               <label class="guided--form-label centered"
-                >Does your dataset have code data?
+                >Was code used in the generation of your dataset?
               </label>
 
               <div class="guided--radio-button-container">
@@ -1246,17 +1250,17 @@
             class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
           >
             <div class="guided--section w-100">
-              <h1 class="guided--text-sub-step">Docs data</h1>
+              <h1 class="guided--text-sub-step">
+                Specify your dataset's docs data
+              </h1>
               <p class="guided--help-text w-100">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry. Lorem Ipsum has been the industry's standard dummy
-                text ever since the 1500s, when an unknown printer took a galley
-                of type and scrambled it to make a type specimen book.
+                Docs data is <b>required if</b> your dataset contains supporting
+                files that don't belong to anoy of the other folders
               </p>
             </div>
             <div class="guided--section">
               <label class="guided--form-label centered"
-                >Does your dataset have docs data?
+                >Do you have docs data that you would like to add?
               </label>
 
               <div class="guided--radio-button-container">
@@ -1289,17 +1293,18 @@
             class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
           >
             <div class="guided--section w-100">
-              <h1 class="guided--text-sub-step">Protocol data</h1>
+              <h1 class="guided--text-sub-step">
+                Specify your dataset's protocol data
+              </h1>
               <p class="guided--help-text w-100">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry. Lorem Ipsum has been the industry's standard dummy
-                text ever since the 1500s, when an unknown printer took a galley
-                of type and scrambled it to make a type specimen book.
+                Protocol data is <b>required if</b> your dataset contains
+                supplementary files to accompany the experimental protocols
+                submitted to Protocols.io.
               </p>
             </div>
             <div class="guided--section">
               <label class="guided--form-label centered"
-                >Does your dataset have protocol data?
+                >Would you like to add protocol data to your dataset?
               </label>
 
               <div class="guided--radio-button-container">
@@ -1728,10 +1733,10 @@
                   class="guided--section"
                   id="guided-section-enter-data-derivatives-manually"
                 >
-                  <h1 class="guided--text-sub-step">
+                  <h2 class="guided--text-sub-step">
                     Click Next to skip importing data deliverables and enter
                     submission metadata manually
-                  </h1>
+                  </h2>
                 </div>
               </div>
               <div
@@ -1996,6 +2001,12 @@
             </ul>
             <div class="guided--section neumorphic mt-xl">
               <h2 class="guided--text-sub-step mt-0">Dataset information</h2>
+              <p
+                class="guided--text-input-instructions text-center"
+                style="margin-top: -15px"
+              >
+                Basic information about the dataset
+              </p>
               <label class="guided--form-label mt-xl required"
                 >Study type:</label
               >

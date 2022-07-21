@@ -23,7 +23,7 @@ async function handleSectionTrigger(event) {
   const sectionId = `${event.target.dataset.section}-section`;
 
   if (sectionId === "guided_mode-section") {
-    if (previousCurationMode === "free-form") {
+    if (previousCurationMode === "free-form" || previousCurationMode === "") {
       //TRANSITION FROM FREE-FORM => GUIDED MODE
       organizeDSglobalPath = document.getElementById(
         "guided-input-global-path"

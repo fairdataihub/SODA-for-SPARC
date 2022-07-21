@@ -1871,7 +1871,6 @@ const traverseToTab = (targetPageID) => {
       //smooth scroll to top of guidedBody
       guidedBody.scrollTo({
         top: 0,
-        behavior: "smooth",
       });
     }
   } catch (error) {
@@ -6363,6 +6362,7 @@ $(document).ready(() => {
         saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
         guidedTransitionFromDatasetNameSubtitlePage();
+        resetGuidedRadioButtons("guided-dataset-starting-point-tab");
       } else {
         if (datasetName == "") {
           errorArray.push({
