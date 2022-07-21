@@ -161,7 +161,6 @@ async function helpMilestoneSubmission() {
         Swal.close();
 
         const filepath = result.value.filepath;
-        console.log(filepath);
         var award = $("#submission-sparc-award");
         log.info(`Importing Data Deliverables document: ${filepath}`);
         try {
@@ -180,6 +179,7 @@ async function helpMilestoneSubmission() {
           var informationJson = {};
           informationJson = parseJson(milestonePath);
           informationJson[award] = milestoneObj;
+          console.log(informationJson)
           fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
           Swal.fire({
             backdrop: "rgba(0,0,0, 0.4)",
@@ -294,10 +294,14 @@ function changeAwardInput() {
   var milestoneValueArray = [];
   completionDateArray.push("Enter my own date");
 
+  console.log(informationJson);
+
   /// when DD is provided
   if (award in informationJson) {
+    console.log("Found award number")
     ddBolean = true;
     var milestoneObj = informationJson[award];
+    console.log(milestoneObj);
     // Load milestone values once users choose an award number
     var milestoneKey = Object.keys(milestoneObj);
 
