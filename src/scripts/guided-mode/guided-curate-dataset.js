@@ -309,7 +309,11 @@ const renderProgressCards = (progressFileJSONdata) => {
     const progressFileSubtitle =
       progressFile["digital-metadata"]["subtitle"] || "No designated subtitle";
     let progressFileOwnerName =
-      progressFile["digital-metadata"]["pi-owner"]["name"];
+      sodaJSONObj["digital-metadata"]["pi-owner"]["name"];
+    if (!progressFileOwnerName) {
+      progressFileOwnerName = "Not designated yet";
+    }
+
     const progressFileLastModified = progressFile["last-modified"];
 
     return `
@@ -2687,6 +2691,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
   sodaJSONObj["digital-metadata"] = {};
   sodaJSONObj["digital-metadata"]["description"] = {};
+  sodaJSONObj["digital-metadata"]["pi-owner"] = {};
   sodaJSONObj["digital-metadata"]["user-permissions"] = [];
   sodaJSONObj["digital-metadata"]["team-permissions"] = [];
   sodaJSONObj["completed-tabs"] = [];
@@ -5297,7 +5302,7 @@ const createPermissionsTableRowElement = (entityType, name, permission) => {
 };
 const renderPermissionsTable = () => {
   let permissionsTableElements = [];
-  const owner = sodaJSONObj["digital-metadata"]["pi-owner"]["name"];
+  const owner = sodaJSONObj["digital-metadata"]["pi-owner"]["userString"];
   const users = sodaJSONObj["digital-metadata"]["user-permissions"];
   const teams = sodaJSONObj["digital-metadata"]["team-permissions"];
   permissionsTableElements.push(
