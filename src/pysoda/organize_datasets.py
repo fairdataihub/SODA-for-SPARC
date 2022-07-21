@@ -1520,7 +1520,8 @@ def upload_collection_tags(account, dataset, tags):
     for tag in tags:
         jsonfile = {"collectionId": tag}
         result = bf._api._put(
-            "/datasets/" + str(dataset_id) + "/collections", json=jsonfile,
+            "/datasets/" + str(dataset_id) + "/collections",
+            json=jsonfile,
         )
         statusResponses.append(result)
 
@@ -1533,7 +1534,6 @@ def remove_collection_tags(account, dataset, tags):
     @params
         tags: List of collection ids (int)
     """
-
 
     error = []
     statusResponses = []
@@ -1548,7 +1548,7 @@ def remove_collection_tags(account, dataset, tags):
         myds = bf.get_dataset(dataset)
         dataset_id = myds.id
     except Exception as e:
-        error.append('Error: Please select a valid dataset')
+        error.append("Error: Please select a valid dataset")
         raise Exception(error)
 
     for tag in tags:
@@ -1556,8 +1556,9 @@ def remove_collection_tags(account, dataset, tags):
             "/datasets/" + str(dataset_id) + "/collections/" + str(tag)
         )
         statusResponses.append(result)
-    
+
     return statusResponses
+
 
 def upload_new_tags(account, dataset, tags):
     """
@@ -1584,9 +1585,7 @@ def upload_new_tags(account, dataset, tags):
 
     for tag in tags:
         jsonfile = {"name": tag}
-        result = bf._api._post(
-            "/collections", json=jsonfile
-        )
+        result = bf._api._post("/collections", json=jsonfile)
         statusResponses.append(result)
 
     return statusResponses
