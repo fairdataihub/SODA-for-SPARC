@@ -6358,14 +6358,13 @@ $(document).ready(() => {
 
         //Get the users information and set them as PI if a PI has not been designated yet
         if (sodaJSONObj["digital-metadata"]["pi-owner"] == undefined) {
-          let user = await getUserInformation();
+          const user = await api.getUserInformation();
           const originalDatasetCreator = {
             userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
             UUID: user["id"],
             name: `${user["firstName"]} ${user["lastName"]}`,
           };
           setGuidedDatasetPiOwner(originalDatasetCreator);
-          generateAlertMessage($("#guided-designated-PI-info"));
         }
         setGuidedDatasetName(datasetName);
         setGuidedDatasetSubtitle(datasetSubtitle);
