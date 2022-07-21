@@ -8002,7 +8002,7 @@ $(document).ready(() => {
     let dataset_destination;
 
     if (sodaJSONObj["generate-dataset"]["destination"] == "bf") {
-      //sodaJSONObj["generate-dataset"]["generate-option"] = "new";
+      sodaJSONObj["generate-dataset"]["generate-option"] = "new";
       //Replace files and folders since guided mode always uploads to an existing Pennsieve dataset
       sodaJSONObj["generate-dataset"]["if-existing"] = "replace";
       sodaJSONObj["generate-dataset"]["if-existing-files"] = "replace";
