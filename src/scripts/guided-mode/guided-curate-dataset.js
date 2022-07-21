@@ -308,10 +308,8 @@ const renderProgressCards = (progressFileJSONdata) => {
     const progressFileName = progressFile["digital-metadata"]["name"] || "";
     const progressFileSubtitle =
       progressFile["digital-metadata"]["subtitle"] || "No designated subtitle";
-    console.log(progressFile);
-    console.log(progressFile["digital-metadata"]);
-    let progressFileOwnerName =
-      progressFile?.["digital-metadata"]?.["pi-owner"]?.["name"] || "";
+    const progressFileOwnerName =
+      progressFile["digital-metadata"]["pi-owner"]["name"] || "Not designated";
 
     const progressFileLastModified = progressFile["last-modified"];
 
@@ -2301,6 +2299,8 @@ const setActiveSubPage = (pageIdToActivate) => {
         "guided-submission-completion-date"
       );
 
+      guidedSubmissionTagsTagify.removeAllTags();
+
       //If a sparc award exists in sodaJSONObj, set and disable sparc award input
       //If not, refresh the input and enable it
       if (sparcAward) {
@@ -2318,8 +2318,6 @@ const setActiveSubPage = (pageIdToActivate) => {
           new Set(selectedMilestones.map((milestone) => milestone.milestone))
         );
         guidedSubmissionTagsTagify.addTags(uniqueMilestones);
-      } else {
-        guidedSubmissionTagsTagify.removeAllTags();
       }
 
       //If completionDate exists in sodaJSONObj, set and disable completion date input
@@ -9605,7 +9603,7 @@ $(document).ready(() => {
       }
       if (pageBeingLeftID === "guided-protocols-tab") {
         const buttonYesImportProtocols = document.getElementById(
-          "guided-button-import-protocols"
+          "guided-button-import-protocols-io"
         );
         const buttonNoEnterProtocolsManually = document.getElementById(
           "guided-section-enter-protocols-manually"

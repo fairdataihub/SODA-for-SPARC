@@ -1695,7 +1695,8 @@
                     style="
                       background-color: var(--color-light-green) !important;
                     "
-                    onclick="guidedHelpMilestoneSubmission()"
+                    onclick="helpMilestoneSubmission('guided')
+                    "
                   >
                     Import data deliverables
                   </button>
@@ -1802,83 +1803,6 @@
                   ></select>
                 </div>
               </div>
-              <div
-                class="guided--section hidden"
-                id="guided-div-import-data-deliverables"
-              >
-                <button
-                  class="ui primary button"
-                  style="background-color: var(--color-light-green) !important"
-                  onclick="guidedHelpMilestoneSubmission()"
-                >
-                  Import data deliverables
-                </button>
-                <div
-                  class="guided--panel hidden mt-xl"
-                  id="guided-div-data-deliverables-import"
-                >
-                  <h2 class="guided--text-sub-step mb-0">
-                    Select the milestones to be supplied to the NIH
-                  </h2>
-                  <table
-                    class="ui celled striped table"
-                    id="milestones-table"
-                    style="margin-bottom: 25px; width: 900px"
-                  >
-                    <thead>
-                      <tr>
-                        <th></th>
-                        <th>Description</th>
-                        <th>Milestone</th>
-                        <th class="center aligned">Completion date</th>
-                      </tr>
-                    </thead>
-                    <tbody id="milestones-table-container"></tbody>
-                  </table>
-                  <button
-                    class="ui primary button"
-                    id="guided-button-save-checked-milestones"
-                    style="
-                      background-color: var(--color-light-green) !important;
-                    "
-                  >
-                    Continue
-                  </button>
-                  <button
-                    class="ui primary button hidden"
-                    id="guided-button-edit-checked-milestones"
-                    style="
-                      background-color: var(--color-light-green) !important;
-                      display: none;
-                    "
-                  >
-                    Edit milestones
-                  </button>
-                  <div
-                    class="guided--panel hidden mt-xl"
-                    id="guided-div-completion-date-selection"
-                  ></div>
-                  <button
-                    class="ui primary button mt-md"
-                    id="guided-button-save-checked-completion-date"
-                    style="
-                      background-color: var(--color-light-green) !important;
-                    "
-                  >
-                    Continue
-                  </button>
-                  <button
-                    class="ui primary button mt-md"
-                    id="guided-button-edit-checked-completion-date"
-                    style="
-                      background-color: var(--color-light-green) !important;
-                      display: none;
-                    "
-                  >
-                    Edit completion date
-                  </button>
-                </div>
-              </div>
             </div>
             <div
               class="guided--panel hidden"
@@ -1969,7 +1893,7 @@
               <div class="guided--radio-button-container">
                 <button
                   class="ui positive basic button guided--radio-button"
-                  id="guided-button-import-protocols"
+                  id="guided-button-import-protocols-io"
                   data-next-element="guided-div-protocols-import"
                   data-button-config-value="protocols-imported"
                   data-button-config-value-state="yes"
