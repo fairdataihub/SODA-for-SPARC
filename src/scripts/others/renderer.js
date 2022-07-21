@@ -1372,11 +1372,11 @@ async function getCurrentCollectionTags() {
           for (let i = 0; i < res.length; i++) {
             let name = res[i]["name"];
             let id = res[i]["id"];
-            if(name.includes(",")) {
+            if (name.includes(",")) {
               let replaced_name = name.replace(/,/g, "，");
-              currentTags[replaced_name] = {"id": id, "original-name": name};
+              currentTags[replaced_name] = { id: id, "original-name": name };
             } else {
-              currentTags[name] = {"id": id};
+              currentTags[name] = { id: id };
             }
           }
           console.log(currentTags);
@@ -1400,11 +1400,14 @@ async function getAllCollectionTags() {
         for (let i = 0; i < res.length; i++) {
           let name = res[i]["name"];
           let id = res[i]["id"];
-          if(name.includes(",")) {
+          if (name.includes(",")) {
             let replaced_name = res[i]["name"].replace(/,/g, "，");
-            allCollectionTags[replaced_name] = {id: id, "original-name": name};
+            allCollectionTags[replaced_name] = {
+              id: id,
+              "original-name": name,
+            };
           } else {
-            allCollectionTags[name] = {id: id};
+            allCollectionTags[name] = { id: id };
           }
         }
         console.log(allCollectionTags);

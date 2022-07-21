@@ -265,27 +265,27 @@ $("#button-bf-collection").click(async () => {
     //updated collection tags are gathered
     for (let i = 0; i < collectionDatasetTags.value.length; i++) {
       let tagName = collectionDatasetTags.value[i]["value"];
-      if(tagName.includes("，")) {
+      if (tagName.includes("，")) {
         console.log("replacing: " + tagName);
         let originalCommaName = tagName.replace(/，/g, ",");
         console.log(originalCommaName);
-        newCollectionTags.push(originalCommaName); 
+        newCollectionTags.push(originalCommaName);
       } else {
         newCollectionTags.push(tagName);
       }
     }
 
     //check if old collections tags are still there
-    for(var [key, value] of Object.entries(currentTags)) {
-      if(key.includes("，")) {
+    for (var [key, value] of Object.entries(currentTags)) {
+      if (key.includes("，")) {
         //key was modified so compare with original-name
-        if(!(newCollectionsTags.includes(value["original-name"]))) {
+        if (!newCollectionsTags.includes(value["original-name"])) {
           //did not match with original name so it was removed
           removeTags.push(value["id"]);
         }
       } else {
         //key was not modified
-        if(!(newCollectionTags.includes(key))) {
+        if (!newCollectionTags.includes(key)) {
           //key is not in updated tags so it was removed
           removeTags.push(value["id"]);
         }
@@ -299,14 +299,14 @@ $("#button-bf-collection").click(async () => {
     //whiteListedTags: tags that have already been created on Pennsieve
     //newTags: tags that are new and need to be created on Pennsieve before assigning to dataset
     //removeTags: tags that are not in newCollectionTag array and will be removed from dataset
-    for(let i = 0; i < newCollectionTags.length; i++) {
-      if(newCollectionTags[i].includes(",")) {
+    for (let i = 0; i < newCollectionTags.length; i++) {
+      if (newCollectionTags[i].includes(",")) {
         //need to compare with original name
         let comparison = newCollectionTags[i].replace(/,/g, "，");
-        if(comparison in allCollectionTags) {
+        if (comparison in allCollectionTags) {
           //modified comma name in whitelist
           //check if in old tags
-          if(!(comparison in currentTags)) {
+          if (!(comparison in currentTags)) {
             //modified comma name not in currentTags and is in allcollectiontags
             whiteListTags.push(allCollectionTags[newCollectionTags[i]]["id"]);
           } //else is in whitelist but in current tags so do nothing
@@ -316,9 +316,9 @@ $("#button-bf-collection").click(async () => {
         }
       } else {
         //tag element does not have commas so just compare
-        if(newCollectionTags[i] in allCollectionTags) {
+        if (newCollectionTags[i] in allCollectionTags) {
           //tag is in whitelist but check if already added to dataset
-          if(!(newCollectionTags[i] in currentTags)) {
+          if (!(newCollectionTags[i] in currentTags)) {
             //not in removed ts and so tag is new
             whiteListTags.push(allCollectionTags[newCollectionTags[i]]["id"]);
           }
@@ -329,14 +329,14 @@ $("#button-bf-collection").click(async () => {
       }
     }
 
-    if(whiteListTags.length > 0) {
-      console.log("below are the whitelist tags")
+    if (whiteListTags.length > 0) {
+      console.log("below are the whitelist tags");
       console.log(whiteListTags);
       //tags that are already on pennsieve
       let res = await uploadCollectionTags(whiteListTags);
       console.log(res);
       Swal.fire({
-        title: "Successfully add tags to " + defaultBfDataset, 
+        title: "Successfully add tags to " + defaultBfDataset,
         icon: "success",
         showConfirmButton: true,
         heightAuto: false,
@@ -344,14 +344,14 @@ $("#button-bf-collection").click(async () => {
       });
     }
 
-    if(removeTags.length > 0) {
+    if (removeTags.length > 0) {
       console.log("below are the removed tags");
       console.log(removeTags);
       //replace currentTags with new list
       let res = await removeCollectionTags(removeTags);
       console.log(res);
       Swal.fire({
-        title: "Successfully removed tags from " + defaultBfDataset, 
+        title: "Successfully removed tags from " + defaultBfDataset,
         icon: "success",
         showConfirmButton: true,
         heightAuto: false,
@@ -359,7 +359,7 @@ $("#button-bf-collection").click(async () => {
       });
     }
 
-    if(newTags.length > 0) {
+    if (newTags.length > 0) {
       console.log("below are the new tags to be created for pennsieve");
       console.log(newTags);
       let res = await uploadNewTags(newTags);
@@ -382,18 +382,18 @@ async function uploadNewTags(tags) {
       defaultBfDataset,
       tags,
       (error, res) => {
-        if(error) {
+        if (error) {
           console.log(error);
           reject(error);
         } else {
           resolve(res);
         }
       }
-    )
+    );
   });
 
   newTags.then((val) => {
-    for(let i = 0; i < val.length; i++) {
+    for (let i = 0; i < val.length; i++) {
       //only need the id's to set to dataset
       newUploadedTags.push(val[i]["id"]);
     }
@@ -404,7 +404,7 @@ async function uploadNewTags(tags) {
         defaultBfDataset,
         newUploadedTags,
         (error, res) => {
-          if(error) {
+          if (error) {
             console.log(error);
             reject(error);
           } else {
@@ -414,7 +414,6 @@ async function uploadNewTags(tags) {
         }
       );
     });
-
 
     newTagsUpload.then((val) => {
       return val;
@@ -430,15 +429,15 @@ async function removeCollectionTags(tags) {
       defaultBfDataset,
       tags,
       (error, res) => {
-        if(error) {
+        if (error) {
           console.log(error);
-          reject(error)
+          reject(error);
         } else {
           resolve(res);
         }
       }
-    )
-  })
+    );
+  });
 }
 
 async function uploadCollectionTags(tags) {
