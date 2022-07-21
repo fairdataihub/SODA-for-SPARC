@@ -1,3 +1,5 @@
+const { arrayIntersectSafe } = require("excel4node/distribution/lib/utils");
+
 var forbidden_characters_bf = '/:*?"<>';
 
 const check_forbidden_characters_bf = (my_string) => {
@@ -236,13 +238,14 @@ const addNewDatasetToList = (newDataset) => {
   datasetList.push({ name: newDataset, role: "owner" });
 };
 
-//Add/remove dataset from collection
+//upload new collection tags or check if none
 $("#button-bf-collection").click(async () => {
   setTimeout(async () => {
     let selectedAccount = defaultBfAccount;
     let selectedDataset = defaultBfDataset;
     let newCollectionTags = [];
-    let uploadTags = [];
+    let whiteListTags = [];
+    let newTags = [];
     let removeTags = [];
 
     Swal.fire({
@@ -259,48 +262,199 @@ $("#button-bf-collection").click(async () => {
       },
     });
 
-    console.log(collectionDatasetTags.value);
+    //updated collection tags are gathered
     for (let i = 0; i < collectionDatasetTags.value.length; i++) {
-      console.log(collectionDatasetTags.value[i]["value"]);
-      newCollectionTags.push(collectionDatasetTags.value[i]["value"]);
+      let tagName = collectionDatasetTags.value[i]["value"];
+      if(tagName.includes("，")) {
+        console.log("replacing: " + tagName);
+        let originalCommaName = tagName.replace(/，/g, ",");
+        console.log(originalCommaName);
+        newCollectionTags.push(originalCommaName); 
+      } else {
+        newCollectionTags.push(tagName);
+      }
     }
-    // console.log(currentCollectionTags); //compare old tags with new, if any are missing send remove call
-    //then post the current tags
-    // console.log(newCollectionTags);
 
-    if (newCollectionTags === currentCollectionTags) {
-      console.log("they match");
-      //no need to upload
-    } else {
-      for (let i = 0; i < newCollectionTags.length; i++) {
-        if (!currentCollectionTags.includes(newCollectionTags[i])) {
-          //new value in old tags
-          //old collection tags still there
-          uploadTags.push(newCollectionTags[i]);
+    //check if old collections tags are still there
+    for(var [key, value] of Object.entries(currentTags)) {
+      if(key.includes("，")) {
+        //key was modified so compare with original-name
+        if(!(newCollectionsTags.includes(value["original-name"]))) {
+          //did not match with original name so it was removed
+          removeTags.push(value["id"]);
+        }
+      } else {
+        //key was not modified
+        if(!(newCollectionTags.includes(key))) {
+          //key is not in updated tags so it was removed
+          removeTags.push(value["id"]);
         }
       }
     }
-    await uploadCollectionTags(uploadTags);
+
+    console.log("below are the removed tags");
     console.log(removeTags);
+    console.log(newCollectionTags);
+    //iterate through new collection tags and separate accordingly
+    //whiteListedTags: tags that have already been created on Pennsieve
+    //newTags: tags that are new and need to be created on Pennsieve before assigning to dataset
+    //removeTags: tags that are not in newCollectionTag array and will be removed from dataset
+    for(let i = 0; i < newCollectionTags.length; i++) {
+      if(newCollectionTags[i].includes(",")) {
+        //need to compare with original name
+        let comparison = newCollectionTags[i].replace(/,/g, "，");
+        if(comparison in allCollectionTags) {
+          //modified comma name in whitelist
+          //check if in old tags
+          if(!(comparison in currentTags)) {
+            //modified comma name not in currentTags and is in allcollectiontags
+            whiteListTags.push(allCollectionTags[newCollectionTags[i]]["id"]);
+          } //else is in whitelist but in current tags so do nothing
+        } else {
+          //not in the whitelist so either new or removed
+          newTags.push(newCollectionTags[i]);
+        }
+      } else {
+        //tag element does not have commas so just compare
+        if(newCollectionTags[i] in allCollectionTags) {
+          //tag is in whitelist but check if already added to dataset
+          if(!(newCollectionTags[i] in currentTags)) {
+            //not in removed ts and so tag is new
+            whiteListTags.push(allCollectionTags[newCollectionTags[i]]["id"]);
+          }
+        } else {
+          //not in whitelist so either new or removed tag
+          newTags.push(newCollectionTags[i]);
+        }
+      }
+    }
+
+    if(whiteListTags.length > 0) {
+      console.log("below are the whitelist tags")
+      console.log(whiteListTags);
+      //tags that are already on pennsieve
+      let res = await uploadCollectionTags(whiteListTags);
+      console.log(res);
+      Swal.fire({
+        title: "Successfully add tags to " + defaultBfDataset, 
+        icon: "success",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+    }
+
+    if(removeTags.length > 0) {
+      console.log("below are the removed tags");
+      console.log(removeTags);
+      //replace currentTags with new list
+      let res = await removeCollectionTags(removeTags);
+      console.log(res);
+      Swal.fire({
+        title: "Successfully removed tags from " + defaultBfDataset, 
+        icon: "success",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+    }
+
+    if(newTags.length > 0) {
+      console.log("below are the new tags to be created for pennsieve");
+      console.log(newTags);
+      let res = await uploadNewTags(newTags);
+      console.log(res);
+    }
+
     Swal.close();
+    //TODO: UPDATE CURRENT TAGS
 
     log.info(`Adding dataset '${selectedDataset}' to Collection'`);
   }, delayAnimation);
 });
 
+async function uploadNewTags(tags) {
+  let newUploadedTags = [];
+  let newTags = new Promise((resolve, reject) => {
+    client.invoke(
+      "api_upload_new_tags",
+      defaultBfAccount,
+      defaultBfDataset,
+      tags,
+      (error, res) => {
+        if(error) {
+          console.log(error);
+          reject(error);
+        } else {
+          resolve(res);
+        }
+      }
+    )
+  });
+
+  newTags.then((val) => {
+    for(let i = 0; i < val.length; i++) {
+      //only need the id's to set to dataset
+      newUploadedTags.push(val[i]["id"]);
+    }
+    let newTagsUpload = new Promise((resolve, reject) => {
+      client.invoke(
+        "api_upload_collection_tags",
+        defaultBfAccount,
+        defaultBfDataset,
+        newUploadedTags,
+        (error, res) => {
+          if(error) {
+            console.log(error);
+            reject(error);
+          } else {
+            console.log(res);
+            resolve(res);
+          }
+        }
+      );
+    });
+
+
+    newTagsUpload.then((val) => {
+      return val;
+    });
+  });
+}
+
+async function removeCollectionTags(tags) {
+  return new Promise((resolve, reject) => {
+    client.invoke(
+      "api_remove_collection_tags",
+      defaultBfAccount,
+      defaultBfDataset,
+      tags,
+      (error, res) => {
+        if(error) {
+          console.log(error);
+          reject(error)
+        } else {
+          resolve(res);
+        }
+      }
+    )
+  })
+}
+
 async function uploadCollectionTags(tags) {
   //tags that will be uploaded
   return new Promise((resolve, reject) => {
     client.invoke(
-      "api_uploadCollectionTags",
+      "api_upload_collection_tags",
       defaultBfAccount,
       defaultBfDataset,
       tags,
       (error, res) => {
         if (error) {
           console.log(error);
+          reject(error);
         } else {
-          console.log(res);
+          resolve(res);
         }
       }
     );
@@ -308,9 +462,6 @@ async function uploadCollectionTags(tags) {
 }
 
 const removePlaceHolder = (e) => {
-  console.log(e);
-  console.log(typeof e.target.value);
-  console.log(e.target.value);
   if (e.target.value === "") {
     e.placeholder = "Enter collection name";
   } else {

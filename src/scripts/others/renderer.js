@@ -1341,22 +1341,27 @@ $("#button-collection-dataset-confirm").click(async () => {
 
   let collectionNames = Object.keys(collection_list);
   let collectionIds = Object.values(collection_list);
-  current_tags.sort();
+
+  let currentCollectionNames = Object.keys(current_tags);
+  let currentCollectionIds = Object.values(current_tags);
+
+  currentCollectionNames.sort();
   collectionNames.sort();
 
   collectionDatasetTags.settings.whitelist = collectionNames;
-  currentCollectionTags = current_tags;
-  collectionDatasetTags.addTags(current_tags);
+  currentCollectionTags = currentCollectionNames;
+  collectionDatasetTags.addTags(currentCollectionNames);
 
   //if on collection section show sweet alert
   if (collection_section.classList.contains("is-shown")) Swal.close();
 });
 
+var currentTags = {};
 async function getCurrentCollectionTags() {
-  let currentTags = [];
+  currentTags = {};
   return new Promise((resolve, reject) => {
     client.invoke(
-      "api_getCurrentCollectionTags",
+      "api_get_current_collection_tags",
       defaultBfAccount,
       defaultBfDataset,
       (error, res) => {
@@ -1365,9 +1370,16 @@ async function getCurrentCollectionTags() {
           reject(error);
         } else {
           for (let i = 0; i < res.length; i++) {
-            currentTags.push(res[i]["name"]);
+            let name = res[i]["name"];
+            let id = res[i]["id"];
+            if(name.includes(",")) {
+              let replaced_name = name.replace(/,/g, "，");
+              currentTags[replaced_name] = {"id": id, "original-name": name};
+            } else {
+              currentTags[name] = {"id": id};
+            }
           }
-          console.log(res);
+          console.log(currentTags);
           resolve(currentTags);
         }
       }
@@ -1375,10 +1387,12 @@ async function getCurrentCollectionTags() {
   });
 }
 
+//Function used to get all collections that belong to the Org
+var allCollectionTags = {};
 async function getAllCollectionTags() {
-  let updated_list = {};
+  allCollectionTags = {};
   return new Promise((resolve, reject) => {
-    client.invoke("api_getCollections", defaultBfAccount, (error, res) => {
+    client.invoke("api_get_all_collections", defaultBfAccount, (error, res) => {
       if (error) {
         console.log(error);
         reject(error);
@@ -1386,9 +1400,15 @@ async function getAllCollectionTags() {
         for (let i = 0; i < res.length; i++) {
           let name = res[i]["name"];
           let id = res[i]["id"];
-          updated_list[name] = id;
+          if(name.includes(",")) {
+            let replaced_name = res[i]["name"].replace(/,/g, "，");
+            allCollectionTags[replaced_name] = {id: id, "original-name": name};
+          } else {
+            allCollectionTags[name] = {id: id};
+          }
         }
-        resolve(updated_list);
+        console.log(allCollectionTags);
+        resolve(allCollectionTags);
       }
     });
   });

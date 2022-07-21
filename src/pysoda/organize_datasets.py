@@ -1454,7 +1454,7 @@ def monitor_pennsieve_json_progress():
     return res
 
 
-def getCollections(account):
+def get_all_collections(account):
     """
     Function used to get the collections that belong to an organization
     """
@@ -1471,7 +1471,7 @@ def getCollections(account):
     return collection_names
 
 
-def getCurrentCollectionTags(account, dataset):
+def get_current_collection_tags(account, dataset):
     """
     Function used to get collection names of the current dataset
     """
@@ -1495,9 +1495,11 @@ def getCurrentCollectionTags(account, dataset):
     return currentCollectionTags
 
 
-def uploadCollectionTags(account, dataset, tags):
+def upload_collection_tags(account, dataset, tags):
     """
     Function used to upload the collection tags of a dataset to Pennsieve
+    @params
+        tags: List of the collection tag id's (int)
     """
 
     error = []
@@ -1516,8 +1518,74 @@ def uploadCollectionTags(account, dataset, tags):
         raise Exception(error)
 
     for tag in tags:
+        jsonfile = {"collectionId": tag}
+        result = bf._api._put(
+            "/datasets/" + str(dataset_id) + "/collections", json=jsonfile,
+        )
+        statusResponses.append(result)
+
+    return statusResponses
+
+
+def remove_collection_tags(account, dataset, tags):
+    """
+    Function used to remove the tags the were assigned to a dataset
+    @params
+        tags: List of collection ids (int)
+    """
+
+
+    error = []
+    statusResponses = []
+
+    try:
+        bf = Pennsieve(account)
+    except Exception as e:
+        error.append("Error: Please select a valid account")
+        raise Exception(error)
+
+    try:
+        myds = bf.get_dataset(dataset)
+        dataset_id = myds.id
+    except Exception as e:
+        error.append('Error: Please select a valid dataset')
+        raise Exception(error)
+
+    for tag in tags:
+        result = bf._api._del(
+            "/datasets/" + str(dataset_id) + "/collections/" + str(tag)
+        )
+        statusResponses.append(result)
+    
+    return statusResponses
+
+def upload_new_tags(account, dataset, tags):
+    """
+    Function is used to upload new collection tags that are not already on Pennsieve
+    @params:
+        tags: List of tag names (string)
+    """
+
+    error = []
+    statusResponses = []
+
+    try:
+        bf = Pennsieve(account)
+    except Exception as e:
+        error.append("Error: Please select a valid account")
+        raise Exception(error)
+
+    try:
+        myds = bf.get_dataset(dataset)
+        dataset_id = myds.id
+    except Exception as e:
+        error.append("Error: Please select a valid dataset")
+        raise Exception(error)
+
+    for tag in tags:
+        jsonfile = {"name": tag}
         result = bf._api._post(
-            "/datasets/" + str(dataset_id) + "/collections?collectionId=" + str(tag)
+            "/collections", json=jsonfile
         )
         statusResponses.append(result)
 

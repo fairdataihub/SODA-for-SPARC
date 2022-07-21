@@ -2,18 +2,11 @@ const settings = require("electron-settings");
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
 
 document.body.addEventListener("click", (event) => {
-  console.log("body click event listener");
   if (event.target.dataset.section) {
     handleSectionTrigger(event);
-    console.log("dataset section");
-    console.log(event);
   } else if (event.target.dataset.modal) {
-    console.log("dataset modal");
-    console.log(event);
     handleModalTrigger(event);
   } else if (event.target.classList.contains("modal-hide")) {
-    console.log("modal-hide");
-    console.log(event);
     hideAllModals();
   }
 });
