@@ -1337,10 +1337,10 @@ const traverseToTab = (targetPageID) => {
       if (protocols) {
         renderProtocolFields(protocols);
       } else {
-        document.getElementById("protocols-container").innerHTML = "";
-        //add an empty contributor information fieldset
-        addProtocolField();
+        document.getElementById("protocols-container").innerHTML =
+          generateProtocolField("", "");
       }
+      $("#guided-section-enter-protocols-manually").click();
     }
     if (targetPageID === "guided-create-description-metadata-tab") {
       guidedLoadDescriptionDatasetInformation();
@@ -3539,54 +3539,34 @@ const addContributorField = () => {
 
 const addProtocolField = () => {
   const protocolsContainer = document.getElementById("protocols-container");
-  //create a new div to hold contributor fields
-  const newProtocolField = document.createElement("div");
-  newProtocolField.classList.add("guided--section");
-  newProtocolField.classList.add("mt-lg");
-  newProtocolField.classList.add("neumorphic");
-  newProtocolField.classList.add("guided-protocol-field-container");
-  newProtocolField.style.position = "relative";
-
-  newProtocolField.innerHTML = `
-    <i
-      class="fas fa-times fa-2x"
-      style="
-        position: absolute;
-        top: 10px;
-        right: 15px;
-        color: black;
-        cursor: pointer;
-      "
-      onclick="removeProtocolField(this)"
-    >
-    </i>
-    <h2 class="guided--text-sub-step">Enter protocol details</h2>
-    <label class="guided--form-label mt-lg">Protocol URL: </label>
-    <input
-      class="guided--input guided-protocol-url-input"
-      type="text"
-      placeholder="Enter protocol URL here"
-      onkeyup="validateInput($(this))"
-    />
-    <label class="guided--form-label mt-lg"
-      >Protocol description:</label
-    >
-    <textarea
-      class="guided--input guided--text-area guided-protocol-description-input"
-      type="text"
-      placeholder="Enter protocol description here"
-      style="height: 7.5em; padding-bottom: 20px"
-      onkeyup="validateInput($(this))"
-    >The protocol used to generate this dataset</textarea>
-  `;
-  protocolsContainer.appendChild(newProtocolField);
-  //select the last protocol field (the one that was just added)
-  const newlyAddedProtocolField = protocolsContainer.lastChild;
-  smoothScrollToElement(newlyAddedProtocolField);
+  const newProtocolField = generateProtocolField("", "");
+  protocolsContainer.insertAdjacentHTML("beforeend", newProtocolField);
+  //scroll to the new element
+  scrollToBottomOfGuidedBody();
 };
 
 const removeProtocolField = (protocolDeleteButton) => {
   const protocolField = protocolDeleteButton.parentElement;
+  const protocolURL = protocolField.dataset.protocolUrl;
+  const protocolDescription = protocolField.dataset.protocolDescription;
+
+  const protocolsBeforeDelete =
+    sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
+  //If the protocol has data-protocol-url and data-protocol-description, then it is a protocol that
+  //already been added. Delete it from the protocols array.
+  if (protocolURL && protocolDescription) {
+    const filteredProtocols = protocolsBeforeDelete.filter((protocol) => {
+      //remove protocols with matching protocol url and protocol description
+      return !(
+        protocol.link == protocolURL &&
+        protocol.description == protocolDescription
+      );
+    });
+
+    sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] =
+      filteredProtocols;
+  }
+
   protocolField.remove();
 };
 
@@ -3594,6 +3574,8 @@ const generateProtocolField = (protocolUrl, protocolDescription) => {
   return `
     <div
       class="guided--section mt-lg neumorphic guided-protocol-field-container"
+      data-protocol-url="${protocolUrl}"
+      data-protocol-description="${protocolDescription}"
       style="position: relative"
     >
       <i
@@ -3614,7 +3596,7 @@ const generateProtocolField = (protocolUrl, protocolDescription) => {
         class="guided--input guided-protocol-url-input"
         type="text"
         placeholder="Enter protocol URL here"
-        value="${protocolUrl ? protocolUrl : ""}"
+        value="${protocolUrl}"
         onkeyup="validateInput($(this))"
       />
       <label class="guided--form-label mt-lg">Protocol description:</label>
@@ -3643,6 +3625,7 @@ const renderProtocolFields = (protocolsArray) => {
     .join("\n");
   protocolsContainer.innerHTML = protocolElements;
 };
+
 const renderContributorFields = (contributionMembersArray) => {
   //loop through curationMembers object
   let contributionMembersElements = contributionMembersArray
@@ -4090,7 +4073,7 @@ const openCopySubjectMetadataPopup = async () => {
   }
 
   const copyMetadataElement = `
-    <div class="space-between">
+    <div class="space-between" style="max-height: 500px; overflow-y: auto;">
       <div class="ui form">
         <div class="grouped fields">
           <label class="guided--form-label med text-left">Which subject would you like to copy metadata from?</label>
@@ -8033,6 +8016,7 @@ $(document).ready(() => {
 
     // clear the Pennsieve Queue (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
     clearQueue();
+
     client
       .post(`/curate_datasets/curation`, {
         soda_json_structure: sodaJSONObj,
@@ -10856,6 +10840,7 @@ $(document).ready(() => {
       });
     }
   });*/
+  $("#guided-button-import-protocols-io").popover();
   $("#guided-button-generate-dataset-locally").popover();
   $("#guided-button-pennsieve-generate-existing").popover();
 });

@@ -3157,7 +3157,7 @@ function grabResearcherProtocolList(username, email, token, type, filetype) {
   var protocolInfoList = {
     hostname: protocolHostname,
     port: 443,
-    path: `/api/v3/researchers/${username}/protocols?filter="user_all"`,
+    path: `/api/v3/protocols?filter="shared_with_user"`,
     headers: { Authorization: `Bearer ${token}` },
   };
   https.get(protocolInfoList, (res) => {
@@ -3239,6 +3239,7 @@ async function showProtocolCredentials(email, filetype, curationMode) {
     },
   });
   if (protocol) {
+    console.log(protocol);
     if (filetype === "subjects") {
       $("#bootbox-subject-protocol-title").val(
         protocolResearcherList[protocol]
