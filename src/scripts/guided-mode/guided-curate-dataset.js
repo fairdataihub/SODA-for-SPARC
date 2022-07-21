@@ -6356,102 +6356,11 @@ $(document).ready(() => {
         guidedCreateSodaJSONObj();
         attachGuidedMethodsToSodaJSONObj();
 
-        //Get the users information and set them as PI if a PI has not been designated yet
-        if (sodaJSONObj["digital-metadata"]["pi-owner"] == undefined) {
-          const user = await api.getUserInformation();
-          const originalDatasetCreator = {
-            userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
-            UUID: user["id"],
-            name: `${user["firstName"]} ${user["lastName"]}`,
-          };
-          setGuidedDatasetPiOwner(originalDatasetCreator);
-        }
         setGuidedDatasetName(datasetName);
         setGuidedDatasetSubtitle(datasetSubtitle);
         saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
         guidedTransitionFromDatasetNameSubtitlePage();
-        /*
-        $("#guided-button-guided-dataset-structuring").click();
-        sodaJSONObj.addSubject("sub-1");
-        sodaJSONObj.addSubject("sub-2");
-        sodaJSONObj.addSubject("sub-3");
-        sodaJSONObj.addSubject("sub-4");
-        sodaJSONObj.addSubject("sub-5");
-        sodaJSONObj.addSubject("sub-6");
-        sodaJSONObj.addSubject("sub-7");
-        sodaJSONObj.addSubject("sub-8");
-        sodaJSONObj.addSubject("sub-9");
-        sodaJSONObj.addSubject("sub-10");
-        sodaJSONObj.addSubject("sub-11");
-        sodaJSONObj.addSubject("sub-12");
-        sodaJSONObj.addSubject("sub-13");
-        sodaJSONObj.addSubject("sub-14");
-        sodaJSONObj.addSubject("sub-15");
-        sodaJSONObj.addSubject("sub-16");
-        sodaJSONObj.addSubject("sub-17");
-        sodaJSONObj.addSubject("sub-18");
-        sodaJSONObj.addSubject("sub-19");
-        sodaJSONObj.addSubject("sub-20");
-        sodaJSONObj.addSubject("sub-21");
-        sodaJSONObj.addSubject("sub-22");
-        sodaJSONObj.addSubject("sub-23");
-        sodaJSONObj.addSubject("sub-24");
-        sodaJSONObj.addSubject("sub-25");
-        sodaJSONObj.addSubject("sub-26");
-        sodaJSONObj.addSubject("sub-27");
-        sodaJSONObj.addSubject("sub-28");
-        sodaJSONObj.addSubject("sub-29");
-        sodaJSONObj.addSubject("sub-30");
-
-        sodaJSONObj.addPool("pool-1");
-        sodaJSONObj.addPool("pool-2");
-        sodaJSONObj.addPool("pool-3");
-        sodaJSONObj.addPool("pool-4");
-        sodaJSONObj.addPool("pool-5");
-        sodaJSONObj.addPool("pool-6");
-        sodaJSONObj.addPool("pool-7");
-        sodaJSONObj.addPool("pool-8");
-        sodaJSONObj.addPool("pool-9");
-        sodaJSONObj.addPool("pool-10");
-        function sleep(ms) {
-          return new Promise((resolve) => setTimeout(resolve, ms));
-        }
-        await sleep(200);
-        sodaJSONObj.moveSubjectIntoPool("sub-1", "pool-1");
-        sodaJSONObj.moveSubjectIntoPool("sub-2", "pool-1");
-        sodaJSONObj.moveSubjectIntoPool("sub-3", "pool-1");
-        sodaJSONObj.moveSubjectIntoPool("sub-4", "pool-1");
-        sodaJSONObj.moveSubjectIntoPool("sub-5", "pool-1");
-        sodaJSONObj.moveSubjectIntoPool("sub-6", "pool-2");
-        sodaJSONObj.moveSubjectIntoPool("sub-7", "pool-2");
-        sodaJSONObj.moveSubjectIntoPool("sub-8", "pool-2");
-        sodaJSONObj.moveSubjectIntoPool("sub-9", "pool-2");
-        sodaJSONObj.moveSubjectIntoPool("sub-10", "pool-2");
-        await sleep(200);
-        sodaJSONObj.addSampleToSubject("sam-1", "pool-1", "sub-1");
-        sodaJSONObj.addSampleToSubject("sam-2", "pool-1", "sub-1");
-        sodaJSONObj.addSampleToSubject("sam-3", "pool-1", "sub-1");
-        sodaJSONObj.addSampleToSubject("sam-4", "pool-1", "sub-1");
-        sodaJSONObj.addSampleToSubject("sam-5", "pool-1", "sub-1");
-        //(sampleName, subjectPoolName, subjectName)
-        sodaJSONObj.addSampleToSubject("sam-1", "pool-1", "sub-2");
-        sodaJSONObj.addSampleToSubject("sam-2", "pool-1", "sub-2");
-        sodaJSONObj.addSampleToSubject("sam-3", "pool-1", "sub-2");
-
-        sodaJSONObj.addSampleToSubject("sam-1", "pool-2", "sub-10");
-        sodaJSONObj.addSampleToSubject("sam-2", "pool-2", "sub-10");
-        sodaJSONObj.addSampleToSubject("sam-3", "pool-2", "sub-10");
-        sodaJSONObj.addSampleToSubject("sam-4", "pool-2", "sub-10");
-        sodaJSONObj.addSampleToSubject("sam-5", "pool-2", "sub-10");
-
-        sodaJSONObj.addSampleToSubject("sam-sub111", "", "sub-11");
-        sodaJSONObj.addSampleToSubject("sam-sub112", "", "sub-11");
-        sodaJSONObj.addSampleToSubject("sam-sub113", "", "sub-11");
-
-        sodaJSONObj.addSampleToSubject("sam-sub121", "", "sub-12");
-        sodaJSONObj.addSampleToSubject("sam-sub122", "", "sub-12");
-        sodaJSONObj.addSampleToSubject("sam-sub123", "", "sub-12");*/
       } else {
         if (datasetName == "") {
           errorArray.push({
@@ -9230,48 +9139,61 @@ $(document).ready(() => {
         }
       }
       if (pageBeingLeftID === "guided-designate-pi-owner-tab") {
-        if (isPageValid(pageBeingLeftID)) {
-          const designateSelfButton = document.getElementById(
-            "guided-button-designate-self-PI"
-          );
-          const designateOtherButton = document.getElementById(
-            "guided-button-designate-other-PI"
-          );
-          if (designateOtherButton.classList.contains("selected")) {
-            let PiOwnerString = $("#guided_bf_list_users_pi option:selected")
-              .text()
-              .trim();
-            // get the text before the email address from the selected dropdown
-            let PiName = PiOwnerString.split("(")[0];
-            let PiUUID = $("#guided_bf_list_users_pi").val().trim();
+        const designateSelfButton = document.getElementById(
+          "guided-button-designate-self-PI"
+        );
+        const designateOtherButton = document.getElementById(
+          "guided-button-designate-other-PI"
+        );
+        if (
+          !designateSelfButton.classList.contains("selected") &&
+          !designateOtherButton.classList.contains("selected")
+        ) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please designate a PI",
+          });
+          throw errorArray;
+        }
 
-            const newPiOwner = {
-              userString: PiOwnerString,
-              UUID: PiUUID,
-              name: PiName,
-            };
-            setGuidedDatasetPiOwner(newPiOwner);
-          }
-        } else {
-          if (
-            !designateSelfButton.classList.contains("selected") &&
-            !designateOtherButton.classList.contains("selected")
-          ) {
+        if (designateSelfButton.classList.contains("selected")) {
+          console.log("foo");
+          const user = await api.getUserInformation();
+          const loggedInUserPiObj = {
+            userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
+            UUID: user["id"],
+            name: `${user["firstName"]} ${user["lastName"]}`,
+          };
+          setGuidedDatasetPiOwner(loggedInUserPiObj);
+        }
+
+        if (designateOtherButton.classList.contains("selected")) {
+          console.log("bar");
+          let PiOwnerString = $("#guided_bf_list_users_pi option:selected")
+            .text()
+            .trim();
+
+          if (PiOwnerString === "Select PI") {
             errorArray.push({
               type: "notyf",
-              message:
-                "Please indicate who you would like to designate as the PI.",
+              message: "Please select a PI from the dropdown",
             });
             throw errorArray;
           }
-          if (designateOtherButton.classList.contains("selected")) {
-            errorArray.push({
-              type: "notyf",
-              message:
-                "Please select a user from the dropdown to designate as PI",
-            });
-            throw errorArray;
+
+          // get the text before the email address from the selected dropdown
+          let PiName = PiOwnerString.split("(")[0];
+          if (PiName === "") {
+            PiName = PiOwnerString;
           }
+          let PiUUID = $("#guided_bf_list_users_pi").val().trim();
+
+          const newPiOwner = {
+            userString: PiOwnerString,
+            UUID: PiUUID,
+            name: PiName,
+          };
+          setGuidedDatasetPiOwner(newPiOwner);
         }
       }
 
