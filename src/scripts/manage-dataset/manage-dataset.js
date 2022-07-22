@@ -743,7 +743,7 @@ $("#button-add-permission-team").click(async () => {
 // Character count for subtitle //
 function countCharacters(textelement, pelement) {
   var textEntered = textelement.value;
-  var counter = 256 - textEntered.length;
+  var counter = 255 - textEntered.length;
   pelement.innerHTML = counter + " characters remaining";
   return textEntered.length;
 }

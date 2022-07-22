@@ -109,6 +109,12 @@ const guidedTransitionFromHome = () => {
   document
     .getElementById("guided-name-subtitle-parent-tab")
     .classList.remove("hidden");
+  //Reset name, subtitle, and subtitle char count
+  document.getElementById("guided-dataset-name-input").value = "";
+  document.getElementById("guided-dataset-subtitle-input").value = "";
+  document.getElementById(
+    "guided-subtitle-char-count"
+  ).innerHTML = `255 characters remaining`;
   //Swith the start curating/modify existing buttons if they were switched
   $("#guided-create-new-dataset").show();
   $("#guided-modify-dataset-name-subtitle").hide();
@@ -9805,7 +9811,7 @@ $(document).ready(() => {
       datasetNameInputElement.value = datasetName;
       datasetSubtitleInputElement.value = datasetSubtitle;
       datasetSubtitleCharacterCountText.innerHTML = `${
-        256 - datasetSubtitle.length
+        255 - datasetSubtitle.length
       } characters remaining`;
 
       //switch the create new / modify existing buttons
