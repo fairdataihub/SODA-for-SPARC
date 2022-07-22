@@ -252,7 +252,7 @@ const getProgressFileData = async (progressFile) => {
   return readFileAsync(progressFilePath);
 };
 const deleteProgressCard = async (progressCardDeleteButton) => {
-  const progressCard = progressCardDeleteButton.parentElement;
+  const progressCard = progressCardDeleteButton.parentElement.parentElement;
   const progressCardNameToDelete = progressCard.querySelector(
     ".progress-file-name"
   ).textContent;
@@ -288,7 +288,9 @@ const renderProgressCards = (progressFileJSONdata) => {
   progressFileJSONdata.sort((a, b) => {
     return new Date(b["last-modified"]) - new Date(a["last-modified"]);
   });
-  let cardContainer = document.getElementById("resume-curation-container");
+
+  const cardContainer = document.getElementById("resume-curation-container");
+
   const progressCards = progressFileJSONdata.map((progressFile) => {
     console.log(progressFile);
     let progressFileImage =
@@ -299,7 +301,7 @@ const renderProgressCards = (progressFileJSONdata) => {
           <img
             src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80"
             alt="Dataset banner image placeholder"
-            style="height: 60px; width: 60px"
+            style="height: 80px; width: 80px"
           />
         `;
     } else {
@@ -307,7 +309,7 @@ const renderProgressCards = (progressFileJSONdata) => {
           <img
             src='${progressFileImage}'
             alt="Dataset banner image"
-            style="height: 60px; width: 60px"
+            style="height: 80px; width: 80px"
           />
         `;
     }
@@ -321,45 +323,41 @@ const renderProgressCards = (progressFileJSONdata) => {
 
     return `
       <div class="guided--dataset-card">
-        <i
-          class="fas fa-times fa-2x"
-          style="
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            color: black;
-            cursor: pointer;
-          "
-          onclick="deleteProgressCard(this)"
-        ></i>
-        <div class="guided--container-dataset-card-center">  
-        ${progressFileImage}     
-          <div class="guided--dataset-card-title">
-            <h1 class="guided--text-dataset-card progress-file-name">${progressFileName}</h1>
-            <h2 class="guided--text-dataset-card-sub">
-              ${progressFileSubtitle}
-            </h2>
-          </div>
-        </div>
+        ${progressFileImage /* banner image */}     
+          
         <div class="guided--dataset-card-body">
-          <div class="guided--dataset-card-item">
-            <h1 class="guided--text-dataset-card">${progressFileOwnerName}</h1>
-            <h2 class="guided--text-dataset-card-sub">Owner</h2>
+          <div class="guided--dataset-card-row">
+            <h1
+              class="guided--text-dataset-card progress-file-name progress-card-popover"
+              data-content="Dataset name: ${progressFileName}"
+              rel="popover"
+              data-placement="bottom"
+              data-trigger="hover"
+            >${progressFileName}</h1>
           </div>
-          <div class="guided--dataset-card-item">
-            <h1 class="guided--text-dataset-card">0 GB</h1>
-            <h2 class="guided--text-dataset-card-sub">Size</h2>
-          </div>
-          <div class="guided--dataset-card-item">
-            <h1 class="guided--text-dataset-card">
-              ${progressFileLastModified}
+          <div class="guided--dataset-card-row">
+            <h1 
+              class="guided--text-dataset-card progress-card-popover"
+              data-content="Dataset subtitle: ${progressFileSubtitle}"
+              rel="popover"
+              data-placement="bottom"
+              data-trigger="hover"
+              style="font-weight: 400;"
+            >
+                ${progressFileSubtitle}
             </h1>
-            <h2 class="guided--text-dataset-card-sub">Last modified</h2>
           </div>
-          <div class="guided--dataset-card-item">
-            <h1 class="guided--text-dataset-card">In progress</h1>
-            <h2 class="guided--text-dataset-card-sub"> 
-              Curation status
+          <div class="guided--dataset-card-row">
+            <h2 class="guided--text-dataset-card-sub" style="width: auto;">
+              <i
+                class="fas fa-clock-o progress-card-popover"
+                data-content="Last modified: ${progressFileLastModified}"
+                rel="popover"
+                data-placement="bottom"
+                data-trigger="hover"
+              ></i>
+            </h2>
+            <h1 class="guided--text-dataset-card">${progressFileLastModified}</h1>           
             </h2>
           </div>
         </div>
@@ -369,16 +367,23 @@ const renderProgressCards = (progressFileJSONdata) => {
             style="
               background-color: var(--color-light-green) !important;
               width: 160px !important;
-              margin: 10px;
+              margin: 4px;
             "
             onClick="guidedResumeProgress($(this))"
           >
-            Continue curation
+            Continue curating
           </button>
+          <h2 class="guided--text-dataset-card-sub" style="width: auto; color: red;" onclick="deleteProgressCard(this)">
+            <i
+              class="fas fa-trash"
+            ></i>
+            Delete progress file
+          </h2>
         </div>
       </div>`;
   });
   cardContainer.innerHTML = progressCards.join("\n");
+  $(".progress-card-popover").popover();
 };
 const setActiveCapsule = (targetPageID) => {
   $(".guided--capsule").removeClass("active");
