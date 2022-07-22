@@ -1321,8 +1321,11 @@ $("#button-collection-dataset-confirm").click(async () => {
     "add_edit_bf_dataset_collection-section"
   );
   if (collection_section.classList.contains("is-shown")) {
+    let datasetName = document.getElementById(
+      "collection_dataset_name"
+    ).innerText;
     Swal.fire({
-      title: `Getting collection tags of dataset: ${defaultBfDataset}`,
+      title: `Getting collection tags of dataset: ${datasetName}`,
       html: "Please wait...",
       // timer: 5000,
       allowEscapeKey: false,

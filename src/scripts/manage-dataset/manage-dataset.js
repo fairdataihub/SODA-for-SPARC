@@ -279,13 +279,19 @@ $("#button-bf-collection").click(async () => {
     for (var [key, value] of Object.entries(currentTags)) {
       if (key.includes("，")) {
         //key was modified so compare with original-name
-        if (!newCollectionsTags.includes(value["original-name"])) {
+        if (!newCollectionTags.includes(value["original-name"])) {
           //did not match with original name so it was removed
+          console.log(key);
+          console.log(value["original-name"]);
+          console.log(value["id"]);
           removeTags.push(value["id"]);
         }
       } else {
         //key was not modified
+        console.log(key);
+        console.log(!newCollectionTags.includes(key));
         if (!newCollectionTags.includes(key)) {
+          console.log(value["id"]);
           //key is not in updated tags so it was removed
           removeTags.push(value["id"]);
         }
@@ -303,12 +309,13 @@ $("#button-bf-collection").click(async () => {
       if (newCollectionTags[i].includes(",")) {
         //need to compare with original name
         let comparison = newCollectionTags[i].replace(/,/g, "，");
+        console.log(comparison);
         if (comparison in allCollectionTags) {
           //modified comma name in whitelist
           //check if in old tags
           if (!(comparison in currentTags)) {
             //modified comma name not in currentTags and is in allcollectiontags
-            whiteListTags.push(allCollectionTags[newCollectionTags[i]]["id"]);
+            whiteListTags.push(allCollectionTags[comparison]["id"]);
           } //else is in whitelist but in current tags so do nothing
         } else {
           //not in the whitelist so either new or removed
@@ -334,14 +341,6 @@ $("#button-bf-collection").click(async () => {
       console.log(whiteListTags);
       //tags that are already on pennsieve
       let res = await uploadCollectionTags(whiteListTags);
-      console.log(res);
-      Swal.fire({
-        title: "Successfully add tags to " + defaultBfDataset,
-        icon: "success",
-        showConfirmButton: true,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-      });
     }
 
     if (removeTags.length > 0) {
@@ -350,13 +349,6 @@ $("#button-bf-collection").click(async () => {
       //replace currentTags with new list
       let res = await removeCollectionTags(removeTags);
       console.log(res);
-      Swal.fire({
-        title: "Successfully removed tags from " + defaultBfDataset,
-        icon: "success",
-        showConfirmButton: true,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-      });
     }
 
     if (newTags.length > 0) {
@@ -367,11 +359,30 @@ $("#button-bf-collection").click(async () => {
     }
 
     Swal.close();
-    //TODO: UPDATE CURRENT TAGS
+    //TODO: UPDATE CURRENT TAGS and white list
+    await getCurrentCollectionTags();
+    Swal.fire({
+      title: "Successfully updated collection tags from " + defaultBfDataset,
+      icon: "success",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    console.log(currentTags);
 
     log.info(`Adding dataset '${selectedDataset}' to Collection'`);
   }, delayAnimation);
 });
+
+async function updateCollectionWhiteList() {
+  let collection_list = await getAllCollectionTags();
+  let collectionNames = Object.keys(collection_list);
+
+  collectionNames.sort();
+
+  collectionDatasetTags.settings.whitelist = collectionNames;
+}
 
 async function uploadNewTags(tags) {
   let newUploadedTags = [];
@@ -393,6 +404,7 @@ async function uploadNewTags(tags) {
   });
 
   newTags.then((val) => {
+    console.log(val);
     for (let i = 0; i < val.length; i++) {
       //only need the id's to set to dataset
       newUploadedTags.push(val[i]["id"]);
@@ -416,6 +428,7 @@ async function uploadNewTags(tags) {
     });
 
     newTagsUpload.then((val) => {
+      console.log(val);
       return val;
     });
   });
