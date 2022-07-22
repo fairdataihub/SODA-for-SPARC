@@ -3599,6 +3599,10 @@ const generateProtocolField = (protocolUrl, protocolDescription) => {
         value="${protocolUrl}"
         onkeyup="validateInput($(this))"
       />
+      <p class="guided--text-input-instructions mb-0">
+        Enter the link to the protocol used to generate your dataset.<br>
+        <b>Links beginning with "https://doi.org/" will automatically be classified as a DOI link.</b>
+      </p>
       <label class="guided--form-label mt-lg">Protocol description:</label>
       <textarea
         class="guided--input guided--text-area guided-protocol-description-input"
@@ -3612,6 +3616,9 @@ const generateProtocolField = (protocolUrl, protocolDescription) => {
           : "The protocol used to generate this dataset"
       }</textarea
       >
+      <p class="guided--text-input-instructions mb-0">
+        Enter a description of the protocol used to generate your dataset.
+      </p>
     </div>
   `;
 };
