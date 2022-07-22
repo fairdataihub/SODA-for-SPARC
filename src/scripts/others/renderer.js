@@ -6517,7 +6517,7 @@ async function listItems(jsonObj, uiItem, amount_req, reset) {
     }
     $(uiItem).html(
       `<div class="drag-drop-container-instructions">
-        <div id="dragDropInscturctions" style="height: 100px; width: 100px;"></div>
+        <div id="dragDropLottieContainer" style="height: 100px; width: 100px;"></div>
         <p class="text-center large">
           Drag and Drop folders and files to be included in the <b>${currentFolder}</b> folder.
         </p>
@@ -6526,15 +6526,18 @@ async function listItems(jsonObj, uiItem, amount_req, reset) {
         </p>
       </div>`
     );
-    //load the lottie animation
+    const dragDropLottieContainer = document.getElementById(
+      "dragDropLottieContainer"
+    );
+    dragDropLottieContainer.innerHTML = ``;
+
     let dragDropAnimation = lottie.loadAnimation({
-      container: document.querySelector("#dragDropInscturctions"),
+      container: dragDropLottieContainer,
       animationData: dragDrop,
       renderer: "svg",
       loop: true,
       autoplay: true,
     });
-    console.log(dragDropAnimation);
   }
 }
 
