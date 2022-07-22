@@ -317,7 +317,8 @@ const renderProgressCards = (progressFileJSONdata) => {
     const progressFileSubtitle =
       progressFile["digital-metadata"]["subtitle"] || "No designated subtitle";
     const progressFileOwnerName =
-      progressFile["digital-metadata"]["pi-owner"]["name"] || "Not designated";
+      progressFile["digital-metadata"]["pi-owner"]["name"] ||
+      "Not designated yet";
 
     const progressFileLastModified = progressFile["last-modified"];
 
@@ -357,8 +358,15 @@ const renderProgressCards = (progressFileJSONdata) => {
                 data-trigger="hover"
               ></i>
             </h2>
-            <h1 class="guided--text-dataset-card">${progressFileLastModified}</h1>           
-            </h2>
+            <h1 class="guided--text-dataset-card ml-sm-1">${progressFileLastModified}</h1>
+            <h2
+              class="guided--text-dataset-card-sub progress-card-popover ml-sm-2"
+              data-content="Principle Investigator of the dataset: ${progressFileOwnerName}"
+              rel="popover"
+              data-placement="bottom"
+              data-trigger="hover"
+            >PI:</h2>
+            <h1 class="guided--text-dataset-card ml-sm-1">${progressFileOwnerName}</h1>
           </div>
         </div>
         <div class="guided--container-dataset-card-center">
@@ -368,12 +376,13 @@ const renderProgressCards = (progressFileJSONdata) => {
               background-color: var(--color-light-green) !important;
               width: 160px !important;
               margin: 4px;
+              margin-bottom: 15px;
             "
             onClick="guidedResumeProgress($(this))"
           >
             Continue curating
           </button>
-          <h2 class="guided--text-dataset-card-sub" style="width: auto; color: red;" onclick="deleteProgressCard(this)">
+          <h2 class="guided--text-dataset-card" style="width: auto; text-decoration: underline;" onclick="deleteProgressCard(this)">
             <i
               class="fas fa-trash"
             ></i>
@@ -9349,6 +9358,29 @@ $(document).ready(() => {
         }
         //Hide the next button for the last page
         $(this).css("visibility", "hidden");
+      }
+
+      if (pageBeingLeftID === "guided-folder-structure-preview-tab") {
+        const { value: continueProgress } = await Swal.fire({
+          title: `No folders or files have been added to your dataset.`,
+          text: `You can go back and add folders and files to your dataset, however, if
+          you choose to generate your dataset on the final step, no folders or files will be
+          added to your target destination.`,
+          allowEscapeKey: false,
+          allowOutsideClick: false,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showConfirmButton: true,
+          showCancelButton: true,
+          cancelButtonText: "Go back to add folders and files",
+          cancelButtonWidth: "200px",
+          confirmButtonText: "Continue without adding folders and files",
+          reverseSwalButtons: true,
+        });
+        if (!continueProgress) {
+          $(this).removeClass("loading");
+          return;
+        }
       }
 
       if (pageBeingLeftID === "guided-airtable-award-tab") {

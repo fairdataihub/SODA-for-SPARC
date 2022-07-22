@@ -4,6 +4,7 @@ const settings = require("electron-settings");
 // variable that keeps track of the previous curation mode (guided or free-form)
 // used to handle updation of the folder structuring elements and sodaJSONObj
 let previousCurationMode = "";
+
 document.body.addEventListener("click", (event) => {
   if (event.target.dataset.section) {
     handleSectionTrigger(event);
@@ -39,8 +40,7 @@ async function handleSectionTrigger(event) {
     guidedPrepareHomeScreen();
     previousCurationMode = "guided";
   }
-  // move the folder structuring elements back to free-form mode if they were borrowed
-  // for guided mode
+
   if (sectionId === "main_tabs-section") {
     if (previousCurationMode === "guided") {
       //TRANSITION FROM GUIDED MODE => FREE-FORM
@@ -79,6 +79,8 @@ async function handleSectionTrigger(event) {
       dataset_path = document.getElementById("input-global-path");
       scroll_box = document.querySelector("#organize-dataset-tab");
 
+      // move the folder structuring elements back to free-form mode if they were borrowed
+      // for guided mode
       $(".shared-folder-structure-element").appendTo(
         $("#free-form-folder-structure-container")
       );
