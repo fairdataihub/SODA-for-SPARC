@@ -7876,7 +7876,7 @@ $(document).ready(() => {
         "guided-div-dataset-metadata-upload-status-table"
       );
 
-      /*if (guidedSubjectsMetadata.length > 0) {
+      if (guidedSubjectsMetadata.length > 0) {
         await guidedUploadSubjectsMetadata(
           guidedBfAccount,
           guidedDatasetName,
@@ -7924,7 +7924,7 @@ $(document).ready(() => {
           guidedChangesMetadata
         );
         console.log(changesMetadataRes);
-      }*/
+      }
 
       //Display the main dataset upload progress bar
       unHideAndSmoothScrollToElement("guided-div-dataset-upload-progress-bar");
