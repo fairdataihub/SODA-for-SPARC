@@ -58,6 +58,11 @@ const hideSubNavAndShowMainNav = (navButtonToClick) => {
     }
   }
 };
+
+const showMainNav = () => {
+  $("#guided-footer-div").css("display", "flex");
+};
+
 const scrollToBottomOfGuidedBody = () => {
   const elementToScrollTo = document.querySelector(".guided--body");
   elementToScrollTo.scrollTop = elementToScrollTo.scrollHeight;
@@ -1516,18 +1521,12 @@ const traverseToTab = (targetPageID) => {
 
     if (targetPageID === "guided-dataset-generate-destination-tab") {
       const datasetName = sodaJSONObj["digital-metadata"]["name"];
-      const pennsieveDatasetName =
-        sodaJSONObj["digital-metadata"]["pennsieve-dataset-name"];
 
       const confirmDatasetGenerationNameinput = document.getElementById(
-        "guided-input-pennsieve-dataset-name"
+        "guided-input-dataset-name"
       );
 
-      if (pennsieveDatasetName) {
-        confirmDatasetGenerationNameinput.value = pennsieveDatasetName;
-      } else if (datasetName) {
-        confirmDatasetGenerationNameinput.value = datasetName;
-      }
+      confirmDatasetGenerationNameinput.value = datasetName;
     }
 
     if (targetPageID === "guided-dataset-generation-confirmation-tab") {
@@ -1570,8 +1569,6 @@ const traverseToTab = (targetPageID) => {
       guidedUploadStatusContainer.innerHTML = "";
 
       const datsetName = sodaJSONObj["digital-metadata"]["name"];
-      const pennsieveDatasetName =
-        sodaJSONObj["digital-metadata"]["pennsieve-dataset-name"];
       const datsetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
       const datasetPiOwner =
         sodaJSONObj["digital-metadata"]["pi-owner"]["userString"];
@@ -1585,9 +1582,7 @@ const traverseToTab = (targetPageID) => {
       const datasetNameReviewText = document.getElementById(
         "guided-review-dataset-name"
       );
-      const pennsieveDatasetNameReviewText = document.getElementById(
-        "guided-review-pennsieve-dataset-name"
-      );
+
       const datasetSubtitleReviewText = document.getElementById(
         "guided-review-dataset-subtitle"
       );
@@ -1608,7 +1603,6 @@ const traverseToTab = (targetPageID) => {
       );
 
       datasetNameReviewText.innerHTML = datsetName;
-      pennsieveDatasetNameReviewText.innerHTML = pennsieveDatasetName;
       datasetSubtitleReviewText.innerHTML = datsetSubtitle;
       datasetPiOwnerReviewText.innerHTML = datasetPiOwner;
 
@@ -6992,7 +6986,7 @@ $(document).ready(() => {
         ).innerHTML = `
           <button
             class="ui positive button guided--button"
-            id="guided-button-rename-pennsieve-dataset-name"
+            id="guided-button-rename-dataset"
             style="
               margin: 5px !important;
               background-color: var(--color-light-green) !important;
@@ -7003,7 +6997,7 @@ $(document).ready(() => {
           </button>
         `;
         //add an on-click handler to the added button
-        $("#guided-button-rename-pennsieve-dataset-name").on("click", () => {
+        $("#guided-button-rename-dataset").on("click", () => {
           openGuidedDatasetRenameSwal();
         });
       }
@@ -7750,8 +7744,7 @@ $(document).ready(() => {
 
   const guidedPennsieveDatasetUpload = async () => {
     const guidedBfAccount = defaultBfAccount;
-    const guidedDatasetName =
-      sodaJSONObj["digital-metadata"]["pennsieve-dataset-name"];
+    const guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
     const guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
     const guidedUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
     const guidedPIOwnerUUID =
@@ -7969,21 +7962,20 @@ $(document).ready(() => {
     }
   };
   const openGuidedDatasetRenameSwal = async () => {
-    const currentPennsieveDatasetUploadName =
-      sodaJSONObj["digital-metadata"]["pennsieve-dataset-name"];
+    const currentDatasetUploadName = sodaJSONObj["digital-metadata"]["name"];
 
     const { value: newDatasetName } = await Swal.fire({
       allowOutsideClick: false,
       allowEscapeKey: false,
       backdrop: "rgba(0,0,0, 0.4)",
       title: "Rename your dataset",
-      html: `<b>Current dataset name:</b> ${currentPennsieveDatasetUploadName}<br /><br />Enter a new name for your dataset below:`,
+      html: `<b>Current dataset name:</b> ${currentDatasetUploadName}<br /><br />Enter a new name for your dataset below:`,
       input: "text",
       inputPlaceholder: "Enter a new name for your dataset",
       inputAttributes: {
         autocapitalize: "off",
       },
-      inputValue: currentPennsieveDatasetUploadName,
+      inputValue: currentDatasetUploadName,
       showCancelButton: true,
       confirmButtonText: "Rename",
       confirmButtonColor: "#3085d6 !important",
@@ -7998,7 +7990,7 @@ $(document).ready(() => {
           Swal.showValidationMessage("Please enter a name for your dataset!");
           return false;
         }
-        if (inputValue === currentPennsieveDatasetUploadName) {
+        if (inputValue === currentDatasetUploadName) {
           Swal.showValidationMessage(
             "Please enter a new name for your dataset!"
           );
@@ -8007,8 +7999,7 @@ $(document).ready(() => {
       },
     });
     if (newDatasetName) {
-      sodaJSONObj["digital-metadata"]["pennsieve-dataset-name"] =
-        newDatasetName;
+      sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
       guidedPennsieveDatasetUpload();
     }
   };
@@ -8037,7 +8028,7 @@ $(document).ready(() => {
       //Replace files and folders since guided mode always uploads to an existing Pennsieve dataset
       sodaJSONObj["generate-dataset"]["if-existing"] = "replace";
       sodaJSONObj["generate-dataset"]["if-existing-files"] = "replace";
-      dataset_name = sodaJSONObj["digital-metadata"]["pennsieve-dataset-name"];
+      dataset_name = sodaJSONObj["digital-metadata"]["name"];
       sodaJSONObj["bf-dataset-selected"] = {};
       sodaJSONObj["bf-dataset-selected"]["dataset-name"] = dataset_name;
       sodaJSONObj["bf-account-selected"]["account-name"] = defaultBfAccount;
@@ -8290,6 +8281,14 @@ $(document).ready(() => {
           </div>
         `;
         guidedUploadStatusContainer.innerHTML = uploadCompleteMessage;
+        showMainNav();
+        swal.fire({
+          title: "Dataset uploaded!",
+          text: "Your dataset has been uploaded to Pennsieve!",
+          icon: "success",
+          confirmButtonText: "OK",
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
       }
     };
     // Progress tracking function for main curate
@@ -9347,7 +9346,7 @@ $(document).ready(() => {
           buttonGenerateOnNewPennsieveDataset.classList.contains("selected")
         ) {
           confirmDatasetGenerationNameinput = document.getElementById(
-            "guided-input-pennsieve-dataset-name"
+            "guided-input-dataset-name"
           );
           if (confirmDatasetGenerationNameinput.value.trim() === "") {
             errorArray.push({
@@ -9356,7 +9355,7 @@ $(document).ready(() => {
             });
             throw errorArray;
           }
-          sodaJSONObj["digital-metadata"]["pennsieve-dataset-name"] =
+          sodaJSONObj["digital-metadata"]["name"] =
             confirmDatasetGenerationNameinput.value.trim();
           sodaJSONObj["generate-dataset"]["destination"] = "bf";
         }
