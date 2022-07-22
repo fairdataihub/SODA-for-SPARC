@@ -74,17 +74,16 @@ async function handleSectionTrigger(event) {
         $("#guided-button-cancel-create-new-dataset").click();
       }
 
-      organizeDSglobalPath = document.getElementById("input-global-path");
-      organizeDSglobalPath.value = "";
-      dataset_path = document.getElementById("input-global-path");
-      scroll_box = document.querySelector("#organize-dataset-tab");
-
       // move the folder structuring elements back to free-form mode if they were borrowed
       // for guided mode
       $(".shared-folder-structure-element").appendTo(
         $("#free-form-folder-structure-container")
       );
     }
+    organizeDSglobalPath = document.getElementById("input-global-path");
+    organizeDSglobalPath.value = "My_dataset_folder/";
+    dataset_path = document.getElementById("input-global-path");
+    scroll_box = document.querySelector("#organize-dataset-tab");
     sodaJSONObj = {};
     datasetStructureJSONObj = {};
     subjectsTableData = [];
