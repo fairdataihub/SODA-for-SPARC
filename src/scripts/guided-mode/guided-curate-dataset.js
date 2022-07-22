@@ -174,7 +174,7 @@ const guidedTransitionFromDatasetNameSubtitlePage = () => {
 const saveGuidedProgress = (guidedProgressFileName) => {
   //create a Guided-Progress folder if one does not yet exist
   //Destination: HOMEDIR/SODA/Guided-Progress
-  sodaJSONObj["last-modified"] = new Date().toLocaleDateString();
+  sodaJSONObj["last-modified"] = new Date();
   try {
     //create Guided-Progress folder if one does not exist
     fs.mkdirSync(guidedProgressFilePath, { recursive: true });
@@ -320,7 +320,15 @@ const renderProgressCards = (progressFileJSONdata) => {
       progressFile["digital-metadata"]["pi-owner"]["name"] ||
       "Not designated yet";
 
-    const progressFileLastModified = progressFile["last-modified"];
+    const progressFileLastModified = new Date(
+      progressFile["last-modified"]
+    ).toLocaleString([], {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
 
     return `
       <div class="guided--dataset-card">
@@ -345,7 +353,11 @@ const renderProgressCards = (progressFileJSONdata) => {
               data-trigger="hover"
               style="font-weight: 400;"
             >
-                ${progressFileSubtitle}
+                ${
+                  progressFileSubtitle.length > 100
+                    ? `${progressFileSubtitle.substring(0, 100)}...`
+                    : progressFileSubtitle
+                }
             </h1>
           </div>
           <div class="guided--dataset-card-row">
@@ -359,14 +371,6 @@ const renderProgressCards = (progressFileJSONdata) => {
               ></i>
             </h2>
             <h1 class="guided--text-dataset-card ml-sm-1">${progressFileLastModified}</h1>
-            <h2
-              class="guided--text-dataset-card-sub progress-card-popover ml-sm-2"
-              data-content="Principle Investigator of the dataset: ${progressFileOwnerName}"
-              rel="popover"
-              data-placement="bottom"
-              data-trigger="hover"
-            >PI:</h2>
-            <h1 class="guided--text-dataset-card ml-sm-1">${progressFileOwnerName}</h1>
           </div>
         </div>
         <div class="guided--container-dataset-card-center">
@@ -382,9 +386,9 @@ const renderProgressCards = (progressFileJSONdata) => {
           >
             Continue curating
           </button>
-          <h2 class="guided--text-dataset-card" style="width: auto; text-decoration: underline;" onclick="deleteProgressCard(this)">
+          <h2 class="guided--text-dataset-card" style="width: auto; text-decoration: underline; cursor: pointer;" onclick="deleteProgressCard(this)">
             <i
-              class="fas fa-trash"
+              class="fas fa-trash mr-sm-1"
             ></i>
             Delete progress file
           </h2>
@@ -9361,25 +9365,31 @@ $(document).ready(() => {
       }
 
       if (pageBeingLeftID === "guided-folder-structure-preview-tab") {
-        const { value: continueProgress } = await Swal.fire({
-          title: `No folders or files have been added to your dataset.`,
-          text: `You can go back and add folders and files to your dataset, however, if
+        //if folders and files in datasetStruture json obj are empty, warn the user
+        if (
+          Object.keys(datasetStructureJSONObj["folders"]).length === 0 &&
+          Object.keys(datasetStructureJSONObj["files"]).length === 0
+        ) {
+          const { value: continueProgress } = await Swal.fire({
+            title: `No folders or files have been added to your dataset.`,
+            text: `You can go back and add folders and files to your dataset, however, if
           you choose to generate your dataset on the final step, no folders or files will be
           added to your target destination.`,
-          allowEscapeKey: false,
-          allowOutsideClick: false,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          showConfirmButton: true,
-          showCancelButton: true,
-          cancelButtonText: "Go back to add folders and files",
-          cancelButtonWidth: "200px",
-          confirmButtonText: "Continue without adding folders and files",
-          reverseSwalButtons: true,
-        });
-        if (!continueProgress) {
-          $(this).removeClass("loading");
-          return;
+            allowEscapeKey: false,
+            allowOutsideClick: false,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            showConfirmButton: true,
+            showCancelButton: true,
+            cancelButtonText: "Go back to add folders and files",
+            cancelButtonWidth: "200px",
+            confirmButtonText: "Continue without adding folders and files",
+            reverseSwalButtons: true,
+          });
+          if (!continueProgress) {
+            $(this).removeClass("loading");
+            return;
+          }
         }
       }
 
