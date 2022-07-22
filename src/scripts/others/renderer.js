@@ -7100,11 +7100,11 @@ document
     }
 
     if (errorMessage) {
-      message += "Would you like to continue?";
-      message = "<div style='text-align: left'>" + message + "</div>";
+      errorMessage += "Would you like to continue?";
+      errorMessage = "<div style='text-align: left'>" + errorMessage + "</div>";
       Swal.fire({
         icon: "warning",
-        html: message,
+        html: errorMessage,
         showCancelButton: true,
         cancelButtonText: "No, I want to review my files",
         focusCancel: true,
