@@ -663,6 +663,7 @@ function renameFolder(
 }
 
 function getGlobalPath(path) {
+  console.log(path);
   var currentPath = path.value.trim();
   var jsonPathArray = currentPath.split("/");
   var filtered = jsonPathArray.filter(function (el) {
