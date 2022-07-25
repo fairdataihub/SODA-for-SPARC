@@ -92,7 +92,7 @@ async function handleSectionTrigger(event) {
         soda_temp = sodaJSONObj;
         console.log(soda_temp);
         //step 3 has already been started so warn user about leaving
-        await Swal.fire({
+        const { value: switchToGuidedFromFreeFormMode } = await Swal.fire({
           title: "Save progress before you go?",
           text: `Transitioning from free form mode to guided mode will cause you to lose
             any progess you have made unless you save your progress.`,
@@ -103,59 +103,66 @@ async function handleSectionTrigger(event) {
           cancelButtonText: "Cancel",
           confirmButtonText: "Save progress",
           backdrop: "rgba(0,0,0,0.4)",
-        }).then((response) => {
-          console.log(response);
-          if (response.isConfirmed) {
-            //save progress before
-            if ("save-progresss" in soda_temp) {
-              saveTempSodaProgress(soda_temp["save-progress"], soda_temp);
-            } else {
-              Swal.fire({
-                icon: "info",
-                title: "Saving progress as...",
-                text: "Enter a name for your progress below:",
-                heightAuto: false,
-                input: "text",
-                showCancelButton: true,
-                cancelButtonText: "Cancel",
-                confirmButtonText: "OK",
-                reverseButtons: reverseSwalButtons,
-                backdrop: "rgba(0,0,0, 0.4)",
-                showClass: {
-                  popup:
-                    "animate__animated animate__fadeInDown animate__faster",
-                },
-                hideClass: {
-                  popup: "animate__animated animate__fadeOutUp animate__faster",
-                },
-              }).then((result) => {
-                if (result.value) {
-                  if (result.value !== null && result.value !== "") {
-                    soda_temp["save-progress"] = result.value.trim();
-                    saveTempSodaProgress(result.value.trim(), soda_temp);
-                    addOption(
-                      progressFileDropdown,
-                      result.value.trim(),
-                      result.value.trim() + ".json"
-                    );
-                    $(".vertical-progress-bar-step").removeClass("is-current");
-                    $(".vertical-progress-bar-step").removeClass("done");
-                    $(".getting-started").removeClass("prev");
-                    $(".getting-started").removeClass("show");
-                    $(".getting-started").removeClass("test2");
-                    $("#Question-getting-started-1").addClass("show");
-                    $("#generate-dataset-progress-tab").css("display", "none");
-
-                    currentTab = 0;
-                    wipeOutCurateProgress();
-                    // $("#main_tabs_view")[0].click();
-                    globalGettingStarted1stQuestionBool = false;
-                  }
+        });
+        if (switchToGuidedFromFreeFormMode) {
+          if ("save-progresss" in soda_temp) {
+            saveTempSodaProgress(soda_temp["save-progress"], soda_temp);
+          } else {
+            const { value: saveProgressName } = await Swal.fire({
+              icon: "info",
+              title: "Saving progress as...",
+              text: "Enter a name for your progress below:",
+              heightAuto: false,
+              input: "text",
+              showCancelButton: true,
+              cancelButtonText: "Cancel",
+              confirmButtonText: "OK",
+              reverseButtons: reverseSwalButtons,
+              backdrop: "rgba(0,0,0, 0.4)",
+              showClass: {
+                popup: "animate__animated animate__fadeInDown animate__faster",
+              },
+              hideClass: {
+                popup: "animate__animated animate__fadeOutUp animate__faster",
+              },
+              preConfirm: (inputValue) => {
+                if (inputValue === "") {
+                  Swal.showValidationMessage(
+                    "Please enter a name to save your progress under."
+                  );
                 }
-              });
+              },
+            });
+            if (saveProgressName) {
+              console.log(saveProgressName);
+              soda_temp["save-progress"] = saveProgressName;
+              saveTempSodaProgress(saveProgressName, soda_temp);
+              addOption(
+                progressFileDropdown,
+                saveProgressName,
+                saveProgressName + ".json"
+              );
+              $(".vertical-progress-bar-step").removeClass("is-current");
+              $(".vertical-progress-bar-step").removeClass("done");
+              $(".getting-started").removeClass("prev");
+              $(".getting-started").removeClass("show");
+              $(".getting-started").removeClass("test2");
+              $("#Question-getting-started-1").addClass("show");
+              $("#generate-dataset-progress-tab").css("display", "none");
+
+              currentTab = 0;
+              wipeOutCurateProgress();
+              // $("#main_tabs_view")[0].click();
+              globalGettingStarted1stQuestionBool = false;
+            } else {
+              $("#main_tabs_view").click();
+              return;
             }
           }
-        });
+        } else {
+          $("#main_tabs_view").click();
+          return;
+        }
       }
       //reset organize dataset
       // exitCurate(false);
