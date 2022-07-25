@@ -3,5 +3,4 @@ from os import getenv
 from flask_restx import Api
 
 def configureAPI():
-    api = Api(version=getenv("API_VERSION"), title="Pysoda API", description="SODA's API")
-    return api
+    return Api(version=getenv("API_VERSION"), title="Pysoda API", description="SODA's API")
