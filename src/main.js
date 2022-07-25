@@ -131,15 +131,9 @@ const exitPyProc = async () => {
     killPythonProcess();
     pyflaskProcess = null;
     PORT = null;
-  } else if (process.platform === "darwin") {
+  } else {
     // send kill GET request to endpoint localhost:4242/sodaforsparc_server_shutdown using axios
     await axios.get("http://localhost:4242/sodaforsparc_server_shutdown");
-
-    pyflaskProcess = null;
-    PORT = null;
-  } else {
-    // kill signal to pyProc
-    pyflaskProcess.kill();
     pyflaskProcess = null;
     PORT = null;
   }
