@@ -63,6 +63,34 @@ function resetSubmission() {
   });
 }
 
+const renderMilestoneSelectionTable = (milestoneData) => {
+  //create a table row element for each description array element for each milestone key in guidedMilestoneData
+  const milestoneTableRows = Object.keys(milestoneData)
+    .map((milestoneKey) => {
+      const milestoneDescriptionArray = milestoneData[milestoneKey];
+      const milestoneDescriptionTableRows = milestoneDescriptionArray.map(
+        (milestoneDescription) => {
+          console.log(milestoneDescription);
+          const descriptionString = milestoneDescription["Description of data"];
+          const milestoneString = milestoneKey;
+          const completionDateString =
+            milestoneDescription["Expected date of completion"];
+          return generateMilestoneRowElement(
+            descriptionString,
+            milestoneString,
+            completionDateString
+          );
+        }
+      );
+      return milestoneDescriptionTableRows.join("");
+    })
+    .join("\n");
+  const milestonesTableContainer = document.getElementById(
+    "milestones-table-container"
+  );
+  milestonesTableContainer.innerHTML = milestoneTableRows;
+};
+
 function resetSubmissionFields() {
   $("#existing-submission-file-destination").attr("placeholder", "Browse here");
 
@@ -348,33 +376,6 @@ const getCheckedMilestones = () => {
     };
   });
   return checkedMilestoneData;
-};
-const renderMilestoneSelectionTable = (milestoneData) => {
-  //create a table row element for each description array element for each milestone key in guidedMilestoneData
-  const milestoneTableRows = Object.keys(milestoneData)
-    .map((milestoneKey) => {
-      const milestoneDescriptionArray = milestoneData[milestoneKey];
-      const milestoneDescriptionTableRows = milestoneDescriptionArray.map(
-        (milestoneDescription) => {
-          console.log(milestoneDescription);
-          const descriptionString = milestoneDescription["Description of data"];
-          const milestoneString = milestoneKey;
-          const completionDateString =
-            milestoneDescription["Expected date of completion"];
-          return generateMilestoneRowElement(
-            descriptionString,
-            milestoneString,
-            completionDateString
-          );
-        }
-      );
-      return milestoneDescriptionTableRows.join("");
-    })
-    .join("\n");
-  const milestonesTableContainer = document.getElementById(
-    "milestones-table-container"
-  );
-  milestonesTableContainer.innerHTML = milestoneTableRows;
 };
 
 function openDDDimport() {
