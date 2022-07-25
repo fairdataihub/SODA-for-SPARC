@@ -249,7 +249,7 @@ $("#button-bf-collection").click(async () => {
     let removeTags = [];
 
     Swal.fire({
-      title: `Adding dataset ${selectedDataset} to collection`,
+      title: `Modifying collection tags for ${selectedDataset}`,
       html: "Please wait...",
       // timer: 5000,
       allowEscapeKey: false,
@@ -358,9 +358,9 @@ $("#button-bf-collection").click(async () => {
       console.log(res);
     }
 
-    Swal.close();
     //TODO: UPDATE CURRENT TAGS and white list
     await getCurrentCollectionTags();
+    Swal.close();
     Swal.fire({
       title: "Successfully updated collection tags from " + defaultBfDataset,
       icon: "success",
