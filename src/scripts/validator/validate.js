@@ -10,25 +10,25 @@ const {
 
 /*
 *******************************************************************************************************************
-// Setup for Axios client that talks to the validator 
+// Setup for Axios client that talks to the validator
 *******************************************************************************************************************
 */
 
-let axiosValidatorClient;
+// const waitForAxios = (client) => {
+//   if (typeof axios !== "undefined") {
+//     //variable exists, do what you want
+//     client = axios.create({
+//       baseURL: "http://127.0.0.1:4242/",
+//       timeout: 0,
+//     });
+//   } else {
+//     setTimeout(waitForAxios, 1000);
+//   }
+// };
 
-const waitForAxios = () => {
-  if (typeof axios !== "undefined") {
-    //variable exists, do what you want
-    axiosValidatorClient = axios.create({
-      baseURL: "http://127.0.0.1:5001/",
-      timeout: 0,
-    });
-  } else {
-    setTimeout(waitForAxios, 1000);
-  }
-};
+// let axiosValidatorClient;
 
-waitForAxios();
+// waitForAxios(axiosValidatorClient);
 
 /*
 *******************************************************************************************************************
@@ -58,9 +58,11 @@ const validateLocalDataset = async () => {
   let validationResponse;
   try {
     // send the dataset path to the validator endpoint
-    validationResponse = await axiosValidatorClient(
-      `api_validate_dataset_pipeline?dataset-path=${datasetPath}`
-    );
+    validationResponse = await client.get(`validate_dataset/local_dataset`, {
+      params: {
+        path: datasetPath,
+      },
+    });
 
     // track that a local validation succeeded
     ipcRenderer.send(
@@ -250,7 +252,7 @@ const validatePennsieveDataset = async () => {
 
 /*
 *******************************************************************************************************************
-// Displaying validation errors 
+// Displaying validation errors
 *******************************************************************************************************************
 */
 
