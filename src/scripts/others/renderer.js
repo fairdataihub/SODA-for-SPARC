@@ -8371,7 +8371,7 @@ async function showBFAddAccountSweetalert() {
                     $("#para-continue-bf-dataset-getting-started").text("");
                     showHideDropdownButtons("account", "show");
                     confirm_click_account_function();
-                    updateBfAccountList(false);
+                    updateBfAccountList();
                   })
                   .catch((error) => {
                     Swal.showValidationMessage(userErrorMessage(error));
@@ -8826,7 +8826,7 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
 
   let role = await api.getDatasetRole(defaultBfDataset);
 
-  if (!role === "owner") {
+  if (role !== "owner") {
     return;
   }
 

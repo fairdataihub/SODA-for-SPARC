@@ -1328,7 +1328,8 @@ async function generateManifestFolderLocallyForEdit(ev) {
       }).then((result) => {});
       return;
     } else {
-      createManifestLocally("local", true, "", ev);
+      console.log(ev)
+      createManifestLocally("local", true, "");
     }
   } else {
     // Case 2: bf dataset
