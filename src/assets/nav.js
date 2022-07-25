@@ -70,6 +70,8 @@ async function handleSectionTrigger(event) {
 
   // Display the current section
   const sectionId = `${event.target.dataset.section}-section`;
+  const itemsContainer = document.getElementById("items");
+
   console.log(sectionId);
   console.log(previousCurationMode);
 
@@ -77,17 +79,8 @@ async function handleSectionTrigger(event) {
     if (previousCurationMode === "free-form" || previousCurationMode === "") {
       //TRANSITION FROM FREE-FORM => GUIDED MODE
       let soda_temp = {};
-      let itemsContainer = document.getElementById("items");
 
       if (itemsContainer.children.length > 0) {
-        if (
-          itemsContainer.children[0].classList.contains(
-            "drag-drop-container-instructions"
-          )
-        ) {
-          //items container is empty but the lotties are there so we remove them
-          itemsContainer.innerHTML = "";
-        }
         updateJSONObjectProgress();
         soda_temp = sodaJSONObj;
         console.log(soda_temp);
@@ -177,6 +170,7 @@ async function handleSectionTrigger(event) {
         $("#guided-folder-structure-container")
       );
     }
+    itemsContainer.innerHTML = "";
     guidedPrepareHomeScreen();
     previousCurationMode = "guided";
   }
@@ -213,12 +207,6 @@ async function handleSectionTrigger(event) {
         console.log("user in rename");
         $("#guided-button-cancel-create-new-dataset").click();
       }
-
-      // move the folder structuring elements back to free-form mode if they were borrowed
-      // for guided mode
-      $(".shared-folder-structure-element").appendTo(
-        $("#free-form-folder-structure-container")
-      );
     }
     organizeDSglobalPath = document.getElementById("input-global-path");
     organizeDSglobalPath.value = "My_dataset_folder/";
@@ -229,6 +217,12 @@ async function handleSectionTrigger(event) {
     subjectsTableData = [];
     samplesTableData = [];
     previousCurationMode = "free-form";
+    // move the folder structuring elements back to free-form mode if they were borrowed
+    // for guided mode
+    $(".shared-folder-structure-element").appendTo(
+      $("#free-form-folder-structure-container")
+    );
+    itemsContainer.innerHTML = "";
   }
 
   hideAllSectionsAndDeselectButtons();

@@ -8080,22 +8080,6 @@ $(document).ready(() => {
         } catch (error) {
           clientError(error);
         }
-
-        // wait to see if the uploaded files or size will grow once the client has time to ask for the updated information
-        // if they stay zero that means nothing was uploaded
-        if (uploadedFiles === 0 || uploadedFilesSize === 0) {
-          await wait(2000);
-        }
-
-        // log the curation errors to Google Analytics
-        logCurationErrorsToAnalytics(
-          uploadedFiles,
-          uploadedFilesSize,
-          dataset_destination,
-          main_total_generate_dataset_size,
-          increaseInFileSize,
-          datasetUploadSession
-        );
       });
 
     const guidedUpdateUploadStatus = async () => {
@@ -8279,6 +8263,11 @@ $(document).ready(() => {
           </div>
         `;
         guidedUploadStatusContainer.innerHTML = uploadCompleteMessage;
+
+        //Save a copy of the sodaJSONObj on this upload to compare it while prepping other uploads
+        sodaJSONObj["previous-guided-upload-sodaJSONObj"] = { ...sodaJSONObj };
+        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+
         swal.fire({
           title: "Dataset uploaded!",
           text: "Your dataset has been uploaded to Pennsieve!",
@@ -8286,9 +8275,7 @@ $(document).ready(() => {
           confirmButtonText: "OK",
           backdrop: "rgba(0,0,0, 0.4)",
         });
-        sodaJSONObj["previous-guided-upload-sodaJSONObj"] = sodaJSONObj;
-
-        // save the sodaJSONObj to local storage
+        showMainNav();
       }
     };
     // Progress tracking function for main curate
