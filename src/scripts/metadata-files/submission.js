@@ -183,7 +183,7 @@ async function helpMilestoneSubmission(curationMode) {
 
           //Handle guided mode submission data
           if (curationMode === "guided") {
-            guidedMilestoneData = res;
+            const guidedMilestoneData = res;
             //create a string with today's date in the format xxxx/xx/xx
             const today = new Date();
             const todayString = `

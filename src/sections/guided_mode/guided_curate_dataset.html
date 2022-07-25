@@ -2261,8 +2261,8 @@
                 </div>
               </div>
               <div id="guided-form-add-a-subject" class="guided--panel hidden">
-                <div class="guided--section neumorphic mt-xl hidden">
-                  <label class="guided--form-label mt-xl">Subject ID:</label>
+                <div class="guided--section neumorphic mt-0">
+                  <label class="guided--form-label mt-0">Subject ID:</label>
                   <input
                     class="guided--input subjects-form-entry"
                     id="guided-bootbox-subject-id"
@@ -2948,9 +2948,7 @@
               </div>
               <div id="guided-form-add-a-sample" class="guided--panel hidden">
                 <div class="guided--section neumorphic mt-xl">
-                  <label class="guided--form-label mt-xl mt-0"
-                    >Subject ID:</label
-                  >
+                  <label class="guided--form-label mt-0">Subject ID:</label>
                   <input
                     class="guided--input samples-form-entry"
                     id="guided-bootbox-subject-id-samples"
@@ -5401,6 +5399,7 @@
               Generate
             </button>
           </div>
+
           <div id="guided-dataset-generation-tab" class="guided--panel hidden">
             <div class="guided--section">
               <h1 class="guided--text-sub-step">
@@ -5452,10 +5451,10 @@
                   </tr>
                 </thead>
                 <tbody id="guided-tbody-pennsieve-metadata-upload">
-                  <tr class="hidden" id="guided-dataset-upload-tr">
+                  <tr class="hidden" id="guided-dataset-name-upload-tr">
                     <td
-                      class="middle aligned guided--td-dataset-upload-status"
-                      id="guided-dataset-upload-text"
+                      class="middle aligned"
+                      id="guided-dataset-name-upload-text"
                     >
                       Dataset name
                     </td>
@@ -5464,7 +5463,104 @@
                     >
                       <div
                         class="guided--container-upload-status"
-                        id="guided-dataset-upload-status"
+                        id="guided-dataset-name-upload-status"
+                      ></div>
+                    </td>
+                  </tr>
+                  <tr class="hidden" id="guided-dataset-subtitle-upload-tr">
+                    <td
+                      class="middle aligned"
+                      id="guided-dataset-subtitle-upload-text"
+                    >
+                      Dataset subtitle
+                    </td>
+                    <td
+                      class="middle aligned text-center collapsing border-left-0 p-0"
+                    >
+                      <div
+                        class="guided--container-upload-status"
+                        id="guided-dataset-subtitle-upload-status"
+                      ></div>
+                    </td>
+                  </tr>
+
+                  <tr class="hidden" id="guided-dataset-description-upload-tr">
+                    <td
+                      class="middle aligned"
+                      id="guided-dataset-description-upload-text"
+                    >
+                      Dataset description
+                    </td>
+                    <td
+                      class="middle aligned text-center collapsing border-left-0 p-0"
+                    >
+                      <div
+                        class="guided--container-upload-status"
+                        id="guided-dataset-description-upload-status"
+                      ></div>
+                    </td>
+                  </tr>
+                  <tr class="hidden" id="guided-dataset-banner-image-upload-tr">
+                    <td
+                      class="middle aligned"
+                      id="guided-dataset-banner-image-upload-text"
+                    >
+                      Dataset banner image
+                    </td>
+                    <td
+                      class="middle aligned text-center collapsing border-left-0 p-0"
+                    >
+                      <div
+                        class="guided--container-upload-status"
+                        id="guided-dataset-banner-image-upload-status"
+                      ></div>
+                    </td>
+                  </tr>
+                  <tr class="hidden" id="guided-dataset-license-upload-tr">
+                    <td
+                      class="middle aligned"
+                      id="guided-dataset-license-upload-text"
+                    >
+                      Dataset license
+                    </td>
+                    <td
+                      class="middle aligned text-center collapsing border-left-0 p-0"
+                    >
+                      <div
+                        class="guided--container-upload-status"
+                        id="guided-dataset-license-upload-status"
+                      ></div>
+                    </td>
+                  </tr>
+                  <tr class="hidden" id="guided-dataset-tags-upload-tr">
+                    <td
+                      class="middle aligned"
+                      id="guided-dataset-tags-upload-text"
+                    >
+                      Dataset tags
+                    </td>
+                    <td
+                      class="middle aligned text-center collapsing border-left-0 p-0"
+                    >
+                      <div
+                        class="guided--container-upload-status"
+                        id="guided-dataset-tags-upload-status"
+                      ></div>
+                    </td>
+                  </tr>
+                  <tr class="hidden" id="guided-dataset-pi-owner-upload-tr">
+                    <td
+                      class="middle aligned"
+                      id="guided-dataset-pi-owner-upload-text"
+                    >
+                      Dataset PI Owner
+                    </td>
+                    <td
+                      class="middle aligned text-center collapsing border-left-0 p-0"
+                    >
+                      <div
+                        class="guided--container-upload-status"
+                        id="guided-dataset-pi-owner-upload-status"
                       ></div>
                     </td>
                   </tr>
@@ -5682,116 +5778,15 @@
                 </thead>
                 <tbody id="guided-tbody-dataset-upload">
                   <tr class="hidden" id="guided-dataset-progress-bar-tr">
-                    <td
-                      class="middle aligned"
-                      id="guided-dataset-name-upload-text"
-                      j
-                    >
-                      Dataset name
+                    <td class="middle aligned" id="guided-progress-bar-text">
+                      Progress
                     </td>
                     <td
                       class="middle aligned text-center collapsing border-left-0 p-0"
                     >
                       <div
                         class="guided--container-upload-status"
-                        id="guided-dataset-name-upload-status"
-                      ></div>
-                    </td>
-                  </tr>
-                  <tr class="hidden" id="guided-dataset-subtitle-upload-tr">
-                    <td
-                      class="middle aligned"
-                      id="guided-dataset-subtitle-upload-text"
-                    >
-                      Dataset subtitle
-                    </td>
-                    <td
-                      class="middle aligned text-center collapsing border-left-0 p-0"
-                    >
-                      <div
-                        class="guided--container-upload-status"
-                        id="guided-dataset-subtitle-upload-status"
-                      ></div>
-                    </td>
-                  </tr>
-
-                  <tr class="hidden" id="guided-dataset-description-upload-tr">
-                    <td
-                      class="middle aligned"
-                      id="guided-dataset-description-upload-text"
-                    >
-                      Dataset description
-                    </td>
-                    <td
-                      class="middle aligned text-center collapsing border-left-0 p-0"
-                    >
-                      <div
-                        class="guided--container-upload-status"
-                        id="guided-dataset-description-upload-status"
-                      ></div>
-                    </td>
-                  </tr>
-                  <tr class="hidden" id="guided-dataset-banner-image-upload-tr">
-                    <td
-                      class="middle aligned"
-                      id="guided-dataset-banner-image-upload-text"
-                    >
-                      Dataset banner image
-                    </td>
-                    <td
-                      class="middle aligned text-center collapsing border-left-0 p-0"
-                    >
-                      <div
-                        class="guided--container-upload-status"
-                        id="guided-dataset-banner-image-upload-status"
-                      ></div>
-                    </td>
-                  </tr>
-                  <tr class="hidden" id="guided-dataset-license-upload-tr">
-                    <td
-                      class="middle aligned"
-                      id="guided-dataset-license-upload-text"
-                    >
-                      Dataset license
-                    </td>
-                    <td
-                      class="middle aligned text-center collapsing border-left-0 p-0"
-                    >
-                      <div
-                        class="guided--container-upload-status"
-                        id="guided-dataset-license-upload-status"
-                      ></div>
-                    </td>
-                  </tr>
-                  <tr class="hidden" id="guided-dataset-tags-upload-tr">
-                    <td
-                      class="middle aligned"
-                      id="guided-dataset-tags-upload-text"
-                    >
-                      Dataset tags
-                    </td>
-                    <td
-                      class="middle aligned text-center collapsing border-left-0 p-0"
-                    >
-                      <div
-                        class="guided--container-upload-status"
-                        id="guided-dataset-tags-upload-status"
-                      ></div>
-                    </td>
-                  </tr>
-                  <tr class="hidden" id="guided-dataset-pi-owner-upload-tr">
-                    <td
-                      class="middle aligned"
-                      id="guided-dataset-pi-owner-upload-text"
-                    >
-                      Dataset PI Owner
-                    </td>
-                    <td
-                      class="middle aligned text-center collapsing border-left-0 p-0"
-                    >
-                      <div
-                        class="guided--container-upload-status"
-                        id="guided-dataset-pi-owner-upload-status"
+                        id="guided-progress-bar"
                       ></div>
                     </td>
                   </tr>
