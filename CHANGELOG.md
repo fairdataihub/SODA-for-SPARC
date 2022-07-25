@@ -5,7 +5,7 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## v.7.0.0 
+## v.7.0.0
 
 ## Feature additions:
 
@@ -25,7 +25,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - The input for renaming or creating a new dataset no longer references undefined function in its HTML.
 - The navigation buttons in each individual Prepare Metadata section have been updated to match the perceived flow from the Prepare Metadata tab.
 - The Add/edit subtitle feature has been updated so that the chracter limit matches the SDS 2.0 specification. This fixes a bug that would cause an error if a user met the character limit enforced by SODA and then tried to add or edit their subtitle.
-
 
 ### Known Issues:
 
