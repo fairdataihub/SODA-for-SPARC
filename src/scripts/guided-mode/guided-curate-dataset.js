@@ -331,8 +331,6 @@ const renderProgressCards = (progressFileJSONdata) => {
       year: "numeric",
       month: "numeric",
       day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
     });
 
     return `
@@ -8281,7 +8279,6 @@ $(document).ready(() => {
           </div>
         `;
         guidedUploadStatusContainer.innerHTML = uploadCompleteMessage;
-        showMainNav();
         swal.fire({
           title: "Dataset uploaded!",
           text: "Your dataset has been uploaded to Pennsieve!",
@@ -8289,6 +8286,9 @@ $(document).ready(() => {
           confirmButtonText: "OK",
           backdrop: "rgba(0,0,0, 0.4)",
         });
+        sodaJSONObj["previous-guided-upload-sodaJSONObj"] = sodaJSONObj;
+
+        // save the sodaJSONObj to local storage
       }
     };
     // Progress tracking function for main curate
