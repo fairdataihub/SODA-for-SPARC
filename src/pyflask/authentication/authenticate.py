@@ -38,9 +38,9 @@ def read_from_config(key):
     config.read(configpath)
     if "global" not in config:
         raise Exception("Profile has not been set")
-    
+
     keyname = config["global"]["default_profile"]
-    
+
     if keyname in config and key in config[keyname]:
         return config[keyname][key]
     return None

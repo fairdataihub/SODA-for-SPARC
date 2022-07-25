@@ -15,8 +15,7 @@ def clear_queue():
 
     command = [agent_cmd(), "upload-status", "--cancel-all"]
 
-    proc = subprocess.run(command, check=True)  # env=agent_env(?settings?)
-    return proc
+    return subprocess.run(command, check=True)
 
 
 def agent_running():
@@ -51,11 +50,8 @@ def check_forbidden_characters(my_string):
         False: no forbidden character
         True: presence of forbidden character(s)
     """
-    regex = re.compile("[" + forbidden_characters + "]")
-    if regex.search(my_string) == None and "\\" not in r"%r" % my_string:
-        return False
-    else:
-        return True
+    regex = re.compile(f"[{forbidden_characters}]")
+    return regex.search(my_string) is not None or "\\" in r"%r" % my_string
 
 
 forbidden_characters_bf = '\/:*?"<>'
@@ -69,11 +65,8 @@ def check_forbidden_characters_bf(my_string):
         False: no forbidden character
         True: presence of forbidden character(s)
     """
-    regex = re.compile("[" + forbidden_characters_bf + "]")
-    if regex.search(my_string) == None and "\\" not in r"%r" % my_string:
-        return False
-    else:
-        return True
+    regex = re.compile(f"[{forbidden_characters_bf}]")
+    return regex.search(my_string) is not None or "\\" in r"%r" % my_string
 
     
 def bf_dataset_size():
