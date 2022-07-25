@@ -2851,7 +2851,7 @@ $("#button-submit-dataset").click(async () => {
         let detailsData = detailsResponse.data;
         if (
           detailsData["uploaded_files"] > 0 &&
-          detailsData["upload_folder_count"] > uploadedFolders 
+          detailsData["upload_folder_count"] > uploadedFolders
         ) {
           uploadedFiles = detailsData["uploaded_files"];
           previousUploadedFileSize = uploadedFileSize;
