@@ -291,7 +291,6 @@ function initialize() {
   });
 
   app.on("will-quit", () => {
-    console.log("About to quit");
     exitPyProc();
   });
 }

@@ -1175,8 +1175,6 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
     $("#div-permission-list-2").css("display", "none");
     $(".ui.active.green.inline.loader.small").css("display", "block");
 
-    console.log("Dropdown prompt in dataset section");
-
     setTimeout(async function () {
       // disable the Continue btn first
       $("#nextBtn").prop("disabled", true);

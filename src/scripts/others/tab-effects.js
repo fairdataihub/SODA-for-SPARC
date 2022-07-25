@@ -2325,7 +2325,6 @@ async function transitionFreeFormMode(
     document.getElementById(parentDiv).scrollTop =
       document.getElementById(parentDiv).scrollHeight;
     if (ev.getAttribute("data-next") === "Question-prepare-submission-2") {
-      console.log("here we go");
       onboardingSubmission();
     }
   }
