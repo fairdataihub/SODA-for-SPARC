@@ -2,8 +2,6 @@
 This file contains all of the functions related to the submission.xlsx file
 */
 
-const { check } = require("prettier");
-
 /// save airtable api key
 const addAirtableKeyBtn = document.getElementById("button-add-airtable-key");
 
