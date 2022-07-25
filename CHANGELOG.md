@@ -26,7 +26,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - The navigation buttons in each individual Prepare Metadata section have been updated to match the perceived flow from the Prepare Metadata tab.
 - The Add/edit subtitle feature has been updated so that the chracter limit matches the SDS 2.0 specification. This fixes a bug that would cause an error if a user met the character limit enforced by SODA and then tried to add or edit their subtitle.
 
-
 ### Known Issues:
 
 - There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.
