@@ -227,7 +227,6 @@ client = axios.create({
 
 const notyf = new Notyf({
   position: { x: "right", y: "bottom" },
-  ripple: true,
   dismissible: true,
   ripple: false,
   types: [
@@ -3452,7 +3451,6 @@ async function submitReviewDataset(embargoReleaseDate) {
         heightAuto: false,
         confirmButtonText: "Ok",
         title: `Could not exclude the selected files from publication`,
-        text: "Please try again.",
         icon: "error",
         reverseButtons: reverseSwalButtons,
         text: `${emessage}`,
@@ -7156,7 +7154,6 @@ let file_counter = 0;
 let folder_counter = 0;
 var uploadComplete = new Notyf({
   position: { x: "right", y: "bottom" },
-  ripple: true,
   dismissible: true,
   ripple: false,
   types: [
