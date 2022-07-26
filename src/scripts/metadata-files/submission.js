@@ -110,7 +110,7 @@ function resetSubmissionFields() {
   checkAirtableStatus("");
 }
 
-function helpMilestoneSubmission() {
+async function helpMilestoneSubmission() {
   var filepath = "";
   var informationJson = {};
   Swal.fire({
@@ -121,7 +121,7 @@ function helpMilestoneSubmission() {
     cancelButtonText: "No",
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
-  }).then((result) => {
+  }).then(async (result) => {
     if (result.isConfirmed) {
       Swal.fire({
         title: "Importing the Data Deliverables document",
@@ -140,43 +140,50 @@ function helpMilestoneSubmission() {
             };
           }
         },
-      }).then((result) => {
+      }).then(async (result) => {
         Swal.close();
 
         const filepath = result.value.filepath;
         var award = $("#submission-sparc-award");
-        client.invoke("api_extract_milestone_info", filepath, (error, res) => {
-          if (error) {
-            var emessage = userError(error);
-            log.error(error);
-            console.error(error);
-            Swal.fire({
-              backdrop: "rgba(0,0,0, 0.4)",
-              heightAuto: false,
-              icon: "error",
-              text: `${emessage}`,
-            });
-          } else {
-            milestoneObj = res;
-            createMetadataDir();
-            var informationJson = {};
-            informationJson = parseJson(milestonePath);
-            informationJson[award] = milestoneObj;
-            fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
-            Swal.fire({
-              backdrop: "rgba(0,0,0, 0.4)",
-              heightAuto: false,
-              timer: 3000,
-              timerProgressBar: true,
-              icon: "success",
-              text: `Successfully loaded your DataDeliverables.docx document`,
-            });
-            removeOptions(descriptionDateInput);
-            milestoneTagify1.removeAllTags();
-            milestoneTagify1.settings.whitelist = [];
-            changeAwardInput();
-          }
-        });
+        log.info(`Importing Data Deliverables document: ${filepath}`);
+        try {
+          let extract_milestone = await client.get(
+            `/prepare_metadata/import_milestone`,
+            {
+              params: {
+                path: filepath,
+              },
+            }
+          );
+
+          let res = extract_milestone.data;
+          milestoneObj = res;
+          createMetadataDir();
+          var informationJson = {};
+          informationJson = parseJson(milestonePath);
+          informationJson[award] = milestoneObj;
+          fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
+          Swal.fire({
+            backdrop: "rgba(0,0,0, 0.4)",
+            heightAuto: false,
+            timer: 3000,
+            timerProgressBar: true,
+            icon: "success",
+            text: `Successfully loaded your DataDeliverables.docx document`,
+          });
+          removeOptions(descriptionDateInput);
+          milestoneTagify1.removeAllTags();
+          milestoneTagify1.settings.whitelist = [];
+          changeAwardInput();
+        } catch (error) {
+          clientError(error);
+          Swal.fire({
+            backdrop: "rgba(0,0,0, 0.4)",
+            heightAuto: false,
+            icon: "error",
+            text: userErrorMessage(error),
+          });
+        }
       });
     }
   });
@@ -599,66 +606,73 @@ async function generateSubmissionHelper(uploadBFBoolean) {
       });
     }
   }
-  json_str = JSON.stringify(json_arr);
-  client.invoke(
-    "api_save_submission_file",
-    uploadBFBoolean,
-    defaultBfAccount,
-    $("#bf_dataset_load_submission").text().trim(),
-    submissionDestinationPath,
-    json_str,
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          icon: "error",
-          html: emessage,
-          title: "Failed to generate the submission file",
-        });
-        logMetadataForAnalytics(
-          "Error",
-          MetadataAnalyticsPrefix.SUBMISSION,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Generate",
-          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
-        );
-      } else {
-        if (uploadBFBoolean) {
-          var successMessage =
-            "Successfully generated the submission.xlsx file on your Pennsieve dataset.";
-        } else {
-          var successMessage =
-            "Successfully generated the submission.xlsx file at the specified location.";
-        }
-        Swal.fire({
-          title: successMessage,
-          icon: "success",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: "Ok",
-          allowOutsideClick: true,
-        });
 
-        logMetadataForAnalytics(
-          "Success",
-          MetadataAnalyticsPrefix.SUBMISSION,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Generate",
-          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
-        );
-
-        // get the size of the uploaded file from the result
-        const size = res;
-
-        // log the size of the metadata file that was generated at varying levels of granularity
-        logMetadataSizeForAnalytics(uploadBFBoolean, "submission.xlsx", size);
+  let datasetName = $("#bf_dataset_load_submission").text().trim();
+  client
+    .post(
+      `/prepare_metadata/submission_file`,
+      {
+        submission_file_rows: json_arr,
+        filepath: submissionDestinationPath,
+        upload_boolean: uploadBFBoolean,
+      },
+      {
+        params: {
+          selected_account: defaultBfAccount,
+          selected_dataset: datasetName,
+        },
       }
-    }
-  );
+    )
+    .then((res) => {
+      if (uploadBFBoolean) {
+        var successMessage =
+          "Successfully generated the submission.xlsx file on your Pennsieve dataset.";
+      } else {
+        var successMessage =
+          "Successfully generated the submission.xlsx file at the specified location.";
+      }
+      Swal.fire({
+        title: successMessage,
+        icon: "success",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Ok",
+        allowOutsideClick: true,
+      });
+
+      logMetadataForAnalytics(
+        "Success",
+        MetadataAnalyticsPrefix.SUBMISSION,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Generate",
+        uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+      );
+
+      // get the size of the uploaded file from the result
+      const size = res;
+
+      // log the size of the metadata file that was generated at varying levels of granularity
+      logMetadataSizeForAnalytics(uploadBFBoolean, "submission.xlsx", size);
+    })
+    .catch((error) => {
+      clientError(error);
+      let emessage = userErrorMessage(error);
+      Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        icon: "error",
+        html: emessage,
+        title: "Failed to generate the submission file",
+      });
+
+      logMetadataForAnalytics(
+        "Error",
+        MetadataAnalyticsPrefix.SUBMISSION,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Generate",
+        uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+      );
+    });
 }
 
 $("#submission-completion-date").change(function () {
@@ -825,29 +839,38 @@ function importExistingSubmissionFile(type) {
 }
 
 // function to load existing submission files
-function loadExistingSubmissionFile(filepath) {
-  client.invoke("api_load_existing_submission_file", filepath, (error, res) => {
-    if (error) {
-      var emessage = userError(error);
-      console.log(error);
-      Swal.fire({
-        title: "Failed to load the existing submission.xlsx file.",
-        html: emessage,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        icon: "error",
-      });
-      logMetadataForAnalytics(
-        "Error",
-        MetadataAnalyticsPrefix.SUBMISSION,
-        AnalyticsGranularity.ALL_LEVELS,
-        "Existing",
-        Destinations.LOCAL
-      );
-    } else {
-      loadSubmissionFileToUI(res, "local");
-    }
-  });
+async function loadExistingSubmissionFile(filepath) {
+  log.info(`Loading existing submission file: ${filepath}`);
+  try {
+    let load_submission_file = await client.get(
+      `/prepare_metadata/submission_file`,
+      {
+        params: {
+          filepath,
+        },
+      }
+    );
+
+    let res = load_submission_file.data;
+    loadSubmissionFileToUI(res, "local");
+  } catch (error) {
+    clientError(error);
+
+    Swal.fire({
+      title: "Failed to load the existing submission.xlsx file.",
+      html: userErrorMessage(error),
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      icon: "error",
+    });
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.SUBMISSION,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.LOCAL
+    );
+  }
 }
 
 function loadSubmissionFileToUI(data, type) {
@@ -910,7 +933,7 @@ function loadSubmissionFileToUI(data, type) {
 }
 
 // function to check for existing submission file on Penn
-function checkBFImportSubmission() {
+async function checkBFImportSubmission() {
   Swal.fire({
     title: "Importing the submission.xlsx file",
     html: "Please wait...",
@@ -925,33 +948,37 @@ function checkBFImportSubmission() {
       Swal.showLoading();
     },
   }).then((result) => {});
-  client.invoke(
-    "api_import_bf_metadata_file",
-    "submission.xlsx",
-    "",
-    defaultBfAccount,
-    $("#bf_dataset_load_submission").text().trim(),
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          icon: "error",
-          html: emessage,
-        });
-        logMetadataForAnalytics(
-          "Error",
-          MetadataAnalyticsPrefix.SUBMISSION,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Existing",
-          Destinations.PENNSIEVE
-        );
-      } else {
-        loadSubmissionFileToUI(res, "bf");
+  let bfDataset = $("#bf_dataset_load_submission").text().trim();
+  log.info(`Loading submission file from Pennsieve dataset: ${bfDataset}`);
+  try {
+    let import_metadata = await client.get(
+      `/prepare_metadata/import_metadata_file`,
+      {
+        params: {
+          file_type: "submission.xlsx",
+          selected_account: defaultBfAccount,
+          selected_dataset: bfDataset,
+        },
       }
-    }
-  );
+    );
+    let res = import_metadata.data;
+
+    loadSubmissionFileToUI(res, "bf");
+  } catch (error) {
+    clientError(error);
+
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      text: error.response.data.message,
+    });
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.SUBMISSION,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.PENNSIEVE
+    );
+  }
 }

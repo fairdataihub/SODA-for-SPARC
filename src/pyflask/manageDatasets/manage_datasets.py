@@ -1,36 +1,22 @@
 # -*- coding: utf-8 -*-
 
 ### Import required python modules
-
 from gevent import monkey
 
 monkey.patch_all()
-import platform
 import os
-from os import listdir, stat, makedirs, mkdir, walk, remove, pardir
+from os import listdir, mkdir, walk
 from os.path import (
     isdir,
-    isfile,
     join,
-    splitext,
-    getmtime,
-    basename,
-    normpath,
     exists,
     expanduser,
-    split,
     dirname,
     getsize,
-    abspath,
 )
-import pandas as pd
 import time
-from time import strftime, localtime
 import shutil
-from shutil import copy2
 from configparser import ConfigParser
-import numpy as np
-from collections import defaultdict
 import subprocess
 from websocket import create_connection
 import socket
@@ -38,35 +24,30 @@ import errno
 import re
 import gevent
 from pennsieve import Pennsieve
-from pennsieve.log import get_logger
 from pennsieve.api.agent import (
     agent_cmd,
     validate_agent_installation,
     agent_env,
+    agent_cmd,
 )
-import semver
-from pennsieve.api.agent import AgentError, check_port, socket_address
-from pennsieve import Settings
-from urllib.request import urlopen
-import json
-import collections
-from threading import Thread
-import pathlib
 
-from openpyxl import load_workbook
-from openpyxl import Workbook
-from openpyxl.styles import PatternFill, Font
-from docx import Document
+from pennsieve.api.agent import AgentError, socket_address
+from pennsieve import Settings
+from threading import Thread
+
+import platform
+
 
 import boto3
 import requests
 
-from string import ascii_uppercase
-import itertools
+from flask import abort 
+from namespaces import NamespaceEnum, get_namespace_logger
+from utils import get_dataset, get_authenticated_ps
 
-from datetime import datetime, timezone
 
 ### Global variables
+namespace_logger = get_namespace_logger(NamespaceEnum.MANAGE_DATASETS)
 curateprogress = " "
 curatestatus = " "
 curateprintstatus = " "
@@ -135,7 +116,7 @@ def bf_dataset_size():
 
     try:
         selected_dataset_id = myds.id
-        bf_response = bf._api._get("/datasets/" + str(selected_dataset_id))
+        bf_response = bf._api._get(f"/datasets/{str(selected_dataset_id)}")
         return bf_response["storage"] if "storage" in bf_response.keys() else 0
     except Exception as e:
         raise e
@@ -159,7 +140,7 @@ def bf_keep_only_account(keyname):
     config_sections = config.sections()
 
     for section in config_sections:
-        if section != "agent" and section != "global" and section != keyname:
+        if section not in ["agent", "global", keyname]:
             config.remove_section(section)
         with open(configpath, "w+") as configfile:
             config.write(configfile)
@@ -181,10 +162,10 @@ def bf_add_account_api_key(keyname, key, secret):
         error = ""
         keyname = keyname.strip()
         if (not keyname) or (not key) or (not secret):
-            raise Exception("Error: Please enter valid keyname, key, and/or secret")
+            abort(401, "Please enter valid keyname, key, and/or secret")
 
         if (keyname.isspace()) or (key.isspace()) or (secret.isspace()):
-            raise Exception("Error: Please enter valid keyname, key, and/or secret")
+            abort(401, "Please enter valid keyname, key, and/or secret")
 
         bfpath = join(userpath, ".pennsieve")
         # Load existing or create new config file
@@ -192,7 +173,7 @@ def bf_add_account_api_key(keyname, key, secret):
         if exists(configpath):
             config.read(configpath)
             if config.has_section(keyname):
-                raise Exception("Error: Key name already exists")
+                abort(400, "Key name already exists")
         else:
             if not exists(bfpath):
                 mkdir(bfpath)
@@ -204,7 +185,6 @@ def bf_add_account_api_key(keyname, key, secret):
         if not config.has_section(agentkey):
             config.add_section(agentkey)
             config.set(agentkey, "proxy_local_port", "8080")
-            # config.set(agentkey, 'cache_base_path', join(bfpath, 'cache'))
             config.set(agentkey, "uploader", "true")
             config.set(agentkey, "cache_hard_cache_size", "10000000000")
             config.set(agentkey, "status_port", "11235")
@@ -230,10 +210,10 @@ def bf_add_account_api_key(keyname, key, secret):
     try:
         bf = Pennsieve(keyname)
 
-    except:
+    except Exception:
         bf_delete_account(keyname)
-        raise Exception(
-            "Authentication Error: please check that key name, key, and secret are entered properly"
+        abort(401, 
+            "Please check that key name, key, and secret are entered properly"
         )
 
     # Check that the Pennsieve account is in the SPARC Consortium organization
@@ -242,8 +222,8 @@ def bf_add_account_api_key(keyname, key, secret):
 
         # CHANGE BACK
         if org_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-            raise Exception(
-                "Error: Please check that your account is within the SPARC Consortium Organization"
+            abort(403,
+                "Please check that your account is within the SPARC Consortium Organization"
             )
 
         if not config.has_section("global"):
@@ -255,10 +235,7 @@ def bf_add_account_api_key(keyname, key, secret):
         with open(configpath, "w") as configfile:
             config.write(configfile)
 
-        # CHANGE BACK
-        # bf_keep_only_account(keyname)
-
-        return "Successfully added account " + str(bf)
+        return {"message": f"Successfully added account {str(bf)}"}
 
     except Exception as e:
         bf_delete_account(keyname)
@@ -279,19 +256,12 @@ def bf_add_account_username(keyname, key, secret):
     temp_keyname = "SODA_temp_generated"
     try:
         keyname = keyname.strip()
-        # if (not keyname) or (not key) or (not secret):
-        #     raise Exception('Error: Please enter valid keyname, key, and/or secret')
-
-        # if (keyname.isspace()) or (key.isspace()) or (secret.isspace()):
-        #     raise Exception('Error: Please enter valid keyname, key, and/or secret')
 
         bfpath = join(userpath, ".pennsieve")
         # Load existing or create new config file
         config = ConfigParser()
         if exists(configpath):
             config.read(configpath)
-            # if config.has_section(keyname):
-            #     raise Exception('Error: Key name already exists')
         else:
             if not exists(bfpath):
                 mkdir(bfpath)
@@ -303,7 +273,6 @@ def bf_add_account_username(keyname, key, secret):
         if not config.has_section(agentkey):
             config.add_section(agentkey)
             config.set(agentkey, "proxy_local_port", "8080")
-            # config.set(agentkey, 'cache_base_path', join(bfpath, 'cache'))
             config.set(agentkey, "uploader", "true")
             config.set(agentkey, "cache_hard_cache_size", "10000000000")
             config.set(agentkey, "status_port", "11235")
@@ -328,21 +297,20 @@ def bf_add_account_username(keyname, key, secret):
     # Check key and secret are valid, if not delete account from config
     try:
         bf = Pennsieve(temp_keyname)
-    except:
+    except Exception:
         bf_delete_account(temp_keyname)
-        raise Exception(
-            "Authentication Error: please check that key name, key, and secret are entered properly"
+        abort(401, 
+            "Please check that key name, key, and secret are entered properly"
         )
 
     # Check that the Pennsieve account is in the SPARC Consortium organization
+    if bf.context.id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
+        bf_delete_account(temp_keyname)
+        abort(403,
+            "Please check that your account is within the SPARC Consortium Organization"
+        )
+
     try:
-
-        # CHANGE BACK
-        if bf.context.id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-            raise Exception(
-                "Error: Please check that your account is within the SPARC Consortium Organization"
-            )
-
         if not config.has_section("global"):
             config.add_section("global")
 
@@ -359,10 +327,8 @@ def bf_add_account_username(keyname, key, secret):
             config.write(configfile)
 
         bf_delete_account(temp_keyname)
-        # # CHANGE BACK
-        # bf_keep_only_account(keyname)
 
-        return "Successfully added account " + str(bf)
+        return {"message": f"Successfully added account {str(bf)}"}
 
     except Exception as e:
         bf_delete_account(temp_keyname)
@@ -433,7 +399,7 @@ def bf_get_accounts():
         try:
             ps = Pennsieve(SODA_SPARC_API_KEY)
             return SODA_SPARC_API_KEY
-        except:
+        except Exception:
             pass
     elif "global" in accountname:
         if "default_profile" in config["global"]:
@@ -475,31 +441,7 @@ def bf_account_list():
             valid_account = bf_get_accounts()
             if valid_account != "":
                 accountlist.append(valid_account)
-            # config = ConfigParser()
-            # config.read(configpath)
-            # accountname = config.sections()
-
-            # if (SODA_SPARC_API_KEY in accountname):
-            #     try:
-            #         bfn = Pennsieve(SODA_SPARC_API_KEY)
-            #         accountlist.append(SODA_SPARC_API_KEY)
-            #         with open(configpath, 'w') as configfile:
-            #             config.write(configfile)
-            #         return accountlist
-            #     except Exception as e:
-            #         pass
-            # else:
-            #     accountnamenoglobal = [n for n in accountname]
-            #     # if accountnamenoglobal:
-            #     for n in accountnamenoglobal:
-            #         try:
-            #             bfn = Pennsieve(n)
-            #             accountlist.append(n)
-            #         except Exception as e:
-            #             pass
-            #     with open(configpath, 'w') as configfile:
-            #         config.write(configfile)
-        return accountlist
+        return {"accounts": accountlist}
         # My accountlist
 
     except Exception as e:
@@ -517,33 +459,7 @@ def bf_default_account_load():
             valid_account = bf_get_accounts()
             if valid_account != "":
                 accountlist.append(valid_account)
-            # # CHANGE BACK
-            # bf_remove_additional_accounts() # remove non consortium accounts
-            # config = ConfigParser()
-            # config.read(configpath)
-            # keys = config.sections()
-            # accountlist = []
-            # if "global" in keys:
-            #     default_acc = config["global"]
-            #     if "default_profile" in default_acc:
-            #         n = default_acc["default_profile"]
-            #         try:
-            #             bfn = Pennsieve(n)
-            #             accountlist.append(n)
-            #         except Exception as e:
-            #             return accountlist
-            # accountnamenoglobal = [n for n in accountname]
-            # if accountnamenoglobal:
-            #     for n in accountnamenoglobal:
-            #         try:
-            #             bfn = Pennsieve(n)
-            #             accountlist.append(n)
-            #             break
-            #         except:
-            #             pass
-            #     with open(configpath, 'w') as configfile:
-            #         config.write(configfile)
-        return accountlist
+        return {"defaultAccounts": accountlist}
     except Exception as e:
         raise e
 
@@ -556,15 +472,11 @@ def bf_dataset_account(accountname):
     Output: a filtered dataset list with objects as elements: {"name": dataset's name, "id": dataset's id, "role": permission}
 
     """
-    # # current_user = bf._api._get('/user')
-    # # current_user_id = current_user['id']
-    # # for ds in bf.datasets():
-    # #     dataset_list.append(ds.name)
-    # dataset_list.sort(key=lambda v: v.upper()) # Returning the list of datasets in alphabetical order
-    # dataset_list.insert(0, ['Select dataset'])
-    # return dataset_list
-
-    bf = Pennsieve(accountname)
+    try:
+        bf = Pennsieve(accountname)
+    except Exception as e:
+        abort(400, str(e))
+    
     # bfaccountname = bf.profile.id
     datasets_list = bf.datasets()
 
@@ -575,12 +487,8 @@ def bf_dataset_account(accountname):
             store = []
         for dataset in datasets_list:
             selected_dataset_id = dataset.id
-            user_role = bf._api._get("/datasets/" + str(selected_dataset_id) + "/role")[
-                "role"
-            ]
-            if user_role == "viewer" or user_role == "editor":
-                pass
-            else:
+            user_role = bf._api._get(f"/datasets/{str(selected_dataset_id)}/role")["role"]
+            if user_role not in ["viewer", "editor"]:
                 store.append(
                     {"id": selected_dataset_id, "name": dataset.name, "role": user_role}
                 )
@@ -603,7 +511,7 @@ def bf_dataset_account(accountname):
 
     sorted_bf_datasets = sorted(store, key=lambda k: k["name"].upper())
 
-    return sorted_bf_datasets
+    return {"datasets": sorted_bf_datasets}
 
 
 def get_username(accountname):
@@ -613,10 +521,14 @@ def get_username(accountname):
     Output: User's name
     """
 
-    bf = Pennsieve(accountname)
+    try:
+        bf = Pennsieve(accountname)
+    except Exception as e:
+        abort(400, "Please select a valid Pennsieve account.")
+    
     bfname = bf.profile.first_name + " " + bf.profile.last_name
 
-    return bfname
+    return {"username": bfname}
 
 
 def bf_account_details(accountname):
@@ -630,9 +542,13 @@ def bf_account_details(accountname):
     """
     try:
         bf = Pennsieve(accountname)
-        acc_details = "User email: " + bf.profile.email + "<br>"
-        acc_details = acc_details + "Organization: " + bf.context.name
+    except Exception as e:
+        abort(400, str(e))
 
+    acc_details = "User email: " + bf.profile.email + "<br>"
+    acc_details = acc_details + "Organization: " + bf.context.name
+
+    try: 
         if exists(configpath):
             config = ConfigParser()
             config.read(configpath)
@@ -647,7 +563,7 @@ def bf_account_details(accountname):
             config.write(configfile)
 
         ## return account details and datasets where such an account has some permission
-        return acc_details
+        return {"account_details": acc_details}
 
     except Exception as e:
         raise e
@@ -670,37 +586,35 @@ def bf_new_dataset_folder(datasetname, accountname):
         if check_forbidden_characters_bf(datasetname):
             error = (
                 error
-                + "Error: A Pennsieve dataset name cannot contain any of the following characters: "
+                + "A Pennsieve dataset name cannot contain any of the following characters: "
                 + forbidden_characters_bf
                 + "<br>"
             )
             c += 1
 
         if not datasetname:
-            error = error + "Error: Please enter valid dataset name" + "<br>"
+            error = error + "Please enter valid dataset name" + "<br>"
             c += 1
 
         if datasetname.isspace():
-            error = error + "Error: Please enter valid dataset name" + "<br>"
+            error = error + "Please enter valid dataset name" + "<br>"
             c += 1
 
         try:
             bf = Pennsieve(accountname)
         except Exception as e:
-            error = error + "Error: Please select a valid Pennsieve account" + "<br>"
+            error = error + "Please select a valid Pennsieve account" + "<br>"
             c += 1
 
         if c > 0:
-            raise Exception(error)
+            abort(400, error)
 
-        dataset_list = []
-        for ds in bf.datasets():
-            dataset_list.append(ds.name)
+        dataset_list = [ds.name for ds in bf.datasets()]
         if datasetname in dataset_list:
-            raise Exception("Error: Dataset name already exists")
+            abort(400, "Dataset name already exists")
         else:
             d = bf.create_dataset(datasetname)
-            return d.id
+            return {"id": d.id}
 
     except Exception as e:
         raise e
@@ -722,64 +636,56 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
     if check_forbidden_characters_bf(datasetname):
         error = (
             error
-            + "Error: A Pennsieve dataset name cannot contain any of the following characters: "
+            + "A Pennsieve dataset name cannot contain any of the following characters: "
             + forbidden_characters_bf
             + "<br>"
         )
         c += 1
 
     if not datasetname:
-        error = error + "Error: Please enter valid new dataset name" + "<br>"
+        error = error + "Please enter valid new dataset name" + "<br>"
         c += 1
 
     if datasetname.isspace():
-        error = error + "Error: Please enter valid new dataset name" + "<br>"
+        error = error + "Please enter valid new dataset name" + "<br>"
         c += 1
 
     try:
         bf = Pennsieve(accountname)
     except Exception as e:
-        error = error + "Error: Please select a valid Pennsieve account" + "<br>"
+        error = error + "Please select a valid Pennsieve account" + "<br>"
         c += 1
 
     if c > 0:
-        raise Exception(error)
+        abort(400, error)
 
     try:
         myds = bf.get_dataset(current_dataset_name)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        error = "Please select a valid Pennsieve dataset"
+        abort(400, error)
 
-    try:
-        role = bf_get_current_user_permission(bf, myds)
-        if role not in ["owner", "manager"]:
-            error = "Error: You don't have permissions to change the name of this Pennsieve dataset"
-            raise Exception(error)
-    except Exception as e:
-        raise e
+    role = bf_get_current_user_permission(bf, myds)
+    if role not in ["owner", "manager"]:
+        error_message = "You don't have permissions to change the name of this Pennsieve dataset"
+        abort(403, error_message)
 
-    dataset_list = []
-    for ds in bf.datasets():
-        dataset_list.append(ds.name)
+
+    dataset_list = [ds.name for ds in bf.datasets()]
     if datasetname in dataset_list:
-        raise Exception("Error: Dataset name already exists")
-    else:
-        myds = bf.get_dataset(current_dataset_name)
-        selected_dataset_id = myds.id
-        jsonfile = {"name": datasetname}
-        bf._api.datasets._put("/" + str(selected_dataset_id), json=jsonfile)
+        raise Exception("Dataset name already exists")
+
+    myds = bf.get_dataset(current_dataset_name)
+    selected_dataset_id = myds.id
+    jsonfile = {"name": datasetname}
+    bf._api.datasets._put(f"/{str(selected_dataset_id)}", json=jsonfile)
 
 
 def clear_queue():
-    command = [
-        agent_cmd(),
-        "upload-status",
-        "--cancel-all",
-    ]
+
+    command = [agent_cmd(), "upload-status", "--cancel-all"]
 
     proc = subprocess.run(command, check=True)  # env=agent_env(?settings?)
-
     return proc
 
 
@@ -820,10 +726,10 @@ def check_agent_install():
     try:
         validate_agent_installation(Settings())
         return agent_version(Settings())
-    except AgentError:
+    except AgentError as e:
         raise AgentError(
             "We highly recommend installing the Pennsieve agent and restarting SODA before you upload any files. Click <a href='https://github.com/bvhpatel/SODA/wiki/Installing-the-Pennsieve-agent' target='_blank'>here</a> for installation instructions."
-        )
+        ) from e
 
 
 def agent_version(settings):
@@ -834,11 +740,11 @@ def agent_version(settings):
         env = agent_env(settings)
         env["PENNSIEVE_LOG_LEVEL"] = "ERROR"  # Avoid spurious output with the version
         version = subprocess.check_output([agent_cmd(), "version"], env=env)
-        return version.decode().strip()
+        return {"agent_version": version.decode().strip()}
     except (AgentError, subprocess.CalledProcessError, EnvironmentError) as e:
         raise AgentError(
             "Agent not installed. Visit https://developer.pennsieve.io/agent for installation directions."
-        )
+        ) from e
 
 
 def bf_submit_dataset(accountname, bfdataset, pathdataset):
@@ -884,28 +790,28 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         submitdatastatus = "Done"
         did_fail = True
         did_upload = False
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        error_message = "Please select a valid Pennsieve account"
+        abort(400, error_message)
 
-    error, c = "", 0
+    error_message, c = "", 0
     try:
         myds = bf.get_dataset(bfdataset)
     except Exception as e:
         submitdatastatus = "Done"
         did_fail = True
         did_upload = False
-        error = error + "Error: Please select a valid Pennsieve dataset" + "<br>"
+        error_message = error_message + "Please select a valid Pennsieve dataset" + "<br>"
         c += 1
 
     if not isdir(pathdataset):
         submitdatastatus = "Done"
-        error = error + "Error: Please select a valid local dataset folder" + "<br>"
+        error_message = error_message + "Please select a valid local dataset folder" + "<br>"
         did_fail = True
         did_upload = False
         c += 1
 
     if c > 0:
-        raise Exception(error)
+        abort(400, error_message)
 
     error, c = "", 0
     total_file_size = 1
@@ -939,23 +845,23 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         submitdatastatus = "Done"
         error = (
             error
-            + "<br>Please remove invalid files/folders from your dataset before uploading. If you have hidden files present please remove them before upload. You can find more details <a href='https://docs.sodaforsparc.io/docs/common-errors/issues-regarding-hidden-files-or-folders' target='_blank'>here </a> on how to fix this issue."
+            + "<br>Please remove invalid files/folders from your dataset before uploading. If you have hidden files present please remove them before upload. You can find more details <a href='https://github.com/bvhpatel/SODA/wiki/Issues-regarding-hidden-files-or-folders' target='_blank'>here </a> on how to fix this issue."
         )
         did_fail = True
         did_upload = False
-        raise Exception(error)
+        abort(400, error)
 
     total_file_size = total_file_size - 1
 
     role = bf_get_current_user_permission(bf, myds)
     if role not in ["owner", "manager", "editor"]:
         submitdatastatus = "Done"
-        error = (
-            "Error: You don't have permissions for uploading to this Pennsieve dataset"
+        error_message = (
+            "You don't have permissions for uploading to this Pennsieve dataset"
         )
         did_fail = True
         did_upload = False
-        raise Exception(error)
+        abort(403, error_message)
 
     ## check if agent is installed
     try:
@@ -1022,14 +928,12 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
             myds = bf.get_dataset(bfdataset)
 
-            folders = {}
-
             # create the root directory on Pennsieve and store it for later
             root_folder_name = os.path.basename(os.path.normpath(pathdataset))
             root_pennsieve_folder = myds.create_collection(root_folder_name)
             myds.update()
-            folders[root_folder_name] = root_pennsieve_folder
-
+            folders = {root_folder_name: root_pennsieve_folder}
+            
             # top down scan through dataset to upload each file/folder
             for dirpath, child_dirs, files in os.walk(pathdataset, topdown=True):
                 #  get the current root directory's name not its relative path
@@ -1166,8 +1070,13 @@ def bf_submit_dataset_upload_details():
     Function frequently called by front end to help keep track of the amount of files that have
     been successfully uploaded to Pennsieve, and the size of the uploaded files
 
-    Return did_fail and did_upload to inform the user that the upload failed and that it failed after uploading data - important for logging upload sessions
-    correctly
+    Returns: 
+        uploaded_files - 
+        uploaded_file_size - 
+        did_fail - 
+        did_upload -  to inform the user that the upload failed and that it failed after uploading data - important for logging upload sessions
+        upload_folder_count - the number of folders that have been uploaded
+
     """
     global uploaded_file_size
     global uploaded_files
@@ -1175,13 +1084,13 @@ def bf_submit_dataset_upload_details():
     global did_upload
     global upload_folder_count
 
-    return (
-        uploaded_files,
-        uploaded_file_size,
-        did_fail,
-        did_upload,
-        upload_folder_count,
-    )
+    return {
+        "uploaded_files": uploaded_files,
+        "uploaded_file_size": uploaded_file_size,
+        "did_fail": did_fail,
+        "did_upload": did_upload,
+        "upload_folder_count": upload_folder_count,
+    }
 
 
 def submit_dataset_progress():
@@ -1209,14 +1118,14 @@ def submit_dataset_progress():
         elapsed_time_formatted = 0
         elapsed_time_formatted_display = "<br>" + "Initiating..." + "<br>"
     # gevent.sleep(0)
-    return (
-        submitdataprogress + elapsed_time_formatted_display,
-        submitdatastatus,
-        submitprintstatus,
-        total_file_size,
-        uploaded_file_size,
-        elapsed_time_formatted,
-    )
+    return {
+        'progress': submitdataprogress + elapsed_time_formatted_display,
+        'submit_dataset_status': submitdatastatus,
+        'submit_print_status': submitprintstatus,
+        'total_file_size': total_file_size,
+        'upload_file_size': uploaded_file_size,
+        'elapsed_time_formatted': elapsed_time_formatted,
+    }
 
 
 def bf_get_users(selected_bfaccount):
@@ -1230,9 +1139,14 @@ def bf_get_users(selected_bfaccount):
         list_users : list of users (first name -- last name) associated with the organization of the
         selected Pennsieve account (list of string)
     """
+
+    global namespace_logger
     try:
-        # def get_users_list():
         bf = Pennsieve(selected_bfaccount)
+    except Exception as e:
+        abort(400, f"{e}")
+        
+    try:
         # organization_name = bf.context.name
         organization_id = bf.context.id
         list_users = bf._api._get("/organizations/" + str(organization_id) + "/members")
@@ -1250,10 +1164,7 @@ def bf_get_users(selected_bfaccount):
             )
             list_users_first_last.append(first_last)
         list_users_first_last.sort()  # Returning the list of users in alphabetical order
-        return list_users_first_last
-        # list_users_first_last = gevent.spawn(get_users_list())
-        # gevent.sleep(0)
-        # return list_users_first_last
+        return {"users": list_users_first_last}
     except Exception as e:
         raise e
 
@@ -1271,15 +1182,16 @@ def bf_get_teams(selected_bfaccount):
     """
     try:
         bf = Pennsieve(selected_bfaccount)
-        # organization_name = bf.context.name
+    except Exception as e:
+        abort(400, f"{e}")
+
+    try:
         organization_id = bf.context.id
-        list_teams = bf._api._get("/organizations/" + str(organization_id) + "/teams")
-        list_teams_name = []
-        for i in range(len(list_teams)):
-            team_name = list_teams[i]["team"]["name"]
-            list_teams_name.append(team_name)
+        list_teams = bf._api._get(f"/organizations/{str(organization_id)}/teams")
+        list_teams_name = [list_teams[i]["team"]["name"] for i in range(len(list_teams))]
+
         list_teams_name.sort()  # Returning the list of teams in alphabetical order
-        return list_teams_name
+        return {"teams": list_teams_name}
     except Exception as e:
         raise e
 
@@ -1300,14 +1212,12 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        abort(400, "Please select a valid Pennsieve account")
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset" + "<br>"
-        raise Exception(error)
+        abort(400, "Please select a valid Pennsieve dataset" + "<br>")
 
     try:
         # user permissions
@@ -1367,7 +1277,7 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
                         + organization_role
                     )
 
-        return list_dataset_permission_first_last_role
+        return {"permissions": list_dataset_permission_first_last_role}
 
     except Exception as e:
         raise e
@@ -1387,11 +1297,7 @@ def bf_get_current_user_permission(bf, myds):
 
     try:
         selected_dataset_id = myds.id
-        user_role = bf._api._get("/datasets/" + str(selected_dataset_id) + "/role")[
-            "role"
-        ]
-
-        return user_role
+        return bf._api._get(f"/datasets/{str(selected_dataset_id)}/role")["role"]
 
     except Exception as e:
         raise e
@@ -1419,20 +1325,19 @@ def bf_add_permission(
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = error + "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        raise abort(400, "Please select a valid Pennsieve account") from e
 
     c = 0
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = error + "Error: Please select a valid Pennsieve dataset" + "<br>"
+        error = error + "Please select a valid Pennsieve dataset" + "<br>"
         c += 1
 
     try:
         # organization_name = bf.context.name
         organization_id = bf.context.id
-        list_users = bf._api._get("/organizations/" + str(organization_id) + "/members")
+        list_users = bf._api._get(f"/organizations/{str(organization_id)}/members")
         # dict_users = {}
         # list_users_firstlast = []
         for i in range(len(list_users)):
@@ -1440,14 +1345,11 @@ def bf_add_permission(
             if selected_user_id == list_users[i]["id"]:
                 user_present = True
                 break
-            # dict_users[list_users_firstlast[i]] = list_users[i]['id']
-            # dict_users[list_users[i]['id']] = list_users_firstlast[i]
         if user_present == False:
-            error = error + "Error: Please select a valid user" + "<br>"
+            error = error + "Please select a valid user" + "<br>"
             c += 1
     except Exception as e:
         raise e
-
     if selected_role not in [
         "manager",
         "viewer",
@@ -1455,15 +1357,14 @@ def bf_add_permission(
         "owner",
         "remove current permissions",
     ]:
-        error = error + "Error: Please select a valid role" + "<br>"
+        error = error + "Please select a valid role" + "<br>"
         c += 1
 
     if c > 0:
-        raise Exception(error)
+        raise abort(400, error)
     else:
         try:
             selected_dataset_id = myds.id
-            # selected_user_id = selected_user_id #dict_users[selected_user]
 
             # check that currently logged in user is a manager or a owner of the selected dataset (only manager and owner can change dataset permission)
             current_user = bf._api._get("/user")
@@ -1483,23 +1384,17 @@ def bf_add_permission(
                     and last_name == last_name_current_user
                 ):
                     if role not in ["owner", "manager"]:
-                        raise Exception(
-                            "Error: you must be dataset owner or manager to change its permissions"
-                        )
+                        abort(403, "You must be dataset owner or manager to change its permissions")
                     elif selected_role == "owner" and role != "owner":
-                        raise Exception(
-                            "Error: you must be dataset owner to change the ownership"
-                        )
+                        abort(403,"You must be dataset owner to change the ownership")
                     else:
                         c += 1
                 # check if selected user is owner, dataset permission cannot be changed for owner
                 if user_id == selected_user_id and role == "owner":
-                    raise Exception("Error: owner's permission cannot be changed")
+                    abort(400, "Owner's permission cannot be changed")
 
             if c == 0:
-                raise Exception(
-                    "Error: you must be dataset owner or manager to change its permissions"
-                )
+                abort(403,"You must be dataset owner or manager to change its permissions")
 
             if selected_role == "remove current permissions":
 
@@ -1509,7 +1404,7 @@ def bf_add_permission(
                     + "/collaborators/users".format(dataset_id=selected_dataset_id),
                     json={"id": selected_user_id},
                 )
-                return "Permission removed for " + selected_user
+                return {"message": "Permission removed for " + selected_user}
             elif selected_role == "owner":
                 # check if currently logged in user is owner of selected dataset (only owner can change owner)
 
@@ -1520,14 +1415,7 @@ def bf_add_permission(
                     + "/collaborators/owner".format(dataset_id=selected_dataset_id),
                     json={"id": selected_user_id},
                 )
-                return (
-                    "Permission "
-                    + "'"
-                    + selected_role
-                    + "' "
-                    + " added for "
-                    + selected_user
-                )
+                return {"message":  "Permission " + "'" + selected_role + "' " + " added for " + selected_user}
             else:
                 bf._api.datasets._put(
                     "/"
@@ -1535,14 +1423,7 @@ def bf_add_permission(
                     + "/collaborators/users".format(dataset_id=selected_dataset_id),
                     json={"id": selected_user_id, "role": selected_role},
                 )
-                return (
-                    "Permission "
-                    + "'"
-                    + selected_role
-                    + "' "
-                    + " added for "
-                    + selected_user
-                )
+                return {"message": "Permission " + "'" + selected_role + "' " + " added for " + selected_user}
         except Exception as e:
             raise e
 
@@ -1568,29 +1449,24 @@ def bf_add_permission_team(
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        error_message = "Please select a valid Pennsieve account"
+        abort(400, error_message)
 
-    try:
-        if selected_team == "SPARC Data Curation Team":
-            if bf.context.id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-                raise Exception(
-                    "Error: Please login under the Pennsieve SPARC Consortium organization to share with the Curation Team"
-                )
-        if selected_team == "SPARC Embargoed Data Sharing Group":
-            if bf.context.id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-                raise Exception(
-                    "Error: Please login under the Pennsieve SPARC Consortium organization to share with the SPARC consortium group"
-                )
-    except Exception as e:
-        raise e
+
+    if selected_team == "SPARC Data Curation Team":
+        if bf.context.id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
+            abort(403, "Please login under the Pennsieve SPARC Consortium organization to share with the Curation Team")
+    if selected_team == "SPARC Embargoed Data Sharing Group":
+        if bf.context.id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
+            abort(403, "Please login under the Pennsieve SPARC Consortium organization to share with the SPARC consortium group")
+
 
     c = 0
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = error + "Error: Please select a valid Pennsieve dataset" + "<br>"
+        error = error + "Please select a valid Pennsieve dataset" + "<br>"
         c += 1
 
     try:
@@ -1603,7 +1479,7 @@ def bf_add_permission_team(
             list_teams_name.append(list_teams[i]["team"]["name"])
             dict_teams[list_teams_name[i]] = list_teams[i]["team"]["id"]
         if selected_team not in list_teams_name:
-            error = error + "Error: Please select a valid team" + "<br>"
+            error = error + "Please select a valid team" + "<br>"
             c += 1
     except Exception as e:
         raise e
@@ -1614,11 +1490,12 @@ def bf_add_permission_team(
         "editor",
         "remove current permissions",
     ]:
-        error = error + "Error: Please select a valid role" + "<br>"
+        error = error + "Please select a valid role" + "<br>"
         c += 1
 
     if c > 0:
-        raise Exception(error)
+        # can either be error with dataset, team, or role validity
+        abort(400, error)
 
     try:
         selected_dataset_id = myds.id
@@ -1642,15 +1519,11 @@ def bf_add_permission_team(
                 and last_name == last_name_current_user
             ):
                 if role not in ["owner", "manager"]:
-                    raise Exception(
-                        "Error: you must be dataset owner or manager to change its permissions"
-                    )
+                    abort(403, "You must be dataset owner or manager to change its permissions")
                 else:
                     c += 1
         if c == 0:
-            raise Exception(
-                "Error: you must be dataset owner or manager to change its permissions"
-            )
+            abort(400, "You must be dataset owner or manager to change its permissions")
 
         if selected_role == "remove current permissions":
 
@@ -1660,7 +1533,7 @@ def bf_add_permission_team(
                 + "/collaborators/teams".format(dataset_id=selected_dataset_id),
                 json={"id": selected_team_id},
             )
-            return "Permission removed for " + selected_team
+            return {"message": "Permission removed for " + selected_team}
         else:
             bf._api.datasets._put(
                 "/"
@@ -1668,19 +1541,16 @@ def bf_add_permission_team(
                 + "/collaborators/teams".format(dataset_id=selected_dataset_id),
                 json={"id": selected_team_id, "role": selected_role},
             )
-            return (
-                "Permission "
-                + "'"
-                + selected_role
-                + "' "
-                + " added for "
-                + selected_team
-            )
+            return {"message": "Permission " + "'" + selected_role + "' " + " added for " + selected_team}
     except Exception as e:
         raise e
 
 
-"""
+
+
+
+def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
+    """
     Function to get current subtitle associated with a selected dataset
 
     Args:
@@ -1691,19 +1561,17 @@ def bf_add_permission_team(
     """
 
 
-def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
-
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        error_message = "Please select a valid Pennsieve account"
+        abort(400, error_message)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        error_message = "Please select a valid Pennsieve dataset"
+        abort(400, error_message)
 
     try:
         selected_dataset_id = myds.id
@@ -1712,13 +1580,17 @@ def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
         res = ""
         if "description" in dataset_info["content"]:
             res = dataset_info["content"]["description"]
-        return res
+        return {"subtitle": res}
         # return json.dumps(dataset_info)
     except Exception as e:
         raise Exception(e)
 
 
-"""
+
+
+
+def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
+    """
     Args:
         selected_bfaccount: name of selected Pennsieve acccount (string)
         selected_bfdataset: name of selected Pennsieve dataset (string)
@@ -1729,39 +1601,36 @@ def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
         Success messsge or error
     """
 
-
-def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
-
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        error_message = "Please select a valid Pennsieve account"
+        abort(400, error_message)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        error_message = "Please select a valid Pennsieve dataset"
+        abort(400, error_message)
 
-    try:
-        role = bf_get_current_user_permission(bf, myds)
-        if role not in ["owner", "manager"]:
-            error = "Error: You don't have permissions for editing metadata on this Pennsieve dataset"
-            raise Exception(error)
-    except Exception as e:
-        raise e
+  
+    role = bf_get_current_user_permission(bf, myds)
+    if role not in ["owner", "manager"]:
+        error_message = "You don't have permissions for editing metadata on this Pennsieve dataset"
+        abort(403, error_message)
 
     try:
         selected_dataset_id = myds.id
         jsonfile = {"description": input_subtitle}
         bf._api.datasets._put("/" + str(selected_dataset_id), json=jsonfile)
-        return "Subtitle added!"
+        return{ "message": "Subtitle added!"}
     except Exception as e:
         raise Exception(e)
 
 
-"""
+
+def bf_get_description(selected_bfaccount, selected_bfdataset):
+    """
     Function to get current description associated with a selected dataset
 
     Args:
@@ -1771,33 +1640,33 @@ def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
         Description (string with markdown code)
     """
 
-
-def bf_get_description(selected_bfaccount, selected_bfdataset):
-
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        error_message = "Please select a valid Pennsieve account"
+        abort(400, error_message)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        error_message = "Please select a valid Pennsieve dataset"
+        abort(400, error_message)
 
     try:
         selected_dataset_id = myds.id
-        dataset_readme_info = bf._api._get(
-            "/datasets/" + str(selected_dataset_id) + "/readme"
-        )
+        dataset_readme_info = bf._api._get(f"/datasets/{str(selected_dataset_id)}/readme")
+
         res = dataset_readme_info["readme"]
-        return res
+        return {"description": res}
     except Exception as e:
         raise Exception(e)
 
 
-"""
+
+
+
+def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
+    """
     Args:
         selected_bfaccount: name of selected Pennsieve acccount (string)
         selected_bfdataset: name of selected Pennsieve dataset (string)
@@ -1808,39 +1677,39 @@ def bf_get_description(selected_bfaccount, selected_bfdataset):
         Success messsge or error
     """
 
-
-def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
-
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        error_message = "Please select a valid Pennsieve account"
+        abort(400, error_message)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        error_message = "Please select a valid Pennsieve dataset"
+        abort(400, error_message)
 
-    try:
-        role = bf_get_current_user_permission(bf, myds)
-        if role not in ["owner", "manager"]:
-            error = "Error: You don't have permissions for editing metadata on this Pennsieve dataset"
-            raise Exception(error)
-    except Exception as e:
-        raise e
+
+    role = bf_get_current_user_permission(bf, myds)
+    if role not in ["owner", "manager"]:
+        error_message = "You don't have permissions for editing metadata on this Pennsieve dataset"
+        abort(403, error_message)
+
 
     try:
         selected_dataset_id = myds.id
         jsonfile = {"readme": markdown_input}
-        bf._api.datasets._put("/" + str(selected_dataset_id) + "/readme", json=jsonfile)
-        return "Description added!"
+        bf._api.datasets._put(f"/{str(selected_dataset_id)}/readme", json=jsonfile)
+        return{ "message": "Description added!"}
     except Exception as e:
         raise Exception(e)
 
 
-"""
+
+
+
+def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
+    """
     Function to get url of current banner image associated with a selected dataset
 
     Args:
@@ -1850,37 +1719,37 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
         url of banner image (string)
     """
 
-
-def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
-
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        error_message = "Please select a valid Pennsieve account"
+        abort(400, error_message)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        error_message = "Please select a valid Pennsieve dataset"
+        abort(400, error_message)
 
     try:
         selected_dataset_id = myds.id
-        dataset_banner_info = bf._api._get(
-            "/datasets/" + str(selected_dataset_id) + "/banner"
-        )
+        dataset_banner_info = bf._api._get(f"/datasets/{str(selected_dataset_id)}/banner")
+
         list_keys = dataset_banner_info.keys()
         if "banner" in list_keys:
             res = dataset_banner_info["banner"]
         else:
             res = "No banner image"
-        return res
+        return {"banner_image": res}
     except Exception as e:
         raise Exception(e)
 
 
-"""
+
+
+
+def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_path):
+    """
     Function to add banner to a selected dataset
 
     Args:
@@ -1891,50 +1760,47 @@ def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
         Success or error message
     """
 
-
-def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_path):
-
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        error_message = "Please select a valid Pennsieve account"
+        abort(400, error_message)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        error_message = "Please select a valid Pennsieve dataset"
+        abort(400, error_message)
 
-    try:
-        role = bf_get_current_user_permission(bf, myds)
-        if role not in ["owner", "manager"]:
-            error = "Error: You don't have permissions for editing metadata on this Pennsieve dataset"
-            raise Exception(error)
-    except Exception as e:
-        raise Exception(error)
+
+    role = bf_get_current_user_permission(bf, myds)
+    if role not in ["owner", "manager"]:
+        error_message = "You don't have permissions for editing metadata on this Pennsieve dataset"
+        abort(403, error_message)
+
 
     try:
         selected_dataset_id = myds.id
 
         def upload_image():
             with open(banner_image_path, "rb") as f:
-                bf._api._put(
-                    "/datasets/" + str(selected_dataset_id) + "/banner",
-                    files={"banner": f},
-                )
+                bf._api._put(f"/datasets/{str(selected_dataset_id)}/banner", files={"banner": f})
 
         # delete banner image folder if it is located in SODA
         gevent.spawn(upload_image())
         image_folder = dirname(banner_image_path)
         if isdir(image_folder) and ("SODA" in image_folder):
             shutil.rmtree(image_folder, ignore_errors=True)
-        return "Uploaded!"
+        return {"message": "Uploaded!"}
     except Exception as e:
         raise Exception(e)
 
 
-"""
+
+
+
+def bf_get_license(selected_bfaccount, selected_bfdataset):
+    """
     Function to get current license associated with a selected dataset
 
     Args:
@@ -1944,35 +1810,36 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
         License name, if any, or "No license" message
     """
 
-
-def bf_get_license(selected_bfaccount, selected_bfdataset):
-
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        error_message = "Please select a valid Pennsieve account"
+        abort(400, error_message)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        error_message = "Please select a valid Pennsieve dataset"
+        abort(400, error_message)
 
     try:
         selected_dataset_id = myds.id
-        dataset_info = bf._api._get("/datasets/" + str(selected_dataset_id))
+        dataset_info = bf._api._get(f"/datasets/{str(selected_dataset_id)}")
         list_keys = dataset_info["content"].keys()
         if "license" in list_keys:
             res = dataset_info["content"]["license"]
         else:
             res = "No license is currently assigned to this dataset"
-        return res
+        return {"license": res}
     except Exception as e:
         raise Exception(e)
 
 
-"""
+
+
+
+def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
+    """
     Args:
         selected_bfaccount: name of selected Pennsieve acccount (string)
         selected_bfdataset: name of selected Pennsieve dataset (string)
@@ -1983,57 +1850,58 @@ def bf_get_license(selected_bfaccount, selected_bfdataset):
         Success messsge or error
     """
 
-
-def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
-
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        error_message = "Please select a valid Pennsieve account"
+        abort(400, error_message)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        error_message = "Please select a valid Pennsieve dataset"
+        abort(400, error_message)
 
-    try:
-        role = bf_get_current_user_permission(bf, myds)
-        if role not in ["owner", "manager"]:
-            error = "Error: You don't have permissions for editing metadata on this Pennsieve dataset"
-            raise Exception(error)
+
+    role = bf_get_current_user_permission(bf, myds)
+    if role not in ["owner", "manager"]:
+        error_message = "You don't have permissions for editing metadata on this Pennsieve dataset"
+        abort(403, error_message)
+
+
+    allowed_licenses_list = [
+        "Community Data License Agreement – Permissive",
+        "Community Data License Agreement – Sharing",
+        "Creative Commons Zero 1.0 Universal",
+        "Creative Commons Attribution",
+        "Creative Commons Attribution - ShareAlike",
+        "Open Data Commons Open Database",
+        "Open Data Commons Attribution",
+        "Open Data Commons Public Domain Dedication and License",
+        "Apache 2.0",
+        "GNU General Public License v3.0",
+        "GNU Lesser General Public License",
+        "MIT",
+        "Mozilla Public License 2.0",
+    ]
+    if selected_license not in allowed_licenses_list:
+        error = "Please select a valid license"
+        abort(403, error)
+    selected_dataset_id = myds.id
+    jsonfile = {"license": selected_license}
+    try: 
+        bf._api.datasets._put(f"/{str(selected_dataset_id)}", json=jsonfile)
     except Exception as e:
-        raise e
-
-    try:
-        allowed_licenses_list = [
-            "Community Data License Agreement – Permissive",
-            "Community Data License Agreement – Sharing",
-            "Creative Commons Zero 1.0 Universal",
-            "Creative Commons Attribution",
-            "Creative Commons Attribution - ShareAlike",
-            "Open Data Commons Open Database",
-            "Open Data Commons Attribution",
-            "Open Data Commons Public Domain Dedication and License",
-            "Apache 2.0",
-            "GNU General Public License v3.0",
-            "GNU Lesser General Public License",
-            "MIT",
-            "Mozilla Public License 2.0",
-        ]
-        if selected_license not in allowed_licenses_list:
-            error = "Error: Please select a valid license"
-            raise Exception(error)
-        selected_dataset_id = myds.id
-        jsonfile = {"license": selected_license}
-        bf._api.datasets._put("/" + str(selected_dataset_id), json=jsonfile)
-        return "License added!"
-    except Exception as e:
-        raise Exception(e)
+        raise Exception(e) from e
+    return {"message": "License added!"}
 
 
-"""
+
+
+
+
+def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
+    """
     Function to get current status for a selected dataset
 
     Args:
@@ -2044,33 +1912,28 @@ def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
         Current dataset status (string)
     """
 
-
-def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
-
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        error_message = "Please select a valid Pennsieve account"
+        abort(400, error_message)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        error_message = "Please select a valid Pennsieve dataset"
+        abort(400, error_message)
 
     try:
         # get list of available status options
         organization_id = bf.context.id
-        list_status = bf._api._get(
-            "/organizations/" + str(organization_id) + "/dataset-status"
-        )
+        list_status = bf._api._get(f"/organizations/{str(organization_id)}/dataset-status")
+
         # get current status of select dataset
         selected_dataset_id = myds.id
-        dataset_current_status = bf._api._get("/datasets/" + str(selected_dataset_id))[
-            "content"
-        ]["status"]
-        return [list_status, dataset_current_status]
+        dataset_current_status = bf._api._get(f"/datasets/{str(selected_dataset_id)}")["content"]["status"]
+
+        return {"status_options": list_status, "current_status": dataset_current_status}
     except Exception as e:
         raise e
 
@@ -2088,24 +1951,20 @@ def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
 
 
 def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_status):
-
     try:
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        abort(400, str(e))
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
-        raise Exception(error)
+        abort(400, str(e))
 
     try:
         role = bf_get_current_user_permission(bf, myds)
         if role not in ["owner", "manager"]:
-            error = "Error: You don't have permissions for changing the status of this Pennsieve dataset"
-            raise Exception(error)
+            abort(403, "You don't have permissions for changing the status of this Pennsieve dataset")
     except Exception as e:
         raise e
 
@@ -2122,14 +1981,13 @@ def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_st
                 c += 1
                 break
         if c == 0:
-            error = "Error: Selected status is not available for this Pennsieve account"
-            raise Exception(error)
+            abort(400, "Selected status is not available for this Pennsieve account.")
 
         # gchange dataset status
         selected_dataset_id = myds.id
         jsonfile = {"status": new_status}
         bf._api.datasets._put("/" + str(selected_dataset_id), json=jsonfile)
-        return "Success: Changed dataset status to '" + selected_status + "'"
+        return { "message": "Success: Changed dataset status to '" + selected_status + "'" }
     except Exception as e:
         raise e
 
@@ -2143,15 +2001,20 @@ def get_number_of_files_and_folders_locally(filepath):
     Return:
         Number of files and folders
     """
+    global namespace_logger
+
     totalDir = 0
     totalFiles = 0
     for base, dirs, files in os.walk(filepath):
-        for directories in dirs:
+        for _ in dirs:
             totalDir += 1
-        for Files in files:
+        for _ in files:
             totalFiles += 1
 
-    return (totalFiles, totalDir)
+    namespace_logger.info(f"Number of files: {str(totalFiles)}")
+    namespace_logger.info(f"Number of folders: {str(totalDir)}")
+
+    return {"totalFiles": totalFiles, "totalDir": totalDir}
 
 
 def get_pennsieve_api_key_secret(email, password, keyname):
@@ -2179,8 +2042,7 @@ def get_pennsieve_api_key_secret(email, password, keyname):
             ClientId=cognito_app_client_id,
         )
     except Exception as e:
-        error = "Error: Username or password was incorrect."
-        raise Exception(error)
+        abort(400, "Username or password was incorrect.")
 
     try:
         api_key = login_response["AuthenticationResult"]["AccessToken"]
@@ -2223,13 +2085,13 @@ def get_pennsieve_api_key_secret(email, password, keyname):
         response = response.json()
         if "preferredOrganization" in response:
             if response["preferredOrganization"] != sparc_org_id:
-                error = "Error: Could not switch to the SPARC Consortium organization. Please log in and switch to the organization and try again."
+                error = "Could not switch to the SPARC Consortium organization. Please log in and switch to the organization and try again."
                 raise Exception(error)
         else:
-            error = "Error: Could not switch to the SPARC Consortium organization. Please log in and switch to the organization and try again."
+            error = "Could not switch to the SPARC Consortium organization. Please log in and switch to the organization and try again."
             raise Exception(error)
     except Exception as error:
-        error = "Error: Could not switch to the SPARC Consortium organization. Please log in and switch to the organization and try again."
+        error = "Could not switch to the SPARC Consortium organization. Please log in and switch to the organization and try again."
         raise error
 
     try:
@@ -2245,6 +2107,96 @@ def get_pennsieve_api_key_secret(email, password, keyname):
         response = requests.request("POST", url, json=payload, headers=headers)
         response.raise_for_status()
         response = response.json()
-        return ("success", response["key"], response["secret"], response["name"])
+        return { 
+            "success": "success", 
+            "key": response["key"], 
+            "secret": response["secret"], 
+            "name": response["name"]
+        }
     except Exception as e:
         raise e
+
+
+
+def get_dataset_readme(selected_account, selected_dataset):
+    """
+    Function to get readme for a dataset
+    
+        Args:
+            selected_account: account name
+            selected_dataset: dataset name
+        Return:
+            Readme for the dataset
+    """
+
+    ps = get_authenticated_ps(selected_account)
+
+    myds = get_dataset(ps, selected_dataset)
+
+    return ps._api._get(f"/datasets/{myds.id}/readme")
+
+
+
+def update_dataset_readme(selected_account, selected_dataset, updated_readme):
+    """
+    Update the readme of a dataset on Pennsieve with the given readme string.
+    """
+
+    ps = get_authenticated_ps(selected_account)
+
+    myds = get_dataset(ps, selected_dataset)
+
+    role = bf_get_current_user_permission(ps, myds)
+    if role not in ["owner", "manager"]:
+        abort(403, "You don't have permissions to modify this dataset.")
+
+
+    ps._api._put(f"/datasets/{myds.id}/readme", json={"readme": updated_readme})
+
+    return {"message": "Readme updated"}
+
+
+def get_dataset_tags(selected_account, selected_dataset):
+    """
+    Function to get tags for a dataset
+    
+        Args:
+            selected_account: account name
+            selected_dataset: dataset name
+        Return:
+            Tags for the dataset
+    """
+
+    ps = get_authenticated_ps(selected_account)
+
+    myds = get_dataset(ps, selected_dataset)
+
+    resp = ps._api._get(f"/datasets/{myds.id}")
+
+    tags = resp["content"]["tags"] if "tags" in resp["content"] else []
+
+    return {"tags": tags}
+
+
+
+
+def update_dataset_tags(selected_account, selected_dataset, updated_tags):
+    """
+    Update the tags of a dataset on Pennsieve with the given tags list.
+    """
+
+    ps = get_authenticated_ps(selected_account)
+
+    myds = get_dataset(ps, selected_dataset)
+
+    # check user permissions
+    role = bf_get_current_user_permission(ps, myds)
+    if role not in ["owner", "manager"]:
+        abort(403, "You don't have permissions to modify this dataset.")
+
+
+    ps._api._put(f"/datasets/{myds.id}", json={"tags": updated_tags})
+
+    return {"message": "Tags updated"}
+
+    

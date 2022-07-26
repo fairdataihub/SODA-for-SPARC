@@ -2,7 +2,6 @@
 // Import required modules
 //////////////////////////////////
 
-const zerorpc = require("zerorpc");
 const fs = require("fs-extra");
 const os = require("os");
 const path = require("path");
@@ -30,9 +29,8 @@ const { JSONStorage } = require("node-localstorage");
 const tippy = require("tippy.js").default;
 const introJs = require("intro.js");
 const selectpicker = require("bootstrap-select");
-const ini = require("ini");
+
 const { homedir } = require("os");
-const cognitoClient = require("amazon-cognito-identity-js");
 const diskCheck = require("check-disk-space").default;
 const validator = require("validator");
 const doiRegex = require("doi-regex");
@@ -49,6 +47,14 @@ const {
 const {
   determineDatasetLocation,
 } = require("./scripts/others/analytics/analytics-utils");
+const {
+  clientError,
+  userErrorMessage,
+} = require("./scripts/others/http-error-handler/error-handler");
+const {
+  hasConnectedAccountWithPennsieve,
+} = require("./scripts/others/authentication/auth");
+const api = require("./scripts/others/api/api");
 
 const axios = require("axios").default;
 
@@ -211,80 +217,16 @@ document.getElementById("getting_starting_tab").click();
 //////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
-let client = new zerorpc.Client({ timeout: 300000 });
-client.connect("tcp://127.0.0.1:4242");
-client.invoke("echo", "server ready", (error, res) => {
-  if (error || res !== "server ready") {
-    log.error(error);
-    console.error(error);
-    ipcRenderer.send(
-      "track-event",
-      "Error",
-      "Establishing Python Connection",
-      error
-    );
-    Swal.fire({
-      icon: "error",
-      html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: "Restart now",
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        app.relaunch();
-        app.exit();
-      }
-    });
-  } else {
-    console.log("Connected to Python back-end successfully");
-    log.info("Connected to Python back-end successfully");
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      "Establishing Python Connection"
-    );
 
-    // verify backend api versions
-    client.invoke("api_version_check", (error, res) => {
-      if (error || res !== appVersion) {
-        log.error(error);
-        console.error(error);
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Verifying App Version",
-          error
-        );
+let client = null;
 
-        Swal.fire({
-          icon: "error",
-          html: `The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: "Close now",
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-        }).then(async (result) => {
-          if (result.isConfirmed) {
-            app.exit();
-          }
-        });
-      } else {
-        ipcRenderer.send("track-event", "Success", "Verifying App Version");
-
-        //Load Default/global Pennsieve account if available
-        updateBfAccountList();
-        checkNewAppVersion(); // Added so that version will be displayed for new users
-      }
-    });
-  }
+client = axios.create({
+  baseURL: "http://127.0.0.1:4242/",
+  timeout: 300000,
 });
 
 const notyf = new Notyf({
   position: { x: "right", y: "bottom" },
-  ripple: true,
   dismissible: true,
   ripple: false,
   types: [
@@ -439,10 +381,10 @@ const startupServerAndApiCheck = async () => {
   try {
     await backOff(serverIsLiveStartup, {
       delayFirstAttempt: true,
-      startingDelay: 1000, // 1 second + 2 second + 4 second + 8 second
+      startingDelay: 1000, // 1 second + 2 second + 4 second + 8 second + 16 seconds + 32 seconds
       timeMultiple: 2,
-      numOfAttempts: 4,
-      maxDelay: 8000, // 16 seconds max wait time
+      numOfAttempts: 6,
+      maxDelay: 32000, // 16 seconds max wait time
     });
   } catch (e) {
     log.error(e);
@@ -502,32 +444,35 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
     await wait(1000);
   }
 
+  log.info("Done with startup");
+
   // check integrity of all the core systems
   await run_pre_flight_checks();
+
+  log.info("Running pre flight checks finished");
 
   // get apps base path
   const basepath = app.getAppPath();
   const resourcesPath = process.resourcesPath;
 
   // set the templates path
-  client.invoke(
-    "api_set_template_path",
-    basepath,
-    resourcesPath,
-    (error, res) => {
-      if (error) {
-        console.log(error);
-        log.error(error);
-        ipcRenderer.send("track-event", "Error", "Setting Templates Path");
-      } else {
-        ipcRenderer.send("track-event", "Success", "Setting Templates Path");
-      }
-    }
-  );
+  try {
+    await client.put("prepare_metadata/template_paths", {
+      basepath: basepath,
+      resourcesPath: resourcesPath,
+    });
+  } catch (error) {
+    clientError(error);
+    ipcRenderer.send("track-event", "Error", "Setting Templates Path");
+    return;
+  }
+
+  ipcRenderer.send("track-event", "Success", "Setting Templates Path");
 });
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
+  log.info("Running pre flight checks");
   return new Promise(async (resolve) => {
     let connection_response = "";
     let agent_installed_response = "";
@@ -737,16 +682,19 @@ const run_pre_flight_checks = async (check_update = true) => {
 };
 
 // Check if the Pysoda server is live
-const serverIsLiveStartup = () => {
-  return new Promise((resolve, reject) => {
-    client.invoke("echo", "server ready", (error, res) => {
-      if (error || res !== "server ready") {
-        reject(false);
-      } else {
-        resolve(true);
-      }
-    });
-  });
+const serverIsLiveStartup = async () => {
+  let echoResponseObject;
+
+  try {
+    echoResponseObject = await client.get("/startup/echo?arg=server ready");
+  } catch (error) {
+    clientError(error);
+    throw error;
+  }
+
+  let echoResponse = echoResponseObject.data;
+
+  return echoResponse === "server ready" ? true : false;
 };
 
 // Check if the Pysoda server API version and the package.json versions match
@@ -757,48 +705,74 @@ const apiVersionsMatch = async () => {
     type: "checking_server_api_version",
   });
 
-  return new Promise((resolve, reject) => {
-    client.invoke("api_version_check", async (error, res) => {
-      if (error || res !== appVersion) {
-        log.error(error);
-        console.error(error);
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Verifying App Version",
-          error
-        );
+  let responseObject;
 
-        await Swal.fire({
-          icon: "error",
-          html: `The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: "Close now",
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-        });
+  try {
+    responseObject = await client.get("/startup/minimum_api_version");
+  } catch (e) {
+    clientError(e);
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Verifying App Version",
+      userErrorMessage(e)
+    );
 
-        return reject();
-      } else {
-        ipcRenderer.send("track-event", "Success", "Verifying App Version");
-
-        notyf.dismiss(notification);
-
-        // create a success notyf for api version check
-        notyf.open({
-          message: "API Versions match",
-          type: "success",
-        });
-
-        //Load Default/global Pennsieve account if available
-        updateBfAccountList();
-        checkNewAppVersion(); // Added so that version will be displayed for new users
-
-        return resolve();
-      }
+    await Swal.fire({
+      icon: "error",
+      html: `The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Close now",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
     });
+
+    throw e;
+  }
+
+  let serverAppVersion = responseObject.data.version;
+
+  log.info(`Server version is ${serverAppVersion}`);
+
+  if (serverAppVersion !== appVersion) {
+    log.info("Server version does not match client version");
+
+    log.error(error);
+    console.error(error);
+    ipcRenderer.send("track-event", "Error", "Verifying App Version", error);
+
+    await Swal.fire({
+      icon: "error",
+      html: `The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Close now",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    });
+
+    throw new Error();
+  }
+
+  ipcRenderer.send("track-event", "Success", "Verifying App Version");
+
+  notyf.dismiss(notification);
+
+  // create a success notyf for api version check
+  notyf.open({
+    message: "API Versions match",
+    type: "success",
   });
+
+  log.info("About to do unsupported stuff");
+
+  //Load Default/global Pennsieve account if available
+  if (hasConnectedAccountWithPennsieve()) {
+    updateBfAccountList();
+  }
+
+  checkNewAppVersion(); // Added so that version will be displayed for new users
 };
 
 const check_internet_connection = async (show_notification = true) => {
@@ -849,38 +823,46 @@ const check_api_key = async () => {
   });
   await wait(800);
   // If no accounts are found, return false.
-  return new Promise((resolve) => {
-    client.invoke("api_bf_account_list", (error, res) => {
-      if (error) {
-        notyf.dismiss(notification);
-        notyf.open({
-          type: "error",
-          message: "No account was found",
-        });
-        log.error(error);
-        console.error(error);
-        resolve(false);
-      } else {
-        log.info("Found a set of valid API keys");
-        if (res[0] === "Select" && res.length === 1) {
-          //no api key found
-          notyf.dismiss(notification);
-          notyf.open({
-            type: "error",
-            message: "No account was found",
-          });
-          resolve(false);
-        } else {
-          notyf.dismiss(notification);
-          notyf.open({
-            type: "success",
-            message: "Connected to Pennsieve",
-          });
-          resolve(true);
-        }
-      }
+  let responseObject;
+
+  if (!hasConnectedAccountWithPennsieve()) {
+    notyf.dismiss(notification);
+    notyf.open({
+      type: "error",
+      message: "No account was found",
     });
-  });
+    return false;
+  }
+
+  try {
+    responseObject = await client.get("manage_datasets/bf_account_list");
+  } catch (e) {
+    notyf.dismiss(notification);
+    notyf.open({
+      type: "error",
+      message: "No account was found",
+    });
+    return false;
+  }
+
+  let res = responseObject.data["accounts"];
+  log.info("Found a set of valid API keys");
+  if (res[0] === "Select" && res.length === 1) {
+    //no api key found
+    notyf.dismiss(notification);
+    notyf.open({
+      type: "error",
+      message: "No account was found",
+    });
+    return false;
+  } else {
+    notyf.dismiss(notification);
+    notyf.open({
+      type: "success",
+      message: "Connected to Pennsieve",
+    });
+    return true;
+  }
 };
 
 const check_agent_installed = async () => {
@@ -890,29 +872,31 @@ const check_agent_installed = async () => {
     message: "Searching for Pennsieve Agent...",
   });
   await wait(800);
-  return new Promise((resolve) => {
-    client.invoke("api_check_agent_install", (error, res) => {
-      if (error) {
-        notyf.dismiss(notification);
-        notyf.open({
-          type: "error",
-          message: "Pennsieve agent not found",
-        });
-        console.log(error);
-        log.warn("Pennsieve agent not found");
-        var emessage = userError(error);
-        resolve([false, emessage]);
-      } else {
-        notyf.dismiss(notification);
-        notyf.open({
-          type: "success",
-          message: "Pennsieve agent found",
-        });
-        log.info("Pennsieve agent found");
-        resolve([true, res]);
-      }
+
+  let responseObject;
+
+  try {
+    responseObject = await client.get("/manage_datasets/check_agent_install");
+  } catch (error) {
+    clientError(error);
+    notyf.dismiss(notification);
+    notyf.open({
+      type: "error",
+      message: "Pennsieve agent not found",
     });
+    log.warn("Pennsieve agent not found");
+    return [false, userErrorMessage(error)];
+  }
+
+  let { agent_version } = responseObject.data;
+
+  notyf.dismiss(notification);
+  notyf.open({
+    type: "success",
+    message: "Pennsieve agent found",
   });
+  log.info("Pennsieve agent found");
+  return [true, agent_version];
 };
 
 const check_agent_installed_version = async (agent_version) => {
@@ -1694,58 +1678,69 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     },
   }).then((result) => {});
 
-  client.invoke(
-    "api_save_subjects_file",
-    uploadBFBoolean,
-    defaultBfAccount,
-    $("#bf_dataset_load_subjects").text().trim(),
-    subjectsDestinationPath,
-    subjectsTableData,
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        Swal.fire({
-          title: "Failed to generate the subjects.xlsx file.",
-          html: emessage,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          icon: "error",
-        });
-
-        // log the error to analytics
-        logMetadataForAnalytics(
-          "Error",
-          MetadataAnalyticsPrefix.SUBJECTS,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Generate",
-          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
-        );
-      } else {
-        Swal.fire({
-          title:
-            "The subjects.xlsx file has been successfully generated at the specified location.",
-          icon: "success",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-
-        // log the success to Pennsieve
-        logMetadataForAnalytics(
-          "Success",
-          MetadataAnalyticsPrefix.SUBJECTS,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Generate",
-          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
-        );
-
-        // log the size of the metadata file that was generated at varying levels of granularity
-        const size = res;
-        logMetadataSizeForAnalytics(uploadBFBoolean, "subjects.xlsx", size);
+  let bfdataset = document
+    .getElementById("bf_dataset_load_subjects")
+    .innerText.trim();
+  try {
+    log.info(`Generating a subjects file.`);
+    let save_locally = await client.post(
+      `/prepare_metadata/subjects_file`,
+      {
+        filepath: subjectsDestinationPath,
+        selected_account: defaultBfAccount,
+        selected_dataset: bfdataset,
+        subjects_header_row: subjectsTableData,
+      },
+      {
+        params: {
+          upload_boolean: uploadBFBoolean,
+        },
       }
-    }
-  );
+    );
+
+    let res = save_locally.data;
+
+    Swal.fire({
+      title:
+        "The subjects.xlsx file has been successfully generated at the specified location.",
+      icon: "success",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    // log the success to Pennsieve
+    logMetadataForAnalytics(
+      "Success",
+      MetadataAnalyticsPrefix.SUBJECTS,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Generate",
+      uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+    );
+
+    // log the size of the metadata file that was generated at varying levels of granularity
+    const size = res;
+    logMetadataSizeForAnalytics(uploadBFBoolean, "subjects.xlsx", size);
+  } catch (error) {
+    clientError(error);
+    let emessage = userErrorMessage(error);
+
+    Swal.fire({
+      title: "Failed to generate the subjects.xlsx file.",
+      html: emessage,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      icon: "error",
+    });
+
+    // log the error to analytics
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.SUBJECTS,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Generate",
+      uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+    );
+  }
 }
 
 // generate samples file
@@ -1856,62 +1851,60 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
     },
   }).then((result) => {});
 
-  // new client that has a longer timeout
-  let clientLongTimeout = new zerorpc.Client({
-    timeout: 300000,
-    heartbeatInterval: 60000,
-  });
-  clientLongTimeout.connect("tcp://127.0.0.1:4242");
-  clientLongTimeout.invoke(
-    "api_save_samples_file",
-    uploadBFBoolean,
-    defaultBfAccount,
-    $("#bf_dataset_load_samples").text().trim(),
-    samplesDestinationPath,
-    samplesTableData,
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        Swal.fire({
-          title: "Failed to generate the samples.xlsx file.",
-          html: emessage,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          icon: "error",
-        });
-
-        logMetadataForAnalytics(
-          "Error",
-          MetadataAnalyticsPrefix.SAMPLES,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Generate",
-          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
-        );
-      } else {
-        Swal.fire({
-          title:
-            "The samples.xlsx file has been successfully generated at the specified location.",
-          icon: "success",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-
-        logMetadataForAnalytics(
-          "Success",
-          MetadataAnalyticsPrefix.SAMPLES,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Generate",
-          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
-        );
-
-        // log the size of the metadata file that was generated at varying levels of granularity
-        const size = res;
-        logMetadataSizeForAnalytics(uploadBFBoolean, "samples.xlsx", size);
+  try {
+    let samplesFileResponse = await client.post(
+      "prepare_metadata/samples_file",
+      {
+        filepath: samplesDestinationPath,
+        selected_account: defaultBfAccount,
+        selected_dataset: $("#bf_dataset_load_samples").text().trim(),
+        samples_str: samplesTableData,
+      },
+      {
+        params: {
+          upload_boolean: uploadBFBoolean,
+        },
       }
-    }
-  );
+    );
+
+    Swal.fire({
+      title:
+        "The samples.xlsx file has been successfully generated at the specified location.",
+      icon: "success",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    logMetadataForAnalytics(
+      "Success",
+      MetadataAnalyticsPrefix.SAMPLES,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Generate",
+      uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+    );
+
+    // log the size of the metadata file that was generated at varying levels of granularity
+    const { size } = samplesFileResponse.data;
+    logMetadataSizeForAnalytics(uploadBFBoolean, "samples.xlsx", size);
+  } catch (error) {
+    clientError(error);
+    var emessage = userErrorMessage(error);
+    Swal.fire({
+      title: "Failed to generate the samples.xlsx file.",
+      html: emessage,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      icon: "error",
+    });
+
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.SAMPLES,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Generate",
+      uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+    );
+  }
 }
 
 // import Primary folder
@@ -1966,26 +1959,36 @@ function getAllIndexes(arr, val) {
 }
 
 // import existing subjects.xlsx info (calling python to load info to a dataframe)
-function loadSubjectsFileToDataframe(filePath) {
+async function loadSubjectsFileToDataframe(filePath) {
   var fieldSubjectEntries = [];
   for (var field of $("#form-add-a-subject")
     .children()
     .find(".subjects-form-entry")) {
     fieldSubjectEntries.push(field.name.toLowerCase());
   }
-  client.invoke(
-    "api_convert_subjects_samples_file_to_df",
-    "subjects",
-    filePath,
-    fieldSubjectEntries,
-    (error, res) => {
-      if (error) {
-        log.error(error);
-        console.error(error);
-        var emessage = userError(error);
+
+  try {
+    let import_subjects_file = await client.get(
+      `/prepare_metadata/subjects_file`,
+      {
+        params: {
+          type: "subjects",
+          filepath: filePath,
+          ui_fields: JSON.stringify(fieldSubjectEntries),
+        },
+      }
+    );
+
+    let res = import_subjects_file.data.subject_file_rows;
+    // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
+    if (res.length > 1) {
+      result = transformImportedExcelFile("subjects", res);
+      if (result !== false) {
+        subjectsTableData = result;
+      } else {
         Swal.fire({
           title: "Couldn't load existing subjects.xlsx file",
-          html: emessage,
+          text: "Please make sure the imported file follows the latest SPARC Dataset Structure 2.0.0 and try again.",
           icon: "error",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
@@ -1998,80 +2001,82 @@ function loadSubjectsFileToDataframe(filePath) {
           "Existing",
           Destinations.LOCAL
         );
-      } else {
-        // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
-        if (res.length > 1) {
-          result = transformImportedExcelFile("subjects", res);
-          if (result !== false) {
-            subjectsTableData = result;
-          } else {
-            Swal.fire({
-              title: "Couldn't load existing subjects.xlsx file",
-              text: "Please make sure the imported file follows the latest SPARC Dataset Structure 2.0.0 and try again.",
-              icon: "error",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
-
-            logMetadataForAnalytics(
-              "Error",
-              MetadataAnalyticsPrefix.SUBJECTS,
-              AnalyticsGranularity.ALL_LEVELS,
-              "Existing",
-              Destinations.LOCAL
-            );
-            return;
-          }
-          logMetadataForAnalytics(
-            "Success",
-            MetadataAnalyticsPrefix.SUBJECTS,
-            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-            "Existing",
-            Destinations.LOCAL
-          );
-          loadDataFrametoUI("local");
-        } else {
-          logMetadataForAnalytics(
-            "Error",
-            MetadataAnalyticsPrefix.SUBJECTS,
-            AnalyticsGranularity.ALL_LEVELS,
-            "Existing",
-            Destinations.LOCAL
-          );
-          Swal.fire({
-            title: "Couldn't load existing subjects.xlsx file",
-            text: "Please make sure there is at least one subject in the subjects.xlsx file.",
-            icon: "error",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-        }
+        return;
       }
+      logMetadataForAnalytics(
+        "Success",
+        MetadataAnalyticsPrefix.SUBJECTS,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        "Existing",
+        Destinations.LOCAL
+      );
+      loadDataFrametoUI("local");
+    } else {
+      logMetadataForAnalytics(
+        "Error",
+        MetadataAnalyticsPrefix.SUBJECTS,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Existing",
+        Destinations.LOCAL
+      );
+      Swal.fire({
+        title: "Couldn't load existing subjects.xlsx file",
+        text: "Please make sure there is at least one subject in the subjects.xlsx file.",
+        icon: "error",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
     }
-  );
+  } catch (error) {
+    clientError(error);
+    Swal.fire({
+      title: "Couldn't load existing subjects.xlsx file",
+      html: userErrorMessage(error),
+      icon: "error",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.SUBJECTS,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.LOCAL
+    );
+  }
 }
 
 // import existing subjects.xlsx info (calling python to load info to a dataframe)
-function loadSamplesFileToDataframe(filePath) {
+async function loadSamplesFileToDataframe(filePath) {
   var fieldSampleEntries = [];
   for (var field of $("#form-add-a-sample")
     .children()
     .find(".samples-form-entry")) {
     fieldSampleEntries.push(field.name.toLowerCase());
   }
-  client.invoke(
-    "api_convert_subjects_samples_file_to_df",
-    "samples",
-    filePath,
-    fieldSampleEntries,
-    (error, res) => {
-      if (error) {
-        log.error(error);
-        console.error(error);
-        var emessage = userError(error);
+  try {
+    let importSamplesResponse = await client.get(
+      `/prepare_metadata/samples_file`,
+      {
+        params: {
+          type: "samples.xlsx",
+          filepath: filePath,
+          ui_fields: JSON.stringify(fieldSampleEntries),
+        },
+      }
+    );
+
+    let res = importSamplesResponse.data.sample_file_rows;
+    // res is a dataframe, now we load it into our samplesTableData in order to populate the UI
+    if (res.length > 1) {
+      result = transformImportedExcelFile("samples", res);
+      if (result !== false) {
+        samplesTableData = result;
+      } else {
         Swal.fire({
           title: "Couldn't load existing samples.xlsx file",
-          html: emessage,
+          text: "Please make sure the imported file follows the latest SPARC Dataset Structure 2.0.0 and try again.",
           icon: "error",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
@@ -2084,59 +2089,53 @@ function loadSamplesFileToDataframe(filePath) {
           "Existing",
           Destinations.LOCAL
         );
-      } else {
-        // res is a dataframe, now we load it into our samplesTableData in order to populate the UI
-        if (res.length > 1) {
-          result = transformImportedExcelFile("samples", res);
-          if (result !== false) {
-            samplesTableData = result;
-          } else {
-            Swal.fire({
-              title: "Couldn't load existing samples.xlsx file",
-              text: "Please make sure the imported file follows the latest SPARC Dataset Structure 2.0.0 and try again.",
-              icon: "error",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
 
-            logMetadataForAnalytics(
-              "Error",
-              MetadataAnalyticsPrefix.SAMPLES,
-              AnalyticsGranularity.ALL_LEVELS,
-              "Existing",
-              Destinations.LOCAL
-            );
-
-            return;
-          }
-          logMetadataForAnalytics(
-            "Success",
-            MetadataAnalyticsPrefix.SAMPLES,
-            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-            "Existing",
-            Destinations.LOCAL
-          );
-
-          loadDataFrametoUISamples("local");
-        } else {
-          logMetadataForAnalytics(
-            "Error",
-            MetadataAnalyticsPrefix.SAMPLES,
-            AnalyticsGranularity.ALL_LEVELS,
-            "Existing",
-            Destinations.LOCAL
-          );
-          Swal.fire({
-            title: "Couldn't load existing samples.xlsx file",
-            text: "Please make sure there is at least one sample in the samples.xlsx file.",
-            icon: "error",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-        }
+        return;
       }
+      logMetadataForAnalytics(
+        "Success",
+        MetadataAnalyticsPrefix.SAMPLES,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        "Existing",
+        Destinations.LOCAL
+      );
+
+      loadDataFrametoUISamples("local");
+    } else {
+      logMetadataForAnalytics(
+        "Error",
+        MetadataAnalyticsPrefix.SAMPLES,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Existing",
+        Destinations.LOCAL
+      );
+      Swal.fire({
+        title: "Couldn't load existing samples.xlsx file",
+        text: "Please make sure there is at least one sample in the samples.xlsx file.",
+        icon: "error",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
     }
-  );
+  } catch (error) {
+    clientError(error);
+
+    Swal.fire({
+      title: "Couldn't load existing samples.xlsx file",
+      html: userErrorMessage(error),
+      icon: "error",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.SAMPLES,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.LOCAL
+    );
+  }
 }
 
 // load and parse json file
@@ -2373,50 +2372,50 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
       Swal.showLoading();
     },
   }).then((result) => {});
-  await client.invoke(
-    "api_load_taxonomy_species",
-    [commonName],
-    (error, res) => {
-      if (error) {
-        log.error(error);
-        console.error(error);
-      } else {
-        if (Object.keys(res).length === 0) {
-          Swal.fire({
-            title: "Cannot find a scientific name for '" + commonName + "'",
-            text: "Make sure you enter a correct species name.",
-            icon: "error",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-          if (!$("#btn-confirm-species").hasClass("confirm-disabled")) {
-            $("#btn-confirm-species").addClass("confirm-disabled");
-          }
-          if (destinationInput.includes("subject")) {
-            if ($("#bootbox-subject-species").val() === "") {
-              $("#bootbox-subject-species").css("display", "none");
-            }
-            // set the Edit species button back to "+ Add species"
-            $("#button-add-species-subject").html(
-              `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
-            );
-          }
-          if (destinationInput.includes("sample")) {
-            if ($("#bootbox-sample-species").val() === "") {
-              $("#bootbox-sample-species").css("display", "none");
-            }
-            // set the Edit species button back to "+ Add species"
-            $("#button-add-species-sample").html(
-              `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
-            );
-          }
-        } else {
-          $("#" + destinationInput).val(res[commonName]["ScientificName"]);
-          $("#btn-confirm-species").removeClass("confirm-disabled");
-        }
+  try {
+    let load_taxonomy_species = await client.get(`/taxonomy/species`, {
+      params: {
+        animals_list: [commonName],
+      },
+    });
+    let res = load_taxonomy_species.data;
+
+    if (Object.keys(res).length === 0) {
+      Swal.fire({
+        title: "Cannot find a scientific name for '" + commonName + "'",
+        text: "Make sure you enter a correct species name.",
+        icon: "error",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+      if (!$("#btn-confirm-species").hasClass("confirm-disabled")) {
+        $("#btn-confirm-species").addClass("confirm-disabled");
       }
+      if (destinationInput.includes("subject")) {
+        if ($("#bootbox-subject-species").val() === "") {
+          $("#bootbox-subject-species").css("display", "none");
+        }
+        // set the Edit species button back to "+ Add species"
+        $("#button-add-species-subject").html(
+          `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
+        );
+      }
+      if (destinationInput.includes("sample")) {
+        if ($("#bootbox-sample-species").val() === "") {
+          $("#bootbox-sample-species").css("display", "none");
+        }
+        // set the Edit species button back to "+ Add species"
+        $("#button-add-species-sample").html(
+          `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
+        );
+      }
+    } else {
+      $("#" + destinationInput).val(res[commonName]["ScientificName"]);
+      $("#btn-confirm-species").removeClass("confirm-disabled");
     }
-  );
+  } catch (error) {
+    clientError(error);
+  }
 }
 
 // Function to add options to dropdown list
@@ -3123,23 +3122,27 @@ var displaySize = 1000;
 /// Add all BF accounts to the dropdown list, and then choose by default one option ('global' account)
 const curateDatasetDropdown = document.getElementById("curatebfdatasetlist");
 
-function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
-  client.invoke(
-    "api_bf_dataset_account",
-    bfaccountDropdown.options[bfaccountDropdown.selectedIndex].text,
-    (error, result) => {
-      if (error) {
-        log.error(error);
-        console.log(error);
-        var emessage = error;
-        curateBFAccountLoadStatus.innerHTML =
-          "<span style='color: red'>" + emessage + "</span>";
-      } else {
-        // clear and populate dataset list
-        populateDatasetDropdownCurate(datasetDropdown, result);
+async function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
+  let defaultBfAccount =
+    bfaccountDropdown.options[bfaccountDropdown.selectedIndex].text;
+  try {
+    let responseObject = await client.get(
+      `manage_datasets/bf_dataset_account`,
+      {
+        params: {
+          selected_account: defaultBfAccount,
+        },
       }
-    }
-  );
+    );
+    datasetList = [];
+    datasetList = responseObject.data.datasets;
+    populateDatasetDropdownCurate(datasetDropdown, datasetList);
+    refreshDatasetList();
+  } catch (error) {
+    clientError(error);
+    curateBFAccountLoadStatus.innerHTML =
+      "<span style='color: red'>" + userErrorMessage(error) + "</span>";
+  }
 }
 
 //// De-populate dataset dropdowns to clear options for CURATE
@@ -3196,7 +3199,7 @@ const { waitForDebugger } = require("inspector");
 const { resolve } = require("path");
 const { background } = require("jimp");
 const { rename } = require("fs");
-const { createCipheriv } = require("crypto");
+const { resolveSoa } = require("dns");
 var cropOptions = {
   aspectRatio: 1,
   movable: false,
@@ -3553,8 +3556,10 @@ async function submitReviewDataset(embargoReleaseDate) {
     let files = getExcludedFilesFromPublicationFlow();
     try {
       // exclude the user's selected files from publication
-      await updateDatasetExcludedFiles(selectedBfDataset, files);
+      //check res
+      await api.updateDatasetExcludedFiles(defaultBfDatasetId, files);
     } catch (error) {
+      clientError(error);
       // log the error
       logGeneralOperationsForAnalytics(
         "Error",
@@ -3562,10 +3567,8 @@ async function submitReviewDataset(embargoReleaseDate) {
         AnalyticsGranularity.ALL_LEVELS,
         ["Updating excluded files"]
       );
-      log.error(error);
-      console.error(error);
 
-      var emessage = userError(error);
+      var emessage = userErrorMessage(error);
 
       // alert the user of the error
       Swal.fire({
@@ -3573,7 +3576,6 @@ async function submitReviewDataset(embargoReleaseDate) {
         heightAuto: false,
         confirmButtonText: "Ok",
         title: `Could not exclude the selected files from publication`,
-        text: "Please try again.",
         icon: "error",
         reverseButtons: reverseSwalButtons,
         text: `${emessage}`,
@@ -3590,22 +3592,22 @@ async function submitReviewDataset(embargoReleaseDate) {
   }
 
   try {
-    await submitDatasetForPublication(
+    await api.submitDatasetForPublication(
       selectedBfAccount,
       selectedBfDataset,
-      embargoReleaseDate
+      embargoReleaseDate,
+      embargoReleaseDate === "" ? "publication" : "embargo"
     );
   } catch (error) {
+    clientError(error);
     logGeneralOperationsForAnalytics(
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
       AnalyticsGranularity.ALL_LEVELS,
       ["Submit dataset"]
     );
-    log.error(error);
-    console.error(error);
 
-    var emessage = userError(error);
+    var emessage = userErrorMessage(error);
 
     // alert the user of an error
     Swal.fire({
@@ -3615,7 +3617,7 @@ async function submitReviewDataset(embargoReleaseDate) {
       title: `Could not submit your dataset for pre-publishing review`,
       icon: "error",
       reverseButtons: reverseSwalButtons,
-      text: `${emessage}`,
+      text: emessage,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -3715,7 +3717,7 @@ function withdrawDatasetSubmission() {
 }
 
 async function withdrawDatasetCheck(res) {
-  var reviewstatus = res[0];
+  var reviewstatus = res["publishing_status"];
   if (reviewstatus !== "requested") {
     Swal.fire({
       icon: "error",
@@ -3769,13 +3771,6 @@ async function withdrawDatasetCheck(res) {
   }
 }
 
-// ipcRenderer.on("warning-withdraw-dataset-selection", (event, index) => {
-//   if (index === 0) {
-//     withdrawReviewDataset();
-//   }
-//   $("#submit_prepublishing_review-spinner").hide();
-// });
-
 async function withdrawReviewDataset() {
   bfWithdrawReviewDatasetBtn.disabled = true;
   var selectedBfAccount = $("#current-bf-account").text();
@@ -3784,7 +3779,10 @@ async function withdrawReviewDataset() {
     .replace(/^\s+|\s+$/g, "");
 
   try {
-    await withdrawDatasetReviewSubmission(selectedBfDataset);
+    await api.withdrawDatasetReviewSubmission(
+      selectedBfDataset,
+      selectedBfAccount
+    );
 
     logGeneralOperationsForAnalytics(
       "Success",
@@ -3826,9 +3824,8 @@ async function withdrawReviewDataset() {
     bfRefreshPublishingDatasetStatusBtn.disabled = false;
     bfWithdrawReviewDatasetBtn.disabled = false;
   } catch (error) {
-    log.error(error);
-    console.error(error);
-    var emessage = userError(error);
+    clientError(error);
+    var emessage = userErrorMessage(error);
     Swal.fire({
       title: "Could not withdraw dataset from publication!",
       text: `${emessage}`,
@@ -3889,30 +3886,31 @@ function refreshBfUsersList() {
   bfListUsersPI.appendChild(optionUserPI);
 
   if (accountSelected !== "Select") {
-    client.invoke("api_bf_get_users", accountSelected, (error, res) => {
-      if (error) {
-        log.error(error);
-        console.error(error);
-      } else {
+    client
+      .get(`manage_datasets/bf_get_users?selected_account=${accountSelected}`)
+      .then((res) => {
+        let users = res.data["users"];
         // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
         $("#bf_list_users").selectpicker("refresh");
         $("#bf_list_users").find("option:not(:first)").remove();
         $("#button-add-permission-user").hide();
         $("#bf_list_users_pi").selectpicker("refresh");
         $("#bf_list_users_pi").find("option:not(:first)").remove();
-        for (var myItem in res) {
+        for (var myItem in users) {
           // returns like [..,''fname lname email !!**!! pennsieve_id',',..]
-          let sep_pos = res[myItem].lastIndexOf("!|**|!");
-          var myUser = res[myItem].substring(0, sep_pos);
+          let sep_pos = users[myItem].lastIndexOf("!|**|!");
+          var myUser = users[myItem].substring(0, sep_pos);
           var optionUser = document.createElement("option");
           optionUser.textContent = myUser;
-          optionUser.value = res[myItem].substring(sep_pos + 6);
+          optionUser.value = users[myItem].substring(sep_pos + 6);
           bfListUsers.appendChild(optionUser);
           var optionUser2 = optionUser.cloneNode(true);
           bfListUsersPI.appendChild(optionUser2);
         }
-      }
-    });
+      })
+      .catch((error) => {
+        clientError(error);
+      });
   }
 }
 
@@ -3926,26 +3924,28 @@ function refreshBfTeamsList(teamList) {
   teamList.appendChild(optionTeam);
 
   if (accountSelected !== "Select") {
-    client.invoke("api_bf_get_teams", accountSelected, (error, res) => {
-      if (error) {
-        log.error(error);
-        console.error(error);
-        confirm_click_account_function();
-      } else {
+    client
+      .get(`/manage_datasets/bf_get_teams?selected_account=${accountSelected}`)
+      .then((res) => {
+        let teams = res.data["teams"];
         // The removeoptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
         $("#bf_list_teams").selectpicker("refresh");
         $("#bf_list_teams").find("option:not(:first)").remove();
         $("#button-add-permission-team").hide();
-        for (var myItem in res) {
-          var myTeam = res[myItem];
+        for (var myItem in teams) {
+          var myTeam = teams[myItem];
           var optionTeam = document.createElement("option");
           optionTeam.textContent = myTeam;
           optionTeam.value = myTeam;
           teamList.appendChild(optionTeam);
         }
         confirm_click_account_function();
-      }
-    });
+      })
+      .catch((error) => {
+        log.error(error);
+        console.error(error);
+        confirm_click_account_function();
+      });
   }
 }
 
@@ -3996,106 +3996,80 @@ const populateDatasetDropdowns = (mylist) => {
 };
 ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
 
-function loadDefaultAccount() {
-  client.invoke("api_bf_default_account_load", (error, res) => {
-    if (error) {
-      log.error(error);
-      console.error(error);
-      confirm_click_account_function();
-    } else {
-      if (res.length > 0) {
-        var myitemselect = res[0];
-        defaultBfAccount = myitemselect;
-        $("#current-bf-account").text(myitemselect);
-        $("#current-bf-account-generate").text(myitemselect);
-        $("#create_empty_dataset_BF_account_span").text(myitemselect);
-        $(".bf-account-span").text(myitemselect);
-        showHideDropdownButtons("account", "show");
-        refreshBfUsersList();
-        refreshBfTeamsList(bfListTeams);
-      }
-    }
-  });
-}
-
-function updateBfAccountList(api_key) {
-  client.invoke("api_bf_account_list", (error, res) => {
-    if (error) {
-      log.error(error);
-      console.error(error);
-      var emessage = userError(error);
-      confirm_click_account_function();
-    } else {
-      for (myitem in res) {
-        var myitemselect = res[myitem];
-        var option = document.createElement("option");
-        option.textContent = myitemselect;
-        option.value = myitemselect;
-        var option2 = option.cloneNode(true);
-      }
-      if (api_key === undefined) {
-        loadDefaultAccount();
-      }
-      if (res[0] === "Select" && res.length === 1) {
-        // todo: no existing accounts to load
-      }
-    }
+async function updateBfAccountList() {
+  let responseObject;
+  try {
+    responseObject = await client.get("manage_datasets/bf_account_list");
+  } catch (error) {
+    clientError(error);
+    confirm_click_account_function();
     refreshBfUsersList();
     refreshBfTeamsList(bfListTeams);
-  });
+    return;
+  }
+
+  let accountList = responseObject.data["accounts"];
+  for (myitem in accountList) {
+    var myitemselect = accountList[myitem];
+    var option = document.createElement("option");
+    option.textContent = myitemselect;
+    option.value = myitemselect;
+    var option2 = option.cloneNode(true);
+  }
+  await loadDefaultAccount();
+  if (accountList[0] === "Select" && accountList.length === 1) {
+    // todo: no existing accounts to load
+  }
+  refreshBfUsersList();
+  refreshBfTeamsList(bfListTeams);
 }
 
-/*
-function showCurrentDOI() {
-  currentDOI.value = "Please wait...";
-  reserveDOIStatus.innerHTML = "";
-  bfPostCurationProgressDOI.style.display = "block";
-  var selectedBfAccount = defaultBfAccount;
-  var selectedBfDataset = defaultBfDataset;
-  if (selectedBfDataset === "Select dataset") {
-    currentDOI.value = "-------";
-    bfPostCurationProgressDOI.style.display = "none";
-  } else {
-    client.invoke(
-      "api_bf_get_doi",
-      selectedBfAccount,
-      selectedBfDataset,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-          currentDOI.value = "-------";
-          var emessage = userError(error);
-          reserveDOIStatus.innerHTML =
-            "<span style='color: red;'> " + emessage + "</span>";
-          bfPostCurationProgressDOI.style.display = "none";
-        } else {
-          currentDOI.value = res;
-          bfPostCurationProgressDOI.style.display = "none";
-        }
-      }
+async function loadDefaultAccount() {
+  let responseObject;
+
+  try {
+    responseObject = await client.get(
+      "/manage_datasets/bf_default_account_load"
     );
+  } catch (e) {
+    clientError(e);
+    confirm_click_account_function();
+    return;
+  }
+
+  let accounts = responseObject.data["defaultAccounts"];
+
+  if (accounts.length > 0) {
+    var myitemselect = accounts[0];
+    defaultBfAccount = myitemselect;
+    $("#current-bf-account").text(myitemselect);
+    $("#current-bf-account-generate").text(myitemselect);
+    $("#create_empty_dataset_BF_account_span").text(myitemselect);
+    $(".bf-account-span").text(myitemselect);
+    showHideDropdownButtons("account", "show");
+    refreshBfUsersList();
+    refreshBfTeamsList(bfListTeams);
   }
 }
-*/
 
 const showPrePublishingPageElements = () => {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
   if (selectedBfDataset === "Select dataset") {
-  } else {
-    // show the "Begin Publishing" button and hide the checklist and submission section
-    $("#begin-prepublishing-btn").show();
-    $("#prepublishing-checklist-container").hide();
-    $("#prepublishing-submit-btn-container").hide();
-    $("#excluded-files-container").hide();
-    $(".pre-publishing-continue-container").hide();
+    return;
   }
+
+  // show the "Begin Publishing" button and hide the checklist and submission section
+  $("#begin-prepublishing-btn").show();
+  $("#prepublishing-checklist-container").hide();
+  $("#prepublishing-submit-btn-container").hide();
+  $("#excluded-files-container").hide();
+  $(".pre-publishing-continue-container").hide();
 };
 
-function showPublishingStatus(callback) {
-  return new Promise(function (resolve, reject) {
+async function showPublishingStatus(callback) {
+  return new Promise(async function (resolve, reject) {
     if (callback == "noClear") {
       var nothing;
     }
@@ -4107,68 +4081,66 @@ function showPublishingStatus(callback) {
     if (selectedBfDataset === "None") {
       resolve();
     } else {
-      client.invoke(
-        "api_bf_get_publishing_status",
-        selectedBfAccount,
-        selectedBfDataset,
-        (error, res) => {
-          if (error) {
-            log.error(error);
-            console.error(error);
-            var emessage = userError(error);
-            Swal.fire({
-              title: "Could not get your publishing status!",
-              text: `${emessage}`,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              confirmButtonText: "Ok",
-              reverseButtons: reverseSwalButtons,
-              showClass: {
-                popup: "animate__animated animate__fadeInDown animate__faster",
-              },
-              hideClass: {
-                popup: "animate__animated animate__fadeOutUp animate__faster",
-              },
-            });
+      try {
+        let get_publishing_status = await client.get(
+          `/disseminate_datasets/datasets/${selectedBfDataset}/publishing_status?selected_account=${selectedBfAccount}`
+        );
+        let res = get_publishing_status.data;
 
-            logGeneralOperationsForAnalytics(
-              "Error",
-              DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
-              AnalyticsGranularity.ALL_LEVELS,
-              ["Show publishing status"]
-            );
+        try {
+          //update the dataset's publication status and display
+          //onscreen for the user under their dataset name
+          $("#para-review-dataset-info-disseminate").text(
+            publishStatusOutputConversion(res)
+          );
 
-            resolve();
-          } else {
-            try {
-              // update the dataset's publication status and display it onscreen for the user under their dataset name
-              $("#para-review-dataset-info-disseminate").text(
-                publishStatusOutputConversion(res)
-              );
-
-              if (
-                callback === submitReviewDatasetCheck ||
-                callback === withdrawDatasetCheck
-              ) {
-                return resolve(callback(res));
-              }
-
-              resolve();
-            } catch (error) {
-              // an exception will be caught and rejected
-              // if the executor function is not ready before an exception is found it is uncaught without the try catch
-              reject(error);
-            }
+          if (
+            callback === submitReviewDatasetCheck ||
+            callback === withdrawDatasetCheck
+          ) {
+            return resolve(callback(res));
           }
+
+          resolve();
+        } catch (error) {
+          // an exception will be caught and rejected
+          // if the executor function is not ready before an exception is found it is uncaught without the try catch
+          reject(error);
         }
-      );
+      } catch (error) {
+        clientError(error);
+
+        Swal.fire({
+          title: "Could not get your publishing status!",
+          text: userErrorMessage(error),
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "Ok",
+          reverseButtons: reverseSwalButtons,
+          showClass: {
+            popup: "animate__animated animate__fadeInDown animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp animate__faster",
+          },
+        });
+
+        logGeneralOperationsForAnalytics(
+          "Error",
+          DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
+          AnalyticsGranularity.ALL_LEVELS,
+          ["Show publishing status"]
+        );
+
+        resolve();
+      }
     }
   });
 }
 
 function publishStatusOutputConversion(res) {
-  var reviewStatus = res[0];
-  var publishStatus = res[1];
+  var reviewStatus = res["publishing_status"];
+  var publishStatus = res["review_request_status"];
 
   var outputMessage = "";
   if (reviewStatus === "draft" || reviewStatus === "cancelled") {
@@ -4572,68 +4544,78 @@ async function retrieveBFAccounts() {
   bfAccountOptions = [];
   bfAccountOptionsStatus = "";
 
-  client.invoke("api_bf_account_list", (error, res) => {
-    if (error) {
-      log.error(error);
-      console.error(error);
-      bfAccountOptionsStatus = error;
-    } else {
-      for (myitem in res) {
-        bfAccountOptions[res[myitem]] = res[myitem];
-      }
-      showDefaultBFAccount();
-    }
-  });
+  if (hasConnectedAccountWithPennsieve()) {
+    client
+      .get("manage_datasets/bf_account_list")
+      .then((res) => {
+        let accounts = res.data;
+        for (const myitem in accounts) {
+          bfAccountOptions[accounts[myitem]] = accounts[myitem];
+        }
+
+        showDefaultBFAccount();
+      })
+      .catch((error) => {
+        // clientError(error)
+        bfAccountOptionsStatus = error;
+      });
+  } else {
+    bfAccountOptionsStatus = "No account connected";
+  }
   return [bfAccountOptions, bfAccountOptionsStatus];
 }
 
-function showDefaultBFAccount() {
-  client.invoke("api_bf_default_account_load", (error, res) => {
-    if (error) {
-      log.error(error);
-      console.error(error);
-    } else {
-      if (res.length > 0) {
-        var myitemselect = res[0];
-        defaultBfAccount = myitemselect;
-        client.invoke(
-          "api_bf_account_details",
-          defaultBfAccount,
-          (error, res) => {
-            if (error) {
-              log.error(error);
-              console.error(error);
-              $("#para-account-detail-curate").html("None");
-              $("#current-bf-account").text("None");
-              $("#current-bf-account-generate").text("None");
-              $("#create_empty_dataset_BF_account_span").text("None");
-              $(".bf-account-span").text("None");
-              $("#para-account-detail-curate-generate").html("None");
-              $("#para_create_empty_dataset_BF_account").html("None");
-              $(".bf-account-details-span").html("None");
-
-              $("#div-bf-account-load-progress").css("display", "none");
-              showHideDropdownButtons("account", "hide");
-            } else {
-              $("#para-account-detail-curate").html(res);
-              $("#current-bf-account").text(defaultBfAccount);
-              $("#current-bf-account-generate").text(defaultBfAccount);
-              $("#create_empty_dataset_BF_account_span").text(defaultBfAccount);
-              $(".bf-account-span").text(defaultBfAccount);
-              $("#para-account-detail-curate-generate").html(res);
-              $("#para_create_empty_dataset_BF_account").html(res);
-              $(".bf-account-details-span").html(res);
-
-              $("#div-bf-account-load-progress").css("display", "none");
-              showHideDropdownButtons("account", "show");
-              // refreshDatasetList()
-              updateDatasetList();
-            }
+async function showDefaultBFAccount() {
+  try {
+    let bf_default_acc_req = await client.get(
+      "manage_datasets/bf_default_account_load"
+    );
+    let accounts = bf_default_acc_req.data.defaultAccounts;
+    if (accounts.length > 0) {
+      var myitemselect = accounts[0];
+      defaultBfAccount = myitemselect;
+      try {
+        let bf_account_details_req = await client.get(
+          `/manage_datasets/bf_account_details`,
+          {
+            params: {
+              selected_account: defaultBfAccount,
+            },
           }
         );
+        let accountDetails = bf_account_details_req.data.account_details;
+        $("#para-account-detail-curate").html(accountDetails);
+        $("#current-bf-account").text(defaultBfAccount);
+        $("#current-bf-account-generate").text(defaultBfAccount);
+        $("#create_empty_dataset_BF_account_span").text(defaultBfAccount);
+        $(".bf-account-span").text(defaultBfAccount);
+        $("#para-account-detail-curate-generate").html(accountDetails);
+        $("#para_create_empty_dataset_BF_account").html(accountDetails);
+        $(".bf-account-details-span").html(accountDetails);
+
+        $("#div-bf-account-load-progress").css("display", "none");
+        showHideDropdownButtons("account", "show");
+        // refreshDatasetList()
+        updateDatasetList();
+      } catch (error) {
+        clientError(error);
+
+        $("#para-account-detail-curate").html("None");
+        $("#current-bf-account").text("None");
+        $("#current-bf-account-generate").text("None");
+        $("#create_empty_dataset_BF_account_span").text("None");
+        $(".bf-account-span").text("None");
+        $("#para-account-detail-curate-generate").html("None");
+        $("#para_create_empty_dataset_BF_account").html("None");
+        $(".bf-account-details-span").html("None");
+
+        $("#div-bf-account-load-progress").css("display", "none");
+        showHideDropdownButtons("account", "hide");
       }
     }
-  });
+  } catch (error) {
+    clientError(error);
+  }
 }
 
 ////// function to trigger action for each context menu option
@@ -4708,47 +4690,41 @@ function generateDataset(button) {
   }
 }
 
-ipcRenderer.on("selected-new-dataset", (event, filepath) => {
+ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
   if (filepath.length > 0) {
     if (filepath != null) {
       document.getElementById("para-organize-datasets-loading").style.display =
         "block";
       document.getElementById("para-organize-datasets-loading").innerHTML =
         "<span>Please wait...</span>";
-      client.invoke(
-        "api_generate_dataset_locally",
-        "create new",
-        filepath[0],
-        newDSName,
-        datasetStructureJSONObj,
-        (error, res) => {
-          document.getElementById(
-            "para-organize-datasets-loading"
-          ).style.display = "none";
-          if (error) {
-            log.error(error);
-            console.error(error);
-            document.getElementById(
-              "para-organize-datasets-success"
-            ).style.display = "none";
-            document.getElementById(
-              "para-organize-datasets-error"
-            ).style.display = "block";
-            document.getElementById("para-organize-datasets-error").innerHTML =
-              "<span> " + error + "</span>";
-          } else {
-            document.getElementById(
-              "para-organize-datasets-error"
-            ).style.display = "none";
-            document.getElementById(
-              "para-organize-datasets-success"
-            ).style.display = "block";
-            document.getElementById(
-              "para-organize-datasets-success"
-            ).innerHTML = "<span>Generated successfully!</span>";
-          }
-        }
-      );
+
+      log.info("Generating a new dataset organize datasets at ${filepath}");
+
+      try {
+        await client.post(`/organize_datasets/datasets`, {
+          generation_type: "create-new",
+          generation_destination_path: filepath[0],
+          dataset_name: newDSName,
+          soda_json_directory_structure: datasetStructureJSONObj,
+        });
+
+        document.getElementById("para-organize-datasets-error").style.display =
+          "none";
+        document.getElementById(
+          "para-organize-datasets-success"
+        ).style.display = "block";
+        document.getElementById("para-organize-datasets-success").innerHTML =
+          "<span>Generated successfully!</span>";
+      } catch (error) {
+        clientError(error);
+        document.getElementById(
+          "para-organize-datasets-success"
+        ).style.display = "none";
+        document.getElementById("para-organize-datasets-error").style.display =
+          "block";
+        document.getElementById("para-organize-datasets-error").innerHTML =
+          "<span> " + userErrorMessage(error) + "</span>";
+      }
     }
   }
 });
@@ -6723,7 +6699,7 @@ document
 
 ipcRenderer.on(
   "selected-local-destination-datasetCurate",
-  (event, filepath) => {
+  async (event, filepath) => {
     if (filepath.length > 0) {
       if (filepath != null) {
         sodaJSONObj["starting-point"]["local-path"] = "";
@@ -6765,7 +6741,7 @@ ipcRenderer.on(
                   $(".swal-popover").popover();
                 },
                 footer: footer,
-              }).then((result) => {
+              }).then(async (result) => {
                 // var replaced = [];
                 /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {
@@ -6816,89 +6792,67 @@ ipcRenderer.on(
                 ).attr("placeholder");
 
                 let local_progress = setInterval(progressReport, 500);
-                function progressReport() {
-                  client.invoke(
-                    "api_monitor_local_json_progress",
-                    (error, res) => {
-                      if (error) {
-                        console.log(error);
-                      } else {
-                        percentage_amount = res[2].toFixed(2);
-                        finished = res[3];
+                async function progressReport() {
+                  try {
+                    let monitorProgressResponse = await client.get(
+                      `/organize_datasets/datasets/import/progress`
+                    );
 
-                        progressBar_rightSide = document.getElementById(
-                          "left-side_less_than_50"
-                        );
-                        progressBar_leftSide = document.getElementById(
-                          "right-side_greater_than_50"
-                        );
+                    let { data } = monitorProgressResponse;
+                    percentage_amount = data["progress_percentage"].toFixed(2);
+                    finished = data["create_soda_json_completed"];
 
-                        numb.innerText = percentage_amount + "%";
-                        if (percentage_amount <= 50) {
-                          progressBar_rightSide.style.transform = `rotate(${
-                            percentage_amount * 0.01 * 360
-                          }deg)`;
-                        } else {
-                          progressBar_rightSide.style.transition = "";
-                          progressBar_rightSide.classList.add("notransition");
-                          progressBar_rightSide.style.transform = `rotate(180deg)`;
-                          progressBar_leftSide.style.transform = `rotate(${
-                            percentage_amount * 0.01 * 180
-                          }deg)`;
-                        }
+                    progressBar_rightSide = document.getElementById(
+                      "left-side_less_than_50"
+                    );
+                    progressBar_leftSide = document.getElementById(
+                      "right-side_greater_than_50"
+                    );
 
-                        if (finished === 1) {
-                          progressBar_leftSide.style.transform = `rotate(180deg)`;
-                          let numb_change = new Promise((resolve) => {
-                            numb.innerText = "100%";
-                            resolve();
-                          }).then(() => {
-                            clearInterval(local_progress);
-                            progressBar_rightSide.classList.remove(
-                              "notransition"
-                            );
-                            populate_existing_folders(datasetStructureJSONObj);
-                            populate_existing_metadata(sodaJSONObj);
-                            $(
-                              "#para-continue-location-dataset-getting-started"
-                            ).text("Please continue below.");
-                            $("#nextBtn").prop("disabled", false);
-                            // log the success to analytics
-                            logMetadataForAnalytics(
-                              "Success",
-                              PrepareDatasetsAnalyticsPrefix.CURATE,
-                              AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-                              Actions.EXISTING,
-                              Destinations.LOCAL
-                            );
-                            setTimeout(() => {
-                              document.getElementById(
-                                "loading_local_dataset"
-                              ).style.display = "none";
-                            }, 1000);
-                          });
-                        }
-                      }
-                    }
-                  );
-                }
-                client.invoke(
-                  "api_create_soda_json_object_backend",
-                  sodaJSONObj,
-                  root_folder_path,
-                  irregularFolderArray,
-                  replaced,
-                  (error, res) => {
-                    if (error) {
-                      console.log(error);
-                      clearInterval(local_progress);
+                    numb.innerText = percentage_amount + "%";
+                    if (percentage_amount <= 50) {
+                      progressBar_rightSide.style.transform = `rotate(${
+                        percentage_amount * 0.01 * 360
+                      }deg)`;
                     } else {
-                      sodaJSONObj = res;
-                      datasetStructureJSONObj =
-                        sodaJSONObj["dataset-structure"];
+                      progressBar_rightSide.style.transition = "";
+                      progressBar_rightSide.classList.add("notransition");
+                      progressBar_rightSide.style.transform = `rotate(180deg)`;
+                      progressBar_leftSide.style.transform = `rotate(${
+                        percentage_amount * 0.01 * 180
+                      }deg)`;
                     }
+
+                    if (finished === 1) {
+                      progressBar_leftSide.style.transform = `rotate(180deg)`;
+                      numb.innerText = "100%";
+                      clearInterval(local_progress);
+                      progressBar_rightSide.classList.remove("notransition");
+                      populate_existing_folders(datasetStructureJSONObj);
+                      populate_existing_metadata(sodaJSONObj);
+                      $("#para-continue-location-dataset-getting-started").text(
+                        "Please continue below."
+                      );
+                      $("#nextBtn").prop("disabled", false);
+                      // log the success to analytics
+                      logMetadataForAnalytics(
+                        "Success",
+                        PrepareDatasetsAnalyticsPrefix.CURATE,
+                        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+                        Actions.EXISTING,
+                        Destinations.LOCAL
+                      );
+                      setTimeout(() => {
+                        document.getElementById(
+                          "loading_local_dataset"
+                        ).style.display = "none";
+                      }, 1000);
+                    }
+                  } catch (error) {
+                    clientError(error);
+                    clearInterval(local_progress);
                   }
-                );
+                }
                 //create setInterval variable that will keep track of the iterated items
               });
             } else {
@@ -6923,82 +6877,84 @@ ipcRenderer.on(
 
               let percentage_amount = 0;
               let local_progress = setInterval(progressReport, 500);
-              function progressReport() {
-                client.invoke(
-                  "api_monitor_local_json_progress",
-                  (error, res) => {
-                    if (error) {
-                      console.log(error);
-                      clearInterval(local_progress);
-                    } else {
-                      percentage_amount = res[2].toFixed(2);
-                      finished = res[3];
-                      progressBar_rightSide = document.getElementById(
-                        "left-side_less_than_50"
-                      );
-                      progressBar_leftSide = document.getElementById(
-                        "right-side_greater_than_50"
-                      );
+              async function progressReport() {
+                try {
+                  let monitorProgressResponse = await client.get(
+                    `/organize_datasets/datasets/import/progress`
+                  );
 
-                      numb.innerText = percentage_amount + "%";
-                      if (percentage_amount <= 50) {
-                        progressBar_rightSide.style.transform = `rotate(${
-                          percentage_amount * 0.01 * 360
-                        }deg)`;
-                      } else {
-                        progressBar_rightSide.style.transition = "";
-                        progressBar_rightSide.classList.add("notransition");
-                        progressBar_rightSide.style.transform = `rotate(180deg)`;
-                        progressBar_leftSide.style.transform = `rotate(${
-                          percentage_amount * 0.01 * 180
-                        }deg)`;
-                      }
-                      if (finished === 1) {
-                        progressBar_leftSide.style.transform = `rotate(180deg)`;
-                        numb.innerText = "100%";
+                  let { data } = monitorProgressResponse;
+                  percentage_amount = data["progress_percentage"].toFixed(2);
+                  finished = data["create_soda_json_completed"];
+                  progressBar_rightSide = document.getElementById(
+                    "left-side_less_than_50"
+                  );
+                  progressBar_leftSide = document.getElementById(
+                    "right-side_greater_than_50"
+                  );
 
-                        clearInterval(local_progress);
-                        progressBar_rightSide.classList.remove("notransition");
-                        populate_existing_folders(datasetStructureJSONObj);
-                        populate_existing_metadata(sodaJSONObj);
-                        $(
-                          "#para-continue-location-dataset-getting-started"
-                        ).text("Please continue below.");
-                        $("#nextBtn").prop("disabled", false);
-                        // log the success to analytics
-                        logMetadataForAnalytics(
-                          "Success",
-                          PrepareDatasetsAnalyticsPrefix.CURATE,
-                          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-                          Actions.EXISTING,
-                          Destinations.LOCAL
-                        );
-                        setTimeout(() => {
-                          document.getElementById(
-                            "loading_local_dataset"
-                          ).style.display = "none";
-                        }, 1000);
-                      }
-                    }
+                  numb.innerText = percentage_amount + "%";
+                  if (percentage_amount <= 50) {
+                    progressBar_rightSide.style.transform = `rotate(${
+                      percentage_amount * 0.01 * 360
+                    }deg)`;
+                  } else {
+                    progressBar_rightSide.style.transition = "";
+                    progressBar_rightSide.classList.add("notransition");
+                    progressBar_rightSide.style.transform = `rotate(180deg)`;
+                    progressBar_leftSide.style.transform = `rotate(${
+                      percentage_amount * 0.01 * 180
+                    }deg)`;
+                  }
+                  if (finished === 1) {
+                    progressBar_leftSide.style.transform = `rotate(180deg)`;
+                    numb.innerText = "100%";
+
+                    clearInterval(local_progress);
+                    progressBar_rightSide.classList.remove("notransition");
+                    populate_existing_folders(datasetStructureJSONObj);
+                    populate_existing_metadata(sodaJSONObj);
+                    $("#para-continue-location-dataset-getting-started").text(
+                      "Please continue below."
+                    );
+                    $("#nextBtn").prop("disabled", false);
+                    // log the success to analytics
+                    logMetadataForAnalytics(
+                      "Success",
+                      PrepareDatasetsAnalyticsPrefix.CURATE,
+                      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+                      Actions.EXISTING,
+                      Destinations.LOCAL
+                    );
+                    setTimeout(() => {
+                      document.getElementById(
+                        "loading_local_dataset"
+                      ).style.display = "none";
+                    }, 1000);
+                  }
+                } catch (error) {
+                  clientError(error);
+                  clearInterval(local_progress);
+                }
+              }
+
+              try {
+                let importLocalDatasetResponse = await client.post(
+                  `/organize_datasets/datasets/import`,
+                  {
+                    sodajsonobject: sodaJSONObj,
+                    root_folder_path: root_folder_path,
+                    irregular_folders: irregularFolderArray,
+                    replaced: replaced,
                   }
                 );
+                let { data } = importLocalDatasetResponse;
+                sodajsonobject = data;
+                datasetStructureJSONObj = sodajsonobject["dataset-structure"];
+              } catch (error) {
+                clientError(error);
+                clearInterval(local_progress);
               }
-              client.invoke(
-                "api_create_soda_json_object_backend",
-                sodaJSONObj,
-                root_folder_path,
-                irregularFolderArray,
-                replaced,
-                (error, res) => {
-                  if (error) {
-                    console.log(error);
-                    clearInterval(local_progress);
-                  } else {
-                    sodaJSONObj = res;
-                    datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-                  }
-                }
-              );
             }
           } else {
             Swal.fire({
@@ -7223,77 +7179,82 @@ document
       }
     }
 
-    client.invoke(
-      "api_check_empty_files_folders",
-      sodaJSONObj,
-      (error, res) => {
-        if (error) {
-          var emessage = userError(error);
-          document.getElementById(
-            "para-new-curate-progress-bar-error-status"
-          ).innerHTML =
-            "<span style='color: red;'> Error: " + emessage + "</span>";
-          document.getElementById("para-please-wait-new-curate").innerHTML = "";
-          console.error(error);
-          $("#sidebarCollapse").prop("disabled", false);
-        } else {
-          document.getElementById("para-please-wait-new-curate").innerHTML =
-            "Please wait...";
-          log.info("Continue with curate");
-          var message = "";
-          error_files = res[0];
-          //bring duplicate outside
-          error_folders = res[1];
-
-          if (error_files.length > 0) {
-            var error_message_files =
-              backend_to_frontend_warning_message(error_files);
-            message += error_message_files;
-          }
-
-          if (error_folders.length > 0) {
-            var error_message_folders =
-              backend_to_frontend_warning_message(error_folders);
-            message += error_message_folders;
-          }
-
-          if (message) {
-            message += "Would you like to continue?";
-            message = "<div style='text-align: left'>" + message + "</div>";
-            Swal.fire({
-              icon: "warning",
-              html: message,
-              showCancelButton: true,
-              cancelButtonText: "No, I want to review my files",
-              focusCancel: true,
-              confirmButtonText: "Yes, Continue",
-              backdrop: "rgba(0,0,0, 0.4)",
-              reverseButtons: reverseSwalButtons,
-              heightAuto: false,
-              showClass: {
-                popup: "animate__animated animate__zoomIn animate__faster",
-              },
-              hideClass: {
-                popup: "animate__animated animate__zoomOut animate__faster",
-              },
-            }).then((result) => {
-              if (result.isConfirmed) {
-                initiate_generate();
-              } else {
-                $("#sidebarCollapse").prop("disabled", false);
-                document.getElementById(
-                  "para-please-wait-new-curate"
-                ).innerHTML = "Return to make changes";
-                document.getElementById("div-generate-comeback").style.display =
-                  "flex";
-              }
-            });
-          } else {
-            initiate_generate();
-          }
+    let emptyFilesFoldersResponse;
+    try {
+      emptyFilesFoldersResponse = await client.get(
+        `/curate_datasets/empty_files_and_folders`,
+        {
+          params: {
+            soda_json_structure: JSON.stringify(sodaJSONObj),
+          },
         }
-      }
-    );
+      );
+    } catch (error) {
+      clientError(error);
+      let emessage = userErrorMessage(error);
+      document.getElementById(
+        "para-new-curate-progress-bar-error-status"
+      ).innerHTML = "<span style='color: red;'> Error: " + emessage + "</span>";
+      document.getElementById("para-please-wait-new-curate").innerHTML = "";
+      $("#sidebarCollapse").prop("disabled", false);
+      return;
+    }
+
+    let { data } = emptyFilesFoldersResponse;
+
+    document.getElementById("para-please-wait-new-curate").innerHTML =
+      "Please wait...";
+    log.info("Continue with curate");
+    let errorMessage = "";
+    error_files = data["empty_files"];
+    //bring duplicate outside
+    error_folders = data["empty_folders"];
+
+    if (error_files.length > 0) {
+      var error_message_files =
+        backend_to_frontend_warning_message(error_files);
+      errorMessage += error_message_files;
+    }
+
+    if (error_folders.length > 0) {
+      var error_message_folders =
+        backend_to_frontend_warning_message(error_folders);
+      errorMessage += error_message_folders;
+    }
+
+    if (errorMessage) {
+      errorMessage += "Would you like to continue?";
+      errorMessage = "<div style='text-align: left'>" + errorMessage + "</div>";
+      Swal.fire({
+        icon: "warning",
+        html: errorMessage,
+        showCancelButton: true,
+        cancelButtonText: "No, I want to review my files",
+        focusCancel: true,
+        confirmButtonText: "Yes, Continue",
+        backdrop: "rgba(0,0,0, 0.4)",
+        reverseButtons: reverseSwalButtons,
+        heightAuto: false,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          initiate_generate();
+        } else {
+          $("#sidebarCollapse").prop("disabled", false);
+          document.getElementById("para-please-wait-new-curate").innerHTML =
+            "Return to make changes";
+          document.getElementById("div-generate-comeback").style.display =
+            "flex";
+        }
+      });
+    } else {
+      initiate_generate();
+    }
   });
 
 const delete_imported_manifest = () => {
@@ -7318,7 +7279,6 @@ let file_counter = 0;
 let folder_counter = 0;
 var uploadComplete = new Notyf({
   position: { x: "right", y: "bottom" },
-  ripple: true,
   dismissible: true,
   ripple: false,
   types: [
@@ -7443,14 +7403,52 @@ async function initiate_generate() {
   // clear the Pennsieve Queue (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
   clearQueue();
 
-  client.invoke("api_main_curate_function", sodaJSONObj, async (error, res) => {
-    if (error) {
+  client
+    .post(`/curate_datasets/curation`, {
+      soda_json_structure: sodaJSONObj,
+    })
+    .then(async (response) => {
+      let { data } = response;
+
+      main_total_generate_dataset_size =
+        data["main_total_generate_dataset_size"];
+      uploadedFiles = data["main_curation_uploaded_files"];
+
+      $("#sidebarCollapse").prop("disabled", false);
+      log.info("Completed curate function");
+
+      // log relevant curation details about the dataset generation/Upload to Google Analytics
+      logCurationSuccessToAnalytics(
+        manifest_files_requested,
+        main_total_generate_dataset_size,
+        dataset_name,
+        dataset_destination,
+        uploadedFiles
+      );
+
+      try {
+        let responseObject = await client.get(
+          `manage_datasets/bf_dataset_account`,
+          {
+            params: {
+              selected_account: defaultBfAccount,
+            },
+          }
+        );
+        datasetList = [];
+        datasetList = responseObject.data.datasets;
+      } catch (error) {
+        clientError(error);
+      }
+    })
+    .catch(async (error) => {
+      clientError(error);
+      let emessage = userErrorMessage(error);
       organizeDataset_option_buttons.style.display = "flex";
       organizeDataset.disabled = false;
       organizeDataset.className = "content-button is-selected";
       organizeDataset.style = "background-color: #fff";
       $("#sidebarCollapse").prop("disabled", false);
-      var emessage = userError(error);
       document.getElementById(
         "para-new-curate-progress-bar-error-status"
       ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
@@ -7491,23 +7489,22 @@ async function initiate_generate() {
       statusText.innerHTML = "";
       document.getElementById("div-new-curate-progress").style.display = "none";
       generateProgressBar.value = 0;
-      log.error(error);
-      console.error(error);
 
-      client.invoke(
-        "api_bf_dataset_account",
-        defaultBfAccount,
-        (error, result) => {
-          if (error) {
-            log.error(error);
-            console.log(error);
-            var emessage = error;
-          } else {
-            datasetList = [];
-            datasetList = result;
+      try {
+        let responseObject = await client.get(
+          `manage_datasets/bf_dataset_account`,
+          {
+            params: {
+              selected_account: defaultBfAccount,
+            },
           }
-        }
-      );
+        );
+        datasetList = [];
+        datasetList = responseObject.data.datasets;
+      } catch (error) {
+        clientError(error);
+        emessage = userErrorMessage(error);
+      }
 
       // wait to see if the uploaded files or size will grow once the client has time to ask for the updated information
       // if they stay zero that means nothing was uploaded
@@ -7524,183 +7521,158 @@ async function initiate_generate() {
         increaseInFileSize,
         datasetUploadSession
       );
-    } else {
-      main_total_generate_dataset_size = res[1];
-      uploadedFiles = res[2];
-
-      $("#sidebarCollapse").prop("disabled", false);
-      log.info("Completed curate function");
-
-      // log relevant curation details about the dataset generation/Upload to Google Analytics
-      logCurationSuccessToAnalytics(
-        manifest_files_requested,
-        main_total_generate_dataset_size,
-        dataset_name,
-        dataset_destination,
-        uploadedFiles
-      );
-      client.invoke(
-        "api_bf_dataset_account",
-        defaultBfAccount,
-        (error, result) => {
-          if (error) {
-            log.error(error);
-            console.log(error);
-            var emessage = error;
-          } else {
-            datasetList = [];
-            datasetList = result;
-          }
-        }
-      );
-    }
-    document.getElementById("div-generate-comeback").style.display = "flex";
-  });
+    });
 
   // Progress tracking function for main curate
   var countDone = 0;
   var timerProgress = setInterval(main_progressfunction, 1000);
   var successful = false;
-  function main_progressfunction() {
-    client.invoke("api_main_curate_function_progress", (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        document.getElementById(
-          "para-new-curate-progress-bar-error-status"
-        ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
-        log.error(error);
-        organizeDataset_option_buttons.style.display = "flex";
-        organizeDataset.disabled = false;
-        organizeDataset.className = "content-button is-selected";
-        organizeDataset.style = "background-color: #fff";
-        uploadLocally.disabled = false;
-        uploadLocally.className = "content-button is-selected";
-        uploadLocally.style = "background-color: #fff";
-        Swal.fire({
-          icon: "error",
-          title: "An Error Occurred While Uploading Your Dataset",
-          html: "Check the error text in the Organize Dataset's upload page to see what went wrong.",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
-        }).then((result) => {
-          //statusBarClone.remove();
-          if (result.isConfirmed) {
-            organizeDataset.click();
-            let button = document.getElementById("button-generate");
-            $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
-            document.getElementById("prevBtn").style.display = "none";
-            document.getElementById("start-over-btn").style.display = "none";
-            document.getElementById("div-vertical-progress-bar").style.display =
-              "none";
-            document.getElementById("div-generate-comeback").style.display =
-              "none";
-            document.getElementById(
-              "generate-dataset-progress-tab"
-            ).style.display = "flex";
-          }
-        });
-        organizeDataset_option_buttons.style.display = "flex";
-        organizeDataset.disabled = false;
-        organizeDataset.className = "content-button is-selected";
-        organizeDataset.style = "background-color: #fff";
-        uploadLocally.disabled = false;
-        uploadLocally.className = "content-button is-selected";
-        uploadLocally.style = "background-color: #fff";
-        console.error(error);
-        //Clear the interval to stop the generation of new sweet alerts after intitial error
-        clearInterval(timerProgress);
-      } else {
-        main_curate_status = res[0];
-        var start_generate = res[1];
-        var main_curate_progress_message = res[2];
-        main_total_generate_dataset_size = res[3];
-        var main_generated_dataset_size = res[4];
-        var elapsed_time_formatted = res[5];
 
-        if (start_generate === 1) {
-          divGenerateProgressBar.style.display = "block";
-          if (main_curate_progress_message.includes("Success: COMPLETED!")) {
-            generateProgressBar.value = 100;
-            statusMeter.value = 100;
-            progressStatus.innerHTML = main_curate_status + smileyCan;
-            statusText.innerHTML = main_curate_status + smileyCan;
-            successful = true;
-          } else {
-            var value =
-              (main_generated_dataset_size / main_total_generate_dataset_size) *
-              100;
-            generateProgressBar.value = value;
-            statusMeter.value = value;
-            if (main_total_generate_dataset_size < displaySize) {
-              var totalSizePrint =
-                main_total_generate_dataset_size.toFixed(2) + " B";
-            } else if (
-              main_total_generate_dataset_size <
-              displaySize * displaySize
-            ) {
-              var totalSizePrint =
-                (main_total_generate_dataset_size / displaySize).toFixed(2) +
-                " KB";
-            } else if (
-              main_total_generate_dataset_size <
-              displaySize * displaySize * displaySize
-            ) {
-              var totalSizePrint =
-                (
-                  main_total_generate_dataset_size /
-                  displaySize /
-                  displaySize
-                ).toFixed(2) + " MB";
-            } else {
-              var totalSizePrint =
-                (
-                  main_total_generate_dataset_size /
-                  displaySize /
-                  displaySize /
-                  displaySize
-                ).toFixed(2) + " GB";
-            }
-            var progressMessage = "";
-            var statusProgressMessage = "";
-            progressMessage += main_curate_progress_message + "<br>";
-            statusProgressMessage += main_curate_progress_message + "<br>";
-            statusProgressMessage +=
-              "Progress: " + value.toFixed(2) + "%" + "<br>";
-            progressMessage +=
-              "Progress: " +
-              value.toFixed(2) +
-              "%" +
-              " (total size: " +
-              totalSizePrint +
-              ") " +
-              "<br>";
-            progressMessage +=
-              "Elapsed time: " + elapsed_time_formatted + "<br>";
-            progressStatus.innerHTML = progressMessage;
-            statusText.innerHTML = statusProgressMessage;
-          }
-        } else {
-          statusText.innerHTML =
-            main_curate_progress_message +
-            "<br>" +
-            "Elapsed time: " +
-            elapsed_time_formatted +
-            "<br>";
-          progressStatus.innerHTML =
-            main_curate_progress_message +
-            "<br>" +
-            "Elapsed time: " +
-            elapsed_time_formatted +
-            "<br>";
+  async function main_progressfunction() {
+    let mainCurationProgressResponse;
+    try {
+      mainCurationProgressResponse = await client.get(
+        `/curate_datasetscuration/progress`
+      );
+    } catch (error) {
+      clientError(error);
+      let emessage = userErrorMessage(error);
+
+      document.getElementById(
+        "para-new-curate-progress-bar-error-status"
+      ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
+      log.error(error);
+      organizeDataset_option_buttons.style.display = "flex";
+      organizeDataset.disabled = false;
+      organizeDataset.className = "content-button is-selected";
+      organizeDataset.style = "background-color: #fff";
+      uploadLocally.disabled = false;
+      uploadLocally.className = "content-button is-selected";
+      uploadLocally.style = "background-color: #fff";
+      Swal.fire({
+        icon: "error",
+        title: "An Error Occurred While Uploading Your Dataset",
+        html: "Check the error text in the Organize Dataset's upload page to see what went wrong.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      }).then((result) => {
+        //statusBarClone.remove();
+        if (result.isConfirmed) {
+          organizeDataset.click();
+          let button = document.getElementById("button-generate");
+          $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
+          document.getElementById("prevBtn").style.display = "none";
+          document.getElementById("start-over-btn").style.display = "none";
+          document.getElementById("div-vertical-progress-bar").style.display =
+            "none";
+          document.getElementById("div-generate-comeback").style.display =
+            "none";
+          document.getElementById(
+            "generate-dataset-progress-tab"
+          ).style.display = "flex";
         }
+      });
+      organizeDataset_option_buttons.style.display = "flex";
+      organizeDataset.disabled = false;
+      organizeDataset.className = "content-button is-selected";
+      organizeDataset.style = "background-color: #fff";
+      uploadLocally.disabled = false;
+      uploadLocally.className = "content-button is-selected";
+      uploadLocally.style = "background-color: #fff";
+      console.error(error);
+      //Clear the interval to stop the generation of new sweet alerts after intitial error
+      clearInterval(timerProgress);
+      return;
+    }
+
+    let { data } = mainCurationProgressResponse;
+
+    main_curate_status = data["main_curate_status"];
+    var start_generate = data["start_generate"];
+    var main_curate_progress_message = data["main_curate_progress_message"];
+    main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
+    var main_generated_dataset_size = data["main_generated_dataset_size"];
+    var elapsed_time_formatted = data["elapsed_time_formatted"];
+
+    if (start_generate === 1) {
+      divGenerateProgressBar.style.display = "block";
+      if (main_curate_progress_message.includes("Success: COMPLETED!")) {
+        generateProgressBar.value = 100;
+        statusMeter.value = 100;
+        progressStatus.innerHTML = main_curate_status + smileyCan;
+        statusText.innerHTML = main_curate_status + smileyCan;
+        successful = true;
+      } else {
+        var value =
+          (main_generated_dataset_size / main_total_generate_dataset_size) *
+          100;
+        generateProgressBar.value = value;
+        statusMeter.value = value;
+        if (main_total_generate_dataset_size < displaySize) {
+          var totalSizePrint =
+            main_total_generate_dataset_size.toFixed(2) + " B";
+        } else if (
+          main_total_generate_dataset_size <
+          displaySize * displaySize
+        ) {
+          var totalSizePrint =
+            (main_total_generate_dataset_size / displaySize).toFixed(2) + " KB";
+        } else if (
+          main_total_generate_dataset_size <
+          displaySize * displaySize * displaySize
+        ) {
+          var totalSizePrint =
+            (
+              main_total_generate_dataset_size /
+              displaySize /
+              displaySize
+            ).toFixed(2) + " MB";
+        } else {
+          var totalSizePrint =
+            (
+              main_total_generate_dataset_size /
+              displaySize /
+              displaySize /
+              displaySize
+            ).toFixed(2) + " GB";
+        }
+        var progressMessage = "";
+        var statusProgressMessage = "";
+        progressMessage += main_curate_progress_message + "<br>";
+        statusProgressMessage += main_curate_progress_message + "<br>";
+        statusProgressMessage += "Progress: " + value.toFixed(2) + "%" + "<br>";
+        progressMessage +=
+          "Progress: " +
+          value.toFixed(2) +
+          "%" +
+          " (total size: " +
+          totalSizePrint +
+          ") " +
+          "<br>";
+        progressMessage += "Elapsed time: " + elapsed_time_formatted + "<br>";
+        progressStatus.innerHTML = progressMessage;
+        statusText.innerHTML = statusProgressMessage;
       }
-    });
+    } else {
+      statusText.innerHTML =
+        main_curate_progress_message +
+        "<br>" +
+        "Elapsed time: " +
+        elapsed_time_formatted +
+        "<br>";
+      progressStatus.innerHTML =
+        main_curate_progress_message +
+        "<br>" +
+        "Elapsed time: " +
+        elapsed_time_formatted +
+        "<br>";
+    }
 
     if (main_curate_status === "Done") {
       $("#sidebarCollapse").prop("disabled", false);
@@ -7754,62 +7726,74 @@ async function initiate_generate() {
   const checkForBucketUpload = async () => {
     // ask the server for the amount of files uploaded in the current session
     // nothing to log for uploads where a user is solely deleting files in this section
-    client.invoke("api_main_curate_function_upload_details", (err, res) => {
-      // check if the amount of successfully uploaded files has increased
-      if (res[0] > 0 && res[2] > foldersUploaded) {
-        previousUploadedFileSize = uploadedFilesSize;
-        uploadedFiles = res[0];
-        uploadedFilesSize = res[1];
-        foldersUploaded = res[2];
 
-        // log the increase in the file size
-        increaseInFileSize = uploadedFilesSize - previousUploadedFileSize;
+    let mainCurationDetailsResponse;
+    try {
+      mainCurationDetailsResponse = await client.get(
+        `/curate_datasetscuration/upload_details`
+      );
+    } catch (error) {
+      clientError(error);
+      clearInterval(timerCheckForBucketUpload);
+      return;
+    }
 
-        // log the aggregate file count and size values when uploading to Pennsieve
-        if (
-          dataset_destination === "bf" ||
-          dataset_destination === "Pennsieve"
-        ) {
-          // use the session id as the label -- this will help with aggregating the number of files uploaded per session
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            PrepareDatasetsAnalyticsPrefix.CURATE +
-              " - Step 7 - Generate - Dataset - Number of Files",
-            `${datasetUploadSession.id}`,
-            uploadedFiles
-          );
+    let { data } = mainCurationDetailsResponse;
 
-          // use the session id as the label -- this will help with aggregating the size of the given upload session
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            PrepareDatasetsAnalyticsPrefix.CURATE +
-              " - Step 7 - Generate - Dataset - Size",
-            `${datasetUploadSession.id}`,
-            increaseInFileSize
-          );
-        }
-      }
+    // check if the amount of successfully uploaded files has increased
+    if (
+      data["main_curation_uploaded_files"] > 0 &&
+      data["uploaded_folder_counter"] > foldersUploaded
+    ) {
+      previousUploadedFileSize = uploadedFilesSize;
+      uploadedFiles = data["main_curation_uploaded_files"];
+      uploadedFilesSize = data["current_size_of_uploaded_files"];
+      foldersUploaded = data["uploaded_folder_counter"];
 
-      generated_dataset_id = res[3];
-      // if a new Pennsieve dataset was generated log it once to the dataset id to name mapping
-      if (
-        !loggedDatasetNameToIdMapping &&
-        generated_dataset_id !== null &&
-        generated_dataset_id !== undefined
-      ) {
+      // log the increase in the file size
+      increaseInFileSize = uploadedFilesSize - previousUploadedFileSize;
+
+      // log the aggregate file count and size values when uploading to Pennsieve
+      if (dataset_destination === "bf" || dataset_destination === "Pennsieve") {
+        // use the session id as the label -- this will help with aggregating the number of files uploaded per session
         ipcRenderer.send(
           "track-event",
-          "Dataset ID to Dataset Name Map",
-          generated_dataset_id,
-          dataset_name
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE +
+            " - Step 7 - Generate - Dataset - Number of Files",
+          `${datasetUploadSession.id}`,
+          uploadedFiles
         );
 
-        // don't log this again for the current upload session
-        loggedDatasetNameToIdMapping = true;
+        // use the session id as the label -- this will help with aggregating the size of the given upload session
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE +
+            " - Step 7 - Generate - Dataset - Size",
+          `${datasetUploadSession.id}`,
+          increaseInFileSize
+        );
       }
-    });
+    }
+
+    generated_dataset_id = data["generated_dataset_id"];
+    // if a new Pennsieve dataset was generated log it once to the dataset id to name mapping
+    if (
+      !loggedDatasetNameToIdMapping &&
+      generated_dataset_id !== null &&
+      generated_dataset_id !== undefined
+    ) {
+      ipcRenderer.send(
+        "track-event",
+        "Dataset ID to Dataset Name Map",
+        generated_dataset_id,
+        dataset_name
+      );
+
+      // don't log this again for the current upload session
+      loggedDatasetNameToIdMapping = true;
+    }
 
     //stop the inteval when the upload is complete
     if (main_curate_status === "Done") {
@@ -7818,7 +7802,7 @@ async function initiate_generate() {
   };
 
   let timerCheckForBucketUpload = setInterval(checkForBucketUpload, 1000);
-}
+} // end initiate_generate
 
 const show_curation_shortcut = () => {
   Swal.fire({
@@ -8025,6 +8009,15 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
   }
 });
 
+/**
+ *
+ * @param {object} sodaJSONObj - The SODA json object used for tracking files, folders, and basic dataset curation information such as providence (local or Pennsieve).
+ * @returns {
+ *    "soda_json_structure": {}
+ *    "success_message": ""
+ *    "manifest_error_message": ""
+ * }
+ */
 var bf_request_and_populate_dataset = async (sodaJSONObj) => {
   let progress_container = document.getElementById("loading_pennsieve_dataset");
   let percentage_text = document.getElementById(
@@ -8041,69 +8034,84 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
   left_progress_bar.style.transform = `rotate(0deg)`;
   right_progress_bar.style.transform = `rotate(0deg)`;
   let pennsieve_progress = setInterval(progressReport, 500);
-  function progressReport() {
-    client.invoke("api_monitor_pennsieve_json_progress", (error, res) => {
-      if (error) {
-        console.log(error);
-      } else {
-        let percentage_amount = res[2].toFixed(2);
-        finished = res[3];
-        percentage_text.innerText = percentage_amount + "%";
-        if (percentage_amount <= 50) {
-          left_progress_bar.style.transform = `rotate(${
-            percentage_amount * 0.01 * 360
-          }deg)`;
-        } else {
-          left_progress_bar.style.transition = "";
-          left_progress_bar.classList.add("notransition");
-          left_progress_bar.style.transform = `rotate(180deg)`;
-          right_progress_bar.style.transform = `rotate(${
-            percentage_amount * 0.01 * 180
-          }deg)`;
-        }
+  async function progressReport() {
+    let progressResponse;
+    try {
+      progressResponse = await client.get(
+        "/organize_datasets/dataset_files_and_folders/progress"
+      );
+    } catch (error) {
+      clientError(error);
+      clearInterval(pennsieve_progress);
+      return;
+    }
 
-        if (finished === 1) {
-          percentage_text.innerText = "100%";
-          left_progress_bar.style.transform = `rotate(180deg)`;
-          right_progress_bar.style.transform = `rotate(180deg)`;
-          right_progress_bar.classList.remove("notransition");
-          clearInterval(pennsieve_progress);
-          setTimeout(() => {
-            progress_container.style.display = "none";
-          }, 1000);
-        }
-      }
-    });
+    let res = progressResponse.data;
+
+    let percentage_amount = res["import_progress_percentage"].toFixed(2);
+    finished = res["import_completed_items"];
+    percentage_text.innerText = percentage_amount + "%";
+    if (percentage_amount <= 50) {
+      left_progress_bar.style.transform = `rotate(${
+        percentage_amount * 0.01 * 360
+      }deg)`;
+    } else {
+      left_progress_bar.style.transition = "";
+      left_progress_bar.classList.add("notransition");
+      left_progress_bar.style.transform = `rotate(180deg)`;
+      right_progress_bar.style.transform = `rotate(${
+        percentage_amount * 0.01 * 180
+      }deg)`;
+    }
+
+    if (finished === 1) {
+      percentage_text.innerText = "100%";
+      left_progress_bar.style.transform = `rotate(180deg)`;
+      right_progress_bar.style.transform = `rotate(180deg)`;
+      right_progress_bar.classList.remove("notransition");
+      clearInterval(pennsieve_progress);
+      setTimeout(() => {
+        progress_container.style.display = "none";
+      }, 2000);
+    }
   }
 
-  return new Promise((resolve, reject) => {
-    client.invoke("api_import_pennsieve_dataset", sodaJSONObj, (error, res) => {
-      if (error) {
-        progress_container.style.display = "none";
-        reject(userError(error));
-        log.error(error);
-        console.error(error);
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Retrieve Dataset - Pennsieve",
-          defaultBfDatasetId
-        );
-      } else {
-        resolve(res);
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Retrieve Dataset - Pennsieve",
-          defaultBfDatasetId
-        );
+  try {
+    let filesFoldersResponse = await client.get(
+      `/organize_datasets/dataset_files_and_folders`,
+      {
+        params: {
+          sodajsonobject: sodaJSONObj,
+        },
       }
-    });
-  });
+    );
+
+    let data = filesFoldersResponse.data;
+
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Retrieve Dataset - Pennsieve",
+      defaultBfDatasetId
+    );
+
+    return data;
+  } catch (error) {
+    clearInterval(pennsieve_progress);
+    progress_container.style.display = "none";
+    clientError(error);
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Retrieve Dataset - Pennsieve",
+      defaultBfDatasetId
+    );
+    throw Error(userErrorMessage(error));
+  }
 };
 
 // When mode = "update", the buttons won't be hidden or shown to prevent button flickering effect
-const curation_consortium_check = (mode = "") => {
+const curation_consortium_check = async (mode = "") => {
   let selected_account = defaultBfAccount;
   let selected_dataset = defaultBfDataset;
 
@@ -8113,219 +8121,225 @@ const curation_consortium_check = (mode = "") => {
   $("#curation-team-share-btn").hide();
   $("#sparc-consortium-share-btn").hide();
 
-  client.invoke("api_bf_account_details", selected_account, (error, res) => {
-    $(".spinner.post-curation").show();
-    if (error) {
-      log.error(error);
-      console.error(error);
+  try {
+    let bf_account_details_req = await client.get(
+      `/manage_datasets/bf_account_details`,
+      {
+        params: {
+          selected_account: defaultBfAccount,
+        },
+      }
+    );
+    let res = bf_account_details_req.data.account_details;
+    // remove html tags from response
+    res = res.replace(/<[^>]*>?/gm, "");
+
+    if (res.search("SPARC Consortium") == -1) {
+      $("#current_curation_team_status").text("None");
+      $("#current_sparc_consortium_status").text("None");
+      Swal.fire({
+        title: "Failed to share with Curation team!",
+        text: "This account is not in the SPARC Consortium organization. Please switch accounts and try again",
+        icon: "error",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+      Swal.fire({
+        title: "Failed to share with the SPARC Consortium!",
+        text: "This account is not in the SPARC Consortium organization. Please switch accounts and try again.",
+        icon: "error",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
 
       if (mode != "update") {
         $("#curation-team-unshare-btn").hide();
         $("#sparc-consortium-unshare-btn").hide();
         $("#curation-team-share-btn").hide();
         $("#sparc-consortium-share-btn").hide();
+        $(".spinner.post-curation").hide();
       }
+      return;
+    }
 
+    if (mode != "update") {
+      $("#curation-team-unshare-btn").hide();
+      $("#sparc-consortium-unshare-btn").hide();
+      $("#curation-team-share-btn").hide();
+      $("#sparc-consortium-share-btn").hide();
+    }
+
+    if (selected_dataset === "Select dataset") {
+      $("#current_curation_team_status").text("None");
+      $("#current_sparc_consortium_status").text("None");
       $(".spinner.post-curation").hide();
     } else {
-      // remove html tags from response
-      res = res.replace(/<[^>]*>?/gm, "");
-
-      if (res.search("SPARC Consortium") == -1) {
-        $("#current_curation_team_status").text("None");
-        $("#current_sparc_consortium_status").text("None");
-        Swal.fire({
-          title: "Failed to share with Curation team!",
-          text: "This account is not in the SPARC Consortium organization. Please switch accounts and try again",
-          icon: "error",
-          showConfirmButton: true,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-        Swal.fire({
-          title: "Failed to share with the SPARC Consortium!",
-          text: "This account is not in the SPARC Consortium organization. Please switch accounts and try again.",
-          icon: "error",
-          showConfirmButton: true,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-
-        if (mode != "update") {
-          $("#curation-team-unshare-btn").hide();
-          $("#sparc-consortium-unshare-btn").hide();
-          $("#curation-team-share-btn").hide();
-          $("#sparc-consortium-share-btn").hide();
-          $(".spinner.post-curation").hide();
-        }
-        return;
-      }
-
-      if (mode != "update") {
-        $("#curation-team-unshare-btn").hide();
-        $("#sparc-consortium-unshare-btn").hide();
-        $("#curation-team-share-btn").hide();
-        $("#sparc-consortium-share-btn").hide();
-      }
-
-      if (selected_dataset === "Select dataset") {
-        $("#current_curation_team_status").text("None");
-        $("#current_sparc_consortium_status").text("None");
-        $(".spinner.post-curation").hide();
-      } else {
-        client.invoke(
-          "api_bf_get_permission",
-          selected_account,
-          selected_dataset,
-          (error, res) => {
-            $(".spinner.post-curation").show();
-            if (error) {
-              log.error(error);
-              console.error(error);
-              if (mode != "update") {
-                $("#current_curation_team_status").text("None");
-                $("#current_sparc_consortium_status").text("None");
-              }
-              $(".spinner.post-curation").hide();
-            } else {
-              let curation_permission_satisfied = false;
-              let consortium_permission_satisfied = false;
-              let curation_return_status = false;
-              let consortium_return_status = false;
-
-              for (var i in res) {
-                let permission = String(res[i]);
-                if (permission.search("SPARC Data Curation Team") != -1) {
-                  if (permission.search("manager") != -1) {
-                    curation_permission_satisfied = true;
-                  }
-                }
-                if (
-                  permission.search("SPARC Embargoed Data Sharing Group") != -1
-                ) {
-                  if (permission.search("viewer") != -1) {
-                    consortium_permission_satisfied = true;
-                  }
-                }
-              }
-
-              if (!curation_permission_satisfied) {
-                $("#current_curation_team_status").text(
-                  "Not shared with the curation team"
-                );
-                curation_return_status = true;
-              }
-              if (!consortium_permission_satisfied) {
-                $("#current_sparc_consortium_status").text(
-                  "Not shared with the SPARC Consortium"
-                );
-                consortium_return_status = true;
-              }
-
-              if (curation_return_status) {
-                if (mode != "update") {
-                  $("#curation-team-share-btn").show();
-                  $("#curation-team-unshare-btn").hide();
-                }
-              }
-
-              if (consortium_return_status) {
-                if (mode != "update") {
-                  $("#sparc-consortium-unshare-btn").hide();
-                  $("#sparc-consortium-share-btn").show();
-                }
-              }
-
-              if (curation_return_status && consortium_return_status) {
-                $("#sparc-consortium-unshare-btn").hide();
-                $("#sparc-consortium-share-btn").show();
-                $("#curation-team-unshare-btn").hide();
-                $("#curation-team-share-btn").show();
-                $(".spinner.post-curation").hide();
-                return;
-              }
-
-              client.invoke(
-                "api_bf_get_dataset_status",
-                defaultBfAccount,
-                defaultBfDataset,
-                (error, res) => {
-                  $(".spinner.post-curation").show();
-                  if (error) {
-                    log.error(error);
-                    console.error(error);
-                    $("#current_curation_team_status").text("None");
-                    $("#current_sparc_consortium_status").text("None");
-                    $(".spinner.post-curation").hide();
-                  } else {
-                    let dataset_status_value = res[1];
-                    let dataset_status = parseInt(
-                      dataset_status_value.substring(0, 2)
-                    );
-                    let curation_status_satisfied = false;
-                    let consortium_status_satisfied = false;
-
-                    if (dataset_status > 2) {
-                      curation_status_satisfied = true;
-                    }
-                    if (dataset_status > 10) {
-                      consortium_status_satisfied = true;
-                    }
-
-                    if (!curation_status_satisfied) {
-                      $("#current_curation_team_status").text(
-                        "Not shared with the curation team"
-                      );
-                      curation_return_status = true;
-                    }
-                    if (!consortium_status_satisfied) {
-                      $("#current_sparc_consortium_status").text(
-                        "Not shared with the SPARC Consortium"
-                      );
-                      consortium_return_status = true;
-                    }
-
-                    if (curation_return_status) {
-                      $("#curation-team-unshare-btn").hide();
-                      $("#curation-team-share-btn").show();
-                    } else {
-                      $("#current_curation_team_status").text(
-                        "Shared with the curation team"
-                      );
-                      $("#curation-team-unshare-btn").show();
-                      $("#curation-team-share-btn").hide();
-                    }
-
-                    if (consortium_return_status) {
-                      $("#sparc-consortium-unshare-btn").hide();
-                      $("#sparc-consortium-share-btn").show();
-                    } else {
-                      $("#current_sparc_consortium_status").text(
-                        "Shared with the SPARC Consortium"
-                      );
-                      $("#sparc-consortium-unshare-btn").show();
-                      $("#sparc-consortium-share-btn").hide();
-                    }
-
-                    if (curation_return_status && consortium_return_status) {
-                      $("#sparc-consortium-unshare-btn").hide();
-                      $("#sparc-consortium-share-btn").show();
-                      $("#curation-team-unshare-btn").hide();
-                      $("#curation-team-share-btn").show();
-                      $(".spinner.post-curation").hide();
-                      return;
-                    }
-
-                    $(".spinner.post-curation").hide();
-                  }
-                }
-              );
-            }
+      //needs to be replaced
+      try {
+        let bf_get_permissions = await client.get(
+          `/manage_datasets/bf_dataset_permissions`,
+          {
+            params: {
+              selected_account: selected_account,
+              selected_dataset: selected_dataset,
+            },
           }
         );
+        let res = bf_get_permissions.data.permissions;
+
+        let curation_permission_satisfied = false;
+        let consortium_permission_satisfied = false;
+        let curation_return_status = false;
+        let consortium_return_status = false;
+
+        for (var i in res) {
+          let permission = String(res[i]);
+          if (permission.search("SPARC Data Curation Team") != -1) {
+            if (permission.search("manager") != -1) {
+              curation_permission_satisfied = true;
+            }
+          }
+          if (permission.search("SPARC Embargoed Data Sharing Group") != -1) {
+            if (permission.search("viewer") != -1) {
+              consortium_permission_satisfied = true;
+            }
+          }
+        }
+
+        if (!curation_permission_satisfied) {
+          $("#current_curation_team_status").text(
+            "Not shared with the curation team"
+          );
+          curation_return_status = true;
+        }
+        if (!consortium_permission_satisfied) {
+          $("#current_sparc_consortium_status").text(
+            "Not shared with the SPARC Consortium"
+          );
+          consortium_return_status = true;
+        }
+
+        if (curation_return_status) {
+          if (mode != "update") {
+            $("#curation-team-share-btn").show();
+            $("#curation-team-unshare-btn").hide();
+          }
+        }
+
+        if (consortium_return_status) {
+          if (mode != "update") {
+            $("#sparc-consortium-unshare-btn").hide();
+            $("#sparc-consortium-share-btn").show();
+          }
+        }
+
+        if (curation_return_status && consortium_return_status) {
+          $("#sparc-consortium-unshare-btn").hide();
+          $("#sparc-consortium-share-btn").show();
+          $("#curation-team-unshare-btn").hide();
+          $("#curation-team-share-btn").show();
+          $(".spinner.post-curation").hide();
+          return;
+        }
+        //needs to be replaced
+        try {
+          let bf_dataset_permissions = await client.get(
+            `/manage_datasets/bf_dataset_status`,
+            {
+              params: {
+                selected_account: defaultBfAccount,
+                selected_dataset: defaultBfDataset,
+              },
+            }
+          );
+          let res = bf_dataset_permissions.data;
+
+          let dataset_status_value = res["current_status"];
+          let dataset_status = parseInt(dataset_status_value.substring(0, 2));
+          let curation_status_satisfied = false;
+          let consortium_status_satisfied = false;
+
+          if (dataset_status > 2) {
+            curation_status_satisfied = true;
+          }
+          if (dataset_status > 10) {
+            consortium_status_satisfied = true;
+          }
+
+          if (!curation_status_satisfied) {
+            $("#current_curation_team_status").text(
+              "Not shared with the curation team"
+            );
+            curation_return_status = true;
+          }
+          if (!consortium_status_satisfied) {
+            $("#current_sparc_consortium_status").text(
+              "Not shared with the SPARC Consortium"
+            );
+            consortium_return_status = true;
+          }
+
+          if (curation_return_status) {
+            $("#curation-team-unshare-btn").hide();
+            $("#curation-team-share-btn").show();
+          } else {
+            $("#current_curation_team_status").text(
+              "Shared with the curation team"
+            );
+            $("#curation-team-unshare-btn").show();
+            $("#curation-team-share-btn").hide();
+          }
+
+          if (consortium_return_status) {
+            $("#sparc-consortium-unshare-btn").hide();
+            $("#sparc-consortium-share-btn").show();
+          } else {
+            $("#current_sparc_consortium_status").text(
+              "Shared with the SPARC Consortium"
+            );
+            $("#sparc-consortium-unshare-btn").show();
+            $("#sparc-consortium-share-btn").hide();
+          }
+
+          if (curation_return_status && consortium_return_status) {
+            $("#sparc-consortium-unshare-btn").hide();
+            $("#sparc-consortium-share-btn").show();
+            $("#curation-team-unshare-btn").hide();
+            $("#curation-team-share-btn").show();
+            $(".spinner.post-curation").hide();
+            return;
+          }
+
+          $(".spinner.post-curation").hide();
+        } catch (error) {
+          clientError(error);
+          $("#current_curation_team_status").text("None");
+          $("#current_sparc_consortium_status").text("None");
+          $(".spinner.post-curation").hide();
+        }
+      } catch (error) {
+        clientError(error);
+        if (mode != "update") {
+          $("#current_curation_team_status").text("None");
+          $("#current_sparc_consortium_status").text("None");
+        }
+        $(".spinner.post-curation").hide();
       }
     }
-  });
+  } catch (error) {
+    clientError(error);
+
+    if (mode != "update") {
+      $("#curation-team-unshare-btn").hide();
+      $("#sparc-consortium-unshare-btn").hide();
+      $("#curation-team-share-btn").hide();
+      $("#sparc-consortium-share-btn").hide();
+    }
+
+    $(".spinner.post-curation").hide();
+  }
 };
 
 $("#button-generate-manifest-locally").click(() => {
@@ -8351,7 +8365,7 @@ const recursive_remove_deleted_files = (dataset_folder) => {
   }
 };
 
-ipcRenderer.on("selected-manifest-folder", (event, result) => {
+ipcRenderer.on("selected-manifest-folder", async (event, result) => {
   if (!result["canceled"]) {
     $("body").addClass("waiting");
     let manifest_destination = result["filePaths"][0];
@@ -8379,49 +8393,37 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
       }
     }
 
-    client.invoke(
-      "api_generate_manifest_file_locally",
-      "",
-      temp_sodaJSONObj,
-      (error, res) => {
-        if (error) {
-          var emessage = userError(error);
-          log.error(error);
-          console.error(error);
-          $("body").removeClass("waiting");
+    try {
+      await client.post(`/curate_datasets/manifest_files`, {
+        generate_purpose: "",
+        soda_json_object: temp_sodaJSONObj,
+      });
 
-          // log the error to analytics
-          logCurationForAnalytics(
-            "Error",
-            PrepareDatasetsAnalyticsPrefix.CURATE,
-            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-            ["Step 5", "Generate", "Manifest"],
-            determineDatasetLocation()
-          );
-        } else {
-          $("body").removeClass("waiting");
-          logCurationForAnalytics(
-            "Success",
-            PrepareDatasetsAnalyticsPrefix.CURATE,
-            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-            ["Step 5", "Generate", "Manifest"],
-            determineDatasetLocation()
-          );
-        }
-      }
-    );
+      $("body").removeClass("waiting");
+      logCurationForAnalytics(
+        "Success",
+        PrepareDatasetsAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        ["Step 5", "Generate", "Manifest"],
+        determineDatasetLocation()
+      );
+    } catch (error) {
+      clientError(error);
+      $("body").removeClass("waiting");
+
+      // log the error to analytics
+      logCurationForAnalytics(
+        "Error",
+        PrepareDatasetsAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        ["Step 5", "Generate", "Manifest"],
+        determineDatasetLocation()
+      );
+    }
   }
 });
 
 async function showBFAddAccountSweetalert() {
-  // let this_one = await get_access_token();
-  // console.log(this_one);
-  // try {
-  //   userInformation = get_api_key_and_secret_from_ini();
-  //   console.log(userInformation);
-  // } catch (e) {
-  //   throw e;
-  // }
   await Swal.fire({
     title: bfaddaccountTitle,
     html: bfAddAccountBootboxMessage,
@@ -8445,110 +8447,101 @@ async function showBFAddAccountSweetalert() {
     hideClass: {
       popup: "animate__animated animate__fadeOutUp animate__faster",
     },
-    preConfirm: async (result) => {
+    preConfirm: (result) => {
       if (result === true) {
         var name = $("#bootbox-key-name").val();
         var apiKey = $("#bootbox-api-key").val();
         var apiSecret = $("#bootbox-api-secret").val();
-        return new Promise((resolve, reject) => {
-          client.invoke(
-            "api_bf_add_account_api_key",
-            name,
-            apiKey,
-            apiSecret,
-            (error, res) => {
-              if (error) {
-                if (String(error).includes("please check that key name")) {
-                  error =
-                    "Please check that your key name, key and api secret are entered properly";
-                } else if (
-                  String(error).includes("Please enter valid keyname")
-                ) {
-                  error = "Please enter valid keyname, key, and/or secret";
-                }
-                Swal.showValidationMessage(error);
-                document.getElementsByClassName(
-                  "swal2-actions"
-                )[0].children[1].disabled = false;
-                document.getElementsByClassName(
-                  "swal2-actions"
-                )[0].children[3].disabled = false;
-                document.getElementsByClassName(
-                  "swal2-actions"
-                )[0].children[0].style.display = "none";
-                document.getElementsByClassName(
-                  "swal2-actions"
-                )[0].children[1].style.display = "inline-block";
-                reject(false);
-                log.error(error);
-                console.error(error);
-              } else {
-                $("#bootbox-key-name").val("");
-                $("#bootbox-api-key").val("");
-                $("#bootbox-api-secret").val("");
-                bfAccountOptions[name] = name;
-                defaultBfAccount = name;
-                defaultBfDataset = "Select dataset";
-                return new Promise((resolve, reject) => {
-                  client.invoke(
-                    "api_bf_account_details",
-                    name,
-                    (error, res) => {
-                      if (error) {
-                        log.error(error);
-                        console.error(error);
-                        Swal.showValidationMessage(error);
-                        document.getElementsByClassName(
-                          "swal2-actions"
-                        )[0].children[1].disabled = false;
-                        document.getElementsByClassName(
-                          "swal2-actions"
-                        )[0].children[3].disabled = false;
-                        document.getElementsByClassName(
-                          "swal2-actions"
-                        )[0].children[0].style.display = "none";
-                        document.getElementsByClassName(
-                          "swal2-actions"
-                        )[0].children[1].style.display = "inline-block";
-
-                        reject(false);
-                        showHideDropdownButtons("account", "hide");
-                        confirm_click_account_function();
-                      } else {
-                        $("#para-account-detail-curate").html(res);
-                        $("#current-bf-account").text(name);
-                        $("#current-bf-account-generate").text(name);
-                        $("#create_empty_dataset_BF_account_span").text(name);
-                        $(".bf-account-span").text(name);
-                        $("#current-bf-dataset").text("None");
-                        $("#current-bf-dataset-generate").text("None");
-                        $(".bf-dataset-span").html("None");
-                        $("#para-account-detail-curate-generate").html(res);
-                        $("#para_create_empty_dataset_BF_account").html(res);
-                        $(".bf-account-details-span").html(res);
-                        $("#para-continue-bf-dataset-getting-started").text("");
-                        showHideDropdownButtons("account", "show");
-                        confirm_click_account_function();
-                        updateBfAccountList(false);
-                      }
-                    }
-                  );
-                  Swal.fire({
-                    icon: "success",
-                    title:
-                      "Successfully added! <br/>Loading your account details...",
-                    timer: 3000,
-                    timerProgressBar: true,
-                    allowEscapeKey: false,
-                    heightAuto: false,
-                    backdrop: "rgba(0,0,0, 0.4)",
-                    showConfirmButton: false,
+        return new Promise(() => {
+          client
+            .put("/manage_datasets/account/api_key", {
+              keyname: name,
+              key: apiKey,
+              secret: apiSecret,
+            })
+            .then((response) => {
+              $("#bootbox-key-name").val("");
+              $("#bootbox-api-key").val("");
+              $("#bootbox-api-secret").val("");
+              bfAccountOptions[name] = name;
+              defaultBfAccount = name;
+              defaultBfDataset = "Select dataset";
+              return new Promise((resolve, reject) => {
+                client
+                  .get("/manage_datasets/bf_account_details", {
+                    params: {
+                      selected_account: name,
+                    },
+                  })
+                  .then((response) => {
+                    let accountDetails = response.data.account_details;
+                    $("#para-account-detail-curate").html(accountDetails);
+                    $("#current-bf-account").text(name);
+                    $("#current-bf-account-generate").text(name);
+                    $("#create_empty_dataset_BF_account_span").text(name);
+                    $(".bf-account-span").text(name);
+                    $("#current-bf-dataset").text("None");
+                    $("#current-bf-dataset-generate").text("None");
+                    $(".bf-dataset-span").html("None");
+                    $("#para-account-detail-curate-generate").html(
+                      accountDetails
+                    );
+                    $("#para_create_empty_dataset_BF_account").html(
+                      accountDetails
+                    );
+                    $(".bf-account-details-span").html(accountDetails);
+                    $("#para-continue-bf-dataset-getting-started").text("");
+                    showHideDropdownButtons("account", "show");
+                    confirm_click_account_function();
+                    updateBfAccountList();
+                  })
+                  .catch((error) => {
+                    Swal.showValidationMessage(userErrorMessage(error));
+                    document.getElementsByClassName(
+                      "swal2-actions"
+                    )[0].children[1].disabled = false;
+                    document.getElementsByClassName(
+                      "swal2-actions"
+                    )[0].children[3].disabled = false;
+                    document.getElementsByClassName(
+                      "swal2-actions"
+                    )[0].children[0].style.display = "none";
+                    document.getElementsByClassName(
+                      "swal2-actions"
+                    )[0].children[1].style.display = "inline-block";
+                    showHideDropdownButtons("account", "hide");
+                    confirm_click_account_function();
                   });
-                  resolve();
+
+                Swal.fire({
+                  icon: "success",
+                  title:
+                    "Successfully added! <br/>Loading your account details...",
+                  timer: 3000,
+                  timerProgressBar: true,
+                  allowEscapeKey: false,
+                  heightAuto: false,
+                  backdrop: "rgba(0,0,0, 0.4)",
+                  showConfirmButton: false,
                 });
-              }
-            }
-          );
+              });
+            })
+            .catch((error) => {
+              clientError(error);
+              Swal.showValidationMessage(userErrorMessage(error));
+              document.getElementsByClassName(
+                "swal2-actions"
+              )[0].children[1].disabled = false;
+              document.getElementsByClassName(
+                "swal2-actions"
+              )[0].children[3].disabled = false;
+              document.getElementsByClassName(
+                "swal2-actions"
+              )[0].children[0].style.display = "none";
+              document.getElementsByClassName(
+                "swal2-actions"
+              )[0].children[1].style.display = "inline-block";
+            });
         });
       }
     },
@@ -8909,488 +8902,11 @@ function logGeneralOperationsForAnalytics(
   }
 }
 
-/*
-******************************************************
-******************************************************
-Pennsieve Authentication Section With Nodejs
-******************************************************
-******************************************************
-*/
-
-// Purpose: Functions that take a user through the authentication flow for the Pennsieve APIs.
-
-// retrieve the aws cognito configuration data for authenticating a user with their API key and secret using a Password Auth flow.
-const get_cognito_config = async () => {
-  const PENNSIEVE_URL = "https://api.pennsieve.io";
-  let cognitoConfigResponse;
-  try {
-    cognitoConfigResponse = await fetch(
-      `${PENNSIEVE_URL}/authentication/cognito-config`
-    );
-  } catch (e) {
-    // network error
-    throw e;
-  }
-
-  // check that there weren't any unexpected errors
-  let statusCode = cognitoConfigResponse.status;
-  if (statusCode === 404) {
-    throw new Error(
-      `${cognitoConfigResponse.status} - Resource for authenticating not found.`
-    );
-  } else if (statusCode !== 200) {
-    // something unexpected happened with the request
-    let statusText = await cognitoConfigResponse.json().statusText;
-    throw new Error(`${cognitoConfigResponse.status} - ${statusText}`);
-  }
-
-  let cognitoConfigData = await cognitoConfigResponse.json();
-  return cognitoConfigData;
-};
-
-// read the .ini file for the current user's api key and secret
-// the .ini file is where the current user's information is stored - such as their API key and secret
-const get_api_key_and_secret_from_ini = () => {
-  // get the path to the configuration file
-  const config_path = path.join(
-    app.getPath("home"),
-    ".pennsieve",
-    "config.ini"
-  );
-  let config;
-
-  // check that the user's configuration file exists
-  if (!fs.existsSync(config_path)) {
-    throw new Error(
-      "Error: Could not read information. No configuration file."
-    );
-  }
-
-  try {
-    // initialize the ini reader
-    config = ini.parse(fs.readFileSync(`${config_path}`, "utf-8"));
-  } catch (e) {
-    throw e;
-  }
-
-  // check that an api key and secret does ot exist
-  if (!config["global"]) {
-    // throw an error
-    throw new Error(
-      "Error: User must connect their Pennsieve account to SODA in order to access this feature."
-    );
-  }
-
-  // return the user's api key and secret
-  let default_profile = config["global"]["default_profile"];
-  const { api_token, api_secret } = config[default_profile];
-  return { api_token, api_secret };
-};
-
-// authenticate a user with api key and api secret
-// this step is to validate that a user is who they say they are
-const authenticate_with_cognito = async (
-  cognitoConfigurationData,
-  usernameOrApiKey,
-  passwordOrSecret
-) => {
-  let cognito_app_client_id =
-    cognitoConfigurationData["tokenPool"]["appClientId"];
-  let cognito_pool_id = cognitoConfigurationData["tokenPool"]["id"];
-
-  var authParams = {
-    Username: `${usernameOrApiKey}`,
-    Password: `${passwordOrSecret}`,
-  };
-
-  var authenticationDetails = new cognitoClient.AuthenticationDetails(
-    authParams
-  );
-
-  var poolData = {
-    UserPoolId: cognito_pool_id,
-    ClientId: cognito_app_client_id, // Your client id here
-  };
-
-  var userPool = new cognitoClient.CognitoUserPool(poolData);
-
-  var userData = {
-    Username: `${usernameOrApiKey}`,
-    Pool: userPool,
-  };
-
-  var cognitoUser = new cognitoClient.CognitoUser(userData);
-
-  // tell the cognito user object to login using a user password flow
-  cognitoUser.setAuthenticationFlowType("USER_PASSWORD_AUTH");
-
-  return new Promise((resolve, reject) => {
-    cognitoUser.authenticateUser(authenticationDetails, {
-      onSuccess: resolve,
-      onFailure: reject,
-    });
-  });
-};
-
-// get the currnet Pennsieve user's access token -- this is used before every request to Pennsieve APIs as a bearer token
-const get_access_token = async () => {
-  // read the current user's ini file and get back their api key and secret
-  let userInformation;
-  try {
-    userInformation = get_api_key_and_secret_from_ini();
-  } catch (e) {
-    throw e;
-  }
-
-  // get the cognito configuration data for the given user
-  let configData;
-  try {
-    configData = await get_cognito_config();
-  } catch (e) {
-    throw e;
-  }
-
-  // get the access token from the cognito service for this user using the api key and secret for the current user
-  let cognitoResponse;
-  let { api_token, api_secret } = userInformation;
-  try {
-    cognitoResponse = await authenticate_with_cognito(
-      configData,
-      api_token,
-      api_secret
-    );
-  } catch (e) {
-    throw e;
-  }
-
-  if (!cognitoResponse["accessToken"]["jwtToken"])
-    throw new Error("Error: No access token available for this user.");
-
-  return cognitoResponse["accessToken"]["jwtToken"];
-};
-
-/*
-******************************************************
-******************************************************
-Manage Datasets Tag Section With Nodejs
-******************************************************
-******************************************************
-*/
-
-// to be used with an authenticated user that has a valid access token
-// Inputs:
-//    dataset_id_or_name: string
-//    jwt: string  (a valid JWT acquired from get_access_token)
-const get_dataset_by_name_id = async (dataset_id_or_Name, jwt = undefined) => {
-  // a name on the Pennsieve side is not made unqiue by " ","-", or "_" so remove them
-  function name_key(n) {
-    return n
-      .toLowerCase()
-      .trim()
-      .replace(" ", "")
-      .replace("_", "")
-      .replace("-", "");
-  }
-
-  let search_key = name_key(dataset_id_or_Name);
-
-  // a way to check if the given dataset's name or id matches one on the Pennsieve side
-  function is_match(ds) {
-    return name_key(ds.name) == search_key || ds.id == dataset_id_or_Name;
-  }
-
-  // get the all of datasets from Pennsieve that the user has access to in their organization
-  let datasets_response;
-
-  try {
-    datasets_response = await fetch("https://api.pennsieve.io/datasets", {
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${jwt}`,
-      },
-    });
-  } catch (e) {
-    // network error
-    throw e;
-  }
-
-  // check the status codes
-  let statusCode = datasets_response.status;
-  if (statusCode == 401) {
-    throw new Error(
-      `${statusCode} - Please authenticate before accessing this resource by connecting your Pennsieve account to SODA.`
-    );
-  } else if (statusCode === 403) {
-    throw new Error(`${statusCode} - You do not have access to this dataset.`);
-  } else if (statusCode !== 200) {
-    // something unexpected
-    let statusText = await datasets_response.json().statusText;
-    throw new Error(`${statusCode} - ${statusText}`);
-  }
-
-  // valid datasets result
-  let datasets = await datasets_response.json();
-
-  // search through the datasets for a match
-  let matches = [];
-  for (const dataset of datasets) {
-    if (is_match(dataset["content"])) matches.push(dataset);
-  }
-
-  // check if there is no matching dataset
-  if (!matches.length) {
-    // could not find the dataset that matches the user's requested id/name
-    throw new Error(
-      `The dataset identified as ${dataset_id_or_Name} does not exist.`
-    );
-  }
-
-  // return the first match
-  return matches[0];
-};
-
-/*
-******************************************************
-******************************************************
-Manage Datasets Add/Edit Tags Section With Nodejs
-******************************************************
-******************************************************
-*/
-
-// get the tags from the Pennsieve API for a particular dataset
-// Inputs:
-//    dataset_id_or_name: string
-// Outputs:
-//     tags: string[]
-const get_dataset_tags = async (dataset_id_or_name) => {
-  if (dataset_id_or_name === "" || dataset_id_or_name === undefined) {
-    throw new Error("Error: Must provide a valid dataset to pull tags from.");
-  }
-
-  // get the access token so the user can access the Pennsieve api
-  let jwt = await get_access_token();
-
-  // fetch the tags for their dataset using the Pennsieve API
-  let dataset = await get_dataset_by_name_id(dataset_id_or_name, jwt);
-
-  // get the tags out of the dataset
-  const { tags } = dataset["content"];
-
-  // return the tags
-  return tags;
-};
-
-// update the tags for a given dataset using the Pennsieve API
-// Inputs:
-//    dataset_id_or_name: string
-//    tags: string[]
-//    jwt: string (gathered from get_access_token)
-const update_dataset_tags = async (datasetIdOrName, tags) => {
-  if (datasetIdOrName === "" || datasetIdOrName === undefined) {
-    throw new Error("Must provide a valid dataset to pull tags from.");
-  }
-  // authenticate the user
-  let jwt = await get_access_token();
-
-  // fetch the tags for their dataset using the Pennsieve API
-  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
-
-  // check if the user has permission to edit this dataset
-  let role = await getCurrentUserPermissions(datasetIdOrName);
-
-  if (!userIsOwnerOrManager(role)) {
-    throw new Error(
-      "You don't have permissions for editing metadata on this Pennsieve dataset"
-    );
-  }
-
-  // grab the dataset's id
-  const id = dataset["content"]["id"];
-  // setup the request options
-  let options = {
-    method: "PUT",
-    headers: {
-      Accept: "*/*",
-      Authorization: `Bearer ${jwt}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ tags: tags }),
-  };
-
-  // update the the user's tags
-  let updateResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}`,
-    options
-  );
-
-  // Check status codes and respond accordingly
-  let statusCode = updateResponse.status;
-  if (statusCode === 404) {
-    throw new Error(
-      `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset.`
-    );
-  } else if (statusCode === 401) {
-    throw new Error(
-      `${statusCode} - You cannot update dataset tags while unauthenticated. Please reauthenticate then try again.`
-    );
-  } else if (statusCode === 403) {
-    throw new Error(`${statusCode} - You do not have access to this dataset.`);
-  } else if (statusCode !== 200) {
-    // something unexpected happened
-    let statusText = await updateResponse.json().statusText;
-    throw new Error(`${statusCode} - ${statusText}`);
-  }
-};
-
-/*
-******************************************************
-******************************************************
-Manage Datasets Add/Edit Description Section With Nodejs
-******************************************************
-******************************************************
-*/
-
-// returns the readme of a dataset.
-// I: dataset_name_or_id : string
-// O: a dataset description as a string
-const getDatasetReadme = async (datasetIdOrName) => {
-  // check that a dataset name or id is provided
-  if (!datasetIdOrName || datasetIdOrName === "") {
-    throw new Error("Error: Must provide a valid dataset to pull tags from.");
-  }
-  // get the user's access token
-  let jwt = await get_access_token();
-
-  // get the dataset
-  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
-
-  // pull out the id from the result
-  const id = dataset["content"]["id"];
-  // fetch the readme file from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
-  let readmeResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/readme`,
-    {
-      headers: {
-        Accept: "*/*",
-        Authorization: `Bearer ${jwt}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-
-  // get the status code out of the response
-  let statusCode = readmeResponse.status;
-
-  // check the status code of the response
-  switch (statusCode) {
-    case 200:
-      // success do nothing
-      break;
-    case 404:
-      throw new Error(
-        `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset.`
-      );
-    case 401:
-      throw new Error(
-        `${statusCode} - You cannot get the dataset readme while unauthenticated. Please reauthenticate and try again.`
-      );
-    case 403:
-      throw new Error(
-        `${statusCode} - You do not have access to this dataset. `
-      );
-
-    default:
-      // something unexpected happened
-      let statusText = await readmeResponse.json().statusText;
-      throw new Error(`${statusCode} - ${statusText}`);
-  }
-
-  // grab the readme out of the response
-  let { readme } = await readmeResponse.json();
-
-  return readme;
-};
-
-const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
-  if (datasetIdOrName === "" || datasetIdOrName === undefined) {
-    throw new Error(
-      "Must provide a valid dataset to get the metadata description."
-    );
-  }
-
-  // get the user's permissions
-  let role = await getCurrentUserPermissions(datasetIdOrName);
-
-  // check if the user permissions do not include "owner" or "manager"
-  if (!userIsOwnerOrManager(role)) {
-    // throw a permission error: "You don't have permissions for editing metadata on this Pennsieve dataset"
-    throw new Error(
-      "You don't have permissions for editing metadata on this Pennsieve dataset"
-    );
-  }
-
-  // get access token for the current user
-  let jwt = await get_access_token();
-
-  // get the dataset the user wants to edit
-  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
-
-  // get the id out of the dataset
-  let id = dataset.content.id;
-  // put the new readme data in the readme on Pennsieve
-  options = {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`,
-    },
-    body: JSON.stringify({ readme: updatedReadme.trim() }),
-  };
-
-  let readmeResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/readme`,
-    options
-  );
-
-  // get the status code out of the response
-  let statusCode = readmeResponse.status;
-
-  // check the status code of the response
-  switch (statusCode) {
-    case 200:
-      // success do nothing
-      break;
-    case 404:
-      throw new Error(
-        `${statusCode} - The selected dataset cannot be found. Please select a valid dataset.`
-      );
-    case 401:
-      throw new Error(
-        `${statusCode} - You cannot update the dataset description while unauthenticated. Please reauthenticate and try again.`
-      );
-    case 403:
-      throw new Error(
-        `${statusCode} - You do not have access to this dataset. `
-      );
-
-    default:
-      // something unexpected happened
-      let statusText = await readmeResponse.json().statusText;
-      throw new Error(`${statusCode} - ${statusText}`);
-  }
-};
-
-/*
-******************************************************
-******************************************************
-Dissemniate Datasets Submit dataset for pre-publishing
-******************************************************
-******************************************************
-*/
-
-// I: The currently selected dataset - name or by id
-// O: A status object that details the state of each pre-publishing checklist item for the given dataset and user
-//   {subtitle: boolean, description: boolean, tags: boolean, bannerImageURL: boolean, license: boolean, ORCID: boolean}
+/**
+ *
+ * @param {string} datasetIdOrName - The currently selected dataset - name or its ID
+ * @returns statuses - A status object that details the state of each pre-publishing checklist item for the given dataset and user
+ */
 const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // check that a dataset name or id is provided
   if (!datasetIdOrName || datasetIdOrName === "") {
@@ -9399,13 +8915,10 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
     );
   }
 
-  // get the dataset
-  let jwt = await get_access_token();
-
-  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
-
   // construct the statuses object
   const statuses = {};
+
+  let dataset = await api.getDataset(defaultBfDatasetId);
 
   // get the description - aka subtitle (unfortunate naming), tags, banner image URL, collaborators, and license
   const { description, tags, license } = dataset["content"];
@@ -9413,8 +8926,7 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // set the subtitle's status
   statuses.subtitle = description && description.length ? true : false;
 
-  // get the readme
-  const readme = await getDatasetReadme(datasetIdOrName);
+  let readme = await api.getDatasetReadme(defaultBfAccount, defaultBfDatasetId);
 
   // set the readme's status
   statuses.readme = readme && readme.length >= 1 ? true : false;
@@ -9422,247 +8934,44 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // set tags's status
   statuses.tags = tags && tags.length ? true : false;
 
-  // get the banner url
-  const bannerPresignedUrl = await getDatasetBannerImageURL(datasetIdOrName);
+  let bannerImageURL = await api.getDatasetBannerImageURL(
+    defaultBfAccount,
+    defaultBfDataset
+  );
 
   // set the banner image's url status
   statuses.bannerImageURL =
-    bannerPresignedUrl && bannerPresignedUrl.length ? true : false;
+    bannerImageURL && bannerImageURL.length ? true : false;
 
   // set the license's status
   statuses.license = license && license.length ? true : false;
 
-  // check if the user is the owner of the dataset
-  let owner = await userIsDatasetOwner(datasetIdOrName);
+  let role = await api.getDatasetRole(defaultBfDataset);
+
+  if (role !== "owner") {
+    return;
+  }
 
   // declare the orcidId
   let orcidId;
 
-  // check if the user is the owner
-  if (owner) {
-    // get the user's information
-    let user = await getUserInformation();
+  // get the user's information
+  let user = await api.getUserInformation();
 
-    // get the orcid object out of the user information
-    let orcidObject = user.orcid;
+  // get the orcid object out of the user information
+  let orcidObject = user.orcid;
 
-    // check if the owner has an orcid id
-    if (orcidObject) {
-      orcidId = orcidObject.orcid;
-    } else {
-      orcidId = undefined;
-    }
+  // check if the owner has an orcid id
+  if (orcidObject) {
+    orcidId = orcidObject.orcid;
+  } else {
+    orcidId = undefined;
   }
 
   // the user has an ORCID iD if the property is defined and non-empty
   statuses.ORCID = orcidId && orcidId.length ? true : false;
 
   return statuses;
-};
-
-// Submits the selected dataset for review by the publishers within a given user's organization.
-// Note: To be run after the pre-publishing validation checks have all passed.
-// I:
-//  pennsieveAccount: string - the SODA user's pennsieve account
-//  datasetIdOrName: string - the id/name of the dataset being submitted for publication
-//  embargoReleaseDate?: string  - in yyyy-mm-dd format. Represents the day an embargo will be lifted on this dataset; at which point the dataset will be made public.
-// O: void
-const submitDatasetForPublication = async (
-  pennsieveAccount,
-  datasetIdOrName,
-  embargoReleaseDate
-) => {
-  // check that a dataset was provided
-  if (!datasetIdOrName || datasetIdOrName === "") {
-    throw new Error(
-      "A valid dataset must be provided to the dataset review process."
-    );
-  }
-
-  // get the current SODA user's permissions (permissions are indicated by the user's assigned role for a given dataset)
-  let userRole = await getCurrentUserPermissions(datasetIdOrName);
-
-  // check that the current SODA user is the owner of the given dataset
-  if (!userIsOwnerOrManager(userRole))
-    throw new Error(
-      "You don't have permissions for submitting this dataset for publication. Please have the dataset owner start the submission process."
-    );
-
-  // get an access token for the user
-  let jwt = await get_access_token();
-
-  // get the dataset by name or id
-  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
-
-  // set the publication type to "publication" or "embargo" based on the value of embargoReleaseDate
-  const publicationType = embargoReleaseDate === "" ? "publication" : "embargo";
-
-  // get the dataset id
-  const { id } = dataset.content;
-
-  // create the publication request options
-  const options = {
-    method: "POST",
-    headers: {
-      Accept: "*/*",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`,
-    },
-  };
-
-  // construct the appropriate query string
-  let queryString = "";
-
-  // if an embargo release date was selected add it to the query string
-  if (embargoReleaseDate !== "") {
-    queryString = `?embargoReleaseDate=${embargoReleaseDate}&publicationType=${publicationType}`;
-  } else {
-    // add the required publication type
-    queryString = `?publicationType=${publicationType}`;
-  }
-  // request that the dataset be sent in for publication/publication review
-  let publicationResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/publication/request` + queryString,
-    options
-  );
-  // get the status code out of the response
-  let statusCode = publicationResponse.status;
-
-  // check the status code of the response
-  switch (statusCode) {
-    case 201:
-      // success do nothing
-      break;
-    case 404:
-      throw new Error(
-        `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset to add submit for publication.`
-      );
-    case 401:
-      throw new Error(
-        `${statusCode} - You cannot submit a dataset for publication while unauthenticated.`
-      );
-    case 403:
-      throw new Error(
-        `${statusCode} - You do not have access to this dataset. `
-      );
-    case 400:
-      throw new Error(
-        `${statusCode} - You did not complete an item in the pre-publishing checklist before submitting your dataset for publication.`
-      );
-
-    default:
-      // something unexpected happened
-      let statusText = await publicationResponse.json().statusText;
-      throw new Error(`${statusCode} - ${statusText}`);
-  }
-};
-
-// Withdraw any dataset from a pre-publishing review submission
-// I:
-//  datasetIdOrName: string - the id/name of the dataset being submitted for publication
-//  hasEmbargo: boolean - True when the dataset was submotted for publishing under embargo, false otherwise
-//  O:
-//    void
-const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
-  // ensure a valid dataset ir or name has been passed in
-  if (!datasetIdOrName || datasetIdOrName === "") {
-    throw new Error("A valid dataset must be provided");
-  }
-
-  // get the current SODA user's permissions (permissions are indicated by the user's assigned role for a given dataset)
-  let userRole = await getCurrentUserPermissions(datasetIdOrName);
-
-  // check that the current SODA user is the owner of the given dataset
-  if (!userIsOwnerOrManager(userRole))
-    throw new Error(
-      "You don't have permissions for withdrawing this dataset from publication. Please have the dataset owner withdraw the dataset."
-    );
-
-  // get the dataset id
-  let jwt = await get_access_token();
-
-  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
-
-  let { id } = dataset.content;
-
-  // create the api call options
-  const options = {
-    method: "POST",
-    headers: {
-      Accept: "*/*",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`,
-    },
-  };
-
-  // construct the appropriate query string
-  let queryString = "";
-
-  // get the publication type
-  let publicationType = dataset.publication.type;
-
-  // if an embargo release date was selected add it to the query string
-  if (publicationType === "embargo") {
-    queryString = `?publicationType=embargo`;
-  } else {
-    // add the required publication type
-    queryString = `?publicationType=publication`;
-  }
-  let withdrawResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/publication/cancel${queryString}`,
-    options
-  );
-  // get the status code out of the response
-  let statusCode = withdrawResponse.status;
-
-  // check the status code of the response
-  switch (statusCode) {
-    case 201:
-      // success do nothing
-      break;
-    case 404:
-      throw new Error(
-        `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset to withdraw from publication.`
-      );
-    case 401:
-      throw new Error(
-        `${statusCode} - You cannot withdraw a dataset from publication while unauthenticated.`
-      );
-    case 403:
-      throw new Error(
-        `${statusCode} - You do not have access to this dataset. `
-      );
-    default:
-      // something unexpected happened
-      let statusText = await withdrawResponse.json().statusText;
-      throw new Error(`${statusCode} - ${statusText}`);
-  }
-};
-
-/*
-******************************************************
-******************************************************
-Manage Datasets Add/Edit Subtitle Section With Nodejs
-******************************************************
-******************************************************
-*/
-
-const getDatasetSubtitle = async (datasetIdOrName) => {
-  // check that a dataset name or id is provided
-  if (!datasetIdOrName) {
-    throw new Error("Error: Must provide a valid dataset to pull tags from.");
-  }
-
-  // get the current user's access token
-  let jwt = await get_access_token();
-
-  // get the dataset
-  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
-
-  // get the dataset subtitle from the dataset content
-  let subtitle = dataset["content"]["description"];
-
-  return subtitle;
 };
 
 /*
@@ -9681,52 +8990,9 @@ const getDatasetBannerImageURL = async (datasetIdOrName) => {
     throw new Error("Error: Must provide a valid dataset to pull tags from.");
   }
 
-  // get an access token
-  let jwt = await get_access_token();
-
-  // get the dataset to get the id
-  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
-
-  let { id } = dataset["content"];
   // fetch the banner url from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
-  let bannerResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/banner`,
-    {
-      headers: {
-        Accept: "*/*",
-        Authorization: `Bearer ${jwt}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-  // get the status code out of the response
-  let statusCode = bannerResponse.status;
 
-  // check the status code of the response
-  switch (statusCode) {
-    case 200:
-      // success do nothing
-      break;
-    case 404:
-      throw new Error(
-        `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset to look at the banner image.`
-      );
-    case 401:
-      throw new Error(
-        `${statusCode} - You cannot get the dataset banner image without being authenticated. Please reauthenticate and try again.`
-      );
-    case 403:
-      throw new Error(
-        `${statusCode} - You do not have access to this dataset. `
-      );
-
-    default:
-      // something unexpected happened
-      let statusText = await bannerResponse.json().statusText;
-      throw new Error(`${statusCode} - ${statusText}`);
-  }
-
-  let { banner } = await bannerResponse.json();
+  let { banner } = bannerResponse.data;
 
   return banner;
 };
@@ -9756,13 +9022,11 @@ const getCurrentUserPermissions = async (datasetIdOrName) => {
 
   // get the id out of the dataset
   let id = dataset.content.id;
+
   // get the user's permissions
-  let permissionsResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/role`,
-    { headers: { Authorization: `Bearer ${jwt}` } }
-  );
+
   // get the status code out of the response
-  let statusCode = permissionsResponse.status;
+  let statusCode = dataset_roles.status;
 
   // check the status code of the response
   switch (statusCode) {
@@ -9784,12 +9048,12 @@ const getCurrentUserPermissions = async (datasetIdOrName) => {
 
     default:
       // something unexpected happened
-      let statusText = await permissionsResponse.json().statusText;
+      let statusText = dataset_roles.statusText;
       throw new Error(`${statusCode} - ${statusText}`);
   }
 
   // get the permissions object
-  const { role } = await permissionsResponse.json();
+  const { role } = dataset_roles.data;
 
   // return the permissions
   return role;
@@ -9826,379 +9090,11 @@ const userIsDatasetOwner = async (datasetIdOrName) => {
   }
 
   // get the dataset the user wants to edit
+  // TODO: Replace with Flask call -- READY
   let role = await getCurrentUserPermissions(datasetIdOrName);
 
   return userIsOwner(role);
 };
-
-/*
-******************************************************
-******************************************************
-Get User Information With Nodejs
-******************************************************
-******************************************************
-*/
-
-const getUserInformation = async () => {
-  // get the access token
-  let jwt = await get_access_token();
-
-  // get the user information
-  let userResponse = await fetch("https://api.pennsieve.io/user/", {
-    headers: { Authorization: `Bearer ${jwt}` },
-  });
-
-  let statusCode = userResponse.status;
-
-  switch (statusCode) {
-    case 200:
-      break;
-    case 403:
-      throw new Error(
-        `${statusCode} - You do not have access to this user information. `
-      );
-    case 401:
-      throw new Error(
-        `${statusCode} - Reauthenticate to access this user information. `
-      );
-    case 404:
-      throw new Error(`${statusCode} - Resource could not be found. `);
-    default:
-      // something unexpected happened
-      let pennsieveErrorObject = await userResponse.json();
-      let { message } = pennsieveErrorObject;
-      throw new Error(`${statusCode} - ${message}`);
-  }
-
-  let user = await userResponse.json();
-
-  return user;
-};
-
-/*
-******************************************************
-******************************************************
-ORCID Integration with NodeJS
-******************************************************
-******************************************************
-*/
-
-const integrateORCIDWithPennsieve = async (accessCode) => {
-  // check that the accessCode is defined and non-empty
-  if (accessCode === "" || !accessCode) {
-    throw new Error(
-      "Cannot integrate your ORCID iD to Pennsieve without an access code."
-    );
-  }
-
-  // integrate the ORCID to Pennsieve using the access code
-  let jwt = await get_access_token();
-  let connectOrcidResponse = await fetch(
-    "https://api.pennsieve.io/user/orcid",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${jwt}`,
-      },
-      body: JSON.stringify({ authorizationCode: accessCode }),
-    }
-  );
-
-  // get the status code
-  let statusCode = connectOrcidResponse.status;
-
-  // check for any http errors and statuses
-  switch (statusCode) {
-    case 200:
-      // success do nothing
-      break;
-    case 404:
-      throw new Error(
-        `${statusCode} - The currently signed in user does not exist on Pennsieve.`
-      );
-    case 401:
-      throw new Error(
-        `${statusCode} - You cannot update the dataset description while unauthenticated. Please reauthenticate and try again.`
-      );
-    default:
-      // something unexpected happened -- likely a 400 or something in the 500s
-      let pennsieveErrorObject = await connectOrcidResponse.json();
-      let { message } = pennsieveErrorObject;
-      throw new Error(`${statusCode} - ${message}`);
-  }
-};
-
-/*
-******************************************************
-******************************************************
-Get User's Excluded Files with NodeJS
-******************************************************
-******************************************************
-*/
-
-const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
-  // check a valid dataset was provided
-  if (!datasetIdOrName || datasetIdOrName === "") {
-    throw new Error(
-      "Error: Must provide a valid dataset to check permissions for."
-    );
-  }
-
-  // get the access token
-  let jwt = await get_access_token();
-
-  // get the dataset
-  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
-
-  // peel out the id
-  let { id } = dataset.content;
-
-  // get the excluded files
-  let excludedFilesResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/ignore-files`,
-    {
-      headers: { Authorization: `Bearer ${jwt}` },
-    }
-  );
-  // get the status code
-  let statusCode = excludedFilesResponse.status;
-
-  // check the status code and respond appropriately
-  switch (statusCode) {
-    case 200:
-      break;
-    case 403:
-      throw new Error(
-        `${statusCode} - You do not have access to this dataset. `
-      );
-    case 401:
-      throw new Error(
-        `${statusCode} - Reauthenticate to access this dataset. `
-      );
-    case 404:
-      throw new Error(`${statusCode} - Dataset could not be found. `);
-    default:
-      // something unexpected happened
-      let pennsieveErrorObject = await excludedFilesResponse.json();
-      let { message } = pennsieveErrorObject;
-      throw new Error(`${statusCode} - ${message}`);
-  }
-
-  // get the ignored files array
-  let { ignoreFiles } = await excludedFilesResponse.json();
-
-  // return the ignored files
-  return ignoreFiles;
-};
-
-// tell Pennsieve to ignore a set of user selected files when publishing their dataset.
-// this keeps those files hidden from the public but visible to publishers and collaboraors.
-// I:
-//  datasetIdOrName: string - A dataset id or name
-//  files: [{fileName: string}] - An array of file name objects
-const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
-  // ensure a valid datasetIDOrName is passed in
-  if (!datasetIdOrName || datasetIdOrName === "") {
-    throw new Error(
-      "Error: Must provide a valid dataset to check permissions for."
-    );
-  }
-
-  // get the dataset ID
-  let jwt = await get_access_token();
-  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
-  let { id } = dataset.content;
-
-  // create the request options
-  const options = {
-    method: "PUT",
-    headers: {
-      Accept: "*/*",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`,
-    },
-    body: JSON.stringify(files),
-  };
-
-  // create the request
-  let excludeFilesResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/ignore-files`,
-    options
-  );
-  // check the status code
-  let { status } = excludeFilesResponse;
-  switch (status) {
-    //  200 is success do nothing
-    case 200:
-      break;
-
-    // 403 is forbidden from modifying this resource
-    case 403:
-      throw new Error(
-        `${status} - You are forbidden from accessing this resouce.`
-      );
-
-    // 401 is unauthenticated
-    case 401:
-      throw new Error(
-        `${status} - Not authenticated. Please reauthenticate to access this dataset.`
-      );
-
-    // else a 400 of some kind or a 500 as default
-    default:
-      let pennsieveErrorObject = await excludeFilesResponse.json();
-      let { message } = pennsieveErrorObject;
-      throw new Error(`${status} - ${message}`);
-  }
-
-  return;
-};
-
-// retrieves the currently selected dataset's metadata files
-// I:
-//  datasetIdOrName: string - A dataset id or name
-const getDatasetMetadataFiles = async (datasetIdOrName) => {
-  // check that the datasetIDOrName is provided
-  if (!datasetIdOrName || datasetIdOrName === "") {
-    throw new Error(
-      "Error: Must provide a valid dataset to check permissions for."
-    );
-  }
-
-  // get the dataset id
-  let jwt = await get_access_token();
-  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
-
-  // get the id out of the dataset
-  let { id } = dataset.content;
-
-  // get the metadata files for the dataset
-  let datasetWithChildrenResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}`,
-    {
-      headers: { Authorization: `Bearer ${jwt}` },
-    }
-  );
-  // check the status code
-  let { status } = datasetWithChildrenResponse;
-  switch (status) {
-    //  200 is success do nothing
-    case 200:
-      break;
-
-    // 403 is forbidden from accessing this resource
-    case 403:
-      throw new Error(
-        `${status} - You are forbidden from accessing this resouce.`
-      );
-
-    // 401 is unauthenticated
-    case 401:
-      throw new Error(
-        `${status} - Not authenticated. Please reauthenticate to access this dataset.`
-      );
-
-    // else a 400 of some kind or a 500 as default
-    default:
-      let pennsieveErrorObject = await datasetWithChildrenResponse.json();
-      let { message } = pennsieveErrorObject;
-      throw new Error(`${status} - ${message}`);
-  }
-
-  // get the metadata files from the dataset
-  let datasetWithChildren = await datasetWithChildrenResponse.json();
-
-  // get the metadata packages
-  let topLevelMetadataPackages = datasetWithChildren.children;
-
-  // traverse the top level metadata packages and pull out -- submission.xlsx, code_description.xlsx, dataset_description.xlsx, outputs_metadata.xlsx,
-  // inputs_metadata.xlsx, CHANGES.txt, README.txt, samples.xlsx, subjects.xlsx
-  const metadataFiles = topLevelMetadataPackages
-    .map((packageObject) => {
-      // get the content
-      const { content } = packageObject;
-
-      // get the file name
-      const { name } = content;
-      // return only the name
-      return name;
-    })
-    .filter((fileName) => {
-      // return the filenames that match a metadata file name
-      if (
-        fileName === "submission.xlsx" ||
-        fileName === "code_description.xlsx" ||
-        fileName === "dataset_description.xlsx" ||
-        fileName === "outputs_metadata.xlsx" ||
-        fileName === "inputs_metadata.xlsx" ||
-        fileName === "CHANGES.txt" ||
-        fileName === "README.txt" ||
-        fileName === "samples.xlsx" ||
-        fileName === "subjects.xlsx"
-      ) {
-        return fileName;
-      }
-    });
-
-  // return the metdata files to the client
-  return metadataFiles;
-};
-
-// Test calls for the validator
-
-// let validation_report_template = `
-//   <div class="title active">
-//     <i class="dropdown icon"></i>
-//       What is a dog?
-//   </div>
-//   <div class="content active">
-//     <p class="visible" style="display: block !important;">A dog is a type of domesticated animal. Known for its loyalty and faithfulness, it can be found as a welcome guest in many households across the world.</p>
-//   </div>`;
-
-// const create_validation_report = (error_report) => {
-//   // let accordion_elements = ` <div class="title active"> `;
-//   let accordion_elements = "";
-//   let elements = Object.keys(error_report).length;
-
-//   if ((elements = 0)) {
-//     accordion_elements += `<div class="title active"><i class="dropdown icon"></i> No errors found  </div> <div class="content active"> - </div>`;
-//   } else if (elements == 1) {
-//     let key = Object.keys(error_report)[0];
-//     accordion_elements += `<div class="title active"><i class="dropdown icon"></i> ${key} </div> <div class="content active"> `;
-//     if ("messages" in error_report[key]) {
-//       for (let i = 0; i < error_report[key]["messages"].length; i++) {
-//         accordion_elements += ` <p> ${error_report[key]["messages"][i]} </p>`;
-//       }
-//     }
-//     accordion_elements += `</div>`;
-//   } else {
-//     let keys = Object.keys(error_report);
-//     for (key_index in keys) {
-//       key = keys[key_index];
-//       if (key == keys[0]) {
-//         accordion_elements += `<div class="title active"> <i class="dropdown icon"></i> ${key} </div> <div class="content active"> `;
-//         if ("messages" in error_report[key]) {
-//           for (let i = 0; i < error_report[key]["messages"].length; i++) {
-//             accordion_elements += ` <p> ${error_report[key]["messages"][i]} </p>`;
-//           }
-//         }
-//         accordion_elements += `</div> `;
-//       } else {
-//         accordion_elements += `<div class="title"><i class="dropdown icon"></i> ${key} </div> <div class="content"> `;
-//         if ("messages" in error_report[key]) {
-//           for (let i = 0; i < error_report[key]["messages"].length; i++) {
-//             accordion_elements += ` <p> ${error_report[key]["messages"][i]} </p>`;
-//           }
-//         }
-//         accordion_elements += `</div>`;
-//       }
-//     }
-//     accordion_elements += `</div>`;
-//   }
-//   $("#validation_error_accordion").html(accordion_elements);
-//   // $("#validation_error_accordion").accordion();
-// };
 
 const create_validation_report = (error_report) => {
   // let accordion_elements = ` <div class="title active"> `;
@@ -10316,17 +9212,32 @@ $("#validate_dataset_bttn").on("click", async () => {
   $("#dataset_validator_spinner").hide();
 });
 
+function openFeedbackForm() {
+  let feedback_btn = document.getElementById("feedback-btn");
+  if (!feedback_btn.classList.contains("is-open")) {
+    feedback_btn.click();
+  }
+  setTimeout(() => {
+    document.getElementById("feedback-btn").scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, 5);
+}
 function gatherLogs() {
   //function will be used to gather all logs on all OS's
   let homedir = os.homedir();
   let file_path = "";
-  let log_path = "";
-  let log_files = ["main.log", "renderer.log", "out.log"];
+  let clientLogsPath = "";
+  let serverLogsPath = path.join(homedir, "SODA", "logs");
+  let logFiles = ["main.log", "renderer.log", "out.log", "api.log"];
 
-  if (os.type().includes("Darwin") === true) {
-    log_path = path.join(homedir, "/Library/Logs/SODA for SPARC/");
-  } else if (os.type().includes("Windows") === true) {
-    log_path = path.join(
+  console.log(os.type());
+
+  if (os.platform() === "darwin") {
+    clientLogsPath = path.join(homedir, "/Library/Logs/SODA for SPARC/");
+  } else if (os.platform() === "win32") {
+    clientLogsPath = path.join(
       homedir,
       "AppData",
       "Roaming",
@@ -10334,7 +9245,7 @@ function gatherLogs() {
       "logs"
     );
   } else {
-    log_path = path.join(homedir, ".config", "SODA for SPARC", "logs");
+    clientLogsPath = path.join(homedir, ".config", "SODA for SPARC", "logs");
   }
 
   Swal.fire({
@@ -10398,16 +9309,18 @@ function gatherLogs() {
         try {
           fs.mkdirSync(log_folder, { recursive: true });
           // destination will be created or overwritten by default.
-          for (let i = 0; i < log_files.length; i++) {
-            var log_file;
-            if (i === 2) {
-              log_file = path.join(homedir, ".pennsieve", log_files[i]);
+          for (const logFile of logFiles) {
+            let logFilePath;
+            if (logFile === "out.log") {
+              logFilePath = path.join(homedir, ".pennsieve", logFile);
+            } else if (logFile === "api.log") {
+              logFilePath = path.join(serverLogsPath, logFile);
             } else {
-              log_file = path.join(log_path, log_files[i]);
+              logFilePath = path.join(clientLogsPath, logFile);
             }
-            let log_copy = path.join(log_folder, log_files[i]);
+            let log_copy = path.join(log_folder, logFile);
 
-            fs.copyFileSync(log_file, log_copy, (err) => {
+            fs.copyFileSync(logFilePath, log_copy, (err) => {
               if (err) throw err;
             });
           }
@@ -10432,8 +9345,7 @@ function gatherLogs() {
             },
           });
         } catch (error) {
-          log.error(error);
-          console.log(error);
+          clientError(error);
           Swal.fire({
             title: "Failed to create log folder!",
             text: error,

@@ -1,60 +1,30 @@
 ### Import required python modules
-from logging import exception
-from tabnanny import check
-from turtle import update
 from gevent import monkey
-
+from flask import abort
 monkey.patch_all()
 import platform
 import os
-from os import listdir, replace, stat, makedirs, mkdir, walk, remove, pardir
+from os import makedirs, mkdir, walk
 from os.path import (
     isdir,
-    isfile,
     join,
     splitext,
-    getmtime,
     basename,
-    normpath,
     exists,
     expanduser,
-    split,
-    dirname,
     getsize,
-    abspath,
 )
 import pandas as pd
 import time
-from time import strftime, localtime
 import shutil
-from shutil import copy2
-from configparser import ConfigParser
-import numpy as np
-from collections import defaultdict
 import subprocess
-from websocket import create_connection
-import socket
-import errno
 import re
 import gevent
 from pennsieve import Pennsieve
-from pennsieve.log import get_logger
-from pennsieve.api.agent import agent_cmd
-from pennsieve.api.agent import AgentError, check_port, socket_address
-from urllib.request import urlopen
-import json
-import collections
-from threading import Thread
 import pathlib
-
-from openpyxl import load_workbook
-from openpyxl import Workbook
-from openpyxl.styles import PatternFill, Font
-from docx import Document
-
 from datetime import datetime, timezone
 
-from pysoda import bf_get_current_user_permission
+from manageDatasets import bf_get_current_user_permission
 
 
 ### Global variables
@@ -88,14 +58,14 @@ initial_bfdataset_size_submit = 0
 forbidden_characters = '<>:"/\|?*'
 forbidden_characters_bf = '\/:*?"<>'
 
-## these subsequent CheckLeafValue and traverseForLeafNodes functions check for the validity of file paths,
-## and folder and file size
+
 
 ### Internal functions
 def TZLOCAL():
     return datetime.now(timezone.utc).astimezone().tzinfo
 
-
+## these subsequent CheckLeafValue and traverseForLeafNodes functions check for the validity of file paths,
+## and folder and file size
 def checkLeafValue(leafName, leafNodeValue):
 
     error, c = "", 0
@@ -121,15 +91,12 @@ def checkLeafValue(leafName, leafNodeValue):
         error = error + leafName + " is empty <br>"
 
     if c > 0:
-        error = (
-            error
-            + "<br>Please remove invalid files/folders from your dataset and try again"
-        )
+        error += "<br>Please remove invalid files/folders from your dataset and try again"
         curatestatus = "Done"
-        raise Exception(error)
+        abort(400, error)
 
-    else:
-        return [True, total_dataset_size - 1]
+
+    return [True, total_dataset_size - 1]
 
 
 def traverseForLeafNodes(jsonStructure):
@@ -219,16 +186,13 @@ def generate_dataset_locally(destinationdataset, pathdataset, newdatasetname, js
     if destinationdataset == "create new":
         if not isdir(pathdataset):
             curatestatus = "Done"
-            raise Exception("Error: Please select a valid folder for new dataset")
+            abort(400, "Please select a valid folder for new dataset")
         if not newdatasetname:
             curatestatus = "Done"
-            raise Exception("Error: Please enter a valid name for new dataset folder")
+            abort(400, "Please enter a valid name for new dataset folder")
         if check_forbidden_characters(newdatasetname):
             curatestatus = "Done"
-            raise Exception(
-                "Error: A folder name cannot contain any of the following characters "
-                + forbidden_characters
-            )
+            abort(400,  "A folder name cannot contain any of the following characters " + forbidden_characters)
 
     total_dataset_size = 1
 
@@ -859,330 +823,13 @@ def monitor_local_json_progress():
         create_soda_json_progress / create_soda_json_total_items
     ) * 100
 
-    res = [
-        create_soda_json_progress,
-        create_soda_json_total_items,
-        progress_percentage,
-        create_soda_json_completed,
-    ]
-    return res
+    return {
+        "create_soda_json_progress": create_soda_json_progress,
+        "create_soda_json_total_items": create_soda_json_total_items,
+        "progress_percentage": progress_percentage,
+        "create_soda_json_completed": create_soda_json_completed
+    }
 
-
-def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only=True):
-    """
-    Function for importing Pennsieve data files info into the "dataset-structure" key of the soda json structure,
-    including metadata from any existing manifest files in the high-level folders
-    (name, id, timestamp, description, additional metadata)
-
-    Args:
-        soda_json_structure: soda structure with bf account and dataset info available
-    Output:
-        same soda structure with Pennsieve data file info included under the "dataset-structure" key
-    """
-
-    high_level_sparc_folders = [
-        "code",
-        "derivative",
-        "docs",
-        "primary",
-        "protocol",
-        "source",
-    ]
-    manifest_sparc = ["manifest.xlsx", "manifest.csv"]
-    high_level_metadata_sparc = [
-        "submission.xlsx",
-        "submission.csv",
-        "submission.json",
-        "dataset_description.xlsx",
-        "dataset_description.csv",
-        "dataset_description.json",
-        "subjects.xlsx",
-        "subjects.csv",
-        "subjects.json",
-        "samples.xlsx",
-        "samples.csv",
-        "samples.json",
-        "README.txt",
-        "CHANGES.txt",
-        "code_description.xlsx",
-        "inputs_metadata.xlsx",
-        "outputs_metadata.xlsx",
-    ]
-    manifest_error_message = []
-    double_extensions = [
-        ".ome.tiff",
-        ".ome.tif",
-        ".ome.tf2,",
-        ".ome.tf8",
-        ".ome.btf",
-        ".ome.xml",
-        ".brukertiff.gz",
-        ".mefd.gz",
-        ".moberg.gz",
-        ".nii.gz",
-        ".mgh.gz",
-        ".tar.gz",
-        ".bcl.gz",
-    ]
-
-    # f = open("dataset_contents.soda", "a")
-
-    def verify_file_name(file_name, extension):
-        if extension == "":
-            return file_name
-
-        double_ext = False
-        for ext in double_extensions:
-            if file_name.find(ext) != -1:
-                double_ext = True
-                break
-
-        extension_from_name = ""
-
-        if double_ext == False:
-            extension_from_name = os.path.splitext(file_name)[1]
-        else:
-            extension_from_name = (
-                os.path.splitext(os.path.splitext(file_name)[0])[1]
-                + os.path.splitext(file_name)[1]
-            )
-
-        if extension_from_name == ("." + extension):
-            return file_name
-        else:
-            return file_name + ("." + extension)
-
-    # Add a new key containing the path to all the files and folders on the
-    # local data structure..
-    def recursive_item_path_create(folder, path):
-        if "files" in folder.keys():
-            for item in list(folder["files"]):
-                if "bfpath" not in folder["files"][item]:
-                    folder["files"][item]["bfpath"] = path[:]
-
-        if "folders" in folder.keys():
-            for item in list(folder["folders"]):
-                if "bfpath" not in folder["folders"][item]:
-                    folder["folders"][item]["bfpath"] = path[:]
-                    folder["folders"][item]["bfpath"].append(item)
-                recursive_item_path_create(
-                    folder["folders"][item], folder["folders"][item]["bfpath"][:]
-                )
-        return
-
-    level = 0
-
-    def recursive_dataset_import(
-        my_item, dataset_folder, metadata_files, my_folder_name, my_level, manifest_dict
-    ):
-        level = 0
-        col_count = 0
-        file_count = 0
-
-        for item in my_item:
-            if item.type == "Collection":
-                if "folders" not in dataset_folder:
-                    dataset_folder["folders"] = {}
-                if "files" not in dataset_folder:
-                    dataset_folder["files"] = {}
-                col_count += 1
-                folder_name = item.name
-                if (
-                    my_level == 0
-                    and folder_name not in high_level_sparc_folders
-                    and requested_sparc_only
-                ):  # only import SPARC folders
-                    col_count -= 1
-                    continue
-                if col_count == 1:
-                    level = my_level + 1
-                dataset_folder["folders"][folder_name] = {
-                    "type": "bf",
-                    "action": ["existing"],
-                    "path": item.id,
-                }
-                sub_folder = dataset_folder["folders"][folder_name]
-                if "folders" not in sub_folder:
-                    sub_folder["folders"] = {}
-                if "files" not in sub_folder:
-                    sub_folder["files"] = {}
-                recursive_dataset_import(
-                    item, sub_folder, metadata_files, folder_name, level, manifest_dict
-                )
-            else:
-                if "folders" not in dataset_folder:
-                    dataset_folder["folders"] = {}
-                if "files" not in dataset_folder:
-                    dataset_folder["files"] = {}
-                package_id = item.id
-                package_details = bf._api._get("/packages/" + str(package_id))
-                if "extension" not in package_details:
-                    file_name = verify_file_name(package_details["content"]["name"], "")
-                else:
-                    file_name = verify_file_name(
-                        package_details["content"]["name"], package_details["extension"]
-                    )
-
-                if my_level == 0 and file_name in high_level_metadata_sparc:
-                    metadata_files[file_name] = {
-                        "type": "bf",
-                        "action": ["existing"],
-                        "path": item.id,
-                    }
-
-                else:
-                    file_count += 1
-                    if my_level == 1 and file_name in manifest_sparc:
-                        file_details = bf._api._get(
-                            "/packages/" + str(package_id) + "/view"
-                        )
-                        file_id = file_details[0]["content"]["id"]
-                        manifest_url = bf._api._get(
-                            "/packages/" + str(package_id) + "/files/" + str(file_id)
-                        )
-                        df = ""
-                        try:
-                            if file_name.lower() == "manifest.xlsx":
-                                df = pd.read_excel(
-                                    manifest_url["url"], engine="openpyxl"
-                                )
-                            else:
-                                df = pd.read_csv(manifest_url["url"])
-                            manifest_dict[my_folder_name] = df
-                        except Exception as e:
-                            manifest_error_message.append(
-                                package_details["parent"]["content"]["name"]
-                            )
-                            pass
-                    else:
-                        timestamp = (
-                            package_details["content"]["createdAt"]
-                            .replace(".", ",")
-                            .replace("+00:00", "Z")
-                        )
-                        dataset_folder["files"][file_name] = {
-                            "type": "bf",
-                            "action": ["existing"],
-                            "path": item.id,
-                            "timestamp": timestamp,
-                        }
-
-    def recursive_manifest_info_import(my_folder, my_relative_path, manifest_df):
-
-        if "files" in my_folder.keys():
-            for file_key, file in my_folder["files"].items():
-                filename = join(my_relative_path, file_key)
-                colum_headers = manifest_df.columns.tolist()
-                filename = filename.replace("\\", "/")
-
-                if filename in list(manifest_df["filename"].values):
-                    if "description" in colum_headers:
-                        mydescription = manifest_df[
-                            manifest_df["filename"] == filename
-                        ]["description"].values[0]
-                        if mydescription:
-                            file["description"] = mydescription
-                    if "Additional Metadata" in colum_headers:
-                        my_additional_medata = manifest_df[
-                            manifest_df["filename"] == filename
-                        ]["Additional Metadata"].values[0]
-                        if my_additional_medata:
-                            file["additional-metadata"] = my_additional_medata
-                    if "timestamp" in colum_headers:
-                        my_timestamp = manifest_df[manifest_df["filename"] == filename][
-                            "timestamp"
-                        ].values[0]
-                        if my_timestamp:
-                            file["timestamp"] = my_timestamp
-
-        if "folders" in my_folder.keys():
-            for folder_key, folder in my_folder["folders"].items():
-                relative_path = join(my_relative_path, folder_key)
-
-                recursive_manifest_info_import(folder, relative_path, manifest_df)
-
-    # START
-
-    error = []
-
-    # check that the Pennsieve account is valid
-    try:
-        bf_account_name = soda_json_structure["bf-account-selected"]["account-name"]
-    except Exception as e:
-        raise e
-
-    try:
-        bf = Pennsieve(bf_account_name)
-    except Exception as e:
-        error.append("Error: Please select a valid Pennsieve account")
-        raise Exception(error)
-
-    # check that the Pennsieve dataset is valid
-    try:
-        bf_dataset_name = soda_json_structure["bf-dataset-selected"]["dataset-name"]
-    except Exception as e:
-        raise e
-    try:
-        myds = bf.get_dataset(bf_dataset_name)
-    except Exception as e:
-        error.append("Error: Please select a valid Pennsieve dataset")
-        raise Exception(error)
-
-    # check that the user has permission to edit this dataset
-    try:
-        role = bf_get_current_user_permission(bf, myds)
-        if role not in ["owner", "manager", "editor"]:
-            curatestatus = "Done"
-            error.append(
-                "Error: You don't have permissions for uploading to this Pennsieve dataset"
-            )
-            raise Exception(error)
-    except Exception as e:
-        raise e
-
-    try:
-        # import files and folders in the soda json structure
-        soda_json_structure["dataset-structure"] = {}
-        soda_json_structure["metadata-files"] = {}
-        dataset_folder = soda_json_structure["dataset-structure"]
-        metadata_files = soda_json_structure["metadata-files"]
-        manifest_dict = {}
-        folder_name = ""
-        recursive_dataset_import(
-            myds, dataset_folder, metadata_files, folder_name, level, manifest_dict
-        )
-
-        # remove metadata files keys if empty
-        metadata_files = soda_json_structure["metadata-files"]
-        if not metadata_files:
-            del soda_json_structure["metadata-files"]
-
-        dataset_folder = soda_json_structure["dataset-structure"]
-        # pull information from the manifest files if they satisfy the SPARC format
-        if "folders" in dataset_folder.keys():
-            for folder_key in manifest_dict.keys():
-                manifest_df = manifest_dict[folder_key]
-                manifest_df = manifest_df.fillna("")
-                colum_headers = manifest_df.columns.tolist()
-                folder = dataset_folder["folders"][folder_key]
-                if "filename" in colum_headers:
-                    if (
-                        "description" in colum_headers
-                        or "Additional Metadata" in colum_headers
-                    ):
-                        relative_path = ""
-                        recursive_manifest_info_import(
-                            folder, relative_path, manifest_df
-                        )
-
-        recursive_item_path_create(soda_json_structure["dataset-structure"], [])
-        success_message = (
-            "Data files under a valid high-level SPARC folders have been imported"
-        )
-        return [soda_json_structure, success_message, manifest_error_message]
-
-    except Exception as e:
-        raise e
 
 
 def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
@@ -1214,12 +861,54 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         "inputs_metadata.xlsx",
         "outputs_metadata.xlsx",
     ]
+
+    double_extensions = [
+        ".ome.tiff",
+        ".ome.tif",
+        ".ome.tf2,",
+        ".ome.tf8",
+        ".ome.btf",
+        ".ome.xml",
+        ".brukertiff.gz",
+        ".mefd.gz",
+        ".moberg.gz",
+        ".nii.gz",
+        ".mgh.gz",
+        ".tar.gz",
+        ".bcl.gz",
+    ]
+
     global create_soda_json_completed
     global create_soda_json_total_items
     global create_soda_json_progress
     create_soda_json_progress = 0
     create_soda_json_total_items = 0
     create_soda_json_completed = 0
+
+    def verify_file_name(file_name, extension):
+        if extension == "":
+            return file_name
+
+        double_ext = False
+        for ext in double_extensions:
+            if file_name.find(ext) != -1:
+                double_ext = True
+                break
+                
+        extension_from_name = ""
+
+        if double_ext == False:
+            extension_from_name = os.path.splitext(file_name)[1]
+        else:
+            extension_from_name = (
+                os.path.splitext(os.path.splitext(file_name)[0])[1]
+                + os.path.splitext(file_name)[1]
+            )
+
+        if extension_from_name == ("." + extension):
+            return file_name
+        else:
+            return file_name + ("." + extension)
 
     def createFolderStructure(subfolder_json, pennsieve_account, manifest):
         # root level folder will pass subfolders into this function and will recursively check if there are subfolders while creating the json structure
@@ -1237,6 +926,13 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                 if (
                     item_name[0:8] != "manifest"
                 ):  # manifest files are not being included json structure
+
+                    #verify file name first
+                    if("extension" not in children_content):
+                        item_name = verify_file_name(item_name, "")
+                    else:
+                        item_name = verify_file_name(item_name, children_content["extension"])
+                        
                     subfolder_json["files"][item_name] = {
                         "action": ["existing"],
                         "path": item_id,
@@ -1306,7 +1002,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     try:
         bf = Pennsieve(bf_account_name)
     except Exception as e:
-        error.append("Error: Please select a valid Pennsieve account")
+        error.append("Please select a valid Pennsieve account")
         raise Exception(error)
 
     # check that the Pennsieve dataset is valid
@@ -1318,7 +1014,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         myds = bf.get_dataset(bf_dataset_name)
         dataset_id = myds.id
     except Exception as e:
-        error.append("Error: Please select a valid Pennsieve dataset")
+        error.append("Please select a valid Pennsieve dataset")
         raise Exception(error)
 
     # check that the user has permission to edit this dataset
@@ -1327,7 +1023,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         if role not in ["owner", "manager", "editor"]:
             curatestatus = "Done"
             error.append(
-                "Error: You don't have permissions for uploading to this Pennsieve dataset"
+                "You don't have permissions for uploading to this Pennsieve dataset"
             )
             raise Exception(error)
     except Exception as e:
@@ -1420,16 +1116,13 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         "Data files under a valid high-level SPARC folders have been imported"
     )
     create_soda_json_completed = 1
-    return [
-        soda_json_structure,
-        success_message,
-        manifest_error_message,
-        create_soda_json_progress,
-        create_soda_json_total_items,
-    ]
-
-    # now that we have the user and account info pull the top layer
-
+    return {
+        "soda_object": soda_json_structure,
+        "success_message": success_message,
+        "manifest_error_message": manifest_error_message,
+        "import_progress": create_soda_json_progress,
+        "import_total_items": create_soda_json_total_items,
+    }
 
 def monitor_pennsieve_json_progress():
     """
@@ -1439,19 +1132,19 @@ def monitor_pennsieve_json_progress():
     global create_soda_json_completed
     global create_soda_json_total_items
     global create_soda_json_progress
+
     if create_soda_json_progress != 0:
         progress_percentage = (
             create_soda_json_progress / create_soda_json_total_items
         ) * 100
     else:
         progress_percentage = 0
-    res = [
-        create_soda_json_progress,
-        create_soda_json_total_items,
-        progress_percentage,
-        create_soda_json_completed,
-    ]
-    return res
+    return {
+        "import_progress": create_soda_json_progress,
+        "import_total_items": create_soda_json_total_items,
+        "import_progress_percentage": progress_percentage,
+        "import_completed_items": create_soda_json_completed,
+    }
 
 
 def get_all_collections(account):

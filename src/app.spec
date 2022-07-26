@@ -3,13 +3,10 @@
 
 block_cipher = None
 
-# get the users home directory 
-home = os.path.expanduser("~")
 
-
-a = Analysis(['pysoda\\api.py'],
+a = Analysis(['pyflask\\app.py'],
              pathex=[],
-             binaries=[(f'{home}\\\\anaconda3\\\\envs\\\\env-electron-python\\\\Lib\\\\site-packages\\\\pyzmq.libs\\\\*', 'pyzmq.libs')],
+             binaries=[],
              datas=[],
              hiddenimports=[],
              hookspath=[],
@@ -29,7 +26,7 @@ exe = EXE(pyz,
           a.zipfiles,
           a.datas,  
           [],
-          name='api',
+          name='app',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,

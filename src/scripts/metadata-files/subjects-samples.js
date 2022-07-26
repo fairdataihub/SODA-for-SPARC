@@ -619,7 +619,7 @@ function populateRRID(strain, type) {
       $("#bootbox-" + type + "-strain-RRID").val("");
       Swal.fire({
         title: `Failed to retrieve the RRID for "${strain}" from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
-        text: "Please check your Internet Connection or contact us at sodasparc@gmail.com",
+        text: "Please check your Internet Connection or contact us at help@fairdataihub.org",
         showCancelButton: false,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
@@ -756,6 +756,7 @@ async function edit_current_protocol_id(ev) {
       desc +
       "</textarea>",
     focusConfirm: false,
+    width: "38rem",
     showCancelButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
@@ -1701,7 +1702,7 @@ function loadSamplesDataToTable() {
   } else {
     Swal.fire({
       title: "Loaded successfully!",
-      html: 'Add or edit your sample_id(s) in the following table. <br><br><b>Note</b>:: Any value that does not follow SPARC standards (For example: Values for the fields: "Sample type", "Laterality", and "Plane of section") will be not be imported by SODA.',
+      html: 'Add or edit your sample_id(s) in the following table. <br><br><b>Note</b>: Any value that does not follow SPARC standards (For example: Values for the fields: "Sample type", "Laterality", and "Plane of section") will be not be imported by SODA.',
       icon: "success",
       showConfirmButton: true,
       heightAuto: false,
@@ -2329,7 +2330,7 @@ function importExistingSubjectsFile() {
           Swal.showLoading();
         },
       }).then((result) => {});
-      setTimeout(loadSubjectsFileToDataframe(filePath), 1000);
+      setTimeout(loadSubjectsFileToDataframe, 1000, filePath);
     }
   }
 }
@@ -2388,7 +2389,7 @@ function importExistingSamplesFile() {
   }
 }
 
-function checkBFImportSubjects() {
+async function checkBFImportSubjects() {
   Swal.fire({
     title: "Importing the subjects.xlsx file",
     html: "Please wait...",
@@ -2409,49 +2410,56 @@ function checkBFImportSubjects() {
     .find(".subjects-form-entry")) {
     fieldEntries.push(field.name.toLowerCase());
   }
-  client.invoke(
-    "api_import_bf_metadata_file",
-    "subjects.xlsx",
-    fieldEntries,
-    defaultBfAccount,
-    $("#bf_dataset_load_subjects").text().trim(),
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          icon: "error",
-          html: emessage,
-        });
+  let bfDataset = document
+    .getElementById("bf_dataset_load_subjects")
+    .innerText.trim();
 
-        // log the error to analytics
-        logMetadataForAnalytics(
-          "Error",
-          MetadataAnalyticsPrefix.SUBJECTS,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Existing",
-          Destinations.PENNSIEVE
-        );
-      } else {
-        // log the success to analytics
-        logMetadataForAnalytics(
-          "Success",
-          MetadataAnalyticsPrefix.SUBJECTS,
-          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-          "Existing",
-          Destinations.PENNSIEVE
-        );
-        subjectsTableData = res;
-        loadDataFrametoUI("bf");
+  log.info(`Getting subjects.xlsx for dataset ${bfDataset} from Pennsieve.`);
+  try {
+    let import_metadata_file = await client.get(
+      `/prepare_metadata/import_metadata_file`,
+      {
+        params: {
+          selected_account: defaultBfAccount,
+          selected_dataset: bfDataset,
+          file_type: "subjects.xlsx",
+          ui_fields: fieldEntries.toString(),
+        },
       }
-    }
-  );
+    );
+    let res = import_metadata_file.data.subject_file_rows;
+
+    // log the success to analytics
+    logMetadataForAnalytics(
+      "Success",
+      MetadataAnalyticsPrefix.SUBJECTS,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      "Existing",
+      Destinations.PENNSIEVE
+    );
+    subjectsTableData = res;
+    loadDataFrametoUI("bf");
+  } catch (error) {
+    clientError(error);
+    Swal.fire({
+      backdrop: "rgba(0, 0, 0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      text: error.response.data.message,
+    });
+
+    // log the error to analytics
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.SUBJECTS,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.PENNSIEVE
+    );
+  }
 }
 
-function checkBFImportSamples() {
+async function checkBFImportSamples() {
   Swal.fire({
     title: "Importing the samples.xlsx file",
     html: "Please wait...",
@@ -2472,46 +2480,53 @@ function checkBFImportSamples() {
     .find(".samples-form-entry")) {
     fieldEntries.push(field.name.toLowerCase());
   }
-  client.invoke(
-    "api_import_bf_metadata_file",
-    "samples.xlsx",
-    fieldEntries,
-    defaultBfAccount,
-    $("#bf_dataset_load_samples").text().trim(),
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          icon: "error",
-          html: emessage,
-        });
 
-        // log the error to analytics
-        logMetadataForAnalytics(
-          "Error",
-          MetadataAnalyticsPrefix.SAMPLES,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Existing",
-          Destinations.PENNSIEVE
-        );
-      } else {
-        // log the success to analytics
-        logMetadataForAnalytics(
-          "Success",
-          MetadataAnalyticsPrefix.SAMPLES,
-          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-          "Existing",
-          Destinations.PENNSIEVE
-        );
-        samplesTableData = res;
-        loadDataFrametoUISamples("bf");
+  let bfDataset = document.getElementById("bf_dataset_load_samples").innerText;
+
+  log.info(`Getting samples.xlsx for dataset ${bfDataset} from Pennsieve.`);
+  try {
+    let importMetadataResponse = await client.get(
+      `/prepare_metadata/import_metadata_file`,
+      {
+        params: {
+          file_type: "samples.xlsx",
+          selected_account: defaultBfAccount,
+          selected_dataset: bfDataset,
+          ui_fields: fieldEntries.toString(),
+        },
       }
-    }
-  );
+    );
+
+    let res = importMetadataResponse.data.sample_file_rows;
+
+    // log the success to analytics
+    logMetadataForAnalytics(
+      "Success",
+      MetadataAnalyticsPrefix.SAMPLES,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      "Existing",
+      Destinations.PENNSIEVE
+    );
+    samplesTableData = res;
+    loadDataFrametoUISamples("bf");
+  } catch (error) {
+    clientError(error);
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      text: error.response.data.message,
+    });
+
+    // log the error to analytics
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.SAMPLES,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.PENNSIEVE
+    );
+  }
 }
 
 function loadDataFrametoUI(type) {
@@ -2639,42 +2654,65 @@ function protocolAccountQuestion(type, changeAccountBoolean) {
             showCancelButton: true,
             confirmButtonText: "Add",
             cancelButtonText: "Cancel",
+            width: "38rem",
             showCancelButton: true,
             allowEscapeKey: false,
             allowOutsideClick: false,
             html:
               '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL">' +
-              '<label>Protocol Type: <i class="fas fa-info-circle swal-popover" data-content="This will state whether your protocol is a \'URL\' or \'DOI\' item. Use one of those two items to reference the type of protocol." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-select" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
-              '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="A prespecified list of relations for common protocols used in SPARC datasets. </br>  The value in this field must be read as the \'relationship that this dataset has to the specified protocol\'." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsProtocolFor">IsProtocolFor</option><option value="HasProtocol">HasProtocol</option><option value="IsSoftwareFor">IsSoftwareFor</option><option value="HasSoftware">HasSoftware</option></select>' +
               '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description"></textarea>',
             focusConfirm: false,
             preConfirm: () => {
-              if ($("#DD-protocol-link").val() === "") {
-                Swal.showValidationMessage(`Please enter a link!`);
-              }
-              if ($("#DD-protocol-link-select").val() === "Select") {
-                Swal.showValidationMessage(`Please choose a link type!`);
-              }
-              if ($("#DD-protocol-link-relation").val() === "Select") {
-                Swal.showValidationMessage(`Please choose a link relation!`);
-              }
+              var link = $("#DD-protocol-link").val();
+              let protocolLink = "";
+
               if ($("#DD-protocol-description").val() === "") {
                 Swal.showValidationMessage(`Please enter a short description!`);
               }
+
+              var duplicate = checkLinkDuplicate(
+                link,
+                document.getElementById("protocol-link-table-dd")
+              );
+              if (duplicate) {
+                Swal.showValidationMessage(
+                  "Duplicate protocol. The protocol you entered is already added."
+                );
+              }
+
+              if (link === "") {
+                Swal.showValidationMessage(`Please enter a link!`);
+              } else {
+                if (doiRegex.declared({ exact: true }).test(link) === true) {
+                  protocolLink = "DOI";
+                } else {
+                  //check if link is valid
+                  if (validator.isURL(link) != true) {
+                    Swal.showValidationMessage(`Please enter a valid link`);
+                  } else {
+                    //link is valid url and check for 'doi' in link
+                    if (link.includes("doi")) {
+                      protocolLink = "DOI";
+                    } else {
+                      protocolLink = "URL";
+                    }
+                  }
+                }
+              }
               return [
                 $("#DD-protocol-link").val(),
-                $("#DD-protocol-link-select").val(),
-                $("#DD-protocol-link-relation").val(),
+                protocolLink,
+                "IsProtocolFor",
                 $("#DD-protocol-description").val(),
               ];
             },
           });
-          if (formValues) {
+          if (formValue) {
             addProtocolLinktoTableDD(
-              formValues[0],
-              formValues[1],
-              formValues[2],
-              formValues[3]
+              formValue[0],
+              formValue[1],
+              formValue[2],
+              formValue[3]
             );
           }
         }
@@ -2876,6 +2914,7 @@ async function showProtocolCredentials(email, filetype) {
         showCancelButton: true,
         reverseButtons: reverseSwalButtons,
         heightAuto: false,
+        width: "38rem",
         backdrop: "rgba(0,0,0, 0.4)",
         didOpen: () => {
           $(".swal-popover").popover();
@@ -2953,6 +2992,7 @@ async function addAdditionalLink() {
     cancelButtonText: "Cancel",
     customClass: "swal-content-additional-link",
     showCancelButton: true,
+    width: "38rem",
     reverseButtons: reverseSwalButtons,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
@@ -2996,9 +3036,14 @@ async function addAdditionalLink() {
       );
       if (duplicate) {
         Swal.showValidationMessage(
-          "Duplicate URL/DOI. The URL/DOI you entered is already added."
+          `Duplicate ${protocolLink}. The ${protocolLink} you entered is already added.`
         );
       }
+
+      if ($("#DD-other-link-relation").val() === "Select") {
+        Swal.showValidationMessage("Please select a link relation");
+      }
+
       return [
         $("#DD-other-link").val(),
         protocolLink,
