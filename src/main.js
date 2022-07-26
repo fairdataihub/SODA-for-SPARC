@@ -174,23 +174,23 @@ function initialize() {
       if (!user_restart_confirmed) {
         if (app.showExitPrompt) {
           e.preventDefault(); // Prevents the window from closing
-          dialog.showMessageBox(
-            BrowserWindow.getFocusedWindow(),
-            {
+          dialog
+            .showMessageBox(BrowserWindow.getFocusedWindow(), {
               type: "question",
               buttons: ["Yes", "No"],
               title: "Confirm",
               message:
                 "Any running process will be stopped. Are you sure you want to quit?",
-            }).then(responseObject => {
-              console.log("SHAHO")
-              let {response} = responseObject;
+            })
+            .then((responseObject) => {
+              console.log("SHAHO");
+              let { response } = responseObject;
               console.log(response);
               if (response === 0) {
                 // Runs the following if 'Yes' is clicked
                 quit_app();
               }
-            })
+            });
         }
       } else {
         var first_launch = nodeStorage.getItem("firstlaunch");
