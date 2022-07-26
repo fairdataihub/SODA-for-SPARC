@@ -1325,7 +1325,7 @@ $("#button-collection-dataset-confirm").click(async () => {
       "collection_dataset_name"
     ).innerText;
     Swal.fire({
-      title: `Getting collection tags of dataset: ${datasetName}`,
+      title: `Getting collection of dataset: ${datasetName}`,
       html: "Please wait...",
       // timer: 5000,
       allowEscapeKey: false,

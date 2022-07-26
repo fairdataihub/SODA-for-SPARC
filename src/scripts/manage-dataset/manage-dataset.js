@@ -249,7 +249,7 @@ $("#button-bf-collection").click(async () => {
     let removeTags = [];
 
     Swal.fire({
-      title: `Modifying collection tags for ${selectedDataset}`,
+      title: `Modifying collection for ${selectedDataset}`,
       html: "Please wait...",
       // timer: 5000,
       allowEscapeKey: false,
@@ -266,9 +266,7 @@ $("#button-bf-collection").click(async () => {
     for (let i = 0; i < collectionDatasetTags.value.length; i++) {
       let tagName = collectionDatasetTags.value[i]["value"];
       if (tagName.includes("，")) {
-        console.log("replacing: " + tagName);
         let originalCommaName = tagName.replace(/，/g, ",");
-        console.log(originalCommaName);
         newCollectionTags.push(originalCommaName);
       } else {
         newCollectionTags.push(tagName);
@@ -281,9 +279,6 @@ $("#button-bf-collection").click(async () => {
         //key was modified so compare with original-name
         if (!newCollectionTags.includes(value["original-name"])) {
           //did not match with original name so it was removed
-          console.log(key);
-          console.log(value["original-name"]);
-          console.log(value["id"]);
           removeTags.push(value["id"]);
         }
       } else {
@@ -291,16 +286,12 @@ $("#button-bf-collection").click(async () => {
         console.log(key);
         console.log(!newCollectionTags.includes(key));
         if (!newCollectionTags.includes(key)) {
-          console.log(value["id"]);
           //key is not in updated tags so it was removed
           removeTags.push(value["id"]);
         }
       }
     }
 
-    console.log("below are the removed tags");
-    console.log(removeTags);
-    console.log(newCollectionTags);
     //iterate through new collection tags and separate accordingly
     //whiteListedTags: tags that have already been created on Pennsieve
     //newTags: tags that are new and need to be created on Pennsieve before assigning to dataset
@@ -337,39 +328,29 @@ $("#button-bf-collection").click(async () => {
     }
 
     if (whiteListTags.length > 0) {
-      console.log("below are the whitelist tags");
-      console.log(whiteListTags);
       //tags that are already on pennsieve
-      let res = await uploadCollectionTags(whiteListTags);
+      await uploadCollectionTags(whiteListTags);
     }
 
     if (removeTags.length > 0) {
-      console.log("below are the removed tags");
-      console.log(removeTags);
       //replace currentTags with new list
-      let res = await removeCollectionTags(removeTags);
-      console.log(res);
+      await removeCollectionTags(removeTags);
     }
 
     if (newTags.length > 0) {
-      console.log("below are the new tags to be created for pennsieve");
-      console.log(newTags);
-      let res = await uploadNewTags(newTags);
-      console.log(res);
+      await uploadNewTags(newTags);
     }
 
     //TODO: UPDATE CURRENT TAGS and white list
     await getCurrentCollectionTags();
     Swal.close();
     Swal.fire({
-      title: "Successfully updated collection tags from " + defaultBfDataset,
+      title: "Successfully updated collection from " + defaultBfDataset,
       icon: "success",
       showConfirmButton: true,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
     });
-
-    console.log(currentTags);
 
     log.info(`Adding dataset '${selectedDataset}' to Collection'`);
   }, delayAnimation);
