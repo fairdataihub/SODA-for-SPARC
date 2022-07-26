@@ -182,14 +182,15 @@ function initialize() {
               title: "Confirm",
               message:
                 "Any running process will be stopped. Are you sure you want to quit?",
-            },
-            function (response) {
+            }).then(responseObject => {
+              console.log("SHAHO")
+              let {response} = responseObject;
+              console.log(response);
               if (response === 0) {
                 // Runs the following if 'Yes' is clicked
                 quit_app();
               }
-            }
-          );
+            })
         }
       } else {
         var first_launch = nodeStorage.getItem("firstlaunch");
