@@ -91,7 +91,7 @@
             </div>
 
             <div
-              class="guided--section"
+              class="guided--panel"
               id="continue-curating-existing"
               style="margin-top: 20px"
             >
@@ -99,7 +99,39 @@
                 class="guided--text-sub-step"
                 id="guided-continue-curation-header"
               ></h1>
+              <div
+                class="guided--radio-button-container"
+                id="guided-div-dataset-cards-radio-buttons"
+              >
+                <button
+                  class="ui primary basic button guided--radio-button"
+                  data-next-element="guided-div-resume-progress-cards"
+                  style="width: 250px"
+                >
+                  Datasets in progress
+                </button>
+                <button
+                  class="ui primary basic button guided--radio-button"
+                  data-next-element="guided-div-update-uploaded-cards"
+                  style="width: 250px"
+                >
+                  Datasets uploaded to Pennsieve
+                </button>
+              </div>
+
               <div class="guided--section" id="resume-curation-container"></div>
+            </div>
+            <div
+              class="guided--section hidden"
+              id="guided-div-resume-progress-cards"
+            >
+              a
+            </div>
+            <div
+              class="guided--section hidden"
+              id="guided-div-update-uploaded-cards"
+            >
+              b
             </div>
           </div>
         </div>
@@ -5047,9 +5079,7 @@
                   class="guided--panel hidden"
                 >
                   <div class="guided--section mt-md">
-                    <label class="guided--form-label"
-                      >Pennsieve dataset name:
-                    </label>
+                    <label class="guided--form-label">Dataset name: </label>
                     <input
                       class="guided--input"
                       id="guided-input-dataset-name"
@@ -5721,7 +5751,7 @@
               </table>
             </div>
             <div
-              class="guided--section mt-lg"
+              class="guided--section hidden mt-lg"
               id="guided-div-dataset-upload-status-table"
             >
               <table class="ui celled striped table" style="width: 80%">

@@ -526,6 +526,7 @@ h1.guided--text-sub-step {
 
 .guided--dataset-card {
   width: 100%;
+  max-width: 800px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -598,7 +599,7 @@ h1.guided--text-sub-step {
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-start;
-  width: 950px;
+  max-width: 1200px;
 }
 .guided--folder-organization-buttons-container {
   width: 100%;
@@ -794,7 +795,7 @@ h1.guided--text-sub-step {
   transition: all 0.2s ease-in-out;
 }
 .guided--radio-button:hover {
-  transform: scale(1.1);
+  transform: scale(1.01);
 }
 
 /*.guided--radio-button.selected {

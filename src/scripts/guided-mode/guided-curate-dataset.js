@@ -24,9 +24,9 @@ const updateDatasetUploadProgressTable = (progressObject) => {
     uploadStatusElement += `
       <tr class="upload-status-tr">
         <td class="middle aligned progress-bar-table-left">
-          ${uploadStatusKey}:
+          <b>${uploadStatusKey}:</b>
         </td>
-        <td class="middle aligned remove-left-border">${uploadStatusValue}:</td>
+        <td class="middle aligned remove-left-border">${uploadStatusValue}</td>
       </tr>
     `;
   //insert adjustStatusElement at the end of datasetUploadTablebody
@@ -317,117 +317,141 @@ const deleteProgressCard = async (progressCardDeleteButton) => {
     progressCard.remove();
   }
 };
+const generateProgressCardElement = (progressFileJSONObj) => {
+  let progressFileImage =
+    progressFileJSONObj["digital-metadata"]["banner-image-path"] || "";
+
+  if (progressFileImage === "") {
+    progressFileImage = `
+      <img
+        src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80"
+        alt="Dataset banner image placeholder"
+        style="height: 80px; width: 80px"
+      />
+    `;
+  } else {
+    progressFileImage = `
+      <img
+        src='${progressFileImage}'
+        alt="Dataset banner image"
+        style="height: 80px; width: 80px"
+      />
+    `;
+  }
+  const progressFileName =
+    progressFileJSONObj["digital-metadata"]["name"] || "";
+  const progressFileSubtitle =
+    progressFileJSONObj["digital-metadata"]["subtitle"] ||
+    "No designated subtitle";
+  const progressFileOwnerName =
+    progressFileJSONObj["digital-metadata"]["pi-owner"]["name"] ||
+    "Not designated yet";
+  const progressFileLastModified = new Date(
+    progressFileJSONObj["last-modified"]
+  ).toLocaleString([], {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+  });
+
+  return `
+    <div class="guided--dataset-card">
+      ${progressFileImage /* banner image */}     
+        
+      <div class="guided--dataset-card-body">
+        <div class="guided--dataset-card-row">
+          <h1
+            class="guided--text-dataset-card progress-file-name progress-card-popover"
+            data-content="Dataset name: ${progressFileName}"
+            rel="popover"
+            data-placement="bottom"
+            data-trigger="hover"
+          >${progressFileName}</h1>
+        </div>
+        <div class="guided--dataset-card-row">
+          <h1 
+            class="guided--text-dataset-card progress-card-popover"
+            data-content="Dataset subtitle: ${progressFileSubtitle}"
+            rel="popover"
+            data-placement="bottom"
+            data-trigger="hover"
+            style="font-weight: 400;"
+          >
+              ${
+                progressFileSubtitle.length > 70
+                  ? `${progressFileSubtitle.substring(0, 70)}...`
+                  : progressFileSubtitle
+              }
+          </h1>
+        </div>
+        <div class="guided--dataset-card-row">
+          <h2 class="guided--text-dataset-card-sub" style="width: auto;">
+            <i
+              class="fas fa-clock-o progress-card-popover"
+              data-content="Last modified: ${progressFileLastModified}"
+              rel="popover"
+              data-placement="bottom"
+              data-trigger="hover"
+            ></i>
+          </h2>
+          <h1 class="guided--text-dataset-card ml-sm-1">${progressFileLastModified}</h1>
+        </div>
+      </div>
+      <div class="guided--container-dataset-card-center">
+        <button
+          class="ui positive button guided--button-footer"
+          style="
+            background-color: var(--color-light-green) !important;
+            width: 160px !important;
+            margin: 4px;
+            margin-bottom: 15px;
+          "
+          onClick="guidedResumeProgress($(this))"
+        >
+          Continue curating
+        </button>
+        <h2 class="guided--text-dataset-card" style="width: auto; text-decoration: underline; cursor: pointer;" onclick="deleteProgressCard(this)">
+          <i
+            class="fas fa-trash mr-sm-1"
+          ></i>
+          Delete progress file
+        </h2>
+      </div>
+    </div>
+  `;
+};
 const renderProgressCards = (progressFileJSONdata) => {
+  console.log(progressFileJSONdata);
   //sort progressFileJSONdata by date to place newest cards on top
   progressFileJSONdata.sort((a, b) => {
     return new Date(b["last-modified"]) - new Date(a["last-modified"]);
   });
 
-  const cardContainer = document.getElementById("resume-curation-container");
-
-  const progressCards = progressFileJSONdata.map((progressFile) => {
-    console.log(progressFile);
-    let progressFileImage =
-      progressFile["digital-metadata"]["banner-image-path"] || "";
-
-    if (progressFileImage === "") {
-      progressFileImage = `
-          <img
-            src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80"
-            alt="Dataset banner image placeholder"
-            style="height: 80px; width: 80px"
-          />
-        `;
-    } else {
-      progressFileImage = `
-          <img
-            src='${progressFileImage}'
-            alt="Dataset banner image"
-            style="height: 80px; width: 80px"
-          />
-        `;
+  //sort progressFileJSONdata into two rows one with property "previous-guided-upload-dataset-name"
+  //and one without property "previous-guided-upload-dataset-name"
+  const progressDataAlreadyUploadedToPennsieve = progressFileJSONdata.filter(
+    (progressFileJSONobj) => {
+      return progressFileJSONobj["previous-guided-upload-dataset-name"];
     }
-    const progressFileName = progressFile["digital-metadata"]["name"] || "";
-    const progressFileSubtitle =
-      progressFile["digital-metadata"]["subtitle"] || "No designated subtitle";
-    const progressFileOwnerName =
-      progressFile["digital-metadata"]["pi-owner"]["name"] ||
-      "Not designated yet";
+  );
+  const progressDataNotYetUploadedToPennsieve = progressFileJSONdata.filter(
+    (progressFileJSONobj) => {
+      return !progressFileJSONobj["previous-guided-upload-dataset-name"];
+    }
+  );
+  //Add the progress cards that have already been uploaded to Pennsieve
+  //to their container (datasets that have the sodaJSONObj["previous-guided-upload-dataset-name"] property)
+  document.getElementById("guided-div-update-uploaded-cards").innerHTML =
+    progressDataAlreadyUploadedToPennsieve
+      .map((progressFile) => generateProgressCardElement(progressFile))
+      .join("\n");
+  //Add the progress cards that have not yet been uploaded to Pennsieve
+  //to their container (datasets that do not have the sodaJSONObj["previous-guided-upload-dataset-name"] property)
+  document.getElementById("guided-div-resume-progress-cards").innerHTML =
+    progressDataNotYetUploadedToPennsieve
+      .map((progressFile) => generateProgressCardElement(progressFile))
+      .join("\n");
 
-    const progressFileLastModified = new Date(
-      progressFile["last-modified"]
-    ).toLocaleString([], {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-    });
-
-    return `
-      <div class="guided--dataset-card">
-        ${progressFileImage /* banner image */}     
-          
-        <div class="guided--dataset-card-body">
-          <div class="guided--dataset-card-row">
-            <h1
-              class="guided--text-dataset-card progress-file-name progress-card-popover"
-              data-content="Dataset name: ${progressFileName}"
-              rel="popover"
-              data-placement="bottom"
-              data-trigger="hover"
-            >${progressFileName}</h1>
-          </div>
-          <div class="guided--dataset-card-row">
-            <h1 
-              class="guided--text-dataset-card progress-card-popover"
-              data-content="Dataset subtitle: ${progressFileSubtitle}"
-              rel="popover"
-              data-placement="bottom"
-              data-trigger="hover"
-              style="font-weight: 400;"
-            >
-                ${
-                  progressFileSubtitle.length > 70
-                    ? `${progressFileSubtitle.substring(0, 70)}...`
-                    : progressFileSubtitle
-                }
-            </h1>
-          </div>
-          <div class="guided--dataset-card-row">
-            <h2 class="guided--text-dataset-card-sub" style="width: auto;">
-              <i
-                class="fas fa-clock-o progress-card-popover"
-                data-content="Last modified: ${progressFileLastModified}"
-                rel="popover"
-                data-placement="bottom"
-                data-trigger="hover"
-              ></i>
-            </h2>
-            <h1 class="guided--text-dataset-card ml-sm-1">${progressFileLastModified}</h1>
-          </div>
-        </div>
-        <div class="guided--container-dataset-card-center">
-          <button
-            class="ui positive button guided--button-footer"
-            style="
-              background-color: var(--color-light-green) !important;
-              width: 160px !important;
-              margin: 4px;
-              margin-bottom: 15px;
-            "
-            onClick="guidedResumeProgress($(this))"
-          >
-            Continue curating
-          </button>
-          <h2 class="guided--text-dataset-card" style="width: auto; text-decoration: underline; cursor: pointer;" onclick="deleteProgressCard(this)">
-            <i
-              class="fas fa-trash mr-sm-1"
-            ></i>
-            Delete progress file
-          </h2>
-        </div>
-      </div>`;
-  });
-  cardContainer.innerHTML = progressCards.join("\n");
   $(".progress-card-popover").popover();
 };
 const setActiveCapsule = (targetPageID) => {
@@ -511,12 +535,25 @@ const guidedPrepareHomeScreen = async () => {
   $("#guided-button-start-new-curate").css("display", "flex");
   $("#continue-curating-existing").css("display", "flex");
 
+  const datasetCardsRadioButtonsContainer = document.getElementById(
+    "guided-div-dataset-cards-radio-buttons"
+  );
+  const inProgressCardsContainer = document.getElementById(
+    "guided-div-resume-progress-cards"
+  );
+  const uploadedProgressCardsContainer = document.getElementById(
+    "guided-div-update-uploaded-cards"
+  );
+  inProgressCardsContainer.classList.add("hidden");
+  uploadedProgressCardsContainer.classList.add("hidden");
+
   const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
   //render progress resumption cards from progress file array on first page of guided mode
   if (guidedSavedProgressFiles.length != 0) {
     $("#guided-continue-curation-header").text(
       "Or continue curating a previously started dataset below."
     );
+    datasetCardsRadioButtonsContainer.classList.remove("hidden");
     const progressFileData = await getAllProgressFileData(
       guidedSavedProgressFiles
     );
@@ -525,6 +562,7 @@ const guidedPrepareHomeScreen = async () => {
     $("#guided-continue-curation-header").text(
       "After creating your dataset, your progress will be saved and resumable below."
     );
+    datasetCardsRadioButtonsContainer.classList.add("hidden");
   }
   //empty new-dataset-lottie-container div
   document.getElementById("new-dataset-lottie-container").innerHTML = "";
@@ -7874,13 +7912,17 @@ $(document).ready(() => {
       );
       console.log(datasetUploadResponse);
 
-      //upload dataset subtitle
-      let datasetSubtitleUploadResponse = await guidedAddDatasetSubtitle(
-        guidedBfAccount,
-        guidedDatasetName,
-        guidedDatasetSubtitle
-      );
-      console.log(datasetSubtitleUploadResponse);
+      try {
+        //upload dataset subtitle
+        let datasetSubtitleUploadResponse = await guidedAddDatasetSubtitle(
+          guidedBfAccount,
+          guidedDatasetName,
+          guidedDatasetSubtitle
+        );
+        console.log(datasetSubtitleUploadResponse);
+      } catch (error) {
+        clientError(error);
+      }
 
       let datasetDescriptionResponse = await guidedAddDatasetDescription(
         guidedBfAccount,
@@ -8201,21 +8243,25 @@ $(document).ready(() => {
         clearInterval(timerProgress);
         // electron.powerSaveBlocker.stop(prevent_sleep_id)
         updateDatasetUploadProgressTable({
-          "upload status": "Dataset successfully uploaded to Pennsieve!",
+          "Upload status": "Dataset successfully uploaded to Pennsieve!",
         });
 
         //Save a copy of the sodaJSONObj on this upload to compare it while prepping other uploads
-        sodaJSONObj["previous-guided-upload-sodaJSONObj"] = { ...sodaJSONObj };
+        sodaJSONObj["previous-guided-upload-dataset-name"] =
+          sodaJSONObj["digital-metadata"]["name"];
         saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
-        swal.fire({
+        await swal.fire({
           title: "Dataset uploaded!",
           text: "Your dataset has been uploaded to Pennsieve!",
           icon: "success",
           confirmButtonText: "OK",
           backdrop: "rgba(0,0,0, 0.4)",
         });
-        showMainNav();
+        //Exit back to home page
+        traverseToTab("guided-dataset-starting-point-tab");
+        hideSubNavAndShowMainNav("back");
+        $("#guided-button-cancel-create-new-dataset").click();
       }
     };
     // Progress tracking function for main curate
@@ -9037,13 +9083,13 @@ $(document).ready(() => {
       if (pageBeingLeftID === "guided-add-code-metadata-tab") {
         const requiredCodeDescriptionFilePath =
           sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"];
-        if (!requiredCodeDescriptionFilePath) {
+        /*if (!requiredCodeDescriptionFilePath) {
           errorArray.push({
             type: "notyf",
             message: "Please import a code_description file",
           });
           throw errorArray;
-        }
+        }*/
       }
       if (pageBeingLeftID === "guided-banner-image-tab") {
         if (sodaJSONObj["digital-metadata"]["banner-image-path"] == undefined) {
