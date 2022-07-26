@@ -8,10 +8,11 @@ const updateDatasetUploadProgressTable = (progressObject) => {
   const datasetUploadTableBody = document.getElementById(
     "guided-tbody-dataset-upload"
   );
-  //remove dtasetUploadTableBody children that don't have class guided-upload-progress-bar-tr
+  console.log(datasetUploadTableBody.children);
+  //remove dtasetUploadTableBody children that don't have the id guided-upload-progress-bar-tr
   for (const child of datasetUploadTableBody.children) {
     console.log(child);
-    if (!child.classList.contains("guided-upload-progress-bar-tr")) {
+    if (!child.getAttribute("id") === "guided-upload-progress-bar-tr") {
       datasetUploadTableBody.removeChild(child);
     }
   }
