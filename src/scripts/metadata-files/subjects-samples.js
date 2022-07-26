@@ -619,7 +619,7 @@ function populateRRID(strain, type) {
       $("#bootbox-" + type + "-strain-RRID").val("");
       Swal.fire({
         title: `Failed to retrieve the RRID for "${strain}" from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
-        text: "Please check your Internet Connection or contact us at sodasparc@gmail.com",
+        text: "Please check your Internet Connection or contact us at help@fairdataihub.org",
         showCancelButton: false,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
@@ -744,6 +744,7 @@ async function edit_current_protocol_id(ev) {
   var type = $(currentRow)[0].cells[2].innerText;
   var relation = $(currentRow)[0].cells[3].innerText;
   var desc = $(currentRow)[0].cells[4].innerText;
+  let protocolLink = "";
 
   const { value: values } = await Swal.fire({
     title: "Edit protocol",
@@ -751,37 +752,59 @@ async function edit_current_protocol_id(ev) {
       '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL" value="' +
       link +
       '"/>' +
-      '<label>Protocol Type: <i class="fas fa-info-circle swal-popover" data-content="This will state whether your protocol is a \'URL\' or \'DOI\' item. Use one of those two items to reference the type of identifier." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-select" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
-      '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="A prespecified list of relations for common protocols used in SPARC datasets. </br> The value in this field must be read as the \'relationship that this dataset has to the specified protocol\'." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsProtocolFor">IsProtocolFor</option><option value="HasProtocol">HasProtocol</option><option value="IsSoftwareFor">IsSoftwareFor</option><option value="HasSoftware">HasSoftware</option></select>' +
       '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description">' +
       desc +
       "</textarea>",
     focusConfirm: false,
+    width: "38rem",
     showCancelButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     reverseButtons: reverseSwalButtons,
-    onOpen: () => {
+    didOpen: () => {
       $("#DD-protocol-link-select").val(type);
       $("#DD-protocol-link-relation").val(relation);
     },
     preConfirm: () => {
+      let link = $("#DD-protocol-link").val();
       if ($("#DD-protocol-link").val() === "") {
         Swal.showValidationMessage(`Please enter a link!`);
-      }
-      if ($("#DD-protocol-link-select").val() === "Select") {
-        Swal.showValidationMessage(`Please choose a link type!`);
-      }
-      if ($("#DD-protocol-link-relation").val() === "Select") {
-        Swal.showValidationMessage(`Please choose a link relation!`);
+      } else {
+        if (doiRegex.declared({ exact: true }).test(link) === true) {
+          //format must begin with doi:
+          //example: doi:10.1000/xyz000
+          protocolLink = "DOI";
+        } else {
+          //check if link is a valid URL
+          if (validator.isURL(link) != true) {
+            Swal.showValidationMessage("Please enter a valid link");
+          } else {
+            if (link.includes("doi")) {
+              //link is valid url and checks for 'doi' in link
+              protocolLink = "DOI";
+            } else {
+              protocolLink = "URL";
+            }
+          }
+        }
       }
       if ($("#DD-protocol-description").val() === "") {
         Swal.showValidationMessage(`Please enter a short description!`);
       }
+      let duplicate = checkLinkDuplicate(
+        $("#DD-protocol-link").val(),
+        document.getElementById("protocol-link-table-dd")
+      );
+      if (duplicate) {
+        Swal.showValidationMessage(
+          "Duplicate protocol. The protocol you entered is already added."
+        );
+      }
+      //need to check for duplicates here
       return [
         $("#DD-protocol-link").val(),
-        $("#DD-protocol-link-select").val(),
-        $("#DD-protocol-link-relation").val(),
+        protocolLink,
+        "IsProtocolFor",
         $("#DD-protocol-description").val(),
       ];
     },
@@ -807,7 +830,6 @@ async function edit_current_additional_link_id(ev) {
       '<label>URL or DOI: <i class="fas fa-info-circle swal-popover" data-content="Specify your actual URL (if resource is public) or DOI (if resource is private). This can be web links to repositories or papers (DOI)."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-other-link" class="swal2-input" placeholder="Enter a URL" value="' +
       link +
       '"/>' +
-      '<label>Link Type: <i class="fas fa-info-circle swal-popover" data-content="This will state whether your link is a \'URL\' or \'DOI\' item. Use one of those two items to reference the type of link." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-other-link-type" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
       '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="A prespecified list of relations for common URLs or DOIs used in SPARC datasets. </br> The value in this field must be read as the \'relationship that this dataset has to the specified URL/DOI\'."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-other-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsCitedBy">IsCitedBy</option><option value="Cites">Cites</option><option value="IsSupplementTo">IsSupplementTo</option><option value="IsSupplementedBy">IsSupplementedBy</option><option value="IsContinuedByContinues">IsContinuedByContinues</option><option value="IsDescribedBy">IsDescribedBy</option><option value="Describes">Describes</option><option value="HasMetadata">HasMetadata</option><option value="IsMetadataFor">IsMetadataFor</option><option value="HasVersion">HasVersion</option><option value="IsVersionOf">IsVersionOf</option><option value="IsNewVersionOf">IsNewVersionOf</option><option value="IsPreviousVersionOf">IsPreviousVersionOf</option><option value="IsPreviousVersionOf">IsPreviousVersionOf</option><option value="HasPart">HasPart</option><option value="IsPublishedIn">IsPublishedIn</option><option value="IsReferencedBy">IsReferencedBy</option><option value="References">References</option><option value="IsDocumentedBy">IsDocumentedBy</option><option value="Documents">Documents</option><option value="IsCompiledBy">IsCompiledBy</option><option value="Compiles">Compiles</option><option value="IsVariantFormOf">IsVariantFormOf</option><option value="IsOriginalFormOf">IsOriginalFormOf</option><option value="IsIdenticalTo">IsIdenticalTo</option><option value="IsReviewedBy">IsReviewedBy</option><option value="Reviews">Reviews</option><option value="IsDerivedFrom">IsDerivedFrom</option><option value="IsSourceOf">IsSourceOf</option><option value="IsRequiredBy">IsRequiredBy</option><option value="Requires">Requires</option><option value="IsObsoletedBy">IsObsoletedBy</option><option value="Obsoletes">Obsoletes</option></select>' +
       '<label>Link description: <i class="fas fa-info-circle swal-popover" data-content="Provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-other-description" class="swal2-textarea" placeholder="Enter a description">' +
       desc +
@@ -1680,7 +1702,7 @@ function loadSamplesDataToTable() {
   } else {
     Swal.fire({
       title: "Loaded successfully!",
-      html: 'Add or edit your sample_id(s) in the following table. <br><br><b>Note</b>:: Any value that does not follow SPARC standards (For example: Values for the fields: "Sample type", "Laterality", and "Plane of section") will be not be imported by SODA.',
+      html: 'Add or edit your sample_id(s) in the following table. <br><br><b>Note</b>: Any value that does not follow SPARC standards (For example: Values for the fields: "Sample type", "Laterality", and "Plane of section") will be not be imported by SODA.',
       icon: "success",
       showConfirmButton: true,
       heightAuto: false,
@@ -2308,7 +2330,7 @@ function importExistingSubjectsFile() {
           Swal.showLoading();
         },
       }).then((result) => {});
-      setTimeout(loadSubjectsFileToDataframe(filePath), 1000);
+      setTimeout(loadSubjectsFileToDataframe, 1000, filePath);
     }
   }
 }
@@ -2367,7 +2389,7 @@ function importExistingSamplesFile() {
   }
 }
 
-function checkBFImportSubjects() {
+async function checkBFImportSubjects() {
   Swal.fire({
     title: "Importing the subjects.xlsx file",
     html: "Please wait...",
@@ -2388,49 +2410,56 @@ function checkBFImportSubjects() {
     .find(".subjects-form-entry")) {
     fieldEntries.push(field.name.toLowerCase());
   }
-  client.invoke(
-    "api_import_bf_metadata_file",
-    "subjects.xlsx",
-    fieldEntries,
-    defaultBfAccount,
-    $("#bf_dataset_load_subjects").text().trim(),
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          icon: "error",
-          html: emessage,
-        });
+  let bfDataset = document
+    .getElementById("bf_dataset_load_subjects")
+    .innerText.trim();
 
-        // log the error to analytics
-        logMetadataForAnalytics(
-          "Error",
-          MetadataAnalyticsPrefix.SUBJECTS,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Existing",
-          Destinations.PENNSIEVE
-        );
-      } else {
-        // log the success to analytics
-        logMetadataForAnalytics(
-          "Success",
-          MetadataAnalyticsPrefix.SUBJECTS,
-          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-          "Existing",
-          Destinations.PENNSIEVE
-        );
-        subjectsTableData = res;
-        loadDataFrametoUI("bf");
+  log.info(`Getting subjects.xlsx for dataset ${bfDataset} from Pennsieve.`);
+  try {
+    let import_metadata_file = await client.get(
+      `/prepare_metadata/import_metadata_file`,
+      {
+        params: {
+          selected_account: defaultBfAccount,
+          selected_dataset: bfDataset,
+          file_type: "subjects.xlsx",
+          ui_fields: fieldEntries.toString(),
+        },
       }
-    }
-  );
+    );
+    let res = import_metadata_file.data.subject_file_rows;
+
+    // log the success to analytics
+    logMetadataForAnalytics(
+      "Success",
+      MetadataAnalyticsPrefix.SUBJECTS,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      "Existing",
+      Destinations.PENNSIEVE
+    );
+    subjectsTableData = res;
+    loadDataFrametoUI("bf");
+  } catch (error) {
+    clientError(error);
+    Swal.fire({
+      backdrop: "rgba(0, 0, 0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      text: error.response.data.message,
+    });
+
+    // log the error to analytics
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.SUBJECTS,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.PENNSIEVE
+    );
+  }
 }
 
-function checkBFImportSamples() {
+async function checkBFImportSamples() {
   Swal.fire({
     title: "Importing the samples.xlsx file",
     html: "Please wait...",
@@ -2451,46 +2480,53 @@ function checkBFImportSamples() {
     .find(".samples-form-entry")) {
     fieldEntries.push(field.name.toLowerCase());
   }
-  client.invoke(
-    "api_import_bf_metadata_file",
-    "samples.xlsx",
-    fieldEntries,
-    defaultBfAccount,
-    $("#bf_dataset_load_samples").text().trim(),
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          icon: "error",
-          html: emessage,
-        });
 
-        // log the error to analytics
-        logMetadataForAnalytics(
-          "Error",
-          MetadataAnalyticsPrefix.SAMPLES,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Existing",
-          Destinations.PENNSIEVE
-        );
-      } else {
-        // log the success to analytics
-        logMetadataForAnalytics(
-          "Success",
-          MetadataAnalyticsPrefix.SAMPLES,
-          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-          "Existing",
-          Destinations.PENNSIEVE
-        );
-        samplesTableData = res;
-        loadDataFrametoUISamples("bf");
+  let bfDataset = document.getElementById("bf_dataset_load_samples").innerText;
+
+  log.info(`Getting samples.xlsx for dataset ${bfDataset} from Pennsieve.`);
+  try {
+    let importMetadataResponse = await client.get(
+      `/prepare_metadata/import_metadata_file`,
+      {
+        params: {
+          file_type: "samples.xlsx",
+          selected_account: defaultBfAccount,
+          selected_dataset: bfDataset,
+          ui_fields: fieldEntries.toString(),
+        },
       }
-    }
-  );
+    );
+
+    let res = importMetadataResponse.data.sample_file_rows;
+
+    // log the success to analytics
+    logMetadataForAnalytics(
+      "Success",
+      MetadataAnalyticsPrefix.SAMPLES,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      "Existing",
+      Destinations.PENNSIEVE
+    );
+    samplesTableData = res;
+    loadDataFrametoUISamples("bf");
+  } catch (error) {
+    clientError(error);
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      text: error.response.data.message,
+    });
+
+    // log the error to analytics
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.SAMPLES,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.PENNSIEVE
+    );
+  }
 }
 
 function loadDataFrametoUI(type) {
@@ -2618,42 +2654,65 @@ function protocolAccountQuestion(type, changeAccountBoolean) {
             showCancelButton: true,
             confirmButtonText: "Add",
             cancelButtonText: "Cancel",
+            width: "38rem",
             showCancelButton: true,
             allowEscapeKey: false,
             allowOutsideClick: false,
             html:
               '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL">' +
-              '<label>Protocol Type: <i class="fas fa-info-circle swal-popover" data-content="This will state whether your protocol is a \'URL\' or \'DOI\' item. Use one of those two items to reference the type of protocol." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-select" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
-              '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="A prespecified list of relations for common protocols used in SPARC datasets. </br>  The value in this field must be read as the \'relationship that this dataset has to the specified protocol\'." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsProtocolFor">IsProtocolFor</option><option value="HasProtocol">HasProtocol</option><option value="IsSoftwareFor">IsSoftwareFor</option><option value="HasSoftware">HasSoftware</option></select>' +
               '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description"></textarea>',
             focusConfirm: false,
             preConfirm: () => {
-              if ($("#DD-protocol-link").val() === "") {
-                Swal.showValidationMessage(`Please enter a link!`);
-              }
-              if ($("#DD-protocol-link-select").val() === "Select") {
-                Swal.showValidationMessage(`Please choose a link type!`);
-              }
-              if ($("#DD-protocol-link-relation").val() === "Select") {
-                Swal.showValidationMessage(`Please choose a link relation!`);
-              }
+              var link = $("#DD-protocol-link").val();
+              let protocolLink = "";
+
               if ($("#DD-protocol-description").val() === "") {
                 Swal.showValidationMessage(`Please enter a short description!`);
               }
+
+              var duplicate = checkLinkDuplicate(
+                link,
+                document.getElementById("protocol-link-table-dd")
+              );
+              if (duplicate) {
+                Swal.showValidationMessage(
+                  "Duplicate protocol. The protocol you entered is already added."
+                );
+              }
+
+              if (link === "") {
+                Swal.showValidationMessage(`Please enter a link!`);
+              } else {
+                if (doiRegex.declared({ exact: true }).test(link) === true) {
+                  protocolLink = "DOI";
+                } else {
+                  //check if link is valid
+                  if (validator.isURL(link) != true) {
+                    Swal.showValidationMessage(`Please enter a valid link`);
+                  } else {
+                    //link is valid url and check for 'doi' in link
+                    if (link.includes("doi")) {
+                      protocolLink = "DOI";
+                    } else {
+                      protocolLink = "URL";
+                    }
+                  }
+                }
+              }
               return [
                 $("#DD-protocol-link").val(),
-                $("#DD-protocol-link-select").val(),
-                $("#DD-protocol-link-relation").val(),
+                protocolLink,
+                "IsProtocolFor",
                 $("#DD-protocol-description").val(),
               ];
             },
           });
-          if (formValues) {
+          if (formValue) {
             addProtocolLinktoTableDD(
-              formValues[0],
-              formValues[1],
-              formValues[2],
-              formValues[3]
+              formValue[0],
+              formValue[1],
+              formValue[2],
+              formValue[3]
             );
           }
         }
@@ -2855,6 +2914,7 @@ async function showProtocolCredentials(email, filetype) {
         showCancelButton: true,
         reverseButtons: reverseSwalButtons,
         heightAuto: false,
+        width: "38rem",
         backdrop: "rgba(0,0,0, 0.4)",
         didOpen: () => {
           $(".swal-popover").popover();
@@ -2924,8 +2984,7 @@ async function addAdditionalLink() {
     title: "Add additional link",
     html:
       '<label>URL or DOI: <i class="fas fa-info-circle swal-popover" data-content="Specify your actual URL (if resource is public) or DOI (if resource is private). This can be web links to repositories or papers (DOI)."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-other-link" class="swal2-input" placeholder="Enter a URL">' +
-      '<label>Link Type: <i class="fas fa-info-circle swal-popover" data-content="This will state whether your protocol is a \'URL\' or \'DOI\' item. Use one of those two items to reference the type of identifier." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-other-link-type" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
-      '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="A prespecified list of relations for common URLs or DOIs used in SPARC datasets. </br>  The value in this field must be read as the \'relationship that this dataset has to the specified URL/DOI\'." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-other-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsCitedBy">IsCitedBy</option><option value="Cites">Cites</option><option value="IsSupplementTo">IsSupplementTo</option><option value="IsSupplementedBy">IsSupplementedBy</option><option value="IsContinuedByContinues">IsContinuedByContinues</option><option value="IsDescribedBy">IsDescribedBy</option><option value="Describes">Describes</option><option value="HasMetadata">HasMetadata</option><option value="IsMetadataFor">IsMetadataFor</option><option value="HasVersion">HasVersion</option><option value="IsVersionOf">IsVersionOf</option><option value="IsNewVersionOf">IsNewVersionOf</option><option value="IsPreviousVersionOf">IsPreviousVersionOf</option><option value="IsPreviousVersionOf">IsPreviousVersionOf</option><option value="HasPart">HasPart</option><option value="IsPublishedIn">IsPublishedIn</option><option value="IsReferencedBy">IsReferencedBy</option><option value="References">References</option><option value="IsDocumentedBy">IsDocumentedBy</option><option value="Documents">Documents</option><option value="IsCompiledBy">IsCompiledBy</option><option value="Compiles">Compiles</option><option value="IsVariantFormOf">IsVariantFormOf</option><option value="IsOriginalFormOf">IsOriginalFormOf</option><option value="IsIdenticalTo">IsIdenticalTo</option><option value="IsReviewedBy">IsReviewedBy</option><option value="Reviews">Reviews</option><option value="IsDerivedFrom">IsDerivedFrom</option><option value="IsSourceOf">IsSourceOf</option><option value="IsRequiredBy">IsRequiredBy</option><option value="Requires">Requires</option><option value="IsObsoletedBy">IsObsoletedBy</option><option value="Obsoletes">Obsoletes</option></select>' +
+      '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="A prespecified list of relations for common URLs or DOIs used in SPARC datasets. </br> The value in this field must be read as the \'relationship that this dataset has to the specified URL/DOI\'."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-other-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsCitedBy">IsCitedBy</option><option value="Cites">Cites</option><option value="IsSupplementTo">IsSupplementTo</option><option value="IsSupplementedBy">IsSupplementedBy</option><option value="IsContinuedByContinues">IsContinuedByContinues</option><option value="IsDescribedBy">IsDescribedBy</option><option value="Describes">Describes</option><option value="HasMetadata">HasMetadata</option><option value="IsMetadataFor">IsMetadataFor</option><option value="HasVersion">HasVersion</option><option value="IsVersionOf">IsVersionOf</option><option value="IsNewVersionOf">IsNewVersionOf</option><option value="IsPreviousVersionOf">IsPreviousVersionOf</option><option value="IsPreviousVersionOf">IsPreviousVersionOf</option><option value="HasPart">HasPart</option><option value="IsPublishedIn">IsPublishedIn</option><option value="IsReferencedBy">IsReferencedBy</option><option value="References">References</option><option value="IsDocumentedBy">IsDocumentedBy</option><option value="Documents">Documents</option><option value="IsCompiledBy">IsCompiledBy</option><option value="Compiles">Compiles</option><option value="IsVariantFormOf">IsVariantFormOf</option><option value="IsOriginalFormOf">IsOriginalFormOf</option><option value="IsIdenticalTo">IsIdenticalTo</option><option value="IsReviewedBy">IsReviewedBy</option><option value="Reviews">Reviews</option><option value="IsDerivedFrom">IsDerivedFrom</option><option value="IsSourceOf">IsSourceOf</option><option value="IsRequiredBy">IsRequiredBy</option><option value="Requires">Requires</option><option value="IsObsoletedBy">IsObsoletedBy</option><option value="Obsoletes">Obsoletes</option></select>' +
       '<label>Link description: <i class="fas fa-info-circle swal-popover" data-content="Provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-other-description" class="swal2-textarea" placeholder="Enter a description"></textarea>',
 
     focusConfirm: false,
@@ -2933,6 +2992,7 @@ async function addAdditionalLink() {
     cancelButtonText: "Cancel",
     customClass: "swal-content-additional-link",
     showCancelButton: true,
+    width: "38rem",
     reverseButtons: reverseSwalButtons,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
@@ -2941,15 +3001,32 @@ async function addAdditionalLink() {
     },
     preConfirm: () => {
       var link = $("#DD-other-link").val();
-      if ($("#DD-other-link-type").val() === "Select") {
-        Swal.showValidationMessage(`Please select a type of links!`);
-      }
+      let confirm_btn = document.getElementsByClassName("swal2-confirm")[0];
+      let cancel_btn = document.getElementsByClassName("swal2-cancel")[0];
       if (link === "") {
-        Swal.showValidationMessage(`Please enter a link.`);
+        Swal.showValidationMessage(`Please enter a link!`);
+        confirm_btn.removeAttribute("disabled");
+        cancel_btn.removeAttribute("disabled");
+      } else {
+        if (doiRegex.declared({ exact: true }).test(link) === true) {
+          protocolLink = "DOI";
+        } else {
+          //check if link is valid
+          if (validator.isURL(link) != true) {
+            Swal.showValidationMessage(`Please enter a valid link`);
+            confirm_btn.removeAttribute("disabled");
+            cancel_btn.removeAttribute("disabled");
+          } else {
+            //link is valid url and check for 'doi' in link
+            if (link.includes("doi")) {
+              protocolLink = "DOI";
+            } else {
+              protocolLink = "URL";
+            }
+          }
+        }
       }
-      if ($("#DD-other-link-relation").val() === "Select") {
-        Swal.showValidationMessage(`Please enter a link relation.`);
-      }
+
       if ($("#DD-other-description").val() === "") {
         Swal.showValidationMessage(`Please enter a short description.`);
       }
@@ -2959,12 +3036,17 @@ async function addAdditionalLink() {
       );
       if (duplicate) {
         Swal.showValidationMessage(
-          "Duplicate URL/DOI. The URL/DOI you entered is already added."
+          `Duplicate ${protocolLink}. The ${protocolLink} you entered is already added.`
         );
       }
+
+      if ($("#DD-other-link-relation").val() === "Select") {
+        Swal.showValidationMessage("Please select a link relation");
+      }
+
       return [
         $("#DD-other-link").val(),
-        $("#DD-other-link-type").val(),
+        protocolLink,
         $("#DD-other-link-relation").val(),
         $("#DD-other-description").val(),
       ];

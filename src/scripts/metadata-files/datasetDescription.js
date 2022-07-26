@@ -789,82 +789,87 @@ async function generateDDFile(uploadBFBoolean) {
   studyInfoValueObject["study technique"] = studyTechniqueArr;
   studyInfoValueObject["study approach"] = studyApproachesArr;
 
-  ///////////// stringify JSON objects //////////////////////
-  json_str_ds = JSON.stringify(datasetInfoValueObj);
-  json_str_study = JSON.stringify(studyInfoValueObject);
-  json_str_con = JSON.stringify(contributorObj);
-  json_str_related_info = JSON.stringify(relatedInfoArr);
-
   /// get current, selected Pennsieve account
   var bfaccountname = $("#current-bf-account").text();
+  let bf_dataset = document
+    .getElementById("bf_dataset_load_dd")
+    .innerText.trim();
 
+  log.info(`Generating a dataset description file.`);
   /// call python function to save file
-  client.invoke(
-    "api_save_ds_description_file",
-    uploadBFBoolean,
-    defaultBfAccount,
-    $("#bf_dataset_load_dd").text().trim(),
-    ddDestinationPath,
-    json_str_ds,
-    json_str_study,
-    json_str_con,
-    json_str_related_info,
-    async (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        Swal.fire({
-          title: "Failed to generate the dataset_description file",
-          html: emessage,
-          icon: "warning",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-
-        // log the failure to generate the description file to analytics at this step in the Generation process
-        logMetadataForAnalytics(
-          "Error",
-          MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Generate",
-          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
-        );
-      } else {
-        if (uploadBFBoolean) {
-          var successMessage =
-            "Successfully generated the dataset_description.xlsx file on your Pennsieve dataset.";
-        } else {
-          var successMessage =
-            "Successfully generated the dataset_description.xlsx file at the specified location.";
-        }
-
-        Swal.fire({
-          title: successMessage,
-          icon: "success",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-
-        // log the successful attempt to generate the description file in analytics at this step in the Generation process
-        logMetadataForAnalytics(
-          "Success",
-          MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Generate",
-          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
-        );
-
-        // log the size of the metadata file that was generated at varying levels of granularity
-        const size = res;
-        logMetadataSizeForAnalytics(
-          uploadBFBoolean,
-          "dataset_description.xlsx",
-          size
-        );
+  try {
+    let save_ds_desc_file = await client.post(
+      `/prepare_metadata/dataset_description_file`,
+      {
+        selected_account: bfaccountname,
+        selected_dataset: bf_dataset,
+        filepath: ddDestinationPath,
+        dataset_str: datasetInfoValueObj,
+        study_str: studyInfoValueObject,
+        contributor_str: contributorObj,
+        related_info_str: relatedInfoArr,
+      },
+      {
+        params: {
+          upload_boolean: uploadBFBoolean,
+        },
       }
+    );
+
+    let res = save_ds_desc_file.data.size;
+
+    if (uploadBFBoolean) {
+      var successMessage =
+        "Successfully generated the dataset_description.xlsx file on your Pennsieve dataset.";
+    } else {
+      var successMessage =
+        "Successfully generated the dataset_description.xlsx file at the specified location.";
     }
-  );
+
+    Swal.fire({
+      title: successMessage,
+      icon: "success",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    // log the successful attempt to generate the description file in analytics at this step in the Generation process
+    logMetadataForAnalytics(
+      "Success",
+      MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Generate",
+      uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+    );
+
+    // log the size of the metadata file that was generated at varying levels of granularity
+    const size = res;
+    logMetadataSizeForAnalytics(
+      uploadBFBoolean,
+      "dataset_description.xlsx",
+      size
+    );
+  } catch (error) {
+    clientError(error);
+    let emessage = userErrorMessage(error);
+
+    Swal.fire({
+      title: "Failed to generate the dataset_description file",
+      html: emessage,
+      icon: "warning",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    // log the failure to generate the description file to analytics at this step in the Generation process
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Generate",
+      uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+    );
+  }
 }
 
 ///// Functions to grab each piece of info to generate the dd file
@@ -956,8 +961,6 @@ async function addProtocol() {
     title: "Add a protocol",
     html:
       '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL">' +
-      '<label>Protocol Type: <i class="fas fa-info-circle swal-popover" data-content="This will state whether your link is a \'URL\' or \'DOI\' item. Use one of those two items to reference the type of identifier." "rel="popover" data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-select" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
-      '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="A prespecified list of relations for common protocols used in SPARC datasets. </br> The value in this field must be read as the \'relationship that this dataset has to the specified protocol\'."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsProtocolFor">IsProtocolFor</option><option value="HasProtocol">HasProtocol</option><option value="IsSoftwareFor">IsSoftwareFor</option><option value="HasSoftware">HasSoftware</option></select>' +
       '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description"></textarea>',
     focusConfirm: false,
     confirmButtonText: "Add",
@@ -966,20 +969,32 @@ async function addProtocol() {
     showCancelButton: true,
     reverseButtons: reverseSwalButtons,
     heightAuto: false,
+    width: "38rem",
     backdrop: "rgba(0,0,0, 0.4)",
     didOpen: () => {
       $(".swal-popover").popover();
     },
     preConfirm: () => {
       var link = $("#DD-protocol-link").val();
+      let protocolLink = "";
       if (link === "") {
         Swal.showValidationMessage(`Please enter a link!`);
-      }
-      if ($("#DD-protocol-link-select").val() === "Select") {
-        Swal.showValidationMessage(`Please choose a link type!`);
-      }
-      if ($("#DD-protocol-link-relation").val() === "Select") {
-        Swal.showValidationMessage(`Please choose a link relation!`);
+      } else {
+        if (doiRegex.declared({ exact: true }).test(link) === true) {
+          protocolLink = "DOI";
+        } else {
+          //check if link is valid
+          if (validator.isURL(link) != true) {
+            Swal.showValidationMessage(`Please enter a valid link`);
+          } else {
+            //link is valid url and check for 'doi' in link
+            if (link.includes("doi")) {
+              protocolLink = "DOI";
+            } else {
+              protocolLink = "URL";
+            }
+          }
+        }
       }
       if ($("#DD-protocol-description").val() === "") {
         Swal.showValidationMessage(`Please enter a short description!`);
@@ -995,8 +1010,8 @@ async function addProtocol() {
       }
       return [
         $("#DD-protocol-link").val(),
-        $("#DD-protocol-link-select").val(),
-        $("#DD-protocol-link-relation").val(),
+        protocolLink,
+        "IsProtocolFor",
         $("#DD-protocol-description").val(),
       ];
     },
@@ -2266,7 +2281,7 @@ function importExistingDDFile() {
   }
 }
 
-function checkBFImportDD() {
+async function checkBFImportDD() {
   Swal.fire({
     title: "Importing the dataset_description.xlsx file",
     html: "Please wait...",
@@ -2280,93 +2295,96 @@ function checkBFImportDD() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
-  client.invoke(
-    "api_import_bf_metadata_file",
-    "dataset_description.xlsx",
-    "",
-    defaultBfAccount,
-    $("#bf_dataset_load_dd").text().trim(),
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          icon: "error",
-          html: emessage,
-        });
+  });
 
-        // log the error to analytics at all levels of granularity
-        logMetadataForAnalytics(
-          "Error",
-          MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Existing",
-          Destinations.PENNSIEVE
-        );
-      } else {
-        loadDDFileToUI(res, "bf");
-
-        // log the import action success to analytics
-        logMetadataForAnalytics(
-          "Success",
-          MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
-          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-          "Existing",
-          Destinations.PENNSIEVE
-        );
-      }
-    }
+  let bf_dataset = document.getElementById("bf_dataset_load_dd").innerText;
+  log.info(
+    `Importing dataset_description.xlsx file from Pennsieve for dataset ${bf_dataset}`
   );
+  try {
+    let metadata_import = await client.get(
+      `/prepare_metadata/import_metadata_file`,
+      {
+        params: {
+          selected_account: defaultBfAccount,
+          selected_dataset: bf_dataset,
+          file_type: "dataset_description.xlsx",
+        },
+      }
+    );
+    let res = metadata_import.data;
+    loadDDFileToUI(res, "bf");
+
+    // log the import action success to analytics
+    logMetadataForAnalytics(
+      "Success",
+      MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      "Existing",
+      Destinations.PENNSIEVE
+    );
+  } catch (error) {
+    clientError(error);
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      text: error.response.data.message,
+    });
+
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.PENNSIEVE
+    );
+  }
 }
 
-function loadDDfileDataframe(filePath) {
-  // new client that has a longer timeout
-  let clientLongTimeout = new zerorpc.Client({
-    timeout: 300000,
-    heartbeatInterval: 60000,
-  });
-  clientLongTimeout.connect("tcp://127.0.0.1:4242");
-  clientLongTimeout.invoke(
-    "api_load_existing_DD_file",
-    "local",
-    filePath,
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        console.log(error);
-        Swal.fire({
-          title: "Failed to load the existing dataset_description.xlsx file",
-          html: emessage,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          icon: "error",
-        });
-
-        // log the import action failure to analytics
-        logMetadataForAnalytics(
-          "Error",
-          MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Existing",
-          Destinations.LOCAL
-        );
-      } else {
-        loadDDFileToUI(res, "local");
-        // log the import action success to analytics
-        logMetadataForAnalytics(
-          "Success",
-          MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
-          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-          "Existing",
-          Destinations.LOCAL
-        );
+async function loadDDfileDataframe(filePath) {
+  try {
+    let ddFileResponse = await client.get(
+      "/prepare_metadata/dataset_description_file",
+      {
+        params: {
+          filepath: filePath,
+          import_type: "local",
+        },
       }
-    }
-  );
+    );
+
+    let ddFileData = ddFileResponse.data;
+
+    loadDDFileToUI(ddFileData, "local");
+    // log the import action success to analytics
+    logMetadataForAnalytics(
+      "Success",
+      MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      "Existing",
+      Destinations.LOCAL
+    );
+  } catch (error) {
+    clientError(error);
+    var emessage = userErrorMessage(error);
+    Swal.fire({
+      title: "Failed to load the existing dataset_description.xlsx file",
+      html: emessage,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      icon: "error",
+    });
+
+    // log the import action failure to analytics
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.LOCAL
+    );
+  }
 }
 
 function loadDDFileToUI(object, file_type) {

@@ -644,33 +644,50 @@ const nextPrev = (n) => {
     });
     // check if required metadata files are included
   } else if (n === 1 && x[currentTab].id === "metadata-files-tab") {
-    var requiredFiles = ["submission", "dataset_description", "subjects"];
-    if (
-      $(".metadata-button.button-generate-dataset.code-metadata").css(
-        "display"
-      ) === "block"
-    ) {
-      requiredFiles.push("code_description");
-    }
+    var requiredFiles = [
+      "submission",
+      "dataset_description",
+      "subjects",
+      "README",
+    ];
+    let missingFiles = [];
     var withoutExtMetadataArray = [];
     if (!("metadata-files" in sodaJSONObj)) {
       sodaJSONObj["metadata-files"] = {};
     }
-    Object.keys(sodaJSONObj["metadata-files"]).forEach((element) => {
-      if (!element.includes("-DELETED")) {
-        withoutExtMetadataArray.push(path.parse(element).name);
-      }
-    });
-    var subArrayBoolean = requiredFiles.every((val) =>
-      withoutExtMetadataArray.includes(val)
-    );
-    if (requiredFiles.includes("code_description")) {
-      var extraRequiredFile = "<li> code_description</li>";
-    } else {
-      var extraRequiredFile = "";
+    if (
+      Object.keys(sodaJSONObj["dataset-structure"]["folders"]).includes("code")
+    ) {
+      requiredFiles.push("code_description");
     }
-    if (!subArrayBoolean) {
-      var notIncludedMessage = `<div style='text-align: left'>You did not include all of the following required metadata files: <br><ol style='text-align: left'><li> submission</li><li> dataset_description</li> <li> subjects</li> ${extraRequiredFile} </ol>Are you sure you want to continue?</div>`;
+
+    if (Object.keys(sodaJSONObj["metadata-files"]).length > 0) {
+      Object.keys(sodaJSONObj["metadata-files"]).forEach((element) => {
+        let file_name = path.parse(element).name;
+        if (!element.includes("-DELETED")) {
+          withoutExtMetadataArray.push(path.parse(element).name);
+        }
+        if (requiredFiles.includes(file_name)) {
+          let element_index = requiredFiles.indexOf(file_name);
+          requiredFiles.splice(element_index, 1);
+          missingFiles = [];
+        }
+      });
+      for (let element in requiredFiles) {
+        let swal_element = `<li>${requiredFiles[element]}</li>`;
+        missingFiles.push(swal_element);
+      }
+    } else {
+      for (let element in requiredFiles) {
+        let swal_element = `<li>${requiredFiles[element]}</li>`;
+        missingFiles.push(swal_element);
+      }
+    }
+
+    if (missingFiles.length > 0) {
+      var notIncludedMessage = `<div style='text-align: left'>You did not include the following metadata files that are typically expected for all SPARC datasets: <br><ol style='text-align: left'>${missingFiles.join(
+        ""
+      )} </ol>Are you sure you want to continue?</div>`;
       Swal.fire({
         allowOutsideClick: false,
         allowEscapeKey: false,
@@ -1785,9 +1802,9 @@ const verify_sparc_folder = (root_folder_path, type) => {
         possible_metadata_files.includes(path.parse(item).name)
       ) {
         valid_dataset = true;
+        break;
       } else {
         valid_dataset = false;
-        break;
       }
     } else {
       if (
@@ -1796,9 +1813,9 @@ const verify_sparc_folder = (root_folder_path, type) => {
         item.substring(0, 1) != "."
       ) {
         valid_dataset = true;
+        break;
       } else {
         valid_dataset = false;
-        break;
       }
     }
   }
@@ -1851,20 +1868,19 @@ async function transitionSubQuestionsButton(
     $("#bf-dataset-spinner").show();
     $("#bf-dataset-spinner").children().show();
     $("#bf-dataset-spinner").css("visibility", "visible");
-    var result;
-    try {
-      var res = await bf_request_and_populate_dataset(sodaJSONObj);
-      result = [true, res];
-    } catch (err) {
-      result = [false, err];
-    }
 
-    if (!result[0]) {
+    let sodaObject = {};
+    let manifestErrorMessage = [];
+    try {
+      let data = await bf_request_and_populate_dataset(sodaJSONObj);
+      sodaObject = data.soda_object;
+      manifestErrorMessage = data.manifest_error_message;
+    } catch (err) {
       Swal.fire({
         icon: "error",
         html:
           "<p style='color:red'>" +
-          result[1] +
+          "Could not retrieve this Pennsieve dataset" +
           ".<br>Please choose another dataset!</p>",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
@@ -1872,7 +1888,7 @@ async function transitionSubQuestionsButton(
       $("#nextBtn").prop("disabled", true);
       $("#para-continue-bf-dataset-getting-started").text("");
       $("body").removeClass("waiting");
-      $("#bf-dataset-spinner").css("visibility", "hidden");
+      // $("#bf-dataset-spinner").css("visibility", "hidden");
       showHideDropdownButtons("dataset", "hide");
       $("#current-bf-dataset").text("None");
       $(datasetPermissionDiv)
@@ -1883,7 +1899,7 @@ async function transitionSubQuestionsButton(
       $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
       $("body").removeClass("waiting");
 
-      // // log the error to analytics
+      // log the error to analytics
       logCurationForAnalytics(
         "Error",
         PrepareDatasetsAnalyticsPrefix.CURATE,
@@ -1894,90 +1910,88 @@ async function transitionSubQuestionsButton(
       );
 
       return;
-    } else {
-      if (result[1][2].length > 0) {
-        // if any manifest files could not be read
-        let missing_files = result[1][2];
-        let message_text = "";
-        message_text =
-          "The manifest files in the following folders could not be read due to formatting issues. Would you like SODA to ignore these manifest files and continue? <br><ul>";
-
-        for (let item in missing_files) {
-          message_text += `<li>${missing_files[item]}</li>`;
-        }
-        message_text += "</ul>";
-
-        Swal.fire({
-          icon: "warning",
-          text: message_text,
-          showCancelButton: true,
-          cancelButtonText: "No",
-          confirmButtonText: "Continue",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          reverseButtons: reverseSwalButtons,
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
-        }).then((response) => {
-          if (response.isConfirmed) {
-            sodaJSONObj = result[1][0];
-            if (JSON.stringify(sodaJSONObj["dataset-structure"]) !== "{}") {
-              datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-            } else {
-              datasetStructureJSONObj = { folders: {}, files: {} };
-            }
-            populate_existing_folders(datasetStructureJSONObj);
-            populate_existing_metadata(sodaJSONObj);
-            $("#nextBtn").prop("disabled", false);
-            $("#para-continue-bf-dataset-getting-started").text(
-              "Please continue below."
-            );
-            showHideDropdownButtons("dataset", "show");
-            // log the successful Pennsieve import to analytics- no matter if the user decided to cancel
-            logCurationForAnalytics(
-              "Success",
-              PrepareDatasetsAnalyticsPrefix.CURATE,
-              AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-              ["Existing"],
-              "Pennsieve",
-              false
-            );
-          } else {
-            exitCurate();
-          }
-        });
-      } else {
-        sodaJSONObj = result[1][0];
-        if (JSON.stringify(sodaJSONObj["dataset-structure"]) !== "{}") {
-          datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-        } else {
-          datasetStructureJSONObj = { folders: {}, files: {} };
-        }
-        populate_existing_folders(datasetStructureJSONObj);
-        populate_existing_metadata(sodaJSONObj);
-        $("#nextBtn").prop("disabled", false);
-        $("#para-continue-bf-dataset-getting-started").text(
-          "Please continue below."
-        );
-        showHideDropdownButtons("dataset", "show");
-
-        // log the successful Pennsieve import to analytics
-
-        logCurationForAnalytics(
-          "Success",
-          PrepareDatasetsAnalyticsPrefix.CURATE,
-          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-          ["Existing"],
-          "Pennsieve",
-          false
-        );
-        // $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
-      }
     }
+
+    if (manifestErrorMessage.length > 0) {
+      // if any manifest files could not be read
+      let message_text = "";
+      message_text =
+        "The manifest files in the following folders could not be read due to formatting issues. Would you like SODA to ignore these manifest files and continue? <br><ul>";
+
+      for (let item in manifestErrorMessage) {
+        message_text += `<li>${manifestErrorMessage[item]}</li>`;
+      }
+      message_text += "</ul>";
+
+      Swal.fire({
+        icon: "warning",
+        text: message_text,
+        showCancelButton: true,
+        cancelButtonText: "No",
+        confirmButtonText: "Continue",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        reverseButtons: reverseSwalButtons,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      }).then((response) => {
+        if (response.isConfirmed) {
+          sodaJSONObj = sodaObject;
+          if (JSON.stringify(sodaJSONObj["dataset-structure"]) !== "{}") {
+            datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+          } else {
+            datasetStructureJSONObj = { folders: {}, files: {} };
+          }
+          populate_existing_folders(datasetStructureJSONObj);
+          populate_existing_metadata(sodaJSONObj);
+          $("#nextBtn").prop("disabled", false);
+          $("#para-continue-bf-dataset-getting-started").text(
+            "Please continue below."
+          );
+          showHideDropdownButtons("dataset", "show");
+          // log the successful Pennsieve import to analytics- no matter if the user decided to cancel
+          logCurationForAnalytics(
+            "Success",
+            PrepareDatasetsAnalyticsPrefix.CURATE,
+            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+            ["Existing"],
+            "Pennsieve",
+            false
+          );
+        } else {
+          exitCurate();
+        }
+      });
+    } else {
+      sodaJSONObj = sodaObject;
+      if (JSON.stringify(sodaJSONObj["dataset-structure"]) !== "{}") {
+        datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+      } else {
+        datasetStructureJSONObj = { folders: {}, files: {} };
+      }
+
+      populate_existing_folders(datasetStructureJSONObj);
+      populate_existing_metadata(sodaJSONObj);
+      $("#nextBtn").prop("disabled", false);
+      $("#para-continue-bf-dataset-getting-started").text(
+        "Please continue below."
+      );
+      showHideDropdownButtons("dataset", "show");
+
+      logCurationForAnalytics(
+        "Success",
+        PrepareDatasetsAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        ["Existing"],
+        "Pennsieve",
+        false
+      );
+    }
+
     $("body").removeClass("waiting");
     $("#bf-dataset-spinner").css("visibility", "hidden");
     $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
@@ -2522,37 +2536,37 @@ async function switchMetadataManifestQuestion() {
     });
     if (continueProgressManifest) {
       // deleting manifest file folders in user/SODA path that were generated half-way before users switch.
-      client.invoke(
-        "api_delete_manifest_dummy_folders",
-        [userpath1, userpath2],
-        (error, res) => {
-          if (error) {
-            return true;
-          } else {
-            sodaJSONObj = {
-              "starting-point": { type: "" },
-              "dataset-structure": {},
-              "metadata-files": {},
-            };
-            datasetStructureJSONObj = {
-              folders: {},
-              files: {},
-              type: "",
-            };
-            $("#bf_dataset_create_manifest").text("None");
-            defaultBfDataset = "Select dataset";
-            $("#input-manifest-local-folder-dataset").val("");
-            $("#input-manifest-local-folder-dataset").attr(
-              "placeholder",
-              "Browse here"
-            );
-            $("#div-confirm-manifest-local-folder-dataset").css(
-              "display",
-              "none"
-            );
-          }
-        }
-      );
+      try {
+        await client.delete(`prepare_metadata/manifest_dummy_folders`, {
+          // Axios delete API specifies config as the second parameter; which is why we use the data keyword here.
+          data: {
+            paths: [userpath1, userpath2],
+          },
+        });
+
+        sodaJSONObj = {
+          "starting-point": { type: "" },
+          "dataset-structure": {},
+          "metadata-files": {},
+        };
+        datasetStructureJSONObj = {
+          folders: {},
+          files: {},
+          type: "",
+        };
+        $("#bf_dataset_create_manifest").text("None");
+        defaultBfDataset = "Select dataset";
+        $("#input-manifest-local-folder-dataset").val("");
+        $("#input-manifest-local-folder-dataset").attr(
+          "placeholder",
+          "Browse here"
+        );
+        $("#div-confirm-manifest-local-folder-dataset").css("display", "none");
+      } catch (error) {
+        clientError(error);
+        return true;
+      }
+
       return continueProgressManifest;
     }
   } else {
@@ -3754,7 +3768,7 @@ $(document).ready(() => {
 
     if (section === "rename_existing_bf_dataset") {
       let rename_dataset_name = $("#rename_dataset_name").html();
-      if (rename_dataset_name != "None" && rename_dataset_name != "") {
+      if (rename_dataset_name.trim() != "None" && rename_dataset_name != "") {
         $("#bf-rename-dataset-name").val(rename_dataset_name);
       } else {
         $("#bf-rename-dataset-name").val("");
