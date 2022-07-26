@@ -462,6 +462,11 @@ h1.guided--text-sub-step {
   margin-bottom: 10px;
 }
 
+.progress-bar-table-left {
+  width: 200px;
+  text-align: right !important;
+}
+
 .guided--progress-container {
   display: flex;
   flex-direction: row;

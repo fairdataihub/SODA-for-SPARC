@@ -589,7 +589,7 @@
             <div class="guided--panel" id="guided-add-sample-primary-data">
               <div class="guided--section">
                 <h1 class="guided--text-sub-step">
-                  Specify your subject and sample primary data in the intervace
+                  Specify your subject and sample primary data in the interface
                   below
                 </h1>
               </div>
@@ -796,7 +796,7 @@
             <div class="guided--panel" id="guided-add-sample-source-data">
               <div class="guided--section">
                 <h1 class="guided--text-sub-step">
-                  Specify your subject and sample source data in the intervace
+                  Specify your subject and sample source data in the interface
                   below
                 </h1>
               </div>
@@ -1002,7 +1002,7 @@
               <div class="guided--section">
                 <h1 class="guided--text-sub-step">
                   Specify your subject and sample derivative data in the
-                  intervace below
+                  interface below
                 </h1>
               </div>
               <div class="guided--capsule-container-sub-page">
@@ -5616,7 +5616,7 @@
                 </thead>
                 <tbody id="guided-tbody-dataset-metadata-upload">
                   <tr
-                    class="hidden upload-statys-tr"
+                    class="hidden upload-status-tr"
                     id="guided-subjects-metadata-upload-tr"
                   >
                     <td
@@ -5634,10 +5634,7 @@
                       ></div>
                     </td>
                   </tr>
-                  <tr
-                    class="hidden upload-statys-tr"
-                    id="guided-samples-metadata-upload-tr"
-                  >
+                  <tr class="hidden" id="guided-samples-metadata-upload-tr">
                     <td
                       class="middle aligned"
                       id="guided-samples-metadata-upload-text"
@@ -5653,10 +5650,7 @@
                       ></div>
                     </td>
                   </tr>
-                  <tr
-                    class="hidden upload-statys-tr"
-                    id="guided-submission-metadata-upload-tr"
-                  >
+                  <tr class="hidden" id="guided-submission-metadata-upload-tr">
                     <td
                       class="middle aligned"
                       id="guided-submission-metadata-upload-text"
@@ -5673,7 +5667,7 @@
                     </td>
                   </tr>
                   <tr
-                    class="hidden upload-statys-tr"
+                    class="hidden"
                     id="guided-dataset-description-metadata-upload-tr"
                   >
                     <td
@@ -5691,10 +5685,7 @@
                       ></div>
                     </td>
                   </tr>
-                  <tr
-                    class="hidden upload-statys-tr"
-                    id="guided-readme-metadata-upload-tr"
-                  >
+                  <tr class="hidden" id="guided-readme-metadata-upload-tr">
                     <td
                       class="middle aligned"
                       id="guided-readme-metadata-upload-text"
@@ -5710,10 +5701,7 @@
                       ></div>
                     </td>
                   </tr>
-                  <tr
-                    class="hidden upload-statys-tr"
-                    id="guided-changes-metadata-upload-tr"
-                  >
+                  <tr class="hidden" id="guided-changes-metadata-upload-tr">
                     <td
                       class="middle aligned"
                       id="guided-changes-metadata-upload-text"
@@ -5733,7 +5721,7 @@
               </table>
             </div>
             <div
-              class="guided--section hidden mt-lg"
+              class="guided--section mt-lg"
               id="guided-div-dataset-upload-status-table"
             >
               <table class="ui celled striped table" style="width: 80%">
@@ -5752,43 +5740,24 @@
                       <span>Dataset upload status</span>
                     </th>
                   </tr>
-                  <tr>
-                    <th
-                      style="
-                        z-index: 2;
-                        position: sticky !important;
-                        top: 40px !important;
-                      "
-                    >
-                      Dataset field
-                    </th>
-
-                    <th
-                      class="center aligned border-left-0"
-                      style="
-                        z-index: 2;
-                        position: sticky !important;
-                        top: 40px !important;
-                        min-width: 130px;
-                      "
-                    >
-                      Upload status
-                    </th>
-                  </tr>
                 </thead>
                 <tbody id="guided-tbody-dataset-upload">
-                  <tr class="hidden" id="guided-dataset-progress-bar-tr">
-                    <td class="middle aligned" id="guided-progress-bar-text">
-                      Progress
+                  <tr id="guided-upload-progress-bar-tr">
+                    <td class="middle aligned" colspan="2">
+                      <progress
+                        class="progresstrack"
+                        id="guided-progress-bar-new-curate"
+                        style="width: 100%"
+                        max="100"
+                        value="0"
+                      ></progress>
                     </td>
-                    <td
-                      class="middle aligned text-center collapsing border-left-0 p-0"
-                    >
-                      <div
-                        class="guided--container-upload-status"
-                        id="guided-progress-bar"
-                      ></div>
+                  </tr>
+                  <tr>
+                    <td class="middle aligned progress-bar-table-left">
+                      asdf:
                     </td>
+                    <td class="middle aligned remove-left-border">asdf</td>
                   </tr>
                 </tbody>
               </table>
@@ -5797,13 +5766,6 @@
               class="guided--section mt-lg hidden neumorphic"
               id="guided-div-dataset-upload-progress-bar"
             >
-              <progress
-                class="progresstrack"
-                id="guided-progress-bar-new-curate"
-                style="width: 80%"
-                max="100"
-                value="0"
-              ></progress>
               <div
                 class="guided--panel"
                 id="guided-upload-status-container"

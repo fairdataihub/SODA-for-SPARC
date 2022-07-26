@@ -4,6 +4,19 @@ const guidedUploadStatusContainer = document.getElementById(
   "guided-upload-status-container"
 );
 
+const updateDatasetUploadProgressTable = (progressObject) => {
+  const datasetUploadTableBody = document.getElementById(
+    "guided-tbody-dataset-upload"
+  );
+  //remove dtasetUploadTableBody children that don't have class guided-upload-progress-bar-tr
+  for (const child of datasetUploadTableBody.children) {
+    console.log(child);
+    if (!child.classList.contains("guided-upload-progress-bar-tr")) {
+      datasetUploadTableBody.removeChild(child);
+    }
+  }
+};
+
 //Initialize description tagify variables as null
 //to make them accessible to functions outside of $(document).ready
 let guidedDatasetKeywordsTagify = null;
