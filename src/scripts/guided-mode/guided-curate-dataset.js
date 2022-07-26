@@ -1,14 +1,15 @@
 const { parseJSON } = require("jquery");
 
-const guidedUploadStatusContainer = document.getElementById(
-  "guided-upload-status-container"
-);
-
 const updateDatasetUploadProgressTable = (progressObject) => {
   const datasetUploadTableBody = document.getElementById(
     "guided-tbody-dataset-upload"
   );
-  console.log(datasetUploadTableBody.children);
+  //delete datasetUPloadTableBody children with class "upload-status-tr"
+  const uploadStatusTRs =
+    datasetUploadTableBody.querySelectorAll(".upload-status-tr");
+  for (const uploadStatusTR of uploadStatusTRs) {
+    datasetUploadTableBody.removeChild(uploadStatusTR);
+  }
   //remove dtasetUploadTableBody children that don't have the id guided-upload-progress-bar-tr
   for (const child of datasetUploadTableBody.children) {
     console.log(child);
@@ -16,6 +17,20 @@ const updateDatasetUploadProgressTable = (progressObject) => {
       datasetUploadTableBody.removeChild(child);
     }
   }
+  let uploadStatusElement = "";
+  for (const [uploadStatusKey, uploadStatusValue] of Object.entries(
+    progressObject
+  ))
+    uploadStatusElement += `
+      <tr class="upload-status-tr">
+        <td class="middle aligned progress-bar-table-left">
+          ${uploadStatusKey}:
+        </td>
+        <td class="middle aligned remove-left-border">${uploadStatusValue}:</td>
+      </tr>
+    `;
+  //insert adjustStatusElement at the end of datasetUploadTablebody
+  datasetUploadTableBody.insertAdjacentHTML("beforeend", uploadStatusElement);
 };
 
 //Initialize description tagify variables as null
@@ -371,8 +386,8 @@ const renderProgressCards = (progressFileJSONdata) => {
               style="font-weight: 400;"
             >
                 ${
-                  progressFileSubtitle.length > 100
-                    ? `${progressFileSubtitle.substring(0, 100)}...`
+                  progressFileSubtitle.length > 70
+                    ? `${progressFileSubtitle.substring(0, 70)}...`
                     : progressFileSubtitle
                 }
             </h1>
@@ -1578,7 +1593,9 @@ const traverseToTab = (targetPageID) => {
 
       //reset the progress bar to 0
       setGuidedProgressBarValue(0);
-      guidedUploadStatusContainer.innerHTML = "";
+      updateDatasetUploadProgressTable({
+        "Upload status": `Preparing dataset for upload`,
+      });
 
       const datsetName = sodaJSONObj["digital-metadata"]["name"];
       const datsetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
@@ -7963,7 +7980,7 @@ $(document).ready(() => {
       }
 
       //Display the main dataset upload progress bar
-      unHideAndSmoothScrollToElement("guided-div-dataset-upload-progress-bar");
+      unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
 
       //Upload the dataset files
 
@@ -8162,95 +8179,17 @@ $(document).ready(() => {
                 displaySize
               ).toFixed(2) + " GB";
           }
-          let progressMessage = `
-            <div class="guided--card-dataset-info">
-              <div class="guided--card-dataset-info">
-                <div class="guided--dataset-description-container" style="width: 40%">
-                  <h5 class="guided--dataset-description">Upload status:</h5>
-                </div>
-                <div class="guided--dataset-content-container" style="width: 60%">
-                  <h5
-                    class="guided--dataset-content"
-                  >
-                    ${main_curate_progress_message}
-                  </h5>
-                </div>
-              </div>
-              <div class="guided--dataset-content-container" style="width: 60%">
-                <h5
-                  class="guided--dataset-content"
-                  style="white-space: pre-wrap"
-                ></h5>
-              </div>
-            </div>
-            <div class="guided--card-dataset-info">
-              <div class="guided--card-dataset-info">
-                <div class="guided--dataset-description-container" style="width: 40%">
-                  <h5 class="guided--dataset-description">Upload completion percentage:</h5>
-                </div>
-                <div class="guided--dataset-content-container" style="width: 60%">
-                  <h5
-                    class="guided--dataset-content"
-                  >
-                    ${percentOfDatasetUploaded.toFixed(2)}%
-                  </h5>
-                </div>
-              </div>
-              <div class="guided--dataset-content-container" style="width: 60%">
-                <h5
-                  class="guided--dataset-content"
-                  style="white-space: pre-wrap"
-                ></h5>
-              </div>
-            </div>
-            <div class="guided--card-dataset-info">
-              <div class="guided--card-dataset-info">
-                <div class="guided--dataset-description-container" style="width: 40%">
-                  <h5 class="guided--dataset-description">Elapsed time:</h5>
-                </div>
-                <div class="guided--dataset-content-container" style="width: 60%">
-                  <h5 class="guided--dataset-content">
-                    ${elapsed_time_formatted}
-                  </h5>
-                </div>
-              </div>
-              <div class="guided--dataset-content-container" style="width: 60%">
-                <h5 class="guided--dataset-content" style="white-space: pre-wrap"></h5>
-              </div>
-            </div>
-          `;
-          guidedUploadStatusContainer.innerHTML = progressMessage;
+          updateDatasetUploadProgressTable({
+            "Upload status": `${main_curate_progress_message}`,
+            "Percent uploaded": `${percentOfDatasetUploaded.toFixed(2)}%`,
+            "Elapsed time": `${elapsed_time_formatted}`,
+          });
         }
       } else {
-        const uploadStatusMessage = `
-          <div class="guided--card-dataset-info">
-            <div class="guided--card-dataset-info">
-              <div class="guided--dataset-description-container" style="width: 40%">
-                <h5 class="guided--dataset-description">Upload status:</h5>
-              </div>
-              <div class="guided--dataset-content-container" style="width: 60%">
-                <h5 class="guided--dataset-content">${main_curate_progress_message}</h5>
-              </div>
-            </div>
-            <div class="guided--dataset-content-container" style="width: 60%">
-              <h5 class="guided--dataset-content" style="white-space: pre-wrap"></h5>
-            </div>
-          </div>
-          <div class="guided--card-dataset-info">
-            <div class="guided--card-dataset-info">
-              <div class="guided--dataset-description-container" style="width: 40%">
-                <h5 class="guided--dataset-description">Elapsed time:</h5>
-              </div>
-              <div class="guided--dataset-content-container" style="width: 60%">
-                <h5 class="guided--dataset-content">${elapsed_time_formatted}</h5>
-              </div>
-            </div>
-            <div class="guided--dataset-content-container" style="width: 60%">
-              <h5 class="guided--dataset-content" style="white-space: pre-wrap"></h5>
-            </div>
-          </div>
-        `;
-        guidedUploadStatusContainer.innerHTML = uploadStatusMessage;
+        updateDatasetUploadProgressTable({
+          "Upload status": `${main_curate_progress_message}`,
+          "Elapsed time": `${elapsed_time_formatted}`,
+        });
       }
       //If the curate function is complete, clear the interval
       if (main_curate_status === "Done") {
@@ -8261,22 +8200,9 @@ $(document).ready(() => {
         // forceActionSidebar("show");
         clearInterval(timerProgress);
         // electron.powerSaveBlocker.stop(prevent_sleep_id)
-        const uploadCompleteMessage = `
-          <div class="guided--card-dataset-info">
-            <div class="guided--card-dataset-info">
-              <div class="guided--dataset-description-container" style="width: 40%">
-                <h5 class="guided--dataset-description">Upload status:</h5>
-              </div>
-              <div class="guided--dataset-content-container" style="width: 60%">
-                <h5 class="guided--dataset-content">Dataset successfully uploaded to Pennsieve!</h5>
-              </div>
-            </div>
-            <div class="guided--dataset-content-container" style="width: 60%">
-              <h5 class="guided--dataset-content" style="white-space: pre-wrap"></h5>
-            </div>
-          </div>
-        `;
-        guidedUploadStatusContainer.innerHTML = uploadCompleteMessage;
+        updateDatasetUploadProgressTable({
+          "upload status": "Dataset successfully uploaded to Pennsieve!",
+        });
 
         //Save a copy of the sodaJSONObj on this upload to compare it while prepping other uploads
         sodaJSONObj["previous-guided-upload-sodaJSONObj"] = { ...sodaJSONObj };
@@ -8315,23 +8241,10 @@ $(document).ready(() => {
       clientError(error);
       let emessage = userErrorMessage(error);
 
-      const checkFileErrorMessage = `
-        <div class="guided--card-dataset-info">
-          <div class="guided--card-dataset-info">
-            <div class="guided--dataset-description-container" style="width: 40%">
-              <h5 class="guided--dataset-description">Upload status:</h5>
-            </div>
-            <div class="guided--dataset-content-container" style="width: 60%">
-              <h5
-                class="guided--dataset-content"
-              >
-                ${emessage}
-              </h5>
-            </div>
-          </div>
-        </div>
-      `;
-      guidedUploadStatusContainer.innerHTML = checkFileErrorMessage;
+      updateDatasetUploadProgressTable({
+        "Error preparing dataset for upload": `${emessage}`,
+      });
+
       $("#sidebarCollapse").prop("disabled", false);
       return;
     }
@@ -8381,23 +8294,9 @@ $(document).ready(() => {
           guided_initiate_generate();
         } else {
           $("#sidebarCollapse").prop("disabled", false);
-          const errorMessageElement = `
-            <div class="guided--card-dataset-info">
-              <div class="guided--card-dataset-info">
-                <div class="guided--dataset-description-container" style="width: 40%">
-                  <h5 class="guided--dataset-description">Upload status:</h5>
-                </div>
-                <div class="guided--dataset-content-container" style="width: 60%">
-                  <h5
-                    class="guided--dataset-content"
-                  >
-                    User to go back and review files and folders.
-                  </h5>
-                </div>
-              </div>
-            </div>
-          `;
-          guidedUploadStatusContainer.innerHTML = errorMessageElement;
+          updateDatasetUploadProgressTable({
+            "Upload status": `Error uploading dataset to Pennsieve`,
+          });
         }
       });
     } else {
