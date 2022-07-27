@@ -567,11 +567,6 @@ const guidedPrepareHomeScreen = async () => {
     loop: true,
     autoplay: true,
   });
-  //scroll to the top of the home screen
-  document.getElementById("guided-body").scrollTo({
-    top: 0,
-    behavior: "smooth",
-  });
 };
 
 function guidedShowTreePreview(new_dataset_name, targetElement) {
