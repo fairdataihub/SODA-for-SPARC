@@ -161,10 +161,10 @@
                 onkeyup="validateInput($(this))"
               />
               <p class="guided--text-input-instructions mb-0">
-                Enter desired name for your new dataset. This is the field that
-                will be displayed in public as the title of the dataset. Please
-                make sure that your dataset title is different than your other
-                dataset titles and that it is relatively informative.
+                Enter the desired name for your new dataset. This is the field
+                that will be displayed in public as the title of the dataset.
+                Please make sure that your dataset title is different than your
+                other dataset titles and is relatively informative.
               </p>
             </div>
             <div class="guided--section">
@@ -305,11 +305,12 @@
               <h1 class="guided--text-sub-step">SPARC Data Structure</h1>
               <p class="guided--help-text w-100">
                 The first step of the curation process consists of organizing
-                your data according to the SPARC Data Structure (SDS). Briefly,
-                each SPARC dataset must organized into all or a subset of the
-                six folders shown in the picture below. A specific organization
-                under subjects and/or samples folders is also expected within
-                the primary folder. More details are available on the dedicated
+                your data according to the SPARC Data Structure (SDS). SPARC
+                datasets must contain all or a subset of the six high-level
+                folders as seen depicted below. The primary folder must be
+                organized in a specific manner which guided mode will help you
+                with. To learn more about the SPARC Data Structure, please visit
+                the
                 <a
                   href="https://docs.sparc.science/docs/overview-of-sparc-dataset-format"
                 >
@@ -383,13 +384,74 @@
           >
             <div class="guided--section">
               <h1 class="guided--text-sub-step">
-                Organize your dataset according to the SPARC Data Structure
+                Specify your dataset's structure
               </h1>
               <p class="guided--help-text w-100 text-left">
                 Data collected from subjects and samples must be organized into
-                folders named following the ID of the corresponding subjects and
-                samples. Let's help you with that.
+                folders with a specific naming convention and folder heirarchy.
+                Please review the differentiation between the three main
+                components of the primary folder below, but keep in mind that
+                guided mode will help you organize your dataset's structure.
               </p>
+              <ul class="guided--help-text w-100">
+                <li
+                  class="guided--help-text w-100 text-left mb-4"
+                  style="color: hsl(0, 0%, 22%)"
+                >
+                  <b>Pools:</b> When data is gathered from multiple subjects at
+                  the same time, the subjects are to be placed into pools.<br />
+                  <ul>
+                    <li class="my-2">
+                      Pool folders containing subject data must follow the
+                      folder naming convention <b>pool-&lt;PoolName&gt;</b>.
+                    </li>
+                    <li class="my-2">
+                      Pool folders are to be placed directly in the primary
+                      folder and should have their respective subject folders
+                      directly inside.
+                    </li>
+                  </ul>
+                </li>
+                <li
+                  class="guided--help-text w-100 text-left mb-4"
+                  style="color: hsl(0, 0%, 22%)"
+                >
+                  <b>Subjects:</b> Subjects are human or non-human entities from
+                  which data was derived from during the creation of your
+                  dataset.<br />
+                  <ul>
+                    <li class="my-2">
+                      Folders containing subject data must follow the folder
+                      naming convention <b>sub-&lt;SubjectName&gt;</b>.
+                    </li>
+                    <li class="my-2">
+                      Subjects grouped into pools should be placed into their
+                      pool's folder.
+                    </li>
+                    <li class="my-2">
+                      Subjects that are not grouped into pools should be placed
+                      directly in the primary folder.
+                    </li>
+                  </ul>
+                </li>
+                <li
+                  class="guided--help-text w-100 text-left mb-2"
+                  style="color: hsl(0, 0%, 22%)"
+                >
+                  <b>Samples:</b> Samples are non-living entities derived from
+                  your dataset's subjects.<br />
+                  <ul>
+                    <li class="my-2">
+                      Folders containing sample data must follow the folder
+                      naming convention <b>sam-&lt;SampleName&gt;</b>.
+                    </li>
+                    <li class="my-2">
+                      Sample data should be placed directly in the subject
+                      folder that the sample was derived from.
+                    </li>
+                  </ul>
+                </li>
+              </ul>
             </div>
             <div class="guided--capsule-container-sub-page">
               <div
@@ -411,8 +473,7 @@
             >
               <div class="guided--section" id="guided-specify-subjects-prompt">
                 <label class="guided--form-label centered">
-                  Does your dataset contain data collected in human or non-human
-                  subjects?
+                  Does your dataset contain data collected from subjects?
                 </label>
                 <div
                   class="guided--radio-button-container"
