@@ -1347,15 +1347,12 @@ var currentTags = {};
 async function getCurrentCollectionTags() {
   currentTags = {};
   try {
-    res = await client.get(
-      `/collections/current_collections`,
-      {
-        params: { 
-          selected_account: defaultBfAccount,
-          selected_dataset: defaultBfDataset
-        },
-      }
-    );
+    res = await client.get(`/collections/current_collections`, {
+      params: {
+        selected_account: defaultBfAccount,
+        selected_dataset: defaultBfDataset,
+      },
+    });
     for (let i = 0; i < res.length; i++) {
       let name = res[i]["name"];
       let id = res[i]["id"];
@@ -1368,7 +1365,7 @@ async function getCurrentCollectionTags() {
     }
     console.log(currentTags);
     return currentTags;
-  } catch(error) {
+  } catch (error) {
     console.log(error);
   }
 }
@@ -1378,12 +1375,9 @@ var allCollectionTags = {};
 async function getAllCollectionTags() {
   allCollectionTags = {};
   try {
-    res = await client.get(
-      `/collections/all_collections`,
-      {
-        params: { selected_account: defaultBfAccount },
-      }
-    );
+    res = await client.get(`/collections/all_collections`, {
+      params: { selected_account: defaultBfAccount },
+    });
     for (let i = 0; i < res.length; i++) {
       let name = res[i]["name"];
       let id = res[i]["id"];
@@ -1398,9 +1392,9 @@ async function getAllCollectionTags() {
       }
     }
     console.log(allCollectionTags);
-    return allCollectionTags
-  } catch(error) {
-    console.log(error)
+    return allCollectionTags;
+  } catch (error) {
+    console.log(error);
   }
 }
 
