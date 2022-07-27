@@ -2199,6 +2199,7 @@ def update_dataset_tags(selected_account, selected_dataset, updated_tags):
 
     return {"message": "Tags updated"}
 
+
 def get_all_collections(account):
     """
     Function used to get the collections that belong to an organization
@@ -2206,12 +2207,12 @@ def get_all_collections(account):
 
     error = []
     try:
-        bf = Pennsieve(account)
+        bf = get_authenticated_ps(account)
     except Exception as e:
         error.append("Error: Please select a valid Pennsieve account")
         raise Exception(error)
 
-    collection_names = bf._api._get("/collections/")
+    collection_names = bf._api._get(f"/collections/")
 
     return collection_names
 
@@ -2222,21 +2223,20 @@ def get_current_collection_tags(account, dataset):
     """
     error = []
     try:
-        bf = Pennsieve(account)
+        bf = get_authenticated_ps(account)
     except Exception as error:
         error.append("Error: Please select a valid Pennsieve account")
         raise Exception(error)
 
     try:
-        myds = bf.get_dataset(dataset)
+        myds = get_dataset(bf, dataset)
         dataset_id = myds.id
     except Exception as e:
         error.append("Error: Please select a valid Pennsieve dataset")
         raise Exception(error)
 
-    currentCollectionTags = bf._api._get(
-        "/datasets/" + str(dataset_id) + "/collections"
-    )
+
+    currentCollectionTags = bf._api._get(f"/datasets/" + {dataset_id} + "/collections")
     return currentCollectionTags
 
 
@@ -2250,13 +2250,13 @@ def upload_collection_tags(account, dataset, tags):
     error = []
     statusResponses = []
     try:
-        bf = Pennsieve(account)
+        bf = get_authenticated_ps(account)
     except Exception as e:
         error.append("Error: Please select a valid Pennsieve account")
         raise Exception(error)
 
     try:
-        myds = bf.get_dataset(dataset)
+        myds = get_dataset(bf, dataset)
         dataset_id = myds.id
     except Exception as e:
         error.append("Error: Please select a valid Pennsieve dataset")
@@ -2264,10 +2264,7 @@ def upload_collection_tags(account, dataset, tags):
 
     for tag in tags:
         jsonfile = {"collectionId": tag}
-        result = bf._api._put(
-            "/datasets/" + str(dataset_id) + "/collections",
-            json=jsonfile,
-        )
+        result = bf._api._put(f"/datasets/" + {dataset_id} + "/collections" ,json=jsonfile)
         statusResponses.append(result)
 
     return statusResponses
@@ -2284,22 +2281,20 @@ def remove_collection_tags(account, dataset, tags):
     statusResponses = []
 
     try:
-        bf = Pennsieve(account)
+        bf = get_authenticated_ps(account)
     except Exception as e:
         error.append("Error: Please select a valid account")
         raise Exception(error)
 
     try:
-        myds = bf.get_dataset(dataset)
+        myds = get_dataset(bf, dataset)
         dataset_id = myds.id
     except Exception as e:
         error.append("Error: Please select a valid dataset")
         raise Exception(error)
 
     for tag in tags:
-        result = bf._api._del(
-            "/datasets/" + str(dataset_id) + "/collections/" + str(tag)
-        )
+        result = bf._api._del(f"/datasets/" + {dataset_id} + "/collections/" + {tag})
         statusResponses.append(result)
 
     return statusResponses
@@ -2316,21 +2311,14 @@ def upload_new_tags(account, dataset, tags):
     statusResponses = []
 
     try:
-        bf = Pennsieve(account)
+        bf = get_authenticated_ps(account)
     except Exception as e:
         error.append("Error: Please select a valid account")
         raise Exception(error)
 
-    try:
-        myds = bf.get_dataset(dataset)
-        dataset_id = myds.id
-    except Exception as e:
-        error.append("Error: Please select a valid dataset")
-        raise Exception(error)
-
     for tag in tags:
         jsonfile = {"name": tag}
-        result = bf._api._post("/collections", json=jsonfile)
+        result = bf._api._post(f"/collections", json=jsonfile)
         statusResponses.append(result)
 
     return statusResponses
