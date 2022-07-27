@@ -8039,6 +8039,7 @@ $(document).ready(() => {
       allowOutsideClick: false,
       allowEscapeKey: false,
       backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
       title: "Rename your dataset",
       html: `<b>Current dataset name:</b> ${currentDatasetUploadName}<br /><br />Enter a new name for your dataset below:`,
       input: "text",
@@ -8252,11 +8253,13 @@ $(document).ready(() => {
         saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
         await swal.fire({
-          title: "Dataset uploaded!",
-          text: "Your dataset has been uploaded to Pennsieve!",
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          title: "Dataset successfully uploaded!",
+          html: `Your dataset has been uploaded to Pennsieve!<br /><br />
+          You will be taken back to the home page where you can edit this dataset or begin curating a new dataset.`,
           icon: "success",
           confirmButtonText: "OK",
-          backdrop: "rgba(0,0,0, 0.4)",
         });
         //Exit back to home page
         traverseToTab("guided-dataset-starting-point-tab");
