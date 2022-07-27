@@ -7895,6 +7895,13 @@ $(document).ready(() => {
     const guidedChangesMetadata = sodaJSONObj["dataset-metadata"]["CHANGES"];
 
     try {
+      //Run ple flight checks to ensure SODA is prepared to upload to Pennsieve
+      let supplementary_checks = await run_pre_flight_checks(false);
+      if (!supplementary_checks) {
+        $("#sidebarCollapse").prop("disabled", false);
+        return;
+      }
+
       //Display the Pennsieve metadata upload table
       unHideAndSmoothScrollToElement(
         "guided-div-pennsieve-metadata-upload-status-table"
@@ -8069,6 +8076,7 @@ $(document).ready(() => {
       guidedPennsieveDatasetUpload();
     }
   };
+
   const guided_initiate_generate = async () => {
     // Initiate curation by calling Python function
     let manifest_files_requested = false;
