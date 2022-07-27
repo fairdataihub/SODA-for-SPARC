@@ -5,7 +5,7 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## v.6.1.0 - TBD
+## v.7.0.0 - 2022-07-25
 
 ## Feature additions:
 
@@ -16,12 +16,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Contact Us tab will provide user information on how to reach out to the team for any issues or suggestions. As well as providing a Gather Logs button for the user to provide in an email for the team to look at any issues in depth.
 - Visual overhaul for the prompts that allow users to connect their Pennsieve account with SODA.
 - Simplified UI for adding a URL or DOI to a dataset_description.xlsx in the Prepare Metadata tab.
+- Converted the SODA server from Zerorpc to Flask.
 
 ## Bug fixes:
 
 - The option to upload duplicate files to an existing Pennsieve dataset through the Organize Datasets feature no longer causes an error while uploading.
 - Hidden files can now be imported except .DS_Store and Thumbs.db files.
 - The input for renaming or creating a new dataset no longer references undefined function in its HTML.
+- The navigation buttons in each individual Prepare Metadata section have been updated to match the perceived flow from the Prepare Metadata tab.
+- The Add/edit subtitle feature has been updated so that the chracter limit matches the SDS 2.0 specification. This fixes a bug that would cause an error if a user met the character limit enforced by SODA and then tried to add or edit their subtitle.
+
+### Known Issues:
+
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.
+- When uploading a dataset through Upload Local Dataset or Organize Dataset feature to Pennsieve the upload will sometimes freeze. When this occurs it is best to reset the upload and ensure the Pennsieve Agent has been stopped before attempting to upload again. It is also necessary to verify the integrity of uploaded files up to that point. This can be done by simply ensuring all files from folders that have been uploaded are included in the Pennsieve dataset.
+- The Organize Datasets option to upload duplicate files to Pennsieve uploads some duplicates but does not upload all.
+- When using the Create manifest.xlsx feature any custom columns added to a manifest file stored on Pennsieve will not be imported for editing.
+- The Create manifest.xlsx feature will spawn an error while generating manifest files for a local dataset if there are hidden files in the dataset directory. SODA will not tell the user the cause is the presence of the hidden files.
 
 ## v.6.0.0 - 2022-05-17
 
