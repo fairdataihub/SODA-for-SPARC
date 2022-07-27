@@ -228,7 +228,6 @@ client = axios.create({
 
 const notyf = new Notyf({
   position: { x: "right", y: "bottom" },
-  ripple: true,
   dismissible: true,
   ripple: false,
   types: [
@@ -3534,7 +3533,6 @@ async function submitReviewDataset(embargoReleaseDate) {
         heightAuto: false,
         confirmButtonText: "Ok",
         title: `Could not exclude the selected files from publication`,
-        text: "Please try again.",
         icon: "error",
         reverseButtons: reverseSwalButtons,
         text: `${emessage}`,
@@ -7370,11 +7368,11 @@ document
     }
 
     if (errorMessage) {
-      message += "Would you like to continue?";
-      message = "<div style='text-align: left'>" + message + "</div>";
+      errorMessage += "Would you like to continue?";
+      errorMessage = "<div style='text-align: left'>" + errorMessage + "</div>";
       Swal.fire({
         icon: "warning",
-        html: message,
+        html: errorMessage,
         showCancelButton: true,
         cancelButtonText: "No, I want to review my files",
         focusCancel: true,
@@ -7426,7 +7424,6 @@ let file_counter = 0;
 let folder_counter = 0;
 var uploadComplete = new Notyf({
   position: { x: "right", y: "bottom" },
-  ripple: true,
   dismissible: true,
   ripple: false,
   types: [
@@ -8675,7 +8672,7 @@ async function showBFAddAccountSweetalert() {
                     $("#para-continue-bf-dataset-getting-started").text("");
                     showHideDropdownButtons("account", "show");
                     confirm_click_account_function();
-                    updateBfAccountList(false);
+                    updateBfAccountList();
                   })
                   .catch((error) => {
                     Swal.showValidationMessage(userErrorMessage(error));
@@ -9130,7 +9127,7 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
 
   let role = await api.getDatasetRole(defaultBfDataset);
 
-  if (!role === "owner") {
+  if (role !== "owner") {
     return;
   }
 

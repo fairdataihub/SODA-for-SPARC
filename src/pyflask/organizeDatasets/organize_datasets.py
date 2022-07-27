@@ -1,58 +1,27 @@
 ### Import required python modules
-from logging import exception
-from tabnanny import check
-from turtle import update
 from gevent import monkey
 from flask import abort
-
 monkey.patch_all()
 import platform
 import os
-from os import listdir, replace, stat, makedirs, mkdir, walk, remove, pardir
+from os import makedirs, mkdir, walk
 from os.path import (
     isdir,
-    isfile,
     join,
     splitext,
-    getmtime,
     basename,
-    normpath,
     exists,
     expanduser,
-    split,
-    dirname,
     getsize,
-    abspath,
 )
 import pandas as pd
 import time
-from time import strftime, localtime
 import shutil
-from shutil import copy2
-from configparser import ConfigParser
-import numpy as np
-from collections import defaultdict
 import subprocess
-from websocket import create_connection
-import socket
-import errno
 import re
 import gevent
 from pennsieve import Pennsieve
-from pennsieve.log import get_logger
-from pennsieve.api.agent import agent_cmd
-from pennsieve.api.agent import AgentError, check_port, socket_address
-from urllib.request import urlopen
-import json
-import collections
-from threading import Thread
 import pathlib
-
-from openpyxl import load_workbook
-from openpyxl import Workbook
-from openpyxl.styles import PatternFill, Font
-from docx import Document
-
 from datetime import datetime, timezone
 
 from manageDatasets import bf_get_current_user_permission

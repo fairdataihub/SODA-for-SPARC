@@ -12,6 +12,7 @@ const { JSONStorage } = require("node-localstorage");
 const { trackEvent } = require("./scripts/others/analytics/analytics");
 const { fstat } = require("fs");
 const { resolve } = require("path");
+const axios = require("axios");
 
 log.transports.console.level = false;
 log.transports.file.level = "debug";
@@ -113,7 +114,7 @@ const createPyProc = () => {
 /**
  * Kill the python server process. Needs to be called before SODA closes.
  */
-const exitPyProc = () => {
+const exitPyProc = async () => {
   // Windows does not properly shut off the python server process. This ensures it is killed.
   const killPythonProcess = () => {
     // kill pyproc with command line
@@ -131,8 +132,8 @@ const exitPyProc = () => {
     pyflaskProcess = null;
     PORT = null;
   } else {
-    // kill signal to pyProc
-    pyflaskProcess.kill();
+    // send kill GET request to endpoint localhost:4242/sodaforsparc_server_shutdown using axios
+    await axios.get("http://localhost:4242/sodaforsparc_server_shutdown");
     pyflaskProcess = null;
     PORT = null;
   }
@@ -290,7 +291,6 @@ function initialize() {
   });
 
   app.on("will-quit", () => {
-    console.log("About to quit");
     exitPyProc();
   });
 }
