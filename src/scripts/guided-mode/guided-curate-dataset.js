@@ -7916,6 +7916,23 @@ $(document).ready(() => {
     try {
       //Run ple flight checks to ensure SODA is prepared to upload to Pennsieve
       let supplementary_checks = await run_pre_flight_checks(false);
+
+      // get apps base path
+      const basepath = app.getAppPath();
+      const resourcesPath = process.resourcesPath;
+
+      // set the templates path
+      try {
+        await client.put("prepare_metadata/template_paths", {
+          basepath: basepath,
+          resourcesPath: resourcesPath,
+        });
+      } catch (error) {
+        clientError(error);
+        ipcRenderer.send("track-event", "Error", "Setting Templates Path");
+        return;
+      }
+
       if (!supplementary_checks) {
         $("#sidebarCollapse").prop("disabled", false);
         return;
