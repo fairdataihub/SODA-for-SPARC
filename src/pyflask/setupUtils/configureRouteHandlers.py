@@ -8,7 +8,8 @@ from apis import (
     startup_resource,
     taxonomy_resource,
     user_resource,
-    datasets_resource
+    datasets_resource,
+    collections_resource,
 )
 
 def configureRouteHandlers(api):
@@ -26,3 +27,4 @@ def configureRouteHandlers(api):
     api.add_namespace(taxonomy_resource)
     api.add_namespace(user_resource)
     api.add_namespace(datasets_resource)
+    api.add_namespace(collections_resource)

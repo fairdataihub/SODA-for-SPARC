@@ -34,12 +34,7 @@ from manageDatasets import (
     update_dataset_readme,
     get_dataset_readme,
     get_dataset_tags,
-    update_dataset_tags,
-    get_all_collections,
-    get_current_collection_tags,
-    upload_collection_tags,
-    remove_collection_tags,
-    upload_new_tags,
+    update_dataset_tags
 )
 
 from namespaces import get_namespace, NamespaceEnum
@@ -1023,49 +1018,3 @@ class BfGetDatasetTags(Resource):
           api.abort(500, str(e))
         raise e
 
-
-@api.route('/datasets/<string:account_name>/collections')
-class BfGetDatasetTags(Resource):
-  
-    parser_tags = reqparse.RequestParser(bundle_errors=True)
-    parser_tags.add_argument('selected_account', type=str, required=True, location='args', help='The account to get dataset tags for.')
-
-    @api.expect(parser_tags)
-    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Get the collections tags of a dataset.")
-    @api.marshal_with(model_get_ds_tags, False, 200)
-    def get(self, dataset_name_or_id):
-      data = self.parser_tags.parse_args()
-
-      selected_account = data.get('selected_account')
-
-      try:
-        return get_dataset_tags(selected_account, dataset_name_or_id)
-      except Exception as e:
-        if notBadRequestException(e):
-          api.abort(500, str(e))
-        raise e
-
-    
-
-    parser_tags_put = parser_tags.copy()
-    parser_tags_put.add_argument('tags', type=list, required=True, location='json', help='The  collection tags to add to the dataset.')
-
-    @api.expect(parser_tags_put)
-    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 403: 'Forbidden'}, description="Add/remove a dataset to collections.")
-    @api.marshal_with(successMessage, False, 200)
-    def put(self, dataset_name_or_id):
-      data = self.parser_tags_put.parse_args()
-
-      selected_account = data.get('selected_account')
-
-      try:
-        return get_all_collections(selected_account)
-      except Exception as e:
-        if notBadRequestException(e):
-          api.abort(500, str(e))
-        raise e
-
-
-model_get_collection_tags = api.model("GetCollectionTagsResponse", {
-  'collections': fields.List(fields.String, required=True, description="The collection tags for the dataset."),
-})
