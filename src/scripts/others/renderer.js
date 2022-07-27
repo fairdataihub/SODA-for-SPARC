@@ -1346,62 +1346,62 @@ $("#button-collection-dataset-confirm").click(async () => {
 var currentTags = {};
 async function getCurrentCollectionTags() {
   currentTags = {};
-  return new Promise((resolve, reject) => {
-    client.invoke(
-      "api_get_current_collection_tags",
-      defaultBfAccount,
-      defaultBfDataset,
-      (error, res) => {
-        if (error) {
-          console.log(error);
-          reject(error);
-        } else {
-          for (let i = 0; i < res.length; i++) {
-            let name = res[i]["name"];
-            let id = res[i]["id"];
-            if (name.includes(",")) {
-              let replaced_name = name.replace(/,/g, "，");
-              currentTags[replaced_name] = { id: id, "original-name": name };
-            } else {
-              currentTags[name] = { id: id };
-            }
-          }
-          console.log(currentTags);
-          resolve(currentTags);
-        }
+  try {
+    res = await client.get(
+      `/collections/current_collections`,
+      {
+        params: { 
+          selected_account: defaultBfAccount,
+          selected_dataset: defaultBfDataset
+        },
       }
     );
-  });
+    for (let i = 0; i < res.length; i++) {
+      let name = res[i]["name"];
+      let id = res[i]["id"];
+      if (name.includes(",")) {
+        let replaced_name = name.replace(/,/g, "，");
+        currentTags[replaced_name] = { id: id, "original-name": name };
+      } else {
+        currentTags[name] = { id: id };
+      }
+    }
+    console.log(currentTags);
+    return currentTags;
+  } catch(error) {
+    console.log(error);
+  }
 }
 
 //Function used to get all collections that belong to the Org
 var allCollectionTags = {};
 async function getAllCollectionTags() {
   allCollectionTags = {};
-  return new Promise((resolve, reject) => {
-    client.invoke("api_get_all_collections", defaultBfAccount, (error, res) => {
-      if (error) {
-        console.log(error);
-        reject(error);
-      } else {
-        for (let i = 0; i < res.length; i++) {
-          let name = res[i]["name"];
-          let id = res[i]["id"];
-          if (name.includes(",")) {
-            let replaced_name = res[i]["name"].replace(/,/g, "，");
-            allCollectionTags[replaced_name] = {
-              id: id,
-              "original-name": name,
-            };
-          } else {
-            allCollectionTags[name] = { id: id };
-          }
-        }
-        console.log(allCollectionTags);
-        resolve(allCollectionTags);
+  try {
+    res = await client.get(
+      `/collections/all_collections`,
+      {
+        params: { selected_account: defaultBfAccount },
       }
-    });
-  });
+    );
+    for (let i = 0; i < res.length; i++) {
+      let name = res[i]["name"];
+      let id = res[i]["id"];
+      if (name.includes(",")) {
+        let replaced_name = res[i]["name"].replace(/,/g, "，");
+        allCollectionTags[replaced_name] = {
+          id: id,
+          "original-name": name,
+        };
+      } else {
+        allCollectionTags[name] = { id: id };
+      }
+    }
+    console.log(allCollectionTags);
+    return allCollectionTags
+  } catch(error) {
+    console.log(error)
+  }
 }
 
 var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),

@@ -1,39 +1,142 @@
 from flask_restx import Resource, reqparse, fields
+from numpy import require
+from pandas import array
 from namespaces import get_namespace, NamespaceEnum
-from collections import (
+from collectionsDataset import (
     get_all_collections,
-    get_current_collection_tags,
-    upload_collection_tags,
-    remove_collection_tags,
-    upload_new_tags
+    get_current_collection_names,
+    upload_collection_names,
+    remove_collection_names,
+    upload_new_names
 )
 
 api = get_namespace(NamespaceEnum.COLLECTIONS)
 
 
-organizationCollections = api.model("organizationCollections", {
-    'collections': fields.List(fields.String, required=True, description="Collections that belong to an organization")
+organizationCollections = api.model('collectionDataset', {
+    'id': fields.String(required=True, descripion="The id of collection"),
+    'name': fields.String(required=True, description="Collection name")
 })
+
 
 @api.route("/all_collections")
 class organizationCollections(Resource):
     collections_parser = reqparse.RequestParser(bundle_errors=True)
-    collections_parser.add_argument('account', type=str, required=True, help="Get all collections that belong to the Organization", location="args")
+    collections_parser.add_argument('selected_account', type=str, required=True, help="The target account to work with.", location="args")
 
     #the response object
-    @api.marshal_with(organizationCollections, False, 201)
+    @api.marshal_with(organizationCollections, False, 200)
     #response types/codes
-    @api.doc(responses={500: 'There was an internal error', 400: 'Account information is wrong'})
+    @api.doc(responses={500: 'There was an internal error', 400: 'Bad request'})
     #the request parameters
     @api.expect(collections_parser)
     #get the self, account from the request object
     def get(self):
-        data = self.collections_parser.parse_args()
-        account = data.get('account')
+        account = self.collections_parser.parse_args().get('selected_account')
 
         try: 
             return get_all_collections(account)
         except Exception as e:
             api.abort(500, e.args[0])
 
-        
+
+get_current_collections_model = api.model("currCollections", {
+    'id': fields.String(required=True, description="The id of collection name"),
+    'name': fields.String(required=True, description="Collection name")
+})    
+@api.route("/current_collections")
+class currentCollections(Resource):
+    curr_collections_parse = reqparse.RequestParser(bundle_errors=True)
+    curr_collections_parse.add_argument('selected_account', type=str, required=True, help="The target account to work with.", location="args")
+    curr_collections_parse.add_argument('selected_dataset', type=str, required=True, help="The target dataset to retrieve collection names", location="args")
+
+    @api.marshal_with(get_current_collections_model, False, 200)
+    @api.doc(responses={500: 'There was an internal error', 400: 'Bad request'})
+    @api.expect(curr_collections_parse)
+
+    def get(self):
+        data = self.curr_collections_parse.parse_args()
+        selected_account = data.get('selected_account')
+        selected_dataset = data.get('selected_dataset')
+
+        try:
+            return get_current_collection_names(selected_account, selected_dataset)
+        except Exception as e:
+            api.abort(500, e.args[0])
+
+
+model_upload_collection_names = api.model('uploadCollection', {
+    'id': fields.List(fields.String, required=True, description="ID of collection name"),
+    'name': fields.List(fields.String, required=True, description="Name of collection")
+})
+
+@api.route("/upload_collection_names")
+class uploadCollectionNames(Resource):
+    upload_collection_parse = reqparse.RequestParser(bundle_errors=True)
+    upload_collection_parse.add_argument('selected_account', type=str, required=True, help="The target account to work with.", location="args")
+    upload_collection_parse.add_argument('selected_dataset', type=str, required=True, help="The dataset to update collections", location="args")
+    upload_collection_parse.add_argument('collection_ids', type=list, required=True, help='List of the collection tag ids', location="json")
+
+    @api.marshal_with(model_upload_collection_names, False, 200)
+    @api.expect(upload_collection_parse)
+    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns the updated list of updated collection names and ids.")
+    def put(self):
+        data = self.upload_collection_parse.parse_args()
+
+        selected_account = data.get('selected_account')
+        selected_dataset = data.get('selected_dataset')
+        collection_tags = data.get('collection_ids')
+
+        try:
+            upload_collection_names(selected_account, selected_dataset, collection_tags)
+        except Exception as e:
+            api.abort(500, e.args[0])
+
+successMessage = api.model('SuccessMessage', {
+  'message': fields.String(required=True, description="A message indicating success of the operation."),
+})
+
+@api.route("/remove_collection_names")
+class removeCollectionNames(Resource):
+    parser_remove_collections = reqparse.RequestParser(bundle_errors=True)
+    parser_remove_collections.add_argument('selected_account', type=str, required=True, help="The target account to work with.", location="args")
+    parser_remove_collections.add_argument('selected_dataset', type=str, required=True, help="The dataset to update collections", location="args")
+    parser_remove_collections.add_argument('collection_ids', type=list, required=True, help="List of collection ids", location="json")
+
+    @api.marshal_with(successMessage, False, 200)
+    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'})
+    @api.expect(parser_remove_collections)
+
+    def delete(self):
+        data = self.parser_remove_collections.parse_args()
+        selected_account = data.get('selected_account')
+        selected_dataset = data.get('selected_dataset')
+        collection_ids = data.get('collection_ids')
+
+        try:
+            return remove_collection_names(selected_account, selected_dataset, collection_ids)
+        except Exception as e:
+            api.abort(500, e.args[0])
+
+
+@api.route("/upload_new_names")
+class newCollectionNames(Resource):
+    parser_new_names = reqparse.RequestParser(bundle_errors=True)
+    parser_new_names.add_argument("selected_account", type=str, required=True, help="The selected account to work with", location="args")
+    parser_new_names.add_argument("selected_dataset", required=True, type=str, help="The selected dataset name", location="args")
+    parser_new_names.add_argument("collection_names", required=True, type=list, help="List of collection names", location="json")
+
+
+    @api.doc(description="Method for creating new collection names on Pennsieve", responses={500: 'There was an internal server error', 400: 'Bad request'})
+    @api.expect(parser_new_names)
+
+    def post(self):
+        data = self.parser_new_names.parse_args()
+        account = data.get('selected_account')
+        dataset = data.get('selected-dataset')
+        collection_names = data.get('collection_names')
+
+        try:
+            return upload_new_names(account, dataset, collection_names)
+        except Exception as e:
+                api.abort(500, e.args[0])

@@ -18,120 +18,115 @@ def get_all_collections(account):
     Function used to get the collections that belong to an organization
     """
 
-    error = []
     try:
-        bf = get_authenticated_ps(account)
+        ps = get_authenticated_ps(account)
     except Exception as e:
-        error.append("Error: Please select a valid Pennsieve account")
+        error = "Error: Please select a valid Pennsieve account"
         raise Exception(error)
 
-    collection_names = bf._api._get(f"/collections/")
-
-    return collection_names
+    return ps._api._get(f"/collections/")
 
 
-def get_current_collection_tags(account, dataset):
+
+def get_current_collection_names(account, dataset):
     """
     Function used to get collection names of the current dataset
     """
-    error = []
     try:
-        bf = get_authenticated_ps(account)
+        ps = get_authenticated_ps(account)
     except Exception as error:
         error.append("Error: Please select a valid Pennsieve account")
         raise Exception(error)
 
     try:
-        myds = get_dataset(bf, dataset)
+        myds = get_dataset(ps, dataset)
         dataset_id = myds.id
     except Exception as e:
         error.append("Error: Please select a valid Pennsieve dataset")
         raise Exception(error)
 
 
-    currentCollectionTags = bf._api._get(f"/datasets/" + {dataset_id} + "/collections")
-    return currentCollectionTags
+    return ps._api._get(f"/datasets/{str(dataset_id)}/collections")
 
 
-def upload_collection_tags(account, dataset, tags):
+
+def upload_collection_names(account, dataset, tags):
     """
     Function used to upload the collection tags of a dataset to Pennsieve
     @params
         tags: List of the collection tag id's (int)
     """
-
-    error = []
+    print(tags);
+    print('above is the tags')
     statusResponses = []
     try:
-        bf = get_authenticated_ps(account)
+        ps = get_authenticated_ps(account)
     except Exception as e:
-        error.append("Error: Please select a valid Pennsieve account")
+        error ="Error: Please select a valid Pennsieve account"
         raise Exception(error)
 
     try:
-        myds = get_dataset(bf, dataset)
+        myds = get_dataset(ps, dataset)
         dataset_id = myds.id
     except Exception as e:
-        error.append("Error: Please select a valid Pennsieve dataset")
+        error = "Error: Please select a valid Pennsieve dataset"
         raise Exception(error)
 
     for tag in tags:
         jsonfile = {"collectionId": tag}
-        result = bf._api._put(f"/datasets/" + {dataset_id} + "/collections" ,json=jsonfile)
+        result = ps._api._put(f"/datasets/{dataset_id}/collections" ,json=jsonfile)
         statusResponses.append(result)
 
     return statusResponses
 
 
-def remove_collection_tags(account, dataset, tags):
+def remove_collection_names(account, dataset, tags):
     """
     Function used to remove the tags the were assigned to a dataset
     @params
         tags: List of collection ids (int)
     """
 
-    error = []
     statusResponses = []
 
     try:
-        bf = get_authenticated_ps(account)
+        ps = get_authenticated_ps(account)
     except Exception as e:
-        error.append("Error: Please select a valid account")
+        error = "Error: Please select a valid account"
         raise Exception(error)
 
     try:
-        myds = get_dataset(bf, dataset)
+        myds = get_dataset(ps, dataset)
         dataset_id = myds.id
     except Exception as e:
-        error.append("Error: Please select a valid dataset")
+        error = "Error: Please select a valid dataset"
         raise Exception(error)
 
-    for tag in tags:
-        result = bf._api._del(f"/datasets/" + {dataset_id} + "/collections/" + {tag})
+    for tagid in tags:
+        result = ps._api._del(f"/datasets/{str(dataset_id)}/collections/{str(tagid)}")
         statusResponses.append(result)
 
     return statusResponses
 
 
-def upload_new_tags(account, dataset, tags):
+def upload_new_names(account, dataset, tags):
     """
     Function is used to upload new collection tags that are not already on Pennsieve
     @params:
         tags: List of tag names (string)
     """
 
-    error = []
     statusResponses = []
 
     try:
-        bf = get_authenticated_ps(account)
+        ps = get_authenticated_ps(account)
     except Exception as e:
-        error.append("Error: Please select a valid account")
+        error = "Error: Please select a valid account"
         raise Exception(error)
 
     for tag in tags:
         jsonfile = {"name": tag}
-        result = bf._api._post(f"/collections", json=jsonfile)
+        result = ps._api._post(f"/collections", json=jsonfile)
         statusResponses.append(result)
 
     return statusResponses
