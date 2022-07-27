@@ -442,15 +442,34 @@ const renderProgressCards = (progressFileJSONdata) => {
   //Add the progress cards that have already been uploaded to Pennsieve
   //to their container (datasets that have the sodaJSONObj["previous-guided-upload-dataset-name"] property)
   document.getElementById("guided-div-update-uploaded-cards").innerHTML =
-    progressDataAlreadyUploadedToPennsieve
-      .map((progressFile) => generateProgressCardElement(progressFile))
-      .join("\n");
+    progressDataAlreadyUploadedToPennsieve.length > 0
+      ? progressDataAlreadyUploadedToPennsieve
+          .map((progressFile) => generateProgressCardElement(progressFile))
+          .join("\n")
+      : `
+          <h2 class="guided--text-sub-step">
+            No local datasets have been uploaded to Pennsieve yet.
+          </h2>
+          <p class="guided--text-input-instructions m-0 text-center">
+            <b>Click "Datasets in progress" to view local datasets in progress.</b>
+          </p>
+        `;
+
   //Add the progress cards that have not yet been uploaded to Pennsieve
   //to their container (datasets that do not have the sodaJSONObj["previous-guided-upload-dataset-name"] property)
   document.getElementById("guided-div-resume-progress-cards").innerHTML =
-    progressDataNotYetUploadedToPennsieve
-      .map((progressFile) => generateProgressCardElement(progressFile))
-      .join("\n");
+    progressDataNotYetUploadedToPennsieve.length > 0
+      ? progressDataNotYetUploadedToPennsieve
+          .map((progressFile) => generateProgressCardElement(progressFile))
+          .join("\n")
+      : `
+          <h2 class="guided--text-sub-step">
+            All local datasets have been previously uploaded to Pennsieve.
+          </h2>
+          <p class="guided--text-input-instructions m-0 text-center">
+            <b>Click "Datasets uploaded to Pennsieve" to view local datasets that have already been uploaded to Pennsieve.</b>
+          </p>
+        `;
 
   $(".progress-card-popover").popover();
 };

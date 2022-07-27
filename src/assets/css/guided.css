@@ -448,6 +448,7 @@ h1.guided--text-sub-step {
   margin-bottom: 9px;
 }
 .guided--text-input-instructions {
+  font-size: 1.1rem;
   width: 100%;
   padding-top: 4px;
   padding-bottom: 5px;
