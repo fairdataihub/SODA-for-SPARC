@@ -7914,9 +7914,6 @@ $(document).ready(() => {
     const guidedChangesMetadata = sodaJSONObj["dataset-metadata"]["CHANGES"];
 
     try {
-      //Run ple flight checks to ensure SODA is prepared to upload to Pennsieve
-      let supplementary_checks = await run_pre_flight_checks(false);
-
       // get apps base path
       const basepath = app.getAppPath();
       const resourcesPath = process.resourcesPath;
@@ -7932,6 +7929,10 @@ $(document).ready(() => {
         ipcRenderer.send("track-event", "Error", "Setting Templates Path");
         return;
       }
+      //Run ple flight checks to ensure SODA is prepared to upload to Pennsieve
+      let supplementary_checks = await run_pre_flight_checks(false);
+
+      // set the templates path
 
       if (!supplementary_checks) {
         $("#sidebarCollapse").prop("disabled", false);
