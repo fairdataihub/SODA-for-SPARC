@@ -8250,8 +8250,7 @@ $(document).ready(() => {
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
           title: "Dataset successfully uploaded!",
-          html: `Your dataset has been uploaded to Pennsieve!<br /><br />
-          You will be taken back to the home page where you can edit this dataset or begin curating a new dataset.`,
+          html: `You will be taken back to the home page where you can edit this dataset or begin curating a new dataset.`,
           icon: "success",
           confirmButtonText: "OK",
         });
