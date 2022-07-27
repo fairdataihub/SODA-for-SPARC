@@ -4587,7 +4587,7 @@ const openSubjectRenameInput = (subjectNameEditButton) => {
         class="guided--input"
         type="text"
         name="guided-subject-id"
-        placeholder="Enter new subject ID"
+        placeholder="Enter a new subject ID and press enter"
         onkeyup="specifySubject(event, $(this))"
         data-input-set="guided-subjects-folder-tab"
         data-alert-message="Subject IDs may not contain spaces or special characters"
