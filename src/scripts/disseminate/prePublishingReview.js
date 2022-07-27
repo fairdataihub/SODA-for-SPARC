@@ -90,7 +90,7 @@ $("#ORCID-btn").on("click", async () => {
       "track-event",
       "Success",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-        " - Integrate ORCID iD",
+      " - Integrate ORCID iD",
       defaultBfDatasetId
     );
 
@@ -362,7 +362,6 @@ $(".pre-publishing-continue").on("click", async function () {
   let excludedFileObjects;
   try {
     // read in the excluded files
-    // TODO: Replace with Flask call -- READY
     excludedFileObjects = await api.getFilesExcludedFromPublishing(
       defaultBfDataset
     );
@@ -385,18 +384,20 @@ $(".pre-publishing-continue").on("click", async function () {
       "track-event",
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-        " - Get Excluded Files",
+      " - Get Excluded Files",
       defaultBfDatasetId
     );
 
     // continue as they may not want to set any "ignore files" anyways
+    // hide the spinner for the file tree
+    $(".items-spinner").hide();
   }
 
   ipcRenderer.send(
     "track-event",
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Get Excluded Files",
+    " - Get Excluded Files",
     defaultBfDatasetId
   );
 
@@ -424,7 +425,7 @@ $(".pre-publishing-continue").on("click", async function () {
       "track-event",
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-        " - Get Metadata Files",
+      " - Get Metadata Files",
       defaultBfDatasetId
     );
 
@@ -435,7 +436,7 @@ $(".pre-publishing-continue").on("click", async function () {
     "track-event",
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
-      " - Get Metadata Files",
+    " - Get Metadata Files",
     defaultBfDatasetId
   );
 
