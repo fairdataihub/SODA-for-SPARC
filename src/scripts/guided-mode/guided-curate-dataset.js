@@ -535,17 +535,11 @@ const guidedPrepareHomeScreen = async () => {
   $("#guided-button-start-new-curate").css("display", "flex");
   $("#continue-curating-existing").css("display", "flex");
 
+  resetGuidedRadioButtons("guided-div-dataset-cards-radio-buttons");
+
   const datasetCardsRadioButtonsContainer = document.getElementById(
     "guided-div-dataset-cards-radio-buttons"
   );
-  const inProgressCardsContainer = document.getElementById(
-    "guided-div-resume-progress-cards"
-  );
-  const uploadedProgressCardsContainer = document.getElementById(
-    "guided-div-update-uploaded-cards"
-  );
-  inProgressCardsContainer.classList.add("hidden");
-  uploadedProgressCardsContainer.classList.add("hidden");
 
   const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
   //render progress resumption cards from progress file array on first page of guided mode
@@ -572,6 +566,11 @@ const guidedPrepareHomeScreen = async () => {
     renderer: "svg",
     loop: true,
     autoplay: true,
+  });
+  //scroll to the top of the home screen
+  document.getElementById("guided-body").scrollTo({
+    top: 0,
+    behavior: "smooth",
   });
 };
 
