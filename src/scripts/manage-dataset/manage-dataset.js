@@ -1529,6 +1529,8 @@ $("#edit_banner_image_button").click(async () => {
   } else {
     let img_src = $("#current-banner-img").attr("src");
     let img_base64 = await getBase64(img_src); // encode image to base64
+    console.log(img_base64);
+    console.log(img_src);
 
     $("#image-banner").attr("src", "data:image/jpg;base64," + img_base64);
     $("#save-banner-image").css("visibility", "visible");
@@ -1538,6 +1540,7 @@ $("#edit_banner_image_button").click(async () => {
 
     // Look for the security token in the URL. If this this doesn't exist, something went wrong with the aws bucket link.
     let position = img_src.search("X-Amz-Security-Token");
+    console.log(position);
 
     if (position != -1) {
       // The image url will be before the security token
