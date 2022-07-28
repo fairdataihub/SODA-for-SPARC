@@ -66,8 +66,7 @@ class currentCollections(Resource):
 
 
 model_upload_collection_names = api.model('uploadCollection', {
-    'id': fields.List(fields.String, required=True, description="ID of collection name"),
-    'name': fields.List(fields.String, required=True, description="Name of collection")
+    'collection_ids': fields.List(fields.Integer, required=True, description="ID of collection name")
 })
 
 @api.route("/upload_collection_names")
@@ -92,8 +91,8 @@ class uploadCollectionNames(Resource):
         except Exception as e:
             api.abort(500, e.args[0])
 
-successMessage = api.model('SuccessMessage', {
-  'message': fields.String(required=True, description="A message indicating success of the operation."),
+model_remove_collection_names = api.model('uploadCollection', {
+    'collection_ids': fields.List(fields.String, required=True, description="ID of collection name")
 })
 
 @api.route("/remove_collection_names")
@@ -103,7 +102,7 @@ class removeCollectionNames(Resource):
     parser_remove_collections.add_argument('selected_dataset', type=str, required=True, help="The dataset to update collections", location="args")
     parser_remove_collections.add_argument('collection_ids', type=list, required=True, help="List of collection ids", location="json")
 
-    @api.marshal_with(successMessage, False, 200)
+    @api.marshal_with(model_remove_collection_names, False, 200)
     @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'})
     @api.expect(parser_remove_collections)
 
@@ -119,6 +118,9 @@ class removeCollectionNames(Resource):
             api.abort(500, e.args[0])
 
 
+model_new_collection_names = api.model('uploadCollection', {
+    'collection_ids': fields.List(fields.String, required=True, description="ID of collection name")
+})
 @api.route("/upload_new_names")
 class newCollectionNames(Resource):
     parser_new_names = reqparse.RequestParser(bundle_errors=True)
@@ -126,7 +128,7 @@ class newCollectionNames(Resource):
     parser_new_names.add_argument("selected_dataset", required=True, type=str, help="The selected dataset name", location="args")
     parser_new_names.add_argument("collection_names", required=True, type=list, help="List of collection names", location="json")
 
-
+    @api.marshal_with(model_new_collection_names, False, 200)
     @api.doc(description="Method for creating new collection names on Pennsieve", responses={500: 'There was an internal server error', 400: 'Bad request'})
     @api.expect(parser_new_names)
 

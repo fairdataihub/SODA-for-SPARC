@@ -1,3 +1,4 @@
+from collections import defaultdict
 from gevent import monkey
 
 monkey.patch_all()
@@ -73,11 +74,15 @@ def upload_collection_names(account, dataset, tags):
         raise Exception(error)
 
     for tag in tags:
+        print(tag)
         jsonfile = {"collectionId": int(tag)}
         result = ps._api._put(f"/datasets/{dataset_id}/collections" ,json=jsonfile)
         statusResponses.append(result)
 
-    return statusResponses
+    print(statusResponses)
+    result = dict({"collection_ids": statusResponses})
+    print(result)
+    return result
 
 
 def remove_collection_names(account, dataset, tags):
@@ -106,8 +111,9 @@ def remove_collection_names(account, dataset, tags):
         result = ps._api._del(f"/datasets/{str(dataset_id)}/collections/{str(tagid)}")
         statusResponses.append(result)
 
-    return statusResponses
-
+    result = dict({"collection_ids": statusResponses})
+    print(result)
+    return result
 
 def upload_new_names(account, dataset, tags):
     """
@@ -129,6 +135,8 @@ def upload_new_names(account, dataset, tags):
         result = ps._api._post(f"/collections", json=jsonfile)
         statusResponses.append(result)
 
-    return statusResponses
+    result = dict({"collection_ids": statusResponses})
+    print(result)
+    return result
 
     
