@@ -398,18 +398,37 @@ const generateProgressCardElement = (progressFileJSONObj) => {
         </div>
       </div>
       <div class="guided--container-dataset-card-center">
-        <button
-          class="ui positive button guided--button-footer"
-          style="
-            background-color: var(--color-light-green) !important;
-            width: 160px !important;
-            margin: 4px;
-            margin-bottom: 15px;
-          "
-          onClick="guidedResumeProgress($(this))"
-        >
-          Continue curating
-        </button>
+        ${
+          progressFileJSONObj["previous-guided-upload-dataset-name"]
+            ? `
+                <button
+                  class="ui positive button guided--button-footer"
+                  style="
+                    background-color: var(--color-light-green) !important;
+                    width: 160px !important;
+                    margin: 4px;
+                    margin-bottom: 15px;
+                  "
+                  onClick="openEditGuidedDatasetSwal('${progressFileName}')"
+                >
+                  Edit dataset
+                </button>
+              `
+            : `
+                <button
+                  class="ui positive button guided--button-footer"
+                  style="
+                    background-color: var(--color-light-green) !important;
+                    width: 160px !important;
+                    margin: 4px;
+                    margin-bottom: 15px;
+                  "
+                  onClick="guidedResumeProgress($(this))"
+                >
+                  Continue curating
+                </button>
+              `
+        }
         <h2 class="guided--text-dataset-card" style="width: auto; text-decoration: underline; cursor: pointer;" onclick="deleteProgressCard(this)">
           <i
             class="fas fa-trash mr-sm-1"
@@ -586,6 +605,7 @@ const guidedPrepareHomeScreen = async () => {
     loop: true,
     autoplay: true,
   });
+  document.getElementById("guided-button-view-datasets-in-progress").click();
 };
 
 function guidedShowTreePreview(new_dataset_name, targetElement) {
@@ -2628,6 +2648,19 @@ const isPageValid = (pageID) => {
     }
     return false;
   }
+};
+
+const openEditGuidedDatasetSwal = async (datasetName) => {
+  swal.fire({
+    backdrop: "rgba(0,0,0, 0.4)",
+    heightAuto: false,
+    icon: "info",
+    title:
+      "Editing a dataset curated via guided mode is handled via Free-Form mode.",
+    html: `\nTo edit <b>${datasetName}</b>, go to Free-Form mode, select the dataset component that you would like
+    to modify, select ${datasetName} from the dataset selection drop-down, and edit the data in Free-Form mode.`,
+    confirmButtonText: "OK",
+  });
 };
 
 //Loads UI when continue curation button is pressed
@@ -6713,6 +6746,8 @@ $(document).ready(() => {
         "guided-add-samples-table",
         "guided-add-pools-table",
         "guided-div-add-subjects-table",
+        "guided-div-resume-progress-cards",
+        "guided-div-update-uploaded-cards",
       ];
       if (!elementsToNotScrollTo.includes(nextQuestionID)) {
         nextQuestionElement[0].scrollIntoView({
@@ -7933,7 +7968,6 @@ $(document).ready(() => {
       let supplementary_checks = await run_pre_flight_checks(false);
 
       // set the templates path
-
       if (!supplementary_checks) {
         $("#sidebarCollapse").prop("disabled", false);
         return;
