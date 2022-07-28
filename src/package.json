@@ -149,7 +149,7 @@
     "validator": "^13.7.0"
   },
   "devDependencies": {
-    "electron": "16.0.0",
+    "electron": "19.0.0",
     "electron-builder": "22.10.5",
     "electron-packager": "^14.0.6",
     "electron-rebuild": "^1.11.0",
