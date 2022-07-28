@@ -194,7 +194,7 @@ async function handleSectionTrigger(event) {
         if (switchToFreeFormModeFromGuided) {
           traverseToTab("guided-dataset-starting-point-tab");
           hideSubNavAndShowMainNav("back");
-          $("#guided-button-cancel-create-new-dataset").click();
+          $("#guided-button-name-dataset-back").click();
         } else {
           $("#guided_mode_view").click();
           return;
@@ -205,7 +205,7 @@ async function handleSectionTrigger(event) {
           .classList.contains("hidden")
       ) {
         console.log("user in rename");
-        $("#guided-button-cancel-create-new-dataset").click();
+        $("#guided-button-name-dataset-back").click();
       }
     }
     organizeDSglobalPath = document.getElementById("input-global-path");

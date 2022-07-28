@@ -150,7 +150,7 @@ const guidedTransitionFromHome = () => {
     "guided-subtitle-char-count"
   ).innerHTML = `255 characters remaining`;
   //Swith the start curating/modify existing buttons if they were switched
-  $("#guided-create-new-dataset").show();
+  $("#guided-button-name-dataset-next").show();
   $("#guided-modify-dataset-name-subtitle").hide();
 
   //Close the sidebar
@@ -6430,7 +6430,7 @@ $(document).ready(() => {
   $("#guided-button-start-new-curate").on("click", () => {
     guidedTransitionFromHome();
   });
-  $("#guided-button-cancel-create-new-dataset").on("click", () => {
+  $("#guided-button-name-dataset-back").on("click", () => {
     //remove text from dataset name and subtitle inputs
     document.getElementById("guided-dataset-name-input").value = "";
     document.getElementById("guided-dataset-subtitle-input").value = "";
@@ -6442,7 +6442,7 @@ $(document).ready(() => {
 
     guidedPrepareHomeScreen();
   });
-  $("#guided-create-new-dataset").on("click", async function () {
+  $("#guided-button-name-dataset-next").on("click", async function () {
     let errorArray = [];
     try {
       $(this).addClass("loading");
@@ -8334,7 +8334,7 @@ $(document).ready(() => {
         //Exit back to home page
         traverseToTab("guided-dataset-starting-point-tab");
         hideSubNavAndShowMainNav("back");
-        $("#guided-button-cancel-create-new-dataset").click();
+        $("#guided-button-name-dataset-back").click();
       }
     };
     // Progress tracking function for main curate
@@ -9881,7 +9881,7 @@ $(document).ready(() => {
 
       //switch the create new / modify existing buttons
       $("#guided-modify-dataset-name-subtitle").show();
-      $("#guided-create-new-dataset").hide();
+      $("#guided-button-name-dataset-next").hide();
 
       CURRENT_PAGE = null;
 
