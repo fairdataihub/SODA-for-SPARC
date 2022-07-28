@@ -1347,12 +1347,13 @@ var currentTags = {};
 async function getCurrentCollectionTags() {
   currentTags = {};
   try {
-    res = await client.get(`/collections/current_collections`, {
+    let result = await client.get(`/collections/current_collections`, {
       params: {
         selected_account: defaultBfAccount,
         selected_dataset: defaultBfDataset,
       },
     });
+    let res = result.data;
     for (let i = 0; i < res.length; i++) {
       let name = res[i]["name"];
       let id = res[i]["id"];
@@ -1375,9 +1376,10 @@ var allCollectionTags = {};
 async function getAllCollectionTags() {
   allCollectionTags = {};
   try {
-    res = await client.get(`/collections/all_collections`, {
+    result = await client.get(`/collections/all_collections`, {
       params: { selected_account: defaultBfAccount },
     });
+    let res = result.data;
     for (let i = 0; i < res.length; i++) {
       let name = res[i]["name"];
       let id = res[i]["id"];

@@ -73,7 +73,7 @@ def upload_collection_names(account, dataset, tags):
         raise Exception(error)
 
     for tag in tags:
-        jsonfile = {"collectionId": tag}
+        jsonfile = {"collectionId": int(tag)}
         result = ps._api._put(f"/datasets/{dataset_id}/collections" ,json=jsonfile)
         statusResponses.append(result)
 
