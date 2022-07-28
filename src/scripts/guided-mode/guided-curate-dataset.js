@@ -590,10 +590,9 @@ const guidedPrepareHomeScreen = async () => {
       guidedSavedProgressFiles
     );
     renderProgressCards(progressFileData);
+    document.getElementById("guided-button-view-datasets-in-progress").click();
   } else {
-    $("#guided-continue-curation-header").text(
-      "After creating your dataset, your progress will be saved and resumable below."
-    );
+    $("#guided-continue-curation-header").text("");
     datasetCardsRadioButtonsContainer.classList.add("hidden");
   }
   //empty new-dataset-lottie-container div
@@ -605,7 +604,6 @@ const guidedPrepareHomeScreen = async () => {
     loop: true,
     autoplay: true,
   });
-  document.getElementById("guided-button-view-datasets-in-progress").click();
 };
 
 function guidedShowTreePreview(new_dataset_name, targetElement) {
