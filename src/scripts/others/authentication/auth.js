@@ -5,7 +5,7 @@
 const { existsSync } = require("fs");
 
 const hasConnectedAccountWithPennsieve = () => {
-  log.info("Checking if the user has a connected account with Pennsieve...")
+  log.info("Checking if the user has a connected account with Pennsieve...");
   const ini = require("ini");
 
   // get the path to home directory
