@@ -1251,10 +1251,11 @@ const traverseToTab = (targetPageID) => {
         .getElementById("guided-file-explorer-elements")
         .classList.remove("hidden");
     }
-    if (targetPageID === "guided-docs-folder-tab") {
-      //Append the guided-file-explorer element to the docs folder organization container
+
+    if (targetPageID === "guided-protocol-folder-tab") {
+      //Append the guided-file-explorer element to the derivative folder organization container
       $("#guided-file-explorer-elements").appendTo(
-        $("#guided-user-has-docs-data")
+        $("#guided-user-has-protocol-data")
       );
       //Remove hidden class from file explorer element in case it was hidden
       //when showing the intro for prim/src/deriv organization
@@ -1262,10 +1263,11 @@ const traverseToTab = (targetPageID) => {
         .getElementById("guided-file-explorer-elements")
         .classList.remove("hidden");
     }
-    if (targetPageID === "guided-protocol-folder-tab") {
-      //Append the guided-file-explorer element to the derivative folder organization container
+
+    if (targetPageID === "guided-docs-folder-tab") {
+      //Append the guided-file-explorer element to the docs folder organization container
       $("#guided-file-explorer-elements").appendTo(
-        $("#guided-user-has-protocol-data")
+        $("#guided-user-has-docs-data")
       );
       //Remove hidden class from file explorer element in case it was hidden
       //when showing the intro for prim/src/deriv organization

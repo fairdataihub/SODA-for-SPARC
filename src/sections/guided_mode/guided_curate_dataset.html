@@ -242,11 +242,11 @@
               ></div>
               <div
                 class="guided--capsule"
-                id="guided-docs-folder-capsule"
+                id="guided-protocol-folder-capsule"
               ></div>
               <div
                 class="guided--capsule"
-                id="guided-protocol-folder-capsule"
+                id="guided-docs-folder-capsule"
               ></div>
 
               <button
@@ -1269,49 +1269,6 @@
             ></div>
           </div>
           <div
-            id="guided-docs-folder-tab"
-            class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
-          >
-            <div class="guided--section w-100">
-              <h1 class="guided--text-sub-step">
-                Specify your dataset's docs data
-              </h1>
-              <p class="guided--help-text w-100">
-                Docs data is <b>required if</b> your dataset contains supporting
-                files that don't belong to anoy of the other folders
-              </p>
-            </div>
-            <div class="guided--section">
-              <label class="guided--form-label centered"
-                >Do you have docs data that you would like to add?
-              </label>
-
-              <div class="guided--radio-button-container">
-                <button
-                  class="ui positive basic button guided--radio-button"
-                  id="guided-button-has-docs-data"
-                  data-next-element="guided-user-has-docs-data"
-                  data-button-config-value="dataset-contains-docs-data"
-                  data-button-config-value-state="yes"
-                >
-                  Yes
-                </button>
-                <button
-                  class="ui negative basic button guided--radio-button"
-                  id="guided-button-no-docs-data"
-                  data-button-config-value="dataset-contains-docs-data"
-                  data-button-config-value-state="no"
-                >
-                  No
-                </button>
-              </div>
-            </div>
-            <div
-              class="guided--panel hidden"
-              id="guided-user-has-docs-data"
-            ></div>
-          </div>
-          <div
             id="guided-protocol-folder-tab"
             class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
           >
@@ -1355,6 +1312,50 @@
               id="guided-user-has-protocol-data"
             ></div>
           </div>
+          <div
+            id="guided-docs-folder-tab"
+            class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+          >
+            <div class="guided--section w-100">
+              <h1 class="guided--text-sub-step">
+                Specify your dataset's docs data
+              </h1>
+              <p class="guided--help-text w-100">
+                Docs data is <b>required if</b> your dataset contains supporting
+                files that don't belong to anoy of the other folders
+              </p>
+            </div>
+            <div class="guided--section">
+              <label class="guided--form-label centered"
+                >Do you have docs data that you would like to add?
+              </label>
+
+              <div class="guided--radio-button-container">
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  id="guided-button-has-docs-data"
+                  data-next-element="guided-user-has-docs-data"
+                  data-button-config-value="dataset-contains-docs-data"
+                  data-button-config-value-state="yes"
+                >
+                  Yes
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  id="guided-button-no-docs-data"
+                  data-button-config-value="dataset-contains-docs-data"
+                  data-button-config-value-state="no"
+                >
+                  No
+                </button>
+              </div>
+            </div>
+            <div
+              class="guided--panel hidden"
+              id="guided-user-has-docs-data"
+            ></div>
+          </div>
+
           <div
             id="guided-folder-importation-tab"
             class="guided--panel hidden guided-curate-existing-local-dataset-branch-page"
@@ -5158,5 +5159,5 @@
   <script
     src="./scripts/guided-mode/lottieJSON.js"
     type="text/javascript"
-  ></script>
-</template>
+  ></script> </template
+>k
