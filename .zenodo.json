@@ -1,7 +1,7 @@
 {
   "upload_type": "software",
   "title": "SODA (Software to Organize Data Automatically) for SPARC",
-  "publication_date": "2022-05-18",
+  "publication_date": "2022-07-26",
   "creators": [
     { "name": "Patel, Bhavesh", "affiliation": "FAIR Data Innovations Hub" },
     { "name": "Ngo, Tram", "affiliation": "FAIR Data Innovations Hub" },
@@ -29,5 +29,5 @@
     "ubuntu",
     "windows"
   ],
-  "version": "6.0.0"
+  "version": "7.0.0"
 }
