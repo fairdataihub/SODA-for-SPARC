@@ -2,7 +2,7 @@
  * Check if the user has a connected account with Pennsieve by checking the ini file.
  */
 
-const { existsSync } = require("fs")
+const { existsSync } = require("fs");
 
 const hasConnectedAccountWithPennsieve = () => {
   log.info("Checking if the user has a connected account with Pennsieve...")
@@ -14,7 +14,7 @@ const hasConnectedAccountWithPennsieve = () => {
   const configFilePath = path.join(homeDir, ".pennsieve", "config.ini");
 
   if (!existsSync(configFilePath)) {
-    return false
+    return false;
   }
 
   // parse the config file
