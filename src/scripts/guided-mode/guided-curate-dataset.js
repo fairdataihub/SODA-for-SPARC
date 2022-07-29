@@ -6582,13 +6582,6 @@ $(document).ready(() => {
     );
   });
 
-  $("#guided-structure-new-dataset").on("click", () => {
-    $("#guided-next-button").click();
-  });
-  $("#guided-import-existing-dataset").on("click", () => {
-    $("#guided-next-button").click();
-  });
-
   $("#guided-button-add-permission-user-or-team").on("click", function () {
     try {
       //get the selected permission element
