@@ -974,7 +974,6 @@ function handleDuplicateImports(btnId, duplicateArray) {
   //toast alert created with Notyf
   var toastUpdate = new Notyf({
     position: { x: "right", y: "bottom" },
-    ripple: true,
     dismissible: true,
     ripple: false,
     types: [
@@ -1704,7 +1703,6 @@ async function addFilesfunction(
   //toast alert created with Notyf
   let importToast = new Notyf({
     position: { x: "right", y: "bottom" },
-    ripple: true,
     dismissible: true,
     ripple: false,
     types: [

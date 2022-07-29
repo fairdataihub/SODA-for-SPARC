@@ -23,7 +23,7 @@ const handleAxiosValidationErrors = async (errorObject) => {
   } else if (errorObject.request) {
     Swal.fire({
       title: `The server could not be reached for validation`,
-      text: "Please restart SODA and try again. If this issue continues please contact the SODA team at sodasparc@gmail.com",
+      text: "Please restart SODA and try again. If this issue continues please contact the SODA team at help@fairdataihub.org",
       icon: "error",
       allowEscapeKey: true,
       allowOutsideClick: true,
@@ -42,7 +42,7 @@ const handleAxiosValidationErrors = async (errorObject) => {
     // error with creating the request
     Swal.fire({
       title: `The validation request is malformed`,
-      text: "This is not caused by any user action. Reach out to the SODA team at sodasparc@gmail.com if this happens again.",
+      text: "This is not caused by any user action. Reach out to the SODA team at help@fairdataihub.org if this happens again.",
       icon: "error",
       allowEscapeKey: true,
       allowOutsideClick: true,
