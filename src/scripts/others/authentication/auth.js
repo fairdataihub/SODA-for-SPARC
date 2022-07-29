@@ -2,7 +2,7 @@
  * Check if the user has a connected account with Pennsieve by checking the ini file.
  */
 
-const { existsSync } = require("fs")
+const { existsSync } = require("fs");
 
 const hasConnectedAccountWithPennsieve = () => {
   const ini = require("ini");
@@ -16,7 +16,7 @@ const hasConnectedAccountWithPennsieve = () => {
   let config = ini.parse(require("fs").readFileSync(configFilePath, "utf-8"));
 
   if (!existsSync(configFilePath)) {
-    return false
+    return false;
   }
 
   // search for a default profile key in the config
