@@ -133,9 +133,6 @@ const guidedTransitionFromHome = () => {
   document.getElementById(
     "guided-subtitle-char-count"
   ).innerHTML = `255 characters remaining`;
-  //Swith the start curating/modify existing buttons if they were switched
-  $("#guided-button-dataset-intro-next").show();
-  $("#guided-modify-dataset-name-subtitle").hide();
 
   //Close the sidebar
   const sidebar = document.getElementById("sidebarCollapse");
@@ -211,7 +208,6 @@ const saveGuidedProgress = (guidedProgressFileName) => {
     guidedProgressFilePath,
     guidedProgressFileName + ".json"
   );
-  sodaJSONObj["progress-save-file-path"] = guidedFilePath;
   // delete sodaJSONObj["dataset-structure"] value that was added only for the Preview tree view
   if ("files" in sodaJSONObj["dataset-structure"]) {
     sodaJSONObj["dataset-structure"]["files"] = {};
@@ -2813,7 +2809,6 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["completed-tabs"] = [];
   sodaJSONObj["last-modified"] = "";
   sodaJSONObj["button-config"] = {};
-  sodaJSONObj["progress-save-file-path"] = "";
   datasetStructureJSONObj = { folders: {}, files: {} };
 };
 const attachGuidedMethodsToSodaJSONObj = () => {
@@ -5683,38 +5678,57 @@ $("#guided-submission-completion-date").change(function () {
 /////////////////////////////////////////////////////////
 //////////       GUIDED OBJECT ACCESSORS       //////////
 /////////////////////////////////////////////////////////
-const setGuidedDatasetName = (datasetName) => {
-  const previousDatasetName = sodaJSONObj["digital-metadata"]["name"];
-  //If updataing the dataset, update the old banner image path with a new one
-  if (previousDatasetName) {
-    const bannerImagePathToUpdate =
-      sodaJSONObj["digital-metadata"]["banner-image-path"];
-    if (bannerImagePathToUpdate) {
-      const newBannerImagePath = bannerImagePathToUpdate.replace(
-        previousDatasetName,
-        datasetName
-      );
-      //Rename the old banner image folder to the new dataset name
-      fs.renameSync(bannerImagePathToUpdate, newBannerImagePath);
-      //change the banner image path in the JSON obj
-      sodaJSONObj["digital-metadata"]["banner-image-path"] = newBannerImagePath;
-    }
+const setOrUpdateGuidedDatasetName = (newDatasetName) => {
+  return new Promise((resolve, reject) => {
+    const previousDatasetName = sodaJSONObj["digital-metadata"]["name"];
+    //If updataing the dataset, update the old banner image path with a new one
+    if (previousDatasetName) {
+      //If previousDatasetName is equal to the newDatasetName, we don't need to update any progress files
+      if (previousDatasetName === newDatasetName) {
+        resolve("No changes made to dataset name");
+      }
 
-    const progressFilePathToUpdate = sodaJSONObj["progress-save-file-path"];
-    if (progressFilePathToUpdate) {
-      const newProgressFilePath = progressFilePathToUpdate.replace(
-        previousDatasetName,
-        datasetName
-      );
-      //Rename the old progress file to the new dataset name
-      fs.renameSync(progressFilePathToUpdate, newProgressFilePath);
-      //change the progress file path in the JSON obj
-      sodaJSONObj["progress-save-file-path"] = newProgressFilePath;
-    }
-  }
+      //get names of existing progress saves
+      const existingProgressNames = fs.readdirSync(guidedProgressFilePath);
+      //Remove '.json' from each element in existingProgressNames
+      existingProgressNames.forEach((element, index) => {
+        existingProgressNames[index] = element.replace(".json", "");
+      });
+      console.log(existingProgressNames);
+      //check if dataset name is already in use
+      if (existingProgressNames.includes(newDatasetName)) {
+        reject(
+          "An existing progress file already exists with that name. Please choose a different name."
+        );
+      }
 
-  sodaJSONObj["digital-metadata"]["name"] = datasetName;
-  $(".guidedDatasetName").text(datasetName);
+      //update old progress file with new dataset name
+      const oldProgressFilePath = `${guidedProgressFilePath}/${previousDatasetName}.json`;
+      const newProgressFilePath = `${guidedProgressFilePath}/${newDatasetName}.json`;
+      fs.renameSync(oldProgressFilePath, newProgressFilePath);
+
+      const bannerImagePathToUpdate =
+        sodaJSONObj["digital-metadata"]["banner-image-path"];
+      if (bannerImagePathToUpdate) {
+        const newBannerImagePath = bannerImagePathToUpdate.replace(
+          previousDatasetName,
+          datasetName
+        );
+        //Rename the old banner image folder to the new dataset name
+        fs.renameSync(bannerImagePathToUpdate, newBannerImagePath);
+        //change the banner image path in the JSON obj
+        sodaJSONObj["digital-metadata"]["banner-image-path"] =
+          newBannerImagePath;
+      }
+      sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
+      saveGuidedProgress(newDatasetName);
+      resolve("Dataset name updated");
+    } else {
+      sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
+      saveGuidedProgress(newDatasetName);
+      resolve("Dataset name updated");
+    }
+  });
 };
 
 const getExistingPennsieveDatasetNames = async () => {
@@ -6357,18 +6371,16 @@ $(document).ready(() => {
       "guided-new-dataset-info"
     );
     if (!guidedIntroPage.classList.contains("hidden")) {
-      switchElementVisibility("guided-name-subtitle-parent-tab", "guided-home");
-      guidedPrepareHomeScreen();
-    }
-    if (!guidedDatasetNameSubtitlePage.classList.contains("hidden")) {
       //remove text from dataset name and subtitle inputs
       document.getElementById("guided-dataset-name-input").value = "";
       document.getElementById("guided-dataset-subtitle-input").value = "";
-      //show the home page
-      document
-        .getElementById("guided-name-subtitle-parent-tab")
-        .classList.add("hidden");
-      document.getElementById("guided-home").classList.remove("hidden");
+
+      switchElementVisibility("guided-name-subtitle-parent-tab", "guided-home");
+      //hide the intro footer
+      document.getElementById("guided-footer-intro").classList.add("hidden");
+      guidedPrepareHomeScreen();
+    } else if (!guidedDatasetNameSubtitlePage.classList.contains("hidden")) {
+      switchElementVisibility("guided-new-dataset-info", "guided-intro-page");
     }
   });
   $("#guided-button-dataset-intro-next").on("click", async function () {
@@ -6384,15 +6396,30 @@ $(document).ready(() => {
 
       try {
         $(this).addClass("loading");
-        let datasetName = document
+
+        let datasetNameInput = document
           .getElementById("guided-dataset-name-input")
           .value.trim();
-        //temp bypass stuff
-        let datasetSubtitle = document
+        let datasetSubtitleInput = document
           .getElementById("guided-dataset-subtitle-input")
           .value.trim();
-        //temp bypass stuff
-        if (datasetName != "" && datasetSubtitle != "") {
+        if (!datasetNameInput) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please enter a dataset name.",
+          });
+        }
+        if (!datasetSubtitleInput) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please enter a dataset subtitle.",
+          });
+        }
+        if (errorArray.length > 0) {
+          throw errorArray;
+        }
+
+        if (Object.keys(sodaJSONObj).length === 0) {
           //get names of existing progress saves
           const existingProgressNames = fs.readdirSync(guidedProgressFilePath);
           //Remove '.json' from each element in existingProgressNames
@@ -6401,7 +6428,7 @@ $(document).ready(() => {
           });
           console.log(existingProgressNames);
           //check if dataset name is already in use
-          if (existingProgressNames.includes(datasetName)) {
+          if (existingProgressNames.includes(datasetNameInput)) {
             errorArray.push({
               type: "notyf",
               message:
@@ -6410,33 +6437,36 @@ $(document).ready(() => {
             throw errorArray;
           }
           console.log(existingProgressNames);
-          //If sodaJSONObj is empty, populate initial object properties
+
           guidedCreateSodaJSONObj();
           attachGuidedMethodsToSodaJSONObj();
 
-          setGuidedDatasetName(datasetName);
-          setGuidedDatasetSubtitle(datasetSubtitle);
+          await setOrUpdateGuidedDatasetName(datasetNameInput);
+          setGuidedDatasetSubtitle(datasetSubtitleInput);
+          saveGuidedProgress(datasetNameInput);
+        } else {
+          //updating current progress file
+          console.log("updating current progress file");
+          try {
+            await setOrUpdateGuidedDatasetName(datasetNameInput);
+          } catch (error) {
+            errorArray.push({
+              type: "notyf",
+              message: error,
+            });
+            throw errorArray;
+          }
+          console.log("progress file updated");
+          setGuidedDatasetSubtitle(datasetSubtitleInput);
           saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
-          guidedTransitionFromDatasetNameSubtitlePage();
-          resetGuidedRadioButtons("guided-dataset-starting-point-tab");
-        } else {
-          if (datasetName == "") {
-            errorArray.push({
-              type: "notyf",
-              message: "Please enter a dataset name",
-            });
-          }
-          if (datasetSubtitle == "") {
-            errorArray.push({
-              type: "notyf",
-              message: "Please enter a dataset subtitle",
-            });
-          }
-          $(this).removeClass("loading");
-          throw errorArray;
+          console.log("done saving stuff");
         }
+        console.log("going to next page");
         $(this).removeClass("loading");
+
+        guidedTransitionFromDatasetNameSubtitlePage();
+        resetGuidedRadioButtons("guided-dataset-starting-point-tab");
       } catch (error) {
         errorArray.map((error) => {
           if (error.type === "notyf") {
@@ -6446,10 +6476,10 @@ $(document).ready(() => {
               message: error.message,
             });
           }
-          errorArray = [];
         });
         $(this).removeClass("loading");
       }
+      $(this).removeClass("loading");
     }
   });
   $("#guided-modify-dataset-name-subtitle").on("click", async () => {
@@ -6457,79 +6487,57 @@ $(document).ready(() => {
     try {
       const datasetName = getGuidedDatasetName();
       const datasetSubtitle = getGuidedDatasetSubtitle();
-      const datasetNameInputValue = document.getElementById(
-        "guided-dataset-name-input"
-      ).value;
-      const datasetSubtitleInputValue = document.getElementById(
-        "guided-dataset-subtitle-input"
-      ).value;
 
-      if (datasetNameInputValue != "" && datasetSubtitleInputValue != "") {
-        if (
-          datasetName === datasetNameInputValue &&
-          datasetSubtitle === datasetSubtitleInputValue
-        ) {
-          //If not changes were made to the name or subtitle, exit the page
-          guidedTransitionFromDatasetNameSubtitlePage();
-          return;
-        }
+      if (
+        datasetName === datasetNameInputValue &&
+        datasetSubtitle === datasetSubtitleInputValue
+      ) {
+        //If not changes were made to the name or subtitle, exit the page
+        guidedTransitionFromDatasetNameSubtitlePage();
+        return;
+      }
 
-        if (datasetName != datasetNameInputValue) {
-          //check if dataset name is already in use
-          const existingProgressFileNames = fs.readdirSync(
-            guidedProgressFilePath
-          );
-          //Get the name of the progress files without the file type
-          const existingProgressDatasetNames = existingProgressFileNames.map(
-            (fileName) => {
-              return fileName.split(".")[0];
-            }
-          );
-          if (existingProgressDatasetNames.includes(datasetNameInputValue)) {
-            const result = await Swal.fire({
-              title: "An existing progress file with this name already exists",
-              text: "Would you like to overwrite it? This will replace existing data saved under the old progress file with your current progress.",
-              icon: "warning",
-              showCancelButton: true,
-              confirmButtonColor: "#3085d6",
-              cancelButtonColor: "#d33",
-              confirmButtonText: "Yes, overwrite existing file",
-              cancelButtonText: "No, cancel",
-            });
-            if (result.isConfirmed) {
-              setGuidedDatasetName(datasetNameInputValue);
-              console.log(datasetSubtitleInputValue);
-              setGuidedDatasetSubtitle(datasetSubtitleInputValue);
-              saveGuidedProgress(datasetNameInputValue);
-            }
-          } else {
-            setGuidedDatasetName(datasetNameInputValue);
+      if (datasetName != datasetNameInputValue) {
+        //check if dataset name is already in use
+        const existingProgressFileNames = fs.readdirSync(
+          guidedProgressFilePath
+        );
+        //Get the name of the progress files without the file type
+        const existingProgressDatasetNames = existingProgressFileNames.map(
+          (fileName) => {
+            return fileName.split(".")[0];
+          }
+        );
+        if (existingProgressDatasetNames.includes(datasetNameInputValue)) {
+          const result = await Swal.fire({
+            title: "An existing progress file with this name already exists",
+            text: "Would you like to overwrite it? This will replace existing data saved under the old progress file with your current progress.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, overwrite existing file",
+            cancelButtonText: "No, cancel",
+          });
+          if (result.isConfirmed) {
+            setOrUpdateGuidedDatasetName(datasetNameInputValue);
             console.log(datasetSubtitleInputValue);
-
             setGuidedDatasetSubtitle(datasetSubtitleInputValue);
             saveGuidedProgress(datasetNameInputValue);
           }
         } else {
+          setOrUpdateGuidedDatasetName(datasetNameInputValue);
+          console.log(datasetSubtitleInputValue);
+
           setGuidedDatasetSubtitle(datasetSubtitleInputValue);
           saveGuidedProgress(datasetNameInputValue);
         }
-        //transition out of dataset name/subtitle page
-        guidedTransitionFromDatasetNameSubtitlePage();
       } else {
-        if (datasetNameInputValue == "") {
-          errorArray.push({
-            type: "notyf",
-            message: "Please enter a dataset name",
-          });
-        }
-        if (datasetSubtitleInputValue == "") {
-          errorArray.push({
-            type: "notyf",
-            message: "Please enter a dataset subtitle",
-          });
-        }
-        throw errorArray;
+        setGuidedDatasetSubtitle(datasetSubtitleInputValue);
+        saveGuidedProgress(datasetNameInputValue);
       }
+      //transition out of dataset name/subtitle page
+      guidedTransitionFromDatasetNameSubtitlePage();
     } catch (error) {
       errorArray.map((error) => {
         if (error.type === "notyf") {
@@ -9744,6 +9752,8 @@ $(document).ready(() => {
         .getElementById("guided-name-subtitle-parent-tab")
         .classList.remove("hidden");
 
+      switchElementVisibility("guided-intro-page", "guided-new-dataset-info");
+
       //show the intro footer
       document.getElementById("guided-footer-intro").classList.remove("hidden");
 
@@ -9769,10 +9779,6 @@ $(document).ready(() => {
       datasetSubtitleCharacterCountText.innerHTML = `${
         255 - datasetSubtitle.length
       } characters remaining`;
-
-      //switch the create new / modify existing buttons
-      $("#guided-modify-dataset-name-subtitle").show();
-      $("#guided-button-dataset-intro-next").hide();
 
       CURRENT_PAGE = null;
 
