@@ -115,24 +115,6 @@ const openSubPageNavigation = (pageBeingNavigatedTo) => {
   $("#guided-sub-page-navigation-footer-div").css("display", "flex");
 };
 
-const guidedGetSubjects = () => {
-  return Object.keys(
-    sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]
-  );
-};
-const guidedGetSubjectSamples = (subject) => {
-  return sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
-    subject
-  ];
-};
-const guidedGetSamplesSubject = (sample) => {
-  for (const subject of guidedGetSubjects()) {
-    if (guidedGetSubjectSamples(subject).includes(sample)) {
-      return subject;
-    }
-  }
-};
-
 const guidedTransitionFromHome = () => {
   //Hide the home screen
   document.getElementById("guided-home").classList.add("hidden");
@@ -143,6 +125,8 @@ const guidedTransitionFromHome = () => {
   document
     .getElementById("guided-name-subtitle-parent-tab")
     .classList.remove("hidden");
+
+  switchElementVisibility("guided-new-dataset-info", "guided-intro-page");
   //Reset name, subtitle, and subtitle char count
   document.getElementById("guided-dataset-name-input").value = "";
   document.getElementById("guided-dataset-subtitle-input").value = "";
@@ -150,7 +134,7 @@ const guidedTransitionFromHome = () => {
     "guided-subtitle-char-count"
   ).innerHTML = `255 characters remaining`;
   //Swith the start curating/modify existing buttons if they were switched
-  $("#guided-button-name-dataset-next").show();
+  $("#guided-button-dataset-intro-next").show();
   $("#guided-modify-dataset-name-subtitle").hide();
 
   //Close the sidebar
@@ -158,7 +142,11 @@ const guidedTransitionFromHome = () => {
   if (!sidebar.classList.contains("active")) {
     sidebar.click();
   }
+
+  //Show the intro footer
+  document.getElementById("guided-footer-intro").classList.remove("hidden");
 };
+
 const guidedTransitionToHome = () => {
   guidedPrepareHomeScreen();
   document.getElementById("guided-home").classList.remove("hidden");
@@ -180,6 +168,9 @@ const guidedTransitionFromDatasetNameSubtitlePage = () => {
   document
     .getElementById("guided-name-subtitle-parent-tab")
     .classList.add("hidden");
+  //hide the intro footer
+  document.getElementById("guided-footer-intro").classList.add("hidden");
+
   //Show the dataset structure page
   $("#prepare-dataset-parent-tab").css("display", "flex");
   $("#guided-header-div").css("display", "flex");
@@ -5285,77 +5276,6 @@ const deleteSampleFolder = (sampleDeleteButton) => {
   ]["folders"][sampleIdToDelete];
 };
 
-const renderSampleMetadataTables = () => {
-  let subjectsToMap = guidedGetSubjects();
-  let sampleMetadataTables = subjectsToMap.map((subject) => {
-    let samples = guidedGetSubjectSamples(subject);
-    let sampleMetadataRows;
-    if (samples.length > 0) {
-      sampleMetadataRows = guidedGetSubjectSamples(subject)
-        .map((sample, index) => {
-          let tableIndex = index + 1;
-          return generateSampleMetadataRowElement(tableIndex, sample);
-        })
-        .join("\n");
-    } else {
-      const emptyRowWarning = generateAlertElement(
-        "warning",
-        `No samples were added to the subject ${subject}. If you would like to add samples to ${subject}, return to the samples table.`
-      );
-      sampleMetadataRows = `<tr><td colspan="3">${emptyRowWarning}</td></tr>`;
-    }
-    return `
-      <table
-        class="ui celled striped table"
-        style="margin-bottom: 25px; min-width: 820px;"
-      >
-        <thead>
-          <tr>
-            <th
-              colspan="3"
-              class="text-center"
-              style="
-                z-index: 2;
-                height: 50px;
-                position: sticky !important;
-                top: -10px !important;
-              "
-            >
-              <span class="sample-subject-metadata-id">${subject}</span>'s sample metadata
-            </th>
-          </tr>
-          <tr>
-            <th
-              class="center aligned"
-              style="z-index: 2; position: sticky !important; top: 40px !important;"
-            >
-              Index
-            </th>
-            <th
-              style="z-index: 2; position: sticky !important; top: 40px !important;"
-            >
-              sample ID
-            </th>
-            <th
-              class="center aligned"
-              style="z-index: 2; position: sticky !important; top: 40px !important;"
-            >
-              Modify metadata
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          ${sampleMetadataRows}
-        </tbody>
-      </table>
-    `;
-  });
-  let sampleMetadataTablesContainer = document.getElementById(
-    "sample-metadata-tables-container"
-  );
-  //sampleMetadataTablesContainer.innerHTML = sampleMetadataTables.join("\n");
-};
-
 const removePermission = (clickedPermissionRemoveButton) => {
   let permissionElementToRemove = clickedPermissionRemoveButton.closest("tr");
   let permissionEntityType = permissionElementToRemove.attr("data-entity-type");
@@ -6430,87 +6350,106 @@ $(document).ready(() => {
   $("#guided-button-start-new-curate").on("click", () => {
     guidedTransitionFromHome();
   });
-  $("#guided-button-name-dataset-back").on("click", () => {
-    //remove text from dataset name and subtitle inputs
-    document.getElementById("guided-dataset-name-input").value = "";
-    document.getElementById("guided-dataset-subtitle-input").value = "";
-    //show the home page
-    document
-      .getElementById("guided-name-subtitle-parent-tab")
-      .classList.add("hidden");
-    document.getElementById("guided-home").classList.remove("hidden");
 
-    guidedPrepareHomeScreen();
+  $("#guided-button-dataset-intro-back").on("click", () => {
+    const guidedIntroPage = document.getElementById("guided-intro-page");
+    const guidedDatasetNameSubtitlePage = document.getElementById(
+      "guided-new-dataset-info"
+    );
+    if (!guidedIntroPage.classList.contains("hidden")) {
+      switchElementVisibility("guided-name-subtitle-parent-tab", "guided-home");
+      guidedPrepareHomeScreen();
+    }
+    if (!guidedDatasetNameSubtitlePage.classList.contains("hidden")) {
+      //remove text from dataset name and subtitle inputs
+      document.getElementById("guided-dataset-name-input").value = "";
+      document.getElementById("guided-dataset-subtitle-input").value = "";
+      //show the home page
+      document
+        .getElementById("guided-name-subtitle-parent-tab")
+        .classList.add("hidden");
+      document.getElementById("guided-home").classList.remove("hidden");
+    }
   });
-  $("#guided-button-name-dataset-next").on("click", async function () {
-    let errorArray = [];
-    try {
-      $(this).addClass("loading");
-      let datasetName = document
-        .getElementById("guided-dataset-name-input")
-        .value.trim();
-      //temp bypass stuff
-      let datasetSubtitle = document
-        .getElementById("guided-dataset-subtitle-input")
-        .value.trim();
-      //temp bypass stuff
-      if (datasetName != "" && datasetSubtitle != "") {
-        //get names of existing progress saves
-        const existingProgressNames = fs.readdirSync(guidedProgressFilePath);
-        //Remove '.json' from each element in existingProgressNames
-        existingProgressNames.forEach((element, index) => {
-          existingProgressNames[index] = element.replace(".json", "");
-        });
-        console.log(existingProgressNames);
-        //check if dataset name is already in use
-        if (existingProgressNames.includes(datasetName)) {
-          errorArray.push({
-            type: "notyf",
-            message:
-              "An existing progress file already exists with that name. Please choose a different name.",
+  $("#guided-button-dataset-intro-next").on("click", async function () {
+    const guidedIntroPage = document.getElementById("guided-intro-page");
+    const guidedDatasetNameSubtitlePage = document.getElementById(
+      "guided-new-dataset-info"
+    );
+
+    if (!guidedIntroPage.classList.contains("hidden")) {
+      switchElementVisibility("guided-intro-page", "guided-new-dataset-info");
+    } else if (!guidedDatasetNameSubtitlePage.classList.contains("hidden")) {
+      let errorArray = [];
+
+      try {
+        $(this).addClass("loading");
+        let datasetName = document
+          .getElementById("guided-dataset-name-input")
+          .value.trim();
+        //temp bypass stuff
+        let datasetSubtitle = document
+          .getElementById("guided-dataset-subtitle-input")
+          .value.trim();
+        //temp bypass stuff
+        if (datasetName != "" && datasetSubtitle != "") {
+          //get names of existing progress saves
+          const existingProgressNames = fs.readdirSync(guidedProgressFilePath);
+          //Remove '.json' from each element in existingProgressNames
+          existingProgressNames.forEach((element, index) => {
+            existingProgressNames[index] = element.replace(".json", "");
           });
+          console.log(existingProgressNames);
+          //check if dataset name is already in use
+          if (existingProgressNames.includes(datasetName)) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "An existing progress file already exists with that name. Please choose a different name.",
+            });
+            throw errorArray;
+          }
+          console.log(existingProgressNames);
+          //If sodaJSONObj is empty, populate initial object properties
+          guidedCreateSodaJSONObj();
+          attachGuidedMethodsToSodaJSONObj();
+
+          setGuidedDatasetName(datasetName);
+          setGuidedDatasetSubtitle(datasetSubtitle);
+          saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+
+          guidedTransitionFromDatasetNameSubtitlePage();
+          resetGuidedRadioButtons("guided-dataset-starting-point-tab");
+        } else {
+          if (datasetName == "") {
+            errorArray.push({
+              type: "notyf",
+              message: "Please enter a dataset name",
+            });
+          }
+          if (datasetSubtitle == "") {
+            errorArray.push({
+              type: "notyf",
+              message: "Please enter a dataset subtitle",
+            });
+          }
+          $(this).removeClass("loading");
           throw errorArray;
         }
-        console.log(existingProgressNames);
-        //If sodaJSONObj is empty, populate initial object properties
-        guidedCreateSodaJSONObj();
-        attachGuidedMethodsToSodaJSONObj();
-
-        setGuidedDatasetName(datasetName);
-        setGuidedDatasetSubtitle(datasetSubtitle);
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-
-        guidedTransitionFromDatasetNameSubtitlePage();
-        resetGuidedRadioButtons("guided-dataset-starting-point-tab");
-      } else {
-        if (datasetName == "") {
-          errorArray.push({
-            type: "notyf",
-            message: "Please enter a dataset name",
-          });
-        }
-        if (datasetSubtitle == "") {
-          errorArray.push({
-            type: "notyf",
-            message: "Please enter a dataset subtitle",
-          });
-        }
         $(this).removeClass("loading");
-        throw errorArray;
+      } catch (error) {
+        errorArray.map((error) => {
+          if (error.type === "notyf") {
+            notyf.open({
+              duration: "4000",
+              type: "error",
+              message: error.message,
+            });
+          }
+          errorArray = [];
+        });
+        $(this).removeClass("loading");
       }
-      $(this).removeClass("loading");
-    } catch (error) {
-      errorArray.map((error) => {
-        if (error.type === "notyf") {
-          notyf.open({
-            duration: "4000",
-            type: "error",
-            message: error.message,
-          });
-        }
-        errorArray = [];
-      });
-      $(this).removeClass("loading");
     }
   });
   $("#guided-modify-dataset-name-subtitle").on("click", async () => {
@@ -8334,7 +8273,7 @@ $(document).ready(() => {
         //Exit back to home page
         traverseToTab("guided-dataset-starting-point-tab");
         hideSubNavAndShowMainNav("back");
-        $("#guided-button-name-dataset-back").click();
+        $("#guided-button-dataset-intro-back").click();
       }
     };
     // Progress tracking function for main curate
@@ -8974,58 +8913,6 @@ $(document).ready(() => {
         }
       }
 
-      if (pageBeingLeftID === "guided-subjects-folder-tab") {
-      }
-      if (pageBeingLeftID === "guided-samples-folder-tab") {
-        const skipSampleMetadataPages = () => {
-          $("#guided-create-samples-metadata-tab").attr(
-            "data-skip-page",
-            "true"
-          );
-        };
-        const unSkipSampleMetadataPages = () => {
-          $("#guided-create-samples-metadata-tab").attr(
-            "data-skip-page",
-            "false"
-          );
-        };
-        //If the user indicated they had subjects however left the subjects table page,
-        //Ask the user if they would like to go back to subjects table, and if not, skip
-        //to the source folder
-
-        //get combined length of arrays for properties in sodaJSONObj["subjects-samples-structure"]
-
-        let numSamples = 0;
-        for (let i = 0; i < guidedGetSubjects().length; i++) {
-          numSamples =
-            numSamples + guidedGetSubjectSamples(guidedGetSubjects()[i]).length;
-        }
-
-        if (numSamples == 0) {
-          let result = await Swal.fire({
-            title: "Continue without adding samples?",
-            text: "You indicated that your dataset contained samples, however, you did not add any samples to your samples table.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "I want to add samples into the sample table",
-            cancelButtonText: "I do not have any samples",
-          });
-          //If the user indicates they do not have any samples, skip to source folder
-          if (result.isConfirmed) {
-            $(this).removeClass("loading");
-            return;
-          } else {
-            skipSampleMetadataPages();
-            traverseToTab("guided-source-folder-tab");
-            $(this).removeClass("loading");
-            return;
-          }
-        } else {
-          unSkipSampleMetadataPages();
-        }
-      }
       if (pageBeingLeftID === "guided-source-folder-tab") {
         if (
           !$("#guided-button-has-source-data").hasClass("selected") &&
@@ -9856,6 +9743,10 @@ $(document).ready(() => {
       document
         .getElementById("guided-name-subtitle-parent-tab")
         .classList.remove("hidden");
+
+      //show the intro footer
+      document.getElementById("guided-footer-intro").classList.remove("hidden");
+
       //Show the dataset structure page
       $("#prepare-dataset-parent-tab").hide();
       $("#guided-header-div").hide();
@@ -9881,7 +9772,7 @@ $(document).ready(() => {
 
       //switch the create new / modify existing buttons
       $("#guided-modify-dataset-name-subtitle").show();
-      $("#guided-button-name-dataset-next").hide();
+      $("#guided-button-dataset-intro-next").hide();
 
       CURRENT_PAGE = null;
 

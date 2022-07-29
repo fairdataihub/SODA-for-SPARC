@@ -136,7 +136,18 @@
           class="guided--parent-tab hidden"
         >
           <div
-            class="guided--panel"
+            class="guided--panel hidden"
+            id="guided-intro-page"
+            style="flex-grow: 1"
+          >
+            <div class="guided--section">
+              <h1 class="guided--text-sub-step">
+                This is where I would put my intro page... IF I HAD ONE
+              </h1>
+            </div>
+          </div>
+          <div
+            class="guided--panel hidden"
             id="guided-new-dataset-info"
             style="flex-grow: 1"
           >
@@ -196,36 +207,6 @@
                 short description visible immediately under the title of your
                 dataset once it is published.
               </p>
-            </div>
-            <div class="space-between">
-              <button
-                class="ui secondary basic button guided--button-footer"
-                id="guided-button-name-dataset-back"
-                style="width: 180px !important"
-              >
-                <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
-              </button>
-              <button
-                class="ui primary button"
-                id="guided-button-name-dataset-next"
-                style="
-                  background-color: var(--color-light-green) !important;
-                  width: 180px;
-                "
-              >
-                Start curating dataset
-              </button>
-              <button
-                class="ui primary button"
-                id="guided-modify-dataset-name-subtitle"
-                style="
-                  background-color: var(--color-light-green) !important;
-                  width: 180px;
-                  display: none;
-                "
-              >
-                Save and continue
-              </button>
             </div>
           </div>
         </div>
@@ -5179,6 +5160,31 @@
             class="ui secondary basic button guided--button-footer guided--button-basic"
             id="guided-button-sub-page-continue"
             style="width: 130px !important"
+          >
+            Next
+          </button>
+        </div>
+      </footer>
+      <footer
+        class="guided--footer hidden"
+        id="guided-footer-intro"
+        style="justify-content: center"
+      >
+        <div class="space-between">
+          <button
+            class="ui secondary basic button guided--button-footer"
+            id="guided-button-dataset-intro-back"
+            style="width: 130px !important"
+          >
+            <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+          </button>
+          <button
+            class="ui positive button guided--button-footer"
+            id="guided-button-dataset-intro-next"
+            style="
+              background-color: var(--color-light-green) !important;
+              width: 130px !important;
+            "
           >
             Next
           </button>
