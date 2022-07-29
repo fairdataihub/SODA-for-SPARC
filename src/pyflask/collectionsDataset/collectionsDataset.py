@@ -73,15 +73,23 @@ def upload_collection_names(account, dataset, tags):
         error = "Error: Please select a valid Pennsieve dataset"
         raise Exception(error)
 
+# TODO: modify response to create object to return
+# arrays are not accepted and will need to convert final call in tags list as the object to return
     for tag in tags:
         print(tag)
         jsonfile = {"collectionId": int(tag)}
         result = ps._api._put(f"/datasets/{dataset_id}/collections" ,json=jsonfile)
         statusResponses.append(result)
+        for res_object in result:
+            collection_id = res_object.id
+            collection_name = res_object.name
+            if store is None:
+                store = []
+            store.append({"id": collection_id, "name": collection_name})
 
     print(statusResponses)
     result = dict({"collection_ids": statusResponses})
-    print(result)
+    # print(result)
     return result
 
 
@@ -107,12 +115,17 @@ def remove_collection_names(account, dataset, tags):
         error = "Error: Please select a valid dataset"
         raise Exception(error)
 
+    store = []
+    threads = []
+    nthreads = 8
+    
     for tagid in tags:
         result = ps._api._del(f"/datasets/{str(dataset_id)}/collections/{str(tagid)}")
         statusResponses.append(result)
+        print(result)
+        print("uhhh")
 
     result = dict({"collection_ids": statusResponses})
-    print(result)
     return result
 
 def upload_new_names(account, dataset, tags):

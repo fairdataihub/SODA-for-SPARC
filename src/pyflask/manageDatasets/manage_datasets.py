@@ -479,7 +479,8 @@ def bf_dataset_account(accountname):
     
     # bfaccountname = bf.profile.id
     datasets_list = bf.datasets()
-
+    print(datasets_list)
+    print('above')
     # all_bf_datasets = []
 
     def filter_dataset(datasets_list, store=None):
@@ -499,9 +500,12 @@ def bf_dataset_account(accountname):
     threads = []
     nthreads = 8
     # create the threads
+    print(datasets_list)
     for i in range(nthreads):
         sub_datasets_list = datasets_list[i::nthreads]
+        print(sub_datasets_list)
         t = Thread(target=filter_dataset, args=(sub_datasets_list, store))
+        print(t)
         threads.append(t)
 
     # start the threads
