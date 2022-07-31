@@ -8,12 +8,14 @@ const nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
 document
   .querySelector("#Question-getting-started-BF-account .change-current-account")
   .addEventListener("click", function () {
+    console.log("Fired account");
     openDropdownPrompt(this, "bf");
   });
 
 document
   .querySelector("#Question-getting-started-BF-dataset .change-current-account")
   .addEventListener("click", function () {
+    console.log("Fired dataset");
     openDropdownPrompt(this, "dataset", false);
   });
 

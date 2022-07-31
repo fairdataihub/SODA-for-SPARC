@@ -6,9 +6,10 @@ document.querySelectorAll(".ds-dd").forEach((dropdownElement) => {
 });
 
 document
-  .querySelectorAll("[class='change-current-account']")
+  .querySelectorAll(".md-change-current-account")
   .forEach((dropdownElement) => {
     dropdownElement.addEventListener("click", function () {
+      console.log("Firing manage datasets event");
       openDropdownPrompt(this, "bf");
     });
   });
