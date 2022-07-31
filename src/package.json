@@ -120,6 +120,7 @@
     "electron-updater": "4.3.9",
     "excel4node": "^1.7.2",
     "exponential-backoff": "^3.1.0",
+    "find-free-port": "^2.0.0",
     "fomantic-ui": "^2.8.8",
     "fs-extra": "^10.0.0",
     "glob": "^7.1.7",
