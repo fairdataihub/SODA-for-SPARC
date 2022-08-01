@@ -88,69 +88,65 @@ ipcMain.on("open-file-dialog-metadata-curate", async (event) => {
   }
 });
 
-ipcMain.on("open-destination-generate-submission-locally", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
-    {
-      properties: ["openDirectory"],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send(
-          "selected-destination-generate-submission-locally",
-          files
-        );
-      }
-    }
-  );
+ipcMain.on("open-destination-generate-submission-locally", async (event) => {
+  let mainWindow = BrowserWindow.getFocusedWindow();
+
+  let files = await dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+    properties: ["openDirectory"],
+  });
+
+  if (files) {
+    mainWindow.webContents.send(
+      "selected-destination-generate-submission-locally",
+      files.filePaths
+    );
+  }
+
 });
 
-ipcMain.on("open-destination-generate-dd-locally", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
-    {
-      properties: ["openDirectory"],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send("selected-destination-generate-dd-locally", files);
-      }
-    }
-  );
+ipcMain.on("open-destination-generate-dd-locally", async (event) => {
+  let mainWindow = BrowserWindow.getFocusedWindow();
+
+  let files = await dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+    properties: ["openDirectory"],
+  });
+
+  if (files) {
+    mainWindow.webContents.send(
+      "selected-destination-generate-dd-locally",
+      files.filePaths
+    );
+  }
 });
 
-ipcMain.on("open-destination-generate-subjects-locally", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
-    {
-      properties: ["openDirectory"],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send(
-          "selected-destination-generate-subjects-locally",
-          files
-        );
-      }
-    }
-  );
+ipcMain.on("open-destination-generate-subjects-locally", async (event) => {
+  let mainWindow = BrowserWindow.getFocusedWindow();
+
+  let files = await dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+    properties: ["openDirectory"],
+  });
+
+  if (files) {
+    mainWindow.webContents.send(
+      "selected-destination-generate-subjects-locally",
+      files.filePaths
+    );
+  }
 });
 
-ipcMain.on("open-destination-generate-samples-locally", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
-    {
-      properties: ["openDirectory"],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send(
-          "selected-destination-generate-samples-locally",
-          files
-        );
-      }
-    }
-  );
+ipcMain.on("open-destination-generate-samples-locally", async (event) => {
+  let mainWindow = BrowserWindow.getFocusedWindow();
+
+  let files = await dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+    properties: ["openDirectory"],
+  });
+
+  if (files) {
+    mainWindow.webContents.send(
+      "selected-destination-generate-samples-locally",
+      files.filePaths
+    );
+  }
 });
 
 ipcMain.on("open-destination-generate-changes-locally", async (event) => {
@@ -183,64 +179,70 @@ ipcMain.on("open-destination-generate-readme-locally", async (event) => {
   }
 });
 
-ipcMain.on("open-file-dialog-submission", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
+ipcMain.on("open-file-dialog-submission", async (event) => {
+  let mainWindow = BrowserWindow.getFocusedWindow();
+
+  let files = await dialog.showOpenDialog(
+    mainWindow,
     {
       properties: ["openFile"],
       filters: [{ name: "Excel", extensions: ["xlsx", "xls", "csv"] }],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send("selected-submission", files);
-      }
-    }
-  );
+    })
+
+  if (files) {
+    mainWindow.webContents.send("selected-submission", files.filePaths);
+  }
+
 });
 
-ipcMain.on("open-file-dialog-description", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
+ipcMain.on("open-file-dialog-description", async (event) => {
+
+  let mainWindow = BrowserWindow.getFocusedWindow();
+
+  let files = await dialog.showOpenDialog(
+    mainWindow,
     {
       properties: ["openFile"],
       filters: [{ name: "Excel", extensions: ["xlsx", "xls", "csv"] }],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send("selected-description", files);
-      }
-    }
-  );
+    })
+
+  if (files) {
+    mainWindow.webContents.send("selected-description", files.filePaths);
+  }
+
 });
 
-ipcMain.on("open-file-dialog-subjects", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
+ipcMain.on("open-file-dialog-subjects", async (event) => {
+  let mainWindow = BrowserWindow.getFocusedWindow();
+
+  let files = await dialog.showOpenDialog(
+    mainWindow,
     {
       properties: ["openFile"],
       filters: [{ name: "Excel", extensions: ["xlsx", "xls"] }],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send("selected-subjects", files);
-      }
-    }
-  );
+    })
+
+  if (files) {
+    mainWindow.webContents.send("selected-subjects", files.filePaths);
+  }
 });
 
-ipcMain.on("open-file-dialog-samples", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
+ipcMain.on("open-file-dialog-samples", async (event) => {
+
+  let mainWindow = BrowserWindow.getFocusedWindow();
+
+  let files = await dialog.showOpenDialog(
+    mainWindow,
     {
       properties: ["openFile"],
       filters: [{ name: "Excel", extensions: ["xlsx", "xls"] }],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send("selected-samples", files);
-      }
-    }
-  );
+    })
+
+
+  if (files) {
+    mainWindow.webContents.send("selected-samples", files.filePaths);
+  }
+
 });
 
 // import existing subjects.xlsx to continue working on
@@ -330,19 +332,20 @@ ipcMain.on("open-file-dialog-existing-readme", async (event) => {
 });
 
 ////// milestone document
-ipcMain.on("open-file-dialog-milestone-doc", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
+ipcMain.on("open-file-dialog-milestone-doc", async (event) => {
+  let mainWindow = BrowserWindow.getFocusedWindow();
+
+  let files = await dialog.showOpenDialog(
+    mainWindow,
     {
       properties: ["openFile"],
       filters: [{ name: "DOCX", extensions: ["docx"] }],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send("selected-milestonedoc", files);
-      }
-    }
-  );
+    })
+
+  if (files) {
+    mainWindow.webContents.send("selected-milestonedoc", files.filePaths);
+  }
+
 });
 
 ipcMain.on("open-file-dialog-milestone-doc-reupload", async (event) => {
@@ -452,18 +455,17 @@ ipcMain.on("open-folder-dialog-save-metadata", async (event, filename) => {
 });
 
 // Generate submission file
-ipcMain.on("open-folder-dialog-save-submission", (event, filename) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
-    {
-      properties: ["openDirectory"],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send("selected-metadata-submission", files, filename);
-      }
-    }
-  );
+ipcMain.on("open-folder-dialog-save-submission", async (event, filename) => {
+  let mainWindow = BrowserWindow.getFocusedWindow();
+
+  let files = await dialog.showOpenDialog(mainWindow, {
+    properties: ["openDirectory"],
+  });
+
+  if (files) {
+    mainWindow.webContents.send("selected-metadata-submission", files.filePaths, filename);
+  }
+
 });
 
 // Generate ds description file
@@ -485,75 +487,81 @@ ipcMain.on(
 );
 
 // Generate subjects file
-ipcMain.on("open-folder-dialog-save-subjects", (event, filename) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
+ipcMain.on("open-folder-dialog-save-subjects", async (event, filename) => {
+
+  let mainWindow = BrowserWindow.getFocusedWindow();
+
+  let files = await dialog.showOpenDialog(
+    mainWindow,
     {
       properties: ["openDirectory"],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send(
-          "selected-generate-metadata-subjects",
-          files,
-          filename
-        );
-      }
-    }
-  );
+    })
+
+  if (files) {
+    mainWindow.webContents.send(
+      "selected-generate-metadata-subjects",
+      files.filePaths,
+      filename
+    );
+  }
+
 });
 
 // Generate samples file
-ipcMain.on("open-folder-dialog-save-samples", (event, filename) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
+ipcMain.on("open-folder-dialog-save-samples", async (event, filename) => {
+  let mainWindow = BrowserWindow.getFocusedWindow();
+
+  let files = await dialog.showOpenDialog(
+    mainWindow,
     {
       properties: ["openDirectory"],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send(
-          "selected-generate-metadata-samples",
-          files,
-          filename
-        );
-      }
-    }
-  );
+    })
+
+  if (files) {
+    mainWindow.webContents.send(
+      "selected-generate-metadata-samples",
+      files.filePaths,
+      filename
+    );
+  }
 });
 
 // Generate changes file
-ipcMain.on("open-folder-dialog-save-changes", (event, filename) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
+ipcMain.on("open-folder-dialog-save-changes", async (event, filename) => {
+  let mainWindow = BrowserWindow.getFocusedWindow();
+
+  let files = await dialog.showOpenDialog(
+    mainWindow,
     {
       properties: ["openDirectory"],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send(
-          "selected-generate-metadata-changes",
-          files,
-          filename
-        );
-      }
-    }
-  );
+    })
+
+  if (files) {
+    mainWindow.webContents.send(
+      "selected-generate-metadata-changes",
+      files.filePaths,
+      filename
+    );
+  }
 });
 
 // Generate readme file
-ipcMain.on("open-folder-dialog-save-readme", (event, filename) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
+ipcMain.on("open-folder-dialog-save-readme", async (event, filename) => {
+  let mainWindow = BrowserWindow.getFocusedWindow();
+
+  let files = await dialog.showOpenDialog(
+    mainWindow,
     {
       properties: ["openDirectory"],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send("selected-generate-metadata-readme", files, filename);
-      }
-    }
-  );
+    })
+
+  if (files) {
+    mainWindow.webContents.send(
+      "selected-generate-metadata-readme",
+      files.filePaths,
+      filename
+    );
+  }
 });
 
 // open primary folder
@@ -589,18 +597,22 @@ ipcMain.on("open-file-dialog-local-primary-folder-samples", async (event) => {
 });
 
 //// DDD download
-ipcMain.on("open-folder-dialog-save-DDD", (event, filename) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
+ipcMain.on("open-folder-dialog-save-DDD", async (event, filename) => {
+  let mainWindow = BrowserWindow.getFocusedWindow();
+
+  let files = await dialog.showOpenDialog(
+    mainWindow,
     {
       properties: ["openDirectory"],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send("selected-DDD-download-folder", files, filename);
-      }
-    }
-  );
+    })
+
+  if (files) {
+    mainWindow.webContents.send(
+      "selected-DDD-download-folder",
+      files.filePaths,
+      filename
+    );
+  }
 });
 
 ///////////////// ORGANIZE DATASETS *NEW* /////////////////////////////
