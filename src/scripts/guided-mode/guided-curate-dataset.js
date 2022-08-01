@@ -8946,19 +8946,35 @@ $(document).ready(() => {
         }
       }
       if (pageBeingLeftID === "guided-code-folder-tab") {
+        const guidedButtonUserHasCodeData = document.getElementById(
+          "guided-button-has-code-data"
+        );
+        const guidedButtonUserHasNoCodeData = document.getElementById(
+          "guided-button-no-code-data"
+        );
         if (
-          !document
-            .getElementById("guided-button-has-code-data")
-            .classList.contains("selected") &&
-          !document
-            .getElementById("guided-button-no-code-data")
-            .classList.contains("selected")
+          !guidedButtonUserHasCodeData.classList.contains("selected") &&
+          !guidedButtonUserHasNoCodeData.classList.contains("selected")
         ) {
           errorArray.push({
             type: "notyf",
             message: "Please indicate if your dataset contains code data",
           });
-          //throw errorArray;
+          throw errorArray;
+        }
+
+        if (guidedButtonUserHasCodeData.classList.contains("selected")) {
+          //Unskip the code metadata addition page
+          document
+            .getElementById("guided-add-code-metadata-tab")
+            .setAttribute("data-skip-page", "false");
+        }
+
+        if (guidedButtonUserHasNoCodeData.classList.contains("selected")) {
+          //Skip the code metadata addition page
+          document
+            .getElementById("guided-add-code-metadata-tab")
+            .setAttribute("data-skip-page", "true");
         }
       }
       if (pageBeingLeftID === "guided-docs-folder-tab") {
@@ -8974,7 +8990,7 @@ $(document).ready(() => {
             type: "notyf",
             message: "Please indicate if your dataset contains docs data",
           });
-          //throw errorArray;
+          throw errorArray;
         }
       }
       if (pageBeingLeftID === "guided-folder-importation-tab") {
