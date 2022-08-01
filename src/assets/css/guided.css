@@ -278,6 +278,7 @@
 }
 
 .guided--section {
+  background-color: rgb(250, 255, 247);
   padding: 12px;
   display: flex;
   flex-direction: column;
@@ -301,6 +302,7 @@
 }
 
 .guided--panel {
+  background-color: rgb(255, 247, 254);
   width: 100%;
   display: flex;
   flex-direction: column;
