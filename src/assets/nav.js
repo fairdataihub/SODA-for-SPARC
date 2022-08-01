@@ -177,53 +177,22 @@ async function handleSectionTrigger(event) {
 
   if (sectionId === "main_tabs-section") {
     if (previousCurationMode === "guided") {
-      //TRANSITION FROM GUIDED MODE => FREE-FORM
-      if (CURRENT_PAGE) {
-        const { value: switchToFreeFormModeFromGuided } = await Swal.fire({
-          title: "Are you sure?",
-          text: `Transitioning from guided mode to free form mode will cause you to lose
-          the progress you have made on the current page. You will still be able to continue
-          curating your current dataset by selecting its card on the guided mode homepage.`,
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#3085d6",
-          cancelButtonColor: "#d33",
-          confirmButtonText: "Exit guided mode",
-          heightAuto: "false",
-          backDrop: "rgba(0,0,0,0.4)",
-        });
-        if (switchToFreeFormModeFromGuided) {
-          traverseToTab("guided-dataset-starting-point-tab");
-          hideSubNavAndShowMainNav("back");
-          $("#guided-button-dataset-intro-back").click();
-        } else {
-          $("#guided_mode_view").click();
-          return;
-        }
-      } else if (
-        !document
-          .getElementById("guided-mode-starting-container")
-          .classList.contains("hidden")
-      ) {
-        console.log("user in rename");
-        $("#guided-button-dataset-intro-back").click();
-      }
+      organizeDSglobalPath = document.getElementById("input-global-path");
+      organizeDSglobalPath.value = "My_dataset_folder/";
+      dataset_path = document.getElementById("input-global-path");
+      scroll_box = document.querySelector("#organize-dataset-tab");
+      sodaJSONObj = {};
+      datasetStructureJSONObj = {};
+      subjectsTableData = [];
+      samplesTableData = [];
+      previousCurationMode = "free-form";
+      // move the folder structuring elements back to free-form mode if they were borrowed
+      // for guided mode
+      $(".shared-folder-structure-element").appendTo(
+        $("#free-form-folder-structure-container")
+      );
+      itemsContainer.innerHTML = "";
     }
-    organizeDSglobalPath = document.getElementById("input-global-path");
-    organizeDSglobalPath.value = "My_dataset_folder/";
-    dataset_path = document.getElementById("input-global-path");
-    scroll_box = document.querySelector("#organize-dataset-tab");
-    sodaJSONObj = {};
-    datasetStructureJSONObj = {};
-    subjectsTableData = [];
-    samplesTableData = [];
-    previousCurationMode = "free-form";
-    // move the folder structuring elements back to free-form mode if they were borrowed
-    // for guided mode
-    $(".shared-folder-structure-element").appendTo(
-      $("#free-form-folder-structure-container")
-    );
-    itemsContainer.innerHTML = "";
   }
 
   hideAllSectionsAndDeselectButtons();
