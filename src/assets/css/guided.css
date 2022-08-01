@@ -822,6 +822,23 @@ h1.guided--text-sub-step {
   margin-bottom: 10px;
 }
 
+.guided--container-footer-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 50%;
+  padding: 0px 3px;
+}
+.guided--container-footer-buttons.flex-start {
+  justify-content: flex-start;
+}
+.guided--container-footer-buttons.flex-end {
+  justify-content: flex-end;
+}
+.guided--container-footer-buttons.flex-between {
+  justify-content: space-between;
+}
+
 .guided--button-footer {
   width: 120px !important;
 }
@@ -834,14 +851,6 @@ h1.guided--text-sub-step {
 .guided--button-basic {
   color: var(--color-light-green) !important;
   box-shadow: 0 0 0 1px var(--color-light-green) inset !important;
-}
-
-.guided--footer button:first-child {
-  margin-left: 7%;
-}
-
-.guided--footer button:last-child {
-  margin-right: 7%;
 }
 
 .guided--field {

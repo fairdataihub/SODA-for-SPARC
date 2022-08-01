@@ -33,6 +33,80 @@ const updateDatasetUploadProgressTable = (progressObject) => {
   datasetUploadTableBody.insertAdjacentHTML("beforeend", uploadStatusElement);
 };
 
+const guidedLockSideBar = () => {
+  const sidebar = document.getElementById("sidebarCollapse");
+  if (!sidebar.classList.contains("active")) {
+    sidebar.click();
+  }
+
+  sidebar.disabled = true;
+};
+
+guidedUnLockSideBar = () => {
+  const sidebar = document.getElementById("sidebarCollapse");
+  if (sidebar.classList.contains("active")) {
+    sidebar.click();
+  }
+
+  sidebar.disabled = false;
+};
+
+const guidedSaveAndExit = async (exitPoint) => {
+  if (exitPoint === "main" || exitPoint === "sub") {
+    const { value: switchToFreeFormModeFromGuided } = await Swal.fire({
+      title: "Are you sure?",
+      text: `Transitioning from guided mode to free form mode will cause you to lose
+          the progress you have made on the current page. You will still be able to continue
+          curating your current dataset by selecting its card on the guided mode homepage.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Exit guided mode",
+      heightAuto: false,
+      backDrop: "rgba(0,0,0,0.4)",
+    });
+    if (switchToFreeFormModeFromGuided) {
+      guidedUnLockSideBar();
+      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      traverseToTab("guided-dataset-starting-point-tab");
+      hideSubNavAndShowMainNav("back");
+      $("#guided-button-dataset-intro-back").click();
+      $("#guided-button-dataset-intro-back").click();
+    }
+  } else if (exitPoint === "intro") {
+    const { value: switchToFreeFormModeFromGuided } = await Swal.fire({
+      title: "Are you sure?",
+      text: `Transitioning from guided mode to free form mode will cause you to lose
+        the progress you have made on the current page. You will still be able to continue
+        curating your current dataset by selecting its card on the guided mode homepage.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Exit guided mode",
+      heightAuto: false,
+      backDrop: "rgba(0,0,0,0.4)",
+    });
+    if (switchToFreeFormModeFromGuided) {
+      guidedUnLockSideBar();
+      const guidedIntroPage = document.getElementById("guided-intro-page");
+      const guidedDatasetNameSubtitlePage = document.getElementById(
+        "guided-new-dataset-info"
+      );
+
+      if (!guidedIntroPage.classList.contains("hidden")) {
+        //click past the intro page
+        $("#guided-button-dataset-intro-back").click();
+      } else if (!guidedDatasetNameSubtitlePage.classList.contains("hidden")) {
+        //click past the dataset name/subtitle page and intro page
+        $("#guided-button-dataset-intro-back").click();
+        $("#guided-button-dataset-intro-back").click();
+      }
+    }
+  }
+};
+
 //Initialize description tagify variables as null
 //to make them accessible to functions outside of $(document).ready
 let guidedDatasetKeywordsTagify = null;
@@ -115,17 +189,21 @@ const openSubPageNavigation = (pageBeingNavigatedTo) => {
   $("#guided-sub-page-navigation-footer-div").css("display", "flex");
 };
 
+const saveAndExitToGuidedHomePage = () => {};
+
 const guidedTransitionFromHome = () => {
   //Hide the home screen
   document.getElementById("guided-home").classList.add("hidden");
   //Hide the header and footer for the dataset name/subtitle page
   $("#guided-header-div").hide();
   $("#guided-footer-div").hide();
-  //Show the dataset name/subtitle page
+
+  //Show the guided mode starting container
   document
-    .getElementById("guided-name-subtitle-parent-tab")
+    .getElementById("guided-mode-starting-container")
     .classList.remove("hidden");
 
+  //hide the name+subtitle page and show the intro page
   switchElementVisibility("guided-new-dataset-info", "guided-intro-page");
   //Reset name, subtitle, and subtitle char count
   document.getElementById("guided-dataset-name-input").value = "";
@@ -134,11 +212,7 @@ const guidedTransitionFromHome = () => {
     "guided-subtitle-char-count"
   ).innerHTML = `255 characters remaining`;
 
-  //Close the sidebar
-  const sidebar = document.getElementById("sidebarCollapse");
-  if (!sidebar.classList.contains("active")) {
-    sidebar.click();
-  }
+  guidedLockSideBar();
 
   //Show the intro footer
   document.getElementById("guided-footer-intro").classList.remove("hidden");
@@ -150,7 +224,7 @@ const guidedTransitionToHome = () => {
   $("#guided-header-div").hide();
   $("#guided-footer-div").hide();
   document
-    .getElementById("guided-name-subtitle-parent-tab")
+    .getElementById("guided-mode-starting-container")
     .classList.add("hidden");
 
   //get element with id "sidebarCollapse"
@@ -163,7 +237,7 @@ const guidedTransitionToHome = () => {
 const guidedTransitionFromDatasetNameSubtitlePage = () => {
   //Hide dataset name and subtitle parent tab
   document
-    .getElementById("guided-name-subtitle-parent-tab")
+    .getElementById("guided-mode-starting-container")
     .classList.add("hidden");
   //hide the intro footer
   document.getElementById("guided-footer-intro").classList.add("hidden");
@@ -2634,6 +2708,8 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   document.getElementById("guided-dataset-subtitle-input").value =
     datasetResumeJsonObj["digital-metadata"]["subtitle"];
   guidedTransitionFromDatasetNameSubtitlePage();
+
+  guidedLockSideBar();
 };
 
 //Add  spinner to element
@@ -6338,7 +6414,7 @@ $(document).ready(() => {
       document.getElementById("guided-dataset-name-input").value = "";
       document.getElementById("guided-dataset-subtitle-input").value = "";
 
-      switchElementVisibility("guided-name-subtitle-parent-tab", "guided-home");
+      switchElementVisibility("guided-mode-starting-container", "guided-home");
       //hide the intro footer
       document.getElementById("guided-footer-intro").classList.add("hidden");
       guidedPrepareHomeScreen();
@@ -9721,7 +9797,7 @@ $(document).ready(() => {
     if (pageBeingLeftID === "guided-dataset-starting-point-tab") {
       //Hide dataset name and subtitle parent tab
       document
-        .getElementById("guided-name-subtitle-parent-tab")
+        .getElementById("guided-mode-starting-container")
         .classList.remove("hidden");
 
       switchElementVisibility("guided-intro-page", "guided-new-dataset-info");

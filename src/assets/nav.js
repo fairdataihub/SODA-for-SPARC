@@ -189,6 +189,7 @@ async function handleSectionTrigger(event) {
           confirmButtonColor: "#3085d6",
           cancelButtonColor: "#d33",
           confirmButtonText: "Exit guided mode",
+          heightAuto: "false",
           backDrop: "rgba(0,0,0,0.4)",
         });
         if (switchToFreeFormModeFromGuided) {
@@ -201,7 +202,7 @@ async function handleSectionTrigger(event) {
         }
       } else if (
         !document
-          .getElementById("guided-name-subtitle-parent-tab")
+          .getElementById("guided-mode-starting-container")
           .classList.contains("hidden")
       ) {
         console.log("user in rename");

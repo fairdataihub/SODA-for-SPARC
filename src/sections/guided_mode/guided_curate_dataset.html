@@ -132,7 +132,7 @@
           </div>
         </div>
         <div
-          id="guided-name-subtitle-parent-tab"
+          id="guided-mode-starting-container"
           class="guided--parent-tab hidden"
         >
           <div
@@ -280,7 +280,7 @@
           </div>
 
           <div id="guided-dataset-starting-point-tab" class="guided--panel">
-            <div class="guided--section w-100">
+            <div class="guided--section">
               <h1 class="guided--text-sub-step">SPARC Data Structure</h1>
               <p class="guided--help-text w-100">
                 The first step of the curation process consists of organizing
@@ -5041,12 +5041,8 @@
           </div>
         </div>
       </div>
-      <footer
-        class="guided--footer hidden"
-        id="guided-footer-div"
-        style="justify-content: center"
-      >
-        <div class="space-between">
+      <footer class="guided--footer hidden" id="guided-footer-div">
+        <div class="guided--container-footer-buttons flex-end">
           <button
             class="ui secondary basic button guided--button-footer"
             id="guided-back-button"
@@ -5054,6 +5050,8 @@
           >
             <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
           </button>
+        </div>
+        <div class="guided--container-footer-buttons flex-between">
           <button
             class="ui positive button guided--button-footer"
             id="guided-next-button"
@@ -5064,14 +5062,21 @@
           >
             Save and Continue
           </button>
+          <button
+            class="ui secondary basic button guided--button-footer guided--button-basic"
+            style="width: 150px !important"
+            onclick="guidedSaveAndExit('main')"
+          >
+            <i class="far fa-save" style="margin-right: 10px"></i>
+            Save and Exit
+          </button>
         </div>
       </footer>
       <footer
         class="guided--footer hidden"
         id="guided-sub-page-navigation-footer-div"
-        style="justify-content: center"
       >
-        <div class="space-between">
+        <div class="guided--container-footer-buttons flex-end">
           <button
             class="ui secondary basic button guided--button-footer"
             id="guided-button-sub-page-back"
@@ -5079,21 +5084,26 @@
           >
             <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
           </button>
+        </div>
+        <div class="guided--container-footer-buttons flex-between">
           <button
             class="ui secondary basic button guided--button-footer guided--button-basic"
             id="guided-button-sub-page-continue"
             style="width: 130px !important"
           >
-            Next
+            Next</button
+          ><button
+            class="ui secondary basic button guided--button-footer guided--button-basic"
+            style="width: 150px !important"
+            onclick="guidedSaveAndExit('sub')"
+          >
+            <i class="far fa-save" style="margin-right: 10px"></i>
+            Save and Exit
           </button>
         </div>
       </footer>
-      <footer
-        class="guided--footer hidden"
-        id="guided-footer-intro"
-        style="justify-content: center"
-      >
-        <div class="space-between">
+      <footer class="guided--footer hidden" id="guided-footer-intro">
+        <div class="guided--container-footer-buttons flex-end">
           <button
             class="ui secondary basic button guided--button-footer"
             id="guided-button-dataset-intro-back"
@@ -5101,6 +5111,8 @@
           >
             <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
           </button>
+        </div>
+        <div class="guided--container-footer-buttons flex-between">
           <button
             class="ui positive button guided--button-footer"
             id="guided-button-dataset-intro-next"
@@ -5110,6 +5122,14 @@
             "
           >
             Next
+          </button>
+          <button
+            class="ui secondary basic button guided--button-footer guided--button-basic"
+            style="width: 150px !important"
+            onclick="guidedSaveAndExit('intro')"
+          >
+            <i class="far fa-save" style="margin-right: 10px"></i>
+            Save and Exit
           </button>
         </div>
       </footer>
@@ -5122,5 +5142,5 @@
   <script
     src="./scripts/guided-mode/lottieJSON.js"
     type="text/javascript"
-  ></script> </template
->k
+  ></script>
+</template>
