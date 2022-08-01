@@ -3450,57 +3450,6 @@
                 </div>
               </div>
             </div>
-            <div class="guided--section">
-              <h2 class="guided--text-sub-step">
-                Import the code_parameters metadata file
-              </h2>
-              <p
-                class="guided--help-text w-100 small text-left"
-                style="margin-bottom: 2px"
-              >
-                code_description is an <b>optional</b> metadata file that
-                contains specific paramets required to run code used in the
-                creation of the dataset.
-              </p>
-              <p class="guided--help-text w-100 small text-center mt-sm">
-                <b
-                  >The code_parameters file must be in .xlsx format
-                  (code_description.xlsx)</b
-                >
-              </p>
-              <div
-                class="guided--container-file-import"
-                droppable="true"
-                ondrop="dropHandler(event, 'guided-code-parameters-para-text', 'code_parameters', 'guided');"
-                ondragover="return false;"
-              >
-                <div
-                  class="guided--file-import"
-                  data-code-metadata-file-type="code_parameters"
-                >
-                  <div
-                    id="code-parameters-lottie-container"
-                    class="code-metadata-lottie-container"
-                  ></div>
-                  <p class="guided--help-text text-center">
-                    Drag and Drop <br /><b>code_parameters.xslx</b>
-                  </p>
-                  <p class="guided--help-text text-center mt-md mb-md">OR</p>
-                  <button
-                    class="ui primary basic button mt-sm"
-                    onclick="importMetadataFiles(this, 'code_parameters', ['.xlsx'], 'guided-code-parameters-para-text', 'guided')"
-                  >
-                    <i class="fas fa-file-import" style="margin-right: 7px"></i
-                    >Import code_parameters.xslx
-                  </button>
-                  <p
-                    class="guided--help-text small text-center mt-sm"
-                    id="guided-code-parameters-para-text"
-                    style="max-width: 240px; overflow-wrap: break-word"
-                  ></p>
-                </div>
-              </div>
-            </div>
           </div>
           <div
             id="guided-create-readme-metadata-tab"

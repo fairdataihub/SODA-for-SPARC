@@ -1858,13 +1858,6 @@ const traverseToTab = (targetPageID) => {
         "guided-code-description-para-text"
       );
 
-      const codeParametersLottieContainer = document.getElementById(
-        "code-parameters-lottie-container"
-      );
-      const codeParametersParaText = document.getElementById(
-        "guided-code-parameters-para-text"
-      );
-
       if (codeMetadata["code_description"]) {
         codeDescriptionLottieContainer.innerHTML = "";
         lottie.loadAnimation({
@@ -1875,28 +1868,6 @@ const traverseToTab = (targetPageID) => {
           autoplay: true,
         });
         codeDescriptionParaText.innerHTML = codeMetadata["code_description"];
-
-        if (codeMetadata["code_parameters"]) {
-          codeParametersLottieContainer.innerHTML = "";
-          lottie.loadAnimation({
-            container: codeParametersLottieContainer,
-            animationData: successCheck,
-            renderer: "svg",
-            loop: false,
-            autoplay: true,
-          });
-          codeParametersParaText.innerHTML = codeMetadata["code_parameters"];
-        } else {
-          codeParametersLottieContainer.innerHTML = "";
-          lottie.loadAnimation({
-            container: codeParametersLottieContainer,
-            animationData: dragDrop,
-            renderer: "svg",
-            loop: true,
-            autoplay: true,
-          });
-          codeParametersParaText.innerHTML = "";
-        }
       } else {
         //reset the code metadata lotties and para text
         codeDescriptionLottieContainer.innerHTML = "";
@@ -1908,16 +1879,6 @@ const traverseToTab = (targetPageID) => {
           autoplay: true,
         });
         codeDescriptionParaText.innerHTML = "";
-
-        codeParametersLottieContainer.innerHTML = "";
-        lottie.loadAnimation({
-          container: codeParametersLottieContainer,
-          animationData: dragDrop,
-          renderer: "svg",
-          loop: true,
-          autoplay: true,
-        });
-        codeParametersParaText.innerHTML = "";
       }
     }
     if (targetPageID === "guided-create-readme-metadata-tab") {
