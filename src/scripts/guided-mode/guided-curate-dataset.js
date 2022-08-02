@@ -665,6 +665,8 @@ const guidedPrepareHomeScreen = async () => {
     loop: true,
     autoplay: true,
   });
+
+  guidedUnLockSideBar();
 };
 
 function guidedShowTreePreview(new_dataset_name, targetElement) {
