@@ -683,20 +683,12 @@ ipcMain.on("open-folder-dialog-validate-local-dataset", async (event) => {
 });
 
 //Selecting destination for Log folder
-ipcMain.on("open-file-dialog-log-destination", async (event) => {
+ipcMain.on("open-file-dialog-log-destination", async () => {
   let mainWindow = BrowserWindow.getFocusedWindow();
 
   const result = await dialog.showOpenDialog(mainWindow, {
     properties: ["openDirectory"],
   });
 
-  mainWindow.webContents.send("selected-log-folder", result.filePaths);
-});
-
-//Selecting destination for Log folder
-ipcMain.on("open-file-dialog-log-destination", async (event) => {
-  const result = await dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
-    properties: ["openDirectory"],
-  });
-  event.sender.send("selected-log-folder", result);
+  mainWindow.webContents.send("selected-log-folder", result);
 });

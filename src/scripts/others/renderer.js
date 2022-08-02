@@ -9095,6 +9095,7 @@ function openFeedbackForm() {
   }, 5);
 }
 function gatherLogs() {
+  console.log("Gathering logs...");
   //function will be used to gather all logs on all OS's
   let homedir = os.homedir();
   let file_path = "";
@@ -9190,9 +9191,7 @@ function gatherLogs() {
             }
             let log_copy = path.join(log_folder, logFile);
 
-            fs.copyFileSync(logFilePath, log_copy, (err) => {
-              if (err) throw err;
-            });
+            fs.copyFileSync(logFilePath, log_copy);
           }
           Swal.close();
 
