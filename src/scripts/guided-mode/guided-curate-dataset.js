@@ -3232,24 +3232,29 @@ const highLevelFolderPageData = {
     backPageId: "guided-derivative-folder-tab",
   },
   code: {
-    headerText: "Virtually structure your code folder in the interface below.",
-    contentsText:
-      "Your code folder should contain lorem ipsum foo bar random instructional text will go here",
+    headerText:
+      "Specify the code data used to generate your dataset in the interface below",
+    contentsText: `You can also virtually structure the data and rename files/folders
+    as you would like to have them in your dataset when it is generated (note that none of
+    your original data will be modified).`,
     pathSuffix: "code/",
     backPageId: "guided-code-folder-tab",
   },
   docs: {
-    headerText: "Virtually structure your docs folder in the interface below.",
-    contentsText:
-      "Your docs folder should contain lorem ipsum foo bar random instructional text will go here",
+    headerText:
+      "Add all supporting documentation used to generate your dataset in the interface below",
+    contentsText: `You can also virtually structure the data and rename files/folders
+    as you would like to have them in your dataset when it is generated (note that none of
+    your original data will be modified).`,
     pathSuffix: "docs/",
     backPageId: "guided-docs-folder-tab",
   },
   protocol: {
     headerText:
-      "Virtually structure your protocol folder in the interface below.",
-    contentsText:
-      "Your protocol folder should contain lorem ipsum foo bar random instructional text will go here",
+      "Specify the protocol data used to generate your dataset in the interface below",
+    contentsText: `You can also virtually structure the data and rename files/folders
+    as you would like to have them in your dataset when it is generated (note that none of
+    your original data will be modified).`,
     pathSuffix: "protocol/",
     backPageId: "guided-protocol-folder-tab",
   },
@@ -5280,19 +5285,6 @@ const renderPermissionsTable = () => {
   let permissionsTableBody = document.getElementById("permissions-table-body");
   permissionsTableBody.innerHTML = permissionsTable;
 };
-
-/*********** Source page functions ***********/
-$("#guided-button-has-source-data").on("click", () => {
-  if (datasetStructureJSONObj["folders"]["source"] == undefined)
-    datasetStructureJSONObj["folders"]["source"] = {
-      folders: {},
-      files: {},
-      type: "",
-      action: [],
-    };
-
-  updateFolderStructureUI(highLevelFolderPageData.source);
-});
 
 $("#guided-button-no-source-data").on("click", () => {
   //ask user to confirm they would like to delete source folder if it exists
