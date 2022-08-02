@@ -2747,71 +2747,6 @@ const guidedUploadStatusIcon = (elementID, status) => {
   }
 };
 
-//FOLDER STRUCTURE UTIL FUNCTIONS
-const openSubjectFolder = (clickedStructureButton) => {
-  let subjectID = clickedStructureButton
-    .closest("tr")
-    .find(".subject-id")
-    .text();
-  $("#structure-folder-header").text(
-    `Virtually structure ${subjectID}'s subject folder in the interface below.`
-  );
-  $("#structure-folder-contents").text(
-    `${subjectID}'s folder should contain lorem ipsum foo bar random instructional
-    text will go here`
-  );
-  $("#structure-return-destination-text").text("subjects table");
-  $("#guided-input-global-path").val(`My_dataset_folder/primary/${subjectID}/`);
-  $("#folder-structure-button-row-top").append(`
-    <button
-      class="ui secondary basic button small"
-      onclick="returnToTableFromFolderStructure($(this))"
-      data-prev-page="guided-subjects-folder-tab"
-    >
-      <i class="fas fa-arrow-left" style="margin-right: 10px"></i
-      >Back to subjects table
-    </button>
-  `);
-  traverseToTab("guided-structure-folder-tab");
-  $("#guided-footer-div").hide();
-  //Manually override active capsule to make it seem like they're still on the subjects tab
-  setActiveCapsule("guided-subjects-folder-tab");
-
-  var filtered = getGlobalPath(organizeDSglobalPath);
-  organizeDSglobalPath.value =
-    filtered.slice(0, filtered.length).join("/") + "/";
-  var myPath = datasetStructureJSONObj;
-  for (var item of filtered.slice(1, filtered.length)) {
-    console.log(item);
-    myPath = myPath["folders"][item];
-  }
-  // construct UI with files and folders
-  var appendString = loadFileFolder(myPath);
-
-  /// empty the div
-  $("#items").empty();
-  $("#items").html(appendString);
-
-  // reconstruct div with new elements
-  listItems(myPath, "#items");
-  getInFolder(
-    ".single-item",
-    "#items",
-    organizeDSglobalPath,
-    datasetStructureJSONObj
-  );
-};
-
-//TODO CLEAN UP
-const guidedAddHighLevelFolderToDatasetStructureObj = (highLevelFolderName) => {
-  datasetStructureJSONObj["folders"][highLevelFolderName] = {
-    folders: {},
-    files: {},
-    type: "",
-    action: [],
-  };
-};
-
 //dataset description (first page) functions
 guidedCreateSodaJSONObj = () => {
   sodaJSONObj = {};
@@ -5182,66 +5117,6 @@ const openSampleRenameInput = (subjectNameEditButton) => {
     </div>
   `;
   sampleIdCellToRename.html(sampleRenameElement);
-};
-const openSampleFolder = (clickedStructureButton) => {
-  let subjectIdFromTable = clickedStructureButton
-    .closest("tbody")
-    .siblings()
-    .find(".sample-table-name")
-    .text()
-    .trim();
-  let sampleID = clickedStructureButton.closest("tr").find(".sample-id").text();
-
-  $("#structure-folder-header").text(
-    `Virtually structure ${sampleID}'s subject folder in the interface below.`
-  );
-  $("#structure-folder-contents").text(
-    `${sampleID}'s folder should contain lorem ipsum foo bar random instructional
-    text will go here`
-  );
-  $("#structure-return-destination-text").text("subjects table");
-
-  $("#guided-input-global-path").val(
-    `My_dataset_folder/primary/${subjectIdFromTable}/${sampleID}/`
-  );
-  $("#folder-structure-button-row-top").append(`
-    <button
-      class="ui secondary basic button small"
-      onclick="returnToTableFromFolderStructure($(this))"
-      data-prev-page="guided-samples-folder-tab"
-    >
-      <i class="fas fa-arrow-left" style="margin-right: 10px"></i
-      >Back to samples table
-    </button>
-  `);
-  traverseToTab("guided-structure-folder-tab");
-  $("#guided-footer-div").hide();
-
-  setActiveCapsule("guided-samples-folder-tab");
-
-  var filtered = getGlobalPath(organizeDSglobalPath);
-  organizeDSglobalPath.value =
-    filtered.slice(0, filtered.length).join("/") + "/";
-
-  var myPath = datasetStructureJSONObj;
-  for (var item of filtered.slice(1, filtered.length)) {
-    myPath = myPath["folders"][item];
-  }
-  // construct UI with files and folders
-  var appendString = loadFileFolder(myPath);
-
-  /// empty the div
-  $("#items").empty();
-  $("#items").html(appendString);
-
-  // reconstruct div with new elements
-  listItems(myPath, "#items");
-  getInFolder(
-    ".single-item",
-    "#items",
-    organizeDSglobalPath,
-    datasetStructureJSONObj
-  );
 };
 
 const generateSampleMetadataRowElement = (tableIndex, sampleName) => {

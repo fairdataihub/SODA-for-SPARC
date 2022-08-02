@@ -6507,12 +6507,13 @@ async function listItems(jsonObj, uiItem, amount_req, reset) {
     //Gets the name of the current folder from organizeDSglobalPath and instructs the user
     //on what to do in the empty folder.
     let currentFolder = "";
+    let folderType;
+
     if (organizeDSglobalPath.value == undefined) {
       currentFolder = "My_dataset_folder";
     } else {
       //Get the name of the folder the user is currently in.
       currentFolder = organizeDSglobalPath.value.split("/").slice(-2)[0];
-      let folderType;
       if (currentFolder.startsWith("sub-")) {
         folderType = "subject";
       }
@@ -6520,15 +6521,26 @@ async function listItems(jsonObj, uiItem, amount_req, reset) {
         folderType = "sample";
       }
     }
-    console.log(organizeDSglobalPath);
+
+    let dragDropInstructionsText;
+    if (folderType === undefined) {
+      dragDropInstructionsText = `Drag and Drop folders and files to be included in the <b>${currentFolder}</b> folder.`;
+    } else if (folderType == "subject") {
+      dragDropInstructionsText = `Drag and drop folders and files associated with the subject ${currentFolder}`;
+    } else if (folderType === "sample") {
+      dragDropInstructionsText = `Drag and drop folders and files associated with the sample ${currentFolder}`;
+    }
+
     $(uiItem).html(
       `<div class="drag-drop-container-instructions">
         <div id="dragDropLottieContainer" style="height: 100px; width: 100px;"></div>
         <p class="text-center large">
-          Drag and Drop folders and files to be included in the <b>${currentFolder}</b> folder.
+          ${dragDropInstructionsText}
         </p>
         <p class="text-center">
-          You may also <b>add</b> or <b>import</b> a new folder using the buttons in the upper right corner.
+          You may also <b>add</b> or <b>import</b> ${
+            folderType === undefined ? "folders or files" : folderType + " data"
+          } using the buttons in the upper right corner
         </p>
       </div>`
     );
