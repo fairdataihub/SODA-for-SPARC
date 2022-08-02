@@ -366,30 +366,6 @@
                 components of the primary folder below, but keep in mind that
                 guided mode will help you organize your dataset's structure.
               </p>
-              <ul class="guided--help-text w-100">
-                <li
-                  class="guided--help-text w-100 text-left mb-4"
-                  style="color: hsl(0, 0%, 22%)"
-                >
-                  <b>Pools:</b> When data is gathered from multiple subjects at
-                  the same time, the subjects are to be placed into pools.<br />
-                </li>
-                <li
-                  class="guided--help-text w-100 text-left mb-4"
-                  style="color: hsl(0, 0%, 22%)"
-                >
-                  <b>Subjects:</b> Subjects are human or non-human entities from
-                  which data was derived from during the creation of your
-                  dataset.<br />
-                </li>
-                <li
-                  class="guided--help-text w-100 text-left mb-2"
-                  style="color: hsl(0, 0%, 22%)"
-                >
-                  <b>Samples:</b> Samples are non-living entities derived from
-                  your dataset's subjects.<br />
-                </li>
-              </ul>
             </div>
             <div class="guided--capsule-container-sub-page">
               <div
@@ -603,12 +579,12 @@
             id="guided-primary-data-organization-tab"
             class="guided--panel hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
           >
-            <div class="guided--section w-100">
+            <div class="guided--section">
               <h1 class="guided--text-sub-step">
                 Primary data for subjects and samples
               </h1>
               <p class="guided--help-text w-100">
-                Primary data refer from experimental subjects and/or samples
+                Primary data refers to experimental subjects and/or samples
                 (e.g., time series data, tabular data, clinical imaging data,
                 genomic, metabolomic, or microscopy data). The data generally
                 have been minimally processed so they are in a form ready for
@@ -617,12 +593,6 @@
             </div>
 
             <div class="guided--panel" id="guided-add-sample-primary-data">
-              <div class="guided--section">
-                <h1 class="guided--text-sub-step">
-                  Specify your subject and sample primary data in the interface
-                  below
-                </h1>
-              </div>
               <div class="guided--capsule-container-sub-page">
                 <div
                   class="guided--capsule-sub-page"
@@ -670,6 +640,18 @@
                   class="guided--panel hidden"
                   id="guided-primary-samples-container"
                 >
+                  <div class="guided--section">
+                    <h2 class="guided--text-sub-step mt-0">
+                      Specify the primary data for your samples through the
+                      interface below
+                    </h2>
+                    <p class="guided--help-text w-100">
+                      You can also virtually structure the data and rename
+                      files/folders as you would like to have them in your
+                      dataset when it is generated (note that none of your
+                      original data will be modified).
+                    </p>
+                  </div>
                   <div
                     class="guided--container-subject-samples mt-md"
                     id="guided-primary-samples-file-explorer-container"
@@ -723,6 +705,18 @@
                 class="guided--panel mt-md sub-page hidden"
                 id="guided-primary-subjects-organization-page"
               >
+                <div class="guided--section">
+                  <h2 class="guided--text-sub-step mt-0">
+                    Specify the primary data for your subjects through the
+                    interface below
+                  </h2>
+                  <p class="guided--help-text w-100">
+                    You can also virtually structure the data and rename
+                    files/folders as you would like to have them in your dataset
+                    when it is generated (note that none of your original data
+                    will be modified).
+                  </p>
+                </div>
                 <div
                   class="guided--section"
                   id="guided-primary-subjects-prompt"
@@ -826,12 +820,6 @@
             </div>
 
             <div class="guided--panel" id="guided-add-sample-source-data">
-              <div class="guided--section">
-                <h1 class="guided--text-sub-step">
-                  Specify your subject and sample source data in the interface
-                  below
-                </h1>
-              </div>
               <div class="guided--capsule-container-sub-page">
                 <div
                   class="guided--capsule-sub-page"
@@ -879,6 +867,18 @@
                   class="guided--panel hidden"
                   id="guided-source-samples-container"
                 >
+                  <div class="guided--section">
+                    <h2 class="guided--text-sub-step mt-0">
+                      Specify the source data for your samples through the
+                      interface below
+                    </h2>
+                    <p class="guided--help-text w-100">
+                      You can also virtually structure the data and rename
+                      files/folders as you would like to have them in your
+                      dataset when it is generated (note that none of your
+                      original data will be modified).
+                    </p>
+                  </div>
                   <div
                     class="guided--container-subject-samples mt-md"
                     id="guided-source-samples-file-explorer-container"
@@ -968,6 +968,18 @@
                   class="guided--panel hidden"
                   id="guided-source-subjects-container"
                 >
+                  <div class="guided--section">
+                    <h2 class="guided--text-sub-step mt-0">
+                      Specify the source data for your subjects through the
+                      interface below
+                    </h2>
+                    <p class="guided--help-text w-100">
+                      You can also virtually structure the data and rename
+                      files/folders as you would like to have them in your
+                      dataset when it is generated (note that none of your
+                      original data will be modified).
+                    </p>
+                  </div>
                   <div
                     class="guided--container-subject-samples mt-md"
                     id="guided-source-subjects-file-explorer-container"
@@ -1092,6 +1104,18 @@
                   class="guided--panel hidden"
                   id="guided-derivative-samples-container"
                 >
+                  <div class="guided--section">
+                    <h2 class="guided--text-sub-step mt-0">
+                      Specify the derivative data for your samples through the
+                      interface below
+                    </h2>
+                    <p class="guided--help-text w-100">
+                      You can also virtually structure the data and rename
+                      files/folders as you would like to have them in your
+                      dataset when it is generated (note that none of your
+                      original data will be modified).
+                    </p>
+                  </div>
                   <div
                     class="guided--container-subject-samples mt-md"
                     id="guided-derivative-samples-file-explorer-container"
@@ -1181,6 +1205,18 @@
                   class="guided--panel hidden"
                   id="guided-derivative-subjects-container"
                 >
+                  <div class="guided--section">
+                    <h2 class="guided--text-sub-step mt-0">
+                      Specify the derivative data for your subjects through the
+                      interface below
+                    </h2>
+                    <p class="guided--help-text w-100">
+                      You can also virtually structure the data and rename
+                      files/folders as you would like to have them in your
+                      dataset when it is generated (note that none of your
+                      original data will be modified).
+                    </p>
+                  </div>
                   <div
                     class="guided--container-subject-samples mt-md"
                     id="guided-derivative-subjects-file-explorer-container"
