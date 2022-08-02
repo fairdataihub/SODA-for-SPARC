@@ -27,17 +27,17 @@ document
     openDropdownPrompt(this, "bf");
   });
 
-document
-  .querySelector("#svg-change-current-account-generate-dropdown")
-  .addEventListener("click", function () {
-    openDropdownPrompt(this, "bf");
-  });
+// document
+//   .querySelector("#svg-change-current-account-generate-dropdown")
+//   .addEventListener("click", function () {
+//     openDropdownPrompt(this, "bf");
+//   });
 
-document
-  .querySelector("#change-current-account-new-ds-name")
-  .addEventListener("click", function () {
-    openDropdownPrompt(this, "dataset");
-  });
+// document
+//   .querySelector("#change-current-account-new-ds-name")
+//   .addEventListener("click", function () {
+//     openDropdownPrompt(this, "dataset");
+//   });
 
 $(".button-individual-metadata.remove").click(function () {
   var metadataFileStatus = $($(this).parents()[1]).find(
