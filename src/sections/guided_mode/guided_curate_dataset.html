@@ -649,7 +649,7 @@
                     <button
                       class="ui positive basic button guided--radio-button"
                       id="guided-button-add-sample-primary-data"
-                      data-next-element="guided-primary-samples-file-explorer-container"
+                      data-next-element="guided-primary-samples-container"
                       data-button-config-value="dataset-contains-primary-sample-data"
                       data-button-config-value-state="yes"
                     >
@@ -667,38 +667,43 @@
                   </div>
                 </div>
                 <div
-                  class="guided--container-subject-samples mt-md hidden"
-                  id="guided-primary-samples-file-explorer-container"
+                  class="guided--panel hidden"
+                  id="guided-primary-samples-container"
                 >
-                  <div class="guided--hlf-selection-container">
-                    <label class="guided--form-label centered"
-                      >Dataset samples:
-                    </label>
-                    <aside
-                      class="guided--hlf-selection-aside"
-                      id="guided-primary-samples-aside"
-                    ></aside>
-                  </div>
                   <div
-                    id="guided-primary-samples-file-explorer-intro"
-                    class="guided--panel mb-0"
-                    style="
-                      height: 475px;
-                      padding: 25px;
-                      border: black solid 2px;
-                    "
+                    class="guided--container-subject-samples mt-md"
+                    id="guided-primary-samples-file-explorer-container"
                   >
+                    <div class="guided--hlf-selection-container">
+                      <label class="guided--form-label centered"
+                        >Dataset samples:
+                      </label>
+                      <aside
+                        class="guided--hlf-selection-aside"
+                        id="guided-primary-samples-aside"
+                      ></aside>
+                    </div>
                     <div
-                      class="guided--section"
-                      style="justify-content: flex-start"
+                      id="guided-primary-samples-file-explorer-intro"
+                      class="guided--panel mb-0"
+                      style="
+                        height: 475px;
+                        padding: 25px;
+                        border: black solid 2px;
+                      "
                     >
-                      <h1 class="guided--text-sub-step">
-                        Select a sample on the left to add its primary data.
-                      </h1>
                       <div
-                        id="primary-samples-file-explorer-black-arrow-lottie-container"
-                        class="black-arrow-lottie-container"
-                      ></div>
+                        class="guided--section"
+                        style="justify-content: flex-start"
+                      >
+                        <h1 class="guided--text-sub-step">
+                          Select a sample on the left to add its primary data.
+                        </h1>
+                        <div
+                          id="primary-samples-file-explorer-black-arrow-lottie-container"
+                          class="black-arrow-lottie-container"
+                        ></div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -711,10 +716,6 @@
                       Click Next to confirm you have no primary data for your
                       samples.
                     </h2>
-                    <p class="guided--help-text">
-                      Please note that clicking next will remove all primary
-                      sample data from your dataset.
-                    </p>
                   </div>
                 </div>
               </div>
@@ -736,7 +737,7 @@
                     <button
                       class="ui positive basic button guided--radio-button"
                       id="guided-button-add-subject-primary-data"
-                      data-next-element="guided-primary-subjects-file-explorer-container"
+                      data-next-element="guided-primary-subjects-container"
                       data-button-config-value="dataset-contains-primary-subject-data"
                       data-button-config-value-state="yes"
                     >
@@ -753,39 +754,45 @@
                     </button>
                   </div>
                 </div>
+
                 <div
-                  class="guided--container-subject-samples mt-md hidden"
-                  id="guided-primary-subjects-file-explorer-container"
+                  class="guided--panel hidden"
+                  id="guided-primary-subjects-container"
                 >
-                  <div class="guided--hlf-selection-container">
-                    <label class="guided--form-label centered"
-                      >Dataset subjects:
-                    </label>
-                    <aside
-                      class="guided--hlf-selection-aside"
-                      id="guided-primary-subjects-aside"
-                    ></aside>
-                  </div>
                   <div
-                    id="guided-primary-subjects-file-explorer-intro"
-                    class="guided--panel mb-0"
-                    style="
-                      height: 475px;
-                      padding: 25px;
-                      border: black solid 2px;
-                    "
+                    class="guided--container-subject-samples mt-md"
+                    id="guided-primary-subjects-file-explorer-container"
                   >
+                    <div class="guided--hlf-selection-container">
+                      <label class="guided--form-label centered"
+                        >Dataset subjects:
+                      </label>
+                      <aside
+                        class="guided--hlf-selection-aside"
+                        id="guided-primary-subjects-aside"
+                      ></aside>
+                    </div>
                     <div
-                      class="guided--section"
-                      style="justify-content: flex-start"
+                      id="guided-primary-subjects-file-explorer-intro"
+                      class="guided--panel mb-0"
+                      style="
+                        height: 475px;
+                        padding: 25px;
+                        border: black solid 2px;
+                      "
                     >
-                      <h1 class="guided--text-sub-step">
-                        Select a subject on the left to add its primary data.
-                      </h1>
                       <div
-                        id="primary-subjects-file-explorer-black-arrow-lottie-container"
-                        class="black-arrow-lottie-container"
-                      ></div>
+                        class="guided--section"
+                        style="justify-content: flex-start"
+                      >
+                        <h1 class="guided--text-sub-step">
+                          Select a subject on the left to add its primary data.
+                        </h1>
+                        <div
+                          id="primary-subjects-file-explorer-black-arrow-lottie-container"
+                          class="black-arrow-lottie-container"
+                        ></div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -798,11 +805,6 @@
                       Click Next to confirm you have no primary data for your
                       subjects or samples.
                     </h2>
-                    <p class="guided--help-text">
-                      Please note that clicking next will remove all primary
-                      sample data added in the previous step as well as any data
-                      added to your pools or subjects.
-                    </p>
                   </div>
                 </div>
               </div>
@@ -856,7 +858,7 @@
                     <button
                       class="ui positive basic button guided--radio-button"
                       id="guided-button-add-sample-source-data"
-                      data-next-element="guided-source-samples-file-explorer-container"
+                      data-next-element="guided-source-samples-container"
                       data-button-config-value="dataset-contains-source-sample-data"
                       data-button-config-value-state="yes"
                     >
@@ -874,38 +876,43 @@
                   </div>
                 </div>
                 <div
-                  class="guided--container-subject-samples mt-md hidden"
-                  id="guided-source-samples-file-explorer-container"
+                  class="guided--panel hidden"
+                  id="guided-source-samples-container"
                 >
-                  <div class="guided--hlf-selection-container">
-                    <label class="guided--form-label centered"
-                      >Dataset samples:
-                    </label>
-                    <aside
-                      class="guided--hlf-selection-aside"
-                      id="guided-source-samples-aside"
-                    ></aside>
-                  </div>
                   <div
-                    id="guided-source-samples-file-explorer-intro"
-                    class="guided--panel mb-0"
-                    style="
-                      height: 475px;
-                      padding: 25px;
-                      border: black solid 2px;
-                    "
+                    class="guided--container-subject-samples mt-md"
+                    id="guided-source-samples-file-explorer-container"
                   >
+                    <div class="guided--hlf-selection-container">
+                      <label class="guided--form-label centered"
+                        >Dataset samples:
+                      </label>
+                      <aside
+                        class="guided--hlf-selection-aside"
+                        id="guided-source-samples-aside"
+                      ></aside>
+                    </div>
                     <div
-                      class="guided--section"
-                      style="justify-content: flex-start"
+                      id="guided-source-samples-file-explorer-intro"
+                      class="guided--panel mb-0"
+                      style="
+                        height: 475px;
+                        padding: 25px;
+                        border: black solid 2px;
+                      "
                     >
-                      <h1 class="guided--text-sub-step">
-                        Select a sample on the left to add its source data.
-                      </h1>
                       <div
-                        id="source-samples-file-explorer-black-arrow-lottie-container"
-                        class="black-arrow-lottie-container"
-                      ></div>
+                        class="guided--section"
+                        style="justify-content: flex-start"
+                      >
+                        <h1 class="guided--text-sub-step">
+                          Select a sample on the left to add its source data.
+                        </h1>
+                        <div
+                          id="source-samples-file-explorer-black-arrow-lottie-container"
+                          class="black-arrow-lottie-container"
+                        ></div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -940,7 +947,7 @@
                     <button
                       class="ui positive basic button guided--radio-button"
                       id="guided-button-add-subject-source-data"
-                      data-next-element="guided-source-subjects-file-explorer-container"
+                      data-next-element="guided-source-subjects-container"
                       data-button-config-value="dataset-contains-source-subject-data"
                       data-button-config-value-state="yes"
                     >
@@ -958,38 +965,43 @@
                   </div>
                 </div>
                 <div
-                  class="guided--container-subject-samples mt-md hidden"
-                  id="guided-source-subjects-file-explorer-container"
+                  class="guided--panel hidden"
+                  id="guided-source-subjects-container"
                 >
-                  <div class="guided--hlf-selection-container">
-                    <label class="guided--form-label centered"
-                      >Dataset subjects:
-                    </label>
-                    <aside
-                      class="guided--hlf-selection-aside"
-                      id="guided-source-subjects-aside"
-                    ></aside>
-                  </div>
                   <div
-                    id="guided-source-subjects-file-explorer-intro"
-                    class="guided--panel mb-0"
-                    style="
-                      height: 475px;
-                      padding: 25px;
-                      border: black solid 2px;
-                    "
+                    class="guided--container-subject-samples mt-md"
+                    id="guided-source-subjects-file-explorer-container"
                   >
+                    <div class="guided--hlf-selection-container">
+                      <label class="guided--form-label centered"
+                        >Dataset subjects:
+                      </label>
+                      <aside
+                        class="guided--hlf-selection-aside"
+                        id="guided-source-subjects-aside"
+                      ></aside>
+                    </div>
                     <div
-                      class="guided--section"
-                      style="justify-content: flex-start"
+                      id="guided-source-subjects-file-explorer-intro"
+                      class="guided--panel mb-0"
+                      style="
+                        height: 475px;
+                        padding: 25px;
+                        border: black solid 2px;
+                      "
                     >
-                      <h1 class="guided--text-sub-step">
-                        Select a subject on the left to add its source data.
-                      </h1>
                       <div
-                        id="source-subjects-file-explorer-black-arrow-lottie-container"
-                        class="black-arrow-lottie-container"
-                      ></div>
+                        class="guided--section"
+                        style="justify-content: flex-start"
+                      >
+                        <h1 class="guided--text-sub-step">
+                          Select a subject on the left to add its source data.
+                        </h1>
+                        <div
+                          id="source-subjects-file-explorer-black-arrow-lottie-container"
+                          class="black-arrow-lottie-container"
+                        ></div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1002,11 +1014,6 @@
                       Click Next to confirm you have no source data for your
                       subjects or samples.
                     </h2>
-                    <p class="guided--help-text">
-                      Please note that clicking next will remove all source
-                      sample data added in the previous step as well as any data
-                      added to your pools or subjects.
-                    </p>
                   </div>
                 </div>
               </div>
@@ -1064,7 +1071,7 @@
                     <button
                       class="ui positive basic button guided--radio-button"
                       id="guided-button-add-sample-derivative-data"
-                      data-next-element="guided-derivative-samples-file-explorer-container"
+                      data-next-element="guided-derivative-samples-container"
                       data-button-config-value="dataset-contains-derivative-sample-data"
                       data-button-config-value-state="yes"
                     >
@@ -1082,38 +1089,44 @@
                   </div>
                 </div>
                 <div
-                  class="guided--container-subject-samples mt-md hidden"
-                  id="guided-derivative-samples-file-explorer-container"
+                  class="guided--panel hidden"
+                  id="guided-derivative-samples-container"
                 >
-                  <div class="guided--hlf-selection-container">
-                    <label class="guided--form-label centered"
-                      >Dataset samples:
-                    </label>
-                    <aside
-                      class="guided--hlf-selection-aside"
-                      id="guided-derivative-samples-aside"
-                    ></aside>
-                  </div>
                   <div
-                    id="guided-derivative-samples-file-explorer-intro"
-                    class="guided--panel mb-0"
-                    style="
-                      height: 475px;
-                      padding: 25px;
-                      border: black solid 2px;
-                    "
+                    class="guided--container-subject-samples mt-md"
+                    id="guided-derivative-samples-file-explorer-container"
                   >
+                    <div class="guided--hlf-selection-container">
+                      <label class="guided--form-label centered"
+                        >Dataset samples:
+                      </label>
+                      <aside
+                        class="guided--hlf-selection-aside"
+                        id="guided-derivative-samples-aside"
+                      ></aside>
+                    </div>
                     <div
-                      class="guided--section"
-                      style="justify-content: flex-start"
+                      id="guided-derivative-samples-file-explorer-intro"
+                      class="guided--panel mb-0"
+                      style="
+                        height: 475px;
+                        padding: 25px;
+                        border: black solid 2px;
+                      "
                     >
-                      <h1 class="guided--text-sub-step">
-                        Select a sample on the left to add its derivative data.
-                      </h1>
                       <div
-                        id="derivative-samples-file-explorer-black-arrow-lottie-container"
-                        class="black-arrow-lottie-container"
-                      ></div>
+                        class="guided--section"
+                        style="justify-content: flex-start"
+                      >
+                        <h1 class="guided--text-sub-step">
+                          Select a sample on the left to add its derivative
+                          data.
+                        </h1>
+                        <div
+                          id="derivative-samples-file-explorer-black-arrow-lottie-container"
+                          class="black-arrow-lottie-container"
+                        ></div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1126,10 +1139,6 @@
                       Click Next to confirm you have no derivative data for your
                       samples.
                     </h2>
-                    <p class="guided--help-text">
-                      Please note that clicking next will remove all derivative
-                      sample data from your dataset.
-                    </p>
                   </div>
                 </div>
               </div>
@@ -1151,7 +1160,7 @@
                     <button
                       class="ui positive basic button guided--radio-button"
                       id="guided-button-add-subject-derivative-data"
-                      data-next-element="guided-derivative-subjects-file-explorer-container"
+                      data-next-element="guided-derivative-subjects-container"
                       data-button-config-value="dataset-contains-derivative-subject-data"
                       data-button-config-value-state="yes"
                     >
@@ -1169,38 +1178,44 @@
                   </div>
                 </div>
                 <div
-                  class="guided--container-subject-samples mt-md hidden"
-                  id="guided-derivative-subjects-file-explorer-container"
+                  class="guided--panel hidden"
+                  id="guided-derivative-subjects-container"
                 >
-                  <div class="guided--hlf-selection-container">
-                    <label class="guided--form-label centered"
-                      >Dataset subjects:
-                    </label>
-                    <aside
-                      class="guided--hlf-selection-aside"
-                      id="guided-derivative-subjects-aside"
-                    ></aside>
-                  </div>
                   <div
-                    id="guided-derivative-subjects-file-explorer-intro"
-                    class="guided--panel mb-0"
-                    style="
-                      height: 475px;
-                      padding: 25px;
-                      border: black solid 2px;
-                    "
+                    class="guided--container-subject-samples mt-md"
+                    id="guided-derivative-subjects-file-explorer-container"
                   >
+                    <div class="guided--hlf-selection-container">
+                      <label class="guided--form-label centered"
+                        >Dataset subjects:
+                      </label>
+                      <aside
+                        class="guided--hlf-selection-aside"
+                        id="guided-derivative-subjects-aside"
+                      ></aside>
+                    </div>
                     <div
-                      class="guided--section"
-                      style="justify-content: flex-start"
+                      id="guided-derivative-subjects-file-explorer-intro"
+                      class="guided--panel mb-0"
+                      style="
+                        height: 475px;
+                        padding: 25px;
+                        border: black solid 2px;
+                      "
                     >
-                      <h1 class="guided--text-sub-step">
-                        Select a subject on the left to add its derivative data.
-                      </h1>
                       <div
-                        id="derivative-subjects-file-explorer-black-arrow-lottie-container"
-                        class="black-arrow-lottie-container"
-                      ></div>
+                        class="guided--section"
+                        style="justify-content: flex-start"
+                      >
+                        <h1 class="guided--text-sub-step">
+                          Select a subject on the left to add its derivative
+                          data.
+                        </h1>
+                        <div
+                          id="derivative-subjects-file-explorer-black-arrow-lottie-container"
+                          class="black-arrow-lottie-container"
+                        ></div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1213,11 +1228,6 @@
                       Click Next to confirm you have no derivative data for your
                       subjects or samples.
                     </h2>
-                    <p class="guided--help-text">
-                      Please note that clicking next will remove all derivative
-                      sample data added in the previous step as well as any data
-                      added to your pools or subjects.
-                    </p>
                   </div>
                 </div>
               </div>

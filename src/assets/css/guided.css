@@ -603,6 +603,7 @@ h1.guided--text-sub-step {
   justify-content: space-between;
   align-items: flex-start;
   max-width: 1200px;
+  width: 90%;
 }
 .guided--folder-organization-buttons-container {
   width: 100%;

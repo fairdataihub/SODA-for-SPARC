@@ -1160,13 +1160,7 @@ const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
     ".guided--radio-button"
   );
   for (const guidedRadioButton of guidedRadioButtons) {
-    /*
-    if (selectedButton.data("button-config-value")) {
-      buttonConfigValue = selectedButton.data("button-config-value");
-      buttonConfigValueState = selectedButton.data("button-config-value-state");
-      sodaJSONObj["button-config"][buttonConfigValue] = buttonConfigValueState;
-    }*/
-    //get the data-next-element attribute
+    //Get the button config value from the UI
     const buttonConfigValue = guidedRadioButton.getAttribute(
       "data-button-config-value"
     );
