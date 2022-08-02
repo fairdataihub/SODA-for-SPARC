@@ -4067,23 +4067,32 @@ const renderSubjectSampleAdditionTable = (subject) => {
     <table
       class="ui celled striped table"
       style="margin-bottom: 10px; width: 800px"
+      data-samples-subject-name="${subject.subjectName}"
+      data-samples-subjects-pool-name="${
+        subject.poolName ? subject.poolName : ""
+      }"
     >
       <thead>
         <tr>
-          <th class="text-center" colspan="2">
-            <div class="space-between w-100">
+          <th class="text-center" colspan="2" style="position: relative">
+            <div class="space-between w-100 hidden">
               <span class="samples-subjects-pool">${
                 subject.poolName ? subject.poolName : ""
               }</span>
               <span class="samples-subject-name">${subject.subjectName}</span>
-              <button
+            </div>
+          
+            Enter a unique sample ID for each sample taken from subject ${
+              subject.subjectName
+            }
+            <button
               type="button"
               class="btn btn-primary btn-sm"
+              style="position: absolute; top: 10px; right: 20px;"
               onclick="addSampleSpecificationTableRow(this)"
             >
               Add sample
             </button>
-            </div>
           </th>
         </tr>
       </thead>
