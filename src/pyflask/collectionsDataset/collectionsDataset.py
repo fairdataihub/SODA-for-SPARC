@@ -57,9 +57,6 @@ def upload_collection_names(account, dataset, tags):
     @params
         tags: List of the collection tag id's (int)
     """
-    print(tags);
-    print('above is the tags')
-    statusResponses = []
     try:
         ps = get_authenticated_ps(account)
     except Exception as e:
@@ -75,22 +72,20 @@ def upload_collection_names(account, dataset, tags):
 
 # TODO: modify response to create object to return
 # arrays are not accepted and will need to convert final call in tags list as the object to return
+    store = []
     for tag in tags:
-        print(tag)
         jsonfile = {"collectionId": int(tag)}
         result = ps._api._put(f"/datasets/{dataset_id}/collections" ,json=jsonfile)
-        statusResponses.append(result)
         for res_object in result:
-            collection_id = res_object.id
-            collection_name = res_object.name
+            # each result will hold the updated collection names/ids
+            collection_id = res_object["id"]
+            collection_name = res_object["name"]
             if store is None:
                 store = []
-            store.append({"id": collection_id, "name": collection_name})
+            store.append({'id': collection_id, 'name': str(collection_name)})
 
-    print(statusResponses)
-    result = dict({"collection_ids": statusResponses})
-    # print(result)
-    return result
+    print({"collection": store})
+    return {"collection": store}
 
 
 def remove_collection_names(account, dataset, tags):

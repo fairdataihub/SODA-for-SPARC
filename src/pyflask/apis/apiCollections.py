@@ -66,12 +66,12 @@ class currentCollections(Resource):
 
 
 model_id_names = api.model("collectionIdNames", {
-    "id": fields.String(required=True, description="Collection ID"),
-    "name": fields.String(required=True, description="Collection Name")
+    'id': fields.Integer(required=True, description="Collection ID"),
+    'name': fields.String(required=True, description="Collection Name")
 })
 
 model_upload_collection_names = api.model('uploadCollection', {
-    'collection_ids': fields.List(fields.Nested(model_id_names), required=True, description="ID of collection name")
+    'collection': fields.List(fields.Nested(model_id_names), required=True, description="ID of collection name"),
 })
 
 @api.route("/upload_collection_names")
