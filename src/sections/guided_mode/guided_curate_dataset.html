@@ -808,7 +808,7 @@
             id="guided-source-data-organization-tab"
             class="guided--panel hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
           >
-            <div class="guided--section w-100">
+            <div class="guided--section">
               <h1 class="guided--text-sub-step">Source data for samples</h1>
               <p class="guided--help-text w-100">
                 Source data refers to unaltered, raw files from an experiment,
@@ -1035,7 +1035,7 @@
             id="guided-derivative-data-organization-tab"
             class="guided--panel hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
           >
-            <div class="guided--section w-100">
+            <div class="guided--section">
               <h1 class="guided--text-sub-step">
                 Specify your dataset's derivative data
               </h1>
@@ -1274,7 +1274,7 @@
             id="guided-code-folder-tab"
             class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
           >
-            <div class="guided--section w-100">
+            <div class="guided--section">
               <h1 class="guided--text-sub-step">
                 Specify your dataset's code data
               </h1>
@@ -1319,7 +1319,7 @@
             id="guided-protocol-folder-tab"
             class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
           >
-            <div class="guided--section w-100">
+            <div class="guided--section">
               <h1 class="guided--text-sub-step">
                 Specify your dataset's protocol data
               </h1>
@@ -1363,7 +1363,7 @@
             id="guided-docs-folder-tab"
             class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
           >
-            <div class="guided--section w-100">
+            <div class="guided--section">
               <h1 class="guided--text-sub-step">
                 Specify your dataset's docs data
               </h1>
@@ -1603,19 +1603,29 @@
             ></div>
           </div>
           <div class="guided--panel hidden" id="guided-airtable-award-tab">
-            <div class="guided--section w-100">
+            <div class="guided--section">
               <h1 class="guided--text-sub-step">SPARC Award number</h1>
               <p class="guided--help-text w-100">
                 The number of the SPARC award associated with your dataset is a
                 required metadata when submitting your SPARC dataset. SODA can
                 help you specify your SPARC award through the SPARC Airtable
-                sheet. You can find out more about the SPARC Airtable sheet
+                sheet. To learn more about the SPARC Airtable sheet, please
+                visit the
+                <a
+                  href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-access-to-sparc-airtable"
+                  target="_blank"
+                  >SODA documentation</a
+                >.
               </p>
             </div>
             <div class="guided--section">
-              <label class="guided--form-label centered"
+              <label class="guided--form-label centered mb-0"
                 >Would you like to connect your Airtable Account with SODA?
               </label>
+              <p class="guided--text-input-instructions m-0 text-center">
+                Connecting to Airtable is encouraged as it ensures your SPARC
+                award number and other metadata are entered correctly.
+              </p>
               <div class="guided--radio-button-container">
                 <button
                   class="ui positive basic button guided--radio-button"
@@ -1623,8 +1633,9 @@
                   data-next-element="guided-div-SPARC-award-import"
                   data-button-config-value="SPARC-award-imported"
                   data-button-config-value-state="yes"
+                  style="width: 290px"
                 >
-                  Yes
+                  Yes, let me connect my Airtable account
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button"
@@ -1632,8 +1643,9 @@
                   data-next-element="guided-div-SPARC-award-manual-input"
                   data-button-config-value="SPARC-award-imported"
                   data-button-config-value-state="no"
+                  style="width: 290px"
                 >
-                  No
+                  No, I'll enter my award number manually
                 </button>
               </div>
             </div>
@@ -3645,7 +3657,7 @@
             ></div>
           </div>
           <div id="guided-pennsieve-intro-tab" class="guided--panel hidden">
-            <div class="guided--section w-100">
+            <div class="guided--section">
               <h1 class="guided--text-sub-step" style="margin-bottom: 5px">
                 Pennsieve metadata addition
               </h1>
