@@ -8,4 +8,4 @@ def get_namespace_logger(namespace_name):
         # TODO: General log that we tried to access a namespace that does not exist
         # By default this should send back a 500 error to the user since this will raise an uncaught exception that crashes the server
         # program should stop if we are accessing a namespace that does not exist
-        raise KeyError("Invalid namespace name: {}".format(namespace_name))
+        raise KeyError(f"Invalid namespace name: {namespace_name}")

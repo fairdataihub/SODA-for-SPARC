@@ -223,7 +223,6 @@ client = axios.create({
 
 const notyf = new Notyf({
   position: { x: "right", y: "bottom" },
-  ripple: true,
   dismissible: true,
   ripple: false,
   types: [
@@ -761,8 +760,6 @@ const apiVersionsMatch = async () => {
     message: "API Versions match",
     type: "success",
   });
-
-  log.info("About to do unsupported stuff");
 
   //Load Default/global Pennsieve account if available
   if (hasConnectedAccountWithPennsieve()) {
@@ -2277,6 +2274,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
           $("#bootbox-sample-species").css("display", "none");
         }
         // set the Edit species button back to "+ Add species"
+
         $("#button-add-species-sample").html(
           `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
         );
@@ -3448,7 +3446,6 @@ async function submitReviewDataset(embargoReleaseDate) {
         heightAuto: false,
         confirmButtonText: "Ok",
         title: `Could not exclude the selected files from publication`,
-        text: "Please try again.",
         icon: "error",
         reverseButtons: reverseSwalButtons,
         text: `${emessage}`,
@@ -7096,11 +7093,11 @@ document
     }
 
     if (errorMessage) {
-      message += "Would you like to continue?";
-      message = "<div style='text-align: left'>" + message + "</div>";
+      errorMessage += "Would you like to continue?";
+      errorMessage = "<div style='text-align: left'>" + errorMessage + "</div>";
       Swal.fire({
         icon: "warning",
-        html: message,
+        html: errorMessage,
         showCancelButton: true,
         cancelButtonText: "No, I want to review my files",
         focusCancel: true,
@@ -7152,7 +7149,6 @@ let file_counter = 0;
 let folder_counter = 0;
 var uploadComplete = new Notyf({
   position: { x: "right", y: "bottom" },
-  ripple: true,
   dismissible: true,
   ripple: false,
   types: [
@@ -8367,7 +8363,7 @@ async function showBFAddAccountSweetalert() {
                     $("#para-continue-bf-dataset-getting-started").text("");
                     showHideDropdownButtons("account", "show");
                     confirm_click_account_function();
-                    updateBfAccountList(false);
+                    updateBfAccountList();
                   })
                   .catch((error) => {
                     Swal.showValidationMessage(userErrorMessage(error));
@@ -8822,7 +8818,7 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
 
   let role = await api.getDatasetRole(defaultBfDataset);
 
-  if (!role === "owner") {
+  if (role !== "owner") {
     return;
   }
 

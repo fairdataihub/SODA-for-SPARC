@@ -79,7 +79,6 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
     except Exception as e:
         abort(400, "Please select a valid Pennsieve dataset")
 
-    
     role = bf_get_current_user_permission(bf, myds)
     if role not in ["owner", "manager"]:
         abort(403, "You don't have permissions to view/edit DOI for this Pennsieve dataset")
@@ -95,16 +94,19 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
     try:
         selected_dataset_id = myds.id
         contributors_list = bf._api._get(
-            "/datasets/" + str(selected_dataset_id) + "/contributors"
+            f"/datasets/{str(selected_dataset_id)}/contributors"
         )
-        creators_list = []
-        for item in contributors_list:
-            creators_list.append(item["firstName"] + " " + item["lastName"])
+
+        creators_list = [
+            item["firstName"] + " " + item["lastName"]
+            for item in contributors_list
+        ]
+
         jsonfile = {
             "title": selected_bfdataset,
             "creators": creators_list,
         }
-        bf._api.datasets._post("/" + str(selected_dataset_id) + "/doi", json=jsonfile)
+        bf._api.datasets._post(f"/{str(selected_dataset_id)}/doi", json=jsonfile)
         return {"message": "Done!"}
     except Exception as e:
         raise e
@@ -237,7 +239,6 @@ def get_files_excluded_from_publishing(selected_dataset, pennsieve_account):
         List of files excluded from publishing
     """
 
-    
     ps = get_authenticated_ps(pennsieve_account)
 
     myds = get_dataset(ps, selected_dataset)
@@ -248,7 +249,6 @@ def get_files_excluded_from_publishing(selected_dataset, pennsieve_account):
 
     if "ignoreFiles" in resp:
         return {"ignore_files": resp["ignoreFiles"]}
-    
     return {"ignore_files": []}
 
 
