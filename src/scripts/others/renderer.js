@@ -6512,7 +6512,15 @@ async function listItems(jsonObj, uiItem, amount_req, reset) {
     } else {
       //Get the name of the folder the user is currently in.
       currentFolder = organizeDSglobalPath.value.split("/").slice(-2)[0];
+      let folderType;
+      if (currentFolder.startsWith("sub-")) {
+        folderType = "subject";
+      }
+      if (currentFolder.startsWith("sam-")) {
+        folderType = "sample";
+      }
     }
+    console.log(organizeDSglobalPath);
     $(uiItem).html(
       `<div class="drag-drop-container-instructions">
         <div id="dragDropLottieContainer" style="height: 100px; width: 100px;"></div>
