@@ -2461,6 +2461,7 @@ const setActiveSubPage = (pageIdToActivate) => {
       completionDateInput.innerHTML = `
         <option value="Select a completion date">Select a completion date</option>
         <option value="Enter my own date">Enter my own date</option>
+        <option value="N/A">N/A</option>
       `;
       if (completionDate) {
         completionDateInput.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
