@@ -18,7 +18,6 @@ organizationCollections = api.model('collectionDataset', {
     'name': fields.String(required=True, description="Collection name")
 })
 
-
 @api.route("/all_collections")
 class organizationCollections(Resource):
     collections_parser = reqparse.RequestParser(bundle_errors=True)
@@ -64,16 +63,6 @@ class currentCollections(Resource):
         except Exception as e:
             api.abort(500, e.args[0])
 
-
-model_id_names = api.model("collectionIdNames", {
-    'id': fields.Integer(required=True, description="Collection ID"),
-    'name': fields.String(required=True, description="Collection Name")
-})
-
-model_upload_collection_names = api.model('uploadCollection', {
-    'collection': fields.List(fields.Nested(model_id_names), required=True, description="ID of collection name"),
-})
-
 @api.route("/upload_collection_names")
 class uploadCollectionNames(Resource):
     upload_collection_parse = reqparse.RequestParser(bundle_errors=True)
@@ -95,10 +84,6 @@ class uploadCollectionNames(Resource):
             return upload_collection_names(selected_account, selected_dataset, collection_tags)
         except Exception as e:
             api.abort(500, e.args[0])
-
-model_remove_collection_names = api.model('uploadCollection', {
-    'collection': fields.List(fields.String, required=True, description="ID of collection name")
-})
 
 @api.route("/remove_collection_names")
 class removeCollectionNames(Resource):
@@ -124,9 +109,6 @@ class removeCollectionNames(Resource):
             api.abort(500, e.args[0])
 
 
-model_new_collection_names = api.model('uploadCollection', {
-    'collection': fields.List(fields.String, required=True, description="ID of collection name")
-})
 @api.route("/upload_new_names")
 class newCollectionNames(Resource):
     parser_new_names = reqparse.RequestParser(bundle_errors=True)
