@@ -1295,8 +1295,7 @@ var collectionDatasetInput = document.getElementById("tagify-collection-tags"),
     },
   });
 
-//TODO: create object with both id and name of collection tags
-//handle data accordingly
+//object with both id and name of collection tags
 var currentCollectionTags = [];
 $("#button-collection-dataset-confirm").click(async () => {
   //get collection names when clicked
@@ -9088,7 +9087,6 @@ const userIsDatasetOwner = async (datasetIdOrName) => {
   }
 
   // get the dataset the user wants to edit
-  // TODO: Replace with Flask call -- READY
   let role = await getCurrentUserPermissions(datasetIdOrName);
 
   return userIsOwner(role);
