@@ -25,3 +25,4 @@ dependencies:
   - flask_restx
   - protobuf == 3.20.0
   - PyInstaller == 4.7
+  - opencv-python == 4.6.0.66
