@@ -1657,20 +1657,12 @@ const scaleAndUploadBannerImage = async () => {
     try {
       let ps_upload_banner = await client.put(
         `/manage_datasets/bf_banner_image`,
+        {},
         {
-          
-        },
-        {
-          params: {
-          
-          }
+          params: {},
         }
-      )
-    } catch(error) {
-
-    }
-
-
+      );
+    } catch (error) {}
 
     $("#para-dataset-banner-image-status").html(res);
 
@@ -1684,7 +1676,6 @@ const scaleAndUploadBannerImage = async () => {
       message: "Banner image uploaded",
       type: "success",
     });
-
   } catch (error) {
     clientError(error);
     let emessage = userErrorMessage(error);
@@ -1692,7 +1683,7 @@ const scaleAndUploadBannerImage = async () => {
       "<span style='color: red;'> " + emessage + "</span>"
     );
   }
-}
+};
 
 const uploadBannerImage = async () => {
   $("#para-dataset-banner-image-status").html("Please wait...");
@@ -1845,7 +1836,9 @@ $("#save-banner-image").click((event) => {
             }
           });
         } else if (formBannerHeight.value > 2048) {
-          console.log("image is bigger than standard so will be needing to scale");
+          console.log(
+            "image is bigger than standard so will be needing to scale"
+          );
           Swal.fire({
             icon: "warning",
             text: `Your cropped image is ${formBannerHeight.value} px and is bigger than the 2048px standard. Would you like to scale this image down to fit the entire cropped image?`,
@@ -1866,12 +1859,10 @@ $("#save-banner-image").click((event) => {
             if (result.isConfirmed) {
               // uploadBannerImage();
               console.log("handle here");
-              scaleAndUploadBannerImage()
+              scaleAndUploadBannerImage();
             }
           });
-
-        }
-        else {
+        } else {
           uploadBannerImage();
         }
       });
