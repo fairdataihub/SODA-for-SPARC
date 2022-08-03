@@ -278,7 +278,6 @@
 }
 
 .guided--section {
-  background-color: rgb(250, 255, 247);
   padding: 12px;
   display: flex;
   flex-direction: column;
@@ -302,7 +301,6 @@
 }
 
 .guided--panel {
-  background-color: rgb(255, 247, 254);
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -788,6 +786,7 @@ h1.guided--text-sub-step {
 .guided--help-text {
   font-size: 1.2rem;
   max-width: 900px;
+  text-align: justify;
 }
 .guided--help-text.small {
   font-size: 1rem;
