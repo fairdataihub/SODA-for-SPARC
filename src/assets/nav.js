@@ -19,18 +19,14 @@ function handleSectionTrigger(event) {
   hideAllSectionsAndDeselectButtons();
 
   if (event.detail.target) {
-    console.log(event.detail.target);
-    console.log(event.detail.target.dataset.section);
     let previous_section = `${event.detail.target.dataset.section}-section`;
     document.getElementById(previous_section).classList.add("is-shown");
     forceActionSidebar("show");
     return;
   }
 
-  console.log(event.target);
   event.target.classList.add("is-selected");
   // Display the current section
-  console.log(event.target.dataset.section);
   const sectionId = `${event.target.dataset.section}-section`;
 
   document.getElementById(sectionId).classList.add("is-shown");

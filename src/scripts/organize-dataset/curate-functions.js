@@ -23,7 +23,7 @@ const confirm_click_account_function = () => {
 // per change event of current dataset span text
 function confirm_click_function() {
   let temp = $(".bf-dataset-span").html();
-  console.log(temp);
+
   if (
     $(".bf-dataset-span").html() == "None" ||
     $(".bf-dataset-span").html() == ""

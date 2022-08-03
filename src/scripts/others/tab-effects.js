@@ -2100,10 +2100,6 @@ async function transitionFreeFormMode(
   button,
   category
 ) {
-  console.log(currentDiv);
-  console.log(parentDiv);
-  console.log(button);
-  console.log(category);
   let continueProgressRC = true;
   let continueProgressDD = true;
 

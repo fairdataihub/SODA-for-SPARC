@@ -70,8 +70,6 @@ def upload_collection_names(account, dataset, tags):
         error = "Error: Please select a valid Pennsieve dataset"
         raise Exception(error)
 
-# TODO: modify response to create object to return
-# arrays are not accepted and will need to convert final call in tags list as the object to return
     store = []
     for tag in tags:
         jsonfile = {"collectionId": int(tag)}
@@ -84,7 +82,6 @@ def upload_collection_names(account, dataset, tags):
                 store = []
             store.append({'id': collection_id, 'name': str(collection_name)})
 
-    print({"collection": store})
     return {"collection": store}
 
 

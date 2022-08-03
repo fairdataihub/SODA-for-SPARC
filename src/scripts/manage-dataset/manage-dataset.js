@@ -1,5 +1,3 @@
-const { arrayIntersectSafe } = require("excel4node/distribution/lib/utils");
-
 var forbidden_characters_bf = '/:*?"<>';
 
 const check_forbidden_characters_bf = (my_string) => {
