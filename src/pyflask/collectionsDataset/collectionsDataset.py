@@ -26,7 +26,7 @@ def get_all_collections(account):
         error = "Error: Please select a valid Pennsieve account"
         raise Exception(error)
 
-    return ps._api._get(f"/collections/")
+    return ps._api._get("/collections/")
 
 
 
@@ -74,7 +74,7 @@ def upload_collection_names(account, dataset, tags):
         first_name_current_user = current_user["firstName"]
         last_name_current_user = current_user["lastName"]
         list_dataset_permission = ps._api._get(
-            "/datasets/" + str(dataset_id) + "/collaborators/users"
+           f"/datasets/{str(dataset_id)}/collaborators/users"
         )
         c = 0
         for i in range(len(list_dataset_permission)):
@@ -138,7 +138,7 @@ def remove_collection_names(account, dataset, tags):
         first_name_current_user = current_user["firstName"]
         last_name_current_user = current_user["lastName"]
         list_dataset_permission = ps._api._get(
-            "/datasets/" + str(dataset_id) + "/collaborators/users"
+            f"/datasets/{str(dataset_id)}/collaborators/users"
         )
         c = 0
         for i in range(len(list_dataset_permission)):
@@ -194,7 +194,7 @@ def upload_new_names(account, dataset, tags):
         first_name_current_user = current_user["firstName"]
         last_name_current_user = current_user["lastName"]
         list_dataset_permission = ps._api._get(
-            "/datasets/" + str(dataset_id) + "/collaborators/users"
+            f"/datasets/{str(dataset_id)}/collaborators/users"
         )
         c = 0
         for i in range(len(list_dataset_permission)):
@@ -220,7 +220,7 @@ def upload_new_names(account, dataset, tags):
 
     for tag in tags:
         jsonfile = {"name": tag}
-        result = ps._api._post(f"/collections", json=jsonfile)
+        result = ps._api._post("/collections", json=jsonfile)
         statusResponses.append(result)
 
     return dict({"collection": statusResponses})

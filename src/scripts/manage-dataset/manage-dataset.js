@@ -331,7 +331,6 @@ $("#button-bf-collection").click(async () => {
       await uploadNewTags(newTags);
     }
 
-    //TODO: UPDATE CURRENT TAGS and white list
     await updateCollectionWhiteList();
     Swal.close();
     Swal.fire({
