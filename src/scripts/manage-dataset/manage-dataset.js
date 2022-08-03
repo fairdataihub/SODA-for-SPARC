@@ -278,8 +278,6 @@ $("#button-bf-collection").click(async () => {
         }
       } else {
         //key was not modified
-        console.log(key);
-        console.log(!newCollectionTags.includes(key));
         if (!newCollectionTags.includes(key)) {
           //key is not in updated tags so it was removed
           removeTags.push(value["id"]);
@@ -295,7 +293,6 @@ $("#button-bf-collection").click(async () => {
       if (newCollectionTags[i].includes(",")) {
         //need to compare with original name
         let comparison = newCollectionTags[i].replace(/,/g, "，");
-        console.log(comparison);
         if (comparison in allCollectionTags) {
           //modified comma name in whitelist
           //check if in old tags
@@ -337,7 +334,7 @@ $("#button-bf-collection").click(async () => {
     }
 
     //TODO: UPDATE CURRENT TAGS and white list
-    await getCurrentCollectionTags();
+    await updateCollectionWhiteList();
     Swal.close();
     Swal.fire({
       title: "Successfully updated collection from " + defaultBfDataset,
@@ -353,9 +350,15 @@ $("#button-bf-collection").click(async () => {
 
 async function updateCollectionWhiteList() {
   let collection_list = await getAllCollectionTags();
+  let currentCollectionList = await getCurrentCollectionTags();
+  let currentCollectionNames = Object.keys(currentCollectionList);
   let collectionNames = Object.keys(collection_list);
 
+  currentCollectionNames.sort();
   collectionNames.sort();
+
+  collectionDatasetTags.removeAllTags();
+  collectionDatasetTags.addTags(currentCollectionNames);
 
   collectionDatasetTags.settings.whitelist = collectionNames;
 }
@@ -366,77 +369,71 @@ async function uploadNewTags(tags) {
   //upload names first to then get their ids to add to dataset
   try {
     let newCollectionNames = await client.post(
-      "/collections/upload_new_names",
+      `collections/upload_new_names?selected_account=${defaultBfAccount}&selected_dataset=${defaultBfDataset}`,
       {
-        collection_names: tags,
-      },
-      {
-        params: {
-          selected_acount: defaultBfAccount,
-          selected_dataset: defaultBfDataset,
-        },
+        collection: tags,
       }
     );
-    for (let i = 0; i < newCollectionNames.data.length; i++) {
-      //only need the id's to set to dataset
-      newUploadedTags.push(newCollectionNames[i]["id"]);
-    }
 
-    //put collection ids to dataset
-    try {
-      let newTagsUpload = await client.put(
-        `/collections/upload_collection_names`,
-        {
-          collection_ids: newUploadedTags,
-        },
-        {
-          params: {
-            selected_account: selectedBfAccount,
-            selected_dataset: selectedBfDataset,
-          },
-        }
-      );
-      return newTagsUpload.data;
-    } catch (error) {
-      console.log(error);
+    let res = newCollectionNames.data.collection;
+    if (res.length > 0) {
+      for (let i = 0; i < res.length; i++) {
+        //only need the id's to set to dataset
+        newUploadedTags.push(res[i]["id"]);
+      }
+
+      //put collection ids to dataset
+      try {
+        let newTagsUpload = await client.put(
+          `collections/upload_collection_names?selected_account=${defaultBfAccount}&selected_dataset=${defaultBfDataset}`,
+          {
+            collection: newUploadedTags,
+          }
+        );
+        return newTagsUpload.data;
+      } catch (error) {
+        clientError(error);
+      }
     }
   } catch (error) {
-    console.log(error);
+    clientError(error);
   }
 }
 
 async function removeCollectionTags(tags) {
-  let removedTags = await client.delete(
-    "/collections/remove_collection_names",
-    {
-      collection_ids: tags,
-    },
-    {
-      params: {
-        selected_account: defaultBfAccount,
-        selected_dataset: defaultBfDataset,
-      },
-    }
-  );
-  return removedTags.data;
+  try {
+    let removedTags = await client.delete(
+      `collections/remove_collection_names?selected_account=${defaultBfAccount}&selected_dataset=${defaultBfDataset}`,
+      {
+        data: { collection: tags },
+      }
+    );
+    return removedTags.data;
+  } catch (error) {
+    clientError(error);
+  }
 }
 
 async function uploadCollectionTags(tags) {
   //tags that will be uploaded
-
-  let uploadedTags = await client.put(
-    "collections/upload_collection_names",
-    {
-      collection_ids: tags,
-    },
-    {
-      params: {
-        selected_account: defaultBfAccount,
-        selected_dataset: defaultBfDataset,
+  try {
+    let uploadedTags = await client.put(
+      "collections/upload_collection_names",
+      {
+        collection: tags,
       },
-    }
-  );
-  return uploadedTags.data;
+      {
+        params: {
+          selected_account: defaultBfAccount,
+          selected_dataset: defaultBfDataset,
+        },
+      }
+    );
+
+    return uploadedTags.data;
+  } catch (error) {
+    clientError(error);
+  }
 }
 
 const removePlaceHolder = (e) => {

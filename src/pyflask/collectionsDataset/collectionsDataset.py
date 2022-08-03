@@ -109,18 +109,12 @@ def remove_collection_names(account, dataset, tags):
     except Exception as e:
         error = "Error: Please select a valid dataset"
         raise Exception(error)
-
-    store = []
-    threads = []
-    nthreads = 8
     
     for tagid in tags:
         result = ps._api._del(f"/datasets/{str(dataset_id)}/collections/{str(tagid)}")
         statusResponses.append(result)
-        print(result)
-        print("uhhh")
 
-    result = dict({"collection_ids": statusResponses})
+    result = dict({"collection": statusResponses})
     return result
 
 def upload_new_names(account, dataset, tags):
@@ -143,8 +137,6 @@ def upload_new_names(account, dataset, tags):
         result = ps._api._post(f"/collections", json=jsonfile)
         statusResponses.append(result)
 
-    result = dict({"collection_ids": statusResponses})
-    print(result)
-    return result
+    return dict({"collection": statusResponses})
 
     

@@ -1354,6 +1354,7 @@ async function getCurrentCollectionTags() {
       },
     });
     let res = result.data;
+    console.log(res);
     for (let i = 0; i < res.length; i++) {
       let name = res[i]["name"];
       let id = res[i]["id"];
@@ -1380,6 +1381,7 @@ async function getAllCollectionTags() {
       params: { selected_account: defaultBfAccount },
     });
     let res = result.data;
+    console.log(res);
     for (let i = 0; i < res.length; i++) {
       let name = res[i]["name"];
       let id = res[i]["id"];

@@ -79,9 +79,9 @@ class uploadCollectionNames(Resource):
     upload_collection_parse = reqparse.RequestParser(bundle_errors=True)
     upload_collection_parse.add_argument('selected_account', type=str, required=True, help="The target account to work with.", location="args")
     upload_collection_parse.add_argument('selected_dataset', type=str, required=True, help="The dataset to update collections", location="args")
-    upload_collection_parse.add_argument('collection_ids', type=list, required=True, help='List of the collection tag ids', location="json")
+    upload_collection_parse.add_argument('collection', type=list, required=True, help='List of the collection tag ids', location="json")
 
-    @api.marshal_with(model_upload_collection_names, False, 200)
+    # @api.marshal_with(model_upload_collection_names, False, 200)
     @api.expect(upload_collection_parse)
     @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns the updated list of updated collection names and ids.")
     def put(self):
@@ -89,15 +89,15 @@ class uploadCollectionNames(Resource):
 
         selected_account = data.get('selected_account')
         selected_dataset = data.get('selected_dataset')
-        collection_tags = data.get('collection_ids')
+        collection_tags = data.get('collection')
 
         try:
-            upload_collection_names(selected_account, selected_dataset, collection_tags)
+            return upload_collection_names(selected_account, selected_dataset, collection_tags)
         except Exception as e:
             api.abort(500, e.args[0])
 
 model_remove_collection_names = api.model('uploadCollection', {
-    'collection_ids': fields.List(fields.String, required=True, description="ID of collection name")
+    'collection': fields.List(fields.String, required=True, description="ID of collection name")
 })
 
 @api.route("/remove_collection_names")
@@ -105,9 +105,9 @@ class removeCollectionNames(Resource):
     parser_remove_collections = reqparse.RequestParser(bundle_errors=True)
     parser_remove_collections.add_argument('selected_account', type=str, required=True, help="The target account to work with.", location="args")
     parser_remove_collections.add_argument('selected_dataset', type=str, required=True, help="The dataset to update collections", location="args")
-    parser_remove_collections.add_argument('collection_ids', type=list, required=True, help="List of collection ids", location="json")
+    parser_remove_collections.add_argument('collection', type=list, required=True, help='List of the collection tag ids', location="json")
 
-    @api.marshal_with(model_remove_collection_names, False, 200)
+    # @api.marshal_with(model_remove_collection_names, False, 200)
     @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'})
     @api.expect(parser_remove_collections)
 
@@ -115,8 +115,9 @@ class removeCollectionNames(Resource):
         data = self.parser_remove_collections.parse_args()
         selected_account = data.get('selected_account')
         selected_dataset = data.get('selected_dataset')
-        collection_ids = data.get('collection_ids')
+        collection_ids = data.get('collection')
 
+        print(collection_ids)
         try:
             return remove_collection_names(selected_account, selected_dataset, collection_ids)
         except Exception as e:
@@ -124,16 +125,16 @@ class removeCollectionNames(Resource):
 
 
 model_new_collection_names = api.model('uploadCollection', {
-    'collection_ids': fields.List(fields.String, required=True, description="ID of collection name")
+    'collection': fields.List(fields.String, required=True, description="ID of collection name")
 })
 @api.route("/upload_new_names")
 class newCollectionNames(Resource):
     parser_new_names = reqparse.RequestParser(bundle_errors=True)
-    parser_new_names.add_argument("selected_account", type=str, required=True, help="The selected account to work with", location="args")
-    parser_new_names.add_argument("selected_dataset", required=True, type=str, help="The selected dataset name", location="args")
-    parser_new_names.add_argument("collection_names", required=True, type=list, help="List of collection names", location="json")
+    parser_new_names.add_argument('selected_account', type=str, required=True, help="The target account to work with.", location="args")
+    parser_new_names.add_argument('selected_dataset', type=str, required=True, help="The dataset to update collections", location="args")
+    parser_new_names.add_argument('collection', type=list, required=True, help='List of the collection tag ids', location="json")
 
-    @api.marshal_with(model_new_collection_names, False, 200)
+    # @api.marshal_with(model_new_collection_names, False, 200)
     @api.doc(description="Method for creating new collection names on Pennsieve", responses={500: 'There was an internal server error', 400: 'Bad request'})
     @api.expect(parser_new_names)
 
@@ -141,7 +142,7 @@ class newCollectionNames(Resource):
         data = self.parser_new_names.parse_args()
         account = data.get('selected_account')
         dataset = data.get('selected-dataset')
-        collection_names = data.get('collection_names')
+        collection_names = data.get('collection')
 
         try:
             return upload_new_names(account, dataset, collection_names)
