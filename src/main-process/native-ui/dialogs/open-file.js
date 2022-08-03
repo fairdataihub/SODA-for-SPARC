@@ -323,6 +323,7 @@ ipcMain.on("open-file-dialog-milestone-doc", async (event) => {
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openFile"],
     filters: [{ name: "DOCX", extensions: ["docx"] }],
+    title: "Select milestone document",
   });
 
   if (files) {
@@ -336,6 +337,7 @@ ipcMain.on("open-file-dialog-milestone-doc-reupload", async (event) => {
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openFile"],
     filters: [{ name: "DOCX", extensions: ["docx"] }],
+    title: "Select the milestone document to reupload",
   });
 
   if (files) {
@@ -351,6 +353,7 @@ ipcMain.on("open-file-dialog-newdataset", async (event) => {
 
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openDirectory"],
+    title: "Select a dataset"
   });
 
   if (files) {
@@ -364,6 +367,7 @@ ipcMain.handle("open-file-dialog-data-deliverables", async (event) => {
   let dddFile = await dialog.showOpenDialog(mainWindow, {
     properties: ["openFile"],
     filters: [{ name: "DOCX", extensions: ["docx"] }],
+    title: "Select a data deliverables document",
   });
 
   if (dddFile) {
@@ -378,6 +382,7 @@ ipcMain.handle("open-file-dialog-submit-dataset", async (event) => {
 
   let datasetDirectory = await dialog.showOpenDialog(mainWindow, {
     properties: ["openDirectory"],
+    title: "Select a dataset"
   });
 
   if (datasetDirectory) {
@@ -395,6 +400,7 @@ ipcMain.handle("open-file-dialog-import-banner-image", async (event) => {
     filters: [
       { name: "Image", extensions: ["jpg", "png", "jpeg", "tiff", "tif"] },
     ],
+    title: "Select a banner image"
   });
 
   if (!files) {
@@ -425,6 +431,7 @@ ipcMain.on("open-folder-dialog-save-metadata", async (event, filename) => {
 
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openDirectory"],
+    title: "Select a directory"
   });
 
   if (files) {
@@ -442,6 +449,7 @@ ipcMain.on("open-folder-dialog-save-submission", async (event, filename) => {
 
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openDirectory"],
+    title: "Select a directory"
   });
 
   if (files) {
@@ -459,6 +467,7 @@ ipcMain.on(
   async (event, filename) => {
     let mainWindow = await dialog.showOpenDialog(mainWindow, {
       properties: ["openDirectory"],
+      title: "Select a directory"
     });
 
     if (files) {
@@ -477,6 +486,7 @@ ipcMain.on("open-folder-dialog-save-subjects", async (event, filename) => {
 
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openDirectory"],
+    title: "Select a directory"
   });
 
   if (files) {
@@ -494,6 +504,7 @@ ipcMain.on("open-folder-dialog-save-samples", async (event, filename) => {
 
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openDirectory"],
+    title: "Select a directory"
   });
 
   if (files) {
@@ -511,6 +522,7 @@ ipcMain.on("open-folder-dialog-save-changes", async (event, filename) => {
 
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openDirectory"],
+    title: "Select a directory"
   });
 
   if (files) {
@@ -528,6 +540,7 @@ ipcMain.on("open-folder-dialog-save-readme", async (event, filename) => {
 
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openDirectory"],
+    title: "Select a directory"
   });
 
   if (files) {
@@ -577,6 +590,7 @@ ipcMain.on("open-folder-dialog-save-DDD", async (event, filename) => {
 
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openDirectory"],
+    title: "Select a directory"
   });
 
   if (files) {
@@ -609,6 +623,7 @@ ipcMain.on("open-files-organize-datasets-dialog", async (event) => {
 
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openFile", "multiSelections"],
+    title: "Import a file(s)"
   });
 
   if (files) {
@@ -624,6 +639,7 @@ ipcMain.on("open-folders-organize-datasets-dialog", async (event) => {
 
   let folders = await dialog.showOpenDialog(mainWindow, {
     properties: ["openDirectory", "multiSelections"],
+    title: "Import a folder"
   });
 
   if (folders) {
@@ -639,6 +655,7 @@ ipcMain.on("open-folder-dialog-save-manifest-local", async (event, arg) => {
   let mainWindow = BrowserWindow.getFocusedWindow();
   const result = await dialog.showOpenDialog(mainWindow, {
     properties: ["openDirectory"],
+    title: "Select folder to save manifest",
   });
 
   mainWindow.webContents.send("selected-manifest-folder", result);
@@ -688,6 +705,7 @@ ipcMain.on("open-file-dialog-log-destination", async () => {
 
   const result = await dialog.showOpenDialog(mainWindow, {
     properties: ["openDirectory"],
+    title: "Select a directory",
   });
 
   mainWindow.webContents.send("selected-log-folder", result);
