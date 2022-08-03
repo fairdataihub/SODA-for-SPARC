@@ -2244,8 +2244,6 @@ async function transitionFreeFormMode(
       $("#bf_list_users_pi").selectpicker("refresh");
     }
   }
-  //TODO: See how transitionFreeFormMode works
-  console.log(ev);
 
   if (ev.getAttribute("data-next") === "div-rename-bf-dataset") {
     let dataset_name = $("#rename_dataset_name").text();
@@ -2254,7 +2252,6 @@ async function transitionFreeFormMode(
 
   // first, handle target or the next div to show
   var target = document.getElementById(ev.getAttribute("data-next"));
-  console.log(target);
   // hide related previous divs
   hidePrevDivs(currentDiv, category);
   // display the target tab (data-next tab)
@@ -2292,7 +2289,6 @@ async function transitionFreeFormMode(
       }
     }, delay);
   } else {
-    console.log(ev.getAttribute("data-next"));
     if (
       $(".bf-dataset-span")
         .html()
@@ -3768,7 +3764,6 @@ $(document).ready(() => {
 
   $(".ui.accordion").accordion();
   $(".content-button").click(function () {
-    console.log("clicked here");
     let section = $(this).data("section");
 
     if (section === "add_edit_bf_dataset_collection") {
