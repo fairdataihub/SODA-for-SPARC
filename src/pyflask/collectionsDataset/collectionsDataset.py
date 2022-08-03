@@ -1,4 +1,5 @@
 from collections import defaultdict
+from flask import abort
 from gevent import monkey
 
 monkey.patch_all()
@@ -64,10 +65,37 @@ def upload_collection_names(account, dataset, tags):
         raise Exception(error)
 
     try:
+        #get dataset and it's id
         myds = get_dataset(ps, dataset)
         dataset_id = myds.id
+        
+        # check if they are the owner/manager of dataset
+        current_user = ps._api._get("/user")
+        first_name_current_user = current_user["firstName"]
+        last_name_current_user = current_user["lastName"]
+        list_dataset_permission = ps._api._get(
+            "/datasets/" + str(dataset_id) + "/collaborators/users"
+        )
+        c = 0
+        for i in range(len(list_dataset_permission)):
+            first_name = list_dataset_permission[i]["firstName"]
+            last_name = list_dataset_permission[i]["lastName"]
+            role = list_dataset_permission[i]["role"]
+
+            if(
+                first_name == first_name_current_user
+                and last_name == last_name_current_user
+            ):
+                if role not in ["owner", "manager"]:
+                    abort(403, "You must be the dataset owner or manager to add/remove from a collection")
+                else:
+                    c += 1
+
+        if c == 0:
+            abort(403, "You must be the dataset owner or manager to add/remove from a collection")
+
     except Exception as e:
-        error = "Error: Please select a valid Pennsieve dataset"
+        error = "Error: Please select a valid dataset"
         raise Exception(error)
 
     store = []
@@ -101,8 +129,35 @@ def remove_collection_names(account, dataset, tags):
         raise Exception(error)
 
     try:
+        #get dataset and it's id
         myds = get_dataset(ps, dataset)
         dataset_id = myds.id
+
+        # check if they are the owner/manager of dataset
+        current_user = ps._api._get("/user")
+        first_name_current_user = current_user["firstName"]
+        last_name_current_user = current_user["lastName"]
+        list_dataset_permission = ps._api._get(
+            "/datasets/" + str(dataset_id) + "/collaborators/users"
+        )
+        c = 0
+        for i in range(len(list_dataset_permission)):
+            first_name = list_dataset_permission[i]["firstName"]
+            last_name = list_dataset_permission[i]["lastName"]
+            role = list_dataset_permission[i]["role"]
+
+            if(
+                first_name == first_name_current_user
+                and last_name == last_name_current_user
+            ):
+                if role not in ["owner", "manager"]:
+                    abort(403, "You must be the dataset owner or manager to add/remove from a collection")
+                else:
+                    c += 1
+
+        if c == 0:
+            abort(403, "You must be the dataset owner or manager to add/remove from a collection")
+
     except Exception as e:
         error = "Error: Please select a valid dataset"
         raise Exception(error)
@@ -127,6 +182,40 @@ def upload_new_names(account, dataset, tags):
         ps = get_authenticated_ps(account)
     except Exception as e:
         error = "Error: Please select a valid account"
+        raise Exception(error)
+
+    try:
+        #get dataset and it's id
+        myds = get_dataset(ps, dataset)
+        dataset_id = myds.id
+        
+        # check if they are the owner/manager of dataset
+        current_user = ps._api._get("/user")
+        first_name_current_user = current_user["firstName"]
+        last_name_current_user = current_user["lastName"]
+        list_dataset_permission = ps._api._get(
+            "/datasets/" + str(dataset_id) + "/collaborators/users"
+        )
+        c = 0
+        for i in range(len(list_dataset_permission)):
+            first_name = list_dataset_permission[i]["firstName"]
+            last_name = list_dataset_permission[i]["lastName"]
+            role = list_dataset_permission[i]["role"]
+
+            if(
+                first_name == first_name_current_user
+                and last_name == last_name_current_user
+            ):
+                if role not in ["owner", "manager"]:
+                    abort(403, "You must be the dataset owner or manager to add/remove from a collection")
+                else:
+                    c += 1
+
+        if c == 0:
+            abort(403, "You must be the dataset owner or manager to add/remove from a collection")
+
+    except Exception as e:
+        error = "Error: Please select a valid dataset"
         raise Exception(error)
 
     for tag in tags:
