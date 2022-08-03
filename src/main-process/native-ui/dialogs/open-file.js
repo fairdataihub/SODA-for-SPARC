@@ -641,7 +641,7 @@ ipcMain.on("open-folder-dialog-save-manifest-local", async (event, arg) => {
     properties: ["openDirectory"],
   });
 
-  mainWindow.webContents.send("selected-manifest-folder", result.filePaths);
+  mainWindow.webContents.send("selected-manifest-folder", result);
 });
 
 /*
