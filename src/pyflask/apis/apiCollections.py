@@ -83,7 +83,7 @@ class uploadCollectionNames(Resource):
 
     # @api.marshal_with(model_upload_collection_names, False, 200)
     @api.expect(upload_collection_parse)
-    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns the updated list of updated collection names and ids.")
+    @api.doc(responses={200: 'Success',500: 'There was an internal server error', 400: 'Bad request'}, description="Returns the updated list of updated collection names and ids.")
     def put(self):
         data = self.upload_collection_parse.parse_args()
 
@@ -108,7 +108,7 @@ class removeCollectionNames(Resource):
     parser_remove_collections.add_argument('collection', type=list, required=True, help='List of the collection tag ids', location="json")
 
     # @api.marshal_with(model_remove_collection_names, False, 200)
-    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'})
+    @api.doc(responses={200: 'Success', 500: 'There was an internal server error', 400: 'Bad request'})
     @api.expect(parser_remove_collections)
 
     def delete(self):
@@ -135,7 +135,7 @@ class newCollectionNames(Resource):
     parser_new_names.add_argument('collection', type=list, required=True, help='List of the collection tag ids', location="json")
 
     # @api.marshal_with(model_new_collection_names, False, 200)
-    @api.doc(description="Method for creating new collection names on Pennsieve", responses={500: 'There was an internal server error', 400: 'Bad request'})
+    @api.doc(description="Method for creating new collection names on Pennsieve", responses={200: 'Success', 500: 'There was an internal server error', 400: 'Bad request'})
     @api.expect(parser_new_names)
 
     def post(self):
