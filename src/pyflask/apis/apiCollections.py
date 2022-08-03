@@ -1,6 +1,4 @@
 from flask_restx import Resource, reqparse, fields
-from numpy import require
-from pandas import array
 from namespaces import get_namespace, NamespaceEnum
 from collectionsDataset import (
     get_all_collections,

@@ -234,7 +234,6 @@ const addNewDatasetToList = (newDataset) => {
 //upload new collection tags or check if none
 $("#button-bf-collection").click(async () => {
   setTimeout(async () => {
-    let selectedAccount = defaultBfAccount;
     let selectedDataset = defaultBfDataset;
     let newCollectionTags = [];
     let whiteListTags = [];
