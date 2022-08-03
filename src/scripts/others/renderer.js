@@ -3096,8 +3096,8 @@ var cropOptions = {
     let image_height = Math.round(data.height);
 
     formBannerHeight.value = image_height;
-
-    if (image_height < 512 || image_height > 2048) {
+    //if image-height exceeds 2048 then prompt about scaling image down
+    if (image_height < 512) {
       $("#save-banner-image").prop("disabled", true);
       $("#form-banner-height").css("color", "red");
       $("#form-banner-height").css("border", "1px solid red");

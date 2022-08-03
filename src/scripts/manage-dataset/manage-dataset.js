@@ -1637,6 +1637,63 @@ $("#button-import-banner-image").click(() => {
   ipcRenderer.send("open-file-dialog-import-banner-image");
 });
 
+const scaleAndUploadBannerImage = async () => {
+  //call should take in image, resize appropriately and return updated image
+  try {
+    let ps_scale_banner = await client.put(
+      `/manage_datasets/scale_banner_image`,
+      {
+        input_banner_image_path: imagePath,
+      },
+      {
+        params: {
+          selected_account: selectedBfAccount,
+          selected_dataset: selectedBfDataset,
+        },
+      }
+    );
+    let res = ps_scale_banner.data.message; //should be the scaled image (jpg, png)
+    //use result to then upload image
+    try {
+      let ps_upload_banner = await client.put(
+        `/manage_datasets/bf_banner_image`,
+        {
+          
+        },
+        {
+          params: {
+          
+          }
+        }
+      )
+    } catch(error) {
+
+    }
+
+
+
+    $("#para-dataset-banner-image-status").html(res);
+
+    showCurrentBannerImage();
+
+    $("#edit_banner_image_modal").modal("hide");
+
+    //add success toast here
+    // create a success notyf for api version check
+    notyf.open({
+      message: "Banner image uploaded",
+      type: "success",
+    });
+
+  } catch (error) {
+    clientError(error);
+    let emessage = userErrorMessage(error);
+    $("#para-dataset-banner-image-status").html(
+      "<span style='color: red;'> " + emessage + "</span>"
+    );
+  }
+}
+
 const uploadBannerImage = async () => {
   $("#para-dataset-banner-image-status").html("Please wait...");
   //Save cropped image locally and check size
@@ -1743,6 +1800,7 @@ const uploadBannerImage = async () => {
 };
 
 $("#save-banner-image").click((event) => {
+  //save button for banner image
   $("#para-dataset-banner-image-status").html("");
   if (bfViewImportedImage.src.length > 0) {
     if (formBannerHeight.value > 511) {
@@ -1763,6 +1821,7 @@ $("#save-banner-image").click((event) => {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
       }).then((result) => {
+        //then check if height is more than 2048 and handle accordingly
         if (formBannerHeight.value < 1024) {
           Swal.fire({
             icon: "warning",
@@ -1785,7 +1844,34 @@ $("#save-banner-image").click((event) => {
               uploadBannerImage();
             }
           });
-        } else {
+        } else if (formBannerHeight.value > 2048) {
+          console.log("image is bigger than standard so will be needing to scale");
+          Swal.fire({
+            icon: "warning",
+            text: `Your cropped image is ${formBannerHeight.value} px and is bigger than the 2048px standard. Would you like to scale this image down to fit the entire cropped image?`,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            showCancelButton: true,
+            focusCancel: true,
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
+            reverseButtons: reverseSwalButtons,
+            showClass: {
+              popup: "animate__animated animate__zoomIn animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__zoomOut animate__faster",
+            },
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // uploadBannerImage();
+              console.log("handle here");
+              scaleAndUploadBannerImage()
+            }
+          });
+
+        }
+        else {
           uploadBannerImage();
         }
       });
