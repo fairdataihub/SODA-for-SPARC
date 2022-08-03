@@ -223,7 +223,7 @@ async function helpMilestoneSubmission(curationMode) {
               {
                 "Description of data":
                   "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
-                "Expected date of completion": "NA",
+                "Expected date of completion": "N/A",
               },
             ];
             console.log(guidedMilestoneData);

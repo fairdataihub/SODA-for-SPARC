@@ -2379,9 +2379,9 @@ const setActiveSubPage = (pageIdToActivate) => {
       }
 
       if (uniqueCompletionDates.length > 1) {
-        //filter value 'NA' from uniqueCompletionDates
+        //filter value 'N/A' from uniqueCompletionDates
         const filteredUniqueCompletionDates = uniqueCompletionDates.filter(
-          (date) => date !== "NA"
+          (date) => date !== "N/A"
         );
 
         //create a radio button for each unique date
@@ -2475,7 +2475,7 @@ const setActiveSubPage = (pageIdToActivate) => {
   pageElementToActivate.classList.remove("hidden");
   const pageElementSiblings = pageElementToActivate.parentElement.children;
   console.log(pageElementSiblings);
-  //filter pageelementSiblings to only contain elements with class "sub-page"
+  //filter pageElementSiblings to only contain elements with class "sub-page"
   const pageElementSiblingsToHide = Array.from(pageElementSiblings).filter(
     (pageElementSibling) => {
       return (
@@ -2501,6 +2501,7 @@ const setActiveSubPage = (pageIdToActivate) => {
       siblingCapsule.classList.remove("active");
     }
   }
+  smoothScrollToElement(pageCapsuleToActivate);
 };
 
 const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
@@ -3700,11 +3701,7 @@ const generateProtocolField = (protocolUrl, protocolDescription) => {
         placeholder="Enter protocol description here"
         style="height: 7.5em; padding-bottom: 20px"
         onkeyup="validateInput($(this))"
-      >${
-        protocolDescription
-          ? protocolDescription.trim()
-          : "The protocol used to generate this dataset"
-      }</textarea
+      ></textarea
       >
       <p class="guided--text-input-instructions mb-0">
         Enter a description of the protocol used to generate your dataset.
