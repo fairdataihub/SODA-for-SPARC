@@ -8227,10 +8227,22 @@ $(document).ready(() => {
           icon: "success",
           confirmButtonText: "OK",
         });
-        //Exit back to home page
-        traverseToTab("guided-dataset-starting-point-tab");
-        hideSubNavAndShowMainNav("back");
-        $("#guided-button-dataset-intro-back").click();
+        guidedUnLockSideBar();
+        const guidedIntroPage = document.getElementById("guided-intro-page");
+        const guidedDatasetNameSubtitlePage = document.getElementById(
+          "guided-new-dataset-info"
+        );
+
+        if (!guidedIntroPage.classList.contains("hidden")) {
+          //click past the intro page
+          $("#guided-button-dataset-intro-back").click();
+        } else if (
+          !guidedDatasetNameSubtitlePage.classList.contains("hidden")
+        ) {
+          //click past the dataset name/subtitle page and intro page
+          $("#guided-button-dataset-intro-back").click();
+          $("#guided-button-dataset-intro-back").click();
+        }
       }
     };
     // Progress tracking function for main curate
