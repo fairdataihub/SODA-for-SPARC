@@ -7,8 +7,10 @@ const hasConnectedAccountWithPennsieve = () => {
 
   // get the path to home directory
   const homeDir = require("os").homedir();
+  console.log(homeDir);
   const path = require("path");
   const configFilePath = path.join(homeDir, ".pennsieve", "config.ini");
+  console.log(configFilePath);
 
   // parse the config file
   let config = ini.parse(require("fs").readFileSync(configFilePath, "utf-8"));

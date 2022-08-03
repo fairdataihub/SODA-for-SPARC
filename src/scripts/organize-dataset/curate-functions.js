@@ -167,7 +167,6 @@ const metadataFileExtensionObject = {
   README: [".txt"],
   CHANGES: [".txt"],
   code_description: [".xlsx"],
-  code_parameters: [".xlsx"],
   inputs_metadata: [".xlsx"],
   outputs_metadata: [".xlsx"],
 };
@@ -1151,7 +1150,17 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
               $("#para-continue-bf-dataset-getting-started").text("");
 
               $("#guided-bf-account").html(key_name);
+              $("#guided-pennsive-intro-bf-account").html(key_name);
+              $("#guided-bf-dataset").html("None");
               $("#guided-account-details").html(result);
+              $("#guided-pennsive-intro-account-details").html(result);
+
+              //If user logged in from guided mode Pennsieve intro button, reset the page
+              //and have username confirm or change account
+              if (ev.getAttribute("id") == "guided-button-pennsieve-log-in") {
+                traverseToTab("guided-pennsieve-intro-tab");
+                scrollToBottomOfGuidedBody();
+              }
 
               $("#current_curation_team_status").text("None");
               $("#curation-team-share-btn").hide();

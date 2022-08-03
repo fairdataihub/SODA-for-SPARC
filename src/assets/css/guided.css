@@ -785,7 +785,7 @@ h1.guided--text-sub-step {
 }
 .guided--help-text {
   font-size: 1.2rem;
-  max-width: 900px;
+  max-width: 800px;
   text-align: justify;
 }
 .guided--help-text.small {

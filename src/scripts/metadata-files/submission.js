@@ -251,6 +251,9 @@ async function helpMilestoneSubmission(curationMode) {
           });
         }
       });
+    } else {
+      if (curationMode === "guided") {
+      }
     }
   });
 }

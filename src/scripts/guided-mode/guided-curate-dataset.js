@@ -52,12 +52,13 @@ guidedUnLockSideBar = () => {
 };
 
 const guidedSaveAndExit = async (exitPoint) => {
-  if (exitPoint === "main" || exitPoint === "sub") {
-    const { value: switchToFreeFormModeFromGuided } = await Swal.fire({
+  if (exitPoint === "main-nav" || exitPoint === "sub-nav") {
+    const { value: returnToGuidedHomeScreen } = await Swal.fire({
       title: "Are you sure?",
-      text: `Transitioning from guided mode to free form mode will cause you to lose
-          the progress you have made on the current page. You will still be able to continue
-          curating your current dataset by selecting its card on the guided mode homepage.`,
+      text: `Exiting guided mode will discard any changes you have made on the
+      current page. You will be taken back to the homescreen, where you will be able
+      to continue the current dataset you are curating which will be located under datasets
+      in progress.`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -66,7 +67,7 @@ const guidedSaveAndExit = async (exitPoint) => {
       heightAuto: false,
       backDrop: "rgba(0,0,0,0.4)",
     });
-    if (switchToFreeFormModeFromGuided) {
+    if (returnToGuidedHomeScreen) {
       guidedUnLockSideBar();
       saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       traverseToTab("guided-dataset-starting-point-tab");
@@ -75,7 +76,7 @@ const guidedSaveAndExit = async (exitPoint) => {
       $("#guided-button-dataset-intro-back").click();
     }
   } else if (exitPoint === "intro") {
-    const { value: switchToFreeFormModeFromGuided } = await Swal.fire({
+    const { value: returnToGuidedHomeScreen } = await Swal.fire({
       title: "Are you sure?",
       text: `Transitioning from guided mode to free form mode will cause you to lose
         the progress you have made on the current page. You will still be able to continue
@@ -88,7 +89,7 @@ const guidedSaveAndExit = async (exitPoint) => {
       heightAuto: false,
       backDrop: "rgba(0,0,0,0.4)",
     });
-    if (switchToFreeFormModeFromGuided) {
+    if (returnToGuidedHomeScreen) {
       guidedUnLockSideBar();
       const guidedIntroPage = document.getElementById("guided-intro-page");
       const guidedDatasetNameSubtitlePage = document.getElementById(
@@ -1564,6 +1565,47 @@ const traverseToTab = (targetPageID) => {
     if (targetPageID === "guided-samples-folder-tab") {
       renderSamplesTables();
     }
+    if (targetPageID === "guided-pennsieve-intro-tab") {
+      const confirmPennsieveAccountDiv = document.getElementById(
+        "guided-confirm-pennsieve-account"
+      );
+      const selectPennsieveAccountDiv = document.getElementById(
+        "guided-select-pennsieve-account"
+      );
+      if (!defaultBfAccount) {
+        confirmPennsieveAccountDiv.classList.add("hidden");
+        selectPennsieveAccountDiv.classList.remove("hidden");
+      } else {
+        confirmPennsieveAccountDiv.classList.remove("hidden");
+        selectPennsieveAccountDiv.classList.add("hidden");
+
+        const pennsieveIntroText = document.getElementById(
+          "guided-pennsive-intro-bf-account"
+        );
+        const pennsieveIntroAccountDetailsText = document.getElementById(
+          "guided-pennsive-intro-account-details"
+        );
+        pennsieveIntroText.innerHTML = defaultBfAccount;
+        (async () => {
+          try {
+            let bf_account_details_req = await client.get(
+              `/manage_datasets/bf_account_details`,
+              {
+                params: {
+                  selected_account: defaultBfAccount,
+                },
+              }
+            );
+            let accountDetailsRes = bf_account_details_req.data.account_details;
+            pennsieveIntroAccountDetailsText.innerHTML = accountDetailsRes;
+          } catch (error) {
+            currentAccountDetailsText.innerHTML =
+              "Error loading account details";
+            console.log(error);
+          }
+        })();
+      }
+    }
     if (targetPageID === "guided-banner-image-tab") {
       if (sodaJSONObj["digital-metadata"]["banner-image-path"]) {
         guidedShowBannerImagePreview(
@@ -1643,7 +1685,6 @@ const traverseToTab = (targetPageID) => {
       }
     }
     if (targetPageID === "guided-dataset-generate-location-tab") {
-      console.log("bazinga");
       const currentAccountText = document.getElementById("guided-bf-account");
       const currentAccountDetailsText = document.getElementById(
         "guided-account-details"
@@ -2502,7 +2543,6 @@ const setActiveSubPage = (pageIdToActivate) => {
       siblingCapsule.classList.remove("active");
     }
   }
-  smoothScrollToElement(pageCapsuleToActivate);
 };
 
 const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
@@ -3702,7 +3742,7 @@ const generateProtocolField = (protocolUrl, protocolDescription) => {
         placeholder="Enter protocol description here"
         style="height: 7.5em; padding-bottom: 20px"
         onkeyup="validateInput($(this))"
-      ></textarea
+      >${protocolDescription ? protocolDescription.trim() : ""}</textarea
       >
       <p class="guided--text-input-instructions mb-0">
         Enter a description of the protocol used to generate your dataset.
@@ -6569,6 +6609,13 @@ $(document).ready(() => {
 
     notSelectedButton.removeClass("selected");
     notSelectedButton.addClass("not-selected basic");
+
+    //If button has prevent-radio-handler data attribute, other buttons, will be deselected
+    //but all other radio button functions will be halted
+    if (selectedButton.data("prevent-radio-handler") === true) {
+      return;
+    }
+
     selectedButton.removeClass("not-selected basic");
     selectedButton.addClass("selected");
 
@@ -8976,6 +9023,25 @@ $(document).ready(() => {
           });
           throw errorArray;
         }*/
+      }
+      if (pageBeingLeftID === "guided-pennsieve-intro-tab") {
+        const confirmAccountbutton = document.getElementById(
+          "guided-button-add-permissions"
+        );
+        if (!confirmAccountbutton.classList.contains("selected")) {
+          if (!defaultBfAccount) {
+            errorArray.push({
+              type: "notyf",
+              message: "Please sign in to Pennsieve before continuing",
+            });
+          } else {
+            errorArray.push({
+              type: "notyf",
+              message: "Please confirm your account before continuing",
+            });
+            throw errorArray;
+          }
+        }
       }
       if (pageBeingLeftID === "guided-banner-image-tab") {
         if (sodaJSONObj["digital-metadata"]["banner-image-path"] == undefined) {
