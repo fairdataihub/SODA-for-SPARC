@@ -9127,7 +9127,7 @@ $(document).ready(() => {
       }
       if (pageBeingLeftID === "guided-pennsieve-intro-tab") {
         const confirmAccountbutton = document.getElementById(
-          "guided-button-add-permissions"
+          "guided-confirm-pennsieve-account-button"
         );
         if (!confirmAccountbutton.classList.contains("selected")) {
           if (!defaultBfAccount) {

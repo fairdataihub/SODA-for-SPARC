@@ -1715,28 +1715,11 @@
             <div class="guided--section">
               <h1 class="guided--text-sub-step">Submission metadata</h1>
               <p class="guided--help-text">
-                The submission metadata file contains information relevant to
-                internal SPARC bookkeeping, relating milestones negotiated with
-                the NIH to the contents of the submitted dataset.
-              </p>
-            </div>
-            <p class="guided--help-text">
-              All SPARC datasets must include a submission.xlsx metadata file.
-              Provide below the information required in that metadata file and
-              SODA will automatically create and include the submission.xslx
-              metadata file in your dataset when it is generated during the last
-              step.
-            </p>
-            <div
-              class="guided--section"
-              id="guided-section-div-data-deliverables"
-            >
-              <p>
                 The submission file requires information regarding the milestone
                 associated with your dataset. This information should match
                 exactly with the Data Deliverables Document agreed between the
-                SPARC and the award PI. You can find out more about the Data
-                Deliverables Document and how to obtain it
+                SPARC and the award PI.<br /><br />You can find out more about
+                the Data Deliverables Document and how to obtain it
                 <a
                   href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-your-data-deliverables-document"
                   >here</a
@@ -1744,6 +1727,12 @@
                 easily specifying the milestone and associate information for
                 your dataset.
               </p>
+            </div>
+
+            <div
+              class="guided--section"
+              id="guided-section-div-data-deliverables"
+            >
               <h2 class="guided--text-sub-step">
                 Would you like to import your Data Derivables Document?
               </h2>
@@ -3696,9 +3685,7 @@
           </div>
           <div id="guided-pennsieve-intro-tab" class="guided--panel hidden">
             <div class="guided--section">
-              <h1 class="guided--text-sub-step" style="margin-bottom: 5px">
-                Pennsieve metadata addition
-              </h1>
+              <h1 class="guided--text-sub-step">Pennsieve metadata addition</h1>
               <p class="guided--help-text">
                 All SPARC datasets must be uploaded on Pennsieve, a free, open
                 source data management platform supported by the SPARC program.
@@ -3784,7 +3771,7 @@
                 <div class="guided--radio-button-container mb-sm">
                   <button
                     class="ui positive basic button guided--radio-button"
-                    id="guided-button-add-permissions"
+                    id="guided-confirm-pennsieve-account-button"
                     data-next-element="guided-add-permissions"
                     style="width: 210px"
                   >
@@ -3792,7 +3779,6 @@
                   </button>
                   <button
                     class="ui negative basic button guided--radio-button"
-                    id="guided-button-no-permissions"
                     data-prevent-radio-handler="true"
                     onclick="openDropdownPrompt(this, 'bf')"
                     style="width: 210px"
