@@ -1611,6 +1611,10 @@ const traverseToTab = (targetPageID) => {
         guidedShowBannerImagePreview(
           sodaJSONObj["digital-metadata"]["banner-image-path"]
         );
+      } else {
+        //reset the banner image page
+        $("#guided-button-add-banner-image").html("Add banner image");
+        $("#guided-banner-image-preview-container").hide();
       }
     }
     if (targetPageID === "guided-designate-permissions-tab") {
@@ -5733,6 +5737,7 @@ const guidedShowBannerImagePreview = (imagePath) => {
   `;
   bannerImagePreviewelement.innerHTML = guidedBannerImageElement;
   $("#guided-banner-image-preview-container").show();
+  $("#guided-button-add-banner-image").html("Edit banner image");
 };
 const setGuidedBannerImage = (croppedImagePath) => {
   sodaJSONObj["digital-metadata"]["banner-image-path"] = croppedImagePath;

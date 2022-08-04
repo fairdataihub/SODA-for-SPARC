@@ -141,14 +141,33 @@
             style="flex-grow: 1"
           >
             <div class="guided--section">
-              <h1 class="guided--text-sub-step">
-                This is where I would put my intro page... IF I HAD ONE
-              </h1>
+              <h1 class="guided--text-sub-step">Welcome to guided mode!</h1>
+              <p class="guided--help-text">
+                Guided mode is designed to be the simplest and most efficient
+                method of curating a SPARC dataset. If you're not familiar with
+                SPARC dataset curation standards, no worries! We'll walk you
+                through the SPARC curation process step-by-step using simple
+                questions about the characteristics of your dataset.
+              </p>
+              <p class="guided--help-text">
+                Guided mode is broken down into four parts, as depicted below.
+              </p>
             </div>
             <div class="guided--section">
-              <h1 class="guided--text-sub-step">
-                This is where I would put my intro page... IF I HAD ONE
-              </h1>
+              <div class="space-between">
+                <div class="guided--container-intro">
+                  left
+                <div class="guided--container-intro">
+                  <h2 class="guided--text-sub-step">1. Dataset structuring</h2>
+                  <p class="guided--help-text">
+                    Specify your dataset's subjects and samples, and we'll take
+                    care of structuring your dataset. <br /><br />
+                    Once your dataset is structured, we will walk you through
+                    each folder and let you know what data belongs in each
+                    folder.
+                  </p>
+                </div>
+              </div>
             </div>
             <div class="guided--section">
               <h1 class="guided--text-sub-step">
@@ -5296,7 +5315,7 @@
             <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
           </button>
         </div>
-        <div class="guided--container-footer-buttons flex-between">
+        <div class="guided--container-footer-buttons flex-start">
           <button
             class="ui positive button guided--button-footer"
             id="guided-button-dataset-intro-next"
@@ -5306,14 +5325,6 @@
             "
           >
             Next
-          </button>
-          <button
-            class="ui secondary basic button guided--button-footer guided--button-basic"
-            style="width: 150px !important"
-            onclick="guidedSaveAndExit('intro')"
-          >
-            <i class="far fa-save" style="margin-right: 10px"></i>
-            Save and Exit
           </button>
         </div>
       </footer>

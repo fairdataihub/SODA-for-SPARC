@@ -242,6 +242,14 @@
   flex-direction: row;
   width: 100%;
 }
+
+.guided--container-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  width: 50%;
+}
 .guided--subsection-progress-status {
   display: flex;
   flex: 1;
