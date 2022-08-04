@@ -78,7 +78,7 @@ $("#bf-new-dataset-name").on("keyup", () => {
           "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
         icon: "error",
         backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false
+        heightAuto: false,
       });
 
       $("#button-create-bf-new-dataset").hide();
@@ -100,7 +100,7 @@ $("#bf-rename-dataset-name").on("keyup", () => {
           "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
-        icon: "error"
+        icon: "error",
       });
 
       $("#button-rename-dataset").hide();
@@ -133,19 +133,19 @@ $("#button-create-bf-new-dataset").click(async () => {
       timerProgressBar: false,
       didOpen: () => {
         Swal.showLoading();
-      }
+      },
     });
 
     try {
       let bf_new_dataset = await client.post(
         `/manage_datasets/datasets`,
         {
-          input_dataset_name: bfNewDatasetName
+          input_dataset_name: bfNewDatasetName,
         },
         {
           params: {
-            selected_account: selectedbfaccount
-          }
+            selected_account: selectedbfaccount,
+          },
         }
       );
       let res = bf_new_dataset.data.id;
@@ -158,7 +158,7 @@ $("#button-create-bf-new-dataset").click(async () => {
         backdrop: "rgba(0,0,0, 0.4)",
         didOpen: () => {
           Swal.hideLoading();
-        }
+        },
       });
 
       log.info(`Created dataset successfully`);
@@ -211,7 +211,7 @@ $("#button-create-bf-new-dataset").click(async () => {
         showCancelButton: false,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
-        icon: "error"
+        icon: "error",
       });
 
       $("#button-create-bf-new-dataset").prop("disabled", false);
@@ -249,7 +249,7 @@ $("#button-rename-dataset").click(async () => {
       timerProgressBar: false,
       didOpen: () => {
         Swal.showLoading();
-      }
+      },
     });
 
     log.info(
@@ -264,7 +264,7 @@ $("#button-rename-dataset").click(async () => {
         icon: "error",
         showConfirmButton: true,
         heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)"
+        backdrop: "rgba(0,0,0, 0.4)",
       });
     } else {
       $("#button-rename-dataset").prop("disabled", true);
@@ -273,13 +273,13 @@ $("#button-rename-dataset").click(async () => {
         await client.put(
           `/manage_datasets/bf_rename_dataset`,
           {
-            input_new_name: renamedDatasetName
+            input_new_name: renamedDatasetName,
           },
           {
             params: {
               selected_account: selectedbfaccount,
-              selected_dataset: currentDatasetName
-            }
+              selected_dataset: currentDatasetName,
+            },
           }
         );
       } catch (error) {
@@ -290,7 +290,7 @@ $("#button-rename-dataset").click(async () => {
           icon: "error",
           showConfirmButton: true,
           heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)"
+          backdrop: "rgba(0,0,0, 0.4)",
         });
         $("#button-rename-dataset").prop("disabled", false);
 
@@ -320,7 +320,7 @@ $("#button-rename-dataset").click(async () => {
         backdrop: "rgba(0,0,0, 0.4)",
         didOpen: () => {
           Swal.hideLoading();
-        }
+        },
       });
       $("#button-rename-dataset").prop("disabled", false);
 
@@ -368,17 +368,17 @@ $("#button-add-permission-pi").click(async () => {
     backdrop: "rgba(0,0,0, 0.4)",
     reverseButtons: reverseSwalButtons,
     showClass: {
-      popup: "animate__animated animate__zoomIn animate__faster"
+      popup: "animate__animated animate__zoomIn animate__faster",
     },
     hideClass: {
-      popup: "animate__animated animate__zoomOut animate__faster"
+      popup: "animate__animated animate__zoomOut animate__faster",
     },
     preConfirm: () => {
       let userVal = document.getElementById("bf_list_users_pi").value;
       if (userVal === "Select PI") {
         Swal.showValidationMessage("Please choose a valid user");
       }
-    }
+    },
   }).then(async (result) => {
     if (result.isConfirmed) {
       log.info("Changing PI Owner of datset");
@@ -394,7 +394,7 @@ $("#button-add-permission-pi").click(async () => {
         timerProgressBar: false,
         didOpen: () => {
           Swal.showLoading();
-        }
+        },
       });
 
       let selectedBfAccount = defaultBfAccount;
@@ -406,15 +406,15 @@ $("#button-add-permission-pi").click(async () => {
         let bf_change_owner = await client.patch(
           `/manage_datasets/bf_dataset_permissions`,
           {
-            input_role: selectedRole
+            input_role: selectedRole,
           },
           {
             params: {
               selected_account: selectedBfAccount,
               selected_dataset: selectedBfDataset,
               scope: "user",
-              name: selectedUser
-            }
+              name: selectedUser,
+            },
           }
         );
 
@@ -440,7 +440,7 @@ $("#button-add-permission-pi").click(async () => {
           icon: "success",
           showConfirmButton: true,
           heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)"
+          backdrop: "rgba(0,0,0, 0.4)",
         });
       } catch (error) {
         clientError(error);
@@ -458,7 +458,7 @@ $("#button-add-permission-pi").click(async () => {
           icon: "error",
           showConfirmButton: true,
           heightAuto: false,
-          backdrop: "rgba(0, 0, 0, 0.4)"
+          backdrop: "rgba(0, 0, 0, 0.4)",
         });
       }
     }
@@ -539,15 +539,15 @@ const addPermissionUser = async (
     bf_add_permission = await client.patch(
       `/manage_datasets/bf_dataset_permissions`,
       {
-        input_role: selectedRole
+        input_role: selectedRole,
       },
       {
         params: {
           selected_account: selectedBfAccount,
           selected_dataset: selectedBfDataset,
           scope: "user",
-          name: selectedUser
-        }
+          name: selectedUser,
+        },
       }
     );
   } catch (error) {
@@ -559,7 +559,7 @@ const addPermissionUser = async (
       icon: "error",
       showConfirmButton: true,
       heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)"
+      backdrop: "rgba(0,0,0, 0.4)",
     });
 
     logGeneralOperationsForAnalytics(
@@ -580,7 +580,7 @@ const addPermissionUser = async (
     icon: "success",
     showConfirmButton: true,
     heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)"
+    backdrop: "rgba(0,0,0, 0.4)",
   });
 
   log.info(
@@ -600,8 +600,8 @@ const addPermissionUser = async (
     // refresh dataset lists with filter
     let get_username = await client.get(`/manage_datasets/account/username`, {
       params: {
-        selected_account: selectedBfAccount
-      }
+        selected_account: selectedBfAccount,
+      },
     });
     let { username } = get_username.data;
 
@@ -641,7 +641,7 @@ $("#button-add-permission-user").click(() => {
       timerProgressBar: false,
       didOpen: () => {
         Swal.showLoading();
-      }
+      },
     });
 
     let selectedBfAccount = defaultBfAccount;
@@ -674,7 +674,7 @@ $("#button-add-permission-team").click(async () => {
       timerProgressBar: false,
       didOpen: () => {
         Swal.showLoading();
-      }
+      },
     });
 
     let selectedBfAccount = defaultBfAccount;
@@ -686,15 +686,15 @@ $("#button-add-permission-team").click(async () => {
       let bf_add_team_permission = await client.patch(
         `/manage_datasets/bf_dataset_permissions`,
         {
-          input_role: selectedRole
+          input_role: selectedRole,
         },
         {
           params: {
             selected_account: selectedBfAccount,
             selected_dataset: selectedBfDataset,
             scope: "team",
-            name: selectedTeam
-          }
+            name: selectedTeam,
+          },
         }
       );
 
@@ -713,7 +713,7 @@ $("#button-add-permission-team").click(async () => {
         icon: "success",
         showConfirmButton: true,
         heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)"
+        backdrop: "rgba(0,0,0, 0.4)",
       });
 
       showCurrentPermission();
@@ -727,7 +727,7 @@ $("#button-add-permission-team").click(async () => {
         icon: "error",
         showConfirmButton: true,
         heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)"
+        backdrop: "rgba(0,0,0, 0.4)",
       });
 
       logGeneralOperationsForAnalytics(
@@ -768,7 +768,7 @@ $("#button-add-subtitle").click(async () => {
       timerProgressBar: false,
       didOpen: () => {
         Swal.showLoading();
-      }
+      },
     });
 
     let selectedBfAccount = defaultBfAccount;
@@ -782,13 +782,13 @@ $("#button-add-subtitle").click(async () => {
       await client.put(
         `/manage_datasets/bf_dataset_subtitle`,
         {
-          input_subtitle: inputSubtitle
+          input_subtitle: inputSubtitle,
         },
         {
           params: {
             selected_account: selectedBfAccount,
-            selected_dataset: selectedBfDataset
-          }
+            selected_dataset: selectedBfDataset,
+          },
         }
       );
 
@@ -801,7 +801,7 @@ $("#button-add-subtitle").click(async () => {
         icon: "success",
         showConfirmButton: true,
         heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)"
+        backdrop: "rgba(0,0,0, 0.4)",
       }).then(
         //check if subtitle text is empty and set Add/Edit button appropriately
         !$("#bf-dataset-subtitle").val()
@@ -828,7 +828,7 @@ $("#button-add-subtitle").click(async () => {
         icon: "error",
         showConfirmButton: true,
         heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)"
+        backdrop: "rgba(0,0,0, 0.4)",
       });
 
       $("#ds-description").val("");
@@ -900,7 +900,7 @@ const requiredSections = {
   studyPurpose: "study purpose",
   dataCollection: "data collection",
   primaryConclusion: "primary conclusion",
-  invalidText: "invalid text"
+  invalidText: "invalid text",
 };
 
 // open the first section of the accordion for first time user navigation to the section
@@ -1076,11 +1076,11 @@ $("#button-add-description").click(() => {
         cancelButtonText: "No, I want to edit my description",
         reverseButtons: true,
         showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster"
+          popup: "animate__animated animate__zoomIn animate__faster",
         },
         hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster"
-        }
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
       }).then(async (result) => {
         if (!result.isConfirmed) {
           return;
@@ -1123,7 +1123,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
     timerProgressBar: false,
     didOpen: () => {
       Swal.showLoading();
-    }
+    },
   });
 
   // get the dataset readme
@@ -1138,7 +1138,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
       icon: "error",
       showConfirmButton: true,
       heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)"
+      backdrop: "rgba(0,0,0, 0.4)",
     });
 
     logGeneralOperationsForAnalytics(
@@ -1194,7 +1194,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
       icon: "error",
       showConfirmButton: true,
       heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)"
+      backdrop: "rgba(0,0,0, 0.4)",
     });
 
     ipcRenderer.send(
@@ -1220,7 +1220,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
     icon: "success",
     showConfirmButton: true,
     heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)"
+    backdrop: "rgba(0,0,0, 0.4)",
   }).then(
     //check if subtitle text is empty and set Add/Edit button appropriately
     !$("#ds-description-study-purpose").val() &&
@@ -1242,7 +1242,7 @@ const createParsedReadme = (readme) => {
     "study purpose": "",
     "data collection": "",
     "primary conclusion": "",
-    "invalid text": ""
+    "invalid text": "",
   };
 
   // remove the "Study Purpose" section from the readme file and place its value in the parsed readme
@@ -1465,7 +1465,7 @@ const showDatasetDescription = async () => {
     setTimeout(() => {
       document.getElementById("description_header_label").scrollIntoView({
         behavior: "smooth",
-        block: "center"
+        block: "center",
       });
     }, 5);
 
@@ -1493,7 +1493,7 @@ const showDatasetDescription = async () => {
     setTimeout(() => {
       document.getElementById("description_header_label").scrollIntoView({
         behavior: "smooth",
-        block: "center"
+        block: "center",
       });
     }, 5);
   } catch (error) {
@@ -1514,7 +1514,7 @@ const getBase64 = async (url) => {
   const axios = require("axios");
   return axios
     .get(url, {
-      responseType: "arraybuffer"
+      responseType: "arraybuffer",
     })
     .then((response) =>
       Buffer.from(response.data, "binary").toString("base64")
@@ -1563,7 +1563,7 @@ $("#edit_banner_image_button").click(async () => {
             text: "An error occurred when importing the image. Please try again later.",
             showConfirmButton: "OK",
             backdrop: "rgba(0,0,0, 0.4)",
-            heightAuto: false
+            heightAuto: false,
           });
 
           logGeneralOperationsForAnalytics(
@@ -1583,7 +1583,7 @@ $("#edit_banner_image_button").click(async () => {
           text: "An error occurred when importing the image. Please try again later.",
           showConfirmButton: "OK",
           backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false
+          heightAuto: false,
         });
 
         logGeneralOperationsForAnalytics(
@@ -1603,7 +1603,7 @@ $("#edit_banner_image_button").click(async () => {
         text: "An error occurred when importing the image. Please try again later.",
         showConfirmButton: "OK",
         backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false
+        heightAuto: false,
       });
 
       logGeneralOperationsForAnalytics(
@@ -1642,13 +1642,13 @@ const scaleBannerImage = async (imagePath) => {
     let imageScaled = await client.post(
       `/manage_datasets/scale_image`,
       {
-        image_file_path: imagePath
+        image_file_path: imagePath,
       },
       {
         params: {
           selected_account: defaultBfAccount,
-          selected_dataset: defaultBfDataset
-        }
+          selected_dataset: defaultBfDataset,
+        },
       }
     );
     console.log(imageScaled.data.scaled_image_path);
@@ -1696,13 +1696,13 @@ const uploadBannerImage = async () => {
         let bf_add_banner = await client.put(
           `/manage_datasets/bf_banner_image`,
           {
-            input_banner_image_path: imagePath
+            input_banner_image_path: imagePath,
           },
           {
             params: {
               selected_account: selectedBfAccount,
-              selected_dataset: selectedBfDataset
-            }
+              selected_dataset: selectedBfDataset,
+            },
           }
         );
         let res = bf_add_banner.data.message;
@@ -1742,7 +1742,7 @@ const uploadBannerImage = async () => {
         // create a success notyf for api version check
         notyf.open({
           message: "Banner image uploaded",
-          type: "success"
+          type: "success",
         });
 
         // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
@@ -1769,13 +1769,13 @@ const uploadBannerImage = async () => {
         let uploadBannerImage = await client.put(
           `/manage_datasets/bf_banner_image`,
           {
-            input_banner_image_path: scaledImagePath
+            input_banner_image_path: scaledImagePath,
           },
           {
             params: {
               selected_account: defaultBfAccount,
-              selected_dataset: defaultBfDataset
-            }
+              selected_dataset: defaultBfDataset,
+            },
           }
         );
         let bannerImage = uploadBannerImage.data.message;
@@ -1787,7 +1787,7 @@ const uploadBannerImage = async () => {
 
         notyf.open({
           message: "Banner image uploaded",
-          type: "success"
+          type: "success",
         });
       } catch (error) {
         clientError(error);
@@ -1813,11 +1813,11 @@ $("#save-banner-image").click((event) => {
         cancelButtonText: "No",
         reverseButtons: reverseSwalButtons,
         showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster"
+          popup: "animate__animated animate__zoomIn animate__faster",
         },
         hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster"
-        }
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
       }).then((result) => {
         //then check if height is more than 2048 and handle accordingly
         if (formBannerHeight.value < 1024) {
@@ -1832,11 +1832,11 @@ $("#save-banner-image").click((event) => {
             cancelButtonText: "No",
             reverseButtons: reverseSwalButtons,
             showClass: {
-              popup: "animate__animated animate__zoomIn animate__faster"
+              popup: "animate__animated animate__zoomIn animate__faster",
             },
             hideClass: {
-              popup: "animate__animated animate__zoomOut animate__faster"
-            }
+              popup: "animate__animated animate__zoomOut animate__faster",
+            },
           }).then((result) => {
             if (result.isConfirmed) {
               uploadBannerImage();
@@ -1857,11 +1857,11 @@ $("#save-banner-image").click((event) => {
             cancelButtonText: "No",
             reverseButtons: reverseSwalButtons,
             showClass: {
-              popup: "animate__animated animate__zoomIn animate__faster"
+              popup: "animate__animated animate__zoomIn animate__faster",
             },
             hideClass: {
-              popup: "animate__animated animate__zoomOut animate__faster"
-            }
+              popup: "animate__animated animate__zoomOut animate__faster",
+            },
           }).then((result) => {
             if (result.isConfirmed) {
               // uploadBannerImage();
@@ -1912,14 +1912,14 @@ $(document).ready(() => {
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           showClass: {
-            popup: "animate__animated animate__fadeInDown animate__faster"
+            popup: "animate__animated animate__fadeInDown animate__faster",
           },
           hideClass: {
-            popup: "animate__animated animate__fadeOutUp animate__faster"
+            popup: "animate__animated animate__fadeOutUp animate__faster",
           },
           didOpen: () => {
             Swal.showLoading();
-          }
+          },
         });
 
         await Jimp.read(original_image_path)
@@ -2002,7 +2002,7 @@ $(document).ready(() => {
               text: "Something went wrong",
               confirmButtonText: "OK",
               heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)"
+              backdrop: "rgba(0,0,0, 0.4)",
             });
           });
         if (conversion_success == false) {
@@ -2134,7 +2134,7 @@ $("#button-add-tags").click(async () => {
     timerProgressBar: false,
     didOpen: () => {
       Swal.showLoading();
-    }
+    },
   }).then((result) => {});
 
   // get the current tags from the input inside of the manage_datasets.html file inside of the tags section
@@ -2152,8 +2152,8 @@ $("#button-add-tags").click(async () => {
       { tags },
       {
         params: {
-          selected_account: defaultBfAccount
-        }
+          selected_account: defaultBfAccount,
+        },
       }
     );
   } catch (e) {
@@ -2165,7 +2165,7 @@ $("#button-add-tags").click(async () => {
       text: userErrorMessage(e),
       showConfirmButton: true,
       heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)"
+      backdrop: "rgba(0,0,0, 0.4)",
     });
 
     ipcRenderer.send(
@@ -2184,7 +2184,7 @@ $("#button-add-tags").click(async () => {
     icon: "success",
     showConfirmButton: true,
     heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)"
+    backdrop: "rgba(0,0,0, 0.4)",
   }).then(() => {
     ipcRenderer.send(
       "track-event",
@@ -2235,7 +2235,7 @@ const showCurrentTags = async () => {
     tagsResponse = await client.get(
       `/manage_datasets/datasets/${selectedBfDataset}/tags`,
       {
-        params: { selected_account: selectedBfAccount }
+        params: { selected_account: selectedBfAccount },
       }
     );
   } catch (e) {
@@ -2247,7 +2247,7 @@ const showCurrentTags = async () => {
       text: userErrorMessage(e),
       showConfirmButton: true,
       heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)"
+      backdrop: "rgba(0,0,0, 0.4)",
     });
 
     logGeneralOperationsForAnalytics(
@@ -2295,7 +2295,7 @@ $("#button-add-license").click(async () => {
       timerProgressBar: false,
       didOpen: () => {
         Swal.showLoading();
-      }
+      },
     });
 
     let selectedBfAccount = defaultBfAccount;
@@ -2307,13 +2307,13 @@ $("#button-add-license").click(async () => {
       await client.put(
         `/manage_datasets/bf_license`,
         {
-          input_license: selectedLicense
+          input_license: selectedLicense,
         },
         {
           params: {
             selected_account: selectedBfAccount,
-            selected_dataset: selectedBfDataset
-          }
+            selected_dataset: selectedBfDataset,
+          },
         }
       );
 
@@ -2322,7 +2322,7 @@ $("#button-add-license").click(async () => {
         icon: "success",
         showConfirmButton: true,
         heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)"
+        backdrop: "rgba(0,0,0, 0.4)",
       });
 
       showCurrentLicense();
@@ -2346,7 +2346,7 @@ $("#button-add-license").click(async () => {
         icon: "error",
         showConfirmButton: true,
         heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)"
+        backdrop: "rgba(0,0,0, 0.4)",
       });
 
       ipcRenderer.send(
@@ -2380,8 +2380,8 @@ const showCurrentLicense = async () => {
     let bf_get_license = await client.get(`/manage_datasets/bf_license`, {
       params: {
         selected_account: selectedBfAccount,
-        selected_dataset: selectedBfDataset
-      }
+        selected_dataset: selectedBfDataset,
+      },
     });
     let { license } = bf_get_license.data;
     currentDatasetLicense.innerHTML = license;
@@ -2394,7 +2394,7 @@ const showCurrentLicense = async () => {
         animationData: licenseLottie,
         renderer: "svg",
         loop: true,
-        autoplay: true
+        autoplay: true,
       });
     }
 
@@ -2458,11 +2458,11 @@ $(document).ready(() => {
             cancelButtonText: "Cancel",
             reverseButtons: reverseSwalButtons,
             showClass: {
-              popup: "animate__animated animate__zoomIn animate__faster"
+              popup: "animate__animated animate__zoomIn animate__faster",
             },
             hideClass: {
-              popup: "animate__animated animate__zoomOut animate__faster"
-            }
+              popup: "animate__animated animate__zoomOut animate__faster",
+            },
           }).then((result) => {
             if (result.isConfirmed) {
               $("#button_upload_local_folder_confirm").click();
@@ -2611,14 +2611,14 @@ $("#button-submit-dataset").click(async () => {
       {
         params: {
           selected_account: selectedbfaccount,
-          selected_dataset: selectedbfdataset
-        }
+          selected_dataset: selectedbfdataset,
+        },
       }
     )
     .then(async () => {
       $("#upload_local_dataset_progress_div")[0].scrollIntoView({
         behavior: "smooth",
-        block: "start"
+        block: "start",
       });
 
       log.info("Completed submit function");
@@ -2686,7 +2686,7 @@ $("#button-submit-dataset").click(async () => {
         icon: "error",
         title: "There was an issue uploading your dataset",
         html: emessage,
-        allowOutsideClick: false
+        allowOutsideClick: false,
       }).then((result) => {
         progressClone.remove();
         sparc_logo.style.display = "inline";
@@ -2759,7 +2759,7 @@ $("#button-submit-dataset").click(async () => {
 
       $("#upload_local_dataset_progress_div")[0].scrollIntoView({
         behavior: "smooth",
-        block: "start"
+        block: "start",
       });
 
       $("#button-submit-dataset").prop("disabled", false);
@@ -2773,7 +2773,7 @@ $("#button-submit-dataset").click(async () => {
   function progressfunction() {
     $("#upload_local_dataset_progress_div")[0].scrollIntoView({
       behavior: "smooth",
-      block: "start"
+      block: "start",
     });
 
     client
@@ -2864,11 +2864,11 @@ $("#button-submit-dataset").click(async () => {
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster"
+            popup: "animate__animated animate__zoomIn animate__faster",
           },
           hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster"
-          }
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
         }).then((result) => {
           progressClone.remove();
           sparc_logo.style.display = "inline";
@@ -2891,7 +2891,7 @@ $("#button-submit-dataset").click(async () => {
           organzieDatasetButtonDiv.className = "btn_animated-inside";
           uploadComplete.open({
             type: "success",
-            message: "Upload to Pennsieve completed"
+            message: "Upload to Pennsieve completed",
           });
           dismissStatus(progressClone.id);
           progressClone.remove();
@@ -3062,7 +3062,7 @@ $("#bf_list_dataset_status").on("change", async () => {
       {
         selected_bfaccount: selectedBfAccount,
         selected_bfdataset: selectedBfDataset,
-        selected_status: selectedStatusOption
+        selected_status: selectedStatusOption,
       }
     );
     let res = bf_change_dataset_status.data.message;
@@ -3082,7 +3082,7 @@ $("#bf_list_dataset_status").on("change", async () => {
       icon: "success",
       showConfirmButton: true,
       heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)"
+      backdrop: "rgba(0,0,0, 0.4)",
     });
   } catch (error) {
     clientError(error);
@@ -3102,7 +3102,7 @@ $("#bf_list_dataset_status").on("change", async () => {
         icon: "error",
         showConfirmButton: true,
         heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)"
+        backdrop: "rgba(0,0,0, 0.4)",
       });
 
       $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
@@ -3141,8 +3141,8 @@ async function showCurrentDatasetStatus(callback) {
       {
         params: {
           selected_dataset: selectedBfDataset,
-          selected_account: selectedBfAccount
-        }
+          selected_account: selectedBfAccount,
+        },
       }
     );
     let res = bf_dataset_status.data;
@@ -3195,7 +3195,7 @@ async function showCurrentDatasetStatus(callback) {
       icon: "error",
       showConfirmButton: true,
       heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)"
+      backdrop: "rgba(0,0,0, 0.4)",
     });
 
     logGeneralOperationsForAnalytics(
