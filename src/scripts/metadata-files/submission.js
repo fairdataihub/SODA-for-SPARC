@@ -431,6 +431,7 @@ function onboardingSubmission() {
                 "Click here to import your Data Deliverables document for SODA to automatically retrieve your milestone and completion date.",
             },
           ],
+          dontShowAgain: true,
           exitOnEsc: false,
           exitOnOverlayClick: false,
           disableInteraction: false,

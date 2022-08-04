@@ -2821,6 +2821,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["completed-tabs"] = [];
   sodaJSONObj["last-modified"] = "";
   sodaJSONObj["button-config"] = {};
+  sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = false;
   datasetStructureJSONObj = { folders: {}, files: {} };
 };
 const attachGuidedMethodsToSodaJSONObj = () => {
@@ -5920,7 +5921,90 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
         highLevelFolderName,
         pathSuffix
       );
-      updateFolderStructureUI(samplePageData);
+
+      if (
+        sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] == false
+      ) {
+        $("#items").html(`
+          <div
+            class="single-item ds-selectable"
+            id="guided-sample-data-folder"
+            onmouseover="hoverForFullName(this)"
+            onmouseleave="hideFullName()"
+          >
+            <h1 oncontextmenu="folderContextMenu(this)" class="myFol empty"></h1>
+            <div class="folder_desc">Sample data folder</div>
+          </div>
+          <div
+            class="single-item ds-selectable"
+            id="guided-sample-data-file"
+            onmouseover="hoverForFullName(this)"
+            onmouseleave="hideFullName()"
+          >
+            <h1
+              class="myFile xlsx"
+              oncontextmenu="fileContextMenu(this)"
+              style="margin-bottom: 10px"
+            ></h1>
+            <div class="folder_desc">Sample data file.xlsx</div>
+          </div>
+        `);
+        //right click the second child in #items jqeury
+        introJs()
+          .setOptions({
+            steps: [
+              {
+                element: document.querySelector(
+                  ".primary-selection-aside-item"
+                ),
+                intro:
+                  "To switch the sample you would like to add metadata to, select a different sample from this list.",
+              },
+              {
+                element: document.querySelector("#guided-button-back"),
+                intro:
+                  "To view the folders above the folder you are currently in, click the back button.",
+              },
+              {
+                element: document.querySelector("#guided-new-folder"),
+                intro:
+                  "To Add a new folder to insert data into, click the new folder button.",
+              },
+              {
+                element: document.querySelector("#guided-import-folder"),
+                intro:
+                  "To import data inside a folder on your computer, click the import folder button.",
+              },
+              {
+                element: document.querySelector("#guided-imoprt-file"),
+                intro:
+                  "To import a data file on your computer, click the import new file button.",
+              },
+              {
+                element: document.getElementById("items"),
+                intro: `Folders inside your dataset are represented by the folder icon.<br /><br />
+                  To view the contents of a folder, double click the folder.<br /><br />
+                  Right clicking a folder will bring up a context menu which allows you to rename, move, or delete the folder.`,
+              },
+              {
+                element: document.getElementById("items"),
+                intro: `Files inside your dataset are represented with an icon relative to the file type.<br /><br />
+                  Right clicking a file will bring up a context menu which allows you to rename, move, or delete the file.`,
+              },
+            ],
+            exitOnEsc: false,
+            exitOnOverlayClick: false,
+            disableInteraction: false,
+          })
+          .onbeforeexit(function () {
+            sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = true;
+            //reUpdate the file explorer
+            updateFolderStructureUI(samplePageData);
+          })
+          .start();
+      } else {
+        updateFolderStructureUI(samplePageData);
+      }
     });
     //add hover event that changes the background color to black
     item.addEventListener("mouseover", (e) => {

@@ -80,7 +80,7 @@ async function handleSectionTrigger(event) {
       //TRANSITION FROM FREE-FORM => GUIDED MODE
       let soda_temp = {};
 
-      if (itemsContainer.children.length > 0) {
+      /*if (itemsContainer.children.length > 0) {
         updateJSONObjectProgress();
         soda_temp = sodaJSONObj;
         console.log(soda_temp);
@@ -156,7 +156,7 @@ async function handleSectionTrigger(event) {
           $("#main_tabs_view").click();
           return;
         }
-      }
+      }*/
       //reset organize dataset
       // exitCurate(false);
       organizeDSglobalPath = document.getElementById(

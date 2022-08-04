@@ -803,7 +803,9 @@
             class="guided--panel hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
           >
             <div class="guided--section">
-              <h1 class="guided--text-sub-step">Source data for samples</h1>
+              <h1 class="guided--text-sub-step">
+                Source data for subjects and samples
+              </h1>
               <p class="guided--help-text">
                 Source data refers to unaltered, raw files from an experiment,
                 For example, this may include the “truly” raw k-space data for a
@@ -1027,7 +1029,7 @@
           >
             <div class="guided--section">
               <h1 class="guided--text-sub-step">
-                Specify your dataset's derivative data
+                Derivative data for subjects and samples
               </h1>
               <p class="guided--help-text">
                 Derivative data is any data products derived from the original
@@ -1950,13 +1952,10 @@
 
           <div id="guided-protocols-tab" class="guided--panel hidden">
             <div class="guided--section">
-              <h1 class="guided--text-sub-step">
-                Specify protocols used to generate the dataset
-              </h1>
+              <h1 class="guided--text-sub-step">Dataset protocols</h1>
               <p class="guided--help-text">
-                Uploading your protocols to protocols.io is
-                <b>recommended</b> by SPARC as it provides a consistent,
-                accessible resource for the scientific community.
+                Dataset protocols are a set of methods that explain how the data
+                was obtained.
               </p>
             </div>
             <div class="guided--section mb-0">
@@ -1975,9 +1974,9 @@
                   rel="popover"
                   data-placement="bottom"
                   data-trigger="hover"
-                  style="opacity: 0.5; cursor: default !important; width: 265px"
+                  style="opacity: 0.5; cursor: default !important; width: 350px"
                 >
-                  Yes
+                  Yes, let me import my protocols from Protocols.io
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button"
@@ -1985,9 +1984,9 @@
                   data-next-element="guided-div-protocol-container"
                   data-button-config-value="protocols-imported"
                   data-button-config-value-state="no"
-                  style="width: 265px"
+                  style="width: 350px"
                 >
-                  No
+                  No, I'll enter my protocols manually
                 </button>
               </div>
             </div>
@@ -2028,15 +2027,11 @@
             class="guided--panel hidden"
           >
             <div class="guided--section">
-              <h1 class="guided--text-sub-step" style="margin-bottom: 0px">
-                Complete your dataset description below.
-              </h1>
+              <h1 class="guided--text-sub-step">Dataset description</h1>
             </div>
             <p class="guided--help-text text-left">
               The dataset_description file is a <b>required</b> file where
-              investigators provide basic metadata for their dataset. The
-              structure of the dataset description is broken into five clearly
-              seperated sections:
+              investigators provide basic metadata for their dataset.
             </p>
             <div class="guided--section neumorphic mt-xl">
               <h2 class="guided--text-sub-step mt-0">Dataset information</h2>
@@ -2299,9 +2294,12 @@
             class="guided--panel hidden guided-subject-sample-data-addition-page"
           >
             <div class="guided--section">
-              <h1 class="guided--text-sub-step">
-                Add metadata for your subjects in the interface below.
-              </h1>
+              <h1 class="guided--text-sub-step">Subject metadata</h1>
+              <p class="guided--help-text">
+                The subjects metadata file contains updated fields with required
+                and optional metadata providing information about the subjects
+                involved in your dataset's data collection.
+              </p>
             </div>
             <div class="guided--container-subject-samples w-100 mt-md">
               <div class="guided--hlf-selection-container ml-2">
@@ -2985,10 +2983,13 @@
             class="guided--panel hidden guided-subject-sample-data-addition-page"
           >
             <div class="guided--section">
-              <h1 class="guided--text-sub-step">
-                Add metadata for your samples in the interface below.
-              </h1>
+              <h1 class="guided--text-sub-step">Samples metadata</h1>
             </div>
+            <p class="guided--help-text">
+              The samples metadata file contains updated fields with required
+              and optional metadata providing information about the samples
+              involved in your dataset's data collection.
+            </p>
             <div class="guided--container-subject-samples w-100 mt-md">
               <div class="guided--hlf-selection-container ml-2">
                 <label class="guided--form-label centered"
@@ -3775,7 +3776,7 @@
               <h1 class="guided--text-sub-step">
                 Add a banner image to your dataset
               </h1>
-              <p class="guided--help-text" style="max-width: 900px">
+              <p class="guided--help-text">
                 The banner image is used to entice visitors to find and explore
                 your dataset, as well as a thumbnail once the dataset is
                 published on the SPARC data portal.<br /><br />To learn more
@@ -4289,11 +4290,11 @@
               <h1 class="guided--text-sub-step">
                 Assign a license to your datset:
               </h1>
-              <p class="guided--help-text text-left">
+              <p class="guided--help-text">
                 As per SPARC policy, all datasets must be licensed under a
                 <b>Creative Commons Attribution (CC-BY)</b> license.
               </p>
-              <p class="guided--help-text text-left">
+              <p class="guided--help-text">
                 The <b>Creative Commons Attribution license</b> allows reusers
                 to distribute, remix, adapt, and build upon the material in any
                 medium or format, so long as attribution is given to the
