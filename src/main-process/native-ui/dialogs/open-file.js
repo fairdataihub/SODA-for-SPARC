@@ -32,6 +32,7 @@ ipcMain.on("open-file-dialog-local-destination-curate", async (event) => {
   let mainWindow = BrowserWindow.getFocusedWindow();
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openDirectory"],
+    title: "Select a directory"
   });
 
   if (files) {
@@ -49,6 +50,7 @@ ipcMain.on(
 
     let files = await dialog.showOpenDialog(mainWindow, {
       properties: ["openDirectory"],
+      title: "Select a directory"
     });
 
     if (files) {
@@ -81,6 +83,7 @@ ipcMain.on("open-file-dialog-metadata-curate", async (event) => {
 
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openFile"],
+    title: "Select a metadata file"
   });
 
   if (files) {
@@ -93,6 +96,7 @@ ipcMain.on("open-destination-generate-submission-locally", async (event) => {
 
   let files = await dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
     properties: ["openDirectory"],
+    title: "Select a directory"
   });
 
   if (files) {
@@ -108,6 +112,7 @@ ipcMain.on("open-destination-generate-dd-locally", async (event) => {
 
   let files = await dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
     properties: ["openDirectory"],
+    title: "Select a directory"
   });
 
   if (files) {
@@ -123,6 +128,7 @@ ipcMain.on("open-destination-generate-subjects-locally", async (event) => {
 
   let files = await dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
     properties: ["openDirectory"],
+    title: "Select a directory"
   });
 
   if (files) {
@@ -138,6 +144,7 @@ ipcMain.on("open-destination-generate-samples-locally", async (event) => {
 
   let files = await dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
     properties: ["openDirectory"],
+    title: "Select a directory"
   });
 
   if (files) {
@@ -153,6 +160,7 @@ ipcMain.on("open-destination-generate-changes-locally", async (event) => {
 
   let files = await dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
     properties: ["openDirectory"],
+    title: "Select a directory"
   });
 
   if (files) {
@@ -168,6 +176,7 @@ ipcMain.on("open-destination-generate-readme-locally", async (event) => {
 
   let files = await dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
     properties: ["openDirectory"],
+    title: "Select a directory"
   });
 
   if (files) {
@@ -184,6 +193,7 @@ ipcMain.on("open-file-dialog-submission", async (event) => {
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openFile"],
     filters: [{ name: "Excel", extensions: ["xlsx", "xls", "csv"] }],
+    title: "Select a submission file"
   });
 
   if (files) {
@@ -197,6 +207,7 @@ ipcMain.on("open-file-dialog-description", async (event) => {
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openFile"],
     filters: [{ name: "Excel", extensions: ["xlsx", "xls", "csv"] }],
+    title: "Select a dataset description file"
   });
 
   if (files) {
@@ -210,6 +221,7 @@ ipcMain.on("open-file-dialog-subjects", async (event) => {
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openFile"],
     filters: [{ name: "Excel", extensions: ["xlsx", "xls"] }],
+    title: "Select a subjects file"
   });
 
   if (files) {
@@ -223,6 +235,7 @@ ipcMain.on("open-file-dialog-samples", async (event) => {
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openFile"],
     filters: [{ name: "Excel", extensions: ["xlsx", "xls"] }],
+    title: "Select a samples file"
   });
 
   if (files) {
@@ -237,6 +250,7 @@ ipcMain.on("open-file-dialog-existing-subjects", async (event) => {
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openFile"],
     filters: [{ name: "Excel", extensions: ["xlsx", "xls"] }],
+    title: "Select an existing subjects file"
   });
 
   if (files) {
@@ -250,6 +264,7 @@ ipcMain.on("open-file-dialog-existing-samples", async (event) => {
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openFile"],
     filters: [{ name: "Excel", extensions: ["xlsx", "xls"] }],
+    title: "Select an existing samples file"
   });
 
   if (files) {
@@ -264,6 +279,7 @@ ipcMain.on("open-file-dialog-existing-DD", async (event) => {
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openFile"],
     filters: [{ name: "Excel", extensions: ["xlsx", "xls"] }],
+    title: "Select an existing dataset description file"
   });
 
   if (files) {
@@ -278,6 +294,7 @@ ipcMain.on("open-file-dialog-existing-submission", async (event) => {
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openFile"],
     filters: [{ name: "Excel", extensions: ["xlsx", "xls"] }],
+    title: "Select an existing submission file"
   });
 
   if (files) {
@@ -295,6 +312,7 @@ ipcMain.on("open-file-dialog-existing-changes", async (event) => {
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openFile"],
     filters: [{ name: "Text", extensions: ["txt"] }],
+    title: "Select an existing changes file"
   });
 
   if (files) {
@@ -309,6 +327,7 @@ ipcMain.on("open-file-dialog-existing-readme", async (event) => {
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openFile"],
     filters: [{ name: "Text", extensions: ["txt"] }],
+    title: "Select an existing readme file"
   });
 
   if (files) {
