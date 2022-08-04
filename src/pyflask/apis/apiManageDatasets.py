@@ -34,7 +34,8 @@ from manageDatasets import (
     update_dataset_readme,
     get_dataset_readme,
     get_dataset_tags,
-    update_dataset_tags
+    update_dataset_tags,
+    scale_image
 )
 
 from namespaces import get_namespace, NamespaceEnum
@@ -1019,3 +1020,21 @@ class BfGetDatasetTags(Resource):
         raise e
 
 
+scale_image_model = api.model("postScaledImage", {
+  'scaled_image_path': fields.String(required=True, description="The file path for the scaled image."),
+})
+@api.route('/scale_image')
+class ScaleImage(Resource):
+  parser_image = reqparse.RequestParser(bundle_errors=True)
+  parser_image.add_argument('image_file_path', type=str, required=True, location='json', help='The file path of the image to be resized.')
+
+  @api.doc(responses={500: 'There was an internal server error'}, description="Scale an image to be under 5Mb in size.")
+  @api.expect(parser_image)
+  @api.marshal_with(scale_image_model, False, 200)
+  def post(self):
+    data = self.parser_image.parse_args()
+    image_path = data.get('image_file_path')
+    try:
+      return scale_image(image_path)
+    except Exception as e:
+      api.abort(500, str(e))

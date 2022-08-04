@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ### Import required python modules
+import cv2
 from gevent import monkey
 
 monkey.patch_all()
@@ -12,7 +13,7 @@ from os.path import (
     exists,
     expanduser,
     dirname,
-    getsize,
+    getsize
 )
 import time
 import shutil
@@ -2178,8 +2179,6 @@ def get_dataset_tags(selected_account, selected_dataset):
     return {"tags": tags}
 
 
-
-
 def update_dataset_tags(selected_account, selected_dataset, updated_tags):
     """
     Update the tags of a dataset on Pennsieve with the given tags list.
@@ -2199,4 +2198,28 @@ def update_dataset_tags(selected_account, selected_dataset, updated_tags):
 
     return {"message": "Tags updated"}
 
-    
+
+def scale_image(imagePath):
+    """
+    Scale the image to be within the file size limit for banner images (5MB)
+    """
+    max_image_size = (5 * 1024 * 1024)
+    file_size = os.path.getsize(imagePath)
+    filename, file_extension = os.path.splitext(imagePath)
+    home_path = os.path.expanduser('~')
+    store_image_path = os.path.join(home_path, 'SODA', 'banner-image', (filename + file_extension))
+    #file size is greater than 5mb
+    if file_size > max_image_size:
+        while file_size > max_image_size:
+            img = cv2.imread(imagePath)
+            scale_percent = 60 # percent of original size
+            width = int(img.shape[1] * scale_percent / 100)
+            height = int(img.shape[0] * scale_percent / 100)
+            dim = (width, height)
+  
+            # resize image
+            resized_image = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+            cv2.imwrite(store_image_path, resized_image)
+            file_size = os.path.getsize(store_image_path)
+
+    return { "scaled_image_path": store_image_path }
