@@ -13,7 +13,10 @@
       <header id="guided-header-div" class="guided--header hidden">
         <div class="guided--progression-tab-container">
           <div
-            class="guided--progression-tab guided--progression-tab-triangle selected-tab"
+            class="
+              guided--progression-tab guided--progression-tab-triangle
+              selected-tab
+            "
             id="prepare-dataset-progression-tab"
           >
             <div class="guided--progression-tab-content">
@@ -162,9 +165,11 @@
               />
               <p class="guided--text-input-instructions mb-0">
                 Enter the desired name for your new dataset. This is the field
-                that will be displayed in public as the title of the dataset.
-                Please make sure that your dataset title is different than your
-                other dataset titles and is relatively informative.
+                that will be displayed in public as the title of the dataset
+                once it is published on the
+                <a href="https://sparc.science/">SPARC Data Portal</a>. Please
+                make sure that your dataset title is different than your other
+                dataset titles and is relatively informative.
               </p>
             </div>
             <div class="guided--section">
@@ -196,7 +201,8 @@
                 describe the content of your dataset such that it is possible to
                 differentiate it from other datasets. This field will become the
                 short description visible immediately under the title of your
-                dataset once it is published.
+                dataset once it is published on the
+                <a href="https://sparc.science/">SPARC Data Portal</a>.
               </p>
             </div>
             <div class="space-between">
@@ -307,14 +313,13 @@
                 The first step of the curation process consists of organizing
                 your data according to the SPARC Data Structure (SDS). SPARC
                 datasets must contain all or a subset of the six high-level
-                folders as seen depicted below. The primary folder must be
-                organized in a specific manner which guided mode will help you
-                with. To learn more about the SPARC Data Structure, please visit
-                the
+                folders shown in the image below. The primary folder must also
+                be organized in a specific manner. To learn more about the SPARC
+                Data Structure, please visit the corresponding
                 <a
                   href="https://docs.sparc.science/docs/overview-of-sparc-dataset-format"
                 >
-                  SPARC Help page </a
+                  SPARC help page </a
                 >.
               </p>
               <div class="guided--container-sub">
@@ -328,8 +333,8 @@
 
             <div class="guided--section">
               <label class="guided--form-label centered"
-                >Is your dataset already organized according to SPARC's dataset
-                structure?
+                >Is your dataset already organized according to the SPARC Data
+                Structure?
               </label>
               <div class="guided--radio-button-container">
                 <button
@@ -379,13 +384,16 @@
           </div>
           <div
             id="guided-subjects-folder-tab"
-            class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+            class="
+              guided--panel
+              hidden
+              starting-point-branch-page
+              guided-curate-new-dataset-branch-page
+            "
             data-skip-page="true"
           >
             <div class="guided--section">
-              <h1 class="guided--text-sub-step">
-                Specify your dataset's structure
-              </h1>
+              <h1 class="guided--text-sub-step">Subjects and samples</h1>
               <p class="guided--help-text w-100 text-left">
                 Data collected from subjects and samples must be organized into
                 folders with a specific naming convention and folder heirarchy.
@@ -509,7 +517,8 @@
                     <thead>
                       <tr>
                         <th class="text-center" colspan="2">
-                          Dataset subjects
+                          Enter a unique ID for each of your subjects (e.g.,
+                          "sub-1", "sub-2", etc.)
                         </th>
                       </tr>
                     </thead>
@@ -662,28 +671,28 @@
           </div>
           <div
             id="guided-primary-data-organization-tab"
-            class="guided--panel hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
+            class="
+              guided--panel
+              hidden
+              guided-curate-new-dataset-branch-page
+              guided-subject-sample-data-addition-page
+            "
           >
             <div class="guided--section w-100">
               <h1 class="guided--text-sub-step">
-                Primary data for subjects and samples
+                Primary data for samples and subjects
               </h1>
               <p class="guided--help-text w-100">
-                Primary data refer from experimental subjects and/or samples
-                (e.g., time series data, tabular data, clinical imaging data,
-                genomic, metabolomic, or microscopy data). The data generally
-                have been minimally processed so they are in a form ready for
-                analysis.
+                In the SDS, primary data refers to all data collected from
+                subjects and/or samples (e.g., time series data, tabular data,
+                clinical imaging data, genomic, metabolomic, or microscopy
+                data). The data generally have been minimally processed so they
+                are in a form ready for analysis.
               </p>
             </div>
 
             <div class="guided--panel" id="guided-add-sample-primary-data">
-              <div class="guided--section">
-                <h1 class="guided--text-sub-step">
-                  Specify your subject and sample primary data in the interface
-                  below
-                </h1>
-              </div>
+              <div class="guided--section"></div>
               <div class="guided--capsule-container-sub-page">
                 <div
                   class="guided--capsule-sub-page"
@@ -772,10 +781,6 @@
                       Click Next to confirm you have no primary data for your
                       samples.
                     </h2>
-                    <p class="guided--help-text">
-                      Please note that clicking next will remove all primary
-                      sample data from your dataset.
-                    </p>
                   </div>
                 </div>
               </div>
@@ -857,13 +862,8 @@
                   <div class="guided--section w-100">
                     <h2 class="guided--text-sub-step">
                       Click Next to confirm you have no primary data for your
-                      subjects or samples.
+                      subjects.
                     </h2>
-                    <p class="guided--help-text">
-                      Please note that clicking next will remove all primary
-                      sample data added in the previous step as well as any data
-                      added to your pools or subjects.
-                    </p>
                   </div>
                 </div>
               </div>
@@ -871,26 +871,28 @@
           </div>
           <div
             id="guided-source-data-organization-tab"
-            class="guided--panel hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
+            class="
+              guided--panel
+              hidden
+              guided-curate-new-dataset-branch-page
+              guided-subject-sample-data-addition-page
+            "
           >
             <div class="guided--section w-100">
-              <h1 class="guided--text-sub-step">Source data for samples</h1>
+              <h1 class="guided--text-sub-step">
+                Source data for samples and subjects
+              </h1>
               <p class="guided--help-text w-100">
-                Source data refers to unaltered, raw files from an experiment,
-                For example, this may include the “truly” raw k-space data for a
-                Magnetic Resonance (MR) image that has not yet been
-                reconstructed (in this case, the reconstructed DICOM or NIFTI
-                files would be found within the primary folder).
+                In the SDS, source data refers to unaltered, raw files from an
+                experiment. For example, this may include the “truly” raw
+                k-space data for a Magnetic Resonance (MR) image that has not
+                yet been reconstructed (in this case, the reconstructed DICOM or
+                NIFTI files would be considered the primary data).
               </p>
             </div>
 
             <div class="guided--panel" id="guided-add-sample-source-data">
-              <div class="guided--section">
-                <h1 class="guided--text-sub-step">
-                  Specify your subject and sample source data in the interface
-                  below
-                </h1>
-              </div>
+              <div class="guided--section"></div>
               <div class="guided--capsule-container-sub-page">
                 <div
                   class="guided--capsule-sub-page"
@@ -979,10 +981,6 @@
                       Click Next to confirm you have no source data for your
                       samples.
                     </h2>
-                    <p class="guided--help-text">
-                      Please note that clicking next will remove all source
-                      sample data from your dataset.
-                    </p>
                   </div>
                 </div>
               </div>
@@ -1061,13 +1059,8 @@
                   <div class="guided--section w-100">
                     <h2 class="guided--text-sub-step">
                       Click Next to confirm you have no source data for your
-                      subjects or samples.
+                      subjects.
                     </h2>
-                    <p class="guided--help-text">
-                      Please note that clicking next will remove all source
-                      sample data added in the previous step as well as any data
-                      added to your pools or subjects.
-                    </p>
                   </div>
                 </div>
               </div>
@@ -1075,27 +1068,29 @@
           </div>
           <div
             id="guided-derivative-data-organization-tab"
-            class="guided--panel hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
+            class="
+              guided--panel
+              hidden
+              guided-curate-new-dataset-branch-page
+              guided-subject-sample-data-addition-page
+            "
           >
             <div class="guided--section w-100">
               <h1 class="guided--text-sub-step">
-                Specify your dataset's derivative data
+                Derivative data for samples and subjects
               </h1>
               <p class="guided--help-text w-100">
-                Derivative data is any data products derived from the original
-                data. Derivative data includes data such as measurements from
-                images, 3d reconstructions from serial sections, or file
-                conversions.
+                In the SDS, derivative data refers to any data products derived
+                from the original data (typically in the primary folder).or
+                example, processed image stacks that are annotated via the
+                MicroBrightField (MBF Biosciences) tools, segmentation files, or
+                smoothed overlays of current and voltage that demonstrate a
+                particular effect.
               </p>
             </div>
 
             <div class="guided--panel" id="guided-add-sample-derivative-data">
-              <div class="guided--section">
-                <h1 class="guided--text-sub-step">
-                  Specify your subject and sample derivative data in the
-                  interface below
-                </h1>
-              </div>
+              <div class="guided--section"></div>
               <div class="guided--capsule-container-sub-page">
                 <div
                   class="guided--capsule-sub-page"
@@ -1187,10 +1182,6 @@
                       Click Next to confirm you have no derivative data for your
                       samples.
                     </h2>
-                    <p class="guided--help-text">
-                      Please note that clicking next will remove all derivative
-                      sample data from your dataset.
-                    </p>
                   </div>
                 </div>
               </div>
@@ -1272,13 +1263,8 @@
                   <div class="guided--section w-100">
                     <h2 class="guided--text-sub-step">
                       Click Next to confirm you have no derivative data for your
-                      subjects or samples.
+                      subjects.
                     </h2>
-                    <p class="guided--help-text">
-                      Please note that clicking next will remove all derivative
-                      sample data added in the previous step as well as any data
-                      added to your pools or subjects.
-                    </p>
                   </div>
                 </div>
               </div>
@@ -1287,22 +1273,24 @@
 
           <div
             id="guided-code-folder-tab"
-            class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+            class="
+              guided--panel
+              hidden
+              starting-point-branch-page
+              guided-curate-new-dataset-branch-page
+            "
           >
             <div class="guided--section w-100">
-              <h1 class="guided--text-sub-step">
-                Specify your dataset's code data
-              </h1>
+              <h1 class="guided--text-sub-step">Code data</h1>
               <p class="guided--help-text w-100">
-                Code data is <b>required if</b> code was used in the generation
-                of your dataset. If code was used in the generation of your
-                dataset, your code folder should contain the source code and any
-                supporting code.
+                In the SDS, code data refers to any code related folders and
+                files used in the generation or analysis of other data in your
+                dataset.
               </p>
             </div>
             <div class="guided--section">
               <label class="guided--form-label centered"
-                >Was code used in the generation of your dataset?
+                >Do you have code data associated with your dataset?
               </label>
 
               <div class="guided--radio-button-container">
@@ -1332,20 +1320,24 @@
           </div>
           <div
             id="guided-docs-folder-tab"
-            class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+            class="
+              guided--panel
+              hidden
+              starting-point-branch-page
+              guided-curate-new-dataset-branch-page
+            "
           >
             <div class="guided--section w-100">
-              <h1 class="guided--text-sub-step">
-                Specify your dataset's docs data
-              </h1>
+              <h1 class="guided--text-sub-step">Docs data</h1>
               <p class="guided--help-text w-100">
-                Docs data is <b>required if</b> your dataset contains supporting
-                files that don't belong to anoy of the other folders
+                In the SDS, docs data refers to any data to be included in your
+                dataset that does not belong to any of the other five categories
+                (primary, source, derivative, code, or protocol data).
               </p>
             </div>
             <div class="guided--section">
               <label class="guided--form-label centered"
-                >Do you have docs data that you would like to add?
+                >Do you have docs data associated with your dataset?
               </label>
 
               <div class="guided--radio-button-container">
@@ -1375,21 +1367,25 @@
           </div>
           <div
             id="guided-protocol-folder-tab"
-            class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+            class="
+              guided--panel
+              hidden
+              starting-point-branch-page
+              guided-curate-new-dataset-branch-page
+            "
           >
             <div class="guided--section w-100">
-              <h1 class="guided--text-sub-step">
-                Specify your dataset's protocol data
-              </h1>
+              <h1 class="guided--text-sub-step">Protocol data</h1>
               <p class="guided--help-text w-100">
-                Protocol data is <b>required if</b> your dataset contains
-                supplementary files to accompany the experimental protocols
-                submitted to Protocols.io.
+                In the SDS, protocol data refers to supplementary folders and
+                files to accompany the experimental protocols submitted that
+                must be submitted to protocols.io (more on that at a later
+                step).
               </p>
             </div>
             <div class="guided--section">
               <label class="guided--form-label centered"
-                >Would you like to add protocol data to your dataset?
+                >Do you have protocol data associated with your dataset?
               </label>
 
               <div class="guided--radio-button-container">
@@ -1419,7 +1415,11 @@
           </div>
           <div
             id="guided-folder-importation-tab"
-            class="guided--panel hidden guided-curate-existing-local-dataset-branch-page"
+            class="
+              guided--panel
+              hidden
+              guided-curate-existing-local-dataset-branch-page
+            "
             data-skip-page="true"
           >
             <div class="guided--section" id="guided_dataset_name_div">
@@ -1451,12 +1451,14 @@
             class="guided--panel hidden"
           >
             <div class="guided--section">
-              <h1 class="guided--text-sub-step">Folder structuire review</h1>
+              <h1 class="guided--text-sub-step">Folder structure review</h1>
               <p class="guided--help-text w-100 text-left">
-                Review the dataset structure that was created throught the data
-                file specification process. Please note that all empty folders
-                will be deleted before downloading the dataset or uploading it
-                to Pennsieve.
+                The SDS compliant dataset structure shown below will be
+                generated by SODA (during the last step of this process) based
+                on the data files you specified in the previous steps. Review
+                and go back to make changes if needed. Please note that all
+                empty folders will be deleted before generating the dataset
+                since empty folders are not allowed in the SDS.
               </p>
             </div>
             <div class="guided--section">
@@ -1711,27 +1713,36 @@
               </h1>
             </div>
             <p class="guided--help-text w-100 text-left">
-              The dataset_description file is a <b>required</b> file where
-              investigators provide basic metadata for their dataset. The
-              structure of the dataset description is broken into five clearly
-              seperated sections:
+              All SPARC datasets must include a submission.xlsx metadata file.
+              Provide below the information required in that metadata file and
+              SODA will automatically create and include the submission.xslx
+              metadata file in your dataset when it is generated during the last
+              step.
             </p>
             <div
               class="guided--section"
               id="guided-section-div-data-deliverables"
             >
+              <p>
+                The submission file requires information regarding the milestone
+                associated with your dataset. This information should match
+                exactly with the Data Deliverables Document agreed between the
+                SPARC and the award PI. You can find out more about the Data
+                Deliverables Document and how to obtain it
+                <a
+                  href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-your-data-deliverables-document"
+                  >here</a
+                >. You can import your Data Deliverable Document in SODA for
+                easily specifying the milestone and associate information for
+                your dataset.
+              </p>
               <h2 class="guided--text-sub-step">
-                Would you like to import your milestone information from a data
-                derivables document?
+                Would you like to import your Data Derivables Document?
               </h2>
               <p
                 class="guided--help-text w-100 small"
                 style="margin-bottom: 2px"
-              >
-                <b>recommended if available</b> A data deliverables document is
-                a file that contains data pertaining to your project's
-                milestones.
-              </p>
+              ></p>
               <div class="guided--radio-button-container">
                 <button
                   class="ui positive basic button guided--radio-button"
@@ -2308,7 +2319,11 @@
           </div>
           <div
             id="guided-create-subjects-metadata-tab"
-            class="guided--panel hidden guided-subject-sample-data-addition-page"
+            class="
+              guided--panel
+              hidden
+              guided-subject-sample-data-addition-page
+            "
           >
             <div class="guided--section">
               <h1 class="guided--text-sub-step">
@@ -2994,7 +3009,11 @@
           </div>
           <div
             id="guided-create-samples-metadata-tab"
-            class="guided--panel hidden guided-subject-sample-data-addition-page"
+            class="
+              guided--panel
+              hidden
+              guided-subject-sample-data-addition-page
+            "
           >
             <div class="guided--section">
               <h1 class="guided--text-sub-step">
@@ -3743,7 +3762,12 @@
                             </div>
                             <div class="tooltipnew demo-controls-end">
                               <i
-                                class="fas fa-info-circle popover-tooltip subjects-form"
+                                class="
+                                  fas
+                                  fa-info-circle
+                                  popover-tooltip
+                                  subjects-form
+                                "
                                 data-content="sample_id of the sample from which the current sample was derived (e.g., slice, tissue punch, biopsy, etc.).<br>
                           <i>Example: sub 1_sam 1<i>"
                                 rel="popover"
@@ -3780,7 +3804,12 @@
                             </div>
                             <div class="tooltipnew demo-controls-end">
                               <i
-                                class="fas fa-info-circle popover-tooltip subjects-form"
+                                class="
+                                  fas
+                                  fa-info-circle
+                                  popover-tooltip
+                                  subjects-form
+                                "
                                 data-content="If data is collected on multiple subjects at the same time include the identifier of the pool where the data file will be found. If this is included it should be the name of the top level folder inside primary. <br>
                           <i>Example: pool 1<i>"
                                 rel="popover"
@@ -3822,7 +3851,12 @@
                             </div>
                             <div class="tooltipnew demo-controls-end">
                               <i
-                                class="fas fa-info-circle popover-tooltip subjects-form"
+                                class="
+                                  fas
+                                  fa-info-circle
+                                  popover-tooltip
+                                  subjects-form
+                                "
                                 data-content="Experimental group sample is assigned to in the study. <br>
                           <i>Example: control<i>"
                                 rel="popover"
@@ -3890,7 +3924,12 @@
                       </div>
                       <div class="tooltipnew demo-controls-end">
                         <i
-                          class="fas fa-info-circle popover-tooltip subjects-form"
+                          class="
+                            fas
+                            fa-info-circle
+                            popover-tooltip
+                            subjects-form
+                          "
                           data-content="Physical type of the specimen from which the data were extracted. <br>
                           <i>Example: tissue<i>"
                           rel="popover"
@@ -3922,7 +3961,12 @@
                       </div>
                       <div class="tooltipnew demo-controls-end">
                         <i
-                          class="fas fa-info-circle popover-tooltip subjects-form"
+                          class="
+                            fas
+                            fa-info-circle
+                            popover-tooltip
+                            subjects-form
+                          "
                           data-content="The organ, or subregion of organ from which the data were extracted. <br>
                         <i>Example: dentate gyrus<i>"
                           rel="popover"
@@ -3952,7 +3996,12 @@
                       </div>
                       <div class="tooltipnew demo-controls-end">
                         <i
-                          class="fas fa-info-circle popover-tooltip subjects-form"
+                          class="
+                            fas
+                            fa-info-circle
+                            popover-tooltip
+                            subjects-form
+                          "
                           data-content="Provide a population that the specimen or sample belongs to. <br>For example: pop-1"
                           rel="popover"
                           data-placement="right"
@@ -3984,7 +4033,12 @@
                       </div>
                       <div class="tooltipnew demo-controls-end">
                         <i
-                          class="fas fa-info-circle popover-tooltip subjects-form"
+                          class="
+                            fas
+                            fa-info-circle
+                            popover-tooltip
+                            subjects-form
+                          "
                           data-content="Include the Pennsieve id(s) for other datasets that have data about the same specimen."
                           rel="popover"
                           data-placement="right"
@@ -4029,7 +4083,12 @@
                       </div>
                       <div class="tooltipnew demo-controls-end">
                         <i
-                          class="fas fa-info-circle popover-tooltip subjects-form"
+                          class="
+                            fas
+                            fa-info-circle
+                            popover-tooltip
+                            subjects-form
+                          "
                           data-content="Title of the protocol on protocols.io associated with this study. <br>
                     <i>Example: Spinal Cord extraction <i>"
                           rel="popover"
@@ -4065,7 +4124,12 @@
                       </div>
                       <div class="tooltipnew demo-controls-end">
                         <i
-                          class="fas fa-info-circle popover-tooltip subjects-form"
+                          class="
+                            fas
+                            fa-info-circle
+                            popover-tooltip
+                            subjects-form
+                          "
                           data-content="The protocol.io URL for the protocol associated with this study.<br>
                     <i>Example: https://www.protocols.io/view/corchea-paper-based-microfluidic-device-vtwe6pe <i>"
                           rel="popover"
@@ -4136,7 +4200,12 @@
                       </div>
                       <div class="tooltipnew demo-controls-end">
                         <i
-                          class="fas fa-info-circle popover-tooltip subjects-form"
+                          class="
+                            fas
+                            fa-info-circle
+                            popover-tooltip
+                            subjects-form
+                          "
                           data-content="Provide a mapping for groups that have incompatible internal identifier conventions."
                           rel="popover"
                           data-placement="right"
@@ -4168,7 +4237,12 @@
                       </div>
                       <div class="tooltipnew demo-controls-end">
                         <i
-                          class="fas fa-info-circle popover-tooltip subjects-form"
+                          class="
+                            fas
+                            fa-info-circle
+                            popover-tooltip
+                            subjects-form
+                          "
                           data-content="Provide the date at which the subject was collected."
                           rel="popover"
                           data-placement="right"
@@ -4200,7 +4274,12 @@
                       </div>
                       <div class="tooltipnew demo-controls-end">
                         <i
-                          class="fas fa-info-circle popover-tooltip subjects-form"
+                          class="
+                            fas
+                            fa-info-circle
+                            popover-tooltip
+                            subjects-form
+                          "
                           data-content="Provide the pathological condition of the sample if applicable."
                           rel="popover"
                           data-placement="right"
@@ -4234,7 +4313,12 @@
                       </div>
                       <div class="tooltipnew demo-controls-end">
                         <i
-                          class="fas fa-info-circle popover-tooltip subjects-form"
+                          class="
+                            fas
+                            fa-info-circle
+                            popover-tooltip
+                            subjects-form
+                          "
                           data-content="This indicates which one of a pair of organs (i.e: kidneys or lungs) the sample is. <br>For example: Left."
                           rel="popover"
                           data-placement="right"
@@ -4266,7 +4350,12 @@
                       </div>
                       <div class="tooltipnew demo-controls-end">
                         <i
-                          class="fas fa-info-circle popover-tooltip subjects-form"
+                          class="
+                            fas
+                            fa-info-circle
+                            popover-tooltip
+                            subjects-form
+                          "
                           data-content="Provide the cell type of your subject."
                           rel="popover"
                           data-placement="right"
@@ -4305,7 +4394,12 @@
                       </div>
                       <div class="tooltipnew demo-controls-end">
                         <i
-                          class="fas fa-info-circle popover-tooltip subjects-form"
+                          class="
+                            fas
+                            fa-info-circle
+                            popover-tooltip
+                            subjects-form
+                          "
                           data-content="Provide the plane of section of your subject."
                           rel="popover"
                           data-placement="right"
@@ -4334,7 +4428,12 @@
                       </div>
                       <div class="tooltipnew demo-controls-end">
                         <i
-                          class="fas fa-info-circle popover-tooltip subjects-form"
+                          class="
+                            fas
+                            fa-info-circle
+                            popover-tooltip
+                            subjects-form
+                          "
                           data-content="The reference atlas and organ. </br>
                     <i>Example: Paxinos Rat V3 <i>"
                           rel="popover"
@@ -4369,7 +4468,12 @@
                       </div>
                       <div class="tooltipnew demo-controls-end">
                         <i
-                          class="fas fa-info-circle popover-tooltip subjects-form"
+                          class="
+                            fas
+                            fa-info-circle
+                            popover-tooltip
+                            subjects-form
+                          "
                           data-content="A file containing experimental records for each sample."
                           rel="popover"
                           data-placement="right"
@@ -4435,13 +4539,14 @@
                 Pennsieve metadata addition
               </h1>
               <p class="guided--help-text w-100" style="max-width: 900px">
-                Pennsieve is a free, open source data management platform that
-                provides a scalable, cloud-based solution for managing,
-                analyzing, and sharing datasets. In the following fields, you
-                will be prompted to add digital metadata to your dataset such as
-                a banner image, user/team permissions, and license. After
-                uploading your dataset from SODA, your metadata will be added to
-                the Pennsieve platform and appear similar to the examples below.
+                All SPARC datasets must be uploaded on Pennsieve, a free, open
+                source data management platform supported by the SPARC program.
+                As per the SPARC data curation rule, specific metadata are
+                needed on your Pennsieve dataset. In the following fields, you
+                will be prompted to add these metadata such as a banner image,
+                description, license, etc. SODA will automatically add these
+                metadata to your Pennsieve dataset when your dataset is
+                generated during the last step of this process.
               </p>
               <div class="space-around" style="align-items: flex-start">
                 <img
@@ -4491,7 +4596,12 @@
               "
             >
               <div
-                class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable"
+                class="
+                  modal-dialog
+                  modal-dialog-centered
+                  modal-lg
+                  modal-dialog-scrollable
+                "
                 role="document"
               >
                 <div class="modal-content">
@@ -4638,12 +4748,11 @@
               <h1 class="guided--text-sub-step">Specify owner of dataset</h1>
               <p class="guided--help-text w-100" style="max-width: 900px">
                 SPARC curation rules require to set the PI of the SPARC award as
-                'owner' of the dataset before it is shared with the Curation
-                Team for review. This is to ensures that the PI is the only
-                person who can publish the dataset.
+                'owner' of the dataset on Pennsieve. This is to ensures that the
+                PI is the only person who can publish the dataset.
               </p>
               <label class="guided--form-label centered mt-md">
-                Who is the PI of the project associated with the dataset?
+                Who is the PI of the SPARC award associated with this dataset?
               </label>
               <div
                 class="guided--radio-button-container"
@@ -4674,7 +4783,7 @@
               ></div>
               <div class="guided--panel hidden" id="guided-designate-other-PI">
                 <label class="guided--text-sub-step"
-                  >Designate another user as PI Owner:
+                  >Select your PI from the list below:
                 </label>
                 <div class="guided--container-permissions">
                   <div style="flex-grow: 1">
@@ -5077,7 +5186,10 @@
                           onclick="openDropdownPrompt(this, 'bf')"
                         >
                           <h5
-                            class="guided--dataset-content guidedBfAccountDetails"
+                            class="
+                              guided--dataset-content
+                              guidedBfAccountDetails
+                            "
                             id="guided-account-details"
                           >
                             None
@@ -5204,7 +5316,11 @@
                                 </h5>
                               </div>
                               <svg
-                                class="svg-change-current-account dataset bi bi-pencil-fill"
+                                class="
+                                  svg-change-current-account
+                                  dataset
+                                  bi bi-pencil-fill
+                                "
                                 onclick="openDropdownPrompt(this, 'dataset')"
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="18"
@@ -5548,7 +5664,14 @@
                       Dataset name
                     </td>
                     <td
-                      class="middle aligned text-center collapsing border-left-0 p-0"
+                      class="
+                        middle
+                        aligned
+                        text-center
+                        collapsing
+                        border-left-0
+                        p-0
+                      "
                     >
                       <div
                         class="guided--container-upload-status"
@@ -5564,7 +5687,14 @@
                       Dataset subtitle
                     </td>
                     <td
-                      class="middle aligned text-center collapsing border-left-0 p-0"
+                      class="
+                        middle
+                        aligned
+                        text-center
+                        collapsing
+                        border-left-0
+                        p-0
+                      "
                     >
                       <div
                         class="guided--container-upload-status"
@@ -5581,7 +5711,14 @@
                       Dataset description
                     </td>
                     <td
-                      class="middle aligned text-center collapsing border-left-0 p-0"
+                      class="
+                        middle
+                        aligned
+                        text-center
+                        collapsing
+                        border-left-0
+                        p-0
+                      "
                     >
                       <div
                         class="guided--container-upload-status"
@@ -5597,7 +5734,14 @@
                       Dataset banner image
                     </td>
                     <td
-                      class="middle aligned text-center collapsing border-left-0 p-0"
+                      class="
+                        middle
+                        aligned
+                        text-center
+                        collapsing
+                        border-left-0
+                        p-0
+                      "
                     >
                       <div
                         class="guided--container-upload-status"
@@ -5613,7 +5757,14 @@
                       Dataset license
                     </td>
                     <td
-                      class="middle aligned text-center collapsing border-left-0 p-0"
+                      class="
+                        middle
+                        aligned
+                        text-center
+                        collapsing
+                        border-left-0
+                        p-0
+                      "
                     >
                       <div
                         class="guided--container-upload-status"
@@ -5629,7 +5780,14 @@
                       Dataset tags
                     </td>
                     <td
-                      class="middle aligned text-center collapsing border-left-0 p-0"
+                      class="
+                        middle
+                        aligned
+                        text-center
+                        collapsing
+                        border-left-0
+                        p-0
+                      "
                     >
                       <div
                         class="guided--container-upload-status"
@@ -5645,7 +5803,14 @@
                       Dataset PI Owner
                     </td>
                     <td
-                      class="middle aligned text-center collapsing border-left-0 p-0"
+                      class="
+                        middle
+                        aligned
+                        text-center
+                        collapsing
+                        border-left-0
+                        p-0
+                      "
                     >
                       <div
                         class="guided--container-upload-status"
@@ -5715,7 +5880,14 @@
                       Subjects metadata
                     </td>
                     <td
-                      class="middle aligned text-center collapsing border-left-0 p-0"
+                      class="
+                        middle
+                        aligned
+                        text-center
+                        collapsing
+                        border-left-0
+                        p-0
+                      "
                     >
                       <div
                         class="guided--container-upload-status"
@@ -5731,7 +5903,14 @@
                       Samples metadata
                     </td>
                     <td
-                      class="middle aligned text-center collapsing border-left-0 p-0"
+                      class="
+                        middle
+                        aligned
+                        text-center
+                        collapsing
+                        border-left-0
+                        p-0
+                      "
                     >
                       <div
                         class="guided--container-upload-status"
@@ -5747,7 +5926,14 @@
                       Submission metadata
                     </td>
                     <td
-                      class="middle aligned text-center collapsing border-left-0 p-0"
+                      class="
+                        middle
+                        aligned
+                        text-center
+                        collapsing
+                        border-left-0
+                        p-0
+                      "
                     >
                       <div
                         class="guided--container-upload-status"
@@ -5766,7 +5952,14 @@
                       Dataset description metadata
                     </td>
                     <td
-                      class="middle aligned text-center collapsing border-left-0 p-0"
+                      class="
+                        middle
+                        aligned
+                        text-center
+                        collapsing
+                        border-left-0
+                        p-0
+                      "
                     >
                       <div
                         class="guided--container-upload-status"
@@ -5782,7 +5975,14 @@
                       README metadata
                     </td>
                     <td
-                      class="middle aligned text-center collapsing border-left-0 p-0"
+                      class="
+                        middle
+                        aligned
+                        text-center
+                        collapsing
+                        border-left-0
+                        p-0
+                      "
                     >
                       <div
                         class="guided--container-upload-status"
@@ -5798,7 +5998,14 @@
                       CHANGES metadata
                     </td>
                     <td
-                      class="middle aligned text-center collapsing border-left-0 p-0"
+                      class="
+                        middle
+                        aligned
+                        text-center
+                        collapsing
+                        border-left-0
+                        p-0
+                      "
                     >
                       <div
                         class="guided--container-upload-status"
