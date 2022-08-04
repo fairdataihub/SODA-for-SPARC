@@ -19,13 +19,14 @@ document
     openDropdownPrompt(this, "dataset", false);
   });
 
-  document
-  .querySelector("#Question-generate-dataset-BF-dataset .change-current-account")
+document
+  .querySelector(
+    "#Question-generate-dataset-BF-dataset .change-current-account"
+  )
   .addEventListener("click", function () {
     console.log("Fired dataset");
     openDropdownPrompt(this, "dataset", false);
   });
-
 
 document
   .querySelector(
