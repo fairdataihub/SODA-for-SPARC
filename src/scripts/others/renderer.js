@@ -62,7 +62,6 @@ const { backOff } = require("exponential-backoff");
 // const prevent_sleep_id = "";
 // const electron_app = electron.app;
 const app = remote.app;
-const shell = electron.shell;
 const Clipboard = electron.clipboard;
 var noAirtable = false;
 

@@ -40,6 +40,23 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 // TODO: Enhance this to call next script once one is done. Additionally, ensure it is called when the DOM is ready if not doing so already.
 const insertScript = async () => {
+
+  const exLinks = document.createElement("script");
+  exLinks.src = "./assets/ex-links.js";
+  exLinks.defer = true;
+  exLinks.type = "text/javascript";
+  document.body.appendChild(exLinks);
+
+  await ws(500)
+
+
+  const nav = document.createElement("script");
+  nav.src = "./assets/nav.js";
+  nav.defer = true;
+  nav.type = "text/javascript";
+  document.body.appendChild(nav);
+
+
   await ws(500);
 
   const preload = document.createElement("script");
