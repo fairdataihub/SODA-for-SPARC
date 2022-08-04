@@ -54,6 +54,14 @@ const insertScript = async () => {
   nav.type = "text/javascript";
   document.body.appendChild(nav);
 
+  await ws(500)
+
+  const demotBtns = document.createElement("script");
+  demotBtns.src = "./assets/demo-btns.js";
+  demotBtns.defer = true;
+  demotBtns.type = "text/javascript";
+  document.body.appendChild(demotBtns);
+
   await ws(500);
 
   const preload = document.createElement("script");
