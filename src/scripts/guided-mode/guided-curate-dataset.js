@@ -1522,12 +1522,10 @@ const traverseToTab = (targetPageID) => {
       //If contributors already existin in the sodaJSONObj, then show the contributors field
       //and render a card for each contributor
       if (contributors) {
-        document
-          .getElementById("guided-div-contributors-imported-from-airtable")
-          .classList.add("hidden");
-        document
-          .getElementById("guided-div-contributor-field-set")
-          .classList.remove("hidden");
+        switchElementVisibility(
+          "guided-div-contributors-imported-from-airtable",
+          "guided-div-contributor-field-set"
+        );
 
         renderContributorFields(contributors);
       } else {
@@ -1541,24 +1539,33 @@ const traverseToTab = (targetPageID) => {
           airTableKeyData["key-name"] !== "" &&
           airTableKeyData["api-key"] !== ""
         ) {
-          //Show contributor fields and hide contributor information fields
-          document
-            .getElementById("guided-div-contributors-imported-from-airtable")
-            .classList.remove("hidden");
-          document
-            .getElementById("guided-div-contributor-field-set")
-            .classList.add("hidden");
-          loadContributorInfofromAirtable(sparcAward, "guided");
+          try {
+            //Show contributor fields and hide contributor information fields
+            loadContributorInfofromAirtable(sparcAward, "guided");
+            switchElementVisibility(
+              "guided-div-contributor-field-set",
+              "guided-div-contributors-imported-from-airtable"
+            );
+          } catch (error) {
+            console.log(error);
+            //reset if error fetching contributors from Airtable
+            switchElementVisibility(
+              "guided-div-contributors-imported-from-airtable",
+              "guided-div-contributor-field-set"
+            );
+
+            document.getElementById("contributors-container").innerHTML = "";
+            //add an empty contributor information fieldset
+            addContributorField();
+          }
         } else {
           //hide AirTable contributor table and show contributor information fields
-          document
-            .getElementById("guided-div-contributors-imported-from-airtable")
-            .classList.add("hidden");
-          document
-            .getElementById("guided-div-contributor-field-set")
-            .classList.remove("hidden");
+          switchElementVisibility(
+            "guided-div-contributors-imported-from-airtable",
+            "guided-div-contributor-field-set"
+          );
 
-          document.getElementById("contributors-container").innerHTML === "";
+          document.getElementById("contributors-container").innerHTML = "";
           //add an empty contributor information fieldset
           addContributorField();
         }
