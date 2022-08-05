@@ -1,4 +1,4 @@
-const {SodaHeader} = require("./SodaHeader")
+const { SodaHeader } = require("./SodaHeader");
 
 export default {
   headerText: "Soda Header",
