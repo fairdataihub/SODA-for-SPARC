@@ -1298,11 +1298,11 @@ var collectionDatasetInput = document.getElementById("tagify-collection-tags"),
 //object with both id and name of collection tags
 var currentCollectionTags = [];
 $("#button-collection-dataset-confirm").click(async () => {
-  //get collection names when clicked
-  //will click when dataset is selected
   let collection_section = document.getElementById(
     "add_edit_bf_dataset_collection-section"
   );
+
+  //sweet alert will show only if user is on the collections section
   if (collection_section.classList.contains("is-shown")) {
     let datasetName = document.getElementById(
       "collection_dataset_name"
@@ -1322,23 +1322,22 @@ $("#button-collection-dataset-confirm").click(async () => {
     });
   }
 
-  let collection_list = await getAllCollectionTags(); //gets all collection names for org
-  let current_tags = await getCurrentCollectionTags(); //get all collections names that belongs to current dataset
+  let collection_list = await getAllCollectionTags();
+  let current_tags = await getCurrentCollectionTags();
 
   let collectionNames = Object.keys(collection_list);
-  let collectionIds = Object.values(collection_list);
-
   let currentCollectionNames = Object.keys(current_tags);
-  let currentCollectionIds = Object.values(current_tags);
 
   currentCollectionNames.sort();
   collectionNames.sort();
 
+  //put the gathered collection names to the tagify whitelist
   collectionDatasetTags.settings.whitelist = collectionNames;
   currentCollectionTags = currentCollectionNames;
+  collectionDatasetTags.removeAllTags();
   collectionDatasetTags.addTags(currentCollectionNames);
 
-  //if on collection section show sweet alert
+  //if on collection section close the shown sweet alert
   if (collection_section.classList.contains("is-shown")) Swal.close();
 });
 
@@ -1346,10 +1345,9 @@ var currentTags = {};
 async function getCurrentCollectionTags() {
   currentTags = {};
   try {
-    let result = await client.get(`/collections/current_collections`, {
+    let result = await client.get(`/collections/${defaultBfDataset}`, {
       params: {
         selected_account: defaultBfAccount,
-        selected_dataset: defaultBfDataset,
       },
     });
     let res = result.data;
@@ -1367,7 +1365,7 @@ async function getCurrentCollectionTags() {
     console.log(currentTags);
     return currentTags;
   } catch (error) {
-    console.log(error);
+    clientError(error);
   }
 }
 
@@ -1376,7 +1374,7 @@ var allCollectionTags = {};
 async function getAllCollectionTags() {
   allCollectionTags = {};
   try {
-    result = await client.get(`/collections/all_collections`, {
+    result = await client.get(`/collections/`, {
       params: { selected_account: defaultBfAccount },
     });
     let res = result.data;
@@ -1397,7 +1395,7 @@ async function getAllCollectionTags() {
     console.log(allCollectionTags);
     return allCollectionTags;
   } catch (error) {
-    console.log(error);
+    clientError(error);
   }
 }
 

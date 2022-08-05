@@ -29,15 +29,13 @@ def get_current_collection_names(account, dataset):
     try:
         ps = get_authenticated_ps(account)
     except Exception as error:
-        error.append("Error: Please select a valid Pennsieve account")
-        raise Exception(error)
+        abort(400, "Error: Please select a valid Pennsieve account")
 
     try:
         myds = get_dataset(ps, dataset)
         dataset_id = myds.id
     except Exception as e:
-        error.append("Error: Please select a valid Pennsieve dataset")
-        raise Exception(error)
+        abort(400, "Error: Please select a valid Pennsieve dataset")
 
 
     return ps._api._get(f"/datasets/{str(dataset_id)}/collections")
@@ -53,8 +51,7 @@ def upload_collection_names(account, dataset, tags):
     try:
         ps = get_authenticated_ps(account)
     except Exception as e:
-        error ="Error: Please select a valid Pennsieve account"
-        raise Exception(error)
+        abort(400, "Error: Please select a valid Pennsieve account")
 
     try:
         #get dataset and it's id
@@ -87,8 +84,7 @@ def upload_collection_names(account, dataset, tags):
             abort(403, "You must be the dataset owner or manager to add/remove from a collection")
 
     except Exception as e:
-        error = "Error: Please select a valid dataset"
-        raise Exception(error)
+        abort(400, "Error: Please select a valid Pennsieve dataset")
 
     store = []
     for tag in tags:
@@ -117,8 +113,7 @@ def remove_collection_names(account, dataset, tags):
     try:
         ps = get_authenticated_ps(account)
     except Exception as e:
-        error = "Error: Please select a valid account"
-        raise Exception(error)
+        abort(400, "Error: Please select a valid Pennsieve account")
 
     try:
         #get dataset and it's id
@@ -151,8 +146,7 @@ def remove_collection_names(account, dataset, tags):
             abort(403, "You must be the dataset owner or manager to add/remove from a collection")
 
     except Exception as e:
-        error = "Error: Please select a valid dataset"
-        raise Exception(error)
+        abort(400, "Error: Please select a valid Pennsieve dataset")
     
     for tagid in tags:
         result = ps._api._del(f"/datasets/{str(dataset_id)}/collections/{str(tagid)}")
@@ -173,8 +167,7 @@ def upload_new_names(account, dataset, tags):
     try:
         ps = get_authenticated_ps(account)
     except Exception as e:
-        error = "Error: Please select a valid account"
-        raise Exception(error)
+        abort(400, "Error: Please select a valid Pennsieve account")
 
     try:
         #get dataset and it's id
@@ -207,8 +200,7 @@ def upload_new_names(account, dataset, tags):
             abort(403, "You must be the dataset owner or manager to add/remove from a collection")
 
     except Exception as e:
-        error = "Error: Please select a valid dataset"
-        raise Exception(error)
+        abort(400, "Error: Please select a valid Pennsieve dataset")
 
     for tag in tags:
         jsonfile = {"name": tag}

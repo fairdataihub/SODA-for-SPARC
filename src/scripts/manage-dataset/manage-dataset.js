@@ -254,7 +254,7 @@ $("#button-bf-collection").click(async () => {
       },
     });
 
-    //updated collection tags are gathered
+    //user selected/created collection tags are gathered
     for (let i = 0; i < collectionDatasetTags.value.length; i++) {
       let tagName = collectionDatasetTags.value[i]["value"];
       if (tagName.includes("，")) {
@@ -317,16 +317,17 @@ $("#button-bf-collection").click(async () => {
     }
 
     if (whiteListTags.length > 0) {
-      //tags that are already on pennsieve
+      //collection names that are already have an ID
       await uploadCollectionTags(whiteListTags);
     }
 
     if (removeTags.length > 0) {
-      //replace currentTags with new list
+      //remove collection names
       await removeCollectionTags(removeTags);
     }
 
     if (newTags.length > 0) {
+      //upload tags that haven't been created on pennsieve (no ID)
       await uploadNewTags(newTags);
     }
 
@@ -347,25 +348,32 @@ $("#button-bf-collection").click(async () => {
 async function updateCollectionWhiteList() {
   let collection_list = await getAllCollectionTags();
   let currentCollectionList = await getCurrentCollectionTags();
+
   let currentCollectionNames = Object.keys(currentCollectionList);
   let collectionNames = Object.keys(collection_list);
 
   currentCollectionNames.sort();
   collectionNames.sort();
 
+  //remove old tags before attaching current collection tags
   collectionDatasetTags.removeAllTags();
   collectionDatasetTags.addTags(currentCollectionNames);
 
+  //add collection tags to whitelist of tagify
   collectionDatasetTags.settings.whitelist = collectionNames;
 }
 
+//function is for uploading collection names that haven't been created on Pennsieve yet
+//First it will upload the new names to then receive their ID's
+//Then with those IDs we will associate them to the given dataset
 async function uploadNewTags(tags) {
+  //upload names first to then get their ids to add to dataset
+  //PARAMS: tags -> array of collection names
   let newUploadedTags = [];
 
-  //upload names first to then get their ids to add to dataset
   try {
     let newCollectionNames = await client.post(
-      `collections/upload_new_names?selected_account=${defaultBfAccount}&selected_dataset=${defaultBfDataset}`,
+      `collections/new_names/${defaultBfDataset}?selected_account=${defaultBfAccount}`,
       {
         collection: tags,
       }
@@ -381,7 +389,7 @@ async function uploadNewTags(tags) {
       //put collection ids to dataset
       try {
         let newTagsUpload = await client.put(
-          `collections/upload_collection_names?selected_account=${defaultBfAccount}&selected_dataset=${defaultBfDataset}`,
+          `collections/collection_ids/${defaultBfDataset}?selected_account=${defaultBfAccount}`,
           {
             collection: newUploadedTags,
           }
@@ -397,9 +405,11 @@ async function uploadNewTags(tags) {
 }
 
 async function removeCollectionTags(tags) {
+  //remove collection names from a dataset with their given IDs
+  //PARAMS: tags -> array of collection IDs
   try {
     let removedTags = await client.delete(
-      `collections/remove_collection_names?selected_account=${defaultBfAccount}&selected_dataset=${defaultBfDataset}`,
+      `collections/collection_ids/${defaultBfDataset}?selected_account=${defaultBfAccount}`,
       {
         data: { collection: tags },
       }
@@ -411,40 +421,27 @@ async function removeCollectionTags(tags) {
 }
 
 async function uploadCollectionTags(tags) {
-  //tags that will be uploaded
+  //upload tags that have already been created on Pennsieve
+  //PARAMS: tags -> array of collection IDs
   try {
     let uploadedTags = await client.put(
-      "collections/upload_collection_names",
+      `collections/collection_ids/${defaultBfDataset}`,
       {
         collection: tags,
       },
       {
         params: {
           selected_account: defaultBfAccount,
-          selected_dataset: defaultBfDataset,
         },
       }
     );
-
     return uploadedTags.data;
   } catch (error) {
     clientError(error);
   }
 }
 
-const removePlaceHolder = (e) => {
-  if (e.target.value === "") {
-    e.placeholder = "Enter collection name";
-  } else {
-    e.placeholder = "";
-  }
-};
-
-document
-  .getElementById("tagify-collection-tags")
-  .addEventListener("change", removePlaceHolder);
-
-// Rename dataset on bf //
+// Rename dataset on pennsieve
 $("#button-rename-dataset").click(async () => {
   setTimeout(async function () {
     var selectedbfaccount = defaultBfAccount;
