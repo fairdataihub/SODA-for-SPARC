@@ -1290,8 +1290,9 @@ var protocolConfigPath = path.join(metadataPath, protocolConfigFileName);
 
 //initialize Tagify input field for guided submission milestones
 const guidedSubmissionTagsInput = document.getElementById(
-  "guided-tagify-submission-milestone-tags"
+  "guided-tagify-submission-milestone-tags-import"
 );
+
 const guidedSubmissionTagsTagify = new Tagify(guidedSubmissionTagsInput, {
   duplicates: false,
   delimiters: null,
@@ -1302,6 +1303,23 @@ const guidedSubmissionTagsTagify = new Tagify(guidedSubmissionTagsInput, {
     closeOnSelect: true,
   },
 });
+
+const guidedSubmissionTagsInputManual = document.getElementById(
+  "guided-tagify-submission-milestone-tags-manual"
+);
+const guidedSubmissionTagsTagifyManual = new Tagify(
+  guidedSubmissionTagsInputManual,
+  {
+    duplicates: false,
+    delimiters: null,
+    dropdown: {
+      classname: "color-blue",
+      maxItems: Infinity,
+      enabled: 0,
+      closeOnSelect: true,
+    },
+  }
+);
 
 // initiate Tagify input fields for Dataset description file
 var keywordInput = document.getElementById("ds-keywords"),

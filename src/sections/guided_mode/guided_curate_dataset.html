@@ -1776,10 +1776,6 @@
               <h2 class="guided--text-sub-step">
                 Would you like to import your Data Derivables Document?
               </h2>
-              <p
-                class="guided--help-text w-100 small"
-                style="margin-bottom: 2px"
-              ></p>
               <div class="guided--radio-button-container">
                 <button
                   class="ui positive basic button guided--radio-button"
@@ -1805,8 +1801,8 @@
             </div>
 
             <div
-              class="guided--panel"
-              id="guided-div-complete-submission-metadata"
+              class="guided--section"
+              id="guided-section-data-derivative-import"
             >
               <div class="guided--capsule-container-sub-page">
                 <div
@@ -1865,15 +1861,6 @@
                     </table>
                   </div>
                 </div>
-                <div
-                  class="guided--section"
-                  id="guided-section--data-derivative-manual"
-                >
-                  <p class="guided--help-text">
-                    Click Next to skip importing data deliverables and enter
-                    submission metadata manually
-                  </p>
-                </div>
               </div>
               <div
                 class="guided--panel mt-md sub-page hidden"
@@ -1900,7 +1887,7 @@
               >
                 <div class="guided--section neumorphic mt-xl">
                   <h2 class="guided--text-sub-step mt-0">
-                    Review/Edit award and milestone information then click on
+                    Enter your award and milestone information then click on
                     Next
                   </h2>
                   <label class="guided--form-label mt-xl"
@@ -1921,7 +1908,7 @@
                     <div class="ui input modified">
                       <input
                         class="guided-award-and-milestone-information"
-                        id="guided-tagify-submission-milestone-tags"
+                        id="guided-tagify-submission-milestone-tags-import"
                         name="milestone-tags"
                         value=""
                       />
@@ -1954,10 +1941,58 @@
                 </div>
               </div>
             </div>
+
             <div
-              class="guided--panel hidden"
-              id="guided-div-submission-accordion"
-            ></div>
+              class="guided--section neumorphic mt-xl"
+              id="guided-section--data-derivative-manual"
+            >
+              <h2 class="guided--text-sub-step mt-0">
+                Review/Edit award and milestone information then click on Next
+              </h2>
+              <label class="guided--form-label mt-xl"
+                >SPARC award number:</label
+              >
+              <input
+                class="guided--input"
+                id="guided-submission-sparc-award-manual"
+                type="text"
+                placeholder="Enter SPARC award here"
+                onkeyup="validateInput($(this))"
+              />
+              <p class="guided--text-input-instructions mb-0">
+                SPARC award associated with the dataset.
+              </p>
+              <label class="guided--form-label mt-xl">Milestone(s):</label>
+              <div class="demo-controls-body" style="width: 100%">
+                <div class="ui input modified">
+                  <input
+                    class="guided-award-and-milestone-information"
+                    id="guided-tagify-submission-milestone-tags-manual"
+                    name="milestone-tags"
+                    value=""
+                  />
+                </div>
+              </div>
+              <p class="guided--text-input-instructions mb-0">
+                The milestones as listed in your SPARC award's data
+                deliverable's document.<br />
+                <b>If the dataset is not part of the milestone, enter N/A.</b>
+              </p>
+              <label class="guided--form-label mt-xl">Completion date:</label>
+              <select
+                class="form-control"
+                id="guided-submission-completion-date-manual"
+                style="background-color: white !important"
+              ></select>
+              <p class="guided--text-input-instructions mb-0">
+                Enter the completion date associated with this milestone.<br />
+                <b
+                  >Select N/A if this dataset isn't associated with any
+                  milestone initially planned in the Data Deliverables
+                  document.</b
+                >
+              </p>
+            </div>
           </div>
           <div id="guided-contributors-tab" class="guided--panel hidden">
             <div
