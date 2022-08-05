@@ -5861,27 +5861,27 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
                   ".primary-selection-aside-item"
                 ),
                 intro:
-                  "To switch the sample you would like to add metadata to, select a different sample from this list.",
+                  "Select the different samples here to specify data files for each of them.",
               },
               {
                 element: document.querySelector("#guided-button-back"),
                 intro:
-                  "To view the folders above the folder you are currently in, click the back button.",
+                  "To view the folders above the folder you are currently in, click the up button.",
               },
               {
                 element: document.querySelector("#guided-new-folder"),
                 intro:
-                  "To Add a new folder to insert data into, click the new folder button.",
+                  "To include a new empty folder, click the 'New folder' button. You can then specify data to be included into it.",
               },
               {
                 element: document.querySelector("#guided-import-folder"),
                 intro:
-                  "To import data inside a folder on your computer, click the import folder button.",
+                  "To import a folder from your computer, click the 'Import folder' button.",
               },
               {
                 element: document.querySelector("#guided-imoprt-file"),
                 intro:
-                  "To import a data file on your computer, click the import new file button.",
+                  "To import a data file from your computer, click the 'Import file' button.",
               },
               {
                 element: document.getElementById("items"),
@@ -8927,7 +8927,7 @@ $(document).ready(() => {
             errorArray.push({
               type: "notyf",
               message:
-                "Please add docs code or indicate that you do not have code data",
+                "Please add code data or indicate that you do not have code data",
             });
             throw errorArray;
           }
