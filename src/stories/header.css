@@ -1,32 +1,47 @@
 .wrapper {
   font-family: "Nunito Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 15px 20px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
+  flex-direction: row;
+  width: 94.5%;
+  padding-right: 20px;
+  margin-bottom: 50px;
 }
 
-svg {
-  display: inline-block;
-  vertical-align: top;
+.sub-wrapper {
+  width: 100%;
+  border-bottom: 3px solid #b80d49;
+  margin-bottom: -5px;
 }
 
-h1 {
-  font-weight: 900;
-  font-size: 20px;
-  line-height: 1;
-  margin: 6px 0 6px 10px;
-  display: inline-block;
-  vertical-align: top;
+.need-help-div {
+  width: 100%;
+  border-bottom: 5px solid #b80d49;
+  margin-bottom: -5px;
+  display: flex;
+  flex-direction: row;
+  /* height: 40px; */
 }
 
-button + button {
-  margin-left: 10px;
-}
-
-.welcome {
-  color: #333;
+.need-help-div h2 {
   font-size: 14px;
-  margin-right: 10px;
+  width: 70%;
+  margin-right: 0;
+  color: #222;
+  font-weight: 600;
+  /* padding: 10px; */
+  border: 1px solid transparent;
+  text-align: left;
+}
+
+.need-help-div a {
+  text-decoration: none;
+  width: 30%;
+  /* padding-top: 12px; */
+  border-bottom: none !important;
+  text-align: right;
+}
+
+.need-help-div a:hover {
+  text-decoration: underline;
 }
