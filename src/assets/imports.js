@@ -1,4 +1,4 @@
-const {SodaHeader} = require("../stories/SodaHeader")
+const { SodaHeader } = require("../stories/SodaHeader");
 
 const links = document.querySelectorAll('link[rel="import"]');
 
@@ -13,11 +13,13 @@ Array.prototype.forEach.call(links, (link) => {
   //}
 });
 
-
 // once finished add the Storybook designed Add/edit subtitle section to the page - alternatively we can just use classes
-let subtitleHeader = SodaHeader({headerText: "Manage Datasets - Add/edit subtitle", 
-                                      needHelpLink: "https://docs.sodaforsparc.io/docs/manage-dataset/add-edit-subtitle" 
-                                    })
+let subtitleHeader = SodaHeader({
+  headerText: "Manage Datasets - Add/edit subtitle",
+  needHelpLink:
+    "https://docs.sodaforsparc.io/docs/manage-dataset/add-edit-subtitle",
+});
 
-document.querySelector("#add_edit_subtitle_parent-tabc").insertAdjacentElement("afterbegin", subtitleHeader);
-
+document
+  .querySelector("#add_edit_subtitle_parent-tabc")
+  .insertAdjacentElement("afterbegin", subtitleHeader);
