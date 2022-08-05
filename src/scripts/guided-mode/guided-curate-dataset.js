@@ -2606,8 +2606,45 @@ const setActiveSubPage = (pageIdToActivate) => {
     }
 
     case "guided-submission-metadata-page": {
-      //no action necessary here, UI is already cleaned up/set
-      //by traverseToTab("guided-create-submission-metadata-tab")
+      const sparcAward =
+        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+      const selectedMilestones =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"][
+          "selected-milestones"
+        ];
+      const milestones =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
+      const completionDate =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"][
+          "completion-date"
+        ];
+
+      const sparcAwardInput = document.getElementById(
+        "guided-submission-sparc-award"
+      );
+      const completionDateInput = document.getElementById(
+        "guided-submission-completion-date"
+      );
+
+      guidedSubmissionTagsTagify.removeAllTags();
+
+      sparcAwardInput.value = sparcAward;
+
+      //If selectedMilestoneData exists in sodaJSONObj, add the milestones to the tagify input
+      //If not, reset the tagify input
+      if (milestones) {
+        guidedSubmissionTagsTagify.addTags(milestones);
+      } else if (selectedMilestones) {
+        const uniqueMilestones = Array.from(
+          new Set(selectedMilestones.map((milestone) => milestone.milestone))
+        );
+        guidedSubmissionTagsTagify.addTags(uniqueMilestones);
+      }
+
+      completionDateInput.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
+      //select the completion date that was added
+      completionDateInput.value = completionDate;
+
       break;
     }
   }

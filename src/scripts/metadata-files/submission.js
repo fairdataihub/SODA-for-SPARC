@@ -141,119 +141,101 @@ function resetSubmissionFields() {
 async function helpMilestoneSubmission(curationMode) {
   var filepath = "";
   var informationJson = {};
+
   Swal.fire({
-    title: "Do you have the Data Deliverables document ready to import?",
-    showCancelButton: true,
-    showConfirmButton: true,
-    confirmButtonText: "Yes, let's import it",
-    cancelButtonText: "No",
+    title: "Importing the Data Deliverables document",
+    html: `<div class="container-milestone-upload" style="display: flex;margin:10px"><input class="milestone-upload-text" id="input-milestone-select" onclick="openDDDimport()" style="text-align: center;height: 40px;border-radius: 0;background: #f5f5f5; border: 1px solid #d0d0d0; width: 100%" type="text" readonly placeholder="Browse here"/></div>`,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
+    preConfirm: () => {
+      if ($("#input-milestone-select").attr("placeholder") === "Browse here") {
+        Swal.showValidationMessage("Please select a file");
+      } else {
+        filepath = $("#input-milestone-select").attr("placeholder");
+        return {
+          filepath: filepath,
+        };
+      }
+    },
   }).then(async (result) => {
-    if (result.isConfirmed) {
-      Swal.fire({
-        title: "Importing the Data Deliverables document",
-        html: `<div class="container-milestone-upload" style="display: flex;margin:10px"><input class="milestone-upload-text" id="input-milestone-select" onclick="openDDDimport()" style="text-align: center;height: 40px;border-radius: 0;background: #f5f5f5; border: 1px solid #d0d0d0; width: 100%" type="text" readonly placeholder="Browse here"/></div>`,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        preConfirm: () => {
-          if (
-            $("#input-milestone-select").attr("placeholder") === "Browse here"
-          ) {
-            Swal.showValidationMessage("Please select a file");
-          } else {
-            filepath = $("#input-milestone-select").attr("placeholder");
-            return {
-              filepath: filepath,
-            };
-          }
-        },
-      }).then(async (result) => {
-        Swal.close();
+    Swal.close();
 
-        const filepath = result.value.filepath;
-        var award = $("#submission-sparc-award");
-        log.info(`Importing Data Deliverables document: ${filepath}`);
-        try {
-          let extract_milestone = await client.get(
-            `/prepare_metadata/import_milestone`,
-            {
-              params: {
-                path: filepath,
-              },
-            }
-          );
-          let res = extract_milestone.data;
-          milestoneObj = res;
+    const filepath = result.value.filepath;
+    var award = $("#submission-sparc-award");
+    log.info(`Importing Data Deliverables document: ${filepath}`);
+    try {
+      let extract_milestone = await client.get(
+        `/prepare_metadata/import_milestone`,
+        {
+          params: {
+            path: filepath,
+          },
+        }
+      );
+      let res = extract_milestone.data;
+      milestoneObj = res;
 
-          //Handle free-form mode submission data
-          if (curationMode === "free-form") {
-            createMetadataDir();
-            var informationJson = {};
-            informationJson = parseJson(milestonePath);
-            informationJson[award] = milestoneObj;
-            fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
-            Swal.fire({
-              backdrop: "rgba(0,0,0, 0.4)",
-              heightAuto: false,
-              timer: 3000,
-              timerProgressBar: true,
-              icon: "success",
-              text: `Successfully loaded your DataDeliverables.docx document`,
-            });
-            removeOptions(descriptionDateInput);
-            milestoneTagify1.removeAllTags();
-            milestoneTagify1.settings.whitelist = [];
-            changeAwardInput();
-          }
+      //Handle free-form mode submission data
+      if (curationMode === "free-form") {
+        createMetadataDir();
+        var informationJson = {};
+        informationJson = parseJson(milestonePath);
+        informationJson[award] = milestoneObj;
+        fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
+        Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          timer: 3000,
+          timerProgressBar: true,
+          icon: "success",
+          text: `Successfully loaded your DataDeliverables.docx document`,
+        });
+        removeOptions(descriptionDateInput);
+        milestoneTagify1.removeAllTags();
+        milestoneTagify1.settings.whitelist = [];
+        changeAwardInput();
+      }
 
-          //Handle guided mode submission data
-          if (curationMode === "guided") {
-            const guidedMilestoneData = res;
-            //create a string with today's date in the format xxxx/xx/xx
-            const today = new Date();
-            const todayString = `
+      //Handle guided mode submission data
+      if (curationMode === "guided") {
+        const guidedMilestoneData = res;
+        //create a string with today's date in the format xxxx/xx/xx
+        const today = new Date();
+        const todayString = `
               ${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}
             `;
-            //add a custom milestone row for when the user wants to add a custom milestone
-            //not included in the dataset deliverables document
-            guidedMilestoneData[
-              "Not included in the Dataset Deliverables document"
-            ] = [
-              {
-                "Description of data":
-                  "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
-                "Expected date of completion": "N/A",
-              },
-            ];
-            console.log(guidedMilestoneData);
+        //add a custom milestone row for when the user wants to add a custom milestone
+        //not included in the dataset deliverables document
+        guidedMilestoneData[
+          "Not included in the Dataset Deliverables document"
+        ] = [
+          {
+            "Description of data":
+              "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
+            "Expected date of completion": "N/A",
+          },
+        ];
+        console.log(guidedMilestoneData);
 
-            //save the unselected milestones into sodaJSONObj
-            sodaJSONObj["dataset-metadata"]["submission-metadata"][
-              "unselected-milestones"
-            ] = guidedMilestoneData;
+        //save the unselected milestones into sodaJSONObj
+        sodaJSONObj["dataset-metadata"]["submission-metadata"][
+          "unselected-milestones"
+        ] = guidedMilestoneData;
 
-            renderMilestoneSelectionTable(guidedMilestoneData);
+        renderMilestoneSelectionTable(guidedMilestoneData);
 
-            guidedSubmissionTagsTagify.settings.whitelist = [];
+        guidedSubmissionTagsTagify.settings.whitelist = [];
 
-            unHideAndSmoothScrollToElement(
-              "guided-div-data-deliverables-import"
-            );
-          }
-        } catch (error) {
-          clientError(error);
-          Swal.fire({
-            backdrop: "rgba(0,0,0, 0.4)",
-            heightAuto: false,
-            icon: "error",
-            text: userErrorMessage(error),
-          });
-        }
-      });
-    } else {
-      if (curationMode === "guided") {
+        unHideAndSmoothScrollToElement("guided-div-data-deliverables-import");
       }
+    } catch (error) {
+      clientError(error);
+      Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        icon: "error",
+        text: userErrorMessage(error),
+      });
     }
   });
 }
