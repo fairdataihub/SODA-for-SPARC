@@ -2203,23 +2203,21 @@ def scale_image(imagePath):
     """
     Scale the image to be within the file size limit for banner images (5MB)
     """
-    max_image_size = (5 * 1024 * 1024)
-    file_size = os.path.getsize(imagePath)
+    max_image_size = 2048
     filename, file_extension = os.path.splitext(imagePath)
+    img = cv2.imread(imagePath)
+    original_width = int(img.shape[1])
+    original_height = int(img.shape[0])
     home_path = os.path.expanduser('~')
     store_image_path = os.path.join(home_path, 'SODA', 'banner-image', (filename + file_extension))
     #file size is greater than 5mb
-    if file_size > max_image_size:
-        while file_size > max_image_size:
-            img = cv2.imread(imagePath)
-            scale_percent = 60 # percent of original size
-            width = int(img.shape[1] * scale_percent / 100)
-            height = int(img.shape[0] * scale_percent / 100)
-            dim = (width, height)
-  
-            # resize image
-            resized_image = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
-            cv2.imwrite(store_image_path, resized_image)
-            file_size = os.path.getsize(store_image_path)
+    if original_width > max_image_size or original_height > max_image_size:
+        width = 2048
+        height = 2048
+        dim = (width, height)
+
+        # resize image into 2048x2048
+        resized_image = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+        cv2.imwrite(store_image_path, resized_image)
 
     return { "scaled_image_path": store_image_path }

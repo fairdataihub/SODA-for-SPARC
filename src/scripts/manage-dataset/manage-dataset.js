@@ -1684,10 +1684,7 @@ const uploadBannerImage = async () => {
   imageDataURI.outputFile(croppedImageDataURI, imagePath).then(async () => {
     //image is created here into temp folder
     let image_file_size = fs.statSync(imagePath)["size"];
-    console.log(imageDataURI);
-    console.log(imagePath);
 
-    //5mb size limit
     if (image_file_size < 5 * 1024 * 1024) {
       let selectedBfAccount = defaultBfAccount;
       let selectedBfDataset = defaultBfDataset;
@@ -1763,8 +1760,9 @@ const uploadBannerImage = async () => {
       }
     } else {
       //final size is greater than 5mb so compress image here (image already created and stored in temp file)
-      let scaledImagePath = await scaleBannerImage(imagePath); //will scale image in same location
+      let scaledImagePath = await scaleBannerImage(imagePath); //scaled image will be in temp folder
       console.log("after image scaling function");
+      let image_file_size = fs.statSync(scaledImagePath)["size"]; //update size for analytics
       try {
         let uploadBannerImage = await client.put(
           `/manage_datasets/bf_banner_image`,
@@ -1781,7 +1779,7 @@ const uploadBannerImage = async () => {
         let bannerImage = uploadBannerImage.data.message;
         $("#para-dataset-banner-image-status").html(bannerImage);
 
-        await showCurrentBannerImage();
+        showCurrentBannerImage();
 
         $("#edit_banner_image_modal").modal("hide");
 
@@ -1789,8 +1787,42 @@ const uploadBannerImage = async () => {
           message: "Banner image uploaded",
           type: "success",
         });
+
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+          defaultBfDatasetId
+        );
+
+        // track the size for all dataset banner uploads
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
+            " - Size",
+          "Size",
+          image_file_size
+        );
+
+        // track the size for the given dataset
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
+            " - Size",
+          defaultBfDatasetId,
+          image_file_size
+        );
       } catch (error) {
         clientError(error);
+
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+          defaultBfDatasetId
+        );
       }
     }
   });
@@ -1865,7 +1897,7 @@ $("#save-banner-image").click((event) => {
           }).then((result) => {
             if (result.isConfirmed) {
               // uploadBannerImage();
-              console.log("handle here");
+              console.log("handle scaling here");
               uploadBannerImage();
             }
           });
