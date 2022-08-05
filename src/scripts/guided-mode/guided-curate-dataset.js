@@ -965,7 +965,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
             popup: "animate__animated animate__zoomOut animate__faster",
           },
           icon: "warning",
-          title: "Continue?",
+          title: "Missing data",
           html: `${highLevelFolder} data was not added to the following subjects:<br /><br />
             <ul>
               ${subjectsWithEmptyFolders
@@ -974,8 +974,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
                     `<li class="text-left">${subject.subjectName}</li>`
                 )
                 .join("")}
-            </ul><br />
-          Continuing will delete all dataset folders for subjects that do not contain samples with data. You will be able to come back and add additional subject data at a later time.`,
+            </ul>`,
           reverseButtons: true,
           showCancelButton: true,
           cancelButtonColor: "#6e7881",
@@ -1094,16 +1093,16 @@ const cleanUpEmptyGuidedStructureFolders = async (
           hideClass: {
             popup: "animate__animated animate__zoomOut animate__faster",
           },
-          title: "Continue?",
+          title: "Missing data",
           html: `${highLevelFolder} data was not added to the following samples:<br /><br />
             <ul>
               ${samplesWithEmptyFolders
                 .map(
-                  (sample) => `<li class="text-left">${sample.sampleName}</li>`
+                  (sample) =>
+                    `<li class="text-left">${sample.subjectName}/${sample.sampleName}</li>`
                 )
                 .join("")}
-            </ul><br />
-            Continuing will delete all dataset folders for samples that do not contain sample data.\n\nYou will be able to come back and add additional sample data at a later time.`,
+            </ul>`,
           icon: "warning",
           reverseButtons: true,
           showCancelButton: true,
@@ -6524,7 +6523,12 @@ $(document).ready(() => {
       "true"
     );
   });
-
+  $("#guided-structure-new-dataset").on("click", () => {
+    $("#guided-next-button").click();
+  });
+  $("#guided-import-existing-dataset").on("click", () => {
+    $("#guided-next-button").click();
+  });
   $("#guided-button-add-permission-user-or-team").on("click", function () {
     try {
       //get the selected permission element

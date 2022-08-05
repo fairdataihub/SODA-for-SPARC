@@ -184,15 +184,24 @@
             </div>
             <div class="guided--section">
               <h1 class="guided--text-sub-step">
-                3. Uploading metadata to Pennsieve
+                3. Uploading digital metadata to Pennsieve
               </h1>
               <p class="guided--help-text">
                 Once your dataset has been structured and the metadata files
-                have been created, you will then upload it to Pennsieve. All of
-                the folders/files you created during dataset structuring, the
-                metadata files created during dataset metadata creation, and
-                some additional details required to upload to Pennsieve such as
-                a banner image and dataset description will be uploaded.
+                have been created, you will then upload your dataset's digital
+                metadata (such as a banner image or your dataset's description)
+                to Pennsieve. Pennsieve is a cloud-based data managing platform
+                that fosters collaborative scientific research.
+              </p>
+            </div>
+            <div class="guided--section">
+              <h1 class="guided--text-sub-step">4. Generate your dataset</h1>
+              <p class="guided--help-text">
+                The final step of guided mode is generating your dataset. You
+                will have the option to either generate your dataset locally and
+                save a copy of the dataset structure you created on your
+                computer, or generate your dataset on Pennsieve, which will
+                upload a copy of your dataset to be viewed on Pennsieve.
               </p>
             </div>
           </div>
@@ -390,6 +399,13 @@
                   Great, we can skip the guided folder structuring steps and
                   import your dataset from a local folder.
                 </p>
+                <button
+                  class="ui primary button"
+                  id="guided-import-existing-dataset"
+                  style="background-color: var(--color-light-green) !important"
+                >
+                  Import existing dataset
+                </button>
               </div>
               <div
                 class="guided--section hidden"
@@ -399,6 +415,13 @@
                   No problem, SODA will help you structure your data according
                   to the SPARC dataset structure guidelines.
                 </p>
+                <button
+                  class="ui primary button"
+                  id="guided-structure-new-dataset"
+                  style="background-color: var(--color-light-green) !important"
+                >
+                  Start dataset structuring
+                </button>
               </div>
             </div>
           </div>
@@ -1771,7 +1794,7 @@
                 <button
                   class="ui negative basic button guided--radio-button"
                   id="guided-button-enter-submission-metadata-manually"
-                  data-next-element="guided-section-enter-data-derivatives-manually"
+                  data-next-element="guided-section--data-derivative-manual"
                   data-button-config-value="data-deliverables-imported"
                   data-button-config-value-state="no"
                   style="width: 320px"
@@ -1844,7 +1867,7 @@
                 </div>
                 <div
                   class="guided--section"
-                  id="guided-section-enter-data-derivatives-manually"
+                  id="guided-section--data-derivative-manual"
                 >
                   <p class="guided--help-text">
                     Click Next to skip importing data deliverables and enter
@@ -1979,7 +2002,7 @@
             >
               <div class="guided--section">
                 <h1 class="guided--text-sub-step">
-                  Specify your dataset's contributor information
+                  Dataset contributor information
                 </h1>
                 <p class="guided--help-text">
                   It is <b>mandatory</b> to add at least one affiliation and
