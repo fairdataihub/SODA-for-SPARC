@@ -1311,17 +1311,6 @@ const traverseToTab = (targetPageID) => {
     if (targetPageID === "guided-derivative-data-organization-tab") {
       openSubPageNavigation(targetPageID);
     }
-    if (targetPageID === "guided-code-folder-tab") {
-      //Append the guided-file-explorer element to the code folder organization container
-      $("#guided-file-explorer-elements").appendTo(
-        $("#guided-user-has-code-data")
-      );
-      //Remove hidden class from file explorer element in case it was hidden
-      //when showing the intro for prim/src/deriv organization
-      document
-        .getElementById("guided-file-explorer-elements")
-        .classList.remove("hidden");
-    }
 
     if (targetPageID === "guided-protocol-folder-tab") {
       //Append the guided-file-explorer element to the derivative folder organization container
@@ -1335,11 +1324,70 @@ const traverseToTab = (targetPageID) => {
         .classList.remove("hidden");
     }
 
+    if (targetPageID === "guided-code-folder-tab") {
+      const codeFolder = datasetStructureJSONObj["folders"]["code"];
+      if (!codeFolder) {
+        //create a docs folder
+        datasetStructureJSONObj["folders"]["code"] = {
+          folders: {},
+          files: {},
+          type: "",
+          action: [],
+        };
+      }
+      //Append the guided-file-explorer element to the docs folder organization container
+      $("#guided-file-explorer-elements").appendTo(
+        $("#guided-user-has-code-data")
+      );
+      updateFolderStructureUI(highLevelFolderPageData.code);
+
+      //Remove hidden class from file explorer element in case it was hidden
+      //when showing the intro for prim/src/deriv organization
+      document
+        .getElementById("guided-file-explorer-elements")
+        .classList.remove("hidden");
+    }
+
+    if (targetPageID === "guided-protocol-folder-tab") {
+      const protocolFolder = datasetStructureJSONObj["folders"]["protocol"];
+      if (!protocolFolder) {
+        //create a docs folder
+        datasetStructureJSONObj["folders"]["protocol"] = {
+          folders: {},
+          files: {},
+          type: "",
+          action: [],
+        };
+      }
+      //Append the guided-file-explorer element to the docs folder organization container
+      $("#guided-file-explorer-elements").appendTo(
+        $("#guided-user-has-protocol-data")
+      );
+      updateFolderStructureUI(highLevelFolderPageData.protocol);
+
+      //Remove hidden class from file explorer element in case it was hidden
+      //when showing the intro for prim/src/deriv organization
+      document
+        .getElementById("guided-file-explorer-elements")
+        .classList.remove("hidden");
+    }
+
     if (targetPageID === "guided-docs-folder-tab") {
+      const docsFolder = datasetStructureJSONObj["folders"]["docs"];
+      if (!docsFolder) {
+        //create a docs folder
+        datasetStructureJSONObj["folders"]["docs"] = {
+          folders: {},
+          files: {},
+          type: "",
+          action: [],
+        };
+      }
       //Append the guided-file-explorer element to the docs folder organization container
       $("#guided-file-explorer-elements").appendTo(
         $("#guided-user-has-docs-data")
       );
+      updateFolderStructureUI(highLevelFolderPageData.docs);
       //Remove hidden class from file explorer element in case it was hidden
       //when showing the intro for prim/src/deriv organization
       document
@@ -5419,156 +5467,6 @@ $("#guided-button-no-derivative-data").on("click", () => {
   }
 });
 
-/*********** Code page functions ***********/
-
-$("#guided-button-has-code-data").on("click", () => {
-  if (datasetStructureJSONObj["folders"]["code"] == undefined)
-    datasetStructureJSONObj["folders"]["code"] = {
-      folders: {},
-      files: {},
-      type: "",
-      action: [],
-    };
-  updateFolderStructureUI(highLevelFolderPageData.code);
-});
-$("#guided-button-no-code-data").on("click", () => {
-  //ask user to confirm they would like to delete code folder if it exists
-  if (datasetStructureJSONObj["folders"]["code"] != undefined) {
-    Swal.fire({
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      title:
-        "Reverting your decision will wipe out any changes you have made to the code folder.",
-      text: "Are you sure you would like to delete your code folder progress?",
-      icon: "warning",
-      showConfirmButton: true,
-      confirmButtonText: "Delete",
-      confirmButtonColor: "#3085d6 !important",
-      showCancelButton: true,
-      focusCancel: true,
-      reverseButtons: reverseSwalButtons,
-      heightAuto: false,
-      customClass: "swal-wide",
-      backdrop: "rgba(0,0,0, 0.4)",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        //User agrees to delete code folder
-        delete datasetStructureJSONObj["folders"]["code"];
-      } else {
-        //User cancels
-        //reset button UI to how it was before the user clicked no code files
-        $("#guided-button-has-code-data").click();
-      }
-    });
-  }
-});
-
-/*********** Docs page functions ***********/
-$("#guided-button-has-docs-data").on("click", () => {
-  if (datasetStructureJSONObj["folders"]["docs"] == undefined)
-    datasetStructureJSONObj["folders"]["docs"] = {
-      folders: {},
-      files: {},
-      type: "",
-      action: [],
-    };
-  updateFolderStructureUI(highLevelFolderPageData.docs);
-});
-$("#guided-button-no-docs-data").on("click", () => {
-  //ask user to confirm they would like to delete docs folder if it exists
-  if (datasetStructureJSONObj["folders"]["docs"] != undefined) {
-    Swal.fire({
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      title:
-        "Reverting your decision will wipe out any changes you have made to the docs folder.",
-      text: "Are you sure you would like to delete your docs folder progress?",
-      icon: "warning",
-      showConfirmButton: true,
-      confirmButtonText: "Delete",
-      confirmButtonColor: "#3085d6 !important",
-      showCancelButton: true,
-      focusCancel: true,
-      reverseButtons: reverseSwalButtons,
-      heightAuto: false,
-      customClass: "swal-wide",
-      backdrop: "rgba(0,0,0, 0.4)",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        //User agrees to delete docs folder
-        delete datasetStructureJSONObj["folders"]["docs"];
-      } else {
-        //User cancels
-        //reset button UI to how it was before the user clicked no docs files
-        $("#guided-button-has-docs-data").click();
-      }
-    });
-  }
-});
-
-/*********** Protocol page functions ***********/
-$("#guided-button-has-protocol-data").on("click", () => {
-  if (datasetStructureJSONObj["folders"]["protocol"] == undefined)
-    datasetStructureJSONObj["folders"]["protocol"] = {
-      folders: {},
-      files: {},
-      type: "",
-      action: [],
-    };
-  console.log($("#guided-file-explorer-elements"));
-
-  updateFolderStructureUI(highLevelFolderPageData.protocol);
-});
-$("#guided-button-no-protocol-data").on("click", () => {
-  //ask user to confirm they would like to delete protocol folder if it exists
-  if (datasetStructureJSONObj["folders"]["protocol"] != undefined) {
-    Swal.fire({
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      title:
-        "Reverting your decision will wipe out any changes you have made to the protocol folder.",
-      text: "Are you sure you would like to delete your protocol folder progress?",
-      icon: "warning",
-      showConfirmButton: true,
-      confirmButtonText: "Delete",
-      confirmButtonColor: "#3085d6 !important",
-      showCancelButton: true,
-      focusCancel: true,
-      reverseButtons: reverseSwalButtons,
-      heightAuto: false,
-      customClass: "swal-wide",
-      backdrop: "rgba(0,0,0, 0.4)",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        //User agrees to delete protocol folder
-        delete datasetStructureJSONObj["folders"]["protocol"];
-      } else {
-        //User cancels
-        //reset button UI to how it was before the user clicked no protocol files
-        $("#guided-button-has-protocol-data").click();
-      }
-    });
-  }
-});
-
 const getTagsFromTagifyElement = (tagifyElement) => {
   return Array.from(tagifyElement.getTagElms()).map((tag) => {
     return tag.textContent;
@@ -9000,16 +8898,20 @@ $(document).ready(() => {
           throw errorArray;
         }
       }
+
       if (pageBeingLeftID === "guided-code-folder-tab") {
         const guidedButtonUserHasCodeData = document.getElementById(
           "guided-button-has-code-data"
         );
-        const guidedButtonUserHasNoCodeData = document.getElementById(
+        const guidedButtonUserNoCodeData = document.getElementById(
           "guided-button-no-code-data"
         );
+
+        const codeFolder = datasetStructureJSONObj["folders"]["code"];
+
         if (
           !guidedButtonUserHasCodeData.classList.contains("selected") &&
-          !guidedButtonUserHasNoCodeData.classList.contains("selected")
+          !guidedButtonUserNoCodeData.classList.contains("selected")
         ) {
           errorArray.push({
             type: "notyf",
@@ -9017,35 +8919,166 @@ $(document).ready(() => {
           });
           throw errorArray;
         }
-
         if (guidedButtonUserHasCodeData.classList.contains("selected")) {
-          //Unskip the code metadata addition page
-          document
-            .getElementById("guided-add-code-metadata-tab")
-            .setAttribute("data-skip-page", "false");
+          if (
+            Object.keys(codeFolder.folders).length === 0 &&
+            Object.keys(codeFolder.files).length === 0
+          ) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "Please add docs code or indicate that you do not have code data",
+            });
+            throw errorArray;
+          }
         }
-
-        if (guidedButtonUserHasNoCodeData.classList.contains("selected")) {
-          //Skip the code metadata addition page
-          document
-            .getElementById("guided-add-code-metadata-tab")
-            .setAttribute("data-skip-page", "true");
+        if (guidedButtonUserNoCodeData.classList.contains("selected")) {
+          if (
+            Object.keys(codeFolder.folders).length === 0 &&
+            Object.keys(codeFolder.files).length === 0
+          ) {
+            delete datasetStructureJSONObj["folders"]["code"];
+          } else {
+            const { value: deleteCodeFolderWithData } = await Swal.fire({
+              title: "Delete code folder?",
+              text: "You indicated that your dataset does not contain code data, however, you previously added code data to your dataset. Do you want to delete the code folder?",
+              icon: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#3085d6",
+              cancelButtonColor: "#d33",
+              confirmButtonText: "Yes, delete it!",
+              cancelButtonText: "No, keep it!",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
+            if (deleteCodeFolderWithData) {
+              delete datasetStructureJSONObj["folders"]["code"];
+            } else {
+              guidedButtonUserHasCodeData.click();
+            }
+          }
         }
       }
-      if (pageBeingLeftID === "guided-docs-folder-tab") {
+
+      if (pageBeingLeftID === "guided-protocol-folder-tab") {
+        const guidedButtonUserHasProtocolData = document.getElementById(
+          "guided-button-has-protocol-data"
+        );
+        const guidedButtonUserNoProtocolData = document.getElementById(
+          "guided-button-no-protocol-data"
+        );
+
+        const protocolFolder = datasetStructureJSONObj["folders"]["protocol"];
+
         if (
-          !document
-            .getElementById("guided-button-has-docs-data")
-            .classList.contains("selected") &&
-          !document
-            .getElementById("guided-button-no-docs-data")
-            .classList.contains("selected")
+          !guidedButtonUserHasProtocolData.classList.contains("selected") &&
+          !guidedButtonUserNoProtocolData.classList.contains("selected")
+        ) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please indicate if your dataset contains protocol data",
+          });
+          throw errorArray;
+        }
+        if (guidedButtonUserHasProtocolData.classList.contains("selected")) {
+          if (
+            Object.keys(protocolFolder.folders).length === 0 &&
+            Object.keys(protocolFolder.files).length === 0
+          ) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "Please add docs protocol or indicate that you do not have protocol data",
+            });
+            throw errorArray;
+          }
+        }
+        if (guidedButtonUserNoProtocolData.classList.contains("selected")) {
+          if (
+            Object.keys(protocolFolder.folders).length === 0 &&
+            Object.keys(protocolFolder.files).length === 0
+          ) {
+            delete datasetStructureJSONObj["folders"]["protocol"];
+          } else {
+            const { value: deleteCodeFolderWithData } = await Swal.fire({
+              title: "Delete protocol folder?",
+              text: "You indicated that your dataset does not contain protocol data, however, you previously added protocol data to your dataset. Do you want to delete the protocol folder?",
+              icon: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#3085d6",
+              cancelButtonColor: "#d33",
+              confirmButtonText: "Yes, delete it!",
+              cancelButtonText: "No, keep it!",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
+            if (deleteCodeFolderWithData) {
+              delete datasetStructureJSONObj["folders"]["protocol"];
+            } else {
+              guidedButtonUserHasProtocolData.click();
+            }
+          }
+        }
+      }
+
+      if (pageBeingLeftID === "guided-docs-folder-tab") {
+        const guidedButtonUserHasDocsData = document.getElementById(
+          "guided-button-has-docs-data"
+        );
+        const guidedButtonUserNoDocsData = document.getElementById(
+          "guided-button-no-docs-data"
+        );
+
+        const docsFolder = datasetStructureJSONObj["folders"]["docs"];
+
+        if (
+          !guidedButtonUserHasDocsData.classList.contains("selected") &&
+          !guidedButtonUserNoDocsData.classList.contains("selected")
         ) {
           errorArray.push({
             type: "notyf",
             message: "Please indicate if your dataset contains docs data",
           });
           throw errorArray;
+        }
+        if (guidedButtonUserHasDocsData.classList.contains("selected")) {
+          if (
+            Object.keys(docsFolder.folders).length === 0 &&
+            Object.keys(docsFolder.files).length === 0
+          ) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "Please add docs data or indicate that you do not have docs data",
+            });
+            throw errorArray;
+          }
+        }
+        if (guidedButtonUserNoDocsData.classList.contains("selected")) {
+          if (
+            Object.keys(docsFolder.folders).length === 0 &&
+            Object.keys(docsFolder.files).length === 0
+          ) {
+            delete datasetStructureJSONObj["folders"]["docs"];
+          } else {
+            const { value: deleteDocsFolderWithData } = await Swal.fire({
+              title: "Delete docs folder?",
+              text: "You indicated that your dataset does not contain docs data, however, you previously added docs data to your dataset. Do you want to delete the docs folder?",
+              icon: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#3085d6",
+              cancelButtonColor: "#d33",
+              confirmButtonText: "Yes, delete it!",
+              cancelButtonText: "No, keep it!",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
+            if (deleteDocsFolderWithData) {
+              delete datasetStructureJSONObj["folders"]["docs"];
+            } else {
+              guidedButtonUserHasDocsData.click();
+            }
+          }
         }
       }
       if (pageBeingLeftID === "guided-folder-importation-tab") {
