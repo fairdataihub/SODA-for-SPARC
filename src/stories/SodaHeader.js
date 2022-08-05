@@ -1,10 +1,10 @@
 // require("./header.css")
 
-const SodaHeader = ({headerText, needHelpLink }) => {
-    const header = document.createElement("header");
-    header.className = "section-header"
+const SodaHeader = ({ headerText, needHelpLink }) => {
+  const header = document.createElement("header");
+  header.className = "section-header";
 
-    const headerContent = `
+  const headerContent = `
                         <div class="wrapper">
                             <div class="sub-wrapper">
                                 <div class="need-help-div">
@@ -19,10 +19,9 @@ const SodaHeader = ({headerText, needHelpLink }) => {
                         </div>
                 `;
 
-    header.insertAdjacentHTML("beforeend", headerContent);
+  header.insertAdjacentHTML("beforeend", headerContent);
 
-    return header;
+  return header;
 };
-
 
 module.exports = { SodaHeader };
