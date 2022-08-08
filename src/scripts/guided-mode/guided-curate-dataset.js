@@ -8124,7 +8124,8 @@ $(document).ready(() => {
       const mainCurationResponse = await guided_main_curate();
       console.log(mainCurationResponse);
     } catch (e) {
-      console.error(e);
+      console.log("error uploading go back to prev page");
+      console.log(e);
     }
   };
   const openGuidedDatasetRenameSwal = async () => {
@@ -8867,6 +8868,46 @@ $(document).ready(() => {
   };
 
   $("#guided-generate-dataset-button").on("click", async function () {
+    // If no agent is installed, download the latest agent from Github and link to their docs for installation instrucations if needed.
+    const [agent_installed_response, agent_version_response] =
+      await check_agent_installed();
+    if (!agent_installed_response) {
+      Swal.fire({
+        icon: "error",
+        title: "Pennsieve Agent error!",
+        html: agent_version_response,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Download now",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            let [browser_download_url, latest_agent_version] =
+              await get_latest_agent_version();
+            shell.openExternal(browser_download_url);
+            shell.openExternal(
+              "https://docs.pennsieve.io/docs/the-pennsieve-agent"
+            );
+          } catch (e) {
+            await Swal.fire({
+              icon: "error",
+              text: "We are unable to get the latest version of the Pennsieve Agent. Please try again later. If this issue persists please contact the SODA team at help@fairdataihub.org",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              showCancelButton: true,
+              confirmButtonText: "Ok",
+              showClass: {
+                popup: "animate__animated animate__zoomIn animate__faster",
+              },
+              hideClass: {
+                popup: "animate__animated animate__zoomOut animate__faster",
+              },
+            });
+          }
+        }
+      });
+      return;
+    }
     traverseToTab("guided-dataset-generation-tab");
     guidedPennsieveDatasetUpload();
     $("#guided-footer-div").hide();
