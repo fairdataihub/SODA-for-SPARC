@@ -1,452 +1,439 @@
-<template class="task-template">
-  <section
-    id="validate_dataset-section"
-    class="section js-section u-category-windows"
-    style="padding-left: 15px; overflow-y: hidden"
+<section
+  id="validate_dataset-section"
+  class="section js-section u-category-windows"
+  style="padding-left: 15px; overflow-y: hidden"
+>
+  <div
+    class="main-tabs show"
+    style="display: flex; height: 100%; overflow-y: hidden"
   >
-    <div
-      class="main-tabs show"
-      style="display: flex; height: 100%; overflow-y: hidden"
-    >
-      <header class="section-header">
-        <div
-          style="
-            display: inline-flex;
-            align-items: center;
-            flex-direction: row;
-            width: 94.5%;
-            padding-right: 20px;
-            margin-bottom: 50px;
-          "
-        >
-          <div class="need-help-div">
-            <h2>Validate Dataset</h2>
-            <a
-              target="_blank"
-              href="https://docs.sodaforsparc.io/docs/prepare-dataset/validate-your-dataset"
-              >Need help?</a
-            >
-          </div>
+    <header class="section-header">
+      <div
+        style="
+          display: inline-flex;
+          align-items: center;
+          flex-direction: row;
+          width: 94.5%;
+          padding-right: 20px;
+          margin-bottom: 50px;
+        "
+      >
+        <div class="need-help-div">
+          <h2>Validate Dataset</h2>
+          <a
+            target="_blank"
+            href="https://docs.sodaforsparc.io/docs/prepare-dataset/validate-your-dataset"
+            >Need help?</a
+          >
         </div>
-      </header>
+      </div>
+    </header>
 
-      <div id="validate_dataset-tab" style="overflow-y: auto; height: 70%">
-        <div
-          class="individual-question validate_dataset show"
-          id="validate_dataset-question-1"
-          style="height: auto"
-        >
-          <div class="ui form" style="width: 100%">
-            <div class="grouped fields">
-              <!--Select how you wish to validate the dataset-->
-              <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Please select an option below:
-              </label>
-              <div
-                style="
-                  display: flex;
-                  flex-direction: row;
-                  justify-content: center;
-                "
-              >
-                <div style="margin: 15px 0">
-                  <div
-                    class="option-card radio-button"
-                    id="validate_dataset-1-local"
-                    data-current="validate_dataset-question-1"
-                    data-next="validate_dataset-question-2"
-                    style="
-                      max-width: 180px;
-                      height: 220px !important;
-                      width: 180px !important;
-                    "
-                  >
-                    <div class="card-head">
-                      <div class="folder-checkbox">
-                        <input
-                          class="folder-input-check"
-                          name="validate-1-Local"
-                          type="radio"
-                          id="validate-1-Local"
-                        />
-                        <label for="validate-1-Local"></label>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="40px"
-                        height="40px"
-                        fill="var(--color-accent)"
-                        class="bi bi-file-earmark-plus"
-                        viewBox="0 0 16 16"
-                      >
-                        <path
-                          d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
-                        ></path>
-                        <path
-                          d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"
-                        ></path>
-                      </svg>
-                      <h2>I want to validate a local dataset</h2>
+    <div id="validate_dataset-tab" style="overflow-y: auto; height: 70%">
+      <div
+        class="individual-question validate_dataset show"
+        id="validate_dataset-question-1"
+        style="height: auto"
+      >
+        <div class="ui form" style="width: 100%">
+          <div class="grouped fields">
+            <!--Select how you wish to validate the dataset-->
+            <label style="font-size: 17px; color: var(--color-bg-plum)"
+              >Please select an option below:
+            </label>
+            <div
+              style="
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+              "
+            >
+              <div style="margin: 15px 0">
+                <div
+                  class="option-card radio-button"
+                  id="validate_dataset-1-local"
+                  data-current="validate_dataset-question-1"
+                  data-next="validate_dataset-question-2"
+                  style="
+                    max-width: 180px;
+                    height: 220px !important;
+                    width: 180px !important;
+                  "
+                >
+                  <div class="card-head">
+                    <div class="folder-checkbox">
+                      <input
+                        class="folder-input-check"
+                        name="validate-1-Local"
+                        type="radio"
+                        id="validate-1-Local"
+                      />
+                      <label for="validate-1-Local"></label>
                     </div>
                   </div>
+                  <div class="card-body">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="40px"
+                      height="40px"
+                      fill="var(--color-accent)"
+                      class="bi bi-file-earmark-plus"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+                      ></path>
+                      <path
+                        d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"
+                      ></path>
+                    </svg>
+                    <h2>I want to validate a local dataset</h2>
+                  </div>
                 </div>
+              </div>
 
+              <div
+                style="margin: 15px 0"
+                data-content="Coming soon..."
+                rel="popover"
+                data-placement="bottom"
+                data-trigger="hover"
+                class="coming-soon-div"
+              >
                 <div
-                  style="margin: 15px 0"
-                  data-content="Coming soon..."
-                  rel="popover"
-                  data-placement="bottom"
-                  data-trigger="hover"
-                  class="coming-soon-div"
+                  class="option-card radio-button"
+                  data-current="validate_dataset-question-1"
+                  id="validate_dataset-1-pennsieve"
+                  data-next="validate_dataset-question-2"
+                  style="
+                    max-width: 180px;
+                    height: 220px !important;
+                    width: 180px !important;
+                    pointer-events: none;
+                    background: #f6f6f6;
+                  "
                 >
-                  <div
-                    class="option-card radio-button"
-                    data-current="validate_dataset-question-1"
-                    id="validate_dataset-1-pennsieve"
-                    data-next="validate_dataset-question-2"
-                    style="
-                      max-width: 180px;
-                      height: 220px !important;
-                      width: 180px !important;
-                      pointer-events: none;
-                      background: #f6f6f6;
-                    "
-                  >
-                    <div class="card-head">
-                      <div class="folder-checkbox">
-                        <input
-                          class="folder-input-check"
-                          name="validate-1-Pennsieve"
-                          type="radio"
-                          id="validate-1-Pennsieve"
-                        />
-                        <label for="validate-1-Pennsieve"></label>
-                      </div>
+                  <div class="card-head">
+                    <div class="folder-checkbox">
+                      <input
+                        class="folder-input-check"
+                        name="validate-1-Pennsieve"
+                        type="radio"
+                        id="validate-1-Pennsieve"
+                      />
+                      <label for="validate-1-Pennsieve"></label>
                     </div>
-                    <div class="card-body">
-                      <i
-                        class="far fa-save"
-                        style="color: var(--color-bg-orange)"
-                      ></i>
-                      <h2>I want to validate a Pennsieve dataset</h2>
-                    </div>
+                  </div>
+                  <div class="card-body">
+                    <i
+                      class="far fa-save"
+                      style="color: var(--color-bg-orange)"
+                    ></i>
+                    <h2>I want to validate a Pennsieve dataset</h2>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <div
-          class="individual-question validate_dataset"
-          id="validate_dataset-question-2"
-          style="height: auto"
-        >
-          <div class="ui form">
-            <!--Validating a local dataset-->
-            <div
-              class="grouped fields"
-              id="validate_dataset-question-1-local-container"
+      <div
+        class="individual-question validate_dataset"
+        id="validate_dataset-question-2"
+        style="height: auto"
+      >
+        <div class="ui form">
+          <!--Validating a local dataset-->
+          <div
+            class="grouped fields"
+            id="validate_dataset-question-1-local-container"
+          >
+            <label style="font-size: 17px; color: var(--color-bg-plum)"
+              >Where is the local dataset located?</label
             >
-              <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Where is the local dataset located?</label
-              >
-              <div
-                class="field"
-                style="
-                  margin: 15px auto;
-                  display: flex;
-                  justify-content: center;
-                "
-              >
-                <input
-                  class="form-control"
-                  style="width: 450px !important"
-                  id="validate-local-dataset-path"
-                  type="text"
-                  readonly=""
-                  placeholder="Browse here"
-                />
-              </div>
+            <div
+              class="field"
+              style="margin: 15px auto; display: flex; justify-content: center"
+            >
+              <input
+                class="form-control"
+                style="width: 450px !important"
+                id="validate-local-dataset-path"
+                type="text"
+                readonly=""
+                placeholder="Browse here"
+              />
+            </div>
 
+            <div
+              class="field"
+              style="margin: 15px auto; display: flex; justify-content: center"
+            >
+              <button
+                style="width: 120px"
+                class="btn_animated"
+                id="validator-confirm-local-dataset-btn"
+                data-next="validate_dataset-question-3"
+                data-current="validate_dataset-question-2"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+
+          <!--Selecting a Pennsieve dataset-->
+          <!--Shown when user transitions to this question by clicking the Pennsieve dataset radio card-->
+          <div class="grouped fields" id="pennsieve-question-2-container">
+            <label style="font-size: 17px; color: var(--color-bg-plum)"
+              >Which Pennsieve dataset would you like to validate?
+            </label>
+            <div
+              class="field"
+              style="margin: 0 auto !important; width: 500px !important"
+            >
               <div
-                class="field"
                 style="
-                  margin: 15px auto;
                   display: flex;
-                  justify-content: center;
+                  flex-direction: column;
+                  justify-content: space-between;
+                  margin-top: 15px;
+                  height: auto;
+                  box-shadow: 0px 0px 10px #d5d5d5;
+                  padding: 15px 25px;
+                  border-radius: 5px;
                 "
+              >
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                  "
+                >
+                  <div class="card-container prepare-submission">
+                    <div style="width: 100%">
+                      <h5
+                        class="card-left"
+                        style="text-align: right; padding-right: 5px"
+                      >
+                        Current account:
+                      </h5>
+                      <div class="change-current-account">
+                        <h5 class="card-right bf-account-span">
+                          SODA-Pennsieve
+                        </h5>
+
+                        <svg
+                          class="svg-change-current-account bi bi-pencil-fill"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18"
+                          height="18"
+                          fill="#000"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                          ></path>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    margin-bottom: 15px;
+                  "
+                >
+                  <div class="card-container prepare-submission">
+                    <div>
+                      <h5
+                        class="card-left"
+                        style="text-align: right; padding-right: 5px"
+                      >
+                        Account details:
+                      </h5>
+                      <h5 class="card-right bf-account-details-span">
+                        User email: cmarroquin@calmi2.org<br />Organization:
+                        SPARC Consortium
+                      </h5>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                  "
+                >
+                  <div class="card-container prepare-submission">
+                    <div style="width: 100%">
+                      <h5
+                        class="card-left"
+                        style="text-align: right; padding-right: 5px"
+                      >
+                        Current dataset:
+                      </h5>
+                      <div
+                        class="change-current-account"
+                        id="select-dataset-container--validator"
+                      >
+                        <h5
+                          id="bf_dataset_load_validator"
+                          class="card-right bf-dataset-span"
+                        >
+                          None
+                        </h5>
+
+                        <svg
+                          class="svg-change-current-account dataset bi bi-pencil-fill"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18"
+                          height="18"
+                          fill="#000"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                          ></path>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="ui active green inline loader small"
+                    style="display: none"
+                  ></div>
+                </div>
+              </div>
+              <div
+                style="
+                  display: none;
+                  flex-direction: row;
+                  justify-content: center;
+                  margin-top: 30px;
+                "
+                id="div-check-bf-import-validator"
               >
                 <button
                   style="width: 120px"
-                  class="btn_animated"
-                  id="validator-confirm-local-dataset-btn"
+                  id="confirm-dataset-selection--validator"
                   data-next="validate_dataset-question-3"
                   data-current="validate_dataset-question-2"
+                  class="btn_animated"
                 >
                   Confirm
                 </button>
               </div>
             </div>
-
-            <!--Selecting a Pennsieve dataset-->
-            <!--Shown when user transitions to this question by clicking the Pennsieve dataset radio card-->
-            <div class="grouped fields" id="pennsieve-question-2-container">
-              <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Which Pennsieve dataset would you like to validate?
-              </label>
-              <div
-                class="field"
-                style="margin: 0 auto !important; width: 500px !important"
-              >
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: space-between;
-                    margin-top: 15px;
-                    height: auto;
-                    box-shadow: 0px 0px 10px #d5d5d5;
-                    padding: 15px 25px;
-                    border-radius: 5px;
-                  "
-                >
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      justify-content: space-between;
-                    "
-                  >
-                    <div class="card-container prepare-submission">
-                      <div style="width: 100%">
-                        <h5
-                          class="card-left"
-                          style="text-align: right; padding-right: 5px"
-                        >
-                          Current account:
-                        </h5>
-                        <div
-                          class="change-current-account"
-                          onclick="openDropdownPrompt(null, 'bf')"
-                        >
-                          <h5 class="card-right bf-account-span">
-                            SODA-Pennsieve
-                          </h5>
-
-                          <svg
-                            class="svg-change-current-account bi bi-pencil-fill"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="18"
-                            height="18"
-                            fill="#000"
-                            viewBox="0 0 16 16"
-                          >
-                            <path
-                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                            ></path>
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      margin-bottom: 15px;
-                    "
-                  >
-                    <div class="card-container prepare-submission">
-                      <div>
-                        <h5
-                          class="card-left"
-                          style="text-align: right; padding-right: 5px"
-                        >
-                          Account details:
-                        </h5>
-                        <h5 class="card-right bf-account-details-span">
-                          User email: cmarroquin@calmi2.org<br />Organization:
-                          SPARC Consortium
-                        </h5>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      justify-content: space-between;
-                    "
-                  >
-                    <div class="card-container prepare-submission">
-                      <div style="width: 100%">
-                        <h5
-                          class="card-left"
-                          style="text-align: right; padding-right: 5px"
-                        >
-                          Current dataset:
-                        </h5>
-                        <div
-                          class="change-current-account"
-                          id="select-dataset-container--validator"
-                        >
-                          <h5
-                            id="bf_dataset_load_validator"
-                            class="card-right bf-dataset-span"
-                          >
-                            None
-                          </h5>
-
-                          <svg
-                            class="svg-change-current-account dataset bi bi-pencil-fill"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="18"
-                            height="18"
-                            fill="#000"
-                            viewBox="0 0 16 16"
-                          >
-                            <path
-                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                            ></path>
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      class="ui active green inline loader small"
-                      style="display: none"
-                    ></div>
-                  </div>
-                </div>
-                <div
-                  style="
-                    display: none;
-                    flex-direction: row;
-                    justify-content: center;
-                    margin-top: 30px;
-                  "
-                  id="div-check-bf-import-validator"
-                >
-                  <button
-                    style="width: 120px"
-                    id="confirm-dataset-selection--validator"
-                    data-next="validate_dataset-question-3"
-                    data-current="validate_dataset-question-2"
-                    class="btn_animated"
-                  >
-                    Confirm
-                  </button>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
+      </div>
 
-        <div
-          class="individual-question validate_dataset"
-          id="validate_dataset-question-3"
-          style="height: auto; margin-bottom: 84px"
-        >
-          <div class="ui form" style="width: 450px">
-            <div class="grouped fields">
-              <div
-                id="div-confirm-validate_dataset"
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: center;
-                  align-items: center;
-                  margin: 0 auto;
-                "
-              >
-                <div style="display: flex; justify-content: center">
-                  <button
-                    id="run_validator_btn"
-                    class="btn_animated md"
-                    style="
-                      cursor: pointer;
-                      border-radius: 8px;
-                      margin: 0px auto;
-                      width: 160px;
-                      height: 40px;
-                      border: none !important;
-                      font-size: 15px;
-                      text-align: center;
-                      position: absolute;
-                    "
-                    onclick="transitionFreeFormMode(this, 'validate_dataset-question-3', 'validate_dataset-tab', '', 'individual-question validate_dataset')"
-                    data-next="validate_dataset-question-4"
-                  >
-                    Run dataset validator
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          class="individual-question validate_dataset"
-          id="validate_dataset-question-4"
-          style="height: auto"
-        >
-          <div class="ui form" style="width: 450px">
-            <div class="grouped fields">
-              <div
-                id="validation-errors-container"
-                style="
-                  visibility: hidden;
-                  display: flex;
-                  flex-direction: column;
-                  align-items: center;
-                "
-              >
-                <label style="font-size: 17px; color: var(--color-bg-plum)"
-                  >Validation Errors
-                  <i
-                    class="fas fa-info-circle popover-tooltip"
-                    data-content="The path column indicates where the errors occurred. The message column provides an explanation of what the errors are."
-                    rel="popover"
-                    data-html="true"
-                    data-placement="right"
-                    data-trigger="hover"
-                    data-original-title=""
-                    title=""
-                  ></i>
-                </label>
-
-                <table class="ui celled padded table">
-                  <thead>
-                    <tr>
-                      <th>Path</th>
-                      <th>Message</th>
-                      <!-- <th>Fix Here</th> -->
-                    </tr>
-                  </thead>
-                  <tbody></tbody>
-                </table>
+      <div
+        class="individual-question validate_dataset"
+        id="validate_dataset-question-3"
+        style="height: auto; margin-bottom: 84px"
+      >
+        <div class="ui form" style="width: 450px">
+          <div class="grouped fields">
+            <div
+              id="div-confirm-validate_dataset"
+              style="
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                margin: 0 auto;
+              "
+            >
+              <div style="display: flex; justify-content: center">
+                <button
+                  id="run_validator_btn"
+                  class="btn_animated md"
+                  style="
+                    cursor: pointer;
+                    border-radius: 8px;
+                    margin: 0px auto;
+                    width: 160px;
+                    height: 40px;
+                    border: none !important;
+                    font-size: 15px;
+                    text-align: center;
+                    position: absolute;
+                  "
+                  onclick="transitionFreeFormMode(this, 'validate_dataset-question-3', 'validate_dataset-tab', '', 'individual-question validate_dataset')"
+                  data-next="validate_dataset-question-4"
+                >
+                  Run dataset validator
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="footer-div">
-        <div style="display: flex; flex-direction: row; width: 120px">
-          <button
-            type="button"
-            class="transition-btn prev"
-            data-section="main_tabs"
-          >
-            <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
-          </button>
+      <div
+        class="individual-question validate_dataset"
+        id="validate_dataset-question-4"
+        style="height: auto"
+      >
+        <div class="ui form" style="width: 450px">
+          <div class="grouped fields">
+            <div
+              id="validation-errors-container"
+              style="
+                visibility: hidden;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+              "
+            >
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Validation Errors
+                <i
+                  class="fas fa-info-circle popover-tooltip"
+                  data-content="The path column indicates where the errors occurred. The message column provides an explanation of what the errors are."
+                  rel="popover"
+                  data-html="true"
+                  data-placement="right"
+                  data-trigger="hover"
+                  data-original-title=""
+                  title=""
+                ></i>
+              </label>
+
+              <table class="ui celled padded table">
+                <thead>
+                  <tr>
+                    <th>Path</th>
+                    <th>Message</th>
+                    <!-- <th>Fix Here</th> -->
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </section>
 
-  <script src="./scripts/validator/validate.js"></script>
-</template>
+    <div class="footer-div">
+      <div style="display: flex; flex-direction: row; width: 120px">
+        <button
+          type="button"
+          class="transition-btn prev"
+          data-section="main_tabs"
+        >
+          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="./scripts/validator/validate.js"></script>

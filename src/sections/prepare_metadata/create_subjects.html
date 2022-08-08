@@ -1,0 +1,2090 @@
+<section
+  id="create_subjects-section"
+  class="section js-section u-category-windows"
+  style="padding-left: 15px; overflow-y: hidden"
+>
+  <div
+    class="main-tabs show"
+    id="create_subjects-tab"
+    style="
+      height: calc(100% - 60px);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 0;
+    "
+  >
+    <header class="section-header">
+      <div
+        style="
+          display: inline-flex;
+          align-items: center;
+          flex-direction: row;
+          width: 94.5%;
+          padding-right: 20px;
+          margin-bottom: 50px;
+        "
+      >
+        <div
+          style="
+            width: 100%;
+            border-bottom: 3px solid #b80d49;
+            margin-bottom: -5px;
+          "
+        >
+          <div class="need-help-div">
+            <h2>Prepare Metadata - Create subjects.xlsx</h2>
+            <a
+              target="_blank"
+              href="https://docs.sodaforsparc.io/docs/prepare-metadata/create-subjects"
+              >Need help?</a
+            >
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Question 1: Loading previous progress or start anew -->
+    <div
+      class="individual-question prepare-subjects show"
+      id="Question-prepare-subjects-1"
+    >
+      <div class="ui form" style="width: 100%">
+        <div class="grouped fields">
+          <label style="font-size: 17px; color: var(--color-bg-plum)"
+            >Please select an option below:
+          </label>
+          <div
+            style="display: flex; flex-direction: row; justify-content: center"
+          >
+            <div style="margin: 15px 0">
+              <div
+                class="option-card radio-button"
+                data-next="Question-prepare-subjects-3"
+                data-current="Question-prepare-subjects-1"
+                onclick="transitionFreeFormMode(this, 'Question-prepare-subjects-1', 'create_subjects-tab', '', 'individual-question prepare-subjects')"
+                style="
+                  max-height: 160px;
+                  max-width: 180px;
+                  height: 160px !important;
+                  width: 180px !important;
+                "
+              >
+                <div class="card-head">
+                  <div class="folder-checkbox">
+                    <input
+                      class="folder-input-check"
+                      name="subjects-1"
+                      type="radio"
+                      id="subjects-1-B"
+                    />
+                    <label for="subjects-1-B"></label>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="40px"
+                    height="40px"
+                    fill="var(--color-accent)"
+                    class="bi bi-file-earmark-plus"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+                    />
+                    <path
+                      d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"
+                    />
+                  </svg>
+                  <h2>I want to start a new subjects file</h2>
+                </div>
+              </div>
+            </div>
+            <div style="margin: 15px 0">
+              <div
+                class="option-card radio-button"
+                data-next="Question-prepare-subjects-2"
+                data-current="Question-prepare-subjects-1"
+                onclick="transitionFreeFormMode(this, 'Question-prepare-subjects-1', 'create_subjects-tab', '', 'individual-question prepare-subjects')"
+                style="
+                  max-height: 160px;
+                  max-width: 180px;
+                  height: 160px !important;
+                  width: 180px !important;
+                "
+              >
+                <div class="card-head">
+                  <div class="folder-checkbox">
+                    <input
+                      class="folder-input-check"
+                      name="subjects-1"
+                      type="radio"
+                      id="subjects-1-A"
+                    />
+                    <label for="subjects-1-A"></label>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <i
+                    class="far fa-save"
+                    style="color: var(--color-bg-orange)"
+                  ></i>
+                  <h2>
+                    I want to continue working on an existing subjects.xlsx file
+                  </h2>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="individual-question prepare-subjects"
+      id="Question-prepare-subjects-2"
+    >
+      <div class="ui form" style="width: 100%">
+        <div class="grouped fields">
+          <label style="font-size: 17px; color: var(--color-bg-plum)"
+            >Where is the existing subjects.xlsx file located?
+          </label>
+          <div
+            style="display: flex; flex-direction: row; justify-content: center"
+          >
+            <div style="margin: 15px 0">
+              <div
+                class="option-card radio-button"
+                id="Question-prepare-subjects-2-new"
+                data-current="Question-prepare-subjects-2"
+                data-next="Question-prepare-subjects-5"
+                onclick="transitionFreeFormMode(this, 'Question-prepare-subjects-2', 'create_subjects-tab', '', 'individual-question prepare-subjects')"
+                style="
+                  max-width: 180px;
+                  height: 220px !important;
+                  width: 180px !important;
+                "
+              >
+                <div class="card-head">
+                  <div class="folder-checkbox">
+                    <input
+                      class="folder-input-check"
+                      name="subjects-3"
+                      type="radio"
+                      id="subjects-3-B"
+                    />
+                    <label for="subjects-3-B"></label>
+                  </div>
+                </div>
+                <div class="card-body metadata">
+                  <svg
+                    width="40px"
+                    height="40px"
+                    viewBox="0 0 16 16"
+                    class="bi bi-laptop"
+                    fill="var(--color-bg-plum)"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M13.5 3h-11a.5.5 0 0 0-.5.5V11h12V3.5a.5.5 0 0 0-.5-.5zm-11-1A1.5 1.5 0 0 0 1 3.5V12h14V3.5A1.5 1.5 0 0 0 13.5 2h-11z"
+                    />
+                    <path
+                      d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z"
+                    />
+                  </svg>
+                  <h2>On my computer</h2>
+                </div>
+              </div>
+            </div>
+            <div style="margin: 15px 0">
+              <div
+                class="option-card radio-button"
+                data-current="Question-prepare-subjects-2"
+                data-next="Question-prepare-subjects-4"
+                onclick="transitionFreeFormMode(this, 'Question-prepare-subjects-2', 'create_subjects-tab', '', 'individual-question prepare-subjects')"
+                style="
+                  max-width: 180px;
+                  height: 220px !important;
+                  width: 180px !important;
+                "
+              >
+                <div class="card-head">
+                  <div class="folder-checkbox">
+                    <input
+                      class="folder-input-check"
+                      name="subjects-3"
+                      type="radio"
+                      id="subjects-3-A"
+                    />
+                    <label for="subjects-3-A"></label>
+                  </div>
+                </div>
+                <div class="card-body metadata">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="50px"
+                    height="50px"
+                    fill="var(--tagify-dd-color-primary)"
+                    class="bi bi-cloud-check"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10.354 6.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708 0z"
+                    />
+                    <path
+                      d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"
+                    />
+                  </svg>
+                  <h2>On Pennsieve</h2>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Question 4: Ask for existing subjects.xlsx file -->
+    <div
+      class="individual-question prepare-subjects"
+      id="Question-prepare-subjects-5"
+      style="width: 85%"
+    >
+      <div class="ui form" style="width: 450px">
+        <div class="grouped fields">
+          <label
+            style="
+              font-size: 17px;
+              color: var(--color-bg-plum);
+              text-align: center;
+            "
+            >Browse for your <i>subjects.xlsx</i> file below:
+          </label>
+          <div
+            class="field"
+            style="margin: 15px auto; display: flex; justify-content: center"
+          >
+            <input
+              class="form-control"
+              style="width: 450px !important"
+              onclick="showExistingSubjectsFile()"
+              id="existing-subjects-file-destination"
+              type="text"
+              readonly
+              placeholder="Browse here"
+            />
+          </div>
+          <div
+            style="
+              display: none;
+              flex-direction: row;
+              justify-content: center;
+              margin: 10px auto;
+            "
+            id="div-confirm-existing-subjects-import"
+          >
+            <button
+              onclick="importExistingSubjectsFile()"
+              style="
+                cursor: pointer;
+                border-radius: 8px;
+                margin: 10px auto;
+                width: 100px;
+                height: 30px;
+                background: var(--color-light-green);
+                color: #fff;
+                font-weight: 600;
+                border: none;
+                font-size: 13px;
+              "
+            >
+              Confirm
+            </button>
+            <button
+              onclick="transitionFreeFormMode(this, 'Question-prepare-subjects-5', 'create_subjects-tab', 'delete', 'individual-question prepare-subjects')"
+              data-next="Question-prepare-subjects-3"
+              id="button-fake-confirm-existing-subjects-file-load"
+              style="
+                cursor: pointer;
+                border-radius: 8px;
+                margin: 10px auto;
+                width: 100px;
+                height: 30px;
+                background: var(--color-light-green);
+                color: #fff;
+                font-weight: 600;
+                border: none;
+                font-size: 13px;
+                display: none;
+              "
+            >
+              Fake Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="individual-question prepare-subjects"
+      id="Question-prepare-subjects-4"
+    >
+      <div class="ui form" style="width: 100%">
+        <div class="grouped fields">
+          <label style="font-size: 17px; color: var(--color-bg-plum)"
+            >Which Pennsieve dataset is the subjects.xlsx located at?
+          </label>
+          <div
+            class="field"
+            style="margin: 0 auto !important; width: 500px !important"
+          >
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                margin-top: 15px;
+                height: auto;
+                box-shadow: 0px 0px 10px #d5d5d5;
+                padding: 15px 25px;
+                border-radius: 5px;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;
+                "
+              >
+                <div class="card-container prepare-submission">
+                  <div style="width: 100%">
+                    <h5
+                      class="card-left"
+                      style="text-align: right; padding-right: 5px"
+                    >
+                      Current account:
+                    </h5>
+                    <div
+                      class="change-current-account subjects-change-current-account"
+                    >
+                      <h5 class="card-right bf-account-span">None</h5>
+
+                      <svg
+                        class="svg-change-current-account bi bi-pencil-fill"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        fill="#000"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                style="display: flex; flex-direction: row; margin-bottom: 15px"
+              >
+                <div class="card-container prepare-submission">
+                  <div>
+                    <h5
+                      class="card-left"
+                      style="text-align: right; padding-right: 5px"
+                    >
+                      Account details:
+                    </h5>
+                    <h5 class="card-right bf-account-details-span">None</h5>
+                  </div>
+                </div>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;
+                "
+              >
+                <div class="card-container prepare-submission">
+                  <div style="width: 100%">
+                    <h5
+                      class="card-left"
+                      style="text-align: right; padding-right: 5px"
+                    >
+                      Current dataset:
+                    </h5>
+                    <div
+                      class="change-current-account subjects-change-current-ds"
+                    >
+                      <h5
+                        id="bf_dataset_load_subjects"
+                        class="card-right bf-dataset-span"
+                      >
+                        None
+                      </h5>
+
+                      <svg
+                        class="svg-change-current-account dataset bi bi-pencil-fill"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        fill="#000"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="ui active green inline loader small"
+                  style="display: none"
+                ></div>
+              </div>
+            </div>
+            <div
+              style="
+                display: none;
+                flex-direction: row;
+                justify-content: center;
+                margin: 10px auto;
+              "
+              id="div-check-bf-import-subjects"
+            >
+              <button
+                onclick="checkBFImportSubjects()"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                "
+              >
+                Confirm
+              </button>
+              <button
+                onclick="transitionFreeFormMode(this, 'Question-prepare-subjects-4', 'create_subjects-tab', '', 'individual-question prepare-subjects')"
+                data-next="Question-prepare-subjects-3"
+                id="button-fake-confirm-existing-bf-subjects-file-load"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                  display: none;
+                "
+              >
+                Fake Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="individual-question prepare-subjects"
+      id="Question-prepare-subjects-3"
+    >
+      <div class="ui form" style="width: 100%">
+        <div class="grouped fields">
+          <label style="font-size: 17px; color: var(--color-bg-plum)"
+            >Enter information about each subject from your study then click
+            "Generate"
+          </label>
+          <div
+            style="display: flex; flex-direction: column; margin: 10px auto"
+          ></div>
+          <table
+            class="ui celled table"
+            style="
+              text-align: center;
+              display: none;
+              width: auto;
+              min-width: 550px;
+              margin: 10px auto;
+            "
+            id="table-subjects"
+          >
+            <style>
+              /* style for grabbed contributor row for moving contributors */
+              .grab {
+                cursor: grab;
+              }
+              .grabbed {
+                box-shadow: 0 0 6px #000;
+              }
+              .grabCursor,
+              .grabCursor * {
+                cursor: grabbing !important;
+              }
+            </style>
+            <thead class="full-width">
+              <tr>
+                <th style="width: 10%">Index</th>
+                <th style="width: 60%">subject_id</th>
+                <th style="width: 30%">Edit | Copy | Delete</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <div
+            style="
+              display: flex;
+              flex-direction: row;
+              justify-content: center;
+              margin: 10px auto;
+              margin-bottom: 30px;
+            "
+          >
+            <button
+              onclick="showForm('display', false)"
+              id="button-add-a-subject"
+              style="
+                cursor: pointer;
+                border-radius: 8px;
+                margin: 10px;
+                width: 140px;
+                height: 35px;
+                background: #fff;
+                color: var(--color-light-green);
+                font-weight: 600;
+                border: 1px solid var(--color-light-green);
+                font-size: 14px;
+              "
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                style="vertical-align: middle"
+                width="18"
+                height="18"
+                fill="currentColor"
+                class="bi bi-plus"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
+                />
+              </svg>
+              Add a subject
+            </button>
+            <button
+              type="button"
+              class="btn_animated popover-tooltip"
+              data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+              rel="popover"
+              data-placement="top"
+              data-trigger="hover"
+              data-next="Question-prepare-subjects-6"
+              onclick="transitionFreeFormMode(this, 'Question-prepare-subjects-3', 'create_subjects-tab', 'delete', 'individual-question prepare-subjects')"
+              style="
+                cursor: pointer;
+                border-radius: 8px;
+                margin: 10px;
+                width: 140px;
+                height: 35px;
+                background: var(--color-light-green);
+                color: #fff;
+                font-weight: 600;
+                border: none;
+                font-size: 15px;
+                display: none;
+              "
+              id="button-generate-subjects"
+            >
+              Generate
+            </button>
+          </div>
+          <div
+            style="margin: 0 auto; text-decoration: underline"
+            id="div-import-primary-folder-subjects"
+          >
+            <a
+              href="#"
+              onclick="showPrimaryBrowseFolder()"
+              id="primary-folder-destination-input"
+            >
+              I want to import subject ID(s) from my primary folder
+            </a>
+          </div>
+          <div
+            id="generate-subjects-spinner"
+            class="ui active green inline loader"
+            style="display: none; margin: 10px auto; width: 100%"
+          ></div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="individual-question prepare-subjects"
+      id="Question-prepare-subjects-6"
+    >
+      <div class="ui form" style="width: 100%">
+        <div class="grouped fields">
+          <label
+            style="
+              font-size: 17px;
+              color: var(--color-bg-plum);
+              text-align: center;
+            "
+            >Where would you like to generate your subjects.xlsx file? <br />
+            <p class="sub-text">Please select one:</p></label
+          >
+
+          <div
+            style="display: flex; flex-direction: row; justify-content: center"
+          >
+            <div style="margin: 15px 0">
+              <div
+                class="option-card radio-button"
+                data-next="Question-prepare-subjects-7"
+                onclick="transitionFreeFormMode(this, 'Question-prepare-subjects-6', 'create_subjects-tab', '', 'prepare-subjects')"
+              >
+                <div class="card-head">
+                  <div class="folder-checkbox">
+                    <input
+                      class="folder-input-check"
+                      name="generate-subjects-1"
+                      id="prepare-subjects-local"
+                      type="radio"
+                    />
+                    <label for="prepare-subjects-local"></label>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <svg
+                    width="40px"
+                    height="40px"
+                    viewBox="0 0 16 16"
+                    class="bi bi-laptop"
+                    fill="var(--color-bg-plum)"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M13.5 3h-11a.5.5 0 0 0-.5.5V11h12V3.5a.5.5 0 0 0-.5-.5zm-11-1A1.5 1.5 0 0 0 1 3.5V12h14V3.5A1.5 1.5 0 0 0 13.5 2h-11z"
+                    />
+                    <path
+                      d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z"
+                    />
+                  </svg>
+                  <h2>Generate on my computer</h2>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin: 15px 0">
+              <div
+                class="option-card radio-button"
+                data-next="Question-prepare-subjects-8"
+                onclick="transitionFreeFormMode(this, 'Question-prepare-subjects-6', 'create_subjects-tab', '', 'prepare-subjects')"
+              >
+                <div class="card-head">
+                  <div class="folder-checkbox">
+                    <input
+                      class="folder-input-check"
+                      name="generate-subjects-1"
+                      id="prepare-subjects-pennsieve"
+                      type="radio"
+                    />
+                    <label for="prepare-subjects-pennsieve"></label>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <svg
+                    width="50px"
+                    height="50px"
+                    viewBox="0 0 16 16"
+                    class="bi bi-cloud-arrow-up"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"
+                      fill="#565E6B"
+                    />
+                    <path
+                      fill-rule="evenodd"
+                      d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2z"
+                      fill="#B80D49"
+                    />
+                  </svg>
+                  <h2>Generate directly on Pennsieve</h2>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="individual-question prepare-subjects"
+      id="Question-prepare-subjects-7"
+    >
+      <div class="ui form" style="width: 450px">
+        <div class="grouped fields">
+          <label
+            style="
+              font-size: 17px;
+              color: var(--color-bg-plum);
+              text-align: center;
+            "
+            >At which location should we generate the subjects.xlsx file?</label
+          >
+          <div
+            class="field"
+            style="margin: 15px auto; display: flex; justify-content: center"
+          >
+            <input
+              class="form-control"
+              style="width: 450px !important"
+              onclick="openFileBrowserDestination('subjects')"
+              id="input-destination-generate-subjects-locally"
+              type="text"
+              readonly
+              placeholder="Browse here"
+            />
+          </div>
+        </div>
+        <div
+          id="div-confirm-destination-subjects-locally"
+          style="
+            display: none;
+            flex-direction: row;
+            justify-content: center;
+            margin: 10px auto;
+          "
+        >
+          <button
+            id="btn-confirm-local-subjects-destination"
+            onclick="generateSubjectsFileHelper(false)"
+            type="button"
+            class="btn_animated popover-tooltip"
+            data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+            rel="popover"
+            data-placement="top"
+            data-trigger="hover"
+            style="
+              margin: 10px;
+              width: 140px;
+              border: none !important;
+              overflow: visible !important;
+            "
+          >
+            Generate
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="individual-question prepare-subjects"
+      id="Question-prepare-subjects-8"
+    >
+      <div class="ui form" style="width: 100%">
+        <div class="grouped fields">
+          <label style="font-size: 17px; color: var(--color-bg-plum)"
+            >Is this the Pennsieve dataset you want to upload the subjects.xlsx
+            to?
+          </label>
+          <div
+            class="field"
+            style="margin: 0 auto !important; width: 500px !important"
+          >
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                margin-top: 15px;
+                height: auto;
+                box-shadow: 0px 0px 10px #d5d5d5;
+                padding: 15px 25px;
+                border-radius: 5px;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;
+                "
+              >
+                <div class="card-container prepare-submission">
+                  <div style="width: 100%">
+                    <h5
+                      class="card-left"
+                      style="text-align: right; padding-right: 5px"
+                    >
+                      Current account:
+                    </h5>
+                    <div
+                      class="change-current-account subjects-change-current-account"
+                    >
+                      <h5 class="card-right bf-account-span">None</h5>
+
+                      <svg
+                        class="svg-change-current-account bi bi-pencil-fill"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        fill="#000"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                style="display: flex; flex-direction: row; margin-bottom: 15px"
+              >
+                <div class="card-container prepare-submission">
+                  <div>
+                    <h5
+                      class="card-left"
+                      style="text-align: right; padding-right: 5px"
+                    >
+                      Account details:
+                    </h5>
+                    <h5 class="card-right bf-account-details-span">None</h5>
+                  </div>
+                </div>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;
+                "
+              >
+                <div class="card-container prepare-submission">
+                  <div style="width: 100%">
+                    <h5
+                      class="card-left"
+                      style="text-align: right; padding-right: 5px"
+                    >
+                      Current dataset:
+                    </h5>
+                    <div
+                      class="change-current-account subjects-change-current-ds"
+                    >
+                      <h5
+                        id="bf_dataset_generate_subjects"
+                        class="card-right bf-dataset-span"
+                      >
+                        None
+                      </h5>
+
+                      <svg
+                        class="svg-change-current-account dataset bi bi-pencil-fill"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        fill="#000"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="ui active green inline loader small"
+                  style="display: none"
+                ></div>
+              </div>
+            </div>
+            <div
+              style="
+                display: none;
+                flex-direction: row;
+                justify-content: center;
+                margin: 10px auto;
+              "
+              id="div-check-bf-generate-subjects"
+            >
+              <button
+                onclick="generateSubjectsFileHelper(true)"
+                type="button"
+                class="btn_animated popover-tooltip"
+                data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+                rel="popover"
+                data-placement="top"
+                data-trigger="hover"
+                style="
+                  margin: 10px;
+                  width: 140px;
+                  border: none !important;
+                  overflow: visible !important;
+                "
+              >
+                Generate
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Question 4: Show table -->
+    <div
+      class="individual-question prepare-subjects"
+      id="Question-prepare-subjects-main-section"
+      style="width: 85%"
+    ></div>
+  </div>
+
+  <div class="footer-div" id="footer-div-subjects" style="display: flex">
+    <button type="button" class="transition-btn prev" data-section="main_tabs">
+      <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+    </button>
+    <button onclick="resetSubjects()" class="start-over">
+      <i
+        class="fas fa-sync-alt"
+        style="margin-right: 10px; font-size: inherit"
+      ></i>
+      Start over
+    </button>
+    <button
+      type="button"
+      class="transition-btn prev"
+      data-section="create_samples"
+      style="width: auto"
+    >
+      Create samples.xlsx<i
+        class="fas fa-arrow-right"
+        style="margin-left: 10px"
+      ></i>
+    </button>
+  </div>
+
+  <div
+    style="
+      width: 100%;
+      position: relative;
+      margin: 50px auto;
+      display: none;
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
+      height: 95%;
+    "
+    id="form-add-a-subject"
+  >
+    <h3 style="text-align: center; font-size: 18px; padding-bottom: 35px">
+      Enter subject information
+    </h3>
+    <div class="div-dd-info" style="margin: 20px auto; margin-top: 5px">
+      <div class="demo-controls-head mandatory" style="width: 30%">
+        <div style="width: 100%">
+          <font color="black" style="font-weight: 600">
+            subject id <span style="color: red">*</span>:
+          </font>
+        </div>
+      </div>
+      <div class="demo-controls-body" style="width: fit-content">
+        <div class="ui input" style="margin-left: 10px">
+          <input
+            type="text"
+            id="bootbox-subject-id"
+            name="subject id"
+            class="subjects-form-entry"
+            placeholder="Type here..."
+            onkeyup="validateSubSamID(this)"
+          />
+        </div>
+      </div>
+      <div class="tooltipnew demo-controls-end">
+        <i
+          class="fas fa-info-circle popover-tooltip subjects-form"
+          data-content="Lab-based schema for identifying each subject. Should match folder names in the primary folder. <br>
+                              <i> Example: sub-1 <i>"
+          rel="popover"
+          data-placement="right"
+          data-html="true"
+          data-trigger="hover"
+        ></i>
+      </div>
+    </div>
+    <p
+      id="para-bootbox-subject-id"
+      style="color: red; display: none; text-align: center"
+    >
+      Special characters are not allowed.
+    </p>
+    <div class="ui styled accordion">
+      <div class="title" style="background: var(--color-bg-light-green-button)">
+        <i class="dropdown icon"></i>
+        Experimental Setup
+        <span style="font-style: italic; opacity: 0.8"
+          >(Mandatory if available)</span
+        >
+      </div>
+      <div class="content">
+        <div
+          style="display: block; width: 90%; margin: 0 auto; font-size: 13px"
+          id="div-subjects-mandatory-fields"
+        >
+          <div>
+            <form>
+              <div class="row mandatory">
+                <div class="col" style="padding: 0">
+                  <div class="div-dd-info subjects-rows">
+                    <div
+                      class="demo-controls-head mandatory"
+                      style="width: 30%"
+                    >
+                      <div style="width: 100%">
+                        <font color="black"> pool id</font>
+                      </div>
+                    </div>
+                    <div class="demo-controls-body" style="width: fit-content">
+                      <div class="ui input modified">
+                        <input
+                          type="text"
+                          id="bootbox-subject-pool-id"
+                          name="pool id"
+                          class="subjects-form-entry"
+                          placeholder="Type here..."
+                        />
+                      </div>
+                    </div>
+                    <div class="tooltipnew demo-controls-end">
+                      <i
+                        class="fas fa-info-circle popover-tooltip subjects-form"
+                        data-content="If data is collected on multiple subjects at the same time include the identifier of the pool where the data file will be found. If this is included it should be the name of the top level folder inside the primary folder. <br>
+                              <i> Example: pool-1 <i>"
+                        rel="popover"
+                        data-placement="right"
+                        data-html="true"
+                        data-trigger="hover"
+                      ></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="col" style="padding: 0">
+                  <div class="div-dd-info">
+                    <div
+                      class="demo-controls-head mandatory"
+                      style="width: fit-content"
+                    >
+                      <div style="width: 100%">
+                        <font color="black"> subject experimental group</font>
+                      </div>
+                    </div>
+                    <div class="demo-controls-body" style="width: fit-content">
+                      <div class="ui input modified">
+                        <input
+                          type="text"
+                          id="bootbox-subject-exp-group"
+                          name="subject experimental group"
+                          class="subjects-form-entry"
+                          placeholder="Type here..."
+                        />
+                      </div>
+                    </div>
+                    <div class="tooltipnew demo-controls-end">
+                      <i
+                        class="fas fa-info-circle popover-tooltip subjects-form"
+                        data-content="Experimental group of the subject if assigned to in the research project. <br>
+                        <i> Example: Control <i> "
+                        rel="popover"
+                        data-placement="right"
+                        data-html="true"
+                        data-trigger="hover"
+                      ></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="title" style="background: #a8d08d">
+        <i class="dropdown icon"></i>
+        Species Information
+        <span style="font-style: italic; opacity: 0.8"
+          >(Mandatory if available)</span
+        >
+      </div>
+      <div class="content">
+        <div
+          id="div-subjects-recommended-fields"
+          style="width: 90%; margin: 0 auto; font-size: 13px"
+        >
+          <div>
+            <div class="div-dd-info subjects" style="margin-top: 10px">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Sex: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <select
+                    type="number"
+                    id="bootbox-subject-sex"
+                    name="Sex"
+                    class="ui selection dropdown subjects-form-entry"
+                    placeholder="Select here..."
+                  >
+                    <option disabled value="Select">Select an option</option>
+                    <option value="Female">Female</option>
+                    <option value="Male">Male</option>
+                    <option value="Unknown">Unknown</option>
+                  </select>
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Sex of the subject. If unknown, leave it empty. <br> <i>Example: Male<i>"
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Species: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    id="bootbox-subject-species"
+                    name="Species"
+                    class="subjects-form-entry"
+                    style="font-size: 14px; display: none"
+                  />
+                  <button
+                    class="button-add-species"
+                    onclick="addSpecies(this, 'subject')"
+                    id="button-add-species-subject"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      style="vertical-align: middle"
+                      width="14"
+                      height="14"
+                      fill="currentColor"
+                      class="bi bi-plus"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
+                      />
+                    </svg>
+                    Add species
+                  </button>
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Type to get suggestions from the commonly used species. Must use termonology from the
+                      <a
+                      target='_blank'
+                      href='https://www.ncbi.nlm.nih.gov/taxonomy'
+                      >NCBI Taxonomy database</a>.
+                      <br>
+                      <i> Example: Rattus <i>
+                      "
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Strain: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    id="bootbox-subject-strain"
+                    name="Strain"
+                    class="subjects-form-entry"
+                    style="font-size: 13px; display: none"
+                  />
+                  <button
+                    class="button-add-species"
+                    onclick="addStrain(this, 'subject')"
+                    id="button-add-strain-subject"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      style="vertical-align: middle"
+                      width="14"
+                      height="14"
+                      fill="currentColor"
+                      class="bi bi-plus"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
+                      />
+                    </svg>
+                    Add strain
+                  </button>
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Type to get suggestions from the most commonly used organism strain of the subject. <br>
+                      <i>Example: Sprague-Dawley </i> <br><br>
+                        To search for a standard strain name, please visit: <a target='_blank' href='https://scicrunch.org/resources/Organisms/search'>Scicrunch.org</a>"
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects">
+              <div class="demo-controls-head" style="text-align: center">
+                <div style="width: 100%">
+                  <font color="black">
+                    Exact age at the start of experiment:
+                  </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified" style="margin-right: 5px">
+                  <input
+                    type="text"
+                    id="bootbox-subject-age"
+                    name="Age"
+                    class="subjects-form-entry"
+                    placeholder="Type here..."
+                  />
+                </div>
+                <div class="ui input modified">
+                  <select
+                    type="number"
+                    id="bootbox-subject-age-info"
+                    name="Age-info"
+                    class="ui selection dropdown"
+                    placeholder="Select here..."
+                  >
+                    <option value="Select">Select a unit</option>
+                    <option value="hours">hour(s)</option>
+                    <option value="days">day(s)</option>
+                    <option value="weeks">week(s)</option>
+                    <option value="months">month(s)</option>
+                    <option value="years">year(s)</option>
+                    <option value="N/A">N/A</option>
+                  </select>
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Age of the subject  (e.g., hours, days, weeks, years old) or if unknown, leave it empty. <br><i>Example: 4 weeks<i>"
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Member of: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    id="bootbox-subject-member-of"
+                    name="member of"
+                    class="subjects-form-entry"
+                    placeholder="Type here"
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Provide a population that the specimen of your subject belongs to. <br>For example: pop-1"
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects" style="margin-bottom: 20px">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Also in dataset: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    id="bootbox-subject-also-in-dataset"
+                    name="also in dataset"
+                    class="subjects-form-entry"
+                    placeholder="Type here"
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Include the Pennsieve id(s) for other datasets that have data about the same specimen."
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects" style="display: none">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> RRID for strain: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <input
+                  class="form-container-input-bf subjects-form-entry"
+                  id="bootbox-subject-strain-RRID"
+                  name="RRID for strain"
+                />
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <img
+                  class="info"
+                  src="assets/img/info.png"
+                  style="margin-top: -2px"
+                />
+                <span class="tooltiptext">
+                  Research Resource Identifier Identification (RRID) for the
+                  strain For this field.
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="sub accordion" style="width: 100%">
+            <div class="title" id="title-optional-age">
+              <i class="icon dropdown"></i>
+              Optional Details
+            </div>
+            <div class="content">
+              <div class="div-dd-info subjects" style="text-align: center">
+                <div class="demo-controls-head">
+                  <div style="width: 100%">
+                    <font color="black"> Age category: </font>
+                  </div>
+                </div>
+                <div class="demo-controls-body">
+                  <div class="ui input modified">
+                    <select
+                      id="bootbox-subject-age-category"
+                      name="Age category"
+                      class="ui selection dropdown subjects-form-entry"
+                      placeholder="Select here..."
+                    >
+                      <option value="Select">Select a stage</option>
+                      <option value="2 cell stage">2 cell stage</option>
+                      <option value="4 cell stage">4 cell stage</option>
+                      <option value="8 cell stage">8 cell stage</option>
+                      <option value="blastula stage">blastula stage</option>
+                      <option value="cleavage stage">cleavage stage</option>
+                      <option value="copepodite stage">copepodite stage</option>
+                      <option value="crustacean post-larval stage">
+                        crustacean post-larval stage
+                      </option>
+                      <option value="cysticercus stage">
+                        cysticercus stage
+                      </option>
+                      <option value="death stage">death stage</option>
+                      <option value="embryo stage">embryo stage</option>
+                      <option value="fully formed stage">
+                        fully formed stage
+                      </option>
+                      <option value="gastrula stage">gastrula stage</option>
+                      <option value="glaucothoe stage">glaucothoe stage</option>
+                      <option value="infant stage">infant stage</option>
+                      <option value="juvenile stage">juvenile stage</option>
+                      <option value="larval stage">larval stage</option>
+                      <option value="late adult stage">late adult stage</option>
+                      <option value="late embryonic stage">
+                        late embryonic stage
+                      </option>
+                      <option value="nauplius stage">nauplius stage</option>
+                      <option value="neonate stage">neonate stage</option>
+                      <option value="neurula stage">neurula stage</option>
+                      <option value="nursing stage">nursing stage</option>
+                      <option value="organogenesis stage">
+                        organogenesis stage
+                      </option>
+                      <option value="perinatal stage">perinatal stage</option>
+                      <option value="pharyngula stage">pharyngula stage</option>
+                      <option value="post-embryonic stage">
+                        post-embryonic stage
+                      </option>
+                      <option value="post-juvenile adult stage">
+                        post-juvenile adult stage
+                      </option>
+                      <option value="prime adult stage">
+                        prime adult stage
+                      </option>
+                      <option value="pupal stage">pupal stage</option>
+                      <option value="sexually immature stage">
+                        sexually immature stage
+                      </option>
+                      <option value="trochophore stage">
+                        trochophore stage
+                      </option>
+                      <option value="veliger stage">veliger stage</option>
+                      <option value="zoea stage">zoea stage</option>
+                      <option value="zygote stage">zygote stage</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <i
+                    class="fas fa-info-circle popover-tooltip subjects-form"
+                    data-content="Description of age category. Must be derived from the
+                        <a
+                        target='_blank'
+                        href='http://www.ontobee.org/ontology/catalog/UBERON?iri=http://purl.obolibrary.org/obo/UBERON_0000105'
+                        >UBERON life cycle stage</a>.
+                        <br>
+                        <i> Example: prime adult stage <i>
+                        "
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                  ></i>
+                </div>
+              </div>
+              <div class="div-dd-info subjects">
+                <div class="demo-controls-head">
+                  <div style="width: 100%">
+                    <font color="black"> Age range: </font>
+                  </div>
+                </div>
+                <div class="demo-controls-body">
+                  <div class="ui input modified" style="margin-right: 5px">
+                    <input
+                      type="text"
+                      id="bootbox-subject-age-range-min"
+                      name="Age range (min)"
+                      class="subjects-form-entry"
+                      placeholder="Minimum age"
+                    />
+                  </div>
+                  <div class="ui input modified">
+                    <input
+                      type="text"
+                      id="bootbox-subject-age-range-max"
+                      name="Age range (max)"
+                      class="subjects-form-entry"
+                      placeholder="Maximum age"
+                    />
+                  </div>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <i
+                    class="fas fa-info-circle popover-tooltip subjects-form"
+                    data-content="The minimal age (youngest) and  maximal age (oldest) of the subject during the study. The format for this field: numerical value + space + unit (spelled out). <br>
+                        <i> Example: 10 days (min)  20 days (max)<i>"
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                  ></i>
+                </div>
+              </div>
+
+              <div class="div-dd-info subjects" style="margin-bottom: 20px">
+                <div class="demo-controls-head">
+                  <div style="width: 100%">
+                    <font color="black"> Date of birth: </font>
+                  </div>
+                </div>
+                <div class="demo-controls-body">
+                  <div class="ui input modified" style="margin-right: 5px">
+                    <input
+                      class="subjects-form-entry"
+                      id="bootbox-subject-dob"
+                      type="date"
+                      name="date of birth"
+                    />
+                  </div>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <i
+                    class="fas fa-info-circle popover-tooltip subjects-form"
+                    data-content="The date of birth of the subject."
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                  ></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="title" style="background: #ffd965">
+        <i class="dropdown icon"></i>
+        Protocol Information
+        <span style="font-style: italic; opacity: 0.8">(Optional)</span>
+      </div>
+      <div class="content">
+        <div style="width: 90%; margin: 0 auto; font-size: 13px">
+          <div>
+            <div class="div-dd-info subjects">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Protocol title on protocols.io: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body" id="subjects-protocol-titles">
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    id="bootbox-subject-protocol-title"
+                    name="Protocol title"
+                    class="subjects-form-entry"
+                    placeholder="Type here..."
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Title of the protocol on protocols.io associated with this study. <br>
+                    <i>Example: Spinal Cord extraction <i>"
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Protocol URL on protocols.io: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    id="bootbox-subject-protocol-location"
+                    name="protocol url or doi"
+                    class="subjects-form-entry"
+                    placeholder="Type here..."
+                    style="font-size: 1rem"
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="The protocol.io URL for the protocol associated with this study.<br>
+                    <i>Example: https://www.protocols.io/view/corchea-paper-based-microfluidic-device-vtwe6pe <i>"
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div
+              style="
+                margin: 0 auto;
+                text-align: center;
+                margin-bottom: 20px;
+                font-size: 14px;
+                margin-top: 10px;
+              "
+            >
+              <a onclick="preliminaryProtocolStep('subjects')" target="_blank">
+                Click here to import my protocol information
+              </a>
+              <i
+                class="fas fa-info-circle popover-tooltip subjects-form"
+                data-content="Connect SODA with your protocol.io account to auto-fill your protocol information. Information including the protocol titles and links shared with the SPARC group will be extracted for your convenience. A protocol must be shared with the SPARC group on protocols.io to be extracted by SODA. <br><br>See
+                  <a
+                  target='_blank'
+                  href='https://sparc.science/help/1slXZSS2XtTYQsdY6mEJi5'
+                  >here</a> for details about creating your protocol on protocols.io.
+                  <br>
+                  "
+                rel="popover"
+                data-placement="right"
+                data-html="true"
+                data-trigger="hover"
+              ></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="title" style="background: #ffd965">
+        <i class="dropdown icon"></i>
+        Additional fields
+        <span style="font-style: italic; opacity: 0.8">(Optional)</span>
+      </div>
+      <div class="content">
+        <!-- Optional fields -->
+        <div
+          id="div-subjects-optional-fields"
+          style="width: 90%; margin: 0 auto; font-size: 13px"
+        >
+          <div>
+            <div class="div-dd-info subjects">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Handedness: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <select
+                    type="text"
+                    id="bootbox-subject-handedness"
+                    name="Handedness"
+                    class="ui selection dropdown subjects-form-entry"
+                  >
+                    <option value="Select">Select here</option>
+                    <option value="right">Right</option>
+                    <option value="left">Left</option>
+                  </select>
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Preference of the subject to use the right or left hand, if applicable."
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Body mass: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified" style="margin-right: 5px">
+                  <input
+                    class="subjects-form-entry"
+                    id="bootbox-subject-body-mass"
+                    name="body mass"
+                    placeholder="Type here..."
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="The body mass of the subject."
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Genotype: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    id="bootbox-subject-genotype"
+                    name="Genotype"
+                    class="subjects-form-entry"
+                    placeholder="Type here..."
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Genetic makeup of genetically modified alleles in transgenic animals belonging to the same subject group. Ignore if strain is provided.<br>
+                    <i>Example: MGI:3851780 <i>"
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Phenotype: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified" style="margin-right: 5px">
+                  <input
+                    class="subjects-form-entry"
+                    id="bootbox-subject-phenotype"
+                    name="phenotype"
+                    placeholder="Type here..."
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Provide the phenotype of the subject."
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Disease or disorder: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified" style="margin-right: 5px">
+                  <input
+                    class="subjects-form-entry"
+                    id="bootbox-subject-disease"
+                    name="disease or disorder"
+                    placeholder="Type here..."
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Provide any disease of disorder of the subject."
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Disease model: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified" style="margin-right: 5px">
+                  <input
+                    class="subjects-form-entry"
+                    id="bootbox-subject-disease-model"
+                    name="disease model"
+                    placeholder="Type here..."
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Provide the disease model of the subject."
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Intervention: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified" style="margin-right: 5px">
+                  <input
+                    class="subjects-form-entry"
+                    id="bootbox-subject-intervention"
+                    name="intervention"
+                    placeholder="Type here..."
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Provide the intervention applied to your subject (if any). <br> For example: a surgery."
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Reference atlas: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    id="bootbox-subject-reference-atlas"
+                    name="Reference atlas"
+                    class="subjects-form-entry"
+                    placeholder="Type here..."
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="The reference atlas and organ. </br>
+                    <i>Example: Paxinos Rat V3 <i>"
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+            <div class="div-dd-info subjects">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Experimental log file path: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    id="bootbox-subject-experimental-log-file-name"
+                    name="Experimental log file path"
+                    class="subjects-form-entry"
+                    placeholder="Type here..."
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="A file containing experimental records for each subject."
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Experimental date: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <input
+                    id="bootbox-subject-experimental-date"
+                    name="experiment date"
+                    type="date"
+                    class="subjects-form-entry"
+                    placeholder="Type here..."
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Provide the date at which the experiment takes place."
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects" style="margin-bottom: 10px">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Laboratory internal id: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    id="bootbox-subject-lab-internal-id"
+                    name="laboratory internal id"
+                    class="subjects-form-entry"
+                    placeholder="Type here"
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Provide a mapping for groups that have incompatible internal identifier conventions."
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="title" style="background: #ffd965">
+        <i class="dropdown icon"></i>
+        Custom fields
+        <span style="font-style: italic; opacity: 0.8">(Optional)</span>
+      </div>
+      <div class="content">
+        <div id="accordian-custom-fields"></div>
+        <div
+          class="ui secondary submit button"
+          style="margin: 20px"
+          onclick="addCustomField('subjects')"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            style="vertical-align: middle"
+            width="18"
+            height="18"
+            fill="currentColor"
+            class="bi bi-plus"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
+            />
+          </svg>
+          Add a field
+        </div>
+      </div>
+    </div>
+
+    <div
+      style="
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        margin: 40px auto;
+        width: 90%;
+      "
+    >
+      <button
+        class="start-over"
+        onclick="warningBeforeHideForm('subjects')"
+        style="
+          width: 120px;
+          background: #fff;
+          color: red;
+          border: 1px solid red;
+          display: block;
+        "
+      >
+        <i class="fas fa-times" style="margin-right: 7px"></i>
+        Cancel
+      </button>
+      <button
+        class="btn_animated"
+        id="btn-edit-subject"
+        style="width: 140px; border: none !important; display: none"
+      >
+        <i class="fas fa-check" style="margin-right: 7px"></i>
+        Save
+      </button>
+      <button
+        class="btn_animated"
+        onclick="addSubject()"
+        id="btn-add-subject"
+        style="width: 140px; border: none !important; display: inline-block"
+      >
+        <i class="fas fa-check" style="margin-right: 7px"></i>
+        Add subject
+      </button>
+    </div>
+  </div>
+</section>

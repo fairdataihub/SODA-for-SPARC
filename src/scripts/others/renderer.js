@@ -7,7 +7,7 @@ const os = require("os");
 const path = require("path");
 const { ipcRenderer, BrowserWindow } = require("electron");
 const Editor = require("@toast-ui/editor");
-const remote = require("electron").remote;
+const remote = require("@electron/remote");
 const { Notyf } = require("notyf");
 const imageDataURI = require("image-data-uri");
 const log = require("electron-log");
@@ -15,10 +15,6 @@ const Airtable = require("airtable");
 require("v8-compile-cache");
 const Tagify = require("@yaireo/tagify");
 const https = require("https");
-const $ = require("jquery");
-// const PDFDocument = require("pdfkit");
-// const html2canvas = require("html2canvas");
-// const removeMd = require("remove-markdown");
 const electron = require("electron");
 const bootbox = require("bootbox");
 const DragSelect = require("dragselect");
@@ -64,9 +60,8 @@ const excel4node = require("excel4node");
 const { backOff } = require("exponential-backoff");
 
 // const prevent_sleep_id = "";
-const electron_app = electron.app;
+// const electron_app = electron.app;
 const app = remote.app;
-const shell = electron.shell;
 const Clipboard = electron.clipboard;
 var noAirtable = false;
 
@@ -147,7 +142,7 @@ log.info("User OS:", os.type(), os.platform(), "version:", os.release());
 console.log("User OS:", os.type(), os.platform(), "version:", os.release());
 
 // Check current app version //
-const appVersion = window.require("electron").remote.app.getVersion();
+const appVersion = app.getVersion();
 log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
 
@@ -7406,7 +7401,7 @@ async function initiate_generate() {
     let mainCurationProgressResponse;
     try {
       mainCurationProgressResponse = await client.get(
-        `/curate_datasetscuration/progress`
+        `/curate_datasets/curation/progress`
       );
     } catch (error) {
       clientError(error);
@@ -7604,7 +7599,7 @@ async function initiate_generate() {
     let mainCurationDetailsResponse;
     try {
       mainCurationDetailsResponse = await client.get(
-        `/curate_datasetscuration/upload_details`
+        `/curate_datasets/curation/upload_details`
       );
     } catch (error) {
       clientError(error);
@@ -9099,6 +9094,7 @@ function openFeedbackForm() {
   }, 5);
 }
 function gatherLogs() {
+  console.log("Gathering logs...");
   //function will be used to gather all logs on all OS's
   let homedir = os.homedir();
   let file_path = "";
@@ -9194,9 +9190,7 @@ function gatherLogs() {
             }
             let log_copy = path.join(log_folder, logFile);
 
-            fs.copyFileSync(logFilePath, log_copy, (err) => {
-              if (err) throw err;
-            });
+            fs.copyFileSync(logFilePath, log_copy);
           }
           Swal.close();
 
