@@ -5578,9 +5578,23 @@ $("#guided-submission-completion-date").change(function () {
       hideClass: {
         popup: "animate__animated animate__fadeOutUp animate__faster",
       },
+      didOpen: () => {
+        document.getElementById("milestone_date_picker").valueAsDate =
+          new Date();
+      },
+      preConfirm: async () => {
+        const input_date = document.getElementById(
+          "milestone_date_picker"
+        ).value;
+        return {
+          date: input_date,
+        };
+      },
     }).then((result) => {
       if (result.isConfirmed) {
+        console.log(result);
         const input_date = result.value.date;
+        console.log(input_date);
         //remove options from dropdown that already have input_date as value
         $("#guided-submission-completion-date option").each(function () {
           if (this.value == input_date) {
@@ -5588,12 +5602,63 @@ $("#guided-submission-completion-date").change(function () {
           }
         });
         $("#guided-submission-completion-date").append(
-          $("<option>", {
-            value: input_date,
-            text: input_date,
-          })
+          `<option value="${input_date}">${input_date}</option>`
         );
         var $option = $("#guided-submission-completion-date").children().last();
+        $option.prop("selected", true);
+      }
+    });
+  }
+});
+
+$("#guided-submission-completion-date-manual").change(function () {
+  const text = $("#guided-submission-completion-date-manual").val();
+  if (text == "Enter my own date") {
+    Swal.fire({
+      allowOutsideClick: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Confirm",
+      showCloseButton: true,
+      focusConfirm: true,
+      heightAuto: false,
+      reverseButtons: reverseSwalButtons,
+      showCancelButton: false,
+      title: `<span style="text-align:center"> Enter your Milestone completion date </span>`,
+      html: `<input type="date" id="milestone_date_picker" >`,
+      showClass: {
+        popup: "animate__animated animate__fadeInDown animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__fadeOutUp animate__faster",
+      },
+      didOpen: () => {
+        document.getElementById("milestone_date_picker").valueAsDate =
+          new Date();
+      },
+      preConfirm: async () => {
+        const input_date = document.getElementById(
+          "milestone_date_picker"
+        ).value;
+        return {
+          date: input_date,
+        };
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const input_date = result.value.date;
+        //remove options from dropdown that already have input_date as value
+        $("#guided-submission-completion-date-manual option").each(function () {
+          if (this.value == input_date) {
+            $(this).remove();
+          }
+        });
+        $("#guided-submission-completion-date-manual").append(
+          `<option value="${input_date}">${input_date}</option>`
+        );
+        var $option = $("#guided-submission-completion-date-manual")
+          .children()
+          .last();
         $option.prop("selected", true);
       }
     });
