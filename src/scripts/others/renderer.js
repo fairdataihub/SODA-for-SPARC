@@ -7401,7 +7401,7 @@ async function initiate_generate() {
     let mainCurationProgressResponse;
     try {
       mainCurationProgressResponse = await client.get(
-        `/curate_datasetscuration/progress`
+        `/curate_datasets/curation/progress`
       );
     } catch (error) {
       clientError(error);
@@ -7599,7 +7599,7 @@ async function initiate_generate() {
     let mainCurationDetailsResponse;
     try {
       mainCurationDetailsResponse = await client.get(
-        `/curate_datasetscuration/upload_details`
+        `/curate_datasets/curation/upload_details`
       );
     } catch (error) {
       clientError(error);
