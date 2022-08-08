@@ -9310,6 +9310,7 @@ $(document).ready(() => {
               type: "notyf",
               message: "Please sign in to Pennsieve before continuing",
             });
+            throw errorArray;
           } else {
             errorArray.push({
               type: "notyf",
