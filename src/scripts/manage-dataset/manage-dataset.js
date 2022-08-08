@@ -373,7 +373,7 @@ async function uploadNewTags(tags) {
 
   try {
     let newCollectionNames = await client.post(
-      `collections/new_names/${defaultBfDataset}?selected_account=${defaultBfAccount}`,
+      `collections/?selected_account=${defaultBfAccount}&selected_dataset=${defaultBfDataset}`,
       {
         collection: tags,
       }
@@ -389,7 +389,7 @@ async function uploadNewTags(tags) {
       //put collection ids to dataset
       try {
         let newTagsUpload = await client.put(
-          `collections/collection_ids/${defaultBfDataset}?selected_account=${defaultBfAccount}`,
+          `datasets/${defaultBfDataset}/collection_ids?selected_account=${defaultBfAccount}`,
           {
             collection: newUploadedTags,
           }
@@ -409,7 +409,7 @@ async function removeCollectionTags(tags) {
   //PARAMS: tags -> array of collection IDs
   try {
     let removedTags = await client.delete(
-      `collections/collection_ids/${defaultBfDataset}?selected_account=${defaultBfAccount}`,
+      `datasets/${defaultBfDataset}/collection_ids?selected_account=${defaultBfAccount}`,
       {
         data: { collection: tags },
       }
@@ -425,7 +425,7 @@ async function uploadCollectionTags(tags) {
   //PARAMS: tags -> array of collection IDs
   try {
     let uploadedTags = await client.put(
-      `collections/collection_ids/${defaultBfDataset}`,
+      `datasets/${defaultBfDataset}/collection_ids`,
       {
         collection: tags,
       },

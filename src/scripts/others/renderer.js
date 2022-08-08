@@ -1345,7 +1345,7 @@ var currentTags = {};
 async function getCurrentCollectionTags() {
   currentTags = {};
   try {
-    let result = await client.get(`/collections/${defaultBfDataset}`, {
+    let result = await client.get(`/datasets/${defaultBfDataset}/collections`, {
       params: {
         selected_account: defaultBfAccount,
       },
