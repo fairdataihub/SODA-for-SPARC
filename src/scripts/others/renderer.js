@@ -472,7 +472,9 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
 });
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
-const run_pre_flight_checks = async (check_update = true) => {
+const run_pre_flight_checks = async (
+  check_update = false /*guided update over-ride*/
+) => {
   log.info("Running pre flight checks");
   return new Promise(async (resolve) => {
     let connection_response = "";
@@ -772,8 +774,8 @@ const apiVersionsMatch = async () => {
   if (hasConnectedAccountWithPennsieve()) {
     updateBfAccountList();
   }
-
-  checkNewAppVersion(); // Added so that version will be displayed for new users
+  //guided-mode update over-ride
+  //checkNewAppVersion(); // Added so that version will be displayed for new users
 };
 
 const check_internet_connection = async (show_notification = true) => {
