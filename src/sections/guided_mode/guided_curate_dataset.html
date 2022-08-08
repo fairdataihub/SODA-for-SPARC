@@ -373,13 +373,13 @@
               </label>
               <div class="guided--radio-button-container">
                 <button
-                  class="guided--radio-button tile-button"
+                  class="ui positive basic button guided--radio-button"
                   id="guided-button-import-existing-dataset-structure"
                   data-next-element="guided-import-existing-dataset-panel"
                   data-button-config-value="dataset-already-structured"
                   data-button-config-value-state="yes"
                 >
-                  <span>Yes</span> <span>Yes</span>
+                  Yes
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button"
@@ -1679,24 +1679,66 @@
               </p>
               <div class="guided--radio-button-container">
                 <button
-                  class="ui positive basic button guided--radio-button"
+                  class="guided--radio-button tile-button"
                   id="guided-button-import-sparc-award"
                   data-next-element="guided-div-SPARC-award-import"
                   data-button-config-value="SPARC-award-imported"
                   data-button-config-value-state="yes"
-                  style="width: 295px"
                 >
-                  Yes, let me connect my Airtable account
+                  <div class="guided--tile-button-icon">
+                    <svg
+                      width="50"
+                      height="50"
+                      viewBox="0 0 48 46"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M23.5957 32.473C23.6437 32.5343 23.7051 32.584 23.7751 32.6181C23.8452 32.6522 23.9221 32.6699 24 32.6699C24.0779 32.6699 24.1548 32.6522 24.2249 32.6181C24.2949 32.584 24.3563 32.5343 24.4043 32.473L31.5914 23.3799C31.8545 23.0462 31.6171 22.5521 31.1872 22.5521H26.4321V0.836611C26.4321 0.554258 26.2011 0.323242 25.9187 0.323242H22.0684C21.7861 0.323242 21.5551 0.554258 21.5551 0.836611V22.5457H16.8128C16.3829 22.5457 16.1455 23.0398 16.4086 23.3735L23.5957 32.473Z"
+                        fill="#B80D49"
+                      ></path>
+                      <path
+                        d="M47.4866 30.227H43.6364C43.354 30.227 43.123 30.458 43.123 30.7404V40.6227H4.87701V30.7404C4.87701 30.458 4.64599 30.227 4.36364 30.227H0.513369C0.231016 30.227 0 30.458 0 30.7404V43.4462C0 44.5821 0.917647 45.4997 2.05348 45.4997H45.9465C47.0824 45.4997 48 44.5821 48 43.4462V30.7404C48 30.458 47.769 30.227 47.4866 30.227Z"
+                        fill="#565E6B"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class="guided--tile-body">
+                    <p class="guided--help-text text-center">
+                      Yes, import account from Airtable
+                    </p>
+                  </div>
                 </button>
                 <button
-                  class="ui negative basic button guided--radio-button"
+                  class="guided--radio-button tile-button"
                   id="guided-button-enter-sparc-award-manually"
                   data-next-element="guided-div-SPARC-award-manual-input"
                   data-button-config-value="SPARC-award-imported"
                   data-button-config-value-state="no"
-                  style="width: 295px"
                 >
-                  No, I'll enter my award number manually
+                  <div class="guided--tile-button-icon">
+                    <svg
+                      width="50"
+                      height="50"
+                      viewBox="0 0 48 46"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M23.5957 32.473C23.6437 32.5343 23.7051 32.584 23.7751 32.6181C23.8452 32.6522 23.9221 32.6699 24 32.6699C24.0779 32.6699 24.1548 32.6522 24.2249 32.6181C24.2949 32.584 24.3563 32.5343 24.4043 32.473L31.5914 23.3799C31.8545 23.0462 31.6171 22.5521 31.1872 22.5521H26.4321V0.836611C26.4321 0.554258 26.2011 0.323242 25.9187 0.323242H22.0684C21.7861 0.323242 21.5551 0.554258 21.5551 0.836611V22.5457H16.8128C16.3829 22.5457 16.1455 23.0398 16.4086 23.3735L23.5957 32.473Z"
+                        fill="#B80D49"
+                      ></path>
+                      <path
+                        d="M47.4866 30.227H43.6364C43.354 30.227 43.123 30.458 43.123 30.7404V40.6227H4.87701V30.7404C4.87701 30.458 4.64599 30.227 4.36364 30.227H0.513369C0.231016 30.227 0 30.458 0 30.7404V43.4462C0 44.5821 0.917647 45.4997 2.05348 45.4997H45.9465C47.0824 45.4997 48 44.5821 48 43.4462V30.7404C48 30.458 47.769 30.227 47.4866 30.227Z"
+                        fill="#565E6B"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class="guided--tile-body">
+                    <p class="guided--help-text text-center">
+                      No, I'll enter my SPARC award manually
+                    </p>
+                  </div>
                 </button>
               </div>
             </div>
