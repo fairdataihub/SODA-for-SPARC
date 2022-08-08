@@ -733,7 +733,12 @@ const apiVersionsMatch = async () => {
   if (serverAppVersion !== appVersion) {
     log.info("Server version does not match client version");
     console.error("Server version does not match client version");
-    ipcRenderer.send("track-event", "Error", "Verifying App Version", "Server version does not match client version");
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Verifying App Version",
+      "Server version does not match client version"
+    );
 
     await Swal.fire({
       icon: "error",
