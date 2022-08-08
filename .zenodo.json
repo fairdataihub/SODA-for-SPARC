@@ -1,1 +1,33 @@
-{"upload_type": "software", "title": "SODA (Software to Organize Data Automatically) for SPARC", "publication_date": "2022-08-08", "creators": [{"name": "Patel, Bhavesh", "affiliation": "FAIR Data Innovations Hub"}, {"name": "Ngo, Tram", "affiliation": "FAIR Data Innovations Hub"}, {"name": "Soundarajan, Sanjay", "affiliation": "FAIR Data Innovations Hub"}, {"name": "Marroquin, Aaron", "affiliation": "FAIR Data Innovations Hub"}, {"name": "Clark, Jacob", "affiliation": "California Medical Innovations Institute"}, {"name": "Portillo, Dorian", "affiliation": "FAIR Data Innovations Hub"}], "description": "Simplifying data curation for researchers funded by the NIH SPARC initiative", "access_right": "open", "license": "MIT", "keywords": ["SPARC", "FAIR", "data", "curation", "mac", "sparc-dataset", "ubuntu", "windows"], "version": "8.0.0"}
+{
+  "upload_type": "software",
+  "title": "SODA (Software to Organize Data Automatically) for SPARC",
+  "publication_date": "2022-08-08",
+  "creators": [
+    { "name": "Patel, Bhavesh", "affiliation": "FAIR Data Innovations Hub" },
+    { "name": "Ngo, Tram", "affiliation": "FAIR Data Innovations Hub" },
+    {
+      "name": "Soundarajan, Sanjay",
+      "affiliation": "FAIR Data Innovations Hub"
+    },
+    { "name": "Marroquin, Aaron", "affiliation": "FAIR Data Innovations Hub" },
+    {
+      "name": "Clark, Jacob",
+      "affiliation": "California Medical Innovations Institute"
+    },
+    { "name": "Portillo, Dorian", "affiliation": "FAIR Data Innovations Hub" }
+  ],
+  "description": "Simplifying data curation for researchers funded by the NIH SPARC initiative",
+  "access_right": "open",
+  "license": "MIT",
+  "keywords": [
+    "SPARC",
+    "FAIR",
+    "data",
+    "curation",
+    "mac",
+    "sparc-dataset",
+    "ubuntu",
+    "windows"
+  ],
+  "version": "8.0.0"
+}
