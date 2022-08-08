@@ -9181,16 +9181,22 @@ function gatherLogs() {
           // destination will be created or overwritten by default.
           for (const logFile of logFiles) {
             let logFilePath;
+            let missingLog = false;
             if (logFile === "out.log") {
               logFilePath = path.join(homedir, ".pennsieve", logFile);
+              if (!fs.existsSync(logFilePath)) missingLog = true;
             } else if (logFile === "api.log") {
               logFilePath = path.join(serverLogsPath, logFile);
+              if (!fs.existsSync(logFilePath)) missingLog = true;
             } else {
               logFilePath = path.join(clientLogsPath, logFile);
+              if (!fs.existsSync(logFilePath)) missingLog = true;
             }
-            let log_copy = path.join(log_folder, logFile);
+            if (!missingLog) {
+              let log_copy = path.join(log_folder, logFile);
 
-            fs.copyFileSync(logFilePath, log_copy);
+              fs.copyFileSync(logFilePath, log_copy);
+            }
           }
           Swal.close();
 
