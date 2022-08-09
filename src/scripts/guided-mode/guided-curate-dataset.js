@@ -2507,14 +2507,14 @@ const setActiveSubPage = (pageIdToActivate) => {
         ] = uniqueCompletionDate;
 
         document.getElementById("guided-completion-date-container").innerHTML =
-          completionDateCheckMarks;
+          createCompletionDateRadioElement(
+            "completion-date",
+            uniqueCompletionDate
+          );
         //check the completion date
         document.querySelector(
-          `input[name="completion-date"][value="${sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"]}"]`
+          `input[name="completion-date"][value="${uniqueCompletionDate}"]`
         ).checked = true;
-        //click past this sub-page since the user doesn't need to select
-        //a completion date if there is only one
-        document.getElementById("guided-button-sub-page-continue").click();
       }
 
       if (uniqueCompletionDates.length > 1) {
@@ -8295,6 +8295,7 @@ $(document).ready(() => {
         sodaJSONObj["previous-guided-upload-dataset-name"] =
           sodaJSONObj["digital-metadata"]["name"];
         saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+
         //exit to the home page
         traverseToTab("guided-dataset-starting-point-tab");
         hideSubNavAndShowMainNav("back");
