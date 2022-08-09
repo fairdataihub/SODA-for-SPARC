@@ -1510,99 +1510,51 @@ const traverseToTab = (targetPageID) => {
     }
 
     if (targetPageID === "guided-create-submission-metadata-tab") {
-      //reset the HTML
-
-      //hide the data deliverables import table div
-      document
-        .getElementById("guided-div-data-deliverables-import")
-        .classList.add("hidden");
-
-      //reset manual and import SPARC awards
-
-      const sparcAwardInput = document.getElementById(
-        "guided-input-sparc-award"
-      );
+      const sparcAward =
+        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
       const sparcAwardInputManual = document.getElementById(
         "guided-submission-sparc-award-manual"
       );
-      sparcAwardInput.value = "";
-      sparcAwardInputManual.value = "";
+      //If a sparc award exists, set the sparc award manual input
+      //If not, reset the input
+      if (sparcAward) {
+        sparcAwardInputManual.value = sparcAward;
+      } else {
+        //If no sparc award exists, reset the inputs
+        sparcAwardInputManual.value = "";
+      }
 
-      //reset manual and import milestone tags
-      guidedSubmissionTagsTagify.removeAllTags();
-      guidedSubmissionTagsTagifyManual.removeAllTags();
+      const milestones =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
+      //If milestones exist, add the tags to the milestone tagify element
+      //If not, reset tagify element
+      if (milestones) {
+        guidedSubmissionTagsTagifyManual.addTags(milestones);
+      } else {
+        guidedSubmissionTagsTagifyManual.removeAllTags();
+      }
 
-      //reset manual and import completion dates
-      const completionDateInput = document.getElementById(
-        "guided-submission-completion-date"
-      );
+      const completionDate =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"][
+          "completion-date"
+        ];
       const completionDateInputManual = document.getElementById(
         "guided-submission-completion-date-manual"
       );
-      completionDateInput.innerHTML = `
-        <option value="Select a completion date">Select a completion date</option>
-        <option value="Enter my own date">Enter my own date</option>
-        <option value="N/A">N/A</option>
-      `;
+      //If completion date exists, set the completion date input
+      //If not, reset the input
       completionDateInputManual.innerHTML = `
         <option value="Select a completion date">Select a completion date</option>
         <option value="Enter my own date">Enter my own date</option>
         <option value="N/A">N/A</option>
       `;
-
-      const sparcAward =
-        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-      const selectedMilestones =
-        sodaJSONObj["dataset-metadata"]["submission-metadata"][
-          "selected-milestones"
-        ];
-      const milestones =
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
-      const completionDate =
-        sodaJSONObj["dataset-metadata"]["submission-metadata"][
-          "completion-date"
-        ];
-      const submissionDateEntry =
-        sodaJSONObj["dataset-metadata"]["submission-metadata"][
-          "submission-data-entry"
-        ];
-
-      if (submissionDateEntry) {
-        if (submissionDateEntry === "import") {
-          if (sparcAward) {
-            sparcAwardInput.value = sparcAward;
-          }
-          if (milestones) {
-            guidedSubmissionTagsTagify.addTags(milestones);
-          } else if (selectedMilestones) {
-            const uniqueMilestones = Array.from(
-              new Set(
-                selectedMilestones.map((milestone) => milestone.milestone)
-              )
-            );
-            guidedSubmissionTagsTagify.addTags(uniqueMilestones);
-          }
-          if (completionDate) {
-            completionDateInput.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
-            //select the completion date that was added
-            completionDateInput.value = completionDate;
-          }
-        }
-        if (submissionDateEntry === "manual") {
-          if (sparcAward) {
-            sparcAwardInputManual.value = sparcAward;
-          }
-          if (milestones) {
-            guidedSubmissionTagsTagifyManual.addTags(milestones);
-          }
-          if (completionDate) {
-            completionDateInputManual.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
-            //select the completion date that was added
-            completionDateInputManual.value = completionDate;
-          }
-        }
+      if (completionDate) {
+        completionDateInputManual.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
+        //select the completion date that was added
+        completionDateInputManual.value = completionDate;
       }
 
+      //Open the page and leave the sub-page hydration to the sub-page function
       openSubPageNavigation(targetPageID);
     }
     if (targetPageID === "guided-contributors-tab") {
@@ -2156,19 +2108,6 @@ const traverseToTab = (targetPageID) => {
         readMeTextArea.value = "";
       }
     }
-    if (targetPageID === "guided-create-changes-metadata-tab") {
-      const changesTextArea = document.getElementById(
-        "guided-textarea-create-changes"
-      );
-
-      const changes = sodaJSONObj["dataset-metadata"]["CHANGES"];
-
-      if (changes) {
-        changesTextArea.value = changes;
-      } else {
-        changesTextArea.value = "";
-      }
-    }
 
     let currentParentTab = CURRENT_PAGE.parent();
     let targetPage = $(`#${targetPageID}`);
@@ -2507,20 +2446,20 @@ const setActiveSubPage = (pageIdToActivate) => {
     }
 
     case "guided-data-derivative-import-page": {
-      const unselectedMilestones =
+      const importedMilestones =
         sodaJSONObj["dataset-metadata"]["submission-metadata"][
-          "unselected-milestones"
+          "temp-imported-milestones"
         ];
-      console.log(unselectedMilestones);
-      if (unselectedMilestones) {
-        renderMilestoneSelectionTable(unselectedMilestones);
-        const selectedMilestones =
+
+      if (importedMilestones) {
+        renderMilestoneSelectionTable(importedMilestones);
+        const tempSelectedMilestones =
           sodaJSONObj["dataset-metadata"]["submission-metadata"][
-            "selected-milestones"
+            "temp-selected-milestones"
           ];
-        if (selectedMilestones) {
+        if (tempSelectedMilestones) {
           //Check the checkboxes for previously selected milestones
-          const milestoneDescriptionsToCheck = selectedMilestones.map(
+          const milestoneDescriptionsToCheck = tempSelectedMilestones.map(
             (milestone) => {
               return milestone["description"];
             }
@@ -2547,7 +2486,7 @@ const setActiveSubPage = (pageIdToActivate) => {
     case "guided-completion-date-selection-page": {
       const selectedMilestoneData =
         sodaJSONObj["dataset-metadata"]["submission-metadata"][
-          "selected-milestones"
+          "temp-selected-milestones"
         ];
       console.log(selectedMilestoneData);
 
@@ -2560,11 +2499,19 @@ const setActiveSubPage = (pageIdToActivate) => {
       console.log(uniqueCompletionDates);
 
       if (uniqueCompletionDates.length === 1) {
+        console.log(uniqueCompletionDates);
         //save the completion date into sodaJSONObj
         const uniqueCompletionDate = uniqueCompletionDates[0];
         sodaJSONObj["dataset-metadata"]["submission-metadata"][
           "completion-date"
         ] = uniqueCompletionDate;
+
+        document.getElementById("guided-completion-date-container").innerHTML =
+          completionDateCheckMarks;
+        //check the completion date
+        document.querySelector(
+          `input[name="completion-date"][value="${sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"]}"]`
+        ).checked = true;
         //click past this sub-page since the user doesn't need to select
         //a completion date if there is only one
         document.getElementById("guided-button-sub-page-continue").click();
@@ -2610,10 +2557,9 @@ const setActiveSubPage = (pageIdToActivate) => {
         sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
       const selectedMilestones =
         sodaJSONObj["dataset-metadata"]["submission-metadata"][
-          "selected-milestones"
+          "temp-selected-milestones"
         ];
-      const milestones =
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
+
       const completionDate =
         sodaJSONObj["dataset-metadata"]["submission-metadata"][
           "completion-date"
@@ -2630,16 +2576,10 @@ const setActiveSubPage = (pageIdToActivate) => {
 
       sparcAwardInput.value = sparcAward;
 
-      //If selectedMilestoneData exists in sodaJSONObj, add the milestones to the tagify input
-      //If not, reset the tagify input
-      if (milestones) {
-        guidedSubmissionTagsTagify.addTags(milestones);
-      } else if (selectedMilestones) {
-        const uniqueMilestones = Array.from(
-          new Set(selectedMilestones.map((milestone) => milestone.milestone))
-        );
-        guidedSubmissionTagsTagify.addTags(uniqueMilestones);
-      }
+      const uniqueMilestones = Array.from(
+        new Set(selectedMilestones.map((milestone) => milestone.milestone))
+      );
+      guidedSubmissionTagsTagify.addTags(uniqueMilestones);
 
       completionDateInput.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
       //select the completion date that was added
@@ -8343,11 +8283,6 @@ $(document).ready(() => {
           "Upload status": "Dataset successfully uploaded to Pennsieve!",
         });
 
-        //Save a copy of the sodaJSONObj on this upload to compare it while prepping other uploads
-        sodaJSONObj["previous-guided-upload-dataset-name"] =
-          sodaJSONObj["digital-metadata"]["name"];
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-
         await swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
@@ -8356,22 +8291,15 @@ $(document).ready(() => {
           icon: "success",
           confirmButtonText: "OK",
         });
-        guidedUnLockSideBar();
-        const guidedIntroPage = document.getElementById("guided-intro-page");
-        const guidedDatasetNameSubtitlePage = document.getElementById(
-          "guided-new-dataset-info"
-        );
-
-        if (!guidedIntroPage.classList.contains("hidden")) {
-          //click past the intro page
-          $("#guided-button-dataset-intro-back").click();
-        } else if (
-          !guidedDatasetNameSubtitlePage.classList.contains("hidden")
-        ) {
-          //click past the dataset name/subtitle page and intro page
-          $("#guided-button-dataset-intro-back").click();
-          $("#guided-button-dataset-intro-back").click();
-        }
+        guidedUnLockSideBar(); //Save a copy of the sodaJSONObj on this upload to compare it while prepping other uploads
+        sodaJSONObj["previous-guided-upload-dataset-name"] =
+          sodaJSONObj["digital-metadata"]["name"];
+        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+        //exit to the home page
+        traverseToTab("guided-dataset-starting-point-tab");
+        hideSubNavAndShowMainNav("back");
+        $("#guided-button-dataset-intro-back").click();
+        $("#guided-button-dataset-intro-back").click();
       }
     };
     // Progress tracking function for main curate
@@ -9966,13 +9894,6 @@ $(document).ready(() => {
           sodaJSONObj["dataset-metadata"]["README"] = readMe;
         }
       }
-      if (pageBeingLeftID === "guided-create-changes-metadata-tab") {
-        const changesTextArea = document.getElementById(
-          "guided-textarea-create-changes"
-        );
-        const changes = changesTextArea.value.trim();
-        sodaJSONObj["dataset-metadata"]["CHANGES"] = changes;
-      }
 
       console.log(sodaJSONObj);
 
@@ -10647,7 +10568,7 @@ $(document).ready(() => {
                 }
 
                 sodaJSONObj["dataset-metadata"]["submission-metadata"][
-                  "selected-milestones"
+                  "temp-selected-milestones"
                 ] = checkedMilestoneData;
                 setActiveSubPage("guided-completion-date-selection-page");
               }

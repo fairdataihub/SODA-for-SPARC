@@ -219,7 +219,7 @@ async function helpMilestoneSubmission(curationMode) {
 
         //save the unselected milestones into sodaJSONObj
         sodaJSONObj["dataset-metadata"]["submission-metadata"][
-          "unselected-milestones"
+          "temp-imported-milestones"
         ] = guidedMilestoneData;
 
         renderMilestoneSelectionTable(guidedMilestoneData);
