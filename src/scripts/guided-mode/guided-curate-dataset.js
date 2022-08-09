@@ -2108,19 +2108,6 @@ const traverseToTab = (targetPageID) => {
         readMeTextArea.value = "";
       }
     }
-    if (targetPageID === "guided-create-changes-metadata-tab") {
-      const changesTextArea = document.getElementById(
-        "guided-textarea-create-changes"
-      );
-
-      const changes = sodaJSONObj["dataset-metadata"]["CHANGES"];
-
-      if (changes) {
-        changesTextArea.value = changes;
-      } else {
-        changesTextArea.value = "";
-      }
-    }
 
     let currentParentTab = CURRENT_PAGE.parent();
     let targetPage = $(`#${targetPageID}`);
@@ -8296,11 +8283,6 @@ $(document).ready(() => {
           "Upload status": "Dataset successfully uploaded to Pennsieve!",
         });
 
-        //Save a copy of the sodaJSONObj on this upload to compare it while prepping other uploads
-        sodaJSONObj["previous-guided-upload-dataset-name"] =
-          sodaJSONObj["digital-metadata"]["name"];
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-
         await swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
@@ -8309,22 +8291,15 @@ $(document).ready(() => {
           icon: "success",
           confirmButtonText: "OK",
         });
-        guidedUnLockSideBar();
-        const guidedIntroPage = document.getElementById("guided-intro-page");
-        const guidedDatasetNameSubtitlePage = document.getElementById(
-          "guided-new-dataset-info"
-        );
-
-        if (!guidedIntroPage.classList.contains("hidden")) {
-          //click past the intro page
-          $("#guided-button-dataset-intro-back").click();
-        } else if (
-          !guidedDatasetNameSubtitlePage.classList.contains("hidden")
-        ) {
-          //click past the dataset name/subtitle page and intro page
-          $("#guided-button-dataset-intro-back").click();
-          $("#guided-button-dataset-intro-back").click();
-        }
+        guidedUnLockSideBar(); //Save a copy of the sodaJSONObj on this upload to compare it while prepping other uploads
+        sodaJSONObj["previous-guided-upload-dataset-name"] =
+          sodaJSONObj["digital-metadata"]["name"];
+        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+        //exit to the home page
+        traverseToTab("guided-dataset-starting-point-tab");
+        hideSubNavAndShowMainNav("back");
+        $("#guided-button-dataset-intro-back").click();
+        $("#guided-button-dataset-intro-back").click();
       }
     };
     // Progress tracking function for main curate
@@ -9918,13 +9893,6 @@ $(document).ready(() => {
           const readMe = readMeTextArea.value.trim();
           sodaJSONObj["dataset-metadata"]["README"] = readMe;
         }
-      }
-      if (pageBeingLeftID === "guided-create-changes-metadata-tab") {
-        const changesTextArea = document.getElementById(
-          "guided-textarea-create-changes"
-        );
-        const changes = changesTextArea.value.trim();
-        sodaJSONObj["dataset-metadata"]["CHANGES"] = changes;
       }
 
       console.log(sodaJSONObj);
