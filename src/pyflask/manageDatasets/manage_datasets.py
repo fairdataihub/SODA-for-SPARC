@@ -346,11 +346,8 @@ def check_forbidden_characters(my_string):
         False: no forbidden character
         True: presence of forbidden character(s)
     """
-    regex = re.compile("[" + forbidden_characters + "]")
-    if regex.search(my_string) == None and "\\" not in r"%r" % my_string:
-        return False
-    else:
-        return True
+    regex = re.compile(f"[{forbidden_characters}]")
+    return regex.search(my_string) is not None or "\\" in r"%r" % my_string
 
 
 def check_forbidden_characters_bf(my_string):
@@ -363,11 +360,8 @@ def check_forbidden_characters_bf(my_string):
         False: no forbidden character
         True: presence of forbidden character(s)
     """
-    regex = re.compile("[" + forbidden_characters_bf + "]")
-    if regex.search(my_string) == None and "\\" not in r"%r" % my_string:
-        return False
-    else:
-        return True
+    regex = re.compile(f"[{forbidden_characters_bf}]")
+    return regex.search(my_string) is not None or "\\" in r"%r" % my_string
 
 
 def bf_delete_account(keyname):
@@ -526,8 +520,8 @@ def get_username(accountname):
         bf = Pennsieve(accountname)
     except Exception as e:
         abort(400, "Please select a valid Pennsieve account.")
-    
-    bfname = bf.profile.first_name + " " + bf.profile.last_name
+
+    bfname = f"{bf.profile.first_name} {bf.profile.last_name}"
 
     return {"username": bfname}
 
@@ -546,8 +540,8 @@ def bf_account_details(accountname):
     except Exception as e:
         abort(400, str(e))
 
-    acc_details = "User email: " + bf.profile.email + "<br>"
-    acc_details = acc_details + "Organization: " + bf.context.name
+    acc_details = f"User email: {bf.profile.email}<br>"
+    acc_details = f"{acc_details}Organization: {bf.context.name}"
 
     try: 
         if exists(configpath):
@@ -594,17 +588,17 @@ def bf_new_dataset_folder(datasetname, accountname):
             c += 1
 
         if not datasetname:
-            error = error + "Please enter valid dataset name" + "<br>"
+            error = f"{error}Please enter valid dataset name<br>"
             c += 1
 
         if datasetname.isspace():
-            error = error + "Please enter valid dataset name" + "<br>"
+            error = f"{error}Please enter valid dataset name<br>"
             c += 1
 
         try:
             bf = Pennsieve(accountname)
         except Exception as e:
-            error = error + "Please select a valid Pennsieve account" + "<br>"
+            error = f"{error}Please select a valid Pennsieve account<br>"
             c += 1
 
         if c > 0:
@@ -644,17 +638,17 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
         c += 1
 
     if not datasetname:
-        error = error + "Please enter valid new dataset name" + "<br>"
+        error = f"{error}Please enter valid new dataset name<br>"
         c += 1
 
     if datasetname.isspace():
-        error = error + "Please enter valid new dataset name" + "<br>"
+        error = f"{error}Please enter valid new dataset name<br>"
         c += 1
 
     try:
         bf = Pennsieve(accountname)
     except Exception as e:
-        error = error + "Please select a valid Pennsieve account" + "<br>"
+        error = f"{error}Please select a valid Pennsieve account<br>"
         c += 1
 
     if c > 0:
@@ -686,8 +680,7 @@ def clear_queue():
 
     command = [agent_cmd(), "upload-status", "--cancel-all"]
 
-    proc = subprocess.run(command, check=True)  # env=agent_env(?settings?)
-    return proc
+    return subprocess.run(command, check=True)
 
 
 def agent_running():
@@ -801,12 +794,15 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         submitdatastatus = "Done"
         did_fail = True
         did_upload = False
-        error_message = error_message + "Please select a valid Pennsieve dataset" + "<br>"
+        error_message = f"{error_message}Please select a valid Pennsieve dataset<br>"
         c += 1
 
     if not isdir(pathdataset):
         submitdatastatus = "Done"
-        error_message = error_message + "Please select a valid local dataset folder" + "<br>"
+        error_message = (
+            f"{error_message}Please select a valid local dataset folder<br>"
+        )
+
         did_fail = True
         did_upload = False
         c += 1
@@ -824,7 +820,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                 if mypathsize == 0:
                     c += 1
                     error = error + fp + " is 0 KB <br>"
-                elif f[0:1] == ".":
+                elif f[:1] == ".":
                     c += 1
                     error = (
                         error
@@ -934,7 +930,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             root_pennsieve_folder = myds.create_collection(root_folder_name)
             myds.update()
             folders = {root_folder_name: root_pennsieve_folder}
-            
+
             # top down scan through dataset to upload each file/folder
             for dirpath, child_dirs, files in os.walk(pathdataset, topdown=True):
                 #  get the current root directory's name not its relative path
@@ -990,7 +986,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                         current_os = platform.system()
 
                         # Mac builds not able to spawn subprocess from Python at the moment
-                        if not current_os == "Darwin":
+                        if current_os != "Darwin":
                             # clear the pennsieve queue
                             clear_queue()
 
@@ -1026,7 +1022,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                         current_os = platform.system()
 
                         # Mac builds not able to spawn subprocess from Python at the moment
-                        if not current_os == "Darwin":
+                        if current_os != "Darwin":
                             # clear the pennsieve queue
                             clear_queue()
 
@@ -1146,11 +1142,11 @@ def bf_get_users(selected_bfaccount):
         bf = Pennsieve(selected_bfaccount)
     except Exception as e:
         abort(400, f"{e}")
-        
+
     try:
         # organization_name = bf.context.name
         organization_id = bf.context.id
-        list_users = bf._api._get("/organizations/" + str(organization_id) + "/members")
+        list_users = bf._api._get(f"/organizations/{str(organization_id)}/members")
         list_users_first_last = []
         for i in range(len(list_users)):
             # first_last = list_users[i]['firstName'] + ' ' + list_users[i]['lastName']
@@ -1224,34 +1220,39 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
         # user permissions
         selected_dataset_id = myds.id
         list_dataset_permission = bf._api._get(
-            "/datasets/" + str(selected_dataset_id) + "/collaborators/users"
+            f"/datasets/{str(selected_dataset_id)}/collaborators/users"
         )
+
         list_dataset_permission_first_last_role = []
         for i in range(len(list_dataset_permission)):
             first_name = list_dataset_permission[i]["firstName"]
             last_name = list_dataset_permission[i]["lastName"]
             role = list_dataset_permission[i]["role"]
             list_dataset_permission_first_last_role.append(
-                "User: " + first_name + " " + last_name + " , role: " + role
+                f"User: {first_name} {last_name} , role: {role}"
             )
+
 
         # team permissions
         list_dataset_permission_teams = bf._api._get(
-            "/datasets/" + str(selected_dataset_id) + "/collaborators/teams"
+            f"/datasets/{str(selected_dataset_id)}/collaborators/teams"
         )
+
         for i in range(len(list_dataset_permission_teams)):
             team_keys = list(list_dataset_permission_teams[i].keys())
             if "role" in team_keys:
                 team_name = list_dataset_permission_teams[i]["name"]
                 team_role = list_dataset_permission_teams[i]["role"]
                 list_dataset_permission_first_last_role.append(
-                    "Team: " + team_name + ", role: " + team_role
+                    f"Team: {team_name}, role: {team_role}"
                 )
+
 
         # Organization permissions
         list_dataset_permission_organizations = bf._api._get(
-            "/datasets/" + str(selected_dataset_id) + "/collaborators/organizations"
+            f"/datasets/{str(selected_dataset_id)}/collaborators/organizations"
         )
+
         if type(list_dataset_permission_organizations) is dict:
             organization_keys = list(list_dataset_permission_organizations.keys())
             if "role" in organization_keys:
@@ -1332,7 +1333,7 @@ def bf_add_permission(
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = error + "Please select a valid Pennsieve dataset" + "<br>"
+        error = f"{error}Please select a valid Pennsieve dataset<br>"
         c += 1
 
     try:
@@ -1347,7 +1348,7 @@ def bf_add_permission(
                 user_present = True
                 break
         if user_present == False:
-            error = error + "Please select a valid user" + "<br>"
+            error = f"{error}Please select a valid user<br>"
             c += 1
     except Exception as e:
         raise e
@@ -1358,75 +1359,82 @@ def bf_add_permission(
         "owner",
         "remove current permissions",
     ]:
-        error = error + "Please select a valid role" + "<br>"
+        error = f"{error}Please select a valid role<br>"
         c += 1
 
     if c > 0:
         raise abort(400, error)
-    else:
-        try:
-            selected_dataset_id = myds.id
+    try:
+        selected_dataset_id = myds.id
 
-            # check that currently logged in user is a manager or a owner of the selected dataset (only manager and owner can change dataset permission)
-            current_user = bf._api._get("/user")
-            first_name_current_user = current_user["firstName"]
-            last_name_current_user = current_user["lastName"]
-            list_dataset_permission = bf._api._get(
-                "/datasets/" + str(selected_dataset_id) + "/collaborators/users"
-            )
-            c = 0
-            for i in range(len(list_dataset_permission)):
-                first_name = list_dataset_permission[i]["firstName"]
-                last_name = list_dataset_permission[i]["lastName"]
-                role = list_dataset_permission[i]["role"]
-                user_id = list_dataset_permission[i]["id"]
+        # check that currently logged in user is a manager or a owner of the selected dataset (only manager and owner can change dataset permission)
+        current_user = bf._api._get("/user")
+        first_name_current_user = current_user["firstName"]
+        last_name_current_user = current_user["lastName"]
+        list_dataset_permission = bf._api._get(
+            f"/datasets/{str(selected_dataset_id)}/collaborators/users"
+        )
+
+        c = 0
+        for i in range(len(list_dataset_permission)):
+            first_name = list_dataset_permission[i]["firstName"]
+            last_name = list_dataset_permission[i]["lastName"]
+            role = list_dataset_permission[i]["role"]
+            user_id = list_dataset_permission[i]["id"]
+            if role not in ["owner", "manager"]:
                 if (
                     first_name == first_name_current_user
                     and last_name == last_name_current_user
                 ):
-                    if role not in ["owner", "manager"]:
-                        abort(403, "You must be dataset owner or manager to change its permissions")
-                    elif selected_role == "owner" and role != "owner":
-                        abort(403,"You must be dataset owner to change the ownership")
-                    else:
-                        c += 1
-                # check if selected user is owner, dataset permission cannot be changed for owner
-                if user_id == selected_user_id and role == "owner":
-                    abort(400, "Owner's permission cannot be changed")
+                    abort(403, "You must be dataset owner or manager to change its permissions")
+            elif selected_role == "owner" and role != "owner":
+                if (
+                    first_name == first_name_current_user
+                    and last_name == last_name_current_user
+                ):
+                    abort(403,"You must be dataset owner to change the ownership")
+            elif (
+                    first_name == first_name_current_user
+                    and last_name == last_name_current_user
+                ):
+                c += 1
+            # check if selected user is owner, dataset permission cannot be changed for owner
+            if user_id == selected_user_id and role == "owner":
+                abort(400, "Owner's permission cannot be changed")
 
-            if c == 0:
-                abort(403,"You must be dataset owner or manager to change its permissions")
+        if c == 0:
+            abort(403,"You must be dataset owner or manager to change its permissions")
 
-            if selected_role == "remove current permissions":
+        if selected_role == "remove current permissions":
 
-                bf._api.datasets._del(
-                    "/"
-                    + str(selected_dataset_id)
-                    + "/collaborators/users".format(dataset_id=selected_dataset_id),
-                    json={"id": selected_user_id},
-                )
-                return {"message": "Permission removed for " + selected_user}
-            elif selected_role == "owner":
-                # check if currently logged in user is owner of selected dataset (only owner can change owner)
+            bf._api.datasets._del(
+                "/"
+                + str(selected_dataset_id)
+                + "/collaborators/users".format(dataset_id=selected_dataset_id),
+                json={"id": selected_user_id},
+            )
+            return {"message": f"Permission removed for {selected_user}"}
+        elif selected_role == "owner":
+            # check if currently logged in user is owner of selected dataset (only owner can change owner)
 
-                # change owner
-                bf._api.datasets._put(
-                    "/"
-                    + str(selected_dataset_id)
-                    + "/collaborators/owner".format(dataset_id=selected_dataset_id),
-                    json={"id": selected_user_id},
-                )
-                return {"message":  "Permission " + "'" + selected_role + "' " + " added for " + selected_user}
-            else:
-                bf._api.datasets._put(
-                    "/"
-                    + str(selected_dataset_id)
-                    + "/collaborators/users".format(dataset_id=selected_dataset_id),
-                    json={"id": selected_user_id, "role": selected_role},
-                )
-                return {"message": "Permission " + "'" + selected_role + "' " + " added for " + selected_user}
-        except Exception as e:
-            raise e
+            # change owner
+            bf._api.datasets._put(
+                "/"
+                + str(selected_dataset_id)
+                + "/collaborators/owner".format(dataset_id=selected_dataset_id),
+                json={"id": selected_user_id},
+            )
+            return {"message":  "Permission " + "'" + selected_role + "' " + " added for " + selected_user}
+        else:
+            bf._api.datasets._put(
+                "/"
+                + str(selected_dataset_id)
+                + "/collaborators/users".format(dataset_id=selected_dataset_id),
+                json={"id": selected_user_id, "role": selected_role},
+            )
+            return {"message": "Permission " + "'" + selected_role + "' " + " added for " + selected_user}
+    except Exception as e:
+        raise e
 
 
 def bf_add_permission_team(
@@ -1454,12 +1462,18 @@ def bf_add_permission_team(
         abort(400, error_message)
 
 
-    if selected_team == "SPARC Data Curation Team":
-        if bf.context.id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-            abort(403, "Please login under the Pennsieve SPARC Consortium organization to share with the Curation Team")
-    if selected_team == "SPARC Embargoed Data Sharing Group":
-        if bf.context.id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-            abort(403, "Please login under the Pennsieve SPARC Consortium organization to share with the SPARC consortium group")
+    if (
+        selected_team == "SPARC Data Curation Team"
+        and bf.context.id
+        != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
+    ):
+        abort(403, "Please login under the Pennsieve SPARC Consortium organization to share with the Curation Team")
+    if (
+        selected_team == "SPARC Embargoed Data Sharing Group"
+        and bf.context.id
+        != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
+    ):
+        abort(403, "Please login under the Pennsieve SPARC Consortium organization to share with the SPARC consortium group")
 
 
     c = 0
@@ -1467,20 +1481,20 @@ def bf_add_permission_team(
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = error + "Please select a valid Pennsieve dataset" + "<br>"
+        error = f"{error}Please select a valid Pennsieve dataset<br>"
         c += 1
 
     try:
         # organization_name = bf.context.name
         organization_id = bf.context.id
-        list_teams = bf._api._get("/organizations/" + str(organization_id) + "/teams")
+        list_teams = bf._api._get(f"/organizations/{str(organization_id)}/teams")
         dict_teams = {}
         list_teams_name = []
         for i in range(len(list_teams)):
             list_teams_name.append(list_teams[i]["team"]["name"])
             dict_teams[list_teams_name[i]] = list_teams[i]["team"]["id"]
         if selected_team not in list_teams_name:
-            error = error + "Please select a valid team" + "<br>"
+            error = f"{error}Please select a valid team<br>"
             c += 1
     except Exception as e:
         raise e
@@ -1491,7 +1505,7 @@ def bf_add_permission_team(
         "editor",
         "remove current permissions",
     ]:
-        error = error + "Please select a valid role" + "<br>"
+        error = f"{error}Please select a valid role<br>"
         c += 1
 
     if c > 0:
@@ -1507,8 +1521,9 @@ def bf_add_permission_team(
         first_name_current_user = current_user["firstName"]
         last_name_current_user = current_user["lastName"]
         list_dataset_permission = bf._api._get(
-            "/datasets/" + str(selected_dataset_id) + "/collaborators/users"
+            f"/datasets/{str(selected_dataset_id)}/collaborators/users"
         )
+
         c = 0
         for i in range(len(list_dataset_permission)):
             first_name = list_dataset_permission[i]["firstName"]
@@ -1534,7 +1549,7 @@ def bf_add_permission_team(
                 + "/collaborators/teams".format(dataset_id=selected_dataset_id),
                 json={"id": selected_team_id},
             )
-            return {"message": "Permission removed for " + selected_team}
+            return {"message": f"Permission removed for {selected_team}"}
         else:
             bf._api.datasets._put(
                 "/"
@@ -1576,13 +1591,13 @@ def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
 
     try:
         selected_dataset_id = myds.id
-        dataset_info = bf._api._get("/datasets/" + str(selected_dataset_id))
+        dataset_info = bf._api._get(f"/datasets/{str(selected_dataset_id)}")
 
         res = ""
         if "description" in dataset_info["content"]:
             res = dataset_info["content"]["description"]
         return {"subtitle": res}
-        # return json.dumps(dataset_info)
+            # return json.dumps(dataset_info)
     except Exception as e:
         raise Exception(e)
 
@@ -1614,7 +1629,7 @@ def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
         error_message = "Please select a valid Pennsieve dataset"
         abort(400, error_message)
 
-  
+
     role = bf_get_current_user_permission(bf, myds)
     if role not in ["owner", "manager"]:
         error_message = "You don't have permissions for editing metadata on this Pennsieve dataset"
@@ -1623,7 +1638,7 @@ def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
     try:
         selected_dataset_id = myds.id
         jsonfile = {"description": input_subtitle}
-        bf._api.datasets._put("/" + str(selected_dataset_id), json=jsonfile)
+        bf._api.datasets._put(f"/{str(selected_dataset_id)}", json=jsonfile)
         return{ "message": "Subtitle added!"}
     except Exception as e:
         raise Exception(e)
@@ -1973,8 +1988,9 @@ def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_st
         # find name corresponding to display name or show error message
         organization_id = bf.context.id
         list_status = bf._api._get(
-            "/organizations/" + str(organization_id) + "/dataset-status"
+            f"/organizations/{str(organization_id)}/dataset-status"
         )
+
         c = 0
         for option in list_status:
             if option["displayName"] == selected_status:
@@ -1987,7 +2003,7 @@ def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_st
         # gchange dataset status
         selected_dataset_id = myds.id
         jsonfile = {"status": new_status}
-        bf._api.datasets._put("/" + str(selected_dataset_id), json=jsonfile)
+        bf._api.datasets._put(f"/{str(selected_dataset_id)}", json=jsonfile)
         return { "message": "Success: Changed dataset status to '" + selected_status + "'" }
     except Exception as e:
         raise e
@@ -2084,11 +2100,11 @@ def get_pennsieve_api_key_secret(email, password, keyname):
         )
         response.raise_for_status()
         response = response.json()
-        if "preferredOrganization" in response:
-            if response["preferredOrganization"] != sparc_org_id:
-                error = "Could not switch to the SPARC Consortium organization. Please log in and switch to the organization and try again."
-                raise Exception(error)
-        else:
+        if (
+            "preferredOrganization" in response
+            and response["preferredOrganization"] != sparc_org_id
+            or "preferredOrganization" not in response
+        ):
             error = "Could not switch to the SPARC Consortium organization. Please log in and switch to the organization and try again."
             raise Exception(error)
     except Exception as error:
