@@ -1299,6 +1299,7 @@ const traverseToTab = (targetPageID) => {
       //Refresh select pickers so items can be selected
       $(".selectpicker").selectpicker("refresh");
     }
+
     if (
       targetPageID === "guided-dataset-generation-confirmation-tab" ||
       targetPageID === "guided-dataset-generation-tab"
@@ -3821,7 +3822,7 @@ const generateProtocolField = (protocolUrl, protocolDescription) => {
         onkeyup="validateInput($(this))"
       />
       <p class="guided--text-input-instructions mb-0">
-        Enter the DOI of the protocol if it is already published. Else, enter the its protocols.io URL.<br>
+        Enter the DOI of the protocol if it is already published. Else, enter its protocols.io URL.<br>
       </p>
       <label class="guided--form-label mt-lg required">Protocol description:</label>
       <textarea
@@ -3832,7 +3833,8 @@ const generateProtocolField = (protocolUrl, protocolDescription) => {
         onkeyup="validateInput($(this))"
       >${protocolDescription ? protocolDescription.trim() : ""}</textarea
       >
-      <p class="guided--text-input-instructions mb-0">.
+      <p class="guided--text-input-instructions mb-0">
+        Enter a description of the protocol used to generate your dataset.
       </p>
     </div>
   `;
