@@ -1299,6 +1299,17 @@ const traverseToTab = (targetPageID) => {
       //Refresh select pickers so items can be selected
       $(".selectpicker").selectpicker("refresh");
     }
+    if (
+      targetPageID === "guided-dataset-generation-confirmation-tab" ||
+      targetPageID === "guided-dataset-generation-tab"
+    ) {
+      //Hide the next button for the last two pages
+      $("#guided-next-button").css("visibility", "hidden");
+    } else {
+      //show the next button on all pages besides the last two
+      $("#guided-next-button").css("visibility", "visible");
+    }
+
     if (targetPageID === "guided-subjects-folder-tab") {
       openSubPageNavigation(targetPageID);
     }
@@ -9503,8 +9514,6 @@ $(document).ready(() => {
             confirmDatasetGenerationNameinput.value.trim();
           sodaJSONObj["generate-dataset"]["destination"] = "bf";
         }
-        //Hide the next button for the last page
-        $(this).css("visibility", "hidden");
       }
 
       if (pageBeingLeftID === "guided-folder-structure-preview-tab") {
