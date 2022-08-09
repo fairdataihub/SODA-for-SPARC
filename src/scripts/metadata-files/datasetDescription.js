@@ -2328,129 +2328,232 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
       }
     });
   } else {
-    Swal.fire({
-      icon: "warning",
-      title: "Connect to Airtable",
-      text: "This will erase your previous manual input under the submission and/or dataset description file(s). Would you like to continue?",
-      heightAuto: false,
-      showCancelButton: true,
-      focusCancel: true,
-      cancelButtonText: "Cancel",
-      confirmButtonText: "Yes",
-      reverseButtons: reverseSwalButtons,
-      backdrop: "rgba(0,0,0,0.4)",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const optionsSparcTable = {
-          hostname: airtableHostname,
-          port: 443,
-          path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
-          headers: { Authorization: `Bearer ${key}` },
-        };
-        var sparcTableSuccess;
-        https.get(optionsSparcTable, (res) => {
-          if (res.statusCode === 200) {
-            /// updating api key in SODA's storage
-            createMetadataDir();
-            var content = parseJson(airtableConfigPath);
-            content["api-key"] = key;
-            content["key-name"] = name;
-            fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
-            checkAirtableStatus(keyword);
-            // document.getElementById(
-            //   "para-generate-description-status"
-            // ).innerHTML = "";
-            // $("#span-airtable-keyname").html(name);
-            $("#current-airtable-account").html(name);
-            // $("#bootbox-airtable-key-name").val("");
-            $("#bootbox-airtable-key").val("");
-            loadAwardData();
-            // ddNoAirtableMode("Off");
-            Swal.fire({
-              title: "Successfully connected. Loading your Airtable account...",
-              timer: 10000,
-              timerProgressBar: false,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              allowEscapeKey: false,
-              allowOutsideClick: false,
-              showConfirmButton: false,
-              didOpen: () => {
-                Swal.showLoading();
-              },
-            }).then((result) => {
-              helpSPARCAward("submission", curationMode);
-            });
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              "Prepare Metadata - Add Airtable account",
-              "Airtable",
-              1
-            );
-          } else if (res.statusCode === 403) {
-            $("#current-airtable-account").html("None");
-            Swal.fire({
-              icon: "error",
-              text: "Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0,0.4)",
-            }).then((result) => {
-              if (result.isConfirmed) {
-                showAddAirtableAccountSweetalert(keyword, curationMode);
-              }
-            });
-          } else {
-            log.error(res);
-            console.error(res);
-            ipcRenderer.send(
-              "track-event",
-              "Error",
-              "Prepare Metadata - Add Airtable account",
-              "Airtable",
-              1
-            );
-            Swal.fire({
-              icon: "error",
-              text: "Failed to connect to Airtable. Please check your API Key and try again!",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0,0.4)",
-            }).then((result) => {
-              if (result.isConfirmed) {
-                showAddAirtableAccountSweetalert(keyword, curationMode);
-              }
-            });
-          }
-          res.on("error", (error) => {
-            log.error(error);
-            console.error(error);
-            ipcRenderer.send(
-              "track-event",
-              "Error",
-              "Prepare Metadata - Add Airtable account",
-              "Airtable",
-              1
-            );
-            Swal.fire({
-              icon: "error",
-              text: "Failed to connect to Airtable. Please check your API Key and try again!",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0,0.4)",
-            }).then((result) => {
-              if (result.isConfirmed) {
-                showAddAirtableAccountSweetalert(keyword, curationMode);
-              }
+    if (curationMode === "free-form") {
+      Swal.fire({
+        icon: "warning",
+        title: "Connect to Airtable",
+        text: "This will erase your previous manual input under the submission and/or dataset description file(s). Would you like to continue?",
+        heightAuto: false,
+        showCancelButton: true,
+        focusCancel: true,
+        cancelButtonText: "Cancel",
+        confirmButtonText: "Yes",
+        reverseButtons: reverseSwalButtons,
+        backdrop: "rgba(0,0,0,0.4)",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const optionsSparcTable = {
+            hostname: airtableHostname,
+            port: 443,
+            path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
+            headers: { Authorization: `Bearer ${key}` },
+          };
+          var sparcTableSuccess;
+          https.get(optionsSparcTable, (res) => {
+            if (res.statusCode === 200) {
+              /// updating api key in SODA's storage
+              createMetadataDir();
+              var content = parseJson(airtableConfigPath);
+              content["api-key"] = key;
+              content["key-name"] = name;
+              fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
+              checkAirtableStatus(keyword);
+              // document.getElementById(
+              //   "para-generate-description-status"
+              // ).innerHTML = "";
+              // $("#span-airtable-keyname").html(name);
+              $("#current-airtable-account").html(name);
+              // $("#bootbox-airtable-key-name").val("");
+              $("#bootbox-airtable-key").val("");
+              loadAwardData();
+              // ddNoAirtableMode("Off");
+              Swal.fire({
+                title:
+                  "Successfully connected. Loading your Airtable account...",
+                timer: 10000,
+                timerProgressBar: false,
+                heightAuto: false,
+                backdrop: "rgba(0,0,0, 0.4)",
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                  Swal.showLoading();
+                },
+              }).then((result) => {
+                helpSPARCAward("submission", curationMode);
+              });
+              ipcRenderer.send(
+                "track-event",
+                "Success",
+                "Prepare Metadata - Add Airtable account",
+                "Airtable",
+                1
+              );
+            } else if (res.statusCode === 403) {
+              $("#current-airtable-account").html("None");
+              Swal.fire({
+                icon: "error",
+                text: "Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!",
+                heightAuto: false,
+                backdrop: "rgba(0,0,0,0.4)",
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  showAddAirtableAccountSweetalert(keyword, curationMode);
+                }
+              });
+            } else {
+              log.error(res);
+              console.error(res);
+              ipcRenderer.send(
+                "track-event",
+                "Error",
+                "Prepare Metadata - Add Airtable account",
+                "Airtable",
+                1
+              );
+              Swal.fire({
+                icon: "error",
+                text: "Failed to connect to Airtable. Please check your API Key and try again!",
+                heightAuto: false,
+                backdrop: "rgba(0,0,0,0.4)",
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  showAddAirtableAccountSweetalert(keyword, curationMode);
+                }
+              });
+            }
+            res.on("error", (error) => {
+              log.error(error);
+              console.error(error);
+              ipcRenderer.send(
+                "track-event",
+                "Error",
+                "Prepare Metadata - Add Airtable account",
+                "Airtable",
+                1
+              );
+              Swal.fire({
+                icon: "error",
+                text: "Failed to connect to Airtable. Please check your API Key and try again!",
+                heightAuto: false,
+                backdrop: "rgba(0,0,0,0.4)",
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  showAddAirtableAccountSweetalert(keyword, curationMode);
+                }
+              });
             });
           });
+        }
+      });
+    }
+
+    if (curationMode === "guided") {
+      const optionsSparcTable = {
+        hostname: airtableHostname,
+        port: 443,
+        path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
+        headers: { Authorization: `Bearer ${key}` },
+      };
+      let sparcTableSuccess;
+      https.get(optionsSparcTable, (res) => {
+        if (res.statusCode === 200) {
+          /// updating api key in SODA's storage
+          createMetadataDir();
+          var content = parseJson(airtableConfigPath);
+          content["api-key"] = key;
+          content["key-name"] = name;
+          fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
+          checkAirtableStatus(keyword);
+
+          $("#current-airtable-account").html(name);
+          $("#bootbox-airtable-key").val("");
+          loadAwardData();
+          Swal.fire({
+            title: "Successfully connected. Loading your Airtable account...",
+            timer: 10000,
+            timerProgressBar: false,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            allowEscapeKey: false,
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          }).then((result) => {
+            helpSPARCAward("submission", curationMode);
+          });
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Prepare Metadata - Add Airtable account",
+            "Airtable",
+            1
+          );
+        } else if (res.statusCode === 403) {
+          $("#current-airtable-account").html("None");
+          Swal.fire({
+            icon: "error",
+            text: "Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0,0.4)",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              showAddAirtableAccountSweetalert(keyword, curationMode);
+            }
+          });
+        } else {
+          log.error(res);
+          console.error(res);
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Prepare Metadata - Add Airtable account",
+            "Airtable",
+            1
+          );
+          Swal.fire({
+            icon: "error",
+            text: "Failed to connect to Airtable. Please check your API Key and try again!",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0,0.4)",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              showAddAirtableAccountSweetalert(keyword, curationMode);
+            }
+          });
+        }
+        res.on("error", (error) => {
+          log.error(error);
+          console.error(error);
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Prepare Metadata - Add Airtable account",
+            "Airtable",
+            1
+          );
+          Swal.fire({
+            icon: "error",
+            text: "Failed to connect to Airtable. Please check your API Key and try again!",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0,0.4)",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              showAddAirtableAccountSweetalert(keyword, curationMode);
+            }
+          });
         });
-      }
-    });
+      });
+    }
   }
 }
 

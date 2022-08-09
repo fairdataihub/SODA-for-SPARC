@@ -3412,30 +3412,30 @@ const highLevelFolderPageData = {
   },
   code: {
     headerText:
-      "Specify the code data used to generate your dataset in the interface below",
+      "Provide the code data used to generate your dataset in the interface below",
     contentsText: `You can also virtually structure the data and rename files/folders
     as you would like to have them in your dataset when it is generated (note that none of
     your original data will be modified).`,
     pathSuffix: "code/",
     backPageId: "guided-code-folder-tab",
   },
-  docs: {
-    headerText:
-      "Add all supporting documentation used to generate your dataset in the interface below",
-    contentsText: `You can also virtually structure the data and rename files/folders
-    as you would like to have them in your dataset when it is generated (note that none of
-    your original data will be modified).`,
-    pathSuffix: "docs/",
-    backPageId: "guided-docs-folder-tab",
-  },
   protocol: {
     headerText:
-      "Specify the protocol data used to generate your dataset in the interface below",
+      "Provide the protocol data used to generate your dataset in the interface below",
     contentsText: `You can also virtually structure the data and rename files/folders
     as you would like to have them in your dataset when it is generated (note that none of
     your original data will be modified).`,
     pathSuffix: "protocol/",
     backPageId: "guided-protocol-folder-tab",
+  },
+  docs: {
+    headerText:
+      "Provide all supporting documentation used to generate your dataset in the interface below",
+    contentsText: `You can also virtually structure the data and rename files/folders
+    as you would like to have them in your dataset when it is generated (note that none of
+    your original data will be modified).`,
+    pathSuffix: "docs/",
+    backPageId: "guided-docs-folder-tab",
   },
 };
 const generateHighLevelFolderSubFolderPageData = (
@@ -3599,7 +3599,7 @@ const generateContributorField = (
         </h2>
         <div class="space-between w-100">
           <div class="guided--flex-center mt-sm" style="width: 45%">
-            <label class="guided--form-label">Last name: </label>
+            <label class="guided--form-label required">Last name: </label>
             <input
               class="
                 guided--input
@@ -3612,7 +3612,7 @@ const generateContributorField = (
             />
           </div>
           <div class="guided--flex-center mt-sm" style="width: 45%">
-            <label class="guided--form-label">First name: </label>
+            <label class="guided--form-label required">First name: </label>
             <input
               class="
                 guided--input
@@ -3627,7 +3627,7 @@ const generateContributorField = (
         </div>
         <div class="space-between w-100 mb-md">
           <div class="guided--flex-center mt-md" style="width: 45%">
-            <label class="guided--form-label">ORCID: </label>
+            <label class="guided--form-label required">ORCID: </label>
             <input
               class="
                 guided--input
@@ -3640,7 +3640,7 @@ const generateContributorField = (
             />
           </div>
           <div class="guided--flex-center mt-md" style="width: 45%">
-            <label class="guided--form-label">Affiliation: </label>
+            <label class="guided--form-label required">Affiliation: </label>
             <input
               class="
                 guided--input
@@ -3653,8 +3653,8 @@ const generateContributorField = (
             />
           </div>
         </div>
-        <label class="guided--form-label">Role(s): </label>
-        <input class="guided-contributor-role-input"
+        <label class="guided--form-label required">Role(s): </label>
+        <input class="guided-contributor-role-input required"
           contenteditable="true"
           placeholder='Type here to view and add contributor roles'
           data-initial-contributor-roles="${initialContributorRoleString}"
@@ -3720,7 +3720,7 @@ const addContributorField = () => {
     </h2>
     <div class="space-between w-100">
       <div class="guided--flex-center mt-sm" style="width: 45%">
-        <label class="guided--form-label">Last name: </label>
+        <label class="guided--form-label required">Last name: </label>
         <input
           class="guided--input guided-last-name-input"
           type="text"
@@ -3729,7 +3729,7 @@ const addContributorField = () => {
         />
       </div>
       <div class="guided--flex-center mt-sm" style="width: 45%">
-        <label class="guided--form-label">First name: </label>
+        <label class="guided--form-label required">First name: </label>
         <input
           class="guided--input guided-first-name-input"
           type="text"
@@ -3740,7 +3740,7 @@ const addContributorField = () => {
     </div>
     <div class="space-between w-100 mb-md">
       <div class="guided--flex-center mt-md" style="width: 45%">
-        <label class="guided--form-label">ORCID: </label>
+        <label class="guided--form-label required">ORCID: </label>
         <input
           class="guided--input guided-orcid-input"
           type="text"
@@ -3749,7 +3749,7 @@ const addContributorField = () => {
         />
       </div>
       <div class="guided--flex-center mt-md" style="width: 45%">
-        <label class="guided--form-label">Affiliation: </label>
+        <label class="guided--form-label required">Affiliation: </label>
         <input
           class="guided--input guided-affiliation-input"
           type="text"
@@ -3758,7 +3758,7 @@ const addContributorField = () => {
         />
       </div>
     </div>
-    <label class="guided--form-label">Role(s): </label>
+    <label class="guided--form-label required">Role(s): </label>
     <input class="guided-contributor-role-input"
       contenteditable="true"
       placeholder='Type here to view and add contributor roles'
