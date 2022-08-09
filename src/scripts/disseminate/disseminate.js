@@ -469,7 +469,6 @@ async function disseminateConsortium(bfAcct, bfDS, share_status = "") {
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
       });
-
       logGeneralOperationsForAnalytics(
         "Error",
         DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_SPARC_CONSORTIUM,

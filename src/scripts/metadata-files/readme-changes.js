@@ -1,3 +1,33 @@
+// event listeners for changes open dropdown prompts
+document
+  .querySelectorAll(".changes-change-current-account")
+  .forEach((element) => {
+    element.addEventListener("click", function () {
+      openDropdownPrompt(null, "bf");
+    });
+  });
+
+document.querySelectorAll(".changes-change-current-ds").forEach((element) => {
+  element.addEventListener("click", function () {
+    openDropdownPrompt(null, "dataset");
+  });
+});
+
+// event listeners for readme open dropdown prompts
+document
+  .querySelectorAll(".readme-change-current-account")
+  .forEach((element) => {
+    element.addEventListener("click", function () {
+      openDropdownPrompt(null, "bf");
+    });
+  });
+
+document.querySelectorAll(".readme-change-current-ds").forEach((element) => {
+  element.addEventListener("click", function () {
+    openDropdownPrompt(null, "dataset");
+  });
+});
+
 /////// Load SPARC airtable data
 var pennsieveHostname = "https://api.pennsieve.io";
 

@@ -1,7 +1,7 @@
 {
   "name": "soda-for-sparc",
   "productName": "SODA for SPARC",
-  "version": "7.0.0",
+  "version": "8.0.0",
   "description": "Keep Calm and Curate ",
   "main": "main.js",
   "scripts": {
@@ -93,6 +93,7 @@
   "author": "SODA Team",
   "license": "MIT",
   "dependencies": {
+    "@electron/remote": "2.0.8",
     "@fortawesome/fontawesome-free": "^5.15.3",
     "@sweetalert2/theme-bulma": "^4.0.3",
     "@tarekraafat/autocomplete.js": "^10.2.6",
@@ -103,6 +104,7 @@
     "animate.css": "^4.1.1",
     "axios": "^0.19.2",
     "bootbox": "^5.5.2",
+    "bootstrap": "^4.0.0",
     "bootstrap-icons": "^1.5.0",
     "bootstrap-select": "^1.13.18",
     "check-disk-space": "^3.2.0",
@@ -114,11 +116,11 @@
     "electron-context-menu": "^0.13.0",
     "electron-log": "^4.3.5",
     "electron-notarize": "^1.2.1",
-    "electron-settings": "^3.2.0",
     "electron-shortcut-normalizer": "^1.0.0",
     "electron-updater": "4.3.9",
     "excel4node": "^1.7.2",
     "exponential-backoff": "^3.1.0",
+    "find-free-port": "^2.0.0",
     "fomantic-ui": "^2.8.8",
     "fs-extra": "^10.0.0",
     "glob": "^7.1.7",
@@ -135,6 +137,7 @@
     "node-localstorage": "^2.1.6",
     "notyf": "^3.9.0",
     "pdfkit": "^0.11.0",
+    "popper.js": "^1.16.1",
     "prop-types": "^15.7.2",
     "remove-markdown": "^0.3.0",
     "spur-template": "^1.1.0",
@@ -147,7 +150,7 @@
     "validator": "^13.7.0"
   },
   "devDependencies": {
-    "electron": "6.1.9",
+    "electron": "19.0.0",
     "electron-builder": "22.10.5",
     "electron-packager": "^14.0.6",
     "electron-rebuild": "^1.11.0",

@@ -12,6 +12,8 @@ semantic
 semantic.json
 .env
 
+app.spec
+
 *.pyc
 src/package-lock.json
 src/.DS_Store

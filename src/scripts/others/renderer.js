@@ -7,7 +7,7 @@ const os = require("os");
 const path = require("path");
 const { ipcRenderer, BrowserWindow } = require("electron");
 const Editor = require("@toast-ui/editor");
-const remote = require("electron").remote;
+const remote = require("@electron/remote");
 const { Notyf } = require("notyf");
 const imageDataURI = require("image-data-uri");
 const log = require("electron-log");
@@ -15,10 +15,6 @@ const Airtable = require("airtable");
 require("v8-compile-cache");
 const Tagify = require("@yaireo/tagify");
 const https = require("https");
-const $ = require("jquery");
-// const PDFDocument = require("pdfkit");
-// const html2canvas = require("html2canvas");
-// const removeMd = require("remove-markdown");
 const electron = require("electron");
 const bootbox = require("bootbox");
 const DragSelect = require("dragselect");
@@ -64,9 +60,8 @@ const excel4node = require("excel4node");
 const { backOff } = require("exponential-backoff");
 
 // const prevent_sleep_id = "";
-const electron_app = electron.app;
+// const electron_app = electron.app;
 const app = remote.app;
-const shell = electron.shell;
 const Clipboard = electron.clipboard;
 var noAirtable = false;
 
@@ -147,7 +142,7 @@ log.info("User OS:", os.type(), os.platform(), "version:", os.release());
 console.log("User OS:", os.type(), os.platform(), "version:", os.release());
 
 // Check current app version //
-const appVersion = window.require("electron").remote.app.getVersion();
+const appVersion = app.getVersion();
 log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
 
@@ -737,10 +732,13 @@ const apiVersionsMatch = async () => {
 
   if (serverAppVersion !== appVersion) {
     log.info("Server version does not match client version");
-
-    log.error(error);
-    console.error(error);
-    ipcRenderer.send("track-event", "Error", "Verifying App Version", error);
+    console.error("Server version does not match client version");
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Verifying App Version",
+      "Server version does not match client version"
+    );
 
     await Swal.fire({
       icon: "error",
@@ -764,8 +762,6 @@ const apiVersionsMatch = async () => {
     message: "API Versions match",
     type: "success",
   });
-
-  log.info("About to do unsupported stuff");
 
   //Load Default/global Pennsieve account if available
   if (hasConnectedAccountWithPennsieve()) {
@@ -2347,6 +2343,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
           $("#bootbox-sample-species").css("display", "none");
         }
         // set the Edit species button back to "+ Add species"
+
         $("#button-add-species-sample").html(
           `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
         );
@@ -7474,7 +7471,7 @@ async function initiate_generate() {
     let mainCurationProgressResponse;
     try {
       mainCurationProgressResponse = await client.get(
-        `/curate_datasetscuration/progress`
+        `/curate_datasets/curation/progress`
       );
     } catch (error) {
       clientError(error);
@@ -7672,7 +7669,7 @@ async function initiate_generate() {
     let mainCurationDetailsResponse;
     try {
       mainCurationDetailsResponse = await client.get(
-        `/curate_datasetscuration/upload_details`
+        `/curate_datasets/curation/upload_details`
       );
     } catch (error) {
       clientError(error);
@@ -9166,6 +9163,7 @@ function openFeedbackForm() {
   }, 5);
 }
 function gatherLogs() {
+  console.log("Gathering logs...");
   //function will be used to gather all logs on all OS's
   let homedir = os.homedir();
   let file_path = "";
@@ -9252,18 +9250,22 @@ function gatherLogs() {
           // destination will be created or overwritten by default.
           for (const logFile of logFiles) {
             let logFilePath;
+            let missingLog = false;
             if (logFile === "out.log") {
               logFilePath = path.join(homedir, ".pennsieve", logFile);
+              if (!fs.existsSync(logFilePath)) missingLog = true;
             } else if (logFile === "api.log") {
               logFilePath = path.join(serverLogsPath, logFile);
+              if (!fs.existsSync(logFilePath)) missingLog = true;
             } else {
               logFilePath = path.join(clientLogsPath, logFile);
+              if (!fs.existsSync(logFilePath)) missingLog = true;
             }
-            let log_copy = path.join(log_folder, logFile);
+            if (!missingLog) {
+              let log_copy = path.join(log_folder, logFile);
 
-            fs.copyFileSync(logFilePath, log_copy, (err) => {
-              if (err) throw err;
-            });
+              fs.copyFileSync(logFilePath, log_copy);
+            }
           }
           Swal.close();
 
