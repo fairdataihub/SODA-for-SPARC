@@ -1267,6 +1267,9 @@ var milestonePath = path.join(metadataPath, milestoneFileName);
 var airtableConfigPath = path.join(metadataPath, airtableConfigFileName);
 var progressFilePath = path.join(homeDirectory, "SODA", "Progress");
 var protocolConfigPath = path.join(metadataPath, protocolConfigFileName);
+var allCollectionTags = {};
+var currentTags = {};
+var currentCollectionTags = [];
 
 // initiate Tagify input fields for Dataset description file
 var keywordInput = document.getElementById("ds-keywords"),
@@ -1296,7 +1299,6 @@ var collectionDatasetInput = document.getElementById("tagify-collection-tags"),
   });
 
 //object with both id and name of collection tags
-var currentCollectionTags = [];
 $("#button-collection-dataset-confirm").click(async () => {
   let collection_section = document.getElementById(
     "add_edit_bf_dataset_collection-section"
@@ -1322,8 +1324,8 @@ $("#button-collection-dataset-confirm").click(async () => {
     });
   }
 
-  let collection_list = await getAllCollectionTags(defaultBfAccount);
-  let current_tags = await getCurrentCollectionTags(
+  let collection_list = await api.getAllCollectionTags(defaultBfAccount);
+  let current_tags = await api.getCurrentCollectionTags(
     defaultBfAccount,
     defaultBfDataset
   );

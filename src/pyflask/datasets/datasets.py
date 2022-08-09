@@ -7,7 +7,7 @@ import requests
 
 from utils import get_authenticated_ps, get_dataset
 from authentication import get_access_token
-from ..manageDatasets import bf_get_current_user_permission
+from manageDatasets import bf_get_current_user_permission
 
 
 PENNSIEVE_URL = "https://api.pennsieve.io"

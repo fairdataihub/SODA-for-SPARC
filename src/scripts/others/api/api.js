@@ -201,7 +201,7 @@ const submitDatasetForPublication = async (
 };
 
 const getCurrentCollectionTags = async (account, dataset) => {
-  var currentTags = {};
+  currentTags = {};
   try {
     let result = await client.get(`/datasets/${dataset}/collections`, {
       params: {
@@ -229,7 +229,7 @@ const getCurrentCollectionTags = async (account, dataset) => {
 
 //Function used to get all collections that belong to the Org
 const getAllCollectionTags = async (account) => {
-  var allCollectionTags = {};
+  allCollectionTags = {};
   try {
     result = await client.get(`/collections/`, {
       params: { selected_account: account },
@@ -256,6 +256,90 @@ const getAllCollectionTags = async (account) => {
   }
 };
 
+//function is for uploading collection names that haven't been created on Pennsieve yet
+//First it will upload the new names to then receive their ID's
+//Then with those IDs we will associate them to the given dataset
+const uploadNewTags = async (account, dataset, tags) => {
+  //upload names first to then get their ids to add to dataset
+  //PARAMS: tags = list of collection names
+  let newUploadedTags = [];
+  let response200 = false;
+
+  try {
+    let newCollectionNames = await client.post(
+      `collections/?selected_account=${account}&selected_dataset=${dataset}`,
+      {
+        collection: tags,
+      }
+    );
+
+    let res = newCollectionNames.data.collection;
+    //store ids into an array for next call
+    if (res.length > 0) {
+      for (let i = 0; i < res.length; i++) {
+        //only need the id's to set to dataset
+        newUploadedTags.push(res[i]["id"]);
+      }
+      response200 = true;
+    }
+  } catch (error) {
+    clientError(error);
+  }
+
+  //if response200 = true then previous call succeeded and new IDs are in newUploadedTags array
+  if (response200) {
+    //put collection ids to dataset
+    try {
+      let newTagsUpload = await client.put(
+        `datasets/${defaultBfDataset}/collection_ids?selected_account=${defaultBfAccount}`,
+        {
+          collection: newUploadedTags,
+        }
+      );
+      return newTagsUpload.data;
+    } catch (error) {
+      clientError(error);
+    }
+  }
+};
+
+const removeCollectionTags = async (account, dataset, tags) => {
+  //remove collection names from a dataset with their given IDs
+  //PARAMS: tags = list of collection IDs
+  try {
+    let removedTags = await client.delete(
+      `datasets/${dataset}/collection_ids?selected_account=${account}`,
+      {
+        data: { collection: tags },
+      }
+    );
+    return removedTags.data;
+  } catch (error) {
+    clientError(error);
+  }
+};
+
+const uploadCollectionTags = async (account, dataset, tags) => {
+  //upload tags that have already been created on Pennsieve
+  //PARAMS: tags = list of collection IDs
+  try {
+    let uploadedTags = await client.put(
+      `datasets/${dataset}/collection_ids`,
+      {
+        collection: tags,
+      },
+      {
+        params: {
+          selected_account: account,
+        },
+      }
+    );
+    return uploadedTags.data;
+  } catch (error) {
+    clientError(error);
+  }
+};
+
 const api = {
   getUserInformation,
   getDataset,
@@ -272,6 +356,9 @@ const api = {
   submitDatasetForPublication,
   getAllCollectionTags,
   getCurrentCollectionTags,
+  uploadCollectionTags,
+  removeCollectionTags,
+  uploadNewTags,
 };
 
 module.exports = api;

@@ -239,6 +239,7 @@ $("#button-bf-collection").click(async () => {
     let whiteListTags = [];
     let newTags = [];
     let removeTags = [];
+    let success = [];
 
     Swal.fire({
       title: `Modifying collection for ${selectedDataset}`,
@@ -318,36 +319,73 @@ $("#button-bf-collection").click(async () => {
 
     if (whiteListTags.length > 0) {
       //collection names that are already have an ID
-      await uploadCollectionTags(whiteListTags);
+      try {
+        await api.uploadCollectionTags(
+          defaultBfAccount,
+          defaultBfDataset,
+          whiteListTags
+        );
+        success.push(true);
+      } catch (error) {
+        clientError(error);
+        success.push(false);
+      }
     }
 
     if (removeTags.length > 0) {
       //remove collection names
-      await removeCollectionTags(removeTags);
+      try {
+        await api.removeCollectionTags(
+          defaultBfAccount,
+          defaultBfDataset,
+          removeTags
+        );
+        success.push(true);
+      } catch (error) {
+        clientError(error);
+        success.push(false);
+      }
     }
 
     if (newTags.length > 0) {
       //upload tags that haven't been created on pennsieve (no ID)
-      await uploadNewTags(newTags);
+      try {
+        await api.uploadNewTags(defaultBfAccount, defaultBfDataset, newTags);
+        success.push(true);
+      } catch (error) {
+        clientError(error);
+        success.push(false);
+      }
     }
+    console.log(success);
 
     await updateCollectionWhiteList();
     Swal.close();
-    Swal.fire({
-      title: "Successfully updated collection from " + defaultBfDataset,
-      icon: "success",
-      showConfirmButton: true,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-    });
+    if (!success.includes(false)) {
+      Swal.fire({
+        title: "Successfully updated collection from " + defaultBfDataset,
+        icon: "success",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+    } else {
+      Swal.fire({
+        title: "Something went wrong trying to modify collections",
+        icon: "error",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+    }
 
     log.info(`Adding dataset '${selectedDataset}' to Collection'`);
   }, delayAnimation);
 });
 
-async function updateCollectionWhiteList() {
-  let collection_list = await getAllCollectionTags(defaultBfAccount);
-  let currentCollectionList = await getCurrentCollectionTags(
+const updateCollectionWhiteList = async () => {
+  let collection_list = await api.getAllCollectionTags(defaultBfAccount);
+  let currentCollectionList = await api.getCurrentCollectionTags(
     defaultBfAccount,
     defaultBfDataset
   );
@@ -364,85 +402,7 @@ async function updateCollectionWhiteList() {
 
   //add collection tags to whitelist of tagify
   collectionDatasetTags.settings.whitelist = collectionNames;
-}
-
-//function is for uploading collection names that haven't been created on Pennsieve yet
-//First it will upload the new names to then receive their ID's
-//Then with those IDs we will associate them to the given dataset
-async function uploadNewTags(tags) {
-  //upload names first to then get their ids to add to dataset
-  //PARAMS: tags -> array of collection names
-  let newUploadedTags = [];
-
-  try {
-    let newCollectionNames = await client.post(
-      `collections/?selected_account=${defaultBfAccount}&selected_dataset=${defaultBfDataset}`,
-      {
-        collection: tags,
-      }
-    );
-
-    let res = newCollectionNames.data.collection;
-    if (res.length > 0) {
-      for (let i = 0; i < res.length; i++) {
-        //only need the id's to set to dataset
-        newUploadedTags.push(res[i]["id"]);
-      }
-
-      //put collection ids to dataset
-      try {
-        let newTagsUpload = await client.put(
-          `datasets/${defaultBfDataset}/collection_ids?selected_account=${defaultBfAccount}`,
-          {
-            collection: newUploadedTags,
-          }
-        );
-        return newTagsUpload.data;
-      } catch (error) {
-        clientError(error);
-      }
-    }
-  } catch (error) {
-    clientError(error);
-  }
-}
-
-async function removeCollectionTags(tags) {
-  //remove collection names from a dataset with their given IDs
-  //PARAMS: tags -> array of collection IDs
-  try {
-    let removedTags = await client.delete(
-      `datasets/${defaultBfDataset}/collection_ids?selected_account=${defaultBfAccount}`,
-      {
-        data: { collection: tags },
-      }
-    );
-    return removedTags.data;
-  } catch (error) {
-    clientError(error);
-  }
-}
-
-async function uploadCollectionTags(tags) {
-  //upload tags that have already been created on Pennsieve
-  //PARAMS: tags -> array of collection IDs
-  try {
-    let uploadedTags = await client.put(
-      `datasets/${defaultBfDataset}/collection_ids`,
-      {
-        collection: tags,
-      },
-      {
-        params: {
-          selected_account: defaultBfAccount,
-        },
-      }
-    );
-    return uploadedTags.data;
-  } catch (error) {
-    clientError(error);
-  }
-}
+};
 
 // Rename dataset on pennsieve
 $("#button-rename-dataset").click(async () => {
