@@ -77,7 +77,10 @@
               to the SPARC data standards. The user interfaces of the Guided
               Mode are designed to logically guide users through the curation
               steps and include all necessary information such that no prior
-              knowledge of the SPARC data standards is required.
+              knowledge of the SPARC data standards is required. Contrary to the
+              Free Form Mode, the Guided Mode interfaces are interconnected and
+              form a single workflow such the curation process is streamlined
+              further.
             </p>
             <div
               class="justify-center"
@@ -164,11 +167,12 @@
               <p class="guided--help-text">
                 Guided Mode is broken down into four main sections described
                 below. During the first three sections, you will be guided to
-                provide your data files and information about your dataset (i.e.
-                metadata). Then, that information will be used in the fourth
-                section by SODA to generate your dataset with the right folder
-                structure and metadata files directly on Pennsieve. Note that
-                none of your local data files will be ever modified or moved.
+                specify your data files locations and provide information about
+                your dataset (i.e. metadata). Then, that information will be
+                used in the fourth section by SODA to generate your dataset with
+                the right folder structure and metadata files directly on
+                Pennsieve. Note that none of your local data files will be ever
+                modified or moved.
               </p>
             </div>
             <div class="guided--section">
@@ -178,9 +182,9 @@
               <p class="guided--help-text">
                 In this section, you will be asked information about the
                 subjects and samples in your study. You will also be guided into
-                specifying your data files such that they are included in the
-                correct SPARC folders when the dataset is generated in section
-                four of this process.
+                specifying your data files locations from your computer such
+                that they are included in the correct SPARC folders when the
+                dataset is generated in section four of this process.
               </p>
             </div>
             <div class="guided--section">
@@ -191,9 +195,9 @@
                 All SPARC datasets must include several metadata files, each
                 containing various information that describes the content of the
                 dataset. These include information such as the contributors that
-                were involved in collecting/processing the data, or the primary
-                conclusion of the study. You will be guided in this section to
-                provide all the required metadata. SODA will use that
+                were involved in collecting/processing/curating the data, or the
+                primary conclusion of the study. You will be guided in this
+                section to provide all the required metadata. SODA will use that
                 information to automatically create and include the required
                 SPARC metadata files in your dataset when it is generated in
                 section four of this process.
@@ -899,7 +903,7 @@
                 Source data for subjects and samples
               </h1>
               <p class="guided--help-text">
-                Source data refers to unaltered, raw files from an experiment,
+                Source data refers to unaltered, raw files from an experiment.
                 For example, this may include the “truly” raw k-space data for a
                 Magnetic Resonance (MR) image that has not yet been
                 reconstructed (in this case, the reconstructed DICOM or NIFTI
@@ -1127,9 +1131,9 @@
               </h1>
               <p class="guided--help-text">
                 Derivative data is any data products derived from the original
-                data. Derivative data includes data such as measurements from
-                images, 3d reconstructions from serial sections, or file
-                conversions.
+                data (i.e., primary or source data). Derivative data includes
+                data such as measurements from images, 3d reconstructions from
+                serial sections, or file conversions.
               </p>
             </div>
 
@@ -1808,7 +1812,7 @@
                 associated with your dataset. This information should match
                 exactly with the Data Deliverables document agreed between SPARC
                 and the award PI. You can find out more about the Data
-                Deliverables Document and how to obtain it
+                Deliverables document and how to obtain it
                 <a
                   href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-your-data-deliverables-document"
                   >here</a
@@ -5076,7 +5080,7 @@
           <div id="guided-dataset-generation-tab" class="guided--panel hidden">
             <div class="guided--section">
               <h1 class="guided--text-sub-step">
-                Uploading your dataset to Pennsieve
+                Generating your dataset on Pennsieve
               </h1>
             </div>
             <div
