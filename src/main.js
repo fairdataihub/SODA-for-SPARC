@@ -161,8 +161,6 @@ const exitPyProc = async () => {
   pyflaskProcess.kill();
   pyflaskProcess = null;
   PORT = null;
-
-  console.log("Should all be killed");
 };
 
 const killAllPreviousProcesses = async () => {

@@ -8,14 +8,12 @@ const nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
 document
   .querySelector("#Question-getting-started-BF-account .change-current-account")
   .addEventListener("click", function () {
-    console.log("Fired account");
     openDropdownPrompt(this, "bf");
   });
 
 document
   .querySelector("#Question-getting-started-BF-dataset .change-current-account")
   .addEventListener("click", function () {
-    console.log("Fired dataset");
     openDropdownPrompt(this, "dataset", false);
   });
 
@@ -24,7 +22,6 @@ document
     "#Question-generate-dataset-BF-dataset .change-current-account"
   )
   .addEventListener("click", function () {
-    console.log("Fired dataset");
     openDropdownPrompt(this, "dataset", false);
   });
 
@@ -1218,9 +1215,9 @@ async function moveItems(ev, category) {
   for (var highLevelFol in datasetStructureJSONObj["folders"]) {
     if (
       "manifest.xlsx" in
-        datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
+      datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
       datasetStructureJSONObj["folders"][highLevelFol]["files"][
-        "manifest.xlsx"
+      "manifest.xlsx"
       ]["forTreeview"] === true
     ) {
       delete datasetStructureJSONObj["folders"][highLevelFol]["files"][
