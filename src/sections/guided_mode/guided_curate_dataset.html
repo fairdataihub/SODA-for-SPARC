@@ -214,15 +214,18 @@
                 All SPARC datasets need to be uploaded on Pennsieve, a
                 cloud-based data platform. For each of them, specific metadata
                 is required on Pennsieve (such as a banner image or your
-                dataset's description). In this section you will be guided to
-                connect your Pennsieve account with SODA and provide all the
-                required Pennsieve metadata that will be added to your Pennsieve
-                dataset when it is generated in section four of this process.
+                dataset's description). This metadata will then be carried over
+                to the SPARC Data Portal when your dataset becomes publicly
+                available (this is handled outside the Guided Mode). In this
+                section you will be guided to connect your Pennsieve account
+                with SODA and provide all the required Pennsieve metadata that
+                will be added to your Pennsieve dataset when it is generated in
+                section four of this process.
               </p>
             </div>
             <div class="guided--section">
               <label class="guided--form-label text-center"
-                >4. Generate your dataset</label
+                >4. Generate dataset</label
               >
               <p class="guided--help-text">
                 In this final section, SODA will make use of all the information
@@ -231,7 +234,12 @@
                 will be able to see your dataset under your account on
                 <a href="https://app.pennsieve.io" target="_blank"
                   >the Pennsieve web platform</a
-                >.
+                >. Note that the dataset will only be visible to you and anyone
+                you have provided permission to. Only after it has been reviewed
+                by the Curation team and eventually made public by the PI of the
+                dataset it will become publicly available on the
+                <a href="https://sparc.science/">SPARC Data Portal</a> (this is
+                not handled in the Guided Mode).
               </p>
             </div>
           </div>
@@ -4056,12 +4064,10 @@
           </div>
           <div id="guided-banner-image-tab" class="guided--panel hidden">
             <div class="guided--section">
-              <h1 class="guided--text-sub-step">
-                Add a banner image to your dataset
-              </h1>
+              <h1 class="guided--text-sub-step">Banner image</h1>
               <p class="guided--help-text">
                 The banner image is used as a thumbnail once the dataset is
-                published on the SPARC data portal to entice visitors to find
+                published on the SPARC Data portal to entice visitors to find
                 and explore your dataset.<br /><br />To learn more about what an
                 effective banner image consists of, please visit the associated
                 <a
@@ -4251,7 +4257,7 @@
               <p class="guided--help-text">
                 SPARC curation rules require to set the PI of the SPARC award as
                 'owner' of the dataset on Pennsieve. This is to ensures that the
-                PI is the only person who can publish the dataset.
+                PI is the only person who can make the dataset public.
               </p>
             </div>
             <div class="guided--section">
@@ -4500,11 +4506,14 @@
           </div>
           <div id="guided-add-description-tab" class="guided--panel hidden">
             <div class="guided--section">
-              <h1 class="guided--text-sub-step">Describe your dataset</h1>
+              <h1 class="guided--text-sub-step">Dataset description</h1>
               <p class="guided--help-text text-left">
                 The dataset description is a brief summary of the dataset which
-                allows visitors of the SPARC portal to gain better insights into
-                your work and enhance your dataset's findability.
+                will allows visitors of the SPARC portal to gain better insights
+                into your work and enhance your dataset's findability once the
+                dataset is published on the SPARC Data portal. It can be similar
+                to the dataset description you previously provided for the
+                dataset_description metadata file.
               </p>
               <div class="guided--input-container mt-sm">
                 <label class="guided--form-label required"
@@ -4518,9 +4527,8 @@
                   id="guided-pennsieve-study-purpose"
                 ></textarea>
                 <p class="guided--text-input-instructions">
-                  Enter a paragraph that explains the purpose of your study. We
-                  will enter the title for this section to your readme for
-                  you.<br /><b>Refrain from using markdown.</b>
+                  Enter a paragraph that explains the purpose of your study.
+                  <br /><b>Refrain from using markdown.</b>
                 </p>
               </div>
               <div class="guided--input-container">
@@ -4552,18 +4560,20 @@
                 ></textarea>
                 <p class="guided--text-input-instructions">
                   Enter a paragraph that explains the primary conclusion of your
-                  study. We will enter the title for this section to your readme
-                  for you.<br /><b>Refrain from using markdown.</b>
+                  study. <br /><b>Refrain from using markdown.</b>
                 </p>
               </div>
             </div>
           </div>
           <div id="guided-add-tags-tab" class="guided--panel hidden">
             <div class="guided--section">
-              <h1 class="guided--text-sub-step">Enter dataset tags below</h1>
+              <h1 class="guided--text-sub-step">Dataset tags</h1>
               <p class="guided--help-text text-center mb-lg">
                 Dataset tags are keywords that indicate the key elements of your
-                research.
+                research. They will improve the findability of your dataset when
+                it is published on the SPARC Data portal. The tags can be
+                similar to the keywords you provided previously for the
+                dataset_description metadata file.
               </p>
               <input
                 id="guided-tagify-dataset-tags"
@@ -4580,7 +4590,7 @@
           <div id="guided-assign-license-tab" class="guided--panel hidden">
             <div class="guided--section">
               <h1 class="guided--text-sub-step">
-                Assign a license to your datset:
+                Sharing license:
               </h1>
               <p class="guided--help-text">
                 As per SPARC policy, all SPARC datasets must be shared under a
@@ -4591,7 +4601,7 @@
                 commercial use. <br />
                 <br />
                 Consent below that you agree to share your dataset under the
-                C-BY license.
+                CC-BY license.
               </p>
               <div class="ui checkbox">
                 <input
