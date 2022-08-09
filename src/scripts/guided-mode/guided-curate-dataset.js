@@ -153,6 +153,9 @@ const switchElementVisibility = (elementIdToHide, elementIdToShow) => {
 const hideSubNavAndShowMainNav = (navButtonToClick) => {
   $("#guided-sub-page-navigation-footer-div").hide();
   $("#guided-footer-div").css("display", "flex");
+  //show the buttons incase they were hidden
+  $("#guided-next-button").show();
+  $("#guided-back-button").show();
   if (navButtonToClick) {
     if (navButtonToClick === "next") {
       $("#guided-next-button").click();
@@ -189,8 +192,6 @@ const openSubPageNavigation = (pageBeingNavigatedTo) => {
   //Show the sub-page navigation footer
   $("#guided-sub-page-navigation-footer-div").css("display", "flex");
 };
-
-const saveAndExitToGuidedHomePage = () => {};
 
 const guidedTransitionFromHome = () => {
   //Hide the home screen
@@ -10008,7 +10009,7 @@ $(document).ready(() => {
     }
 
     if (pageBeingLeftID === "guided-dataset-generation-confirmation-tab") {
-      $("#guided-next-button").css("visibility", "visible");
+      $("#guided-next-button").show();
     }
 
     const getPrevPageNotSkipped = (startingPage) => {
