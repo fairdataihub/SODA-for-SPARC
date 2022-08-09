@@ -3656,7 +3656,7 @@ const generateContributorField = (
         <label class="guided--form-label">Role(s): </label>
         <input class="guided-contributor-role-input"
           contenteditable="true"
-          placeholder='Type here to view and add contributor roles'
+          placeholder='Type here to view and add contributor roles from the list of standard roles'
           data-initial-contributor-roles="${initialContributorRoleString}"
         />
       </div>
@@ -3761,7 +3761,7 @@ const addContributorField = () => {
     <label class="guided--form-label">Role(s): </label>
     <input class="guided-contributor-role-input"
       contenteditable="true"
-      placeholder='Type here to view and add contributor roles'
+      placeholder='Type here to view and add contributor roles from the list of standard roles'
     />
   `;
   contributorsContainer.appendChild(newContributorField);
@@ -3860,17 +3860,16 @@ const generateProtocolField = (protocolUrl, protocolDescription) => {
       >
       </i>
       <h2 class="guided--text-sub-step">Enter protocol details</h2>
-      <label class="guided--form-label mt-lg">Protocol URL: </label>
+      <label class="guided--form-label mt-lg">Protocol link: </label>
       <input
         class="guided--input guided-protocol-url-input"
         type="text"
-        placeholder="Enter protocol URL here"
+        placeholder="Enter protocol link here"
         value="${protocolUrl}"
         onkeyup="validateInput($(this))"
       />
       <p class="guided--text-input-instructions mb-0">
-        Enter the link to the protocol used to generate your dataset.<br>
-        <b>Links beginning with "https://doi.org/" will automatically be classified as a DOI link.</b>
+        Enter the DOI of the protocol if it is already published. Else, enter the its protocols.io URL.<br>
       </p>
       <label class="guided--form-label mt-lg">Protocol description:</label>
       <textarea
@@ -3881,8 +3880,7 @@ const generateProtocolField = (protocolUrl, protocolDescription) => {
         onkeyup="validateInput($(this))"
       >${protocolDescription ? protocolDescription.trim() : ""}</textarea
       >
-      <p class="guided--text-input-instructions mb-0">
-        Enter a description of the protocol used to generate your dataset.
+      <p class="guided--text-input-instructions mb-0">.
       </p>
     </div>
   `;
