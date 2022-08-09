@@ -70,12 +70,14 @@
       <div id="guided-body" class="guided--body">
         <div id="guided-home" class="guided--parent-tab">
           <div class="guided--panel">
-            <h1 class="guided--text-sub-step">Guided mode</h1>
+            <h1 class="guided--text-sub-step">Guided Mode</h1>
             <p class="guided--help-text">
-              Guided mode walks you through the FAIR SPARC Data curation and
-              sharing guidelines step-by-step and allows you to either upload
-              your dataset and metadata to Pennsieve or download it on your
-              computer.
+              The Guided Mode is intended to guide users step-by-step through
+              all the requirements for curating and sharing datasets according
+              to the SPARC data standards. The user interfaces of the Guided
+              Mode are designed to logically guide users through the curation
+              steps and include all necessary information such that no prior
+              knowledge of the SPARC data standards is required.
             </p>
             <div
               class="justify-center"
@@ -148,61 +150,73 @@
             style="flex-grow: 1"
           >
             <div class="guided--section">
-              <h1 class="guided--text-sub-step">Welcome to guided mode!</h1>
+              <h1 class="guided--text-sub-step">Welcome to Guided Mode!</h1>
               <p class="guided--help-text">
-                Guided mode is designed to be the simplest and most efficient
-                method of curating a SPARC dataset. If you're not familiar with
-                SPARC dataset curation standards, no worries! We'll walk you
-                through the SPARC curation process step-by-step using simple
-                questions about the characteristics of your dataset.
+                Guided Mode is designed to be the simplest and most efficient
+                method of curating a SPARC dataset if you are starting from
+                scratch. If you're not familiar with SPARC dataset curation
+                standards, no worries! We will guide you step-by-step into
+                curating your dataset according to the SPARC data standards. The
+                user interfaces are designed to be very intuitive and will
+                typically require you to only provide basic inputs or answer
+                simple questions about your dataset.
               </p>
               <p class="guided--help-text">
-                Guided mode is broken down into three four main sections as
-                described below.
-              </p>
-            </div>
-            <div class="guided--section">
-              <h1 class="guided--text-sub-step">1. Dataset structuring</h1>
-              <p class="guided--help-text">
-                Specify your dataset's subjects and samples, and we'll take care
-                of structuring your dataset. Once your dataset is structured, we
-                will walk you through each folder and let you know what data
-                belongs in them.
-              </p>
-            </div>
-            <div class="guided--section">
-              <h1 class="guided--text-sub-step">
-                2. Creating dataset metadata
-              </h1>
-              <p class="guided--help-text">
-                Dataset metadata is information that describes the contents of
-                the dataset, for example, the contributors that were involved in
-                the generation of the dataset, or the primary conclusion of the
-                dataset. Guided mode will walk you through the creation of the
-                individual files that are required by the SPARC dataset
-                standards, and automatically upload them for you.
+                Guided Mode is broken down into four main sections described
+                below. During the first three sections, you will be guided to
+                provide your data files and information about your dataset (i.e.
+                metadata). Then, that information will be used in the fourth
+                section by SODA to generate your dataset with the right folder
+                structure and metadata files directly on Pennsieve. Note that
+                none of your local data files will be ever modified or moved.
               </p>
             </div>
             <div class="guided--section">
-              <h1 class="guided--text-sub-step">
-                3. Uploading digital metadata to Pennsieve
-              </h1>
+              <h1 class="guided--text-sub-step">1. Structure dataset</h1>
               <p class="guided--help-text">
-                Once your dataset has been structured and the metadata files
-                have been created, you will then upload your dataset's digital
-                metadata (such as a banner image or your dataset's description)
-                to Pennsieve. Pennsieve is a cloud-based data managing platform
-                that fosters collaborative scientific research.
+                In this section, you will be asked information about the
+                subjects and samples in your study. You will also be guided into
+                specifying your data files such that they are included in the
+                correct SPARC folders when the dataset is generated in section
+                four of this process.
+              </p>
+            </div>
+            <div class="guided--section">
+              <h1 class="guided--text-sub-step">2. Provide metadata</h1>
+              <p class="guided--help-text">
+                All SPARC datasets must include several metadata files, each
+                containing various information that describes the content of the
+                dataset. These include information such as the contributors that
+                were involved in collecting/processing the data, or the primary
+                conclusion of the study. You will be guided in this section to
+                provide all the required metadata. SODA will use that
+                information to automatically create and include the required
+                SPARC metadata files in your dataset when it is generated in
+                section four of this process.
+              </p>
+            </div>
+            <div class="guided--section">
+              <h1 class="guided--text-sub-step">3. Add Pennsieve metadata</h1>
+              <p class="guided--help-text">
+                All SPARC datasets need to be uploaded on Pennsieve, a
+                cloud-based data platform. For each of them, specific metadata
+                is required on Pennsieve (such as a banner image or your
+                dataset's description). In this section you will be guided to
+                connect your Pennsieve account with SODA and provide all the
+                required Pennsieve metadata that will be added to your Pennsieve
+                dataset when it is generated in section four of this process.
               </p>
             </div>
             <div class="guided--section">
               <h1 class="guided--text-sub-step">4. Generate your dataset</h1>
               <p class="guided--help-text">
-                The final step of guided mode is generating your dataset. You
-                will have the option to either generate your dataset locally and
-                save a copy of the dataset structure you created on your
-                computer, or generate your dataset on Pennsieve, which will
-                upload a copy of your dataset to be viewed on Pennsieve.
+                In this final section, SODA will make use of all the information
+                you have provided in the previous three sections to generate and
+                upload you data and metadata on Pennsieve. Once generated, you
+                will be able to see your dataset under your account on
+                <a href="https://app.pennsieve.io" target="_blank"
+                  >the Pennsieve web platform</a
+                >.
               </p>
             </div>
           </div>
@@ -1785,17 +1799,19 @@
             <div class="guided--section">
               <h1 class="guided--text-sub-step">Submission metadata</h1>
               <p class="guided--help-text">
-                The submission file requires information regarding the milestone
+                SPARC requires all datasets to include a submission metadata
+                file that includes information regarding the milestone
                 associated with your dataset. This information should match
-                exactly with the Data Deliverables Document agreed between the
-                SPARC and the award PI.<br /><br />You can find out more about
-                the Data Deliverables Document and how to obtain it
+                exactly with the Data Deliverables document agreed between SPARC
+                and the award PI. You can find out more about the Data
+                Deliverables Document and how to obtain it
                 <a
                   href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-your-data-deliverables-document"
                   >here</a
-                >. You can import your Data Deliverable Document in SODA for
-                easily specifying the milestone and associate information for
-                your dataset.
+                >. <br /><br />
+                You can import your Data Deliverable document in SODA for easily
+                specifying the milestone and associate information for your
+                dataset.
               </p>
             </div>
 
@@ -1864,7 +1880,7 @@
                     </svg>
                   </div>
                   <div class="guided--tile-body">
-                    <h2>No, I'll enter my SPARC award manually</h2>
+                    <h2>No, I'll enter my milestone information manually</h2>
                   </div>
                 </button>
               </div>
@@ -2107,7 +2123,9 @@
                   provide information about the contributors to your dataset
                   below and SODA will automatically include it in the
                   dataset_description file when it is generated in the last step
-                  of this guided workflow.
+                  of this guided workflow. Anyone who participated in the
+                  collection/analysis/curation of the dataset should typically
+                  be listed here.
                 </p>
               </div>
 
@@ -2127,18 +2145,39 @@
             <div class="guided--section">
               <h1 class="guided--text-sub-step">Dataset protocols</h1>
               <p class="guided--help-text">
-                Dataset protocols are a set of methods that explain how the data
-                was obtained.
+                All SPARC dataset must have their associated protocols on
+                <a target="_blank" href="https://www.protocols.io/"
+                  >protocols.io</a
+                >, a platform for creating structured and sharable protocols.
+                Since protocols.io provide a convenient interface to prepare
+                protocols, we recommend you prepare your protocols directly
+                there before continuing. Follow the
+                <a
+                  target="_blank"
+                  href="https://docs.sparc.science/docs/protocols"
+                  >SPARC instructions for preparing protocols on protocols.io</a
+                >
+                for help.
+              </p>
+              <p class="guided--help-text">
+                The dataset_description metadata file must contain information
+                about the protocols on protocols.io. You can provide information
+                about the protocols of your dataset below and SODA will
+                automatically include it in the dataset_description file when it
+                is generated in the last step of this guided workflow. You can
+                connect your protocols.io account with SODA if you would like to
+                import your protocols information easily.
               </p>
             </div>
             <div class="guided--section mb-0">
               <label class="guided--form-label centered mb-0">
-                Would you like to import your protocols from protocols.io?
+                Would you like to import your protocols information from
+                protocols.io?
               </label>
-              <p class="guided--text-input-instructions m-0 text-center">
+              <!-- <p class="guided--text-input-instructions m-0 text-center">
                 Importing protocols from Protocols.io is encouraged as it
                 ensures your protocol data is entered correctly.
-              </p>
+              </p> -->
               <div class="guided--radio-button-container">
                 <button
                   class="guided--radio-button tile-button"
@@ -2211,7 +2250,7 @@
               id="guided-div-protocol-container"
             >
               <h2 class="guided--text-sub-step mb-0">
-                Add the protocol(s) used to generate the dataset
+                Add details about each protocol associated with this dataset
               </h2>
 
               <div class="guided--panel" id="protocols-container"></div>
