@@ -200,6 +200,62 @@ const submitDatasetForPublication = async (
   );
 };
 
+const getCurrentCollectionTags = async (account, dataset) => {
+  var currentTags = {};
+  try {
+    let result = await client.get(`/datasets/${dataset}/collections`, {
+      params: {
+        selected_account: account,
+      },
+    });
+    let res = result.data;
+    console.log(res);
+    for (let i = 0; i < res.length; i++) {
+      let name = res[i]["name"];
+      let id = res[i]["id"];
+      if (name.includes(",")) {
+        let replaced_name = name.replace(/,/g, "，");
+        currentTags[replaced_name] = { id: id, "original-name": name };
+      } else {
+        currentTags[name] = { id: id };
+      }
+    }
+    console.log(currentTags);
+    return currentTags;
+  } catch (error) {
+    clientError(error);
+  }
+};
+
+//Function used to get all collections that belong to the Org
+const getAllCollectionTags = async (account) => {
+  var allCollectionTags = {};
+  try {
+    result = await client.get(`/collections/`, {
+      params: { selected_account: account },
+    });
+    let res = result.data;
+    console.log(res);
+    for (let i = 0; i < res.length; i++) {
+      let name = res[i]["name"];
+      let id = res[i]["id"];
+      if (name.includes(",")) {
+        let replaced_name = res[i]["name"].replace(/,/g, "，");
+        allCollectionTags[replaced_name] = {
+          id: id,
+          "original-name": name,
+        };
+      } else {
+        allCollectionTags[name] = { id: id };
+      }
+    }
+    console.log(allCollectionTags);
+    return allCollectionTags;
+  } catch (error) {
+    clientError(error);
+  }
+};
+
 const api = {
   getUserInformation,
   getDataset,
@@ -214,6 +270,8 @@ const api = {
   getDatasetsForAccount,
   getDatasetSubtitle,
   submitDatasetForPublication,
+  getAllCollectionTags,
+  getCurrentCollectionTags,
 };
 
 module.exports = api;

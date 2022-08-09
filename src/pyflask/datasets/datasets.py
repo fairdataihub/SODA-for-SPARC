@@ -7,6 +7,7 @@ import requests
 
 from utils import get_authenticated_ps, get_dataset
 from authentication import get_access_token
+from ..manageDatasets import bf_get_current_user_permission
 
 
 PENNSIEVE_URL = "https://api.pennsieve.io"
@@ -73,31 +74,9 @@ def upload_collection_names(account, dataset, tags):
         #get dataset and it's id
         myds = get_dataset(ps, dataset)
         dataset_id = myds.id
-        
-        # check if they are the owner/manager of dataset
-        current_user = ps._api._get("/user")
-        first_name_current_user = current_user["firstName"]
-        last_name_current_user = current_user["lastName"]
-        list_dataset_permission = ps._api._get(
-           f"/datasets/{str(dataset_id)}/collaborators/users"
-        )
-        c = 0
-        for i in range(len(list_dataset_permission)):
-            first_name = list_dataset_permission[i]["firstName"]
-            last_name = list_dataset_permission[i]["lastName"]
-            role = list_dataset_permission[i]["role"]
-
-            if(
-                first_name == first_name_current_user
-                and last_name == last_name_current_user
-            ):
-                if role not in ["owner", "manager"]:
-                    abort(403, "You must be the dataset owner or manager to add/remove from a collection")
-                else:
-                    c += 1
-
-        if c == 0:
-            abort(403, "You must be the dataset owner or manager to add/remove from a collection")
+        role = bf_get_current_user_permission(ps, myds)
+        if role not in ["owner", "manager"]:
+            abort(403, "You do not have permissions to view/edit DOI for this Pennsieve")
 
     except Exception as e:
         abort(400, "Error: Please select a valid Pennsieve dataset")
@@ -132,31 +111,9 @@ def remove_collection_names(account, dataset, tags):
         #get dataset and it's id
         myds = get_dataset(ps, dataset)
         dataset_id = myds.id
-
-        # check if they are the owner/manager of dataset
-        current_user = ps._api._get("/user")
-        first_name_current_user = current_user["firstName"]
-        last_name_current_user = current_user["lastName"]
-        list_dataset_permission = ps._api._get(
-            f"/datasets/{str(dataset_id)}/collaborators/users"
-        )
-        c = 0
-        for i in range(len(list_dataset_permission)):
-            first_name = list_dataset_permission[i]["firstName"]
-            last_name = list_dataset_permission[i]["lastName"]
-            role = list_dataset_permission[i]["role"]
-
-            if(
-                first_name == first_name_current_user
-                and last_name == last_name_current_user
-            ):
-                if role not in ["owner", "manager"]:
-                    abort(403, "You must be the dataset owner or manager to add/remove from a collection")
-                else:
-                    c += 1
-
-        if c == 0:
-            abort(403, "You must be the dataset owner or manager to add/remove from a collection")
+        role = bf_get_current_user_permission(ps, myds)
+        if role not in ["owner", "manager"]:
+            abort(403, "You do not have permissions to view/edit DOI for this Pennsieve dataset")
 
     except Exception as e:
         abort(400, "Error: Please select a valid Pennsieve dataset")

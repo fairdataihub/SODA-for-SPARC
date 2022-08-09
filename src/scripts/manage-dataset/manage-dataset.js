@@ -346,8 +346,11 @@ $("#button-bf-collection").click(async () => {
 });
 
 async function updateCollectionWhiteList() {
-  let collection_list = await getAllCollectionTags();
-  let currentCollectionList = await getCurrentCollectionTags();
+  let collection_list = await getAllCollectionTags(defaultBfAccount);
+  let currentCollectionList = await getCurrentCollectionTags(
+    defaultBfAccount,
+    defaultBfDataset
+  );
 
   let currentCollectionNames = Object.keys(currentCollectionList);
   let collectionNames = Object.keys(collection_list);

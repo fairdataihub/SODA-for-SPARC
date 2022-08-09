@@ -1322,8 +1322,11 @@ $("#button-collection-dataset-confirm").click(async () => {
     });
   }
 
-  let collection_list = await getAllCollectionTags();
-  let current_tags = await getCurrentCollectionTags();
+  let collection_list = await getAllCollectionTags(defaultBfAccount);
+  let current_tags = await getCurrentCollectionTags(
+    defaultBfAccount,
+    defaultBfDataset
+  );
 
   let collectionNames = Object.keys(collection_list);
   let currentCollectionNames = Object.keys(current_tags);
@@ -1340,64 +1343,6 @@ $("#button-collection-dataset-confirm").click(async () => {
   //if on collection section close the shown sweet alert
   if (collection_section.classList.contains("is-shown")) Swal.close();
 });
-
-var currentTags = {};
-async function getCurrentCollectionTags() {
-  currentTags = {};
-  try {
-    let result = await client.get(`/datasets/${defaultBfDataset}/collections`, {
-      params: {
-        selected_account: defaultBfAccount,
-      },
-    });
-    let res = result.data;
-    console.log(res);
-    for (let i = 0; i < res.length; i++) {
-      let name = res[i]["name"];
-      let id = res[i]["id"];
-      if (name.includes(",")) {
-        let replaced_name = name.replace(/,/g, "，");
-        currentTags[replaced_name] = { id: id, "original-name": name };
-      } else {
-        currentTags[name] = { id: id };
-      }
-    }
-    console.log(currentTags);
-    return currentTags;
-  } catch (error) {
-    clientError(error);
-  }
-}
-
-//Function used to get all collections that belong to the Org
-var allCollectionTags = {};
-async function getAllCollectionTags() {
-  allCollectionTags = {};
-  try {
-    result = await client.get(`/collections/`, {
-      params: { selected_account: defaultBfAccount },
-    });
-    let res = result.data;
-    console.log(res);
-    for (let i = 0; i < res.length; i++) {
-      let name = res[i]["name"];
-      let id = res[i]["id"];
-      if (name.includes(",")) {
-        let replaced_name = res[i]["name"].replace(/,/g, "，");
-        allCollectionTags[replaced_name] = {
-          id: id,
-          "original-name": name,
-        };
-      } else {
-        allCollectionTags[name] = { id: id };
-      }
-    }
-    console.log(allCollectionTags);
-    return allCollectionTags;
-  } catch (error) {
-    clientError(error);
-  }
-}
 
 var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
   studyOrganSystemsTagify = new Tagify(studyOrganSystemsInput, {
