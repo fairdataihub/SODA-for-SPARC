@@ -3412,7 +3412,7 @@ const highLevelFolderPageData = {
   },
   code: {
     headerText:
-      "Provide the code data used to generate your dataset in the interface below",
+      "Provide the code data associated with your dataset in the interface below",
     contentsText: `You can also virtually structure the data and rename files/folders
     as you would like to have them in your dataset when it is generated (note that none of
     your original data will be modified).`,
@@ -3421,7 +3421,7 @@ const highLevelFolderPageData = {
   },
   protocol: {
     headerText:
-      "Provide the protocol data used to generate your dataset in the interface below",
+      "Provide the protocol data associated with your dataset in the interface below",
     contentsText: `You can also virtually structure the data and rename files/folders
     as you would like to have them in your dataset when it is generated (note that none of
     your original data will be modified).`,
@@ -3430,7 +3430,7 @@ const highLevelFolderPageData = {
   },
   docs: {
     headerText:
-      "Provide all supporting documentation used to generate your dataset in the interface below",
+      "Provide docs data associated with your dataset in the interface below",
     contentsText: `You can also virtually structure the data and rename files/folders
     as you would like to have them in your dataset when it is generated (note that none of
     your original data will be modified).`,
