@@ -1529,8 +1529,6 @@ $("#edit_banner_image_button").click(async () => {
   } else {
     let img_src = $("#current-banner-img").attr("src");
     let img_base64 = await getBase64(img_src); // encode image to base64
-    console.log(img_base64);
-    console.log(img_src);
 
     $("#image-banner").attr("src", "data:image/jpg;base64," + img_base64);
     $("#save-banner-image").css("visibility", "visible");
@@ -1540,7 +1538,6 @@ $("#edit_banner_image_button").click(async () => {
 
     // Look for the security token in the URL. If this this doesn't exist, something went wrong with the aws bucket link.
     let position = img_src.search("X-Amz-Security-Token");
-    console.log(position);
 
     if (position != -1) {
       // The image url will be before the security token
@@ -1651,7 +1648,6 @@ const scaleBannerImage = async (imagePath) => {
         },
       }
     );
-    console.log(imageScaled.data.scaled_image_path);
     return imageScaled.data.scaled_image_path;
   } catch (error) {
     clientError(error);
@@ -1678,8 +1674,6 @@ const uploadBannerImage = async () => {
   //creating path of the image and then getting cropped image information
   let imagePath = path.join(imageFolder, "banner-image-SODA." + imageExtension);
   let croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType);
-  console.log(croppedImageDataURI);
-  console.log(imagePath);
 
   imageDataURI.outputFile(croppedImageDataURI, imagePath).then(async () => {
     //image is created here into temp folder
@@ -1761,7 +1755,6 @@ const uploadBannerImage = async () => {
     } else {
       //final size is greater than 5mb so compress image here (image already created and stored in temp file)
       let scaledImagePath = await scaleBannerImage(imagePath); //scaled image will be in temp folder
-      console.log("after image scaling function");
       let image_file_size = fs.statSync(scaledImagePath)["size"]; //update size for analytics
       try {
         let uploadBannerImage = await client.put(
@@ -1875,9 +1868,6 @@ $("#save-banner-image").click((event) => {
             }
           });
         } else if (formBannerHeight.value > 2048) {
-          console.log(
-            "image is bigger than standard so will be needing to scale"
-          );
           Swal.fire({
             icon: "warning",
             text: `Your cropped image is ${formBannerHeight.value} px and is bigger than the 2048px standard. Would you like to scale this image down to fit the entire cropped image?`,
