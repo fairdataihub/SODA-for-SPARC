@@ -1526,12 +1526,11 @@ const traverseToTab = (targetPageID) => {
 
       const milestones =
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
+      guidedSubmissionTagsTagifyManual.removeAllTags();
+
       //If milestones exist, add the tags to the milestone tagify element
-      //If not, reset tagify element
       if (milestones) {
         guidedSubmissionTagsTagifyManual.addTags(milestones);
-      } else {
-        guidedSubmissionTagsTagifyManual.removeAllTags();
       }
 
       const completionDate =
