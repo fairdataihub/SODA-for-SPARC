@@ -252,13 +252,13 @@ const guidedTransitionFromDatasetNameSubtitlePage = () => {
   //Manually click the proper dataset structure button since the radio button is not controlled
   //by the next button/traverseToTab function
   if (sodaJSONObj["button-config"]["dataset-already-structured"]) {
-    if (sodaJSONObj["button-config"]["dataset-already-structured"] === "yes") {
+    if (sodaJSONObj["button-config"]["dataset-already-structured"] == "yes") {
       //click element with id guided-button-import-existing-dataset-structure
       document
         .getElementById("guided-button-import-existing-dataset-structure")
         .click();
     }
-    if (sodaJSONObj["button-config"]["dataset-already-structured"] === "no") {
+    if (sodaJSONObj["button-config"]["dataset-already-structured"] == "no") {
       //click element with id guided-button-create-new-dataset-structure
       document
         .getElementById("guided-button-guided-dataset-structuring")
@@ -6477,8 +6477,8 @@ $(document).ready(() => {
         console.log("going to next page");
         $(this).removeClass("loading");
 
-        guidedTransitionFromDatasetNameSubtitlePage();
         resetGuidedRadioButtons("guided-dataset-starting-point-tab");
+        guidedTransitionFromDatasetNameSubtitlePage();
       } catch (error) {
         errorArray.map((error) => {
           if (error.type === "notyf") {
