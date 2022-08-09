@@ -773,7 +773,7 @@ const apiVersionsMatch = async () => {
     updateBfAccountList();
   }
   //guided-mode update over-ride
-  //checkNewAppVersion(); // Added so that version will be displayed for new users
+  checkNewAppVersion(); // Added so that version will be displayed for new users
 };
 
 const check_internet_connection = async (show_notification = true) => {

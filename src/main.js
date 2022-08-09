@@ -166,7 +166,8 @@ function initialize() {
 
     mainWindow.webContents.once("dom-ready", () => {
       if (updatechecked == false) {
-        autoUpdater.checkForUpdatesAndNotify();
+        //Guided mode update over-ride
+        //autoUpdater.checkForUpdatesAndNotify();
       }
     });
 
@@ -258,7 +259,8 @@ function initialize() {
           run_pre_flight_checks();
         }
         run_pre_flight_checks();
-        autoUpdater.checkForUpdatesAndNotify();
+        //guided mode update over-ride
+        //autoUpdater.checkForUpdatesAndNotify();
         updatechecked = true;
       }, 6000);
     });
