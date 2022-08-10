@@ -165,6 +165,14 @@ const insertScript = async () => {
   submission.defer = true;
   submission.type = "text/javascript";
   document.body.appendChild(submission);
+
+  await ws(500);
+
+  const datasetCollections = document.createElement("script");
+  datasetCollections.src = "./scripts/collections/collections.js";
+  datasetCollections.defer = true;
+  datasetCollections.type = "text/javascript";
+  document.body.appendChild(datasetCollections);
 };
 
 const ws = (ms) => {

@@ -1294,54 +1294,6 @@ var collectionDatasetInput = document.getElementById("tagify-collection-tags"),
     },
   });
 
-//object with both id and name of collection tags
-$("#button-collection-dataset-confirm").click(async () => {
-  let collection_section = document.getElementById(
-    "add_edit_bf_dataset_collection-section"
-  );
-
-  //sweet alert will show only if user is on the collections section
-  if (collection_section.classList.contains("is-shown")) {
-    let datasetName = document.getElementById(
-      "collection_dataset_name"
-    ).innerText;
-    Swal.fire({
-      title: `Getting collection of dataset: ${datasetName}`,
-      html: "Please wait...",
-      // timer: 5000,
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
-  }
-
-  let collection_list = await api.getAllCollectionTags(defaultBfAccount);
-  let current_tags = await api.getCurrentCollectionTags(
-    defaultBfAccount,
-    defaultBfDataset
-  );
-
-  let collectionNames = Object.keys(collection_list);
-  let currentCollectionNames = Object.keys(current_tags);
-
-  currentCollectionNames.sort();
-  collectionNames.sort();
-
-  //put the gathered collection names to the tagify whitelist
-  collectionDatasetTags.settings.whitelist = collectionNames;
-  currentCollectionTags = currentCollectionNames;
-  collectionDatasetTags.removeAllTags();
-  collectionDatasetTags.addTags(currentCollectionNames);
-
-  //if on collection section close the shown sweet alert
-  if (collection_section.classList.contains("is-shown")) Swal.close();
-});
-
 var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
   studyOrganSystemsTagify = new Tagify(studyOrganSystemsInput, {
     whitelist: [
