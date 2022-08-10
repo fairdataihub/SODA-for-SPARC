@@ -12,7 +12,7 @@ import sys
 import shutil
 import yaml
 from pathlib import Path
-# from .validatorUtils import parse
+from .validatorUtils import parse
 
 userpath = os.path.expanduser("~")
 configpath = os.path.join(userpath, '.pennsieve', 'config.ini')
