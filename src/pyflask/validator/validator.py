@@ -42,10 +42,6 @@ def validate_dataset_pipeline(ps_account, ps_dataset):
     # peel out the path_error_report object
     path_error_report = status.get('path_error_report')
 
-        # write the results to a file
-    with open(os.path.join(userpath, 'validator_results.txt'), 'w') as file:
-        file.write(str(path_error_report))
-
     # get the errors out of the report that do not have errors in their subpaths (see function comments for the explanation)
     parsed_path_error_report = parse(path_error_report)
 
@@ -71,10 +67,6 @@ def validate_local_dataset(ds_path):
 
     # validate the dataset
     blob = validate(norm_ds_path)
-
-    # write the results to a file
-    with open(os.path.join(userpath, 'validator_results.txt'), 'w') as file:
-        file.write(str(blob))
 
     # peel out the status object 
     status = blob.get('status')
