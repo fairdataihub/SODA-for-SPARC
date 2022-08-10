@@ -6160,7 +6160,7 @@ const renderSubjectsMetadataAsideItems = () => {
       return `
           <a 
             class="subjects-metadata-aside-item selection-aside-item"
-            data-pool-id="${subject.poolName ? subject.poolName : "N/A"}"
+            data-pool-id="${subject.poolName ? subject.poolName : ""}"
           ><span class="subject-metadata-id">${subject.subjectName}</span></a>
         `;
     })
@@ -6253,7 +6253,7 @@ const renderSamplesMetadataAsideItems = () => {
       sampleDataArray.push(sample.sampleName);
       //Push an empty string for was derived from
       sampleDataArray.push("");
-      sampleDataArray.push(sample.poolName ? sample.poolName : "N/A");
+      sampleDataArray.push(sample.poolName ? sample.poolName : "");
       for (let i = 0; i < samplesFormNames.length - 4; i++) {
         sampleDataArray.push("");
       }
@@ -6278,7 +6278,7 @@ const renderSamplesMetadataAsideItems = () => {
         sampleDataArray.push(sample.sampleName);
         //Push an empty string for was derived from
         sampleDataArray.push("");
-        sampleDataArray.push(sample.poolName ? sample.poolName : "N/A");
+        sampleDataArray.push(sample.poolName ? sample.poolName : "");
         for (let i = 0; i < samplesTableData[0].length - 4; i++) {
           sampleDataArray.push("");
         }
@@ -6304,7 +6304,7 @@ const renderSamplesMetadataAsideItems = () => {
         <a
           class="samples-metadata-aside-item selection-aside-item"
           data-samples-subject-name="${sample.subjectName}"
-          data-samples-pool-id="${sample.poolName ? sample.poolName : "N/A"}"
+          data-samples-pool-id="${sample.poolName ? sample.poolName : ""}"
         >
           <span class="sample-metadata-id">
             ${sample.sampleName}

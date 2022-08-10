@@ -2624,9 +2624,11 @@
                 <div class="guided--section neumorphic mt-xl">
                   <h2 class="guided--text-sub-step mt-0">Experimental Setup</h2>
 
-                  <label class="guided--form-label mt-xl">Pool ID:</label>
+                  <label class="guided--form-label mt-xl hidden"
+                    >Pool ID:</label
+                  >
                   <input
-                    class="guided--input subjects-form-entry"
+                    class="guided--input subjects-form-entry hidden"
                     id="guided-bootbox-subject-pool-id"
                     name="pool id"
                     type="text"
@@ -2634,10 +2636,11 @@
                     onkeyup="validateInput($(this))"
                     readonly
                   />
+                  <!--
                   <p class="guided--text-input-instructions mb-0">
                     The pool that contains the subject. <br />
                     <b>No further action required.</b>
-                  </p>
+                  </p>-->
 
                   <label class="guided--form-label mt-xl"
                     >Subject experimental group:</label
@@ -3353,8 +3356,10 @@
                     derived. <br />
                   </p>
 
-                  <label class="guided--form-label mt-xl">pool id:</label>
-                  <div class="demo-controls-body w-100">
+                  <label class="guided--form-label mt-xl hidden"
+                    >Pool id:</label
+                  >
+                  <div class="demo-controls-body w-100 hidden">
                     <div class="ui input modified">
                       <input
                         type="text"
@@ -3366,10 +3371,11 @@
                       />
                     </div>
                   </div>
+                  <!--
                   <p class="guided--text-input-instructions mb-0">
                     The pool of the subject this sample belongs to. <br />
                     <b>No further action required.</b>
-                  </p>
+                  </p>-->
 
                   <label class="guided--form-label mt-xl"
                     >Sample experimental group:</label
