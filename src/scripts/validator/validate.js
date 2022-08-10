@@ -58,11 +58,14 @@ const validateLocalDataset = async () => {
   let validationResponse;
   try {
     // send the dataset path to the validator endpoint
-    validationResponse = await client.get(`validator/local_dataset_validation_result`, {
-      params: {
-        path: datasetPath,
-      },
-    });
+    validationResponse = await client.get(
+      `validator/local_dataset_validation_result`,
+      {
+        params: {
+          path: datasetPath,
+        },
+      }
+    );
 
     console.log(validationResponse);
 
