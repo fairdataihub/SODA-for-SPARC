@@ -155,11 +155,12 @@ const validatePennsieveDataset = async () => {
   try {
     // request validation for the current pennsieve dataset
     validationResponse = await client.get(
-      `validator/pennsieve_dataset_validation_result`, {
+      `validator/pennsieve_dataset_validation_result`,
+      {
         params: {
           selected_account: defaultBfAccount,
           selected_dataset: defaultBfDatasetId,
-        }
+        },
       }
     );
 
