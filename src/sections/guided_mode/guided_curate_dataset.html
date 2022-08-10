@@ -71,7 +71,9 @@
         <div id="guided-home" class="guided--parent-tab">
           <div class="guided--panel">
             <h1 class="guided--text-sub-step">Guided Mode</h1>
-            <p class="guided--help-text">
+            <!-- <div class="title-border">
+            </div> -->
+            <p class="guided--help-text" style="margin-bottom: 2rem;">
               The Guided Mode is intended to guide users step-by-step through
               all the requirements for curating and sharing datasets according
               to the SPARC data standards. The user interfaces of the Guided
@@ -90,7 +92,7 @@
               <div
                 class="container--dashed"
                 id="guided-button-start-new-curate"
-                style="width: 320px; margin: 5px"
+                style="width: 320px; margin: 5px; width: 28rem; height: 16.5rem;"
               >
                 <div
                   id="new-dataset-lottie-container"
@@ -105,18 +107,19 @@
             <div
               class="guided--panel"
               id="continue-curating-existing"
-              style="margin-top: 20px"
+              style="margin-top: 20px; width: 100%;"
             >
               <h2
                 class="guided--text-sub-step"
                 id="guided-continue-curation-header"
               ></h2>
               <div
-                class="guided--radio-button-container hidden"
+                class="guided--radio-button-container hidden guided--button-tab-container"
                 id="guided-div-dataset-cards-radio-buttons"
+                style="justify-content: space-evenly;"
               >
                 <button
-                  class="ui primary basic button guided--radio-button"
+                  class="ui button guided--radio-button guided--tab-button"
                   id="guided-button-view-datasets-in-progress"
                   data-next-element="guided-div-resume-progress-cards"
                   style="width: 250px"
@@ -124,7 +127,7 @@
                   Datasets in progress
                 </button>
                 <button
-                  class="ui primary basic button guided--radio-button"
+                  class="ui button guided--radio-button guided--tab-button"
                   id="guided-button-view-datasets-uploaded"
                   data-next-element="guided-div-update-uploaded-cards"
                   style="width: 250px"
@@ -136,10 +139,12 @@
             <div
               class="guided--section hidden"
               id="guided-div-resume-progress-cards"
+              style="padding-top: 0 !important"
             ></div>
             <div
               class="guided--section hidden"
               id="guided-div-update-uploaded-cards"
+              style="margin-top: 2rem;"
             ></div>
           </div>
         </div>
@@ -152,8 +157,10 @@
             id="guided-intro-page"
             style="flex-grow: 1"
           >
+          <div class="title-border">
+            <h1 class="guided--text-sub-step">Welcome to Guided Mode!</h1>
+          </div>
             <div class="guided--section">
-              <h1 class="guided--text-sub-step">Welcome to Guided Mode!</h1>
               <p class="guided--help-text">
                 Guided Mode is designed to be the simplest and most efficient
                 method of curating a SPARC dataset if you are starting from
@@ -176,7 +183,7 @@
               </p>
             </div>
             <div class="guided--section">
-              <label class="guided--form-label text-center"
+              <label class="guided--welcome-section-label text-center"
                 >1. Structure dataset</label
               >
               <p class="guided--help-text">
@@ -188,7 +195,7 @@
               </p>
             </div>
             <div class="guided--section">
-              <label class="guided--form-label text-center"
+              <label class="guided--welcome-section-label text-center"
                 >2. Provide metadata</label
               >
               <p class="guided--help-text">
@@ -204,7 +211,7 @@
               </p>
             </div>
             <div class="guided--section">
-              <label class="guided--form-label text-center"
+              <label class="guided--welcome-section-label text-center"
                 >3. Add Pennsieve metadata</label
               >
               <p class="guided--help-text">
@@ -221,7 +228,7 @@
               </p>
             </div>
             <div class="guided--section">
-              <label class="guided--form-label text-center"
+              <label class="guided--welcome-section-label text-center"
                 >4. Generate dataset</label
               >
               <p class="guided--help-text">
@@ -245,7 +252,7 @@
             id="guided-new-dataset-info"
             style="flex-grow: 1"
           >
-            <div class="guided--section">
+            <div class="title-border">
               <h1 class="guided--text-sub-step">
                 Give your dataset a name and subtitle
               </h1>

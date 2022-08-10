@@ -645,9 +645,9 @@ const guidedPrepareHomeScreen = async () => {
   const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
   //render progress resumption cards from progress file array on first page of guided mode
   if (guidedSavedProgressFiles.length != 0) {
-    $("#guided-continue-curation-header").text(
-      "Or continue curating a previously started dataset below."
-    );
+    // $("#guided-continue-curation-header").text(
+    //   "Or continue curating a previously started dataset below."
+    // );
     datasetCardsRadioButtonsContainer.classList.remove("hidden");
     const progressFileData = await getAllProgressFileData(
       guidedSavedProgressFiles
