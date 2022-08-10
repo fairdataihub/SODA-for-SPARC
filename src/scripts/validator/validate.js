@@ -8,7 +8,6 @@ const {
   translatePipelineError,
 } = require("./scripts/validator/parse-pipeline-errors.js");
 
-
 /*
 *******************************************************************************************************************
 // Logic for talking to the validator
