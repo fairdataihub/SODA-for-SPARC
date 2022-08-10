@@ -37,6 +37,16 @@
       >
         <div class="ui form" style="width: 100%">
           <div class="grouped fields">
+
+            <div class="about-container">
+              <label class="about-title" style="color: var(--color-bg-plum) !important">About</label> 
+              <p class="about-text">Use this feature to validate a dataset against the SPARC Dataset Structure (SDS). 
+                                    It is possible to validate datasets stored on Pennsieve or stored locally on your computer.
+                                    We recommend that your dataset passes validation before being being shared with the SPARC Curation Team.
+              </p>
+            </div>
+
+
             <!--Select how you wish to validate the dataset-->
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >Please select an option below:
@@ -101,6 +111,7 @@
                   max-width: 180px;
                   height: 220px !important;
                   width: 180px !important;
+                  margin-top: 25px;
                 "
               >
                 <div class="card-head">
@@ -381,19 +392,13 @@
                 align-items: center;
               "
             >
-              <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Validation Errors
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="The path column indicates where the errors occurred. The message column provides an explanation of what the errors are."
-                  rel="popover"
-                  data-html="true"
-                  data-placement="right"
-                  data-trigger="hover"
-                  data-original-title=""
-                  title=""
-                ></i>
-              </label>
+              <label style="font-size: 17px; color: var(--color-bg-plum)"> Validation Errors </label>
+              <div style="border-radius: 0.5rem; margin-top: 5px; width: 550px; align-self: center">
+                <p class="tip-content">
+                  The path column indicates where the errors occurred. The message column provides an explanation of what the errors are. 
+                  Fix the errors then re-run validation for updated results.
+                </p>
+              </div>
 
               <table class="ui celled padded table">
                 <thead>

@@ -19,7 +19,6 @@ validation_json = {}
 def validate_dataset_pipeline(ps_account, ps_dataset):
     check_prerequisites(ps_account)
 
-
     sparc_dataset_id = ps_dataset
     sparc_dataset_uuid = sparc_dataset_id.replace("N:dataset:", "")
 
