@@ -65,6 +65,7 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
     .innerText.trim();
   if (uploadBFBoolean) {
     try {
+      console.log(upperCaseLetters);
       let upload_rc_file = await client.post(
         "/prepare_metadata/readme_changes_file",
         {

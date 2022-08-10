@@ -7807,7 +7807,6 @@ $(document).ready(() => {
       `guided-${readmeORchanges}-metadata-upload-status`,
       "loading"
     );
-    console.log(`readmeOrChangesMetadata: ${readmeOrChangesMetadata}`);
     try {
       await client.post(
         "/prepare_metadata/readme_changes_file",
@@ -7816,7 +7815,7 @@ $(document).ready(() => {
         },
         {
           params: {
-            file_type: readmeORchanges,
+            file_type: `${readmeORchanges.toUpperCase()}.txt`,
             selected_account: bfAccount,
             selected_dataset: datasetName,
           },
