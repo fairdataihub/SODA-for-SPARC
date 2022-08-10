@@ -29,7 +29,7 @@ def get_home_directory(folder):
 
 
 # validate a local dataset at the target directory 
-def val_dataset_local_pipeline(ds_path):
+def validate_local_dataset(ds_path):
     # convert the path to absolute from user's home directory
     joined_path = os.path.join(userpath, ds_path.strip())
 
@@ -167,9 +167,32 @@ def check_prerequisites(ps_account):
 
     return add_orthauth_yaml(ps_account)
 
+
+
+def validate_dataset_pipeline(ps_account, ps_dataset):
+    check_prerequisites(ps_account)
+
+    sparc_dataset_id = ps_dataset
+    sparc_dataset_uuid = sparc_dataset_id.replace("N:dataset:", "")
+
+    try:
+        organization = PennsieveId(sparc_organization_id)
+        sparc_dataset = PennsieveId(sparc_dataset_id)
+    except Exception as e:
+        raise e
+
+    # create dataset folder for the retrieve
+    if not os.path.exists(parent_folder):
+        parent_folder.mkdir(parents = True, exist_ok = True)
+
+    local_dataset_folder_path = retrieve(id = sparc_dataset, dataset_id = sparc_dataset, project_id = organization, parent_parent_path = parent_folder)
+
+    print(local_dataset_folder_path)
+
+
 # This pipeline first retrieves a datset to a local folder 
 # and then validates the local dataset
-def validate_dataset_pipeline(ps_account, ps_dataset):
+def validate_dataset_pipeline_old_with_experimental_work(ps_account, ps_dataset):
     # return
     # global local_dataset_folder_path
     # global validation_json
@@ -189,7 +212,7 @@ def validate_dataset_pipeline(ps_account, ps_dataset):
     if not os.path.exists(parent_folder):
         parent_folder.mkdir(parents = True, exist_ok = True)
 
-    # local_dataset_folder_path = retrieve(id = sparc_dataset, dataset_id = sparc_dataset, project_id = organization, parent_parent_path = parent_folder)
+    local_dataset_folder_path = retrieve(id = sparc_dataset, dataset_id = sparc_dataset, project_id = organization, parent_parent_path = parent_folder)
     
 
     # def temp_retrieve_function(sparc_dataset, organization, parent_folder):
