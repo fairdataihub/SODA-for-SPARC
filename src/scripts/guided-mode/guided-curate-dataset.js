@@ -55,7 +55,7 @@ const guidedSaveAndExit = async (exitPoint) => {
   if (exitPoint === "main-nav" || exitPoint === "sub-nav") {
     const { value: returnToGuidedHomeScreen } = await Swal.fire({
       title: "Are you sure?",
-      text: `Exiting guided mode will discard any changes you have made on the
+      text: `Exiting Guided Mode will discard any changes you have made on the
       current page. You will be taken back to the homescreen, where you will be able
       to continue the current dataset you are curating which will be located under datasets
       in progress.`,
