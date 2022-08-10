@@ -8,27 +8,6 @@ const {
   translatePipelineError,
 } = require("./scripts/validator/parse-pipeline-errors.js");
 
-/*
-*******************************************************************************************************************
-// Setup for Axios client that talks to the validator
-*******************************************************************************************************************
-*/
-
-// const waitForAxios = (client) => {
-//   if (typeof axios !== "undefined") {
-//     //variable exists, do what you want
-//     client = axios.create({
-//       baseURL: "http://127.0.0.1:4242/",
-//       timeout: 0,
-//     });
-//   } else {
-//     setTimeout(waitForAxios, 1000);
-//   }
-// };
-
-// let axiosValidatorClient;
-
-// waitForAxios(axiosValidatorClient);
 
 /*
 *******************************************************************************************************************
@@ -66,8 +45,6 @@ const validateLocalDataset = async () => {
         },
       }
     );
-
-    console.log(validationResponse);
 
     // track that a local validation succeeded
     ipcRenderer.send(
