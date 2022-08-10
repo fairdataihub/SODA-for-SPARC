@@ -46,8 +46,15 @@ def validate_local_dataset(ds_path):
     # validate the dataset
     blob = validate(norm_ds_path)
 
+    # write the results to a file
+    with open(os.path.join(userpath, 'validator_results.txt'), 'w') as file:
+        file.write(str(blob))
+
     # peel out the status object 
     status = blob.get('status')
+
+    if 'path_error_report' not in status:
+        return "TODO: Handle this case later"
 
     # peel out the path_error_report object
     path_error_report = status.get('path_error_report')
