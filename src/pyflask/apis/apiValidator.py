@@ -30,16 +30,21 @@ class ValidateLocalDataset(Resource):
 @api.route('/pennsieve_dataset_validation_result')
 class ValidatePennsieveDataset(Resource):
     parser = api.parser()
-    parser.add_argument('dataset_name_or_path', type=str, required=True, help='Dataset identifier can be name or UUID')
+    parser.add_argument('selected_dataset', type=str, required=True, help='Dataset identifier can be name or UUID')
+    parser.add_argument('selected_account', type=str, required=True, help='Account name')
 
     @api.expect(parser)
     @api.doc(responses={500: 'Internal Server Error', 400: 'Bad Request', 200: 'OK'})
     def get(self):
         # get the path from the request object
-        dname = self.parser.parse_args()['path']
-        api.logger.info(f' /local_dataset_validation_result --  args -- path: {dname}')
+        data = self.parser.parse_args()
+
+        selected_dataset = data['selected_dataset']
+        selected_account = data['selected_account']
+
+        api.logger.info(f' /local_dataset_validation_result --  args -- path: {selected_dataset}')
 
         try:
-            return validate_dataset_pipeline(dname)
+            return validate_dataset_pipeline(selected_account, selected_dataset)
         except Exception as e:
             api.abort(500, str(e))

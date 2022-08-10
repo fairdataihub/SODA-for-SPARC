@@ -154,8 +154,13 @@ const validatePennsieveDataset = async () => {
 
   try {
     // request validation for the current pennsieve dataset
-    validationResponse = await axiosValidatorClient(
-      `/api_validate_pennsieve_dataset?dataset-name=${datasetName}`
+    validationResponse = await client.get(
+      `validator/pennsieve_dataset_validation_result`, {
+        params: {
+          selected_account: defaultBfAccount,
+          selected_dataset: defaultBfDatasetId,
+        }
+      }
     );
 
     // track that a local validation succeeded

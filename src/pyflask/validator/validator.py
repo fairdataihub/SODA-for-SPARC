@@ -179,6 +179,7 @@ def check_prerequisites(ps_account):
 def validate_dataset_pipeline(ps_account, ps_dataset):
     check_prerequisites(ps_account)
 
+
     sparc_dataset_id = ps_dataset
     sparc_dataset_uuid = sparc_dataset_id.replace("N:dataset:", "")
 
@@ -194,7 +195,22 @@ def validate_dataset_pipeline(ps_account, ps_dataset):
 
     local_dataset_folder_path = retrieve(id = sparc_dataset, dataset_id = sparc_dataset, project_id = organization, parent_parent_path = parent_folder)
 
-    print(local_dataset_folder_path)
+    blob = validate(local_dataset_folder_path)
+
+    status = blob.get("status")
+
+    # peel out the path_error_report object
+    path_error_report = status.get('path_error_report')
+
+        # write the results to a file
+    with open(os.path.join(userpath, 'validator_results.txt'), 'w') as file:
+        file.write(str(path_error_report))
+
+    # get the errors out of the report that do not have errors in their subpaths (see function comments for the explanation)
+    parsed_path_error_report = parse(path_error_report)
+
+    return parsed_path_error_report
+
 
 
 # This pipeline first retrieves a datset to a local folder 
