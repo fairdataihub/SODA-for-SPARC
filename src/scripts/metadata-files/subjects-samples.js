@@ -601,6 +601,8 @@ async function addStrain(ev, type, curationMode) {
 
 // populate RRID
 function populateRRID(strain, type, curationMode) {
+  console.log("populateRRID");
+  console.log(strain, type, curationMode);
   let curationModeSelectorPrefix = "";
   if (curationMode == "guided") {
     curationModeSelectorPrefix = "guided-";
@@ -625,7 +627,10 @@ function populateRRID(strain, type, curationMode) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => {
+    console.log("then");
+  });
+  console.log("swal fire done");
   https.get(rridInfo, (res) => {
     if (res.statusCode === 200) {
       let data = "";
@@ -634,7 +639,7 @@ function populateRRID(strain, type, curationMode) {
         data += d;
       });
       res.on("end", () => {
-        var returnRes = readXMLScicrunch(data, type);
+        var returnRes = readXMLScicrunch(data, type, curationMode);
         if (!returnRes) {
           Swal.fire({
             title: `Failed to retrieve the RRID for ${strain} from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
@@ -3453,12 +3458,18 @@ function showAgeSection(ev, div, type) {
   }
 }
 
-function readXMLScicrunch(xml, type) {
+function readXMLScicrunch(xml, type, curationMode) {
   var parser = new DOMParser();
   var xmlDoc = parser.parseFromString(xml, "text/xml");
   var resultList = xmlDoc.getElementsByTagName("name"); // THE XML TAG NAME.
   var rrid = "";
   var res;
+
+  let curationModeSelectorPrefix = "";
+  if (curationMode == "guided") {
+    curationModeSelectorPrefix = "guided-";
+  }
+
   for (var i = 0; i < resultList.length; i++) {
     if (resultList[i].childNodes[0].nodeValue === "Proper Citation") {
       rrid = resultList[i].nextSibling.childNodes[0].nodeValue;
@@ -3467,10 +3478,12 @@ function readXMLScicrunch(xml, type) {
   }
   if (type === "subject") {
     if (rrid.trim() !== "") {
-      $("#bootbox-subject-strain-RRID").val(rrid.trim());
+      $(`#${curationModeSelectorPrefix}bootbox-subject-strain-RRID`).val(
+        rrid.trim()
+      );
       res = true;
     } else {
-      $("#bootbox-subject-strain-RRID").val("");
+      $(`#${curationModeSelectorPrefix}bootbox-subject-strain-RRID`).val("");
       res = false;
     }
   } else {

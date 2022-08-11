@@ -55,7 +55,7 @@ const guidedSaveAndExit = async (exitPoint) => {
   if (exitPoint === "main-nav" || exitPoint === "sub-nav") {
     const { value: returnToGuidedHomeScreen } = await Swal.fire({
       title: "Are you sure?",
-      text: `Exiting guided mode will discard any changes you have made on the
+      text: `Exiting Guided Mode will discard any changes you have made on the
       current page. You will be taken back to the homescreen, where you will be able
       to continue the current dataset you are curating which will be located under datasets
       in progress.`,
@@ -2811,6 +2811,8 @@ const openEditGuidedDatasetSwal = async (datasetName) => {
   });
 };
 
+const patchPreviousVersionSodaJSONObj = () => {};
+
 //Loads UI when continue curation button is pressed
 const guidedResumeProgress = async (resumeProgressButton) => {
   const datasetNameToResume = resumeProgressButton
@@ -3508,14 +3510,12 @@ const generateContributorField = (
   contributorLastName,
   contributorFirstName,
   contributorORCID,
-  contributorAffiliation,
+  contributorAffiliations,
   contributorRoles
 ) => {
-  console.log(contributorLastName);
-  console.log(contributorFirstName);
-  console.log(contributorORCID);
-  console.log(contributorAffiliation);
-  console.log(contributorRoles);
+  const initialContributorAffiliationString = contributorAffiliations
+    ? contributorAffiliations.join(",")
+    : "";
   const initialContributorRoleString = contributorRoles
     ? contributorRoles.join(",")
     : "";
@@ -3577,38 +3577,25 @@ const generateContributorField = (
             />
           </div>
         </div>
-        <div class="space-between w-100 mb-md">
-          <div class="guided--flex-center mt-md" style="width: 45%">
-            <label class="guided--form-label required">ORCID: </label>
-            <input
-              class="
-                guided--input
-                guided-orcid-input
-              "
-              type="text"
-              placeholder="Enter ORCID here"
-              onkeyup="validateInput($(this))"
-              value="${contributorORCID ? contributorORCID : ""}"
-            />
-          </div>
-          <div class="guided--flex-center mt-md" style="width: 45%">
-            <label class="guided--form-label required">Affiliation: </label>
-            <input
-              class="
-                guided--input
-                guided-affiliation-input
-              "
-              type="text"
-              placeholder="Enter affiliation here"
-              onkeyup="validateInput($(this))"
-              value="${contributorAffiliation ? contributorAffiliation : ""}"
-            />
-          </div>
-        </div>
-        <label class="guided--form-label required">Role(s): </label>
-        <input class="guided-contributor-role-input required"
+        <label class="guided--form-label mt-md required">ORCID: </label>
+        <input
+          class="
+            guided--input
+            guided-orcid-input
+          "
+          type="text"
+          placeholder="Enter ORCID here"
+          onkeyup="validateInput($(this))"
+          value="${contributorORCID ? contributorORCID : ""}"
+        />
+        <label class="guided--form-label mt-md required">Affiliation(s): </label>
+        <input class="guided-contributor-affiliation-input"
           contenteditable="true"
-          placeholder='Type here to view and add contributor roles from the list of standard roles'
+          data-initial-contributor-affiliation="${initialContributorAffiliationString}"
+        />
+        <label class="guided--form-label mt-md required">Role(s): </label>
+        <input class="guided-contributor-role-input"
+          contenteditable="true"
           data-initial-contributor-roles="${initialContributorRoleString}"
         />
       </div>
@@ -3691,40 +3678,41 @@ const addContributorField = () => {
         />
       </div>
     </div>
-    <div class="space-between w-100 mb-md">
-      <div class="guided--flex-center mt-md" style="width: 45%">
-        <label class="guided--form-label required">ORCID: </label>
-        <input
-          class="guided--input guided-orcid-input"
-          type="text"
-          placeholder="Enter ORCID here"
-          onkeyup="validateInput($(this))"
-        />
-      </div>
-      <div class="guided--flex-center mt-md" style="width: 45%">
-        <label class="guided--form-label required">Affiliation: </label>
-        <input
-          class="guided--input guided-affiliation-input"
-          type="text"
-          placeholder="Enter affiliation here"
-          onkeyup="validateInput($(this))"
-        />
-      </div>
-    </div>
-    <label class="guided--form-label required">Role(s): </label>
+    <label class="guided--form-label required mt-md">ORCID: </label>
+    <input
+      class="guided--input guided-orcid-input"
+      type="text"
+      placeholder="Enter ORCID here"
+      onkeyup="validateInput($(this))"
+    />
+    <label class="guided--form-label required mt-md">Affiliation(s): </label>
+    <input class="guided-contributor-affiliation-input"
+          contenteditable="true"
+    />
+  
+    <label class="guided--form-label required mt-md">Role(s): </label>
     <input class="guided-contributor-role-input"
       contenteditable="true"
       placeholder='Type here to view and add contributor roles from the list of standard roles'
     />
   `;
+
   contributorsContainer.appendChild(newContributorField);
 
   //select the last contributor role input (the one that was just added)
   const newlyAddedContributorField = contributorsContainer.lastChild;
+
+  //Create Affiliation(s) tagify for each contributor
+  const contributorAffiliationInput = newlyAddedContributorField.querySelector(
+    ".guided-contributor-affiliation-input"
+  );
+  const affiliationTagify = new Tagify(contributorAffiliationInput, {
+    duplicate: false,
+  });
+
   const newContributorRoleElement = newlyAddedContributorField.querySelector(
     ".guided-contributor-role-input"
   );
-
   //Add a new tagify for the contributor role field for the new contributor field
   const tagify = new Tagify(newContributorRoleElement, {
     whitelist: [
@@ -3855,6 +3843,7 @@ const renderContributorFields = (contributionMembersArray) => {
   //loop through curationMembers object
   let contributionMembersElements = contributionMembersArray
     .map((contributionMember) => {
+      console.log(contributionMember);
       return generateContributorField(
         contributionMember["contributorLastName"],
         contributionMember["contributorFirstName"],
@@ -3869,11 +3858,30 @@ const renderContributorFields = (contributionMembersArray) => {
     "contributors-container"
   );
   contributorsContainer.innerHTML = contributionMembersElements;
-  const contributorRoleInputs = document.querySelectorAll(
+
+  //Create Affiliation(s) tagify for each contributor
+  const contributorAffiliationInputs = contributorsContainer.querySelectorAll(
+    ".guided-contributor-affiliation-input"
+  );
+  contributorAffiliationInputs.forEach((contributorAffiliationInput) => {
+    const tagify = new Tagify(contributorAffiliationInput, {
+      duplicate: false,
+    });
+    if (contributorAffiliationInput.dataset.initialContributorAffiliation) {
+      const initialAffiliations =
+        contributorAffiliationInput.dataset.initialContributorAffiliation;
+      const initialAffiliationsArray = initialAffiliations.split(",");
+      for (const initialAffiliation of initialAffiliationsArray) {
+        console.log(initialAffiliation);
+        tagify.addTags([initialAffiliation]);
+      }
+    }
+  });
+
+  //create Role(s) tagify for each contributor
+  const contributorRoleInputs = contributorsContainer.querySelectorAll(
     ".guided-contributor-role-input"
   );
-
-  //create a tagify for each element in contributorRoleElements
   contributorRoleInputs.forEach((contributorRoleElement) => {
     const tagify = new Tagify(contributorRoleElement, {
       whitelist: [
@@ -6128,7 +6136,7 @@ const renderSubjectsMetadataAsideItems = () => {
     for (const subject of subjects) {
       const subjectDataArray = [];
       subjectDataArray.push(subject.subjectName);
-      subjectDataArray.push(subject.poolName ? subject.poolName : "N/A");
+      subjectDataArray.push(subject.poolName ? subject.poolName : "");
 
       for (let i = 0; i < subjectsFormNames.length - 2; i++) {
         subjectDataArray.push("");
@@ -6152,7 +6160,7 @@ const renderSubjectsMetadataAsideItems = () => {
         console.log("subject not in array");
         const subjectDataArray = [];
         subjectDataArray.push(subject.subjectName);
-        subjectDataArray.push(subject.poolName ? subject.poolName : "N/A");
+        subjectDataArray.push(subject.poolName ? subject.poolName : "");
         for (let i = 0; i < subjectsTableData[0].length - 2; i++) {
           subjectDataArray.push("");
         }
@@ -6177,7 +6185,7 @@ const renderSubjectsMetadataAsideItems = () => {
       return `
           <a 
             class="subjects-metadata-aside-item selection-aside-item"
-            data-pool-id="${subject.poolName ? subject.poolName : "N/A"}"
+            data-pool-id="${subject.poolName ? subject.poolName : ""}"
           ><span class="subject-metadata-id">${subject.subjectName}</span></a>
         `;
     })
@@ -6270,7 +6278,7 @@ const renderSamplesMetadataAsideItems = () => {
       sampleDataArray.push(sample.sampleName);
       //Push an empty string for was derived from
       sampleDataArray.push("");
-      sampleDataArray.push(sample.poolName ? sample.poolName : "N/A");
+      sampleDataArray.push(sample.poolName ? sample.poolName : "");
       for (let i = 0; i < samplesFormNames.length - 4; i++) {
         sampleDataArray.push("");
       }
@@ -6295,7 +6303,7 @@ const renderSamplesMetadataAsideItems = () => {
         sampleDataArray.push(sample.sampleName);
         //Push an empty string for was derived from
         sampleDataArray.push("");
-        sampleDataArray.push(sample.poolName ? sample.poolName : "N/A");
+        sampleDataArray.push(sample.poolName ? sample.poolName : "");
         for (let i = 0; i < samplesTableData[0].length - 4; i++) {
           sampleDataArray.push("");
         }
@@ -6321,7 +6329,7 @@ const renderSamplesMetadataAsideItems = () => {
         <a
           class="samples-metadata-aside-item selection-aside-item"
           data-samples-subject-name="${sample.subjectName}"
-          data-samples-pool-id="${sample.poolName ? sample.poolName : "N/A"}"
+          data-samples-pool-id="${sample.poolName ? sample.poolName : ""}"
         >
           <span class="sample-metadata-id">
             ${sample.sampleName}
@@ -7819,7 +7827,6 @@ $(document).ready(() => {
       `guided-${readmeORchanges}-metadata-upload-status`,
       "loading"
     );
-    console.log(`readmeOrChangesMetadata: ${readmeOrChangesMetadata}`);
     try {
       await client.post(
         "/prepare_metadata/readme_changes_file",
@@ -7828,7 +7835,7 @@ $(document).ready(() => {
         },
         {
           params: {
-            file_type: readmeORchanges,
+            file_type: `${readmeORchanges.toUpperCase()}.txt`,
             selected_account: bfAccount,
             selected_dataset: datasetName,
           },
@@ -7907,10 +7914,14 @@ $(document).ready(() => {
         "study-information"
       ];
 
-    let guidedContributorInformation =
-      sodaJSONObj["dataset-metadata"]["description-metadata"][
+    let guidedContributorInformation = {
+      ...sodaJSONObj["dataset-metadata"]["description-metadata"][
         "contributor-information"
-      ];
+      ],
+    };
+
+    //add the SPARC award as the first element in the funding source array
+    guidedContributorInformation["funding"].unshift(guidedSparcAward);
 
     //Add contributors from sodaJSONObj to guidedContributorInformation in the "contributors" key
     let contributors =
@@ -7919,7 +7930,7 @@ $(document).ready(() => {
     guidedContributorInformation["contributors"] = contributors.map(
       (contributor) => {
         return {
-          conAffliation: contributor["conAffliation"],
+          conAffliation: contributor["conAffliation"].join(", "),
           conID: contributor["conID"],
           conName: contributor["conName"],
           conRole: contributor["conRole"].join(", "),
@@ -7928,8 +7939,7 @@ $(document).ready(() => {
         };
       }
     );
-
-    guidedContributorInformation = guidedContributorInformation;
+    console.log(guidedContributorInformation);
 
     const guidedAdditionalLinks =
       sodaJSONObj["dataset-metadata"]["description-metadata"][
@@ -9634,8 +9644,6 @@ $(document).ready(() => {
         );
         //case when user adds contributors manually
         if (!contributorFieldSetDiv.classList.contains("hidden")) {
-          console.log("contributors from airtable open");
-
           let allInputsValid = true;
           let contributors = [];
           //get all contributor fields
@@ -9653,7 +9661,7 @@ $(document).ready(() => {
 
           //loop through contributor fields and get values
           const contributorFieldsArray = Array.from(contributorFields);
-          ///////////////////////////////////////////////////////////////////////////////
+
           contributorFieldsArray.forEach((contributorField) => {
             const contributorLastNameInput = contributorField.querySelector(
               ".guided-last-name-input"
@@ -9664,10 +9672,23 @@ $(document).ready(() => {
             const contributorORCIDInput = contributorField.querySelector(
               ".guided-orcid-input"
             );
-            const contributorAffiliationInput = contributorField.querySelector(
-              ".guided-affiliation-input"
+
+            //get the contributor affiliation tags
+            const contributorAffiliationTagify = contributorField.querySelector(
+              ".guided-contributor-affiliation-input"
             );
-            //get the tags inside the tagify element with the class guided-contributor-role-input
+            const contributorAffiliationTagifyChildren = Array.from(
+              contributorAffiliationTagify.children
+            );
+            //remove the span element from the array so only tag elements are left
+            contributorAffiliationTagifyChildren.pop();
+            //get the titles of the tagify tags
+            const contributorAffiliations =
+              contributorAffiliationTagifyChildren.map((child) => {
+                return child.title;
+              });
+
+            //get the contributor role tags
             const contributorRoleTagify = contributorField.querySelector(
               ".guided-contributor-role-input"
             );
@@ -9677,7 +9698,7 @@ $(document).ready(() => {
             );
             //remove the span element from the array so only tag elements are left
             contributorRoleTagifyChildren.pop();
-            //get the titles of the tagify tagsh
+            //get the titles of the tagify tags
             const contributorRoles = contributorRoleTagifyChildren.map(
               (child) => {
                 return child.title;
@@ -9688,7 +9709,6 @@ $(document).ready(() => {
               contributorLastNameInput,
               contributorFirstNameInput,
               contributorORCIDInput,
-              contributorAffiliationInput,
             ];
             //check if all text inputs are valid
             textInputs.forEach((textInput) => {
@@ -9703,6 +9723,24 @@ $(document).ready(() => {
                 );
               }
             });
+
+            //Check if user added at least one affiliation
+            if (contributorAffiliations.length === 0) {
+              contributorAffiliationTagify.style.setProperty(
+                "border-color",
+                "red",
+                "important"
+              );
+              allInputsValid = false;
+            } else {
+              //remove the red border from the contributor affiliation tagify
+              contributorAffiliationTagify.style.setProperty(
+                "border-color",
+                "hsl(0, 0%, 88%)",
+                "important"
+              );
+            }
+
             //Check if user added at least one contributor
             if (contributorRoles.length === 0) {
               contributorRoleTagify.style.setProperty(
@@ -9725,7 +9763,7 @@ $(document).ready(() => {
               contributorFirstName: contributorFirstNameInput.value,
               conName: `${contributorLastNameInput.value}, ${contributorFirstNameInput.value}`,
               conID: contributorORCIDInput.value,
-              conAffliation: contributorAffiliationInput.value,
+              conAffliation: contributorAffiliations,
               conRole: contributorRoles,
             };
             contributors.push(contributorInputObj);
@@ -9783,7 +9821,7 @@ $(document).ready(() => {
                     contributorFirstName: contributor.fields["First_name"],
                     conName: `${contributor.fields["Last_name"]}, ${contributor.fields["First_name"]}`,
                     conID: contributor.fields["ORCID"],
-                    conAffliation: contributor.fields["Institution"],
+                    conAffliation: [contributor.fields["Institution"]],
                     conRole: contributor.fields["NIH_Project_Role"],
                   };
                 }
@@ -9812,7 +9850,6 @@ $(document).ready(() => {
               return;
             }
             return;
-            console.log("baz");
           }
         }
       }
