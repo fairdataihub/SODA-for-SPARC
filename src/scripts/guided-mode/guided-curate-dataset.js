@@ -4803,12 +4803,14 @@ const generateSubjectSpecificationRowElement = () => {
           />
         </div>
       </td>
+
       <td class="middle aligned collapsing text-center remove-left-border">
         <i
           class="far fa-trash-alt"
           style="color: red; cursor: pointer"
           onclick="deleteSubject($(this))"
         ></i>
+        <i class="far fa-check-square fa-solid"></i>
       </td>
     </tr>
   `;
