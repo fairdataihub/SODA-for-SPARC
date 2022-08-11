@@ -1575,16 +1575,6 @@ const traverseToTab = (targetPageID) => {
       const contributors =
         sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
 
-      //temp patch contributor affiliations if they are still a string (they were added in the previous version)
-      for (contributor of sodaJSONObj["dataset-metadata"][
-        "description-metadata"
-      ]["contributors"]) {
-        //if contributor is in old format (string), convert to new format (array)
-        if (!Array.isArray(contributor.conAffliation)) {
-          contributor.conAffliation = [contributor.conAffliation];
-        }
-      }
-
       //If contributors already existin in the sodaJSONObj, then show the contributors field
       //and render a card for each contributor
       if (contributors) {
@@ -2821,6 +2811,8 @@ const openEditGuidedDatasetSwal = async (datasetName) => {
   });
 };
 
+const patchPreviousVersionSodaJSONObj = () => {};
+
 //Loads UI when continue curation button is pressed
 const guidedResumeProgress = async (resumeProgressButton) => {
   const datasetNameToResume = resumeProgressButton
@@ -3685,40 +3677,41 @@ const addContributorField = () => {
         />
       </div>
     </div>
-    <div class="space-between w-100 mb-md">
-      <div class="guided--flex-center mt-md" style="width: 45%">
-        <label class="guided--form-label required">ORCID: </label>
-        <input
-          class="guided--input guided-orcid-input"
-          type="text"
-          placeholder="Enter ORCID here"
-          onkeyup="validateInput($(this))"
-        />
-      </div>
-      <div class="guided--flex-center mt-md" style="width: 45%">
-        <label class="guided--form-label required">Affiliation(s): </label>
-        <input
-          class="guided--input guided-affiliation-input"
-          type="text"
-          placeholder="Enter affiliation here"
-          onkeyup="validateInput($(this))"
-        />
-      </div>
-    </div>
-    <label class="guided--form-label required">Role(s): </label>
+    <label class="guided--form-label required mt-md">ORCID: </label>
+    <input
+      class="guided--input guided-orcid-input"
+      type="text"
+      placeholder="Enter ORCID here"
+      onkeyup="validateInput($(this))"
+    />
+    <label class="guided--form-label required mt-md">Affiliation(s): </label>
+    <input class="guided-contributor-affiliation-input"
+          contenteditable="true"
+    />
+  
+    <label class="guided--form-label required mt-md">Role(s): </label>
     <input class="guided-contributor-role-input"
       contenteditable="true"
       placeholder='Type here to view and add contributor roles from the list of standard roles'
     />
   `;
+
   contributorsContainer.appendChild(newContributorField);
 
   //select the last contributor role input (the one that was just added)
   const newlyAddedContributorField = contributorsContainer.lastChild;
+
+  //Create Affiliation(s) tagify for each contributor
+  const contributorAffiliationInput = newlyAddedContributorField.querySelector(
+    ".guided-contributor-affiliation-input"
+  );
+  const affiliationTagify = new Tagify(contributorAffiliationInput, {
+    duplicate: false,
+  });
+
   const newContributorRoleElement = newlyAddedContributorField.querySelector(
     ".guided-contributor-role-input"
   );
-
   //Add a new tagify for the contributor role field for the new contributor field
   const tagify = new Tagify(newContributorRoleElement, {
     whitelist: [
