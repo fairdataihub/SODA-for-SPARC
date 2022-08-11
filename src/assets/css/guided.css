@@ -287,11 +287,13 @@
 
 .guided--section {
   padding: 12px;
+  padding-left: 0;
+  padding-right: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 90%;
-  max-width: 1200px;
+  max-width: 800px;
 }
 
 .guided--container-sub {
