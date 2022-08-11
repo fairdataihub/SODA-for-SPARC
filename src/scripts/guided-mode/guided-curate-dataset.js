@@ -2811,7 +2811,7 @@ const openEditGuidedDatasetSwal = async (datasetName) => {
   });
 };
 
-const patchPreviousGuidedModeVersion = () => {
+const patchPreviousGuidedModeVersions = () => {
   //temp patch contributor affiliations if they are still a string (they were added in the previous version)
   const contributors =
     sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
@@ -2859,7 +2859,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   subjectsTableData = sodaJSONObj["subjects-table-data"];
   samplesTableData = sodaJSONObj["samples-table-data"];
 
-  patchPreviousGuidedModeVersion();
+  patchPreviousGuidedModeVersions();
 
   guidedTransitionFromHome();
   //Set the dataset name and subtitle input values using the
