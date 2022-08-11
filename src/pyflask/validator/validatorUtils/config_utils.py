@@ -150,3 +150,16 @@ def add_orthauth_yaml(ps_account):
 
 
 
+# adds the scigraph api key to the orthauth secrets.yaml file 
+def add_scicrunch_api_key(api_key, api_key_name):
+    with open(orthauth_path_secrets) as file:
+        yml_obj = yaml.full_load(file)
+        yml_obj["scicrunch"]["api"] = {api_key_name: api_key}
+
+
+
+# adds the scigraph key name to the pyontutils config file
+def add_scigraph_path(api_key_name):
+    with open(pyontutils_path_config) as file:
+        yml_obj = yaml.full_load(file)
+        yml_obj["auth-variables"]["scigraph-api-key"]["path"]= f"scicrunch api {api_key_name}"

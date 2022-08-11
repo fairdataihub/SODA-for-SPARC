@@ -8,7 +8,17 @@ from sparcur.utils import PennsieveId
 from sparcur.simple.validate import main as validate
 from sparcur.simple.retrieve import main as retrieve
 
-from .validatorUtils import parse, userpath, check_prerequisites, sparc_organization_id, parent_folder
+from .validatorUtils import ( 
+    parse, 
+    userpath, 
+    check_prerequisites, 
+    sparc_organization_id, 
+    parent_folder, 
+    pyontutils_path, 
+    orthauth_path, 
+    add_scigraph_path, 
+    add_scicrunch_api_key
+)
 
 
 # for gevent
@@ -80,3 +90,15 @@ def validate_local_dataset(ds_path):
     parsed_path_error_report = parse(path_error_report)
 
     return parsed_path_error_report
+
+
+# add scicrunch api key and api key name to the validator config files
+def add_scicrunch_to_validator_config(api_key, api_key_name, selected_account):
+    # create the config files and folders if they do not already exist
+    check_prerequisites(selected_account)
+
+    # add the scicrunch api key to the orthauth secrets yaml
+    add_scicrunch_api_key(api_key, api_key_name)
+
+    # add the scigraph path to the pyontutils config yaml
+    add_scigraph_path(api_key_name)

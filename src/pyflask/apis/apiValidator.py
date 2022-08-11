@@ -1,5 +1,5 @@
 from flask_restx import Resource
-from validator import validate_local_dataset, validate_dataset_pipeline
+from validator import validate_local_dataset, validate_dataset_pipeline, add_scicrunch_to_validator_config
 from namespaces import get_namespace, NamespaceEnum
 
 # get the namespace for the validator 
@@ -48,3 +48,28 @@ class ValidatePennsieveDataset(Resource):
             return validate_dataset_pipeline(selected_account, selected_dataset)
         except Exception as e:
             api.abort(500, str(e))
+
+
+@api.route('/scicrunch_config')
+class SciCrunchAPIKey(Resource):
+    
+        parser = api.parser()
+        parser.add_argument('api_key', type=str, required=True, help='API key')
+        parser.add_argument('api_key_name', type=str, required=True, help='API key name')
+        parser.add_argument('selected_account', type=str, required=True, help='Pennsieve account for the selected user')
+        
+    
+        @api.expect(parser)
+        @api.doc(responses={500: 'Internal Server Error', 400: 'Bad Request', 200: 'OK'})
+        def post(self):
+            # get the path from the request object
+            data = self.parser.parse_args()
+
+            api_key = data['api_key']
+            api_key_name = data['api_key_name']
+            selected_account = data['selected_account']
+    
+            try:
+                return add_scicrunch_to_validator_config(api_key, api_key_name, selected_account)
+            except Exception as e:
+                api.abort(500, str(e))
