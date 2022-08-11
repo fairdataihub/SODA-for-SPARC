@@ -1579,6 +1579,7 @@ const traverseToTab = (targetPageID) => {
       for (contributor of sodaJSONObj["dataset-metadata"][
         "description-metadata"
       ]["contributors"]) {
+        //if contributor is in old format (string), convert to new format (array)
         if (!Array.isArray(contributor.conAffliation)) {
           contributor.conAffliation = [contributor.conAffliation];
         }
@@ -7903,10 +7904,11 @@ $(document).ready(() => {
         "study-information"
       ];
 
-    let guidedContributorInformation =
-      sodaJSONObj["dataset-metadata"]["description-metadata"][
+    let guidedContributorInformation = {
+      ...sodaJSONObj["dataset-metadata"]["description-metadata"][
         "contributor-information"
-      ];
+      ],
+    };
 
     //add the SPARC award as the first element in the funding source array
     guidedContributorInformation["funding"].unshift(guidedSparcAward);
