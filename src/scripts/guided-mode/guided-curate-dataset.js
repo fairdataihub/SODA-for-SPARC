@@ -1575,6 +1575,15 @@ const traverseToTab = (targetPageID) => {
       const contributors =
         sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
 
+      //temp patch contributor affiliations if they are still a string (they were added in the previous version)
+      for (contributor of sodaJSONObj["dataset-metadata"][
+        "description-metadata"
+      ]["contributors"]) {
+        if (!Array.isArray(contributor.conAffliation)) {
+          contributor.conAffliation = [contributor.conAffliation];
+        }
+      }
+
       //If contributors already existin in the sodaJSONObj, then show the contributors field
       //and render a card for each contributor
       if (contributors) {
