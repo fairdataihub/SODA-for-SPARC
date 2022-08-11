@@ -1038,7 +1038,7 @@ h1.guided--text-sub-step {
   margin-bottom: 15px;
   border-bottom: 5px solid #b80d49;
   width: 100%;
-  margin-top: -.5rem !important
+  margin-top: -0.5rem !important;
 }
 
 .guided--button-tab-container {
@@ -1056,8 +1056,6 @@ h1.guided--text-sub-step {
   font-weight: 600;
   font-size: 1.2rem;
 }
-
-
 
 /* .guided--tab-button:focus {
   border-bottom: 5px solid #b80d49;
