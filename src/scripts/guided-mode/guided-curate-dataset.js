@@ -7899,6 +7899,9 @@ $(document).ready(() => {
         "contributor-information"
       ];
 
+    //add the SPARC award as the first element in the funding source array
+    guidedContributorInformation["funding"].unshift(guidedSparcAward);
+
     //Add contributors from sodaJSONObj to guidedContributorInformation in the "contributors" key
     let contributors =
       sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
@@ -7915,8 +7918,7 @@ $(document).ready(() => {
         };
       }
     );
-
-    guidedContributorInformation = guidedContributorInformation;
+    console.log(guidedContributorInformation);
 
     const guidedAdditionalLinks =
       sodaJSONObj["dataset-metadata"]["description-metadata"][
