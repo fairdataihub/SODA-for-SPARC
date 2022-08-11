@@ -986,7 +986,7 @@ const checkNewAppVersion = () => {
 ipcRenderer.on("app_version", (event, arg) => {
   const version = document.getElementById("version");
   ipcRenderer.removeAllListeners("app_version");
-  version.innerText = "v. " + arg.version;
+  version.innerText = "v. 7.0.2" /* + arg.version Guided beta over-ride*/;
 });
 
 // Check for update and show the pop up box
