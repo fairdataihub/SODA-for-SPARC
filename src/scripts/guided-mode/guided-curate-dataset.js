@@ -2811,7 +2811,37 @@ const openEditGuidedDatasetSwal = async (datasetName) => {
   });
 };
 
-const patchPreviousVersionSodaJSONObj = () => {};
+const patchPreviousGuidedModeVersion = () => {
+  //temp patch contributor affiliations if they are still a string (they were added in the previous version)
+  const contributors =
+    sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+  if (contributors) {
+    for (contributor of sodaJSONObj["dataset-metadata"]["description-metadata"][
+      "contributors"
+    ]) {
+      //if contributor is in old format (string), convert to new format (array)
+      if (!Array.isArray(contributor.conAffliation)) {
+        console.log("Patching contributor affiliation");
+        contributor.conAffliation = [contributor.conAffliation];
+      }
+    }
+  }
+
+  //temp patch subjectsTableData to add "RRID for strain" field
+  if (subjectsTableData.length > 0) {
+    //check if subjectsTableData has "RRID for strain" field
+    if (!subjectsTableData[0].includes("RRID for strain")) {
+      console.log("Patching subjectsTableData");
+      //insert "RRID for strain" string as the 6th element of subjectsTableData[0]
+      subjectsTableData[0].splice(6, 0, "RRID for strain");
+      //Insert empty string as the 6th element for each subject in subjectsTableData
+      //besides the first element, which is the header row
+      for (let i = 1; i < subjectsTableData.length; i++) {
+        subjectsTableData[i].splice(6, 0, "");
+      }
+    }
+  }
+};
 
 //Loads UI when continue curation button is pressed
 const guidedResumeProgress = async (resumeProgressButton) => {
@@ -2828,6 +2858,9 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   datasetStructureJSONObj = sodaJSONObj["saved-datset-structure-json-obj"];
   subjectsTableData = sodaJSONObj["subjects-table-data"];
   samplesTableData = sodaJSONObj["samples-table-data"];
+
+  patchPreviousGuidedModeVersion();
+
   guidedTransitionFromHome();
   //Set the dataset name and subtitle input values using the
   //previously saved dataset name and subtitle
