@@ -7953,8 +7953,10 @@ $(document).ready(() => {
       ],
     };
 
-    //add the SPARC award as the first element in the funding source array
-    guidedContributorInformation["funding"].unshift(guidedSparcAward);
+    //add the SPARC award as the first element in the funding source array if it's not already in the funding array
+    if (!guidedContributorInformation["funding"].includes(guidedSparcAward)) {
+      guidedContributorInformation["funding"].unshift(guidedSparcAward);
+    }
 
     //Add contributors from sodaJSONObj to guidedContributorInformation in the "contributors" key
     let contributors =
