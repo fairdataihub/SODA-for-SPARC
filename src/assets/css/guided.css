@@ -287,11 +287,13 @@
 
 .guided--section {
   padding: 12px;
+  padding-left: 0;
+  padding-right: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 90%;
-  max-width: 1200px;
+  max-width: 800px;
 }
 
 .guided--container-sub {
@@ -792,7 +794,7 @@ h1.guided--text-sub-step {
   align-items: center;
 }
 .guided--help-text {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   max-width: 800px;
   text-align: justify;
 }
@@ -806,7 +808,7 @@ h1.guided--text-sub-step {
   transition: all 0.2s ease-in-out;
 }
 
-.guided--radio-button:not(.tile-button):hover {
+.guided--radio-button:not(.tile-button):not(.guided--tab-button):hover {
   transform: scale(1.01);
 }
 
@@ -833,6 +835,28 @@ h1.guided--text-sub-step {
 .guided--radio-button.tile-button:hover {
   outline: none;
   box-shadow: 0px 0px 10px 0px var(--color-light-green);
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
+}
+
+.guided--radio-button.guided--tab-button {
+  width: 300px !important;
+  color: black !important;
+  background-color: white !important;
+  box-shadow: none !important;
+}
+
+.guided--radio-button.guided--tab-button.selected {
+  border-bottom: 8px solid #b80d49;
+  box-shadow: 0px 0px 3px 0px #b80d49;
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
+  margin-bottom: -8px !important;
+}
+
+.guided--radio-button.guided--tab-button.not-selected {
+  border-bottom: 2px solid lightgray;
+  margin-bottom: -2px !important;
   transition: all 0.25s linear;
   -webkit-transition: all 0.25s linear;
 }
@@ -1011,3 +1035,30 @@ h1.guided--text-sub-step {
 .coming-soon-div {
   pointer-events: none;
 }
+
+.title-border {
+  margin-bottom: 15px;
+  border-bottom: 5px solid #b80d49;
+  width: 100%;
+  margin-top: -0.5rem !important;
+}
+
+.guided--button-tab-container {
+  max-width: 800px;
+  width: 100%;
+  border-top: 2px solid lightgray;
+  margin-bottom: 0rem;
+  border-bottom: 2px solid lightgray;
+}
+
+.guided--welcome-section-label {
+  width: 100%;
+  margin: 0 0 0.45rem 0;
+  color: #b80d49;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+/* .guided--tab-button:focus {
+  border-bottom: 5px solid #b80d49;
+} */

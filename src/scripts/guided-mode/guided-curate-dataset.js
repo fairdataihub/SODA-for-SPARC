@@ -645,9 +645,9 @@ const guidedPrepareHomeScreen = async () => {
   const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
   //render progress resumption cards from progress file array on first page of guided mode
   if (guidedSavedProgressFiles.length != 0) {
-    $("#guided-continue-curation-header").text(
-      "Or continue curating a previously started dataset below."
-    );
+    // $("#guided-continue-curation-header").text(
+    //   "Or continue curating a previously started dataset below."
+    // );
     datasetCardsRadioButtonsContainer.classList.remove("hidden");
     const progressFileData = await getAllProgressFileData(
       guidedSavedProgressFiles
@@ -3672,6 +3672,7 @@ const addContributorField = () => {
   newContributorField.classList.add("mt-lg");
   newContributorField.classList.add("neumorphic");
   newContributorField.classList.add("guided-contributor-field-container");
+  newContributorField.style.width = "100%";
   newContributorField.style.position = "relative";
 
   newContributorField.innerHTML = `
@@ -3818,7 +3819,7 @@ const generateProtocolField = (protocolUrl, protocolDescription) => {
       class="guided--section mt-lg neumorphic guided-protocol-field-container"
       data-protocol-url="${protocolUrl}"
       data-protocol-description="${protocolDescription}"
-      style="position: relative"
+      style="position: relative; width: 100%;"
     >
       <i
         class="fas fa-times fa-2x"
@@ -4842,8 +4843,11 @@ const generateSubjectSpecificationRowElement = () => {
             data-alert-type="danger"
             style="margin-right: 5px;"
           />
+          <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-light-green); font-size: 1.24rem;" onclick="confirmEnter(this)"></i>
         </div>
       </td>
+
+
       <td class="middle aligned collapsing text-center remove-left-border">
         <i
           class="far fa-trash-alt"
@@ -4851,7 +4855,7 @@ const generateSubjectSpecificationRowElement = () => {
           onclick="deleteSubject($(this))"
         ></i>
       </td>
-    </tr>
+      </tr>
   `;
 };
 
@@ -4924,6 +4928,7 @@ const generateSampleSpecificationRowElement = () => {
             data-alert-type="danger"
             style="margin-right: 5px;"
           />
+          <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-light-green); font-size: 1.24rem;" onclick="confirmEnter(this)"></i>
         </div>
       </td>
       <td class="middle aligned collapsing text-center remove-left-border">
@@ -4935,6 +4940,18 @@ const generateSampleSpecificationRowElement = () => {
       </td>
     </tr>
   `;
+};
+
+const confirmEnter = (button) => {
+  const ke = new KeyboardEvent("keyup", {
+    bubbles: true,
+    cancelable: true,
+    keyCode: 13,
+  });
+
+  button.previousElementSibling.dispatchEvent(ke);
+  console.log(ke);
+  console.log(button.previousElementSibling);
 };
 
 const addSubjectSpecificationTableRow = () => {
