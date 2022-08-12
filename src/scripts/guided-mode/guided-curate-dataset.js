@@ -1644,6 +1644,8 @@ const traverseToTab = (targetPageID) => {
       guidedLoadDescriptionStudyInformation();
       guidedLoadDescriptionContributorInformation();
       renderAdditionalLinksTable();
+      document.getElementById("SPARC-award-other-funding-label").innerHTML =
+        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
       /*
       //set study purpose, data collection, and primary conclusion from sodaJSONObj
       const studyPurpose = sodaJSONObj["digital-metadata"]["study-purpose"];
