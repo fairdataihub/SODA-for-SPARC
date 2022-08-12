@@ -70,10 +70,11 @@ def check_prerequisites(ps_account):
         # check if the (scigraph-api-key path => ) path exists and has a value
         if "auth-variables" in config:
             if "scigraph-api-key" in config["auth-variables"]:
-                if config["auth-variables"]["scigraph-api-key"]["path"] != "":
-                    # assume the scigraph-api-key path is valid
-                    # store the path in the config object 
-                    pyontutils_config["auth-variables"]["scigraph-api-key"]["path"] = config["auth-variables"]["scigraph-api-key"]["path"]
+                if "path" in config["auth-variables"]["scigraph-api-key"]:
+                    if config["auth-variables"]["scigraph-api-key"]["path"] != "":
+                        # assume the scigraph-api-key path is valid
+                        # store the path in the config object 
+                        pyontutils_config["auth-variables"]["scigraph-api-key"]["path"] = config["auth-variables"]["scigraph-api-key"]["path"]
 
 
     with open(pyontutils_path_config, 'w') as file:
