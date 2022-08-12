@@ -358,6 +358,7 @@ const deleteProgressCard = async (progressCardDeleteButton) => {
     title: `Are you sure you would like to delete SODA progress made on the dataset: ${progressCardNameToDelete}?`,
     text: "Your progress file will be deleted permanently, and all existing progress will be lost.",
     icon: "warning",
+    heightAuto: false,
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
@@ -3555,6 +3556,7 @@ const generateContributorField = (
   return `
       <div
         class="guided--section mt-lg neumorphic guided-contributor-field-container"
+        style="width: 100%"
         data-contributor-first-name="${
           contributorFirstName ? contributorFirstName : ""
         }"
@@ -4826,6 +4828,7 @@ const generateSubjectRowElement = (subjectName) => {
     </tr>
   `;
 };
+
 const generateSubjectSpecificationRowElement = () => {
   return `
     <tr>
@@ -4833,6 +4836,7 @@ const generateSubjectSpecificationRowElement = () => {
         <div class="space-between w-100" style="align-items: center">
           <span style="margin-right: 5px;">sub-</span>
           <input
+            id="guided--subject-input"
             class="guided--input"
             type="text"
             name="guided-subject-id"
@@ -4918,6 +4922,7 @@ const generateSampleSpecificationRowElement = () => {
         <div class="space-between w-100" style="align-items: center">
           <span style="margin-right: 5px;">sam-</span>
           <input
+            id="guided--sample-input"
             class="guided--input"
             type="text"
             name="guided-sample-id"
@@ -4954,6 +4959,18 @@ const confirmEnter = (button) => {
   console.log(button.previousElementSibling);
 };
 
+const confirmOnBlur = (element) => {
+  document.getElementById(element).addEventListener("blur", (event) => {
+    console.log(event);
+    console.log(event.path[1].children[2]);
+    console.log(event.path[0].value);
+    if (event.path[0].value != "") {
+      confirmEnter(event.path[1].children[2]);
+    }
+    console.log("uhhhhhh");
+  });
+};
+
 const addSubjectSpecificationTableRow = () => {
   const subjectSpecificationTableBody = document.getElementById(
     "subject-specification-table-body"
@@ -4971,6 +4988,10 @@ const addSubjectSpecificationTableRow = () => {
     //create a new table row on
     subjectSpecificationTableBody.innerHTML +=
       generateSubjectSpecificationRowElement();
+
+    //CREATE EVENT LISTENER TO ON FOCUS
+    confirmOnBlur("guided--subject-input");
+
     const newSubjectRow =
       subjectSpecificationTableBody.querySelector("tr:last-child");
     //get the input element in newSubjectRow
@@ -4999,6 +5020,7 @@ const addSampleSpecificationTableRow = (clickedSubjectAddSampleButton) => {
   } else {
     //create a new table row Input element
     addSampleTableBody.innerHTML += generateSampleSpecificationRowElement();
+    confirmOnBlur("guided--sample-input");
     const newSamplerow = addSampleTableBody.querySelector("tr:last-child");
     //Focus the new sample row element
     const newSampleInput = newSamplerow.querySelector(
