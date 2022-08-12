@@ -59,6 +59,12 @@ pyontutils_path_config = SparCurPath(get_home_directory("pyontutils") + '/config
 
 # Check that all the keys are accounted for
 def check_prerequisites(ps_account):
+
+
+    print("THe python ont utils path is: ")
+    print(pyontutils_path)
+    print(pyontutils_path_config)
+
     ## pyontutils config
     if not os.path.exists(pyontutils_path):
         pyontutils_path.mkdir(parents = True, exist_ok = True)
@@ -67,11 +73,13 @@ def check_prerequisites(ps_account):
     with open(pyontutils_path_config) as file:
         config = yaml.full_load(file)
 
+        print(config)
+
         # check if the (scigraph-api-key path => ) path exists and has a value
         if "auth-variables" in config:
             if "scigraph-api-key" in config["auth-variables"]:
-                if "path" in config["auth-variables"]["scigraph-api-key"]:
-                    if config["auth-variables"]["scigraph-api-key"]["path"] != "":
+                if config["auth-variables"]["scigraph-api-key"] != None:
+                    if "path" in config["auth-variables"]["scigraph-api-key"] and config["auth-variables"]["scigraph-api-key"]["path"] != "":
                         # assume the scigraph-api-key path is valid
                         # store the path in the config object 
                         pyontutils_config["auth-variables"]["scigraph-api-key"]["path"] = config["auth-variables"]["scigraph-api-key"]["path"]
@@ -157,6 +165,9 @@ def add_scicrunch_api_key(api_key, api_key_name):
         yml_obj = yaml.full_load(file)
         yml_obj["scicrunch"]["api"] = {api_key_name: api_key}
 
+        with open(orthauth_path_secrets, 'w') as file:
+            yaml.dump(yml_obj, file)
+
 
 
 # adds the scigraph key name to the pyontutils config file
@@ -164,3 +175,6 @@ def add_scigraph_path(api_key_name):
     with open(pyontutils_path_config) as file:
         yml_obj = yaml.full_load(file)
         yml_obj["auth-variables"]["scigraph-api-key"]["path"]= f"scicrunch api {api_key_name}"
+
+        with open(pyontutils_path_config, 'w') as file:
+            yaml.dump(yml_obj, file)

@@ -51,6 +51,10 @@ def validate_dataset_pipeline(ps_account, ps_dataset):
     # peel out the path_error_report object
     path_error_report = status.get('path_error_report')
 
+    if path_error_report == None:
+        print(status)
+        return "Cannot validate this dataset"
+
     # get the errors out of the report that do not have errors in their subpaths (see function comments for the explanation)
     parsed_path_error_report = parse(path_error_report)
 
