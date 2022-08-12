@@ -7408,7 +7408,7 @@ $(document).ready(() => {
 
     if (loggedInUserIsNotPiOwner) {
       try {
-        let bf_change_owner = await client.patch(
+        await client.patch(
           `/manage_datasets/bf_dataset_permissions`,
           {
             input_role: "owner",
