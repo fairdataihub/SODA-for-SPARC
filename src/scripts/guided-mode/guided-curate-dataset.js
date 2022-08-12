@@ -6687,6 +6687,7 @@ $(document).ready(() => {
       if (newPermissionRoleElement.val().trim() === "Select role") {
         throw "Please select a role for the user or team";
       }
+      console.log(newPermissionElement[0].getAttribute("permission-type"));
 
       if (newPermissionElement[0].getAttribute("permission-type") == "user") {
         //if the selected element is a user, add the user to the user permissions array
@@ -6700,6 +6701,7 @@ $(document).ready(() => {
           UUID: UUID,
           permission: userPermission,
         };
+        console.log(newUserPermissionObj);
         guidedAddUserPermission(newUserPermissionObj);
       }
       if (newPermissionElement[0].getAttribute("permission-type") == "team") {
@@ -9391,9 +9393,12 @@ $(document).ready(() => {
           throw errorArray;
         }
 
+        //Get the user information of the user that is currently curating
+        //If they designate themself as the PI, set them as the PI
+        //If they designate someone else as the PI, set them as a manager
+        const user = await api.getUserInformation();
+
         if (designateSelfButton.classList.contains("selected")) {
-          console.log("foo");
-          const user = await api.getUserInformation();
           const loggedInUserPiObj = {
             userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
             UUID: user["id"],
@@ -9429,6 +9434,13 @@ $(document).ready(() => {
             name: PiName,
           };
           setGuidedDatasetPiOwner(newPiOwner);
+
+          const loggedInUserManagerObj = {
+            userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
+            UUID: user["id"],
+            name: `${user["firstName"]} ${user["lastName"]}`,
+          };
+          console.log(loggedInUserManagerObj);
         }
       }
 
