@@ -4960,14 +4960,26 @@ const confirmEnter = (button) => {
 };
 
 const confirmOnBlur = (element) => {
+  let enterKey = false;
   document.getElementById(element).addEventListener("blur", (event) => {
+    window.addEventListener("keydown", (event) => {
+      console.log(event);
+      if(event.key === "Enter") {
+        enterKey = true;
+        console.log(enterKey);
+      }
+      console.log("hererererer");
+    })
     console.log(event);
     console.log(event.path[1].children[2]);
     console.log(event.path[0].value);
     if (event.path[0].value != "") {
-      confirmEnter(event.path[1].children[2]);
+      console.log(enterKey);
+      if(enterKey === false) {
+        confirmEnter(event.path[1].children[2]);
+      }
     }
-    console.log("uhhhhhh");
+    console.log(enterKey);
   });
 };
 
