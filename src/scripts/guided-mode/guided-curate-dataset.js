@@ -5424,9 +5424,13 @@ const removePermission = (clickedPermissionRemoveButton) => {
   if (permissionEntityType === "user") {
     const currentUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
     const filteredUsers = currentUsers.filter((user) => {
+      console.log(user.userString);
+      console.log(user.permission);
+      console.log(user.immutable);
       return !(
         user.userString == permissionNameToRemove &&
-        user.permission == permissionTypeToRemove
+        user.permission == permissionTypeToRemove &&
+        !user.loggedInUser
       );
     });
     sodaJSONObj["digital-metadata"]["user-permissions"] = filteredUsers;
@@ -5441,9 +5445,8 @@ const removePermission = (clickedPermissionRemoveButton) => {
     });
     sodaJSONObj["digital-metadata"]["team-permissions"] = filteredTeams;
   }
-
-  //remove the element from the DOM
-  permissionElementToRemove.remove();
+  //rerender the permissions table to reflect changes to user/team permissions
+  renderPermissionsTable();
 };
 
 const createPermissionsTableRowElement = (entityType, name, permission) => {
@@ -5817,6 +5820,13 @@ const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
     newPiOwnerObj.userString;
   sodaJSONObj["digital-metadata"]["pi-owner"]["UUID"] = newPiOwnerObj.UUID;
   sodaJSONObj["digital-metadata"]["pi-owner"]["name"] = newPiOwnerObj.name;
+
+  //Remove any old permissions the owner may have had
+  const currentUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
+  const filteredUsers = currentUsers.filter((user) => {
+    return !(user.UUID == newPiOwnerObj.UUID);
+  });
+  sodaJSONObj["digital-metadata"]["user-permissions"] = filteredUsers;
 };
 
 const guidedAddUserPermission = (newUserPermissionObj) => {
@@ -6709,6 +6719,17 @@ $(document).ready(() => {
       if (newPermissionRoleElement.val().trim() === "Select role") {
         throw "Please select a role for the user or team";
       }
+      if (
+        newPermissionElement.val().trim() ===
+        sodaJSONObj["digital-metadata"]["pi-owner"]["UUID"]
+      ) {
+        throw `${newPermissionElement
+          .text()
+          .trim()} is designated as the PI owner.
+        To designate them as a ${newPermissionRoleElement
+          .val()
+          .trim()}, go back and remove them as the PI owner.`;
+      }
       console.log(newPermissionElement[0].getAttribute("permission-type"));
 
       if (newPermissionElement[0].getAttribute("permission-type") == "user") {
@@ -7367,6 +7388,64 @@ $(document).ready(() => {
     }
   };
 
+  const guidedAddPiOwner = async (bfAccount, datasetName, piOwnerObj) => {
+    let loggedInUserIsNotPiOwner;
+    for (user of sodaJSONObj["digital-metadata"]["user-permissions"]) {
+      if (user.loggedInUser) {
+        //if logged in user has a user permission, then someone else is set as pi owner
+        loggedInUserIsNotPiOwner = true;
+      }
+    }
+
+    document
+      .getElementById("guided-dataset-pi-owner-upload-tr")
+      .classList.remove("hidden");
+    const datasetPiOwnerUploadText = document.getElementById(
+      "guided-dataset-pi-owner-upload-text"
+    );
+    datasetPiOwnerUploadText.innerHTML = "Adding PI owner...";
+    guidedUploadStatusIcon("guided-dataset-pi-owner-upload-status", "loading");
+
+    if (loggedInUserIsNotPiOwner) {
+      try {
+        let bf_change_owner = await client.patch(
+          `/manage_datasets/bf_dataset_permissions`,
+          {
+            input_role: "owner",
+          },
+          {
+            params: {
+              selected_account: bfAccount,
+              selected_dataset: datasetName,
+              scope: "user",
+              name: piOwnerObj["UUID"],
+            },
+          }
+        );
+        datasetPiOwnerUploadText.innerHTML = `Successfully added PI owner: ${piOwnerObj["name"]}`;
+        guidedUploadStatusIcon(
+          "guided-dataset-pi-owner-upload-status",
+          "success"
+        );
+      } catch (error) {
+        console.error(error);
+        let emessage = userErrorMessage(error);
+        datasetPiOwnerUploadText.innerHTML = "Failed to add a PI owner.";
+        guidedUploadStatusIcon(
+          "guided-dataset-pi-owner-upload-status",
+          "error"
+        );
+      }
+    } else {
+      console.log("logged in user is already a PI owner");
+      datasetPiOwnerUploadText.innerHTML = `Successfully added PI owner: ${piOwnerObj["name"]}`;
+      guidedUploadStatusIcon(
+        "guided-dataset-pi-owner-upload-status",
+        "success"
+      );
+    }
+  };
+
   const guidedAddDatasetTags = async (bfAccount, datasetName, tags) => {
     document
       .getElementById("guided-dataset-tags-upload-tr")
@@ -7470,11 +7549,13 @@ $(document).ready(() => {
       throw error;
     }
   };
+
   const guidedAddUserPermissions = async (
     bfAccount,
     datasetName,
     userPermissionsArray
   ) => {
+    //filter user permissions with loggedInUser key
     const promises = userPermissionsArray.map((userPermission) => {
       return guidedGrantUserPermission(
         bfAccount,
@@ -7918,8 +7999,7 @@ $(document).ready(() => {
     const guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
     const guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
     const guidedUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
-    const guidedPIOwnerUUID =
-      sodaJSONObj["digital-metadata"]["pi-owner"]["UUID"];
+    const guidedPIOwner = sodaJSONObj["digital-metadata"]["pi-owner"];
     const guidedTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
     let guidedPennsieveStudyPurpose =
       sodaJSONObj["digital-metadata"]["study-purpose"];
@@ -8086,6 +8166,13 @@ $(document).ready(() => {
         guidedTags
       );
       console.log(datasetTagsResponse);
+
+      let datasetPIOwnwerResponse = await guidedAddPiOwner(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedPIOwner
+      );
+      console.log(datasetPIOwnwerResponse);
 
       let datasetUsersResponse = await guidedAddUserPermissions(
         guidedBfAccount,
@@ -9420,11 +9507,15 @@ $(document).ready(() => {
         //If they designate someone else as the PI, set them as a manager
         const user = await api.getUserInformation();
 
+        const loggedInUserString = `${user["firstName"]} ${user["lastName"]} (${user["email"]})`;
+        const loggedInUserUUID = user["id"];
+        const loggedInUserName = `${user["firstName"]} ${user["lastName"]}`;
+
         if (designateSelfButton.classList.contains("selected")) {
           const loggedInUserPiObj = {
-            userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
-            UUID: user["id"],
-            name: `${user["firstName"]} ${user["lastName"]}`,
+            userString: loggedInUserString,
+            UUID: loggedInUserUUID,
+            name: loggedInUserName,
           };
           setGuidedDatasetPiOwner(loggedInUserPiObj);
         }
@@ -9457,11 +9548,16 @@ $(document).ready(() => {
           };
           setGuidedDatasetPiOwner(newPiOwner);
 
+          //set the logged in user as a manager
           const loggedInUserManagerObj = {
-            userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
-            UUID: user["id"],
-            name: `${user["firstName"]} ${user["lastName"]}`,
+            userString: loggedInUserString,
+            userName: loggedInUserName,
+            UUID: loggedInUserUUID,
+            permission: "manager",
+            loggedInUser: true,
           };
+
+          guidedAddUserPermission(loggedInUserManagerObj);
           console.log(loggedInUserManagerObj);
         }
       }
