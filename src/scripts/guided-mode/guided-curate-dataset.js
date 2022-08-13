@@ -5838,6 +5838,7 @@ const guidedAddUserPermission = (newUserPermissionObj) => {
       userPermission["userString"] == newUserPermissionObj.userString &&
       userPermission["UUID"] == newUserPermissionObj.UUID
     ) {
+      console.log(userPermission);
       userPermission["permission"] = newUserPermissionObj.permission;
       renderPermissionsTable();
       return;
