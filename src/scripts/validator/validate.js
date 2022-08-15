@@ -1,5 +1,4 @@
 // Purpose: The front end logic for the Validate Dataset section
-
 const {
   handleAxiosValidationErrors,
 } = require("./scripts/validator/axios-validator-utility.js");
@@ -751,3 +750,70 @@ const hideQuestionThreeLocal = () => {
   // set question 3's visibility to none
   document.querySelector("#validate_dataset-question-3").style.display = "none";
 };
+
+const setCurationTeamAsManagers = async () => {
+
+  var selectedTeam = "SPARC Data Curation Team";
+  var selectedRole = "manager";
+
+  try {
+    await client.patch(
+      `/manage_datasets/bf_dataset_permissions`,
+      {
+        input_role: selectedRole,
+      },
+      {
+        params: {
+          selected_account: defaultBfAccount,
+          selected_dataset: defaultBfDataset,
+          scope: "team",
+          name: selectedTeam,
+        },
+      }
+    );
+  } catch (error) {
+    clientError(error)
+  }
+
+
+  console.log("Curation team has management permissions")
+  console.log("The dataset ID to look for is: ", defaultBfDatasetId)
+}
+
+const removeCurationTeamAsManagers = async () => {
+  var selectedTeam = "SPARC Data Curation Team";
+  var selectedRole = "viewer";
+
+  try {
+    await client.patch(
+      `/manage_datasets/bf_dataset_permissions`,
+      {
+        input_role: selectedRole,
+      },
+      {
+        params: {
+          selected_account: defaultBfAccount,
+          selected_dataset: defaultBfDataset,
+          scope: "team",
+          name: selectedTeam,
+        },
+      }
+    );
+  } catch (error) {
+    clientError(error)
+  }
+
+
+  console.log("Curation team does not have management permissions")
+  console.log("The dataset ID to look for is: ", defaultBfDatasetId)
+}
+
+
+document.querySelector("#click-me").addEventListener("click", async () => {
+  setCurationTeamAsManagers();
+})
+
+
+document.querySelector("#remove-me").addEventListener("click", async () => {
+  removeCurationTeamAsManagers();
+})
