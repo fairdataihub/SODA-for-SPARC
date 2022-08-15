@@ -169,7 +169,7 @@ const metadataFileExtensionObject = {
   code_description: [".xlsx"],
   inputs_metadata: [".xlsx"],
   outputs_metadata: [".xlsx"],
-  data_deliverables: [".docx", ".doc"]
+  data_deliverables: [".docx", ".doc"],
 };
 
 async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeliverables=false) {
@@ -190,7 +190,7 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
       console.log("CHECK bool above");
       console.log(extension);
       console.log(metadataWithoutExtension);
-      if(dataDeliverables === true) {
+      if (dataDeliverables === true) {
         let filepath = file.path;
         var award = $("#submission-sparc-award");
         log.info(`Importing Data Deliverables document: ${filepath}`);
@@ -205,7 +205,7 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
           );
           let res = extract_milestone.data;
           milestoneObj = res;
-    
+
           //Handle free-form mode submission data
           if (curationMode === "free-form") {
             createMetadataDir();
@@ -226,14 +226,16 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
             milestoneTagify1.settings.whitelist = [];
             changeAwardInput();
           }
-    
+
           //Handle guided mode submission data
           if (curationMode === "guided") {
             const guidedMilestoneData = res;
             //create a string with today's date in the format xxxx/xx/xx
             const today = new Date();
             const todayString = `
-                  ${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}
+                  ${today.getFullYear()}-${
+              today.getMonth() + 1
+            }-${today.getDate()}
                 `;
             //add a custom milestone row for when the user wants to add a custom milestone
             //not included in the dataset deliverables document
@@ -247,17 +249,19 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
               },
             ];
             console.log(guidedMilestoneData);
-    
+
             //save the unselected milestones into sodaJSONObj
             sodaJSONObj["dataset-metadata"]["submission-metadata"][
               "temp-imported-milestones"
             ] = guidedMilestoneData;
-    
+
             renderMilestoneSelectionTable(guidedMilestoneData);
-    
+
             guidedSubmissionTagsTagify.settings.whitelist = [];
-    
-            unHideAndSmoothScrollToElement("guided-div-data-deliverables-import");
+
+            unHideAndSmoothScrollToElement(
+              "guided-div-data-deliverables-import"
+            );
 
 
             let dragDropContainer =
