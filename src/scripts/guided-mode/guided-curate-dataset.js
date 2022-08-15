@@ -7279,27 +7279,23 @@ $(document).ready(() => {
       "loading"
     );
 
-    let requiredFields = [];
-    if (studyPurpose) {
-      requiredFields.push("**Study Purpose:** " + studyPurpose + "\n\n");
-    }
-    if (dataCollection) {
-      requiredFields.push("**Data Collection:** " + dataCollection + "\n\n");
-    }
-    if (dataConclusion) {
-      requiredFields.push("**Data Conclusion:** " + dataConclusion + "\n\n");
-    }
+    let descriptionArray = [];
 
-    const description = requiredFields.join("");
+    descriptionArray.push("**Study Purpose:** " + studyPurpose + "\n\n");
+    descriptionArray.push("**Data Collection:** " + dataCollection + "\n\n");
+    descriptionArray.push("**Data Conclusion:** " + dataConclusion + "\n\n");
+
+    const description = descriptionArray.join("");
     console.log(description);
 
     try {
       console.log("updating dataset description");
-      await client.put(
+      let res = await client.put(
         `/manage_datasets/datasets/${datasetName}/readme`,
         { updated_readme: description },
         { params: { selected_account: bfAccount } }
       );
+      console.log(res);
 
       datasetDescriptionUploadText.innerHTML = `Successfully added dataset description!`;
       guidedUploadStatusIcon(
