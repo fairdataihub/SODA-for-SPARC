@@ -1534,13 +1534,13 @@ const traverseToTab = (targetPageID) => {
         "guided-data-deliverable-para-text"
       );
 
-      if (submission_metadata != {}) {
+      if (Object.keys(submission_metadata).length > 0) {
         codeDescriptionLottieContainer.innerHTML = "";
         lottie.loadAnimation({
           container: codeDescriptionLottieContainer,
           animationData: successCheck,
           renderer: "svg",
-          loop: false,
+          loop: true,
           autoplay: true,
         });
         if (submission_metadata["filepath"]) {

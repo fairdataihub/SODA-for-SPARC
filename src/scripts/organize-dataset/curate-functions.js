@@ -261,6 +261,9 @@ async function dropHandler(
               "temp-imported-milestones"
             ] = guidedMilestoneData;
 
+            sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] =
+            filepath;
+
             renderMilestoneSelectionTable(guidedMilestoneData);
 
             guidedSubmissionTagsTagify.settings.whitelist = [];
@@ -280,7 +283,7 @@ async function dropHandler(
               container: lottieContainer,
               animationData: successCheck,
               renderer: "svg",
-              loop: false,
+              loop: true,
               autoplay: true,
             });
             console.log("lottie should be playing");
