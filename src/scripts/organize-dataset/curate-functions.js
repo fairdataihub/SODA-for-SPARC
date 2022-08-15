@@ -169,10 +169,16 @@ const metadataFileExtensionObject = {
   code_description: [".xlsx"],
   inputs_metadata: [".xlsx"],
   outputs_metadata: [".xlsx"],
-  data_deliverables: [".docx", ".doc"]
+  data_deliverables: [".docx", ".doc"],
 };
 
-function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeliverables=false) {
+function dropHandler(
+  ev,
+  paraElement,
+  metadataFile,
+  curationMode,
+  dataDeliverables = false
+) {
   // Prevent default behavior (Prevent file from being opened)
   ev.preventDefault();
   document.getElementById(paraElement).innerHTML = "";
@@ -190,7 +196,7 @@ function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeliverabl
       console.log("CHECK bool above");
       console.log(extension);
       console.log(metadataWithoutExtension);
-      if(dataDeliverables === true) {
+      if (dataDeliverables === true) {
         let filepath = file.path;
         var award = $("#submission-sparc-award");
         log.info(`Importing Data Deliverables document: ${filepath}`);
@@ -205,7 +211,7 @@ function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeliverabl
           );
           let res = extract_milestone.data;
           milestoneObj = res;
-    
+
           //Handle free-form mode submission data
           if (curationMode === "free-form") {
             createMetadataDir();
@@ -226,14 +232,16 @@ function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeliverabl
             milestoneTagify1.settings.whitelist = [];
             changeAwardInput();
           }
-    
+
           //Handle guided mode submission data
           if (curationMode === "guided") {
             const guidedMilestoneData = res;
             //create a string with today's date in the format xxxx/xx/xx
             const today = new Date();
             const todayString = `
-                  ${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}
+                  ${today.getFullYear()}-${
+              today.getMonth() + 1
+            }-${today.getDate()}
                 `;
             //add a custom milestone row for when the user wants to add a custom milestone
             //not included in the dataset deliverables document
@@ -247,17 +255,19 @@ function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeliverabl
               },
             ];
             console.log(guidedMilestoneData);
-    
+
             //save the unselected milestones into sodaJSONObj
             sodaJSONObj["dataset-metadata"]["submission-metadata"][
               "temp-imported-milestones"
             ] = guidedMilestoneData;
-    
+
             renderMilestoneSelectionTable(guidedMilestoneData);
-    
+
             guidedSubmissionTagsTagify.settings.whitelist = [];
-    
-            unHideAndSmoothScrollToElement("guided-div-data-deliverables-import");
+
+            unHideAndSmoothScrollToElement(
+              "guided-div-data-deliverables-import"
+            );
           }
         } catch (error) {
           clientError(error);
@@ -270,7 +280,10 @@ function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeliverabl
         }
       }
       //dataDelieravles is true for the name to be however it needs to be, just check extension is doc or docx
-      if (metadataWithoutExtension === metadataFile || dataDeliverables === true) {
+      if (
+        metadataWithoutExtension === metadataFile ||
+        dataDeliverables === true
+      ) {
         if (metadataFileExtensionObject[metadataFile].includes(extension)) {
           document.getElementById(paraElement).innerHTML = file.path;
           if (curationMode === "free-form") {
