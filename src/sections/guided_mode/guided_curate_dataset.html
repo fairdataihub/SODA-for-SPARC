@@ -1852,6 +1852,44 @@
               <h2 class="guided--text-sub-step">
                 Would you like to import your Data Deliverables Document?
               </h2>
+              <!-- DRAG AND DROP FOR DATA DELIVERABLES -->
+              <div>
+                <div
+                  class="guided--container-file-import"
+                  droppable="true"
+                  ondrop="dropHandler(event, 'guided-code-description-para-text', 'DataDeliverablesDocument', 'guided');"
+                  ondragover="return false;"
+                >
+                  <div
+                    class="guided--file-import"
+                    data-code-metadata-file-type="code_description"
+                  >
+                    <div
+                      id="code-description-lottie-container"
+                      class="code-metadata-lottie-container"
+                    ></div>
+                    <p class="guided--help-text text-center">
+                      Drag and Drop <br /><b>DataDeliverablesDocument.docx</b>
+                    </p>
+                    <p class="guided--help-text text-center mt-md mb-md">OR</p>
+                    <button
+                      class="ui primary basic button mt-sm"
+                      onclick="helpMilestoneSubmission('guided')"
+                    >
+                      <i
+                        class="fas fa-file-import"
+                        style="margin-right: 7px"
+                      ></i
+                      >Import DataDeliverablesDocument.docx
+                    </button>
+                    <p
+                      class="guided--help-text small text-center mt-sm"
+                      id="guided-code-description-para-text"
+                      style="max-width: 240px; overflow-wrap: break-word"
+                    ></p>
+                  </div>
+                </div>
+              </div>
               <div class="guided--radio-button-container">
                 <button
                   class="guided--radio-button tile-button"
