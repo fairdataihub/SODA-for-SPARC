@@ -1527,38 +1527,38 @@ const traverseToTab = (targetPageID) => {
       let submission_metadata =
         sodaJSONObj["dataset-metadata"]["submission-metadata"];
 
-      let codeDescriptionLottieContainer = document.getElementById(
+      let dataDeliverableLottieContainer = document.getElementById(
         "data-deliverable-lottie-container"
       );
-      let codeDescriptionParaText = document.getElementById(
+      let dataDeliverableParaText = document.getElementById(
         "guided-data-deliverable-para-text"
       );
 
       if (Object.keys(submission_metadata).length > 0) {
-        codeDescriptionLottieContainer.innerHTML = "";
+        dataDeliverableLottieContainer.innerHTML = "";
         lottie.loadAnimation({
-          container: codeDescriptionLottieContainer,
+          container: dataDeliverableLottieContainer,
           animationData: successCheck,
           renderer: "svg",
           loop: true,
           autoplay: true,
         });
         if (submission_metadata["filepath"]) {
-          codeDescriptionParaText.innerHTML = "";
+          dataDeliverableParaText.innerHTML = submission_metadata["filepath"];
         } else {
-          codeDescriptionParaText.innerHTML = submission_metadata["filepath"];
+          dataDeliverableParaText.innerHTML = "";
         }
       } else {
         //reset the code metadata lotties and para text
-        codeDescriptionLottieContainer.innerHTML = "";
+        dataDeliverableLottieContainer.innerHTML = "";
         lottie.loadAnimation({
-          container: codeDescriptionLottieContainer,
+          container: dataDeliverableLottieContainer,
           animationData: dragDrop,
           renderer: "svg",
           loop: true,
           autoplay: true,
         });
-        codeDescriptionParaText.innerHTML = "";
+        dataDeliverableParaText.innerHTML = "";
       }
 
       const sparcAward =
