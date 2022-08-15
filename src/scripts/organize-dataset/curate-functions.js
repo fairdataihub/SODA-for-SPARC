@@ -262,7 +262,7 @@ async function dropHandler(
             ] = guidedMilestoneData;
 
             sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] =
-            filepath;
+              filepath;
 
             renderMilestoneSelectionTable(guidedMilestoneData);
 
