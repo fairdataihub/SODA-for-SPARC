@@ -4803,6 +4803,7 @@ const openSubjectRenameInput = (subjectNameEditButton) => {
         data-alert-type="danger"
         data-prev-name="${prevSubjectName}"
       />
+      <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-light-green); font-size: 1.24rem;" onclick="confirmEnter(this)"></i>
     </div>
   `;
   subjectIdCellToRename.html(subjectRenameElement);
@@ -4823,8 +4824,9 @@ const openPoolRenameInput = (poolNameEditButton) => {
         data-alert-message="Pool IDs may not contain spaces or special characters"
         data-alert-type="danger"
         data-prev-name="${prevPoolName}"
-        style="width: 250px;"
+        style="width: 180px;"
       />
+      <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-light-green); font-size: 1.24rem;" onclick="confirmEnter(this)"></i>
     </div>
   `;
   poolIdCellToRename.html(poolRenameElement);
@@ -5151,6 +5153,7 @@ const generatePoolSpecificationRowElement = () => {
           data-alert-type="danger"
           style="width: 100%;"
         />
+        <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-light-green); font-size: 1.24rem;" onclick="confirmEnter(this)"></i>
       </div>
     </td>
     <td class="middle aligned pool-subjects remove-left-border">
@@ -5378,6 +5381,7 @@ const openSampleRenameInput = (subjectNameEditButton) => {
         data-alert-type="danger"
         data-prev-name="${prevSampleName}"
       />
+      <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-light-green); font-size: 1.24rem;" onclick="confirmEnter(this)"></i>
     </div>
   `;
   sampleIdCellToRename.html(sampleRenameElement);
