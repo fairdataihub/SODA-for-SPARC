@@ -5423,6 +5423,15 @@ const removePermission = (clickedPermissionRemoveButton) => {
     });
     return;
   }
+  if (permissionEntityType === "loggedInUser") {
+    notyf.open({
+      duration: "6000",
+      type: "error",
+      message:
+        "You can not deselect yourself as a manager, as you need manager permissions to upload a dataset",
+    });
+    return;
+  }
   if (permissionEntityType === "user") {
     const currentUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
     const filteredUsers = currentUsers.filter((user) => {
@@ -5475,9 +5484,10 @@ const renderPermissionsTable = () => {
     createPermissionsTableRowElement("owner", owner, "owner")
   );
   for (user of users) {
+    console.log(users);
     permissionsTableElements.push(
       createPermissionsTableRowElement(
-        "user",
+        user.loggedInUser ? "loggedInUser" : "user",
         user["userString"],
         user["permission"]
       )
@@ -8475,12 +8485,19 @@ $(document).ready(() => {
         await swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
-          title: "Dataset successfully uploaded!",
-          html: `You will be taken back to the home page where you can edit this dataset or begin curating a new dataset.`,
           icon: "success",
-          confirmButtonText: "OK",
+          title: "Dataset successfully uploaded!",
+          html: `Now that your dataset has been uploaded to Pennsieve,
+          you may share it with the SPARC curation team, SPARC Consortium,
+          or submit for pre-publishing review.<br/><br/>Would you like to do so now?`,
+          confirmButtonText: "Share now",
+          showCancelButton: true,
+          cancelButtonText: "No thanks, take me home",
+          reverseButtons: reverseSwalButtons,
         });
-        guidedUnLockSideBar(); //Save a copy of the sodaJSONObj on this upload to compare it while prepping other uploads
+        guidedUnLockSideBar();
+
+        //Save a copy of the sodaJSONObj on this upload to compare it while prepping other uploads
         sodaJSONObj["previous-guided-upload-dataset-name"] =
           sodaJSONObj["digital-metadata"]["name"];
         saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
