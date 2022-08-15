@@ -752,7 +752,6 @@ const hideQuestionThreeLocal = () => {
 };
 
 const setCurationTeamAsManagers = async () => {
-
   var selectedTeam = "SPARC Data Curation Team";
   var selectedRole = "manager";
 
@@ -772,13 +771,12 @@ const setCurationTeamAsManagers = async () => {
       }
     );
   } catch (error) {
-    clientError(error)
+    clientError(error);
   }
 
-
-  console.log("Curation team has management permissions")
-  console.log("The dataset ID to look for is: ", defaultBfDatasetId)
-}
+  console.log("Curation team has management permissions");
+  console.log("The dataset ID to look for is: ", defaultBfDatasetId);
+};
 
 const removeCurationTeamAsManagers = async () => {
   var selectedTeam = "SPARC Data Curation Team";
@@ -800,20 +798,17 @@ const removeCurationTeamAsManagers = async () => {
       }
     );
   } catch (error) {
-    clientError(error)
+    clientError(error);
   }
 
-
-  console.log("Curation team does not have management permissions")
-  console.log("The dataset ID to look for is: ", defaultBfDatasetId)
-}
-
+  console.log("Curation team does not have management permissions");
+  console.log("The dataset ID to look for is: ", defaultBfDatasetId);
+};
 
 document.querySelector("#click-me").addEventListener("click", async () => {
   setCurationTeamAsManagers();
-})
-
+});
 
 document.querySelector("#remove-me").addEventListener("click", async () => {
   removeCurationTeamAsManagers();
-})
+});
