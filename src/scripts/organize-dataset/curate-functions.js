@@ -172,7 +172,13 @@ const metadataFileExtensionObject = {
   data_deliverable: [".docx", ".doc"],
 };
 
-async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeliverables=false) {
+async function dropHandler(
+  ev,
+  paraElement,
+  metadataFile,
+  curationMode,
+  dataDeliverables = false
+) {
   // Prevent default behavior (Prevent file from being opened)
   ev.preventDefault();
   document.getElementById(paraElement).innerHTML = "";
@@ -263,7 +269,6 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
               "guided-div-data-deliverables-import"
             );
 
-
             let dragDropContainer =
               document.getElementById(paraElement).parentElement;
 
@@ -278,7 +283,7 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
               loop: false,
               autoplay: true,
             });
-            console.log("lottie should be playing")
+            console.log("lottie should be playing");
           }
         } catch (error) {
           clientError(error);
@@ -311,8 +316,9 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
                 dragDropContainer.dataset.codeMetadataFileType;
               console.log(metadataFileType);
               //save the path of the metadata file to the json object
-              sodaJSONObj["dataset-metadata"]["code-metadata"][metadataFileType] =
-                file.path;
+              sodaJSONObj["dataset-metadata"]["code-metadata"][
+                metadataFileType
+              ] = file.path;
               const lottieContainer = dragDropContainer.querySelector(
                 ".code-metadata-lottie-container"
               );

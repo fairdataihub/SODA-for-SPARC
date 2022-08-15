@@ -1524,7 +1524,8 @@ const traverseToTab = (targetPageID) => {
     }
 
     if (targetPageID === "guided-create-submission-metadata-tab") {
-      let submission_metadata = sodaJSONObj["dataset-metadata"]["submission-metadata"];
+      let submission_metadata =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"];
 
       let codeDescriptionLottieContainer = document.getElementById(
         "data-deliverable-lottie-container"
@@ -1542,11 +1543,11 @@ const traverseToTab = (targetPageID) => {
           loop: false,
           autoplay: true,
         });
-        if(submission_metadata["filepath"]){
+        if (submission_metadata["filepath"]) {
           codeDescriptionParaText.innerHTML = "";
         } else {
           codeDescriptionParaText.innerHTML = submission_metadata["filepath"];
-        };
+        }
       } else {
         //reset the code metadata lotties and para text
         codeDescriptionLottieContainer.innerHTML = "";

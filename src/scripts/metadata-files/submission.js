@@ -222,7 +222,8 @@ async function helpMilestoneSubmission(curationMode) {
           "temp-imported-milestones"
         ] = guidedMilestoneData;
 
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] = filepath;
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] =
+          filepath;
 
         renderMilestoneSelectionTable(guidedMilestoneData);
 
