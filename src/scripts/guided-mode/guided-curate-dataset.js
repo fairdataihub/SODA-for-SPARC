@@ -8482,12 +8482,27 @@ $(document).ready(() => {
           "Upload status": "Dataset successfully uploaded to Pennsieve!",
         });
 
-        await swal.fire({
+        let allDatasets = await client.get(
+          `manage_datasets/bf_dataset_account`,
+          {
+            params: {
+              selected_account: defaultBfAccount,
+            },
+          }
+        );
+        const uploadedDataset = allDatasets.data.datasets.find(
+          (dataset) => dataset.name === sodaJSONObj["digital-metadata"]["name"]
+        );
+        const uploadedDatasetID = uploadedDataset.id;
+
+        const { value: shareWithCurationTeam } = await swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
           icon: "success",
           title: "Dataset successfully uploaded!",
-          html: `Now that your dataset has been uploaded to Pennsieve,
+          html: `<a href="https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/datasets/${uploadedDatasetID}/overview" target="_blank">Click here to view dataset on Pennsieve</a>
+          <br /><br />
+          Now that your dataset has been uploaded to Pennsieve,
           you may share it with the SPARC curation team, SPARC Consortium,
           or submit for pre-publishing review.<br/><br/>Would you like to do so now?`,
           confirmButtonText: "Share now",
@@ -8495,18 +8510,22 @@ $(document).ready(() => {
           cancelButtonText: "No thanks, take me home",
           reverseButtons: reverseSwalButtons,
         });
-        guidedUnLockSideBar();
+        if (shareWithCurationTeam) {
+          traverseToTab("guided-dataset-dissemination-tab");
+        } else {
+          guidedUnLockSideBar();
 
-        //Save a copy of the sodaJSONObj on this upload to compare it while prepping other uploads
-        sodaJSONObj["previous-guided-upload-dataset-name"] =
-          sodaJSONObj["digital-metadata"]["name"];
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+          //Save a copy of the sodaJSONObj on this upload to compare it while prepping other uploads
+          sodaJSONObj["previous-guided-upload-dataset-name"] =
+            sodaJSONObj["digital-metadata"]["name"];
+          saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
-        //exit to the home page
-        traverseToTab("guided-dataset-starting-point-tab");
-        hideSubNavAndShowMainNav("back");
-        $("#guided-button-dataset-intro-back").click();
-        $("#guided-button-dataset-intro-back").click();
+          //exit to the home page
+          traverseToTab("guided-dataset-starting-point-tab");
+          hideSubNavAndShowMainNav("back");
+          $("#guided-button-dataset-intro-back").click();
+          $("#guided-button-dataset-intro-back").click();
+        }
       }
     };
     // Progress tracking function for main curate
