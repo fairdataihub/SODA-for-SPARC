@@ -7300,6 +7300,7 @@ $(document).ready(() => {
         { updated_readme: description },
         { params: { selected_account: bfAccount } }
       );
+
       datasetDescriptionUploadText.innerHTML = `Successfully added dataset description!`;
       guidedUploadStatusIcon(
         "guided-dataset-description-upload-status",
@@ -8015,11 +8016,11 @@ $(document).ready(() => {
     const guidedPIOwner = sodaJSONObj["digital-metadata"]["pi-owner"];
     const guidedTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
     let guidedPennsieveStudyPurpose =
-      sodaJSONObj["digital-metadata"]["study-purpose"];
+      sodaJSONObj["digital-metadata"]["description"]["study-purpose"];
     let guidedPennsieveDataCollection =
-      sodaJSONObj["digital-metadata"]["data-collection"];
+      sodaJSONObj["digital-metadata"]["description"]["data-collection"];
     let guidedPennsievePrimaryConclusion =
-      sodaJSONObj["digital-metadata"]["primary-conclusion"];
+      sodaJSONObj["digital-metadata"]["description"]["primary-conclusion"];
     const guidedReadMe = sodaJSONObj["dataset-metadata"]["README"];
     const guidedTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
     const guidedLicense = sodaJSONObj["digital-metadata"]["license"];
