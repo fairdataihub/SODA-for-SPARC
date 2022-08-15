@@ -172,7 +172,7 @@ const metadataFileExtensionObject = {
   data_deliverables: [".docx", ".doc"]
 };
 
-function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeliverables=false) {
+async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeliverables=false) {
   // Prevent default behavior (Prevent file from being opened)
   ev.preventDefault();
   document.getElementById(paraElement).innerHTML = "";
@@ -258,41 +258,12 @@ function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeliverabl
             guidedSubmissionTagsTagify.settings.whitelist = [];
     
             unHideAndSmoothScrollToElement("guided-div-data-deliverables-import");
-          }
-        } catch (error) {
-          clientError(error);
-          Swal.fire({
-            backdrop: "rgba(0,0,0, 0.4)",
-            heightAuto: false,
-            icon: "error",
-            text: userErrorMessage(error),
-          });
-        }
-      }
-      //dataDelieravles is true for the name to be however it needs to be, just check extension is doc or docx
-      if (metadataWithoutExtension === metadataFile || dataDeliverables === true) {
-        if (metadataFileExtensionObject[metadataFile].includes(extension)) {
-          document.getElementById(paraElement).innerHTML = file.path;
-          if (curationMode === "free-form") {
-            $($("#" + paraElement).parents()[1])
-              .find(".div-metadata-confirm")
-              .css("display", "flex");
-            $($("#" + paraElement).parents()[1])
-              .find(".div-metadata-go-back")
-              .css("display", "none");
-          }
-          if (curationMode === "guided") {
-            //Add success checkmark lottie animation inside metadata card
-            const dragDropContainer =
+
+
+            let dragDropContainer =
               document.getElementById(paraElement).parentElement;
-            //get the value of data-code-metadata-file-type from dragDropContainer
-            const metadataFileType =
-              dragDropContainer.dataset.codeMetadataFileType;
-            console.log(metadataFileType);
-            //save the path of the metadata file to the json object
-            sodaJSONObj["dataset-metadata"]["code-metadata"][metadataFileType] =
-              file.path;
-            const lottieContainer = dragDropContainer.querySelector(
+
+            let lottieContainer = dragDropContainer.querySelector(
               ".code-metadata-lottie-container"
             );
             lottieContainer.innerHTML = "";
@@ -303,17 +274,64 @@ function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeliverabl
               loop: false,
               autoplay: true,
             });
+            console.log("lottie should be playing")
           }
+        } catch (error) {
+          clientError(error);
+          Swal.fire({
+            backdrop: "rgba(0,0,0, 0.4)",
+            heightAuto: false,
+            icon: "error",
+            text: userErrorMessage(error),
+          });
         }
       } else {
-        document.getElementById(paraElement).innerHTML =
-          "<span style='color:red'>Your SPARC metadata file must be named and formatted exactly as listed above!</span>";
-        $($("#" + paraElement).parents()[1])
-          .find(".div-metadata-confirm")
-          .css("display", "none");
-        $($("#" + paraElement).parents()[1])
-          .find(".div-metadata-go-back")
-          .css("display", "flex");
+        //dataDelieravles is true for the name to be however it needs to be, just check extension is doc or docx
+        if (metadataWithoutExtension === metadataFile) {
+          if (metadataFileExtensionObject[metadataFile].includes(extension)) {
+            document.getElementById(paraElement).innerHTML = file.path;
+            if (curationMode === "free-form") {
+              $($("#" + paraElement).parents()[1])
+                .find(".div-metadata-confirm")
+                .css("display", "flex");
+              $($("#" + paraElement).parents()[1])
+                .find(".div-metadata-go-back")
+                .css("display", "none");
+            }
+            if (curationMode === "guided") {
+              //Add success checkmark lottie animation inside metadata card
+              const dragDropContainer =
+                document.getElementById(paraElement).parentElement;
+              //get the value of data-code-metadata-file-type from dragDropContainer
+              const metadataFileType =
+                dragDropContainer.dataset.codeMetadataFileType;
+              console.log(metadataFileType);
+              //save the path of the metadata file to the json object
+              sodaJSONObj["dataset-metadata"]["code-metadata"][metadataFileType] =
+                file.path;
+              const lottieContainer = dragDropContainer.querySelector(
+                ".code-metadata-lottie-container"
+              );
+              lottieContainer.innerHTML = "";
+              lottie.loadAnimation({
+                container: lottieContainer,
+                animationData: successCheck,
+                renderer: "svg",
+                loop: false,
+                autoplay: true,
+              });
+            }
+          }
+        } else {
+          document.getElementById(paraElement).innerHTML =
+            "<span style='color:red'>Your SPARC metadata file must be named and formatted exactly as listed above!</span>";
+          $($("#" + paraElement).parents()[1])
+            .find(".div-metadata-confirm")
+            .css("display", "none");
+          $($("#" + paraElement).parents()[1])
+            .find(".div-metadata-go-back")
+            .css("display", "flex");
+        }
       }
     } else {
       document.getElementById(paraElement).innerHTML =

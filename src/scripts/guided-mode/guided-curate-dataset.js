@@ -1524,6 +1524,38 @@ const traverseToTab = (targetPageID) => {
     }
 
     if (targetPageID === "guided-create-submission-metadata-tab") {
+      let codeMetadata = sodaJSONObj["dataset-metadata"]["submission-metadata"];
+
+      let codeDescriptionLottieContainer = document.getElementById(
+        "data-deliverable-lottie-container"
+      );
+      let codeDescriptionParaText = document.getElementById(
+        "guided-data-deliverable-para-text"
+      );
+
+      if (codeMetadata != {}) {
+        codeDescriptionLottieContainer.innerHTML = "";
+        lottie.loadAnimation({
+          container: codeDescriptionLottieContainer,
+          animationData: successCheck,
+          renderer: "svg",
+          loop: false,
+          autoplay: true,
+        });
+        codeDescriptionParaText.innerHTML = codeMetadata["code_description"];
+      } else {
+        //reset the code metadata lotties and para text
+        codeDescriptionLottieContainer.innerHTML = "";
+        lottie.loadAnimation({
+          container: codeDescriptionLottieContainer,
+          animationData: dragDrop,
+          renderer: "svg",
+          loop: true,
+          autoplay: true,
+        });
+        codeDescriptionParaText.innerHTML = "";
+      }
+
       const sparcAward =
         sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
       const sparcAwardInputManual = document.getElementById(
