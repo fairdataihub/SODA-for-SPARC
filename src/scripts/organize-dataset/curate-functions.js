@@ -169,7 +169,7 @@ const metadataFileExtensionObject = {
   code_description: [".xlsx"],
   inputs_metadata: [".xlsx"],
   outputs_metadata: [".xlsx"],
-  data_deliverables: [".docx", ".doc"],
+  data_deliverable: [".docx", ".doc"],
 };
 
 async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeliverables=false) {

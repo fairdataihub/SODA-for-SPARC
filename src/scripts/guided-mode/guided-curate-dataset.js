@@ -1524,7 +1524,7 @@ const traverseToTab = (targetPageID) => {
     }
 
     if (targetPageID === "guided-create-submission-metadata-tab") {
-      let codeMetadata = sodaJSONObj["dataset-metadata"]["submission-metadata"];
+      let submission_metadata = sodaJSONObj["dataset-metadata"]["submission-metadata"];
 
       let codeDescriptionLottieContainer = document.getElementById(
         "data-deliverable-lottie-container"
@@ -1533,7 +1533,7 @@ const traverseToTab = (targetPageID) => {
         "guided-data-deliverable-para-text"
       );
 
-      if (codeMetadata != {}) {
+      if (submission_metadata != {}) {
         codeDescriptionLottieContainer.innerHTML = "";
         lottie.loadAnimation({
           container: codeDescriptionLottieContainer,
@@ -1542,7 +1542,11 @@ const traverseToTab = (targetPageID) => {
           loop: false,
           autoplay: true,
         });
-        codeDescriptionParaText.innerHTML = codeMetadata["code_description"];
+        if(submission_metadata["filepath"]){
+          codeDescriptionParaText.innerHTML = "";
+        } else {
+          codeDescriptionParaText.innerHTML = submission_metadata["filepath"];
+        };
       } else {
         //reset the code metadata lotties and para text
         codeDescriptionLottieContainer.innerHTML = "";
