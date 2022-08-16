@@ -131,6 +131,9 @@ const validateLocalDataset = async () => {
 };
 
 const validatePennsieveDataset = async () => {
+  // kicks off pipeline update listener
+  await setCurationTeamAsManagers()
+
   // get the dataset name from the dataset selection card
   let datasetName = document.querySelector(
     "#bf_dataset_load_validator"
@@ -202,6 +205,9 @@ const validatePennsieveDataset = async () => {
       "Dataset Validation",
       1
     );
+
+    // end pipeline update listener
+    removeCurationTeamAsManagers()
 
     // display error message to user
     return handleAxiosValidationErrors(err);

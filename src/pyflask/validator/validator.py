@@ -3,10 +3,10 @@
 import os
 import os.path
 from pathlib import Path
+import requests
 
 from sparcur.utils import PennsieveId
 from sparcur.simple.validate import main as validate
-from sparcur.simple.retrieve import main as retrieve
 
 from .validatorUtils import ( 
     parse, 
@@ -26,44 +26,41 @@ local_dataset_folder_path = ""
 validation_json = {}
 
 
+# retrieve the given dataset ID's export results; return to the user. 
+# TODO: translate export results into a format that is easier to read
 def validate_dataset_pipeline(ps_account, ps_dataset):
-    check_prerequisites(ps_account)
+    # Basic flow. 
+    # Assumes LATEST stores the export that completed after the most recent change in dataset permissions. 
+    # Assumes there is an export ready to be retrieved and that we do not have to wait if this is generating a users first export.
+    # Assumes the export is not of a failed validation run
+    # TODO: handle edge cases
+    #    - to handle case one: ensure that #/meta/timestamp_updated matches the dataset updated time you see on the Pennsieve portal.
+    #    - to handle case two: expect 404s until the export is ready. 
+    #    - to handle case three: Tom will look into adding ways having the exports contain metdata that indicates if the export is a success or failure. For now not sure.
 
-    sparc_dataset_id = ps_dataset
-    sparc_dataset_uuid = sparc_dataset_id.replace("N:dataset:", "")
 
-    try:
-        organization = PennsieveId(sparc_organization_id)
-        sparc_dataset = PennsieveId(sparc_dataset_id)
-    except Exception as e:
-        raise e
+    # remove the N:dataset text from the UUID
+    ps_dataset_trimmed = ps_dataset.replace("N:dataset:", "")
 
-    # create dataset folder for the retrieve
-    if not os.path.exists(parent_folder):
-        parent_folder.mkdir(parents = True, exist_ok = True)
+    # 1. retrieve the exports json file for the given dataset
+    r = requests.get(f"https://cassava.ucsd.edu/sparc/datasets/{ps_dataset_trimmed}/LATEST/curation-export.json")
 
-    local_dataset_folder_path = retrieve(id = sparc_dataset, dataset_id = sparc_dataset, project_id = organization, parent_parent_path = parent_folder)
+    r.raise_for_status()
 
-    blob = validate(local_dataset_folder_path)
+    # 2. parse the response as json ( if necessary )
+    exports_json = r.json()
 
-    status = blob.get("status")
+    # 3. get the status of the export
+    status = exports_json.get('status')
 
-    # peel out the path_error_report object
+    # 4. get the path error report from the status
     path_error_report = status.get('path_error_report')
 
-    if path_error_report == None:
-        print(status)
-        return "Cannot validate this dataset"
-
     # get the errors out of the report that do not have errors in their subpaths (see function comments for the explanation)
-    parsed_path_error_report = parse(path_error_report)
-
-    # TODO: Add a cleanup section to remove the dataset folder
-
-    return parsed_path_error_report
+    return parse(path_error_report)
 
 
-# validate a local dataset at the target directory 
+# validate a local dataset at the target directory
 def validate_local_dataset(ds_path):
     # convert the path to absolute from user's home directory
     joined_path = os.path.join(userpath, ds_path.strip())
