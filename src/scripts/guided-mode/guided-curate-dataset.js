@@ -4996,9 +4996,14 @@ const confirmEnter = (button) => {
     keyCode: 13,
   });
 
-  button.previousElementSibling.dispatchEvent(ke);
-  console.log(ke);
-  console.log(button.previousElementSibling);
+  let input_field = button.previousElementSibling;
+  console.log(input_field.parentNode.children);
+  if(input_field.tagName === "INPUT") {
+    input_field.dispatchEvent(ke);
+  } else {
+    //alert message is the previousElement
+    input_field.parentNode.children[1].dispatchEvent(ke);
+  }
 };
 
 const confirmOnBlur = (element) => {
