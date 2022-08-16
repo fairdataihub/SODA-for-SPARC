@@ -5015,7 +5015,6 @@ const confirmOnBlur = (element) => {
         enterKey = true;
         console.log(enterKey);
       }
-      console.log("hererererer");
     });
     console.log(event);
     console.log(event.path[1].children[2]);
