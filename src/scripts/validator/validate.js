@@ -132,7 +132,7 @@ const validateLocalDataset = async () => {
 
 const validatePennsieveDataset = async () => {
   // kicks off pipeline update listener
-  await setCurationTeamAsManagers()
+  await setCurationTeamAsManagers();
 
   // get the dataset name from the dataset selection card
   let datasetName = document.querySelector(
@@ -207,7 +207,7 @@ const validatePennsieveDataset = async () => {
     );
 
     // end pipeline update listener
-    removeCurationTeamAsManagers()
+    removeCurationTeamAsManagers();
 
     // display error message to user
     return handleAxiosValidationErrors(err);
