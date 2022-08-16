@@ -4998,7 +4998,7 @@ const confirmEnter = (button) => {
 
   let input_field = button.previousElementSibling;
   console.log(input_field.parentNode.children);
-  if(input_field.tagName === "INPUT") {
+  if (input_field.tagName === "INPUT") {
     input_field.dispatchEvent(ke);
   } else {
     //alert message is the previousElement
