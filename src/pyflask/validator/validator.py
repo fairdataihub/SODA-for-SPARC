@@ -140,7 +140,7 @@ def request_pennsieve_export(trimmed_dataset_id):
 
 
 
-def timestamps_match(sparc_export_time, pennsieve_export_time):
+def utc_timestamp_strings_match(sparc_export_time, pennsieve_export_time):
     """
     compare the 'timestamp_updated' property retrieved from the export json file with the 'updated_at' timestamp of the Pennsieve dataset.
     True if they match, False if they do not match.
@@ -156,6 +156,4 @@ def timestamps_match(sparc_export_time, pennsieve_export_time):
 
     # compare the two times
     return setdtime == getdtime
-
-print(timestamps_match())
 
