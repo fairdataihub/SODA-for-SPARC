@@ -4427,7 +4427,26 @@ const openModifySampleMetadataPage = (
   sampleMetadataPoolID
 ) => {
   console.log(sampleMetadataID, sampleMetadataSubjectID, sampleMetadataPoolID);
+
+  //Get all samples from the dataset and add all other samples to the was derived from dropdown
+  const [samplesInPools, samplesOutsidePools] =
+    sodaJSONObj.getAllSamplesFromSubjects();
+  //Combine sample data from samples in and out of pools
+  let samples = [...samplesInPools, ...samplesOutsidePools];
+  const samplesBesidesCurrSample = samples.filter(
+    (sample) => sample.sampleName !== sampleMetadataID
+  );
+  document.getElementById("guided-bootbox-wasDerivedFromSample").innerHTML = `
+ <option value="">Sample not derived from another sample</option>
+ ${samplesBesidesCurrSample
+   .map((sample) => {
+     return `<option value="${sample.sampleName}">${sample.sampleName}</option>`;
+   })
+   .join("\n")}))
+ `;
+
   guidedLoadSampleMetadataIfExists(sampleMetadataID, sampleMetadataSubjectID);
+
   document.getElementById("guided-bootbox-sample-id").value = sampleMetadataID;
   document.getElementById("guided-bootbox-subject-id-samples").value =
     sampleMetadataSubjectID;
@@ -4635,13 +4654,6 @@ const openCopySampleMetadataPopup = async () => {
 
         //If a sample was open in the UI, update it with the new metadata
         if (currentSampleOpenInView) {
-          const currentSampleSubjectOpenInView = document.getElementById(
-            "guided-bootbox-subject-id-samples"
-          ).value;
-          const currentSamplePoolOpenInView = document.getElementById(
-            "guided-bootbox-sample-pool-id"
-          ).value;
-
           openModifySampleMetadataPage(
             currentSampleOpenInView,
             currentSampleSubjectOpenInView,

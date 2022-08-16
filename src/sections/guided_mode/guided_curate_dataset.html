@@ -3373,13 +3373,18 @@
                   >
                   <div class="demo-controls-body w-100">
                     <div class="ui input modified">
-                      <input
+                      <select
                         type="text"
                         id="guided-bootbox-wasDerivedFromSample"
                         name="was derived from"
-                        class="samples-form-entry"
+                        class="ui selection dropdown samples-form-entry"
                         placeholder="Type here..."
-                      />
+                      >
+                        <option value="Select">
+                          Not derived from another sample
+                        </option>
+                        <option value="original">Original</option>
+                      </select>
                     </div>
                   </div>
                   <p class="guided--text-input-instructions mb-0">
