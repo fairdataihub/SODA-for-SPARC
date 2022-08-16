@@ -2705,7 +2705,7 @@ function subSamInputIsValid(subSamInput) {
 }
 const generateAlertElement = (alertType, warningMessageText) => {
   return `
-      <div class="alert alert-${alertType} guided--alert" role="alert">
+      <div style="margin-left:.5rem; margin-right:.5rem"class="alert alert-${alertType} guided--alert" role="alert">
         ${warningMessageText}
       </div>
     `;
@@ -2713,9 +2713,11 @@ const generateAlertElement = (alertType, warningMessageText) => {
 const generateAlertMessage = (elementToWarn) => {
   const alertMessage = elementToWarn.data("alert-message");
   const alertType = elementToWarn.data("alert-type");
+  console.log(elementToWarn);
   if (!elementToWarn.next().hasClass("alert")) {
     elementToWarn.after(generateAlertElement(alertType, alertMessage));
   }
+  console.log("here");
   enableProgressButton();
 };
 const removeAlertMessageIfExists = (elementToCheck) => {
@@ -2758,6 +2760,7 @@ const validateInput = (inputElementToValidate) => {
         $("#guided-same-amount-samples-form").css("display", "flex");
         inputIsValid = true;
       } else {
+        console.log(inputElementToValidate);
         generateAlertMessage(inputElementToValidate);
         $("#guided-same-amount-samples-form").hide();
       }
