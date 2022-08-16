@@ -51,6 +51,23 @@ guidedUnLockSideBar = () => {
   sidebar.disabled = false;
 };
 
+const guidedSetCurationTeamUI = (boolSharedWithCurationTeam) => {
+  const textSharedWithCurationTeamStatus = document.getElementById(
+    "guided-dataset-shared-with-curation-team-status"
+  );
+  if (boolSharedWithCurationTeam) {
+    textSharedWithCurationTeamStatus.innerHTML =
+      "Shared with the Curation Team";
+    $("#guided-button-share-dataset-with-curation-team").hide();
+    $("#guided-button-unshare-dataset-with-curation-team").show();
+  } else {
+    textSharedWithCurationTeamStatus.innerHTML =
+      "Not shared with the Curation Team";
+    $("#guided-button-share-dataset-with-curation-team").show();
+    $("#guided-button-unshare-dataset-with-curation-team").hide();
+  }
+};
+
 const guidedModifyCurationTeamAccess = async (action) => {
   if (action === "share") {
     const { value: confirmShareWithCurationTeam } = await Swal.fire({
@@ -80,12 +97,45 @@ const guidedModifyCurationTeamAccess = async (action) => {
             },
           }
         );
+        guidedSetCurationTeamUI(true);
       } catch (error) {
         log.error(error);
       }
     }
   }
   if (action === "unshare") {
+    const { value: confirmUnshareWithCurationTeam } = await Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      cancelButtonText: "No",
+      confirmButtonText: "Yes",
+      focusCancel: true,
+      icon: "warning",
+      reverseButtons: reverseSwalButtons,
+      showCancelButton: true,
+      text: "Are you sure you would like to remove the SPARC Data Curation Team as a manager of this dataset?",
+    });
+    if (confirmUnshareWithCurationTeam) {
+      try {
+        await client.patch(
+          `/manage_datasets/bf_dataset_permissions`,
+          {
+            input_role: "remove current permissions",
+          },
+          {
+            params: {
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["name"],
+              scope: "team",
+              name: "SPARC Data Curation Team",
+            },
+          }
+        );
+        guidedSetCurationTeamUI(false);
+      } catch (error) {
+        log.error(error);
+      }
+    }
   }
 };
 
@@ -2182,20 +2232,7 @@ const traverseToTab = async (targetPageID) => {
         }
       }
 
-      const sharedWithCurationStatus = document.getElementById(
-        "guided-dataset-shared-with-curation-team-status"
-      );
-
-      if (sharedWithSPARCCurationTeam) {
-        sharedWithCurationStatus.innerHTML = "Shared with the Curation Team";
-        $("#guided-button-share-dataset-with-curation-team").hide();
-        $("#guided-button-unshare-dataset-with-curation-team").show();
-      } else {
-        sharedWithCurationStatus.innerHTML =
-          "Not shared with the Curation Team";
-        $("#guided-button-share-dataset-with-curation-team").show();
-        $("#guided-button-unshare-dataset-with-curation-team").hide();
-      }
+      guidedSetCurationTeamUI(sharedWithSPARCCurationTeam);
     }
 
     let currentParentTab = CURRENT_PAGE.parent();
@@ -8553,6 +8590,11 @@ $(document).ready(() => {
           "Upload status": "Dataset successfully uploaded to Pennsieve!",
         });
 
+        //Save a copy of the sodaJSONObj on this upload to compare it while prepping other uploads
+        sodaJSONObj["previous-guided-upload-dataset-name"] =
+          sodaJSONObj["digital-metadata"]["name"];
+        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+
         let allDatasets = await client.get(
           `manage_datasets/bf_dataset_account`,
           {
@@ -8574,8 +8616,7 @@ $(document).ready(() => {
           html: `<a href="https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/datasets/${uploadedDatasetID}/overview" target="_blank">Click here to view dataset on Pennsieve</a>
           <br /><br />
           Now that your dataset has been uploaded to Pennsieve,
-          you may share it with the SPARC curation team, SPARC Consortium,
-          or submit for pre-publishing review.<br/><br/>Would you like to do so now?`,
+          you may share it with the SPARC curation team for pre-publishing review.<br/><br/>Would you like to do so now?`,
           confirmButtonText: "Share now",
           showCancelButton: true,
           cancelButtonText: "No thanks, take me home",
@@ -8585,12 +8626,6 @@ $(document).ready(() => {
           traverseToTab("guided-dataset-dissemination-tab");
         } else {
           guidedUnLockSideBar();
-
-          //Save a copy of the sodaJSONObj on this upload to compare it while prepping other uploads
-          sodaJSONObj["previous-guided-upload-dataset-name"] =
-            sodaJSONObj["digital-metadata"]["name"];
-          saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-
           //exit to the home page
           traverseToTab("guided-dataset-starting-point-tab");
           hideSubNavAndShowMainNav("back");
