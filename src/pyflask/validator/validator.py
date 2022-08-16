@@ -6,6 +6,7 @@ from pathlib import Path
 from urllib.error import HTTPError
 import requests
 import time 
+import datetime
 
 from sparcur.utils import PennsieveId
 from sparcur.simple.validate import main as validate
@@ -136,3 +137,25 @@ def request_pennsieve_export(trimmed_dataset_id):
         
         # update the backoff time for the next request - we want 10, 20, 30 for a total of about a minute max wait time
         backoff_time += 10 
+
+
+
+def timestamps_match(sparc_export_time, pennsieve_export_time):
+    """
+    compare the 'timestamp_updated' property retrieved from the export json file with the 'updated_at' timestamp of the Pennsieve dataset.
+    True if they match, False if they do not match.
+    constraints: timezones match this format 'yyyy-mm-ddThh:mm:ss.sssZ' where sss =  up to 6 digits of milliseconds
+    """
+
+    # replace sparc export ',' with a '.'
+    sparc_export_time = sparc_export_time.replace(",", ".")
+
+    # convert the timezone strings to datetime objects
+    setdtime = datetime.datetime.strptime(sparc_export_time, "%Y-%m-%dT%H:%M:%S.%fZ")
+    getdtime = datetime.datetime.strptime(pennsieve_export_time, "%Y-%m-%dT%H:%M:%S.%fZ")
+
+    # compare the two times
+    return setdtime == getdtime
+
+print(timestamps_match())
+
