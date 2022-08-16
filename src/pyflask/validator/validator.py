@@ -3,10 +3,14 @@
 import os
 import os.path
 from pathlib import Path
+from urllib.error import HTTPError
 import requests
+import time 
 
 from sparcur.utils import PennsieveId
 from sparcur.simple.validate import main as validate
+
+from errorHandlers import handle_http_error
 
 from .validatorUtils import ( 
     parse, 
@@ -33,31 +37,32 @@ def validate_dataset_pipeline(ps_account, ps_dataset):
     # Assumes LATEST stores the export that completed after the most recent change in dataset permissions. 
     # Assumes there is an export ready to be retrieved and that we do not have to wait if this is generating a users first export.
     # Assumes the export is not of a failed validation run
+    # Assumes the export is created on a dataset that has metadata files
     # TODO: handle edge cases
     #    - to handle case one: ensure that #/meta/timestamp_updated matches the dataset updated time you see on the Pennsieve portal.
-    #    - to handle case two: expect 404s until the export is ready. 
+    #    - to handle case two: expect 404s until the export is ready.  [ WIP ]
     #    - to handle case three: Tom will look into adding ways having the exports contain metdata that indicates if the export is a success or failure. For now not sure.
+    #    - to handle case four: Check if there are metadata files in the dataset. If not then alert the user validation can only be done with metadata files present.
 
 
     # remove the N:dataset text from the UUID
     ps_dataset_trimmed = ps_dataset.replace("N:dataset:", "")
+        
+    # 1. get the pennsieve export json file for the given dataset
+    export_json = request_pennsieve_export(ps_dataset_trimmed)
 
-    # 1. retrieve the exports json file for the given dataset
-    r = requests.get(f"https://cassava.ucsd.edu/sparc/datasets/{ps_dataset_trimmed}/LATEST/curation-export.json")
+    # 2. get the status of the export
+    status = export_json.get('status')
 
-    r.raise_for_status()
+    if "path_error_report" not in status:
+        return "Cannot validate this dataset. No metadata files present?"
 
-    # 2. parse the response as json ( if necessary )
-    exports_json = r.json()
-
-    # 3. get the status of the export
-    status = exports_json.get('status')
-
-    # 4. get the path error report from the status
+    # 3. get the path error report from the status
     path_error_report = status.get('path_error_report')
 
     # get the errors out of the report that do not have errors in their subpaths (see function comments for the explanation)
     return parse(path_error_report)
+
 
 
 # validate a local dataset at the target directory
@@ -103,3 +108,31 @@ def add_scicrunch_to_validator_config(api_key, api_key_name, selected_account):
 
     # add the scigraph path to the pyontutils config yaml
     add_scigraph_path(api_key_name)
+
+
+# retrieves the latest export for a particular users dataset, if avaialble within 1 minute of
+# requesting the export. 
+def request_pennsieve_export(trimmed_dataset_id): 
+    backoff_time = 0
+    while backoff_time <= 30:
+        print("Trying to get the export...")
+        # wait for the backoff time 
+        time.sleep(backoff_time)
+
+        try:
+            # 1. retrieve the exports json file for the given dataset
+            r = requests.get(f"https://cassava.ucsd.edu/sparc/datasets/{trimmed_dataset_id}/LATEST/curation-export.json")
+
+            r.raise_for_status()
+
+            # TODO: check that there is no issue that will require re-running the request
+            return r.json()
+
+        except requests.exceptions.HTTPError as e:
+            print(f"HTTPError: {e}")
+            # if on the last request and we get an HTTP error show the user the error
+            if backoff_time >= 30:
+                return handle_http_error(e)
+        
+        # update the backoff time for the next request - we want 10, 20, 30 for a total of about a minute max wait time
+        backoff_time += 10 
