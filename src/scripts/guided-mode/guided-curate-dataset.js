@@ -1,5 +1,3 @@
-const { parseJSON } = require("jquery");
-
 const updateDatasetUploadProgressTable = (progressObject) => {
   const datasetUploadTableBody = document.getElementById(
     "guided-tbody-dataset-upload"
