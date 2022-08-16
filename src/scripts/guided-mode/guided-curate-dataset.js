@@ -3173,6 +3173,11 @@ const attachGuidedMethodsToSodaJSONObj = () => {
         ][subjectName];
       }
     }
+
+    //remove the subject's subject metadata
+    subjectsTableData = subjectsTableData.filter((subject) => {
+      return subject[0] !== subjectName;
+    });
   };
   sodaJSONObj.getSubjectsOutsidePools = function () {
     let subjectsNotInPools = Object.keys(
@@ -3394,6 +3399,11 @@ const attachGuidedMethodsToSodaJSONObj = () => {
         "subjects"
       ][subjectName][sampleName];
     }
+
+    //remove the sample's sample metadata
+    samplesTableData = samplesTableData.filter((sample) => {
+      return sample[0] !== subjectName || sample[1] !== sampleName;
+    });
   };
   sodaJSONObj.getAllSubjects = function () {
     let subjectsInPools = [];
