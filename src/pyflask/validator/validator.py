@@ -40,7 +40,7 @@ def validate_dataset_pipeline(ps_account, ps_dataset):
     # Assumes the export is created on a dataset that has metadata files
     # TODO: handle edge cases
     #    - to handle case one: ensure that #/meta/timestamp_updated matches the dataset updated time you see on the Pennsieve portal.
-    #    - to handle case two: expect 404s until the export is ready.  [ WIP ]
+    #    - to handle case two: expect 404s until the export is ready.  [ Done ]
     #    - to handle case three: Tom will look into adding ways having the exports contain metdata that indicates if the export is a success or failure. For now not sure.
     #    - to handle case four: Check if there are metadata files in the dataset. If not then alert the user validation can only be done with metadata files present.
 
