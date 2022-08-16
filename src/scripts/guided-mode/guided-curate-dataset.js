@@ -51,6 +51,44 @@ guidedUnLockSideBar = () => {
   sidebar.disabled = false;
 };
 
+const guidedModifyCurationTeamAccess = async (action) => {
+  if (action === "share") {
+    const { value: confirmShareWithCurationTeam } = await Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      cancelButtonText: "No",
+      confirmButtonText: "Yes",
+      focusCancel: true,
+      icon: "warning",
+      reverseButtons: reverseSwalButtons,
+      showCancelButton: true,
+      text: "This will inform the Curation Team that your dataset is ready to be reviewed. It is then advised not to make changes to the dataset until the Curation Team contacts you. Would you like to continue?",
+    });
+    if (confirmShareWithCurationTeam) {
+      try {
+        await client.patch(
+          `/manage_datasets/bf_dataset_permissions`,
+          {
+            input_role: "manager",
+          },
+          {
+            params: {
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["name"],
+              scope: "team",
+              name: "SPARC Data Curation Team",
+            },
+          }
+        );
+      } catch (error) {
+        log.error(error);
+      }
+    }
+  }
+  if (action === "unshare") {
+  }
+};
+
 const guidedSaveAndExit = async (exitPoint) => {
   if (exitPoint === "main-nav" || exitPoint === "sub-nav") {
     const { value: returnToGuidedHomeScreen } = await Swal.fire({
@@ -1288,7 +1326,7 @@ const guidedLoadDescriptionContributorInformation = () => {
   }
 };
 
-const traverseToTab = (targetPageID) => {
+const traverseToTab = async (targetPageID) => {
   console.log(targetPageID);
   try {
     //reset the radio buttons for the page being navigated to
@@ -2121,6 +2159,42 @@ const traverseToTab = (targetPageID) => {
         readMeTextArea.value = readMe;
       } else {
         readMeTextArea.value = "";
+      }
+    }
+
+    if (targetPageID === "guided-dataset-dissemination-tab") {
+      let bf_get_permissions = await client.get(
+        `/manage_datasets/bf_dataset_permissions`,
+        {
+          params: {
+            selected_account: defaultBfAccount,
+            selected_dataset: sodaJSONObj["digital-metadata"]["name"],
+          },
+        }
+      );
+      let datasetPermissions = bf_get_permissions.data.permissions;
+
+      let sharedWithSPARCCurationTeam = false;
+
+      for (const permission of datasetPermissions) {
+        if (permission.includes("SPARC Data Curation Team")) {
+          sharedWithSPARCCurationTeam = true;
+        }
+      }
+
+      const sharedWithCurationStatus = document.getElementById(
+        "guided-dataset-shared-with-curation-team-status"
+      );
+
+      if (sharedWithSPARCCurationTeam) {
+        sharedWithCurationStatus.innerHTML = "Shared with the Curation Team";
+        $("#guided-button-share-dataset-with-curation-team").hide();
+        $("#guided-button-unshare-dataset-with-curation-team").show();
+      } else {
+        sharedWithCurationStatus.innerHTML =
+          "Not shared with the Curation Team";
+        $("#guided-button-share-dataset-with-curation-team").show();
+        $("#guided-button-unshare-dataset-with-curation-team").hide();
       }
     }
 
