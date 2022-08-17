@@ -3,14 +3,16 @@ const { existsSync } = require("original-fs");
 const { default: Swal } = require("sweetalert2");
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
 
-document.body.addEventListener("click", (event) => {
-  if (event.target.dataset.section) {
-    handleSectionTrigger(event);
-  } else if (event.target.dataset.modal) {
-    handleModalTrigger(event);
-  } else if (event.target.classList.contains("modal-hide")) {
-    hideAllModals();
-  }
+$(document).ready(function () {
+  document.body.addEventListener("click", (event) => {
+    if (event.target.dataset.section) {
+      handleSectionTrigger(event);
+    } else if (event.target.dataset.modal) {
+      handleModalTrigger(event);
+    } else if (event.target.classList.contains("modal-hide")) {
+      hideAllModals();
+    }
+  });
 });
 
 document.body.addEventListener("custom-back", (e) => {

@@ -353,6 +353,23 @@ const guidedTransitionFromDatasetNameSubtitlePage = () => {
   }
   //Set the current page to the guided curation page
   CURRENT_PAGE = $("#guided-dataset-starting-point-tab");
+
+  /*reset sub-page navigation
+  const subPageCapsuleContainers = Array.from(
+    document.querySelectorAll(".guided--capsule-container-sub-page")
+  );
+  for (const pageCapsule of subPageCapsuleContainers) {
+    const pageCapsuleChildren = Array.from(pageCapsule.children);
+    for (let i = 0; i < pageCapsuleChildren.length; i++) {
+      console.log(i);
+      let childSubPage = pageCapsuleChildren[i].id.replace("-capsule", "");
+      if (i == 0) {
+        document.getElementById(childSubPage).classList.add("active");
+      } else {
+        document.getElementById(childSubPage).classList.remove("active");
+      }
+    }
+  }*/
 };
 
 const saveGuidedProgress = (guidedProgressFileName) => {
@@ -8628,21 +8645,18 @@ $(document).ready(() => {
         );
         const uploadedDatasetID = uploadedDataset.id;
 
-        const { value: shareWithCurationTeam } = await swal.fire({
+        const { value: goToShareWithCurationTeamPage } = await swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
           icon: "success",
-          title: "Dataset successfully uploaded!",
+          title: "Dataset successfully uploaded to Pennsieve!",
           html: `<a href="https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/datasets/${uploadedDatasetID}/overview" target="_blank">Click here to view dataset on Pennsieve</a>
           <br /><br />
           Now that your dataset has been uploaded to Pennsieve,
           you may share it with the SPARC curation team for pre-publishing review.<br/><br/>Would you like to do so now?`,
-          confirmButtonText: "Share now",
-          showCancelButton: true,
-          cancelButtonText: "No thanks, take me home",
-          reverseButtons: reverseSwalButtons,
+          confirmButtonText: "OK",
         });
-        if (shareWithCurationTeam) {
+        if (goToShareWithCurationTeamPage) {
           traverseToTab("guided-dataset-dissemination-tab");
         } else {
           guidedUnLockSideBar();
