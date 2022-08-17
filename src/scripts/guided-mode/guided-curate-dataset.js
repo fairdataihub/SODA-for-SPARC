@@ -1406,13 +1406,21 @@ const traverseToTab = async (targetPageID) => {
 
     if (
       targetPageID === "guided-dataset-generation-confirmation-tab" ||
-      targetPageID === "guided-dataset-generation-tab"
+      targetPageID === "guided-dataset-generation-tab" ||
+      targetPageID === "guided-dataset-dissemination-tab"
     ) {
-      //Hide the next button for the last two pages
       $("#guided-next-button").css("visibility", "hidden");
     } else {
-      //show the next button on all pages besides the last two
       $("#guided-next-button").css("visibility", "visible");
+    }
+
+    if (
+      targetPageID === "guided-dataset-dissemination-tab" ||
+      targetPageID === "guided-dataset-generation-tab"
+    ) {
+      $("#guided-back-button").css("visibility", "hidden");
+    } else {
+      $("#guided-back-button").css("visibility", "visible");
     }
 
     if (targetPageID === "guided-subjects-folder-tab") {
@@ -2227,7 +2235,35 @@ const traverseToTab = async (targetPageID) => {
       }
     }
 
+    if (targetPageID === "guided-dataset-generation-tab") {
+      document
+        .getElementById("guided-dataset-upload-complete-message")
+        .classList.add("hidden");
+    }
+
     if (targetPageID === "guided-dataset-dissemination-tab") {
+      const pennsieveDatasetID =
+        sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+
+      if (pennsieveDatasetID) {
+        const pennsieveDatasetLink = document.getElementById(
+          "guided-pennsieve-dataset-link"
+        );
+        pennsieveDatasetLink.href = `https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/datasets/${pennsieveDatasetID}/overview`;
+      }
+
+      /*
+      Celebration Lottie
+      const transparentFullWidthHeightElement = document.createElement("div");
+      transparentFullWidthHeightElement.style.height = "700px";
+      transparentFullWidthHeightElement.style.width = "800px";
+      document
+        .getElementById("guided-dataset-dissemination-tab")
+        .appendChild(transparentFullWidthHeightElement);
+      */
+
+      document.getElementById("guided-pennsieve-dataset-name").innerHTML =
+        sodaJSONObj["digital-metadata"]["name"];
       let bf_get_permissions = await client.get(
         `/manage_datasets/bf_dataset_permissions`,
         {
@@ -8627,11 +8663,6 @@ $(document).ready(() => {
           "Upload status": "Dataset successfully uploaded to Pennsieve!",
         });
 
-        //Save a copy of the sodaJSONObj on this upload to compare it while prepping other uploads
-        sodaJSONObj["previous-guided-upload-dataset-name"] =
-          sodaJSONObj["digital-metadata"]["name"];
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-
         let allDatasets = await client.get(
           `manage_datasets/bf_dataset_account`,
           {
@@ -8645,16 +8676,33 @@ $(document).ready(() => {
         );
         const uploadedDatasetID = uploadedDataset.id;
 
-        const { value: goToShareWithCurationTeamPage } = await swal.fire({
+        //Save a copy of the sodaJSONObj on this upload to compare it while prepping other uploads
+        sodaJSONObj["previous-guided-upload-dataset-name"] =
+          sodaJSONObj["digital-metadata"]["name"];
+        sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] =
+          uploadedDatasetID;
+        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+
+        //Display the click next text
+        document
+          .getElementById("guided-dataset-upload-complete-message")
+          .classList.remove("hidden");
+
+        scrollToBottomOfGuidedBody();
+
+        //Show the next button
+        $("#guided-next-button").css("visibility", "visible");
+
+        /*const { value: goToShareWithCurationTeamPage } = await swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
           icon: "success",
           title: "Dataset successfully uploaded to Pennsieve!",
-          html: `<a href="https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/datasets/${uploadedDatasetID}/overview" target="_blank">Click here to view dataset on Pennsieve</a>
+          html: `<a href="https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/datasets/${uploadedDatasetID}}/overview" target="_blank">Click here to view dataset on Pennsieve</a>
           <br /><br />
-          Now that your dataset has been uploaded to Pennsieve,
-          you may share it with the SPARC curation team for pre-publishing review.<br/><br/>Would you like to do so now?`,
-          confirmButtonText: "OK",
+          `,
+          confirmButtonText: "Next",
+          allowOutsideClick: false,
         });
         if (goToShareWithCurationTeamPage) {
           traverseToTab("guided-dataset-dissemination-tab");
@@ -8665,7 +8713,7 @@ $(document).ready(() => {
           hideSubNavAndShowMainNav("back");
           $("#guided-button-dataset-intro-back").click();
           $("#guided-button-dataset-intro-back").click();
-        }
+        }*/
       }
     };
     // Progress tracking function for main curate
@@ -9203,7 +9251,6 @@ $(document).ready(() => {
     }
     traverseToTab("guided-dataset-generation-tab");
     guidedPennsieveDatasetUpload();
-    $("#guided-footer-div").hide();
   });
 
   const guidedSaveBannerImage = () => {
