@@ -7,6 +7,7 @@ from urllib.error import HTTPError
 import requests
 import time 
 import datetime
+from flask import abort
 
 from sparcur.utils import PennsieveId
 from sparcur.simple.validate import main as validate
@@ -25,6 +26,8 @@ from .validatorUtils import (
     add_scicrunch_api_key
 )
 
+from datasets import get_dataset_by_id
+
 
 # for gevent
 local_dataset_folder_path = ""
@@ -33,24 +36,30 @@ validation_json = {}
 
 # retrieve the given dataset ID's export results; return to the user. 
 # TODO: translate export results into a format that is easier to read
-def validate_dataset_pipeline(ps_account, ps_dataset):
+def validate_dataset_pipeline(ps_account, ps_dataset_id):
     # Basic flow. 
     # Assumes LATEST stores the export that completed after the most recent change in dataset permissions. 
     # Assumes there is an export ready to be retrieved and that we do not have to wait if this is generating a users first export.
     # Assumes the export is not of a failed validation run
     # Assumes the export is created on a dataset that has metadata files
     # TODO: handle edge cases
-    #    - to handle case one: ensure that #/meta/timestamp_updated matches the dataset updated time you see on the Pennsieve portal.
+    #    - to handle case one: ensure that #/meta/timestamp_updated matches the dataset updated time you see on the Pennsieve portal.[ Done ]
     #    - to handle case two: expect 404s until the export is ready.  [ Done ]
-    #    - to handle case three: Tom will look into adding ways having the exports contain metdata that indicates if the export is a success or failure. For now not sure.
+    #    - to handle case three: Tom will look into adding ways having the exports contain metdata that indicates if the export is a success or failure. For now not sure. 
     #    - to handle case four: Check if there are metadata files in the dataset. If not then alert the user validation can only be done with metadata files present.
-
-
-    # remove the N:dataset text from the UUID
-    ps_dataset_trimmed = ps_dataset.replace("N:dataset:", "")
         
+
+    # get the timestamp for the latest change to the given pennsieve dataset
+    updated_at_timestamp = get_dataset_by_id(ps_dataset_id)["content"]["updatedAt"]
+    
     # 1. get the pennsieve export json file for the given dataset
-    export_json = request_pennsieve_export(ps_dataset_trimmed)
+    export_json = request_pennsieve_export(ps_dataset_id, updated_at_timestamp)
+
+    # 2. check if the export was not ready to be retrieved
+    if export_json == None:
+        abort(500, "We had trouble validating your dataset. Please try again. If the problem persists, please contact us at fairdataihub@gmail.com.")
+
+    # 3. check if the export was a failed validation run TODO: discern between a failed validation run and a dataset with no metadata files
 
     # 2. get the status of the export
     status = export_json.get('status')
@@ -111,9 +120,15 @@ def add_scicrunch_to_validator_config(api_key, api_key_name, selected_account):
     add_scigraph_path(api_key_name)
 
 
-# retrieves the latest export for a particular users dataset, if avaialble within 1 minute of
-# requesting the export. 
-def request_pennsieve_export(trimmed_dataset_id): 
+def request_pennsieve_export(ps_dataset_id, dataset_latest_updated_at_timestamp):
+    """ 
+    Retrieves the latest export for a particular users dataset, if available within 1 minute of
+    requesting the export. 
+    """
+
+    # remove the N:dataset text from the UUID
+    ps_dataset_id_trimmed = ps_dataset_id.replace("N:dataset:", "")
+
     backoff_time = 0
     while backoff_time <= 30:
         print("Trying to get the export...")
@@ -121,13 +136,17 @@ def request_pennsieve_export(trimmed_dataset_id):
         time.sleep(backoff_time)
 
         try:
-            # 1. retrieve the exports json file for the given dataset
-            r = requests.get(f"https://cassava.ucsd.edu/sparc/datasets/{trimmed_dataset_id}/LATEST/curation-export.json")
+            # retrieve the exports json file for the given dataset
+            r = requests.get(f"https://cassava.ucsd.edu/sparc/datasets/{ps_dataset_id_trimmed}/LATEST/curation-export.json")
 
             r.raise_for_status()
 
-            # TODO: check that there is no issue that will require re-running the request
-            return r.json()
+            export_json = r.json()
+
+            # check if the LATEST export file is the one corresponding to the most recent change in the dataset
+            if verified_latest_export(export_json, dataset_latest_updated_at_timestamp):
+                print("They are the same!")
+                return export_json
 
         except requests.exceptions.HTTPError as e:
             print(f"HTTPError: {e}")
@@ -138,22 +157,58 @@ def request_pennsieve_export(trimmed_dataset_id):
         # update the backoff time for the next request - we want 10, 20, 30 for a total of about a minute max wait time
         backoff_time += 10 
 
+    # there is no pennsieve export for the given dataset; or there is not one that matches the most recent change in the dataset
+    return None
+
+
+def verified_latest_export(export_json, dataset_latest_updated_at_timestamp):
+    """
+    Check if the LATEST export 'timestamp_updated' property matches the corresponding property on the given Pennsieve dataset.
+    If not this means we need to wait longer before the export corresponding to the most recent modification on the given dataset is available.
+    In short, LATEST isn't really LATEST until its 'timestamp_updated' timestamp matches the Pennsieve 'updated_at' timestamp.
+    """
+
+    # get the meta object from the export json file
+    meta = export_json.get('meta')
+
+    # get the timestamp_updated property from the meta object
+    timestamp_updated = meta.get('timestamp_updated')
+
+    print(f"export timestamp: {timestamp_updated}")
+    print(f"dataset timestamp: {dataset_latest_updated_at_timestamp}")
+
+    return utc_timestamp_strings_match(timestamp_updated, dataset_latest_updated_at_timestamp)
+
+
 
 
 def utc_timestamp_strings_match(sparc_export_time, pennsieve_export_time):
     """
-    compare the 'timestamp_updated' property retrieved from the export json file with the 'updated_at' timestamp of the Pennsieve dataset.
-    True if they match, False if they do not match.
+    Compares utc timestamps that are currently in string representation against each other.
+    Returns True if they represent the same time, False if they do not.
     constraints: timezones match this format 'yyyy-mm-ddThh:mm:ss.sssZ' where sss =  up to 6 digits of milliseconds
     """
 
     # replace sparc export ',' with a '.'
     sparc_export_time = sparc_export_time.replace(",", ".")
 
+    # remove the milliseconds and Zulu timezone from the sparc export time
+    sparc_export_time = sparc_export_time.split(".")[0]
+    pennsieve_export_time = pennsieve_export_time.split(".")[0]
+
     # convert the timezone strings to datetime objects
-    setdtime = datetime.datetime.strptime(sparc_export_time, "%Y-%m-%dT%H:%M:%S.%fZ")
-    getdtime = datetime.datetime.strptime(pennsieve_export_time, "%Y-%m-%dT%H:%M:%S.%fZ")
+    setdtime = datetime.datetime.strptime(sparc_export_time, "%Y-%m-%dT%H:%M:%S")
+    getdtime = datetime.datetime.strptime(pennsieve_export_time, "%Y-%m-%dT%H:%M:%S")
+
+    print(f"setdtime: {setdtime}")
+    print(f"getdtime: {getdtime}")
+
+    print(f"setdtime.tzinfo: {setdtime.date()}")
+    print(f"setdtime.tzinfo: {setdtime.time()}")
+
+    print(f"getdtime: {getdtime.date()}")
+    print(f"getdtime: {getdtime.time()}")
 
     # compare the two times
-    return setdtime == getdtime
+    return setdtime.date() == getdtime.date() and setdtime.time() == getdtime.time()
 
