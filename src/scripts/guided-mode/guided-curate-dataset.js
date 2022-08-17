@@ -5961,16 +5961,16 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
   )) {
     asideElementTemplateLiteral += `
       <div class="poolContainer">
-      <div class="justify-center mt-md">
-        <label class="guided--form-label centered">
+      <div class="justify-center poolTitleContainer">
+        <label class="guided--form-label centered poolTitle" style="align-self: center; width: 98%; margin-bottom: .2rem;">
           ${poolName}
         </label>
       </div>
         ${subjects
           .map((subject) => {
             return `
-              <div class="w-100" style="padding-left: .5rem">
-                <label class="guided--form-label text-left">
+              <div class="w-100" style="padding-left: .5rem; border: 1px solid black; background: var(--color-light-green);">
+                <label class="guided--form-label text-left" style="color: white !important;">
                   ${subject.subjectName}
                 </label>
               </div>

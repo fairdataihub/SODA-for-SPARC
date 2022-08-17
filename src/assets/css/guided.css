@@ -1079,3 +1079,18 @@ h1.guided--text-sub-step {
   border-radius: 4px;
   margin-bottom: 1rem;
 }
+
+.poolTitleContainer {
+  margin-top: 0px !important;
+  background: #fff6ea;
+  height: 35px;
+  margin-bottom: -1px;
+  border-bottom: 1px solid black;
+}
+
+.poolTitle {
+  align-self: center;
+  width: 100%;
+  margin: 0 !important;
+  padding-bottom: 6px;
+}
