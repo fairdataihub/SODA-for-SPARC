@@ -1286,6 +1286,11 @@ var guidedProgressFilePath = path.join(
   "Soda",
   "Guided-Progress"
 );
+const guidedManifestFilePath = path.join(
+  homeDirectory,
+  "Soda",
+  "Guided-Manifest-Files"
+);
 var protocolConfigPath = path.join(metadataPath, protocolConfigFileName);
 
 //initialize Tagify input field for guided submission milestones

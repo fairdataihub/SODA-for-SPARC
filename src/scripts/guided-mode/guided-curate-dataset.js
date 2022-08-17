@@ -1600,6 +1600,30 @@ const traverseToTab = async (targetPageID) => {
       );
     }
 
+    if (targetPageID === "guided-manifest-file-generation-tab") {
+      //Create the local Guided-Manifest-Files folder if it doesn't exist
+      fs.mkdirSync(guidedManifestFilePath, { recursive: true });
+      //Create a manifest file folder for the current dataset if it doesn't exist
+      fs.mkdirSync(
+        path.join(
+          guidedManifestFilePath,
+          sodaJSONObj["digital-metadata"]["name"]
+        ),
+        { recursive: true }
+      );
+      for (const highLevelFolder of Object.keys(
+        datasetStructureJSONObj["folders"]
+      )) {
+        //create an excel file for each of the highLevelFolders inside the manifest file folder
+        const folderPath = path.join(
+          guidedManifestFilePath,
+          sodaJSONObj["digital-metadata"]["name"],
+          highLevelFolder
+        );
+        fs.mkdirSync(folderPath, { recursive: true });
+      }
+    }
+
     if (targetPageID === "guided-airtable-award-tab") {
       const sparcAwardImportedFromAirtable =
         sodaJSONObj["dataset-metadata"]["shared-metadata"][
@@ -3034,6 +3058,9 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   document.getElementById("guided-dataset-subtitle-input").value =
     datasetResumeJsonObj["digital-metadata"]["subtitle"];
   guidedTransitionFromDatasetNameSubtitlePage();
+
+  //skip to manifest files
+  traverseToTab("guided-manifest-file-generation-tab");
 
   guidedLockSideBar();
 };
@@ -9963,6 +9990,8 @@ $(document).ready(() => {
             return;
           }
         }
+      }
+      if (pageBeingLeftID === "guided-manifest-file-generation-tab") {
       }
 
       if (pageBeingLeftID === "guided-airtable-award-tab") {
