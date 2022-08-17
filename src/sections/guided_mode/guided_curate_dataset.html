@@ -760,9 +760,10 @@
                   <div
                     class="guided--container-subject-samples mt-md"
                     id="guided-primary-samples-file-explorer-container"
+                    style="margin-right: .5rem; padding-top: 10px;"
                   >
-                    <div class="guided--hlf-selection-container">
-                      <label class="guided--form-label centered"
+                    <div class="guided--hlf-selection-container" style="border: 2px solid var(--color-light-green); padding-top: 15px;">
+                      <label class="guided--form-label centered" style="border-bottom: 2px solid var(--color-light-green); padding-bottom: 12px;"
                         >Dataset samples:
                       </label>
                       <aside
@@ -774,9 +775,12 @@
                       id="guided-primary-samples-file-explorer-intro"
                       class="guided--panel mb-0"
                       style="
-                        height: 475px;
+                        height: 476px;
                         padding: 25px;
                         border: black solid 2px;
+                        width: 800px;
+                        margin-left: .5rem;
+                        border-radius: 4px;
                       "
                     >
                       <div
@@ -1553,20 +1557,20 @@
             class="guided--panel hidden"
             data-skip-page="true"
           >
-            <div class="guided--section" id="guided-file-explorer-elements">
+            <div class="guided--section" id="guided-file-explorer-elements" style="padding: 0; margin-left: .5rem;  border-radius: 4px; border: 2px solid var(--color-light-green); height: 476px;">
               <h2
                 class="guided--text-sub-step mt-0"
                 id="structure-folder-header"
               ></h2>
               <p class="guided--help-text" id="structure-folder-contents"></p>
 
-              <div class="guided--folder-organization-buttons-container">
+              <div class="guided--folder-organization-buttons-container" style="margin-top: .44rem; width: 97% !important;">
                 <div
                   class="guided--folder-organization-buttons-container-sub"
                   style="flex-grow: 1"
                 >
                   <button
-                    class="ui secondary basic button small"
+                    class="ui secondary basic button small onHoverBlackBoxShadow"
                     id="guided-button-back"
                   >
                     <i class="fas fa-arrow-up"></i>
@@ -1591,7 +1595,7 @@
                 </div>
                 <div class="guided--folder-organization-buttons-container-sub">
                   <button
-                    class="ui primary basic button small"
+                    class="ui primary basic button small onHoverBlueBoxShadow"
                     id="guided-new-folder"
                     style="margin-right: 7px"
                   >
@@ -1599,7 +1603,7 @@
                     >New folder
                   </button>
                   <button
-                    class="ui primary basic button small remove-margin-right"
+                    class="ui primary basic button small remove-margin-right onHoverBlueBoxShadow"
                     id="guided-import-folder"
                     style="width: 165px; margin-right: 7px !important"
                   >
@@ -1624,7 +1628,7 @@
                     Import folder
                   </button>
                   <button
-                    class="ui primary basic button small remove-margin-right"
+                    class="ui primary basic button small remove-margin-right onHoverBlueBoxShadow"
                     id="guided-imoprt-file"
                     style="width: 165px"
                   >
@@ -1650,7 +1654,7 @@
                   </button>
                 </div>
               </div>
-              <div id="guided-folder-structure-container" class="w-100"></div>
+              <div id="guided-folder-structure-container" class="w-100" style="border-top: 2px solid var(--color-light-green); margin-top: 0;"></div>
             </div>
           </div>
         </div>

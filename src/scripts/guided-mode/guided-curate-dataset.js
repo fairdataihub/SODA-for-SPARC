@@ -5048,7 +5048,7 @@ const addSubjectSpecificationTableRow = () => {
       generateSubjectSpecificationRowElement();
 
     //CREATE EVENT LISTENER TO ON FOCUS
-    confirmOnBlur("guided--subject-input");
+    // confirmOnBlur("guided--subject-input");
 
     const newSubjectRow =
       subjectSpecificationTableBody.querySelector("tr:last-child");
@@ -5078,7 +5078,7 @@ const addSampleSpecificationTableRow = (clickedSubjectAddSampleButton) => {
   } else {
     //create a new table row Input element
     addSampleTableBody.innerHTML += generateSampleSpecificationRowElement();
-    confirmOnBlur("guided--sample-input");
+    // confirmOnBlur("guided--sample-input");
     const newSamplerow = addSampleTableBody.querySelector("tr:last-child");
     //Focus the new sample row element
     const newSampleInput = newSamplerow.querySelector(
@@ -5960,6 +5960,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
     subjectsWithSamplesInPools
   )) {
     asideElementTemplateLiteral += `
+      <div class="poolContainer">
       <div class="justify-center mt-md">
         <label class="guided--form-label centered">
           ${poolName}
@@ -5968,7 +5969,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
         ${subjects
           .map((subject) => {
             return `
-              <div class="w-100">
+              <div class="w-100" style="padding-left: .5rem">
                 <label class="guided--form-label text-left">
                   ${subject.subjectName}
                 </label>
@@ -5979,6 +5980,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
                     <a 
                       class="${highLevelFolderName}-selection-aside-item selection-aside-item"
                       data-path-suffix="${subject.poolName}/${subject.subjectName}/${sample}"
+                      style="padding-left: 1rem;"
                     >${sample}</a>
                   `;
                   })
@@ -5986,6 +5988,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
             `;
           })
           .join("\n")}
+      </div>
     `;
   }
 
