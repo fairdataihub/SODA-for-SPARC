@@ -5960,16 +5960,16 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
     subjectsWithSamplesInPools
   )) {
     asideElementTemplateLiteral += `
-      <div class="poolContainer">
+      <div class="poolContainer" style="border-radius: 5px;">
       <div class="justify-center poolTitleContainer">
-        <label class="guided--form-label centered poolTitle" style="align-self: center; width: 98%; margin-bottom: .2rem;">
+        <label class="guided--form-label centered poolTitle" style="align-self: center; width: 98%; margin-bottom: .2rem; padding-top: 5px;">
           ${poolName}
         </label>
       </div>
         ${subjects
           .map((subject) => {
             return `
-              <div class="w-100" style="padding-left: .5rem; border: 1px solid black; background: var(--color-light-green);">
+              <div class="w-100" style="padding-left: .5rem; border: 1px solid black; background: var(--color-light-green); padding-top: 5px; padding-bottom: 5px;">
                 <label class="guided--form-label text-left" style="color: white !important;">
                   ${subject.subjectName}
                 </label>
@@ -6170,6 +6170,7 @@ const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
       return `
           <a 
             class="${highLevelFolderName}-selection-aside-item selection-aside-item"
+            style="align-self: center; width: 97%;"
             data-path-suffix="${
               subject.poolName ? subject.poolName + "/" : ""
             }${subject.subjectName}"

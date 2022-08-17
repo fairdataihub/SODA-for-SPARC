@@ -766,7 +766,7 @@
                       class="guided--hlf-selection-container"
                       style="
                         border: 2px solid var(--color-light-green);
-                        padding-top: 15px;
+                        padding-top: 0 !important;
                       "
                     >
                       <label
@@ -774,6 +774,9 @@
                         style="
                           border-bottom: 2px solid var(--color-light-green);
                           padding-bottom: 12px;
+                          padding-top: 12px;
+                          background: var(--color-light-green);
+                          color: white;
                         "
                         >Dataset samples:
                       </label>
@@ -877,13 +880,28 @@
                     class="guided--container-subject-samples mt-md"
                     id="guided-primary-subjects-file-explorer-container"
                   >
-                    <div class="guided--hlf-selection-container">
-                      <label class="guided--form-label centered"
+                    <div
+                      class="guided--hlf-selection-container"
+                      style="
+                        padding-top: 0;
+                        border: 2px solid var(--color-light-green);
+                      "
+                    >
+                      <label
+                        class="guided--form-label centered"
+                        style="
+                          padding: 12px 0 12px 0;
+                          border-bottom: 2px solid var(--color-light-green);
+                          height: 48px;
+                          color: white;
+                          background: var(--color-light-green);
+                        "
                         >Dataset subjects:
                       </label>
                       <aside
                         class="guided--hlf-selection-aside"
                         id="guided-primary-subjects-aside"
+                        style="font-weight: 600"
                       ></aside>
                     </div>
                     <div

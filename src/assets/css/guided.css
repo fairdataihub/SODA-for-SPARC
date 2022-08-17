@@ -1032,6 +1032,8 @@ h1.guided--text-sub-step {
 /*Scale selection-aside-item by 110%*/
 .selection-aside-item:hover {
   background-color: aliceblue;
+  width: 97%;
+  align-self: center;
 }
 
 .coming-soon-div {
@@ -1086,6 +1088,7 @@ h1.guided--text-sub-step {
   height: 35px;
   margin-bottom: -1px;
   border-bottom: 1px solid black;
+  /* padding-top: 0 !important; */
 }
 
 .poolTitle {
