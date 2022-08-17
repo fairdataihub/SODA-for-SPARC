@@ -34,19 +34,27 @@ local_dataset_folder_path = ""
 validation_json = {}
 
 
+# an export stores which metadata files are present in the dataset 
+# however they are named differently than our other lists of metadata files 
+# KEY: This list doesn't need to have - for now ( 08/17/2022 ) at least - performances, resources, or code_parameters 
+metadata_files = ["dataset_description_file", "samples_file", "subjects_file", "submission_file", "manifest_file", "code_description_file"]
+
 # retrieve the given dataset ID's export results; return to the user. 
 # TODO: translate export results into a format that is easier to read
+# TODO: Calibrate an ideal wait time if we keep one at all
 def validate_dataset_pipeline(ps_account, ps_dataset_id):
     # Basic flow. 
     # Assumes LATEST stores the export that completed after the most recent change in dataset permissions. 
     # Assumes there is an export ready to be retrieved and that we do not have to wait if this is generating a users first export.
     # Assumes the export is not of a failed validation run
     # Assumes the export is created on a dataset that has metadata files
+    # Assummes that manifest_file is good enough to validate a dataset off of
     # TODO: handle edge cases
     #    - to handle case one: ensure that #/meta/timestamp_updated matches the dataset updated time you see on the Pennsieve portal.[ Done ]
     #    - to handle case two: expect 404s until the export is ready.  [ Done ]
     #    - to handle case three: Tom will look into adding ways having the exports contain metdata that indicates if the export is a success or failure. For now not sure. 
-    #    - to handle case four: Check if there are metadata files in the dataset. If not then alert the user validation can only be done with metadata files present.
+    #    - to handle case four: Check if there are metadata files in the dataset. If not then alert the user validation can only be done with metadata files present. [ Done ]
+    #    - to handle case five: Verify if the export will be successful using the manifest_file entry. If not then alert the user that the export is not doable successful. [ WIP ]
         
 
     # get the timestamp for the latest change to the given pennsieve dataset
@@ -55,24 +63,32 @@ def validate_dataset_pipeline(ps_account, ps_dataset_id):
     # 1. get the pennsieve export json file for the given dataset
     export_json = request_pennsieve_export(ps_dataset_id, updated_at_timestamp)
 
-    # 2. check if the export was not ready to be retrieved
+    # 2. check if the export was not available for retrieval yet even afer waiting for the current maximum wait time
     if export_json == None:
         abort(500, "We had trouble validating your dataset. Please try again. If the problem persists, please contact us at fairdataihub@gmail.com.")
 
     # 3. check if the export was a failed validation run TODO: discern between a failed validation run and a dataset with no metadata files
+    # TODO: Check that all exports have an inputs. lol 
+    inputs = export_json.get('inputs')
 
-    # 2. get the status of the export
+    # 3.1. check if there are any metadata files for the dataset
+    if not dataset_has_metadata_files(inputs):
+        abort(400, "Your dataset cannot be validated until you add metadata files. Please add metadata files and try again.")
+    
+    # 3.2. check if the export was a failed validation run TODO: eventually figure this out
+    
+    # 4. get the status of the export
     status = export_json.get('status')
 
-    if "path_error_report" not in status:
-        return "Cannot validate this dataset. No metadata files present?"
-
-    # 3. get the path error report from the status
+    # 5. get the path error report from the status
     path_error_report = status.get('path_error_report')
 
-    # get the errors out of the report that do not have errors in their subpaths (see function comments for the explanation)
+    # 6. get the errors out of the report that do not have errors in their subpaths (see function comments for the explanation)
     return parse(path_error_report)
 
+
+def dataset_has_metadata_files(inputs):
+    return any(metadata_files_name in inputs for metadata_files_name in metadata_files) 
 
 
 # validate a local dataset at the target directory
