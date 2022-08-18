@@ -5006,27 +5006,29 @@ const confirmEnter = (button) => {
   }
 };
 
-const confirmOnBlur = (element) => {
-  let enterKey = false;
-  document.getElementById(element).addEventListener("blur", (event) => {
-    window.addEventListener("keydown", (event) => {
-      console.log(event);
-      if (event.key === "Enter") {
-        enterKey = true;
-        console.log(enterKey);
-      }
-    });
-    console.log(event);
-    console.log(event.path[1].children[2]);
-    console.log(event.path[0].value);
-    if (event.path[0].value != "") {
-      console.log(enterKey);
-      if (enterKey === false) {
-        confirmEnter(event.path[1].children[2]);
-      }
+const keydownListener = (event) => {
+  if (event.key === "Enter") {
+    enterKey = true;
+  }
+};
+
+const onBlurEvent = (element) => {
+  if (event.path[0].value != "") {
+    if (enterKey === false) {
+      confirmEnter(event.path[1].children[2]);
     }
-    console.log(enterKey);
-  });
+  }
+};
+
+const endConfirmOnBlur = (element) => {
+  window.removeEventListener("keydown", keydownListener);
+  document.getElementById(element).removeEventListener("blur", onBlurEvent);
+};
+
+var enterKey = false;
+const confirmOnBlur = (element) => {
+  window.addEventListener("keydown", keydownListener);
+  document.getElementById(element).addEventListener("blur", onBlurEvent);
 };
 
 const addSubjectSpecificationTableRow = () => {
@@ -5043,12 +5045,10 @@ const addSubjectSpecificationTableRow = () => {
     //focus on the input that already exists
     subjectSpecificationTableInput.focus();
   } else {
+    // endConfirmOnBlur("guided--subject-input");
     //create a new table row on
     subjectSpecificationTableBody.innerHTML +=
       generateSubjectSpecificationRowElement();
-
-    //CREATE EVENT LISTENER TO ON FOCUS
-    // confirmOnBlur("guided--subject-input");
 
     const newSubjectRow =
       subjectSpecificationTableBody.querySelector("tr:last-child");
@@ -5060,6 +5060,8 @@ const addSubjectSpecificationTableRow = () => {
     newSubjectInput.focus();
     //scroll to bottom of guided body so back/continue buttons are visible
     scrollToBottomOfGuidedBody();
+    //CREATE EVENT LISTENER TO ON FOCUS
+    confirmOnBlur("guided--subject-input");
   }
 };
 const addSampleSpecificationTableRow = (clickedSubjectAddSampleButton) => {
@@ -5076,15 +5078,16 @@ const addSampleSpecificationTableRow = (clickedSubjectAddSampleButton) => {
     //No need to create a new row
     sampleSpecificationTableInput.focus();
   } else {
+    // endConfirmOnBlur("guided--sample-input");
     //create a new table row Input element
     addSampleTableBody.innerHTML += generateSampleSpecificationRowElement();
-    // confirmOnBlur("guided--sample-input");
     const newSamplerow = addSampleTableBody.querySelector("tr:last-child");
     //Focus the new sample row element
     const newSampleInput = newSamplerow.querySelector(
       "input[name='guided-sample-id']"
     );
     newSampleInput.focus();
+    confirmOnBlur("guided--sample-input");
   }
 };
 
