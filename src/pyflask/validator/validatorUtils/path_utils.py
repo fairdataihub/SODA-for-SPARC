@@ -26,7 +26,7 @@ def create_normalized_ds_path(ds_path):
     joined_path = os.path.join(userpath, ds_path.strip())
 
     if not os.path.isdir(joined_path):
-        raise OSError(f"The given directory does not exist: {joined_path}")
+        raise OSError(f"A dataset does not exist at this location: {joined_path}")
     
     return Path(joined_path)
 

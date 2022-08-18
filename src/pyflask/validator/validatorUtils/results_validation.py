@@ -16,20 +16,21 @@ def validate_validation_result(export):
         Verifies the integriy of an export retrieved from remote or generated locally.
         Input: export - A dictionary with sparcur.simple.validate or remote validation results.
     """
+
     # 1. check if the export was not available for retrieval yet even afer waiting for the current maximum wait time
     if export is None:
-        abort(500, "We had trouble validating your dataset. Please try again. If the problem persists, please contact us at fairdataihub@gmail.com.")
+        abort(500, "We had trouble validating your dataset. Please try again. If the problem persists, please contact us at help@fairdataihub.org.")
 
     # 2. check if the export was a failed validation run TODO: discern between a failed validation run and a dataset with no metadata files 
     inputs = export.get('inputs')
 
     # NOTE: May not be possible to be None but just in case
     if inputs is None:
-        abort(500, "We had trouble validating your dataset. Please try again. If the problem persists, please contact us at.")
+        abort(400, "Please add metadata files to your dataset to receive a validation report.")
 
     # 2.1. check if there are any metadata files for the dataset
     if not dataset_has_metadata_files(inputs):
-        abort(400, "Your dataset cannot be validated until you add metadata files. Please add metadata files and try again.")
+        abort(400, "Please add metadata files to your dataset to receive a validation report.")
     
     # 2.2. check if the export was a failed validation run TODO: eventually figure this out
     print("TODO")

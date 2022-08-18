@@ -66,8 +66,26 @@ const validateLocalDataset = async () => {
     document.querySelector("#validation-errors-container").style.visiility =
       "hidden";
 
-    // display message to user
-    handleAxiosValidationErrors(err);
+    // log the error
+    clientError(err)
+
+    // display the error message to the user
+    let errorMessage = userErrorMessage(err)
+
+    await Swal.fire({
+      title: "Validation Failed",
+      text: `${errorMessage}`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      icon: "error",
+      showCancelButton: false,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
 
     // reset the input field to 'Browse Here'
     let datasetLocationInput = document.querySelector(
@@ -104,11 +122,11 @@ const validateLocalDataset = async () => {
 
   Swal.fire({
     title: hasValidationErrors
-      ? "Your dataset has validation errors"
-      : `Your dataset has been successfully validated`,
+      ? "Dataset is Invalid"
+      : `Dataset is Valid`,
     text: hasValidationErrors
-      ? `Your dataset has been found to violate SPARC Guidelines. Please view the Validation Errors table to see what is non-conforming so that you may fix it.`
-      : ``,
+      ? `Please fix the errors listed in the table below to pass validation.`
+      : `Your dataset conforms to the SPARC Dataset Structure.`,
     allowEscapeKey: true,
     allowOutsideClick: false,
     heightAuto: false,
@@ -209,9 +227,31 @@ const validatePennsieveDataset = async () => {
     // end pipeline update listener
     removeCurationTeamAsManagers();
 
-    // display error message to user
-    return handleAxiosValidationErrors(err);
+    // log the error
+    clientError(err)
+
+    // display the error message to the user
+    let errorMessage = userErrorMessage(err)
+
+    await Swal.fire({
+      title: "Validation Failed",
+      text: `${errorMessage}`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      icon: "error",
+      showCancelButton: false,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    return 
   }
+
+  removeCurationTeamAsManagers();
 
   let errors = validationResponse.data;
 
@@ -220,11 +260,11 @@ const validatePennsieveDataset = async () => {
 
   Swal.fire({
     title: hasValidationErrors
-      ? "Your dataset has validation errors"
-      : `Your dataset has been successfully validated`,
+      ? "Dataset is Invalid"
+      : `Dataset is Valid`,
     text: hasValidationErrors
-      ? `Your dataset has been found to violate SPARC Guidelines. Please view the Validation Errors table to see what is non-conforming so that you may fix it.`
-      : ``,
+      ? `Please fix the errors listed in the table below to pass validation.`
+      : `Your dataset conforms to the SPARC Dataset Structure.`,
     allowEscapeKey: true,
     allowOutsideClick: true,
     heightAuto: false,
