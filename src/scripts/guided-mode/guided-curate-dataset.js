@@ -2355,6 +2355,10 @@ const setActiveSubPage = (pageIdToActivate) => {
         .join("\n");
       document.getElementById("subject-specification-table-body").innerHTML =
         subjectElementRows;
+      //remove the add subject help text
+      document
+        .getElementById("guided-add-subject-instructions")
+        .classList.add("hidden");
       break;
     }
 
@@ -4766,6 +4770,10 @@ const specifySubject = (event, subjectNameInput) => {
           generateAlertMessage(subjectNameInput);
           return;
         }
+        //remove the add subject help text
+        document
+          .getElementById("guided-add-subject-instructions")
+          .classList.add("hidden");
         removeAlertMessageIfExists(subjectNameInput);
         if (subjectNameInput.attr("data-prev-name")) {
           const subjectToRename = subjectNameInput.attr("data-prev-name");
@@ -5206,6 +5214,10 @@ const addSubjectSpecificationTableRow = () => {
     newSubjectInput.focus();
     //scroll to bottom of guided body so back/continue buttons are visible
     scrollToBottomOfGuidedBody();
+
+    document
+      .getElementById("guided-add-subject-instructions")
+      .classList.remove("hidden");
   }
 };
 const addSampleSpecificationTableRow = (clickedSubjectAddSampleButton) => {
@@ -5368,6 +5380,10 @@ const deleteSubject = (subjectDeleteButton) => {
 
   //delete the table row element in the UI
   subjectIdCellToDelete.remove();
+  //remove the add subject help text
+  document
+    .getElementById("guided-add-subject-instructions")
+    .classList.add("hidden");
 };
 const deletePool = (poolDeleteButton) => {
   const poolIdCellToDelete = poolDeleteButton.closest("tr");
