@@ -5963,17 +5963,16 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
     subjectsWithSamplesInPools
   )) {
     asideElementTemplateLiteral += `
-      <div class="poolContainer" style="border-radius: 5px;">
-      <div class="justify-center poolTitleContainer">
-        <label class="guided--form-label centered poolTitle" style="align-self: center; width: 98%; margin-bottom: .2rem; padding-top: 5px;">
+      <div class="justify-center">
+        <label class="guided--form-label centered">
           ${poolName}
         </label>
       </div>
         ${subjects
           .map((subject) => {
             return `
-              <div class="w-100" style="padding-left: .5rem; border: 1px solid black; background: var(--color-light-green); padding-top: 5px; padding-bottom: 5px;">
-                <label class="guided--form-label text-left" style="color: white !important;">
+              <div class="w-100">
+                <label class="guided--form-label text-left">
                   ${subject.subjectName}
                 </label>
               </div>
@@ -5991,7 +5990,6 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
             `;
           })
           .join("\n")}
-      </div>
     `;
   }
 
@@ -6004,9 +6002,8 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
   //loop through the subjects and create an aside element for each
   for (const subject of subjectsWithSamplesOutsidePools) {
     asideElementTemplateLiteral += `
-      <div style="display: flex; flex-direction: column; width: 100%; border: 1px solid black; border-radius: 4px; margin-bottom: 1rem">
-      <div class="justify-center" style="background: var(--color-light-green); padding: 5px 0 2px 0;">
-        <label class="guided--form-label centered" style="color: white;">
+      <div class="justify-center">
+        <label class="guided--form-label centered">
           ${subject.subjectName}
         </label>
       </div>
@@ -6017,7 +6014,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
                 class="${highLevelFolderName}-selection-aside-item selection-aside-item"
                 data-path-suffix="${subject.subjectName}/${sample}"
               >${sample}</a>
-            </div>`;
+`;
           })
           .join("\n")}
     `;
