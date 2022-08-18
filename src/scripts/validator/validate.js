@@ -67,10 +67,10 @@ const validateLocalDataset = async () => {
       "hidden";
 
     // log the error
-    clientError(err)
+    clientError(err);
 
     // display the error message to the user
-    let errorMessage = userErrorMessage(err)
+    let errorMessage = userErrorMessage(err);
 
     await Swal.fire({
       title: "Validation Failed",
@@ -121,9 +121,7 @@ const validateLocalDataset = async () => {
   let hasValidationErrors = Object.getOwnPropertyNames(errors).length >= 1;
 
   Swal.fire({
-    title: hasValidationErrors
-      ? "Dataset is Invalid"
-      : `Dataset is Valid`,
+    title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
     text: hasValidationErrors
       ? `Please fix the errors listed in the table below to pass validation.`
       : `Your dataset conforms to the SPARC Dataset Structure.`,
@@ -228,10 +226,10 @@ const validatePennsieveDataset = async () => {
     removeCurationTeamAsManagers();
 
     // log the error
-    clientError(err)
+    clientError(err);
 
     // display the error message to the user
-    let errorMessage = userErrorMessage(err)
+    let errorMessage = userErrorMessage(err);
 
     await Swal.fire({
       title: "Validation Failed",
@@ -248,7 +246,7 @@ const validatePennsieveDataset = async () => {
       },
     });
 
-    return 
+    return;
   }
 
   removeCurationTeamAsManagers();
@@ -259,9 +257,7 @@ const validatePennsieveDataset = async () => {
   let hasValidationErrors = Object.getOwnPropertyNames(errors).length >= 1;
 
   Swal.fire({
-    title: hasValidationErrors
-      ? "Dataset is Invalid"
-      : `Dataset is Valid`,
+    title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
     text: hasValidationErrors
       ? `Please fix the errors listed in the table below to pass validation.`
       : `Your dataset conforms to the SPARC Dataset Structure.`,
