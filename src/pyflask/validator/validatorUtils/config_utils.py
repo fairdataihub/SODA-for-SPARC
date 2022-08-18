@@ -57,9 +57,11 @@ orthauth_path_secrets = SparCurPath(get_home_directory("orthauth") + '/secrets.y
 pyontutils_path = SparCurPath(get_home_directory("pyontutils")).expanduser()
 pyontutils_path_config = SparCurPath(get_home_directory("pyontutils") + '/config.yaml').expanduser()
 
-# Check that all the keys are accounted for
-def check_prerequisites(ps_account):
 
+def check_prerequisites(ps_account):
+    """
+        Check that all the keys are accounted for.
+    """
 
     print("THe python ont utils path is: ")
     print(pyontutils_path)
@@ -117,10 +119,11 @@ def check_prerequisites(ps_account):
     return add_orthauth_yaml(ps_account)
 
 
-
-# If orthauth yaml file doesn't exist, or isn't valid
-# delete it and create a fresh copy with the specified Pennsieve account
 def add_orthauth_yaml(ps_account):
+    """
+        If orthauth yaml file doesn't exist, or isn't valid
+        delete it and create a fresh copy with the specified Pennsieve account.
+    """
     os.chmod(orthauth_path, 0o0700) # might not be required
 
     config = ConfigParser()
@@ -158,9 +161,10 @@ def add_orthauth_yaml(ps_account):
     return "Valid"
 
 
-
-# adds the scigraph api key to the orthauth secrets.yaml file 
 def add_scicrunch_api_key(api_key, api_key_name):
+    """
+     Adds the scigraph api key to the orthauth secrets.yaml file 
+    """
     with open(orthauth_path_secrets) as file:
         yml_obj = yaml.full_load(file)
         yml_obj["scicrunch"]["api"] = {api_key_name: api_key}
@@ -169,12 +173,27 @@ def add_scicrunch_api_key(api_key, api_key_name):
             yaml.dump(yml_obj, file)
 
 
-
-# adds the scigraph key name to the pyontutils config file
 def add_scigraph_path(api_key_name):
+    """
+        Adds the scigraph key name to the pyontutils config file
+    """
     with open(pyontutils_path_config) as file:
         yml_obj = yaml.full_load(file)
         yml_obj["auth-variables"]["scigraph-api-key"]["path"]= f"scicrunch api {api_key_name}"
 
         with open(pyontutils_path_config, 'w') as file:
             yaml.dump(yml_obj, file)
+
+
+def add_scicrunch_to_validator_config(api_key, api_key_name, selected_account):
+    """
+        Add scicrunch api key and api key name to the validator config files
+    """
+    # create the config files and folders if they do not already exist
+    check_prerequisites(selected_account)
+
+    # add the scicrunch api key to the orthauth secrets yaml
+    add_scicrunch_api_key(api_key, api_key_name)
+
+    # add the scigraph path to the pyontutils config yaml
+    add_scigraph_path(api_key_name)

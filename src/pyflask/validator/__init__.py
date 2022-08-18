@@ -1,1 +1,2 @@
-from .validator import validate_local_dataset, validate_dataset_pipeline, add_scicrunch_to_validator_config
+from .validator import validate_pennsieve_dataset_pipeline, validate_local_dataset_pipeline
+from .validatorUtils import add_scicrunch_to_validator_config

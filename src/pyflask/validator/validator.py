@@ -1,46 +1,21 @@
 # -*- coding: utf-8 -*-
 # from gevent import monkey; monkey.patch_all(ssl=False)
-import os
-import os.path
-from pathlib import Path
 import requests
 import time 
-import datetime
-from flask import abort
-
 from sparcur.simple.validate import main as validate
-
 from errorHandlers import handle_http_error
-
 from .validatorUtils import ( 
     parse, 
-    userpath, 
-    check_prerequisites, 
-    add_scigraph_path, 
-    add_scicrunch_api_key
+    create_normalized_ds_path,
+    verified_latest_export,
+    validate_validation_result
 )
-
 from datasets import get_dataset_by_id
 
 
-# for gevent
-local_dataset_folder_path = ""
-validation_json = {}
-
-
-# an export stores which metadata files are present in the dataset 
-# however they are named differently than our other lists of metadata files 
-# NOTE: This list doesn't need to have - for now ( 08/17/2022 ) at least - performances, resources, or code_parameters 
-# NOTE: manifest_files present in a dataset alone will not create a path_error_report. Meaning at least one of 
-# the other metadata files need to be present in the dataset to have a useful validation report.
-# TODO: This begs the question. If the manifest_file is not present in the dataset, but other metadata files are, will the path_error_report notify us of this so we can inform the user?
-#       A: No, the path_error_report doesn't tell the user they need to have manifest files in the dataset. 
-metadata_files = ["dataset_description_file", "samples_file", "subjects_file", "submission_file", "code_description_file"]
-
-# retrieve the given dataset ID's export results; return to the user. 
 # TODO: translate export results into a format that is easier to read
 # TODO: Calibrate an ideal wait time if we keep one at all
-def validate_dataset_pipeline(ps_dataset_id):
+def validate_pennsieve_dataset_pipeline(ps_dataset_id):
 
     """
         Retrieves the given dataset's export results, if the export is valid and available within 1 minute of requesting the export.
@@ -70,7 +45,7 @@ def validate_dataset_pipeline(ps_dataset_id):
     export = request_pennsieve_export(ps_dataset_id, updated_at_timestamp)
 
     # 2. validate the export
-    validate_export(export)
+    validate_validation_result(export)
     
     # 3. get the status of the export
     status = export.get('status')
@@ -81,15 +56,47 @@ def validate_dataset_pipeline(ps_dataset_id):
     # 5. get the errors out of the report that do not have errors in their subpaths (see function comments for the explanation)
     return parse(path_error_report)
 
+def request_pennsieve_export(ps_dataset_id, dataset_latest_updated_at_timestamp):
+    """ 
+    Retrieves the latest export for a particular users dataset, if available within 1 minute of
+    requesting the export. 
+    """
 
-def validate_local_dataset(ds_path):
+    # remove the N:dataset text from the UUID
+    ps_dataset_id_trimmed = ps_dataset_id.replace("N:dataset:", "")
+
+    for backoff_time in range(0, 31, 10):
+        # wait for the backoff time 
+        time.sleep(backoff_time)
+
+        try:
+            # retrieve the exports json file for the given dataset
+            r = requests.get(f"https://cassava.ucsd.edu/sparc/datasets/{ps_dataset_id_trimmed}/LATEST/curation-export.json")
+
+            r.raise_for_status()
+
+            export = r.json()
+
+            # check if the LATEST export file is the one corresponding to the most recent change in the dataset
+            if verified_latest_export(export, dataset_latest_updated_at_timestamp):
+                return export
+
+        except requests.exceptions.HTTPError as e:
+            # if on the last request and we get an HTTP error show the user the error
+            if backoff_time == 30:
+                return handle_http_error(e)
+
+    # a pennsieve export for the given dataset does not exist yet; or there is not one that matches the most recent change in the dataset
+    return None
+
+def validate_local_dataset_pipeline(ds_path):
 
     norm_ds_path = create_normalized_ds_path(ds_path)
 
     # validate the dataset
     blob = validate(norm_ds_path)
 
-    validate_export(blob)
+    validate_validation_result(blob)
 
     # peel out the status object 
     status = blob.get('status')
@@ -102,145 +109,4 @@ def validate_local_dataset(ds_path):
 
 
 
-
-
-def validate_export(export):
-    """
-        Verifies the integriy of an export retrieved from remote or generated locally.
-        Input: export - A dictionary with sparcur.simple.validate or remote validation results.
-    """
-    # 1. check if the export was not available for retrieval yet even afer waiting for the current maximum wait time
-    if export is None:
-        abort(500, "We had trouble validating your dataset. Please try again. If the problem persists, please contact us at fairdataihub@gmail.com.")
-
-    # 2. check if the export was a failed validation run TODO: discern between a failed validation run and a dataset with no metadata files 
-    inputs = export.get('inputs')
-
-    # NOTE: May not be possible to be None but just in case
-    if inputs is None:
-        abort(500, "We had trouble validating your dataset. Please try again. If the problem persists, please contact us at.")
-
-    # 2.1. check if there are any metadata files for the dataset
-    if not dataset_has_metadata_files(inputs):
-        abort(400, "Your dataset cannot be validated until you add metadata files. Please add metadata files and try again.")
-    
-    # 2.2. check if the export was a failed validation run TODO: eventually figure this out
-    print("TODO")
-
-def create_normalized_ds_path(ds_path):
-    """
-        Given a path to a user's dataset, verify and create a normalized path to the dataset. 
-        Necessary for the sparcur.simple.validate function to work.
-    """
-
-    # convert the path to absolute from user's home directory
-    joined_path = os.path.join(userpath, ds_path.strip())
-
-    if not os.path.isdir(joined_path):
-        raise OSError(f"The given directory does not exist: {joined_path}")
-    
-    return Path(joined_path)
-
-def dataset_has_metadata_files(inputs):
-    return any(metadata_files_name in inputs for metadata_files_name in metadata_files)
-
-def add_scicrunch_to_validator_config(api_key, api_key_name, selected_account):
-    """
-        Add scicrunch api key and api key name to the validator config files
-    """
-    # create the config files and folders if they do not already exist
-    check_prerequisites(selected_account)
-
-    # add the scicrunch api key to the orthauth secrets yaml
-    add_scicrunch_api_key(api_key, api_key_name)
-
-    # add the scigraph path to the pyontutils config yaml
-    add_scigraph_path(api_key_name)
-
-def request_pennsieve_export(ps_dataset_id, dataset_latest_updated_at_timestamp):
-    """ 
-    Retrieves the latest export for a particular users dataset, if available within 1 minute of
-    requesting the export. 
-    """
-
-    # remove the N:dataset text from the UUID
-    ps_dataset_id_trimmed = ps_dataset_id.replace("N:dataset:", "")
-
-    backoff_time = 0
-    while backoff_time <= 30:
-        # wait for the backoff time 
-        time.sleep(backoff_time)
-
-        try:
-            # retrieve the exports json file for the given dataset
-            r = requests.get(f"https://cassava.ucsd.edu/sparc/datasets/{ps_dataset_id_trimmed}/LATEST/curation-export.json")
-
-            r.raise_for_status()
-
-            export_json = r.json()
-
-            # check if the LATEST export file is the one corresponding to the most recent change in the dataset
-            if verified_latest_export(export_json, dataset_latest_updated_at_timestamp):
-                print("They are the same!")
-                return export_json
-
-        except requests.exceptions.HTTPError as e:
-            print(f"HTTPError: {e}")
-            # if on the last request and we get an HTTP error show the user the error
-            if backoff_time >= 30:
-                return handle_http_error(e)
-        
-        # update the backoff time for the next request - we want 10, 20, 30 for a total of about a minute max wait time
-        backoff_time += 10 
-
-    # a pennsieve export for the given dataset does not exist yet; or there is not one that matches the most recent change in the dataset
-    return None
-
-def verified_latest_export(export_json, dataset_latest_updated_at_timestamp):
-    """
-    Check if the LATEST export 'timestamp_updated' property matches the corresponding property on the given Pennsieve dataset.
-    If not this means we need to wait longer before the export corresponding to the most recent modification on the given dataset is available.
-    In short, LATEST isn't really LATEST until its 'timestamp_updated' timestamp matches the Pennsieve 'updated_at' timestamp.
-    """
-
-    # get the meta object from the export json file
-    meta = export_json.get('meta')
-
-    # get the timestamp_updated property from the meta object
-    timestamp_updated = meta.get('timestamp_updated')
-
-    print(f"export timestamp: {timestamp_updated}")
-    print(f"dataset timestamp: {dataset_latest_updated_at_timestamp}")
-
-    return utc_timestamp_strings_match(timestamp_updated, dataset_latest_updated_at_timestamp)
-
-def utc_timestamp_strings_match(sparc_export_time, pennsieve_export_time):
-    """
-    Compares utc timestamps that are currently in string representation against each other.
-    Returns True if they represent the same time, False if they do not.
-    constraints: timezones match this format 'yyyy-mm-ddThh:mm:ss.sssZ' where sss =  up to 6 digits of milliseconds
-    """
-
-    # replace sparc export ',' with a '.'
-    sparc_export_time = sparc_export_time.replace(",", ".")
-
-    # remove the milliseconds and Zulu timezone from the sparc export time
-    sparc_export_time = sparc_export_time.split(".")[0]
-    pennsieve_export_time = pennsieve_export_time.split(".")[0]
-
-    # convert the timezone strings to datetime objects
-    setdtime = datetime.datetime.strptime(sparc_export_time, "%Y-%m-%dT%H:%M:%S")
-    getdtime = datetime.datetime.strptime(pennsieve_export_time, "%Y-%m-%dT%H:%M:%S")
-
-    print(f"setdtime: {setdtime}")
-    print(f"getdtime: {getdtime}")
-
-    print(f"setdtime.tzinfo: {setdtime.date()}")
-    print(f"setdtime.tzinfo: {setdtime.time()}")
-
-    print(f"getdtime: {getdtime.date()}")
-    print(f"getdtime: {getdtime.time()}")
-
-    # compare the two times
-    return setdtime.date() == getdtime.date() and setdtime.time() == getdtime.time()
 
