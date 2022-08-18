@@ -10,7 +10,6 @@ const updateDatasetUploadProgressTable = (progressObject) => {
   }
   //remove dtasetUploadTableBody children that don't have the id guided-upload-progress-bar-tr
   for (const child of datasetUploadTableBody.children) {
-    console.log(child);
     if (!child.getAttribute("id") === "guided-upload-progress-bar-tr") {
       datasetUploadTableBody.removeChild(child);
     }
@@ -55,12 +54,12 @@ const guidedSetCurationTeamUI = (boolSharedWithCurationTeam) => {
   );
   if (boolSharedWithCurationTeam) {
     textSharedWithCurationTeamStatus.innerHTML =
-      "Shared with the Curation Team";
+      "Shared with the SPARC Curation Team";
     $("#guided-button-share-dataset-with-curation-team").hide();
     $("#guided-button-unshare-dataset-with-curation-team").show();
   } else {
     textSharedWithCurationTeamStatus.innerHTML =
-      "Not shared with the Curation Team";
+      "Not shared with the SPARC Curation Team";
     $("#guided-button-share-dataset-with-curation-team").show();
     $("#guided-button-unshare-dataset-with-curation-team").hide();
   }
@@ -263,7 +262,6 @@ const scrollToBottomOfGuidedBody = () => {
 
 const getOpenSubPageInPage = (pageID) => {
   const subPageContainer = document.getElementById(pageID);
-  console.log(subPageContainer);
   const openPage = subPageContainer.querySelector(".sub-page:not(.hidden)");
   return openPage.id;
 };
@@ -354,22 +352,15 @@ const guidedTransitionFromDatasetNameSubtitlePage = () => {
   //Set the current page to the guided curation page
   CURRENT_PAGE = $("#guided-dataset-starting-point-tab");
 
-  /*reset sub-page navigation
+  //reset sub-page navigation (Set the first sub-page to be the active sub-page
+  //for all pages with sub-pages)
   const subPageCapsuleContainers = Array.from(
     document.querySelectorAll(".guided--capsule-container-sub-page")
   );
   for (const pageCapsule of subPageCapsuleContainers) {
-    const pageCapsuleChildren = Array.from(pageCapsule.children);
-    for (let i = 0; i < pageCapsuleChildren.length; i++) {
-      console.log(i);
-      let childSubPage = pageCapsuleChildren[i].id.replace("-capsule", "");
-      if (i == 0) {
-        document.getElementById(childSubPage).classList.add("active");
-      } else {
-        document.getElementById(childSubPage).classList.remove("active");
-      }
-    }
-  }*/
+    const firstSubPage = pageCapsule.querySelector(".guided--capsule-sub-page");
+    setActiveSubPage(firstSubPage.id.replace("-capsule", ""));
+  }
 };
 
 const saveGuidedProgress = (guidedProgressFileName) => {
@@ -11546,9 +11537,4 @@ $(document).ready(() => {
   $("#guided-import-folder").on("click", () => {
     ipcRenderer.send("open-folders-organize-datasets-dialog");
   });
-
-  $("#guided-button-import-protocols-io").popover();
-  $("#guided-button-generate-dataset-locally").popover();
-  $("#guided-button-pennsieve-generate-existing").popover();
-  $("#guided-button-data-derivative-manual").popover();
 });
