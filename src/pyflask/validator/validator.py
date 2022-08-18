@@ -65,7 +65,7 @@ def request_pennsieve_export(ps_dataset_id, dataset_latest_updated_at_timestamp)
     # remove the N:dataset text from the UUID
     ps_dataset_id_trimmed = ps_dataset_id.replace("N:dataset:", "")
 
-    for backoff_time in range(0, 31, 10):
+    for backoff_time in range(0, 51, 10):
         # wait for the backoff time 
         time.sleep(backoff_time)
 
@@ -83,7 +83,7 @@ def request_pennsieve_export(ps_dataset_id, dataset_latest_updated_at_timestamp)
 
         except requests.exceptions.HTTPError as e:
             # if on the last request and we get an HTTP error show the user the error
-            if backoff_time == 30:
+            if backoff_time == 50:
                 return handle_http_error(e)
 
     # a pennsieve export for the given dataset does not exist yet; or there is not one that matches the most recent change in the dataset
