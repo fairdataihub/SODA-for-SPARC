@@ -1179,6 +1179,8 @@ function populateFormsSamples(subjectID, sampleID, type, curationMode) {
     var c = fieldArr.map(function (i, field) {
       if (infoJson[i]) {
         if (!emptyEntries.includes(infoJson[i].toLowerCase())) {
+          console.log(field.name);
+          console.log(curationMode);
           if (field.name === "Age") {
             var fullAge = infoJson[i].split(" ");
             var unitArr = ["hours", "days", "weeks", "months", "years"];
@@ -1197,6 +1199,15 @@ function populateFormsSamples(subjectID, sampleID, type, curationMode) {
               }
             } else {
               $(`#${curationModePrefix}bootbox-sample-age-info`).val("N/A");
+            }
+          } else if (
+            curationMode == "guided" &&
+            field.name === "was derived from"
+          ) {
+            //If in guided mode, populate the derived from field with the sample previously
+            //selected as the derived from sample
+            if (!$(`#guided-bootbox-wasDerivedFromSample`).val(infoJson[i])) {
+              $(`#guided-bootbox-wasDerivedFromSample`).val("");
             }
           } else {
             if (type === "import") {

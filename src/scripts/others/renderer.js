@@ -986,7 +986,7 @@ const checkNewAppVersion = () => {
 ipcRenderer.on("app_version", (event, arg) => {
   const version = document.getElementById("version");
   ipcRenderer.removeAllListeners("app_version");
-  version.innerText = "v. " + arg.version;
+  version.innerText = "v. 7.0.4" /* + arg.version Guided beta over-ride*/;
 });
 
 // Check for update and show the pop up box
@@ -1285,6 +1285,11 @@ var guidedProgressFilePath = path.join(
   homeDirectory,
   "Soda",
   "Guided-Progress"
+);
+const guidedManifestFilePath = path.join(
+  homeDirectory,
+  "Soda",
+  "Guided-Manifest-Files"
 );
 var protocolConfigPath = path.join(metadataPath, protocolConfigFileName);
 

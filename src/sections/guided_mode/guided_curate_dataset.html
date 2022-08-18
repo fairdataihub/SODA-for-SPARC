@@ -546,6 +546,13 @@
                     </thead>
                     <tbody id="subject-specification-table-body"></tbody>
                   </table>
+                  <p
+                    class="guided--text-input-instructions text-center mb-sm hidden"
+                    id="guided-add-subject-instructions"
+                    style="margin-top: -7px"
+                  >
+                    Hit enter after entering the subject ID to add a subject.
+                  </p>
                   <button
                     class="ui primary basic button mt-0"
                     onclick="addSubjectSpecificationTableRow()"
@@ -1692,6 +1699,10 @@
           <div class="guided--capsule-container">
             <div
               class="guided--capsule"
+              id="guided-manifest-file-generation-capsule"
+            ></div>
+            <div
+              class="guided--capsule"
               id="guided-airtable-award-capsule"
             ></div>
             <div
@@ -1719,6 +1730,168 @@
             <div
               class="guided--capsule"
               id="guided-create-readme-metadata-capsule"
+            ></div>
+          </div>
+          <div
+            class="guided--panel hidden"
+            id="guided-manifest-file-generation-tab"
+          >
+            <div class="guided--section">
+              <h1 class="guided--text-sub-step">Manifest files</h1>
+              <p class="guided--help-text">
+                The SPARC guidelines require each dataset to have specific
+                metadata files including manifest files, as described by the
+                SPARC Data Standards (SDS).
+              </p>
+            </div>
+            <div class="guided--section">
+              <h2 class="guided--text-sub-step">
+                Would you like SODA to auto-generate your 'mandatory' manifest
+                files?
+              </h2>
+              <div class="guided--radio-button-container">
+                <button
+                  class="guided--radio-button tile-button"
+                  data-next-element="guided-section-manifest-auto-generation"
+                  data-button-config-value="manifest-files-generated-automatically"
+                  data-button-config-value-state="yes"
+                >
+                  <div class="guided--tile-button-icon">
+                    <img
+                      src="assets/img/logo-new-green.png"
+                      alt="SODA logo"
+                      style="height: 50px; width: 40px"
+                    />
+                  </div>
+                  <div class="guided--tile-body">
+                    <h2>Yes, auto-generate my manifest files</h2>
+                  </div>
+                </button>
+                <button
+                  class="guided--radio-button tile-button"
+                  id="guided-button-data-derivative-manual"
+                  style="
+                    opacity: 0.5;
+                    cursor: default !important;
+                    pointer-events: none;
+                  "
+                >
+                  <div class="guided--tile-button-icon">
+                    <svg
+                      height="50"
+                      width="50"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewbox="0 0 80.48 98.35"
+                    >
+                      <defs>
+                        <style>
+                          .cls-1,
+                          .cls-2 {
+                            fill: none;
+                          }
+
+                          .cls-1,
+                          .cls-2,
+                          .cls-3 {
+                            stroke-miterlimit: 10;
+                          }
+
+                          .cls-1 {
+                            stroke-width: 6px;
+                          }
+
+                          .cls-2 {
+                            stroke-width: 8px;
+                          }
+                        </style>
+                      </defs>
+                      <g id="Layer_2" data-name="Layer 2">
+                        <g id="Layer_2-2" data-name="Layer 2">
+                          <rect
+                            class="cls-1"
+                            x="65.2"
+                            y="70.64"
+                            width="0.17"
+                            height="25.22"
+                            stroke="#B80D49"
+                          ></rect>
+                          <rect
+                            class="cls-1"
+                            x="65.29"
+                            y="70.64"
+                            width="0.17"
+                            height="25.22"
+                            transform="translate(148.62 17.88) rotate(90)"
+                            stroke="#B80D49"
+                          ></rect>
+                          <path
+                            class="cls-2"
+                            d="M43.72,83.16l-32.67.09a7.83,7.83,0,0,1-8-7.58V10.58A7.82,7.82,0,0,1,11.05,3H48.81L65.54,17.54V64.8"
+                            stroke="#565E6B"
+                          ></path>
+                          <path
+                            class="cls-3"
+                            d="M65.54,17.54v3.23H52.61a7.31,7.31,0,0,1-7.52-7.09V3h3.72Z"
+                            stroke="#565E6B"
+                            fill="#565E6B"
+                          ></path>
+                          <line
+                            class="cls-1"
+                            x1="4.4"
+                            y1="46.35"
+                            x2="63.26"
+                            y2="46.35"
+                            stroke="#13716D"
+                          ></line>
+                          <line
+                            class="cls-1"
+                            x1="4.4"
+                            y1="62.64"
+                            x2="63.26"
+                            y2="62.64"
+                            stroke="#13716D"
+                          ></line>
+                          <line
+                            class="cls-1"
+                            x1="22.4"
+                            y1="46.35"
+                            x2="22.4"
+                            y2="80.5"
+                            stroke="#13716D"
+                          ></line>
+                          <line
+                            class="cls-1"
+                            x1="40.4"
+                            y1="46.35"
+                            x2="40.4"
+                            y2="80.5"
+                            stroke="#13716D"
+                          ></line>
+                        </g>
+                      </g>
+                    </svg>
+                  </div>
+                  <div class="guided--tile-body">
+                    <h2>No, I alredy have manifest files prepared</h2>
+                  </div>
+                </button>
+              </div>
+            </div>
+            <div
+              class="guided--section hidden"
+              id="guided-section-manifest-auto-generation"
+            >
+              <p class="guided--help-text">
+                Soda will create .xlsx manifest files for each of your high
+                level folders with the filename, timestamp, and filetype
+                metadata generated automatically.<br /><br />
+                Click Save and Continue to confirm that you would like to have
+                your manifest files generated automatically.
+              </p>
+            </div>
+            <div
+              class="guided--section hidden"
+              id="guided-section-data-derivative-manual"
             ></div>
           </div>
           <div class="guided--panel hidden" id="guided-airtable-award-tab">
@@ -2241,7 +2414,7 @@
                 All SPARC dataset must have their associated protocols on
                 <a target="_blank" href="https://www.protocols.io/"
                   >protocols.io</a
-                >, a platform for creating structured and sharable protocols.
+                >, a platform for creating structured and shareable protocols.
                 Since protocols.io provide a convenient interface to prepare
                 protocols, we recommend you prepare your protocols directly
                 there before continuing. Follow the
@@ -2274,11 +2447,11 @@
                 <button
                   class="guided--radio-button tile-button"
                   id="guided-button-import-protocols-io"
-                  data-content="Coming soon..."
-                  rel="popover"
-                  data-placement="bottom"
-                  data-trigger="hover"
-                  style="opacity: 0.5; cursor: default !important"
+                  style="
+                    opacity: 0.5;
+                    cursor: default !important;
+                    pointer-events: none;
+                  "
                 >
                   <div class="guided--tile-button-icon">
                     <img
@@ -2452,7 +2625,6 @@
               ></textarea>
               <p class="guided--text-input-instructions mb-0">
                 Enter a paragraph that explains the purpose of your study.
-                <br /><b>Refrain from using markdown.</b>
               </p>
               <label class="guided--form-label mt-xl required"
                 >Data collection:</label
@@ -2597,8 +2769,9 @@
                 <b>Example:</b> My SPARC research study
               </p>
               <label class="guided--form-label mt-xl"
-                >Other funcing source(s)</label
-              >
+                >Funding sources besides SPARC award
+                <span id="SPARC-award-other-funding-label"></span
+              ></label>
               <div class="demo-controls-body" style="width: 100%">
                 <div class="ui input modified">
                   <input
@@ -2609,7 +2782,6 @@
                 </div>
               </div>
               <p class="guided--text-input-instructions mb-0">
-                Other funding sources, if any.<br />
                 <b
                   >Hit enter after inserting a funding source to add a funding
                   source.</b
@@ -2799,7 +2971,7 @@
                   </div>
                   <p class="guided--text-input-instructions mb-0">
                     Type to get suggestions from the commonly used species. Must
-                    use termonology from the
+                    use terminology from the
                     <a
                       target="_blank"
                       href="https://www.ncbi.nlm.nih.gov/taxonomy"
@@ -3437,13 +3609,18 @@
                   >
                   <div class="demo-controls-body w-100">
                     <div class="ui input modified">
-                      <input
+                      <select
                         type="text"
                         id="guided-bootbox-wasDerivedFromSample"
                         name="was derived from"
-                        class="samples-form-entry"
+                        class="ui selection dropdown samples-form-entry"
                         placeholder="Type here..."
-                      />
+                      >
+                        <option value="Select">
+                          Not derived from another sample
+                        </option>
+                        <option value="original">Original</option>
+                      </select>
                     </div>
                   </div>
                   <p class="guided--text-input-instructions mb-0">
@@ -4443,17 +4620,31 @@
                 Dataset permissions control which users or teams can view, edit,
                 or manage your dataset on Pennsieve. Read below for a breakdown
                 of the different types of dataset permissions:
-                <br /><br />
-                <b>Managers</b> can invite people and teams to a dataset, edit
-                and delete models, records and files, but cannot publish a
-                dataset. <br /><br />
-                <b>Editors</b> can create, edit, or delete records and files in
-                a dataset. <br /><br />
-                <b>Viewers</b> can view and browse all information in a dataset,
-                but have no other permissions. <br /><br />
-                The current permissions specified for your Pennsieve dataset are
-                presented in the table below
               </p>
+              <ul class="guided--help-text">
+                <li
+                  class="guided--help-text text-left mb-2"
+                  style="color: hsl(0, 0%, 22%)"
+                >
+                  <b>Managers</b> can invite people and teams to a dataset, edit
+                  and delete models, records and files, but cannot publish a
+                  dataset.
+                </li>
+                <li
+                  class="guided--help-text text-left mb-2"
+                  style="color: hsl(0, 0%, 22%)"
+                >
+                  <b>Editors</b> can create, edit, or delete records and files
+                  in a dataset.
+                </li>
+                <li
+                  class="guided--help-text text-left mb-2"
+                  style="color: hsl(0, 0%, 22%)"
+                >
+                  <b>Viewers</b> can view and browse all information in a
+                  dataset, but have no other permissions.
+                </li>
+              </ul>
             </div>
             <table
               class="ui celled striped table"
@@ -4666,13 +4857,13 @@
                 Consent below that you agree to share your dataset under the
                 CC-BY license.
               </p>
-              <div class="ui checkbox">
+              <div class="ui checkbox mt-lg">
                 <input
                   type="checkbox"
                   id="guided-license-checkbox"
                   name="license"
                 />
-                <label style="font-size: 1.2rem; margin-top: 2rem"
+                <label style="font-size: 1.2rem"
                   >I agree to share my dataset under the Creative Commons
                   Attribution license
                 </label>
@@ -4702,6 +4893,10 @@
               class="guided--capsule"
               id="guided-dataset-generation-capsule"
             ></div>
+            <div
+              class="guided--capsule"
+              id="guided-dataset-dissemination-capsule"
+            ></div>
           </div>
 
           <div
@@ -4720,11 +4915,12 @@
                 <button
                   class="ui primary basic button"
                   id="guided-button-generate-dataset-locally"
-                  data-content="Coming soon..."
-                  rel="popover"
-                  data-placement="bottom"
-                  data-trigger="hover"
-                  style="width: 240px; opacity: 0.5; cursor: default !important"
+                  style="
+                    width: 240px;
+                    opacity: 0.5;
+                    cursor: default !important;
+                    pointer-events: none !important;
+                  "
                 >
                   Generate dataset locally
                 </button>
@@ -4759,10 +4955,13 @@
                 >
                   <div class="guided--input-container">
                     <h2 class="guided--text-sub-step">
-                      Is this the account you would like to generate your
-                      dataset to Pennsieve under?
+                      Your dataset will be uploaded to Pennsieve using the
+                      following account:
                     </h2>
-                    <div class="guided--container-data-display">
+                    <div
+                      class="guided--container-data-display"
+                      style="margin-top: 0px"
+                    >
                       <div class="guided--card-dataset-info">
                         <div class="guided--dataset-description-container">
                           <h5 class="guided--dataset-description">
@@ -4829,11 +5028,12 @@
                 <button
                   class="ui primary basic button"
                   id="guided-button-pennsieve-generate-existing"
-                  data-content="Coming soon..."
-                  rel="popover"
-                  data-placement="bottom"
-                  data-trigger="hover"
-                  style="width: 280px; opacity: 0.5; cursor: default !important"
+                  style="
+                    width: 280px;
+                    opacity: 0.5;
+                    cursor: default !important;
+                    pointer-events: none !important;
+                  "
                 >
                   Update an existing Pennsieve dataset
                 </button>
@@ -5570,6 +5770,13 @@
                   </tr>
                 </tbody>
               </table>
+              <h2
+                class="guided--text-sub-step"
+                id="guided-dataset-upload-complete-message"
+              >
+                Click "Save and Continue" to go to the last step of the data
+                curation and sharing process
+              </h2>
             </div>
             <div
               class="guided--section mt-lg hidden neumorphic"
@@ -5579,6 +5786,90 @@
                 class="guided--panel"
                 id="guided-upload-status-container"
               ></div>
+            </div>
+          </div>
+
+          <div
+            id="guided-dataset-dissemination-tab"
+            class="guided--panel hidden"
+          >
+            <div class="guided--section">
+              <h1 class="guided--text-sub-step">
+                Share with the SPARC Curation Team
+              </h1>
+              <h2 class="guided--text-sub-step">
+                You can now review your dataset on Pennsieve using the link
+                below:
+              </h2>
+              <p
+                class="guided--help-text text-center"
+                style="font-size: large; margin: 5px !important"
+              >
+                <a id="guided-pennsieve-dataset-link" target="_blank">
+                  <i class="fas fa-link"></i>
+                  View dataset on Pennsieve</a
+                >
+              </p>
+            </div>
+            <div class="guided--section">
+              <h2 class="guided--text-sub-step">Make changes (optional)</h2>
+              <p class="guided--help-text">
+                Now that your initial dataset upload via Guided Mode has been
+                completed, modifications to your dataset can be made by clicking
+                Free Form Mode in the sidebar, selecting the component of your
+                dataset you would like to edit, and selecting
+                <b><span id="guided-pennsieve-dataset-name"></span></b> from the
+                dataset dropdown list. Once your dataset is ready for SPARC
+                curation review, you may share it with the curation team below.
+              </p>
+            </div>
+            <div class="guided--section">
+              <h2 class="guided--text-sub-step">Share with Curation Team</h2>
+              <p class="guided--help-text">
+                Sharing your dataset with the SPARC Curation Team will inform
+                the Curation Team that your dataset is ready to be reviewed. It
+                is then advised not to make changes to the dataset until the
+                Curation Team contacts you.
+              </p>
+            </div>
+            <div class="guided--section">
+              <div
+                class="guided--container-data-display mt-sm"
+                style="width: 100%"
+              >
+                <div class="guided--card-dataset-info">
+                  <div class="guided--dataset-description-container">
+                    <h5 class="guided--dataset-description">Current status:</h5>
+                  </div>
+                  <div class="guided--dataset-content-container">
+                    <h5
+                      id="guided-dataset-shared-with-curation-team-status"
+                      class="guided--dataset-content"
+                    ></h5>
+                  </div>
+                </div>
+              </div>
+              <button
+                class="ui positive button guided--button-footer mt-lg"
+                id="guided-button-share-dataset-with-curation-team"
+                style="
+                  background-color: var(--color-light-green) !important;
+                  width: 270px !important;
+                "
+                onclick="guidedModifyCurationTeamAccess('share')"
+              >
+                Share with SPARC Curation Team</button
+              ><button
+                class="ui positive button guided--button-footer mt-lg"
+                id="guided-button-unshare-dataset-with-curation-team"
+                style="
+                  background-color: var(--color-light-green) !important;
+                  width: 270px !important;
+                "
+                onclick="guidedModifyCurationTeamAccess('unshare')"
+              >
+                Unshare with SPARC Curation Team
+              </button>
             </div>
           </div>
         </div>
@@ -5676,5 +5967,5 @@
   <script
     src="./scripts/guided-mode/lottieJSON.js"
     type="text/javascript"
-  ></script>
-</template>
+  ></script> </template
+>g

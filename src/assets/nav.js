@@ -3,18 +3,16 @@ const { existsSync } = require("original-fs");
 const { default: Swal } = require("sweetalert2");
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
 
-// variable that keeps track of the previous curation mode (guided or free-form)
-// used to handle updation of the folder structuring elements and sodaJSONObj
-let previousCurationMode = "";
-
-document.body.addEventListener("click", (event) => {
-  if (event.target.dataset.section) {
-    handleSectionTrigger(event);
-  } else if (event.target.dataset.modal) {
-    handleModalTrigger(event);
-  } else if (event.target.classList.contains("modal-hide")) {
-    hideAllModals();
-  }
+$(document).ready(function () {
+  document.body.addEventListener("click", (event) => {
+    if (event.target.dataset.section) {
+      handleSectionTrigger(event);
+    } else if (event.target.dataset.modal) {
+      handleModalTrigger(event);
+    } else if (event.target.classList.contains("modal-hide")) {
+      hideAllModals();
+    }
+  });
 });
 
 document.body.addEventListener("custom-back", (e) => {
@@ -73,126 +71,37 @@ async function handleSectionTrigger(event) {
   const itemsContainer = document.getElementById("items");
 
   console.log(sectionId);
-  console.log(previousCurationMode);
 
   if (sectionId === "guided_mode-section") {
-    if (previousCurationMode === "free-form" || previousCurationMode === "") {
-      //TRANSITION FROM FREE-FORM => GUIDED MODE
-      let soda_temp = {};
-
-      /*if (itemsContainer.children.length > 0) {
-        updateJSONObjectProgress();
-        soda_temp = sodaJSONObj;
-        console.log(soda_temp);
-        //step 3 has already been started so warn user about leaving
-        const { value: switchToGuidedFromFreeFormMode } = await Swal.fire({
-          title: "Save progress before you go?",
-          text: `Transitioning from free form mode to guided mode will cause you to lose
-            any progess you have made unless you save your progress.`,
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#3085d6",
-          cancelButtonColor: "#d33",
-          cancelButtonText: "Cancel",
-          confirmButtonText: "Save progress",
-          backdrop: "rgba(0,0,0,0.4)",
-        });
-        if (switchToGuidedFromFreeFormMode) {
-          if ("save-progresss" in soda_temp) {
-            saveTempSodaProgress(soda_temp["save-progress"], soda_temp);
-          } else {
-            const { value: saveProgressName } = await Swal.fire({
-              icon: "info",
-              title: "Saving progress as...",
-              text: "Enter a name for your progress below:",
-              heightAuto: false,
-              input: "text",
-              showCancelButton: true,
-              cancelButtonText: "Cancel",
-              confirmButtonText: "OK",
-              reverseButtons: reverseSwalButtons,
-              backdrop: "rgba(0,0,0, 0.4)",
-              showClass: {
-                popup: "animate__animated animate__fadeInDown animate__faster",
-              },
-              hideClass: {
-                popup: "animate__animated animate__fadeOutUp animate__faster",
-              },
-              preConfirm: (inputValue) => {
-                if (inputValue === "") {
-                  Swal.showValidationMessage(
-                    "Please enter a name to save your progress under."
-                  );
-                }
-              },
-            });
-            if (saveProgressName) {
-              console.log(saveProgressName);
-              soda_temp["save-progress"] = saveProgressName;
-              saveTempSodaProgress(saveProgressName, soda_temp);
-              addOption(
-                progressFileDropdown,
-                saveProgressName,
-                saveProgressName + ".json"
-              );
-              $(".vertical-progress-bar-step").removeClass("is-current");
-              $(".vertical-progress-bar-step").removeClass("done");
-              $(".getting-started").removeClass("prev");
-              $(".getting-started").removeClass("show");
-              $(".getting-started").removeClass("test2");
-              $("#Question-getting-started-1").addClass("show");
-              $("#generate-dataset-progress-tab").css("display", "none");
-
-              currentTab = 0;
-              wipeOutCurateProgress();
-              // $("#main_tabs_view")[0].click();
-              globalGettingStarted1stQuestionBool = false;
-            } else {
-              $("#main_tabs_view").click();
-              return;
-            }
-          }
-        } else {
-          $("#main_tabs_view").click();
-          return;
-        }
-      }*/
-      //reset organize dataset
-      // exitCurate(false);
-      organizeDSglobalPath = document.getElementById(
-        "guided-input-global-path"
-      );
-      organizeDSglobalPath.value = "";
-      dataset_path = document.getElementById("guided-input-global-path");
-      scroll_box = document.querySelector("#guided-body");
-
-      $(".shared-folder-structure-element").appendTo(
-        $("#guided-folder-structure-container")
-      );
-    }
+    //Transition file explorer elements to guided mode
+    organizeDSglobalPath = document.getElementById("guided-input-global-path");
+    organizeDSglobalPath.value = "";
+    dataset_path = document.getElementById("guided-input-global-path");
+    scroll_box = document.querySelector("#guided-body");
     itemsContainer.innerHTML = "";
+    $(".shared-folder-structure-element").appendTo(
+      $("#guided-folder-structure-container")
+    );
+
     guidedPrepareHomeScreen();
-    previousCurationMode = "guided";
   }
 
   if (sectionId === "main_tabs-section") {
-    if (previousCurationMode === "guided") {
-      organizeDSglobalPath = document.getElementById("input-global-path");
-      organizeDSglobalPath.value = "My_dataset_folder/";
-      dataset_path = document.getElementById("input-global-path");
-      scroll_box = document.querySelector("#organize-dataset-tab");
-      sodaJSONObj = {};
-      datasetStructureJSONObj = {};
-      subjectsTableData = [];
-      samplesTableData = [];
-      previousCurationMode = "free-form";
-      // move the folder structuring elements back to free-form mode if they were borrowed
-      // for guided mode
-      $(".shared-folder-structure-element").appendTo(
-        $("#free-form-folder-structure-container")
-      );
-      itemsContainer.innerHTML = "";
-    }
+    //Transition file explorer elements to guided mode
+    organizeDSglobalPath = document.getElementById("input-global-path");
+    organizeDSglobalPath.value = "My_dataset_folder/";
+    dataset_path = document.getElementById("input-global-path");
+    scroll_box = document.querySelector("#organize-dataset-tab");
+    itemsContainer.innerHTML = "";
+    $(".shared-folder-structure-element").appendTo(
+      $("#free-form-folder-structure-container")
+    );
+
+    //Reset variables shared with guided-mode if they had been modified
+    sodaJSONObj = {};
+    datasetStructureJSONObj = {};
+    subjectsTableData = [];
+    samplesTableData = [];
   }
 
   hideAllSectionsAndDeselectButtons();
