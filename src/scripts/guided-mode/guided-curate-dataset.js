@@ -1650,6 +1650,43 @@ const traverseToTab = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-create-submission-metadata-tab") {
+      let submission_metadata =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"];
+
+      let dataDeliverableLottieContainer = document.getElementById(
+        "data-deliverable-lottie-container"
+      );
+      let dataDeliverableParaText = document.getElementById(
+        "guided-data-deliverable-para-text"
+      );
+
+      if (Object.keys(submission_metadata).length > 0) {
+        dataDeliverableLottieContainer.innerHTML = "";
+        lottie.loadAnimation({
+          container: dataDeliverableLottieContainer,
+          animationData: successCheck,
+          renderer: "svg",
+          loop: true,
+          autoplay: true,
+        });
+        if (submission_metadata["filepath"]) {
+          dataDeliverableParaText.innerHTML = submission_metadata["filepath"];
+        } else {
+          dataDeliverableParaText.innerHTML = "";
+        }
+      } else {
+        //reset the code metadata lotties and para text
+        dataDeliverableLottieContainer.innerHTML = "";
+        lottie.loadAnimation({
+          container: dataDeliverableLottieContainer,
+          animationData: dragDrop,
+          renderer: "svg",
+          loop: true,
+          autoplay: true,
+        });
+        dataDeliverableParaText.innerHTML = "";
+      }
+
       const sparcAward =
         sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
       const sparcAwardInputManual = document.getElementById(
@@ -2851,7 +2888,7 @@ function subSamInputIsValid(subSamInput) {
 }
 const generateAlertElement = (alertType, warningMessageText) => {
   return `
-      <div class="alert alert-${alertType} guided--alert" role="alert">
+      <div style="margin-left:.5rem; margin-right:.5rem"class="alert alert-${alertType} guided--alert" role="alert">
         ${warningMessageText}
       </div>
     `;
@@ -2859,9 +2896,11 @@ const generateAlertElement = (alertType, warningMessageText) => {
 const generateAlertMessage = (elementToWarn) => {
   const alertMessage = elementToWarn.data("alert-message");
   const alertType = elementToWarn.data("alert-type");
+  console.log(elementToWarn);
   if (!elementToWarn.next().hasClass("alert")) {
     elementToWarn.after(generateAlertElement(alertType, alertMessage));
   }
+  console.log("here");
   enableProgressButton();
 };
 const removeAlertMessageIfExists = (elementToCheck) => {
@@ -2904,6 +2943,7 @@ const validateInput = (inputElementToValidate) => {
         $("#guided-same-amount-samples-form").css("display", "flex");
         inputIsValid = true;
       } else {
+        console.log(inputElementToValidate);
         generateAlertMessage(inputElementToValidate);
         $("#guided-same-amount-samples-form").hide();
       }
@@ -4978,6 +5018,7 @@ const openSubjectRenameInput = (subjectNameEditButton) => {
         data-alert-type="danger"
         data-prev-name="${prevSubjectName}"
       />
+      <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-light-green); font-size: 1.24rem;" onclick="confirmEnter(this)"></i>
     </div>
   `;
   subjectIdCellToRename.html(subjectRenameElement);
@@ -4998,8 +5039,9 @@ const openPoolRenameInput = (poolNameEditButton) => {
         data-alert-message="Pool IDs may not contain spaces or special characters"
         data-alert-type="danger"
         data-prev-name="${prevPoolName}"
-        style="width: 250px;"
+        style="width: 180px;"
       />
+      <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-light-green); font-size: 1.24rem;" onclick="confirmEnter(this)"></i>
     </div>
   `;
   poolIdCellToRename.html(poolRenameElement);
@@ -5166,21 +5208,39 @@ const confirmEnter = (button) => {
     keyCode: 13,
   });
 
-  button.previousElementSibling.dispatchEvent(ke);
-  console.log(ke);
-  console.log(button.previousElementSibling);
+  let input_field = button.previousElementSibling;
+  console.log(input_field.parentNode.children);
+  if (input_field.tagName === "INPUT") {
+    input_field.dispatchEvent(ke);
+  } else {
+    //alert message is the previousElement
+    input_field.parentNode.children[1].dispatchEvent(ke);
+  }
 };
 
-const confirmOnBlur = (element) => {
-  document.getElementById(element).addEventListener("blur", (event) => {
-    console.log(event);
-    console.log(event.path[1].children[2]);
-    console.log(event.path[0].value);
-    if (event.path[0].value != "") {
+const keydownListener = (event) => {
+  if (event.key === "Enter") {
+    enterKey = true;
+  }
+};
+
+const onBlurEvent = (element) => {
+  if (event.path[0].value != "") {
+    if (enterKey === false) {
       confirmEnter(event.path[1].children[2]);
     }
-    console.log("uhhhhhh");
-  });
+  }
+};
+
+const endConfirmOnBlur = (element) => {
+  window.removeEventListener("keydown", keydownListener);
+  document.getElementById(element).removeEventListener("blur", onBlurEvent);
+};
+
+var enterKey = false;
+const confirmOnBlur = (element) => {
+  window.addEventListener("keydown", keydownListener);
+  document.getElementById(element).addEventListener("blur", onBlurEvent);
 };
 
 const addSubjectSpecificationTableRow = () => {
@@ -5197,12 +5257,11 @@ const addSubjectSpecificationTableRow = () => {
     //focus on the input that already exists
     subjectSpecificationTableInput.focus();
   } else {
+    // endConfirmOnBlur("guided--subject-input");
     //create a new table row on
     subjectSpecificationTableBody.innerHTML +=
       generateSubjectSpecificationRowElement();
 
-    //CREATE EVENT LISTENER TO ON FOCUS
-    // confirmOnBlur("guided--subject-input");
 
     const newSubjectRow =
       subjectSpecificationTableBody.querySelector("tr:last-child");
@@ -5214,6 +5273,8 @@ const addSubjectSpecificationTableRow = () => {
     newSubjectInput.focus();
     //scroll to bottom of guided body so back/continue buttons are visible
     scrollToBottomOfGuidedBody();
+    //CREATE EVENT LISTENER TO ON FOCUS
+    //confirmOnBlur("guided--subject-input");
 
     document
       .getElementById("guided-add-subject-instructions")
@@ -5234,6 +5295,7 @@ const addSampleSpecificationTableRow = (clickedSubjectAddSampleButton) => {
     //No need to create a new row
     sampleSpecificationTableInput.focus();
   } else {
+    // endConfirmOnBlur("guided--sample-input");
     //create a new table row Input element
     addSampleTableBody.innerHTML += generateSampleSpecificationRowElement();
     // confirmOnBlur("guided--sample-input");
@@ -5243,6 +5305,7 @@ const addSampleSpecificationTableRow = (clickedSubjectAddSampleButton) => {
       "input[name='guided-sample-id']"
     );
     newSampleInput.focus();
+    confirmOnBlur("guided--sample-input");
   }
 };
 
@@ -5318,6 +5381,7 @@ const generatePoolSpecificationRowElement = () => {
           data-alert-type="danger"
           style="width: 100%;"
         />
+        <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-light-green); font-size: 1.24rem;" onclick="confirmEnter(this)"></i>
       </div>
     </td>
     <td class="middle aligned pool-subjects remove-left-border">
@@ -5549,6 +5613,7 @@ const openSampleRenameInput = (subjectNameEditButton) => {
         data-alert-type="danger"
         data-prev-name="${prevSampleName}"
       />
+      <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-light-green); font-size: 1.24rem;" onclick="confirmEnter(this)"></i>
     </div>
   `;
   sampleIdCellToRename.html(sampleRenameElement);
@@ -6141,7 +6206,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
     subjectsWithSamplesInPools
   )) {
     asideElementTemplateLiteral += `
-      <div class="justify-center mt-md">
+      <div class="justify-center">
         <label class="guided--form-label centered">
           ${poolName}
         </label>
@@ -6160,6 +6225,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
                     <a 
                       class="${highLevelFolderName}-selection-aside-item selection-aside-item"
                       data-path-suffix="${subject.poolName}/${subject.subjectName}/${sample}"
+                      style="padding-left: 1rem;"
                     >${sample}</a>
                   `;
                   })
@@ -6179,7 +6245,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
   //loop through the subjects and create an aside element for each
   for (const subject of subjectsWithSamplesOutsidePools) {
     asideElementTemplateLiteral += `
-      <div class="justify-center mt-md">
+      <div class="justify-center">
         <label class="guided--form-label centered">
           ${subject.subjectName}
         </label>
@@ -6191,7 +6257,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
                 class="${highLevelFolderName}-selection-aside-item selection-aside-item"
                 data-path-suffix="${subject.subjectName}/${sample}"
               >${sample}</a>
-            `;
+`;
           })
           .join("\n")}
     `;
@@ -6348,6 +6414,7 @@ const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
       return `
           <a 
             class="${highLevelFolderName}-selection-aside-item selection-aside-item"
+            style="align-self: center; width: 97%;"
             data-path-suffix="${
               subject.poolName ? subject.poolName + "/" : ""
             }${subject.subjectName}"

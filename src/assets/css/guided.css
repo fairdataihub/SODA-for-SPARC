@@ -458,7 +458,7 @@ h1.guided--text-sub-step {
   margin-bottom: 9px;
 }
 .guided--text-input-instructions {
-  font-size: 1.1rem;
+  font-size: 13px;
   width: 100%;
   padding-top: 4px;
   padding-bottom: 5px;
@@ -794,12 +794,12 @@ h1.guided--text-sub-step {
   align-items: center;
 }
 .guided--help-text {
-  font-size: 1.1rem;
+  font-size: 14px;
   max-width: 800px;
   text-align: justify;
 }
 .guided--help-text.small {
-  font-size: 1rem;
+  font-size: 13px;
   max-width: 650px;
 }
 
@@ -989,7 +989,7 @@ h1.guided--text-sub-step {
   flex-direction: column;
   align-items: center;
   width: 350px;
-  height: 475px;
+  height: 476px;
   padding: 20px 0px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -1025,11 +1025,15 @@ h1.guided--text-sub-step {
 .selection-aside-item.is-selected {
   background-color: #e8f0fe;
   border: 1px solid black;
+  width: 96%;
+  align-self: center;
 }
 
 /*Scale selection-aside-item by 110%*/
 .selection-aside-item:hover {
   background-color: aliceblue;
+  width: 97%;
+  align-self: center;
 }
 
 .coming-soon-div {
@@ -1059,6 +1063,37 @@ h1.guided--text-sub-step {
   font-size: 1.2rem;
 }
 
-/* .guided--tab-button:focus {
-  border-bottom: 5px solid #b80d49;
-} */
+.onHoverBlueBoxShadow:hover {
+  box-shadow: 0 0 6px #b0b0b0 !important;
+  border: 1px solid #1678c2 !important;
+}
+
+.onHoverBlackBoxShadow:hover {
+  box-shadow: 0 0 6px #b0b0b0 !important;
+  border: 1px solid black !important;
+}
+
+.poolContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border: 1px solid black;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.poolTitleContainer {
+  margin-top: 0px !important;
+  background: #fff6ea;
+  height: 35px;
+  margin-bottom: -1px;
+  border-bottom: 1px solid black;
+  /* padding-top: 0 !important; */
+}
+
+.poolTitle {
+  align-self: center;
+  width: 100%;
+  margin: 0 !important;
+  padding-bottom: 6px;
+}

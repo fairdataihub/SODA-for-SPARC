@@ -169,9 +169,16 @@ const metadataFileExtensionObject = {
   code_description: [".xlsx"],
   inputs_metadata: [".xlsx"],
   outputs_metadata: [".xlsx"],
+  data_deliverable: [".docx", ".doc"],
 };
 
-function dropHandler(ev, paraElement, metadataFile, curationMode) {
+async function dropHandler(
+  ev,
+  paraElement,
+  metadataFile,
+  curationMode,
+  dataDeliverables = false
+) {
   // Prevent default behavior (Prevent file from being opened)
   ev.preventDefault();
   document.getElementById(paraElement).innerHTML = "";
@@ -185,28 +192,90 @@ function dropHandler(ev, paraElement, metadataFile, curationMode) {
       var metadataWithoutExtension = file.name.slice(0, file.name.indexOf("."));
       var extension = file.name.slice(file.name.indexOf("."));
 
-      if (metadataWithoutExtension === metadataFile) {
-        if (metadataFileExtensionObject[metadataFile].includes(extension)) {
-          document.getElementById(paraElement).innerHTML = file.path;
+      console.log(dataDeliverables);
+      console.log("CHECK bool above");
+      console.log(extension);
+      console.log(metadataWithoutExtension);
+      if (dataDeliverables === true) {
+        let filepath = file.path;
+        var award = $("#submission-sparc-award");
+        log.info(`Importing Data Deliverables document: ${filepath}`);
+        try {
+          let extract_milestone = await client.get(
+            `/prepare_metadata/import_milestone`,
+            {
+              params: {
+                path: filepath,
+              },
+            }
+          );
+          let res = extract_milestone.data;
+          milestoneObj = res;
+
+          //Handle free-form mode submission data
           if (curationMode === "free-form") {
-            $($("#" + paraElement).parents()[1])
-              .find(".div-metadata-confirm")
-              .css("display", "flex");
-            $($("#" + paraElement).parents()[1])
-              .find(".div-metadata-go-back")
-              .css("display", "none");
+            createMetadataDir();
+            var informationJson = {};
+            informationJson = parseJson(milestonePath);
+            informationJson[award] = milestoneObj;
+            fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
+            Swal.fire({
+              backdrop: "rgba(0,0,0, 0.4)",
+              heightAuto: false,
+              timer: 3000,
+              timerProgressBar: true,
+              icon: "success",
+              text: `Successfully loaded your DataDeliverables.docx document`,
+            });
+            removeOptions(descriptionDateInput);
+            milestoneTagify1.removeAllTags();
+            milestoneTagify1.settings.whitelist = [];
+            changeAwardInput();
           }
+
+          //Handle guided mode submission data
           if (curationMode === "guided") {
-            //Add success checkmark lottie animation inside metadata card
-            const dragDropContainer =
+            const guidedMilestoneData = res;
+            //create a string with today's date in the format xxxx/xx/xx
+            const today = new Date();
+            const todayString = `
+                  ${today.getFullYear()}-${
+              today.getMonth() + 1
+            }-${today.getDate()}
+                `;
+            //add a custom milestone row for when the user wants to add a custom milestone
+            //not included in the dataset deliverables document
+            guidedMilestoneData[
+              "Not included in the Dataset Deliverables document"
+            ] = [
+              {
+                "Description of data":
+                  "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
+                "Expected date of completion": "N/A",
+              },
+            ];
+            console.log(guidedMilestoneData);
+
+            //save the unselected milestones into sodaJSONObj
+            sodaJSONObj["dataset-metadata"]["submission-metadata"][
+              "temp-imported-milestones"
+            ] = guidedMilestoneData;
+
+            sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] =
+              filepath;
+
+            renderMilestoneSelectionTable(guidedMilestoneData);
+
+            guidedSubmissionTagsTagify.settings.whitelist = [];
+
+            unHideAndSmoothScrollToElement(
+              "guided-div-data-deliverables-import"
+            );
+
+            let dragDropContainer =
               document.getElementById(paraElement).parentElement;
-            //get the value of data-code-metadata-file-type from dragDropContainer
-            const metadataFileType =
-              dragDropContainer.dataset.codeMetadataFileType;
-            //save the path of the metadata file to the json object
-            sodaJSONObj["dataset-metadata"]["code-metadata"][metadataFileType] =
-              file.path;
-            const lottieContainer = dragDropContainer.querySelector(
+
+            let lottieContainer = dragDropContainer.querySelector(
               ".code-metadata-lottie-container"
             );
             lottieContainer.innerHTML = "";
@@ -214,20 +283,68 @@ function dropHandler(ev, paraElement, metadataFile, curationMode) {
               container: lottieContainer,
               animationData: successCheck,
               renderer: "svg",
-              loop: false,
+              loop: true,
               autoplay: true,
             });
+            console.log("lottie should be playing");
           }
+        } catch (error) {
+          clientError(error);
+          Swal.fire({
+            backdrop: "rgba(0,0,0, 0.4)",
+            heightAuto: false,
+            icon: "error",
+            text: userErrorMessage(error),
+          });
         }
       } else {
-        document.getElementById(paraElement).innerHTML =
-          "<span style='color:red'>Your SPARC metadata file must be named and formatted exactly as listed above!</span>";
-        $($("#" + paraElement).parents()[1])
-          .find(".div-metadata-confirm")
-          .css("display", "none");
-        $($("#" + paraElement).parents()[1])
-          .find(".div-metadata-go-back")
-          .css("display", "flex");
+        //dataDelieravles is true for the name to be however it needs to be, just check extension is doc or docx
+        if (metadataWithoutExtension === metadataFile) {
+          if (metadataFileExtensionObject[metadataFile].includes(extension)) {
+            document.getElementById(paraElement).innerHTML = file.path;
+            if (curationMode === "free-form") {
+              $($("#" + paraElement).parents()[1])
+                .find(".div-metadata-confirm")
+                .css("display", "flex");
+              $($("#" + paraElement).parents()[1])
+                .find(".div-metadata-go-back")
+                .css("display", "none");
+            }
+            if (curationMode === "guided") {
+              //Add success checkmark lottie animation inside metadata card
+              const dragDropContainer =
+                document.getElementById(paraElement).parentElement;
+              //get the value of data-code-metadata-file-type from dragDropContainer
+              const metadataFileType =
+                dragDropContainer.dataset.codeMetadataFileType;
+              console.log(metadataFileType);
+              //save the path of the metadata file to the json object
+              sodaJSONObj["dataset-metadata"]["code-metadata"][
+                metadataFileType
+              ] = file.path;
+              const lottieContainer = dragDropContainer.querySelector(
+                ".code-metadata-lottie-container"
+              );
+              lottieContainer.innerHTML = "";
+              lottie.loadAnimation({
+                container: lottieContainer,
+                animationData: successCheck,
+                renderer: "svg",
+                loop: false,
+                autoplay: true,
+              });
+            }
+          }
+        } else {
+          document.getElementById(paraElement).innerHTML =
+            "<span style='color:red'>Your SPARC metadata file must be named and formatted exactly as listed above!</span>";
+          $($("#" + paraElement).parents()[1])
+            .find(".div-metadata-confirm")
+            .css("display", "none");
+          $($("#" + paraElement).parents()[1])
+            .find(".div-metadata-go-back")
+            .css("display", "flex");
+        }
       }
     } else {
       document.getElementById(paraElement).innerHTML =

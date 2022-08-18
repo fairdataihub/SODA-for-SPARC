@@ -222,6 +222,9 @@ async function helpMilestoneSubmission(curationMode) {
           "temp-imported-milestones"
         ] = guidedMilestoneData;
 
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] =
+          filepath;
+
         renderMilestoneSelectionTable(guidedMilestoneData);
 
         guidedSubmissionTagsTagify.settings.whitelist = [];

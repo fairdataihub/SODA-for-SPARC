@@ -767,9 +767,15 @@
                   <div
                     class="guided--container-subject-samples mt-md"
                     id="guided-primary-samples-file-explorer-container"
+                    style="margin-right: 0.5rem; padding-top: 10px"
                   >
-                    <div class="guided--hlf-selection-container">
-                      <label class="guided--form-label centered"
+                    <div
+                      class="guided--hlf-selection-container"
+                      style="padding-top: 0 !important"
+                    >
+                      <label
+                        class="guided--form-label centered"
+                        style="padding-bottom: 12px; padding-top: 12px"
                         >Dataset samples:
                       </label>
                       <aside
@@ -781,9 +787,12 @@
                       id="guided-primary-samples-file-explorer-intro"
                       class="guided--panel mb-0"
                       style="
-                        height: 475px;
+                        height: 476px;
                         padding: 25px;
                         border: black solid 2px;
+                        width: 800px;
+                        margin-left: 0.5rem;
+                        border-radius: 4px;
                       "
                     >
                       <div
@@ -869,8 +878,13 @@
                     class="guided--container-subject-samples mt-md"
                     id="guided-primary-subjects-file-explorer-container"
                   >
-                    <div class="guided--hlf-selection-container">
-                      <label class="guided--form-label centered"
+                    <div
+                      class="guided--hlf-selection-container"
+                      style="padding-top: 0"
+                    >
+                      <label
+                        class="guided--form-label centered"
+                        style="padding: 12px 0 12px 0; height: 48px"
                         >Dataset subjects:
                       </label>
                       <aside
@@ -1560,20 +1574,32 @@
             class="guided--panel hidden"
             data-skip-page="true"
           >
-            <div class="guided--section" id="guided-file-explorer-elements">
+            <div
+              class="guided--section"
+              id="guided-file-explorer-elements"
+              style="
+                padding: 0;
+                margin-left: 0.5rem;
+                border-radius: 4px;
+                height: 476px;
+              "
+            >
               <h2
                 class="guided--text-sub-step mt-0"
                 id="structure-folder-header"
               ></h2>
               <p class="guided--help-text" id="structure-folder-contents"></p>
 
-              <div class="guided--folder-organization-buttons-container">
+              <div
+                class="guided--folder-organization-buttons-container"
+                style="margin-top: 0.44rem; width: 97% !important"
+              >
                 <div
                   class="guided--folder-organization-buttons-container-sub"
                   style="flex-grow: 1"
                 >
                   <button
-                    class="ui secondary basic button small"
+                    class="ui secondary basic button small onHoverBlackBoxShadow"
                     id="guided-button-back"
                   >
                     <i class="fas fa-arrow-up"></i>
@@ -1598,7 +1624,7 @@
                 </div>
                 <div class="guided--folder-organization-buttons-container-sub">
                   <button
-                    class="ui primary basic button small"
+                    class="ui primary basic button small onHoverBlueBoxShadow"
                     id="guided-new-folder"
                     style="margin-right: 7px"
                   >
@@ -1606,7 +1632,7 @@
                     >New folder
                   </button>
                   <button
-                    class="ui primary basic button small remove-margin-right"
+                    class="ui primary basic button small remove-margin-right onHoverBlueBoxShadow"
                     id="guided-import-folder"
                     style="width: 165px; margin-right: 7px !important"
                   >
@@ -1631,7 +1657,7 @@
                     Import folder
                   </button>
                   <button
-                    class="ui primary basic button small remove-margin-right"
+                    class="ui primary basic button small remove-margin-right onHoverBlueBoxShadow"
                     id="guided-imoprt-file"
                     style="width: 165px"
                   >
@@ -1657,7 +1683,11 @@
                   </button>
                 </div>
               </div>
-              <div id="guided-folder-structure-container" class="w-100"></div>
+              <div
+                id="guided-folder-structure-container"
+                class="w-100"
+                style="margin-top: 0"
+              ></div>
             </div>
           </div>
         </div>
@@ -2025,6 +2055,7 @@
               <h2 class="guided--text-sub-step">
                 Would you like to import your Data Deliverables Document?
               </h2>
+              <!-- DRAG AND DROP FOR DATA DELIVERABLES -->
               <div class="guided--radio-button-container">
                 <button
                   class="guided--radio-button tile-button"
@@ -2113,19 +2144,51 @@
                 data-skip-sub-page="false"
               >
                 <div class="guided--section">
-                  <button
-                    class="ui primary button"
-                    style="
-                      background-color: var(--color-light-green) !important;
-                    "
-                    onclick="helpMilestoneSubmission('guided')
-                "
-                  >
-                    Import Data Deliverables document
-                  </button>
+                  <div>
+                    <div
+                      class="guided--container-file-import"
+                      droppable="true"
+                      ondrop="dropHandler(event, 'guided-data-deliverable-para-text', 'DataDeliverablesDocument', 'guided', dataDeliverables=true);"
+                      ondragover="return false;"
+                    >
+                      <div
+                        class="guided--file-import"
+                        data-code-metadata-file-type="data_deliverable"
+                        style="min-height: 300px"
+                      >
+                        <div
+                          id="data-deliverable-lottie-container"
+                          class="code-metadata-lottie-container"
+                          style="height: 100px"
+                        ></div>
+                        <p class="guided--help-text text-center">
+                          Drag and Drop <br /><b>data_deliverable.docx</b>
+                        </p>
+                        <p class="guided--help-text text-center mt-sm mb-sm">
+                          OR
+                        </p>
+                        <button
+                          class="ui primary basic button mt-sm"
+                          onclick="helpMilestoneSubmission('guided')"
+                        >
+                          <i
+                            class="fas fa-file-import"
+                            style="margin-right: 7px"
+                          ></i
+                          >Import data_deliverable.docx
+                        </button>
+                        <p
+                          class="guided--help-text small text-center mt-sm"
+                          id="guided-data-deliverable-para-text"
+                          style="max-width: 240px; overflow-wrap: break-word"
+                        ></p>
+                      </div>
+                    </div>
+                  </div>
                   <div
                     class="guided--panel hidden mt-xl"
                     id="guided-div-data-deliverables-import"
+                    style="margin-top: 1rem !important"
                   >
                     <h2 class="guided--text-sub-step mb-0">
                       Select the milestones associated with this dataset
@@ -3948,7 +4011,19 @@
                 <a href="https://osparc.io/" target="_blank">osparc.io</a>, an
                 interactive, online simulation platform that hosts SPARC
                 computational models and solvers. Prepare the code_description
-                metadata files on osparc then continue below.
+                metadata files on osparc then continue below. For help, please
+                reach out to
+                <a href="mailto:curation@sparc.science" target="_blank"
+                  >the SPARC Curation Team.</a
+                >
+                Alternatively, you can download the code_description.xslx
+                template
+                <a
+                  href="https://github.com/SciCrunch/sparc-curation/releases/download/dataset-template-2.0.0/DatasetTemplate.zip"
+                  target="_blank"
+                  >here</a
+                >
+                and fill it out manually
               </p>
             </div>
 
@@ -4055,9 +4130,6 @@
                 <h2 class="guided--text-sub-step">
                   Provide information to be included in your README:
                 </h2>
-                <p class="guided--text-input-instructions mb-0">
-                  <b>Please refrain from using markdown.</b>
-                </p>
                 <textarea
                   class="guided--input guided--text-area-tall"
                   type="text"
@@ -4065,6 +4137,9 @@
                   placeholder="Draft your README here"
                   id="guided-textarea-create-readme"
                 ></textarea>
+                <p class="guided--text-input-instructions mb-0">
+                  <b>Please refrain from using markdown.</b>
+                </p>
               </div>
               <!--<button
                 id="guided-generate-readme-file"
