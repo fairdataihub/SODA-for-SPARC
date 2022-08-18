@@ -11550,4 +11550,5 @@ $(document).ready(() => {
   $("#guided-button-import-protocols-io").popover();
   $("#guided-button-generate-dataset-locally").popover();
   $("#guided-button-pennsieve-generate-existing").popover();
+  $("#guided-button-data-derivative-manual").popover();
 });
