@@ -5262,7 +5262,6 @@ const addSubjectSpecificationTableRow = () => {
     subjectSpecificationTableBody.innerHTML +=
       generateSubjectSpecificationRowElement();
 
-
     const newSubjectRow =
       subjectSpecificationTableBody.querySelector("tr:last-child");
     //get the input element in newSubjectRow
