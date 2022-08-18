@@ -1,5 +1,3 @@
-const { parseJSON } = require("jquery");
-
 const updateDatasetUploadProgressTable = (progressObject) => {
   const datasetUploadTableBody = document.getElementById(
     "guided-tbody-dataset-upload"
@@ -12,7 +10,6 @@ const updateDatasetUploadProgressTable = (progressObject) => {
   }
   //remove dtasetUploadTableBody children that don't have the id guided-upload-progress-bar-tr
   for (const child of datasetUploadTableBody.children) {
-    console.log(child);
     if (!child.getAttribute("id") === "guided-upload-progress-bar-tr") {
       datasetUploadTableBody.removeChild(child);
     }
@@ -49,6 +46,94 @@ guidedUnLockSideBar = () => {
   }
 
   sidebar.disabled = false;
+};
+
+const guidedSetCurationTeamUI = (boolSharedWithCurationTeam) => {
+  const textSharedWithCurationTeamStatus = document.getElementById(
+    "guided-dataset-shared-with-curation-team-status"
+  );
+  if (boolSharedWithCurationTeam) {
+    textSharedWithCurationTeamStatus.innerHTML =
+      "Shared with the SPARC Curation Team";
+    $("#guided-button-share-dataset-with-curation-team").hide();
+    $("#guided-button-unshare-dataset-with-curation-team").show();
+  } else {
+    textSharedWithCurationTeamStatus.innerHTML =
+      "Not shared with the SPARC Curation Team";
+    $("#guided-button-share-dataset-with-curation-team").show();
+    $("#guided-button-unshare-dataset-with-curation-team").hide();
+  }
+};
+
+const guidedModifyCurationTeamAccess = async (action) => {
+  if (action === "share") {
+    const { value: confirmShareWithCurationTeam } = await Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      cancelButtonText: "No",
+      confirmButtonText: "Yes",
+      focusCancel: true,
+      icon: "warning",
+      reverseButtons: reverseSwalButtons,
+      showCancelButton: true,
+      text: "This will inform the Curation Team that your dataset is ready to be reviewed. It is then advised not to make changes to the dataset until the Curation Team contacts you. Would you like to continue?",
+    });
+    if (confirmShareWithCurationTeam) {
+      try {
+        await client.patch(
+          `/manage_datasets/bf_dataset_permissions`,
+          {
+            input_role: "manager",
+          },
+          {
+            params: {
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["name"],
+              scope: "team",
+              name: "SPARC Data Curation Team",
+            },
+          }
+        );
+        guidedSetCurationTeamUI(true);
+      } catch (error) {
+        log.error(error);
+      }
+    }
+  }
+  if (action === "unshare") {
+    const { value: confirmUnshareWithCurationTeam } = await Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      cancelButtonText: "No",
+      confirmButtonText: "Yes",
+      focusCancel: true,
+      icon: "warning",
+      reverseButtons: reverseSwalButtons,
+      showCancelButton: true,
+      text: "Are you sure you would like to remove the SPARC Data Curation Team as a manager of this dataset?",
+    });
+    if (confirmUnshareWithCurationTeam) {
+      try {
+        await client.patch(
+          `/manage_datasets/bf_dataset_permissions`,
+          {
+            input_role: "remove current permissions",
+          },
+          {
+            params: {
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["name"],
+              scope: "team",
+              name: "SPARC Data Curation Team",
+            },
+          }
+        );
+        guidedSetCurationTeamUI(false);
+      } catch (error) {
+        log.error(error);
+      }
+    }
+  }
 };
 
 const guidedSaveAndExit = async (exitPoint) => {
@@ -177,7 +262,6 @@ const scrollToBottomOfGuidedBody = () => {
 
 const getOpenSubPageInPage = (pageID) => {
   const subPageContainer = document.getElementById(pageID);
-  console.log(subPageContainer);
   const openPage = subPageContainer.querySelector(".sub-page:not(.hidden)");
   return openPage.id;
 };
@@ -267,6 +351,16 @@ const guidedTransitionFromDatasetNameSubtitlePage = () => {
   }
   //Set the current page to the guided curation page
   CURRENT_PAGE = $("#guided-dataset-starting-point-tab");
+
+  //reset sub-page navigation (Set the first sub-page to be the active sub-page
+  //for all pages with sub-pages)
+  const subPageCapsuleContainers = Array.from(
+    document.querySelectorAll(".guided--capsule-container-sub-page")
+  );
+  for (const pageCapsule of subPageCapsuleContainers) {
+    const firstSubPage = pageCapsule.querySelector(".guided--capsule-sub-page");
+    setActiveSubPage(firstSubPage.id.replace("-capsule", ""));
+  }
 };
 
 const saveGuidedProgress = (guidedProgressFileName) => {
@@ -1288,7 +1382,7 @@ const guidedLoadDescriptionContributorInformation = () => {
   }
 };
 
-const traverseToTab = (targetPageID) => {
+const traverseToTab = async (targetPageID) => {
   console.log(targetPageID);
   try {
     //reset the radio buttons for the page being navigated to
@@ -1303,13 +1397,21 @@ const traverseToTab = (targetPageID) => {
 
     if (
       targetPageID === "guided-dataset-generation-confirmation-tab" ||
-      targetPageID === "guided-dataset-generation-tab"
+      targetPageID === "guided-dataset-generation-tab" ||
+      targetPageID === "guided-dataset-dissemination-tab"
     ) {
-      //Hide the next button for the last two pages
       $("#guided-next-button").css("visibility", "hidden");
     } else {
-      //show the next button on all pages besides the last two
       $("#guided-next-button").css("visibility", "visible");
+    }
+
+    if (
+      targetPageID === "guided-dataset-dissemination-tab" ||
+      targetPageID === "guided-dataset-generation-tab"
+    ) {
+      $("#guided-back-button").css("visibility", "hidden");
+    } else {
+      $("#guided-back-button").css("visibility", "visible");
     }
 
     if (targetPageID === "guided-subjects-folder-tab") {
@@ -1487,6 +1589,30 @@ const traverseToTab = (targetPageID) => {
         sodaJSONObj["digital-metadata"]["name"],
         folderStructurePreview
       );
+    }
+
+    if (targetPageID === "guided-manifest-file-generation-tab") {
+      //Create the local Guided-Manifest-Files folder if it doesn't exist
+      fs.mkdirSync(guidedManifestFilePath, { recursive: true });
+      //Create a manifest file folder for the current dataset if it doesn't exist
+      fs.mkdirSync(
+        path.join(
+          guidedManifestFilePath,
+          sodaJSONObj["digital-metadata"]["name"]
+        ),
+        { recursive: true }
+      );
+      for (const highLevelFolder of Object.keys(
+        datasetStructureJSONObj["folders"]
+      )) {
+        //create an excel file for each of the highLevelFolders inside the manifest file folder
+        const folderPath = path.join(
+          guidedManifestFilePath,
+          sodaJSONObj["digital-metadata"]["name"],
+          highLevelFolder
+        );
+        fs.mkdirSync(folderPath, { recursive: true });
+      }
     }
 
     if (targetPageID === "guided-airtable-award-tab") {
@@ -1681,6 +1807,8 @@ const traverseToTab = (targetPageID) => {
       guidedLoadDescriptionStudyInformation();
       guidedLoadDescriptionContributorInformation();
       renderAdditionalLinksTable();
+      document.getElementById("SPARC-award-other-funding-label").innerHTML =
+        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
       /*
       //set study purpose, data collection, and primary conclusion from sodaJSONObj
       const studyPurpose = sodaJSONObj["digital-metadata"]["study-purpose"];
@@ -2159,6 +2287,57 @@ const traverseToTab = (targetPageID) => {
       }
     }
 
+    if (targetPageID === "guided-dataset-generation-tab") {
+      document
+        .getElementById("guided-dataset-upload-complete-message")
+        .classList.add("hidden");
+    }
+
+    if (targetPageID === "guided-dataset-dissemination-tab") {
+      const pennsieveDatasetID =
+        sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+
+      if (pennsieveDatasetID) {
+        const pennsieveDatasetLink = document.getElementById(
+          "guided-pennsieve-dataset-link"
+        );
+        pennsieveDatasetLink.href = `https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/datasets/${pennsieveDatasetID}/overview`;
+      }
+
+      /*
+      Celebration Lottie
+      const transparentFullWidthHeightElement = document.createElement("div");
+      transparentFullWidthHeightElement.style.height = "700px";
+      transparentFullWidthHeightElement.style.width = "800px";
+      document
+        .getElementById("guided-dataset-dissemination-tab")
+        .appendChild(transparentFullWidthHeightElement);
+      */
+
+      document.getElementById("guided-pennsieve-dataset-name").innerHTML =
+        sodaJSONObj["digital-metadata"]["name"];
+      let bf_get_permissions = await client.get(
+        `/manage_datasets/bf_dataset_permissions`,
+        {
+          params: {
+            selected_account: defaultBfAccount,
+            selected_dataset: sodaJSONObj["digital-metadata"]["name"],
+          },
+        }
+      );
+      let datasetPermissions = bf_get_permissions.data.permissions;
+
+      let sharedWithSPARCCurationTeam = false;
+
+      for (const permission of datasetPermissions) {
+        if (permission.includes("SPARC Data Curation Team")) {
+          sharedWithSPARCCurationTeam = true;
+        }
+      }
+
+      guidedSetCurationTeamUI(sharedWithSPARCCurationTeam);
+    }
+
     let currentParentTab = CURRENT_PAGE.parent();
     let targetPage = $(`#${targetPageID}`);
     let targetPageParentTab = targetPage.parent();
@@ -2213,6 +2392,10 @@ const setActiveSubPage = (pageIdToActivate) => {
         .join("\n");
       document.getElementById("subject-specification-table-body").innerHTML =
         subjectElementRows;
+      //remove the add subject help text
+      document
+        .getElementById("guided-add-subject-instructions")
+        .classList.add("hidden");
       break;
     }
 
@@ -2852,7 +3035,7 @@ const openEditGuidedDatasetSwal = async (datasetName) => {
   });
 };
 
-const patchPreviousGuidedModeVersion = () => {
+const patchPreviousGuidedModeVersions = () => {
   //temp patch contributor affiliations if they are still a string (they were added in the previous version)
   const contributors =
     sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
@@ -2900,7 +3083,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   subjectsTableData = sodaJSONObj["subjects-table-data"];
   samplesTableData = sodaJSONObj["samples-table-data"];
 
-  patchPreviousGuidedModeVersion();
+  patchPreviousGuidedModeVersions();
 
   guidedTransitionFromHome();
   //Set the dataset name and subtitle input values using the
@@ -2910,6 +3093,9 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   document.getElementById("guided-dataset-subtitle-input").value =
     datasetResumeJsonObj["digital-metadata"]["subtitle"];
   guidedTransitionFromDatasetNameSubtitlePage();
+
+  //skip to manifest files
+  traverseToTab("guided-manifest-file-generation-tab");
 
   guidedLockSideBar();
 };
@@ -3100,6 +3286,11 @@ const attachGuidedMethodsToSodaJSONObj = () => {
         ][subjectName];
       }
     }
+
+    //remove the subject's subject metadata
+    subjectsTableData = subjectsTableData.filter((subject) => {
+      return subject[0] !== subjectName;
+    });
   };
   sodaJSONObj.getSubjectsOutsidePools = function () {
     let subjectsNotInPools = Object.keys(
@@ -3321,6 +3512,11 @@ const attachGuidedMethodsToSodaJSONObj = () => {
         "subjects"
       ][subjectName][sampleName];
     }
+
+    //remove the sample's sample metadata
+    samplesTableData = samplesTableData.filter((sample) => {
+      return sample[0] !== subjectName || sample[1] !== sampleName;
+    });
   };
   sodaJSONObj.getAllSubjects = function () {
     let subjectsInPools = [];
@@ -4354,7 +4550,26 @@ const openModifySampleMetadataPage = (
   sampleMetadataPoolID
 ) => {
   console.log(sampleMetadataID, sampleMetadataSubjectID, sampleMetadataPoolID);
+
+  //Get all samples from the dataset and add all other samples to the was derived from dropdown
+  const [samplesInPools, samplesOutsidePools] =
+    sodaJSONObj.getAllSamplesFromSubjects();
+  //Combine sample data from samples in and out of pools
+  let samples = [...samplesInPools, ...samplesOutsidePools];
+  const samplesBesidesCurrSample = samples.filter(
+    (sample) => sample.sampleName !== sampleMetadataID
+  );
+  document.getElementById("guided-bootbox-wasDerivedFromSample").innerHTML = `
+ <option value="">Sample not derived from another sample</option>
+ ${samplesBesidesCurrSample
+   .map((sample) => {
+     return `<option value="${sample.sampleName}">${sample.sampleName}</option>`;
+   })
+   .join("\n")}))
+ `;
+
   guidedLoadSampleMetadataIfExists(sampleMetadataID, sampleMetadataSubjectID);
+
   document.getElementById("guided-bootbox-sample-id").value = sampleMetadataID;
   document.getElementById("guided-bootbox-subject-id-samples").value =
     sampleMetadataSubjectID;
@@ -4562,13 +4777,6 @@ const openCopySampleMetadataPopup = async () => {
 
         //If a sample was open in the UI, update it with the new metadata
         if (currentSampleOpenInView) {
-          const currentSampleSubjectOpenInView = document.getElementById(
-            "guided-bootbox-subject-id-samples"
-          ).value;
-          const currentSamplePoolOpenInView = document.getElementById(
-            "guided-bootbox-sample-pool-id"
-          ).value;
-
           openModifySampleMetadataPage(
             currentSampleOpenInView,
             currentSampleSubjectOpenInView,
@@ -4602,6 +4810,10 @@ const specifySubject = (event, subjectNameInput) => {
           generateAlertMessage(subjectNameInput);
           return;
         }
+        //remove the add subject help text
+        document
+          .getElementById("guided-add-subject-instructions")
+          .classList.add("hidden");
         removeAlertMessageIfExists(subjectNameInput);
         if (subjectNameInput.attr("data-prev-name")) {
           const subjectToRename = subjectNameInput.attr("data-prev-name");
@@ -5050,6 +5262,7 @@ const addSubjectSpecificationTableRow = () => {
     subjectSpecificationTableBody.innerHTML +=
       generateSubjectSpecificationRowElement();
 
+
     const newSubjectRow =
       subjectSpecificationTableBody.querySelector("tr:last-child");
     //get the input element in newSubjectRow
@@ -5061,7 +5274,11 @@ const addSubjectSpecificationTableRow = () => {
     //scroll to bottom of guided body so back/continue buttons are visible
     scrollToBottomOfGuidedBody();
     //CREATE EVENT LISTENER TO ON FOCUS
-    confirmOnBlur("guided--subject-input");
+    //confirmOnBlur("guided--subject-input");
+
+    document
+      .getElementById("guided-add-subject-instructions")
+      .classList.remove("hidden");
   }
 };
 const addSampleSpecificationTableRow = (clickedSubjectAddSampleButton) => {
@@ -5081,6 +5298,7 @@ const addSampleSpecificationTableRow = (clickedSubjectAddSampleButton) => {
     // endConfirmOnBlur("guided--sample-input");
     //create a new table row Input element
     addSampleTableBody.innerHTML += generateSampleSpecificationRowElement();
+    // confirmOnBlur("guided--sample-input");
     const newSamplerow = addSampleTableBody.querySelector("tr:last-child");
     //Focus the new sample row element
     const newSampleInput = newSamplerow.querySelector(
@@ -5226,6 +5444,10 @@ const deleteSubject = (subjectDeleteButton) => {
 
   //delete the table row element in the UI
   subjectIdCellToDelete.remove();
+  //remove the add subject help text
+  document
+    .getElementById("guided-add-subject-instructions")
+    .classList.add("hidden");
 };
 const deletePool = (poolDeleteButton) => {
   const poolIdCellToDelete = poolDeleteButton.closest("tr");
@@ -5484,12 +5706,25 @@ const removePermission = (clickedPermissionRemoveButton) => {
     });
     return;
   }
+  if (permissionEntityType === "loggedInUser") {
+    notyf.open({
+      duration: "6000",
+      type: "error",
+      message:
+        "You can not deselect yourself as a manager, as you need manager permissions to upload a dataset",
+    });
+    return;
+  }
   if (permissionEntityType === "user") {
     const currentUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
     const filteredUsers = currentUsers.filter((user) => {
+      console.log(user.userString);
+      console.log(user.permission);
+      console.log(user.immutable);
       return !(
         user.userString == permissionNameToRemove &&
-        user.permission == permissionTypeToRemove
+        user.permission == permissionTypeToRemove &&
+        !user.loggedInUser
       );
     });
     sodaJSONObj["digital-metadata"]["user-permissions"] = filteredUsers;
@@ -5504,9 +5739,8 @@ const removePermission = (clickedPermissionRemoveButton) => {
     });
     sodaJSONObj["digital-metadata"]["team-permissions"] = filteredTeams;
   }
-
-  //remove the element from the DOM
-  permissionElementToRemove.remove();
+  //rerender the permissions table to reflect changes to user/team permissions
+  renderPermissionsTable();
 };
 
 const createPermissionsTableRowElement = (entityType, name, permission) => {
@@ -5533,9 +5767,10 @@ const renderPermissionsTable = () => {
     createPermissionsTableRowElement("owner", owner, "owner")
   );
   for (user of users) {
+    console.log(users);
     permissionsTableElements.push(
       createPermissionsTableRowElement(
-        "user",
+        user.loggedInUser ? "loggedInUser" : "user",
         user["userString"],
         user["permission"]
       )
@@ -5880,6 +6115,13 @@ const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
     newPiOwnerObj.userString;
   sodaJSONObj["digital-metadata"]["pi-owner"]["UUID"] = newPiOwnerObj.UUID;
   sodaJSONObj["digital-metadata"]["pi-owner"]["name"] = newPiOwnerObj.name;
+
+  //Remove any old permissions the owner may have had
+  const currentUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
+  const filteredUsers = currentUsers.filter((user) => {
+    return !(user.UUID == newPiOwnerObj.UUID);
+  });
+  sodaJSONObj["digital-metadata"]["user-permissions"] = filteredUsers;
 };
 
 const guidedAddUserPermission = (newUserPermissionObj) => {
@@ -5889,6 +6131,7 @@ const guidedAddUserPermission = (newUserPermissionObj) => {
       userPermission["userString"] == newUserPermissionObj.userString &&
       userPermission["UUID"] == newUserPermissionObj.UUID
     ) {
+      console.log(userPermission);
       userPermission["permission"] = newUserPermissionObj.permission;
       renderPermissionsTable();
       return;
@@ -6774,6 +7017,18 @@ $(document).ready(() => {
       if (newPermissionRoleElement.val().trim() === "Select role") {
         throw "Please select a role for the user or team";
       }
+      if (
+        newPermissionElement.val().trim() ===
+        sodaJSONObj["digital-metadata"]["pi-owner"]["UUID"]
+      ) {
+        throw `${newPermissionElement
+          .text()
+          .trim()} is designated as the PI owner.
+        To designate them as a ${newPermissionRoleElement
+          .val()
+          .trim()}, go back and remove them as the PI owner.`;
+      }
+      console.log(newPermissionElement[0].getAttribute("permission-type"));
 
       if (newPermissionElement[0].getAttribute("permission-type") == "user") {
         //if the selected element is a user, add the user to the user permissions array
@@ -6787,6 +7042,7 @@ $(document).ready(() => {
           UUID: UUID,
           permission: userPermission,
         };
+        console.log(newUserPermissionObj);
         guidedAddUserPermission(newUserPermissionObj);
       }
       if (newPermissionElement[0].getAttribute("permission-type") == "team") {
@@ -7308,27 +7564,24 @@ $(document).ready(() => {
       "loading"
     );
 
-    let requiredFields = [];
-    if (studyPurpose) {
-      requiredFields.push("**Study Purpose:** " + studyPurpose + "\n\n");
-    }
-    if (dataCollection) {
-      requiredFields.push("**Data Collection:** " + dataCollection + "\n\n");
-    }
-    if (dataConclusion) {
-      requiredFields.push("**Data Conclusion:** " + dataConclusion + "\n\n");
-    }
+    let descriptionArray = [];
 
-    const description = requiredFields.join("");
+    descriptionArray.push("**Study Purpose:** " + studyPurpose + "\n\n");
+    descriptionArray.push("**Data Collection:** " + dataCollection + "\n\n");
+    descriptionArray.push("**Data Conclusion:** " + dataConclusion + "\n\n");
+
+    const description = descriptionArray.join("");
     console.log(description);
 
     try {
       console.log("updating dataset description");
-      await client.put(
+      let res = await client.put(
         `/manage_datasets/datasets/${datasetName}/readme`,
         { updated_readme: description },
         { params: { selected_account: bfAccount } }
       );
+      console.log(res);
+
       datasetDescriptionUploadText.innerHTML = `Successfully added dataset description!`;
       guidedUploadStatusIcon(
         "guided-dataset-description-upload-status",
@@ -7427,6 +7680,64 @@ $(document).ready(() => {
       let emessage = userErrorMessage(error);
       datasetLicenseUploadText.innerHTML = "Failed to add a dataset license.";
       guidedUploadStatusIcon("guided-dataset-license-upload-status", "error");
+    }
+  };
+
+  const guidedAddPiOwner = async (bfAccount, datasetName, piOwnerObj) => {
+    let loggedInUserIsNotPiOwner;
+    for (user of sodaJSONObj["digital-metadata"]["user-permissions"]) {
+      if (user.loggedInUser) {
+        //if logged in user has a user permission, then someone else is set as pi owner
+        loggedInUserIsNotPiOwner = true;
+      }
+    }
+
+    document
+      .getElementById("guided-dataset-pi-owner-upload-tr")
+      .classList.remove("hidden");
+    const datasetPiOwnerUploadText = document.getElementById(
+      "guided-dataset-pi-owner-upload-text"
+    );
+    datasetPiOwnerUploadText.innerHTML = "Adding PI owner...";
+    guidedUploadStatusIcon("guided-dataset-pi-owner-upload-status", "loading");
+
+    if (loggedInUserIsNotPiOwner) {
+      try {
+        await client.patch(
+          `/manage_datasets/bf_dataset_permissions`,
+          {
+            input_role: "owner",
+          },
+          {
+            params: {
+              selected_account: bfAccount,
+              selected_dataset: datasetName,
+              scope: "user",
+              name: piOwnerObj["UUID"],
+            },
+          }
+        );
+        datasetPiOwnerUploadText.innerHTML = `Successfully added PI owner: ${piOwnerObj["name"]}`;
+        guidedUploadStatusIcon(
+          "guided-dataset-pi-owner-upload-status",
+          "success"
+        );
+      } catch (error) {
+        console.error(error);
+        let emessage = userErrorMessage(error);
+        datasetPiOwnerUploadText.innerHTML = "Failed to add a PI owner.";
+        guidedUploadStatusIcon(
+          "guided-dataset-pi-owner-upload-status",
+          "error"
+        );
+      }
+    } else {
+      console.log("logged in user is already a PI owner");
+      datasetPiOwnerUploadText.innerHTML = `Successfully added PI owner: ${piOwnerObj["name"]}`;
+      guidedUploadStatusIcon(
+        "guided-dataset-pi-owner-upload-status",
+        "success"
+      );
     }
   };
 
@@ -7533,11 +7844,13 @@ $(document).ready(() => {
       throw error;
     }
   };
+
   const guidedAddUserPermissions = async (
     bfAccount,
     datasetName,
     userPermissionsArray
   ) => {
+    //filter user permissions with loggedInUser key
     const promises = userPermissionsArray.map((userPermission) => {
       return guidedGrantUserPermission(
         bfAccount,
@@ -7981,15 +8294,14 @@ $(document).ready(() => {
     const guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
     const guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
     const guidedUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
-    const guidedPIOwnerUUID =
-      sodaJSONObj["digital-metadata"]["pi-owner"]["UUID"];
+    const guidedPIOwner = sodaJSONObj["digital-metadata"]["pi-owner"];
     const guidedTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
     let guidedPennsieveStudyPurpose =
-      sodaJSONObj["digital-metadata"]["study-purpose"];
+      sodaJSONObj["digital-metadata"]["description"]["study-purpose"];
     let guidedPennsieveDataCollection =
-      sodaJSONObj["digital-metadata"]["data-collection"];
+      sodaJSONObj["digital-metadata"]["description"]["data-collection"];
     let guidedPennsievePrimaryConclusion =
-      sodaJSONObj["digital-metadata"]["primary-conclusion"];
+      sodaJSONObj["digital-metadata"]["description"]["primary-conclusion"];
     const guidedReadMe = sodaJSONObj["dataset-metadata"]["README"];
     const guidedTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
     const guidedLicense = sodaJSONObj["digital-metadata"]["license"];
@@ -8040,8 +8352,10 @@ $(document).ready(() => {
       ],
     };
 
-    //add the SPARC award as the first element in the funding source array
-    guidedContributorInformation["funding"].unshift(guidedSparcAward);
+    //add the SPARC award as the first element in the funding source array if it's not already in the funding array
+    if (!guidedContributorInformation["funding"].includes(guidedSparcAward)) {
+      guidedContributorInformation["funding"].unshift(guidedSparcAward);
+    }
 
     //Add contributors from sodaJSONObj to guidedContributorInformation in the "contributors" key
     let contributors =
@@ -8147,6 +8461,13 @@ $(document).ready(() => {
         guidedTags
       );
       console.log(datasetTagsResponse);
+
+      let datasetPIOwnwerResponse = await guidedAddPiOwner(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedPIOwner
+      );
+      console.log(datasetPIOwnwerResponse);
 
       let datasetUsersResponse = await guidedAddUserPermissions(
         guidedBfAccount,
@@ -8443,24 +8764,57 @@ $(document).ready(() => {
           "Upload status": "Dataset successfully uploaded to Pennsieve!",
         });
 
-        await swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          title: "Dataset successfully uploaded!",
-          html: `You will be taken back to the home page where you can edit this dataset or begin curating a new dataset.`,
-          icon: "success",
-          confirmButtonText: "OK",
-        });
-        guidedUnLockSideBar(); //Save a copy of the sodaJSONObj on this upload to compare it while prepping other uploads
+        let allDatasets = await client.get(
+          `manage_datasets/bf_dataset_account`,
+          {
+            params: {
+              selected_account: defaultBfAccount,
+            },
+          }
+        );
+        const uploadedDataset = allDatasets.data.datasets.find(
+          (dataset) => dataset.name === sodaJSONObj["digital-metadata"]["name"]
+        );
+        const uploadedDatasetID = uploadedDataset.id;
+
+        //Save a copy of the sodaJSONObj on this upload to compare it while prepping other uploads
         sodaJSONObj["previous-guided-upload-dataset-name"] =
           sodaJSONObj["digital-metadata"]["name"];
+        sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] =
+          uploadedDatasetID;
         saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
-        //exit to the home page
-        traverseToTab("guided-dataset-starting-point-tab");
-        hideSubNavAndShowMainNav("back");
-        $("#guided-button-dataset-intro-back").click();
-        $("#guided-button-dataset-intro-back").click();
+        //Display the click next text
+        document
+          .getElementById("guided-dataset-upload-complete-message")
+          .classList.remove("hidden");
+
+        scrollToBottomOfGuidedBody();
+
+        //Show the next button
+        $("#guided-next-button").css("visibility", "visible");
+
+        /*const { value: goToShareWithCurationTeamPage } = await swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          icon: "success",
+          title: "Dataset successfully uploaded to Pennsieve!",
+          html: `<a href="https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/datasets/${uploadedDatasetID}}/overview" target="_blank">Click here to view dataset on Pennsieve</a>
+          <br /><br />
+          `,
+          confirmButtonText: "Next",
+          allowOutsideClick: false,
+        });
+        if (goToShareWithCurationTeamPage) {
+          traverseToTab("guided-dataset-dissemination-tab");
+        } else {
+          guidedUnLockSideBar();
+          //exit to the home page
+          traverseToTab("guided-dataset-starting-point-tab");
+          hideSubNavAndShowMainNav("back");
+          $("#guided-button-dataset-intro-back").click();
+          $("#guided-button-dataset-intro-back").click();
+        }*/
       }
     };
     // Progress tracking function for main curate
@@ -8998,7 +9352,6 @@ $(document).ready(() => {
     }
     traverseToTab("guided-dataset-generation-tab");
     guidedPennsieveDatasetUpload();
-    $("#guided-footer-div").hide();
   });
 
   const guidedSaveBannerImage = () => {
@@ -9476,13 +9829,20 @@ $(document).ready(() => {
           throw errorArray;
         }
 
+        //Get the user information of the user that is currently curating
+        //If they designate themself as the PI, set them as the PI
+        //If they designate someone else as the PI, set them as a manager
+        const user = await api.getUserInformation();
+
+        const loggedInUserString = `${user["firstName"]} ${user["lastName"]} (${user["email"]})`;
+        const loggedInUserUUID = user["id"];
+        const loggedInUserName = `${user["firstName"]} ${user["lastName"]}`;
+
         if (designateSelfButton.classList.contains("selected")) {
-          console.log("foo");
-          const user = await api.getUserInformation();
           const loggedInUserPiObj = {
-            userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
-            UUID: user["id"],
-            name: `${user["firstName"]} ${user["lastName"]}`,
+            userString: loggedInUserString,
+            UUID: loggedInUserUUID,
+            name: loggedInUserName,
           };
           setGuidedDatasetPiOwner(loggedInUserPiObj);
         }
@@ -9514,6 +9874,18 @@ $(document).ready(() => {
             name: PiName,
           };
           setGuidedDatasetPiOwner(newPiOwner);
+
+          //set the logged in user as a manager
+          const loggedInUserManagerObj = {
+            userString: loggedInUserString,
+            userName: loggedInUserName,
+            UUID: loggedInUserUUID,
+            permission: "manager",
+            loggedInUser: true,
+          };
+
+          guidedAddUserPermission(loggedInUserManagerObj);
+          console.log(loggedInUserManagerObj);
         }
       }
 
@@ -9692,6 +10064,8 @@ $(document).ready(() => {
             return;
           }
         }
+      }
+      if (pageBeingLeftID === "guided-manifest-file-generation-tab") {
       }
 
       if (pageBeingLeftID === "guided-airtable-award-tab") {
@@ -11246,8 +11620,4 @@ $(document).ready(() => {
   $("#guided-import-folder").on("click", () => {
     ipcRenderer.send("open-folders-organize-datasets-dialog");
   });
-
-  $("#guided-button-import-protocols-io").popover();
-  $("#guided-button-generate-dataset-locally").popover();
-  $("#guided-button-pennsieve-generate-existing").popover();
 });
