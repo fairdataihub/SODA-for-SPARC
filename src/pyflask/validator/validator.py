@@ -36,25 +36,37 @@ validation_json = {}
 
 # an export stores which metadata files are present in the dataset 
 # however they are named differently than our other lists of metadata files 
-# KEY: This list doesn't need to have - for now ( 08/17/2022 ) at least - performances, resources, or code_parameters 
-metadata_files = ["dataset_description_file", "samples_file", "subjects_file", "submission_file", "manifest_file", "code_description_file"]
+# NOTE: This list doesn't need to have - for now ( 08/17/2022 ) at least - performances, resources, or code_parameters 
+# NOTE: manifest_files present in a dataset alone will not create a path_error_report. Meaning at least one of 
+# the other metadata files need to be present in the dataset to have a useful validation report.
+# TODO: This begs the question. If the manifest_file is not present in the dataset, but other metadata files are, will the path_error_report notify us of this so we can inform the user?
+#       A: No, the path_error_report doesn't tell the user they need to have manifest files in the dataset. 
+metadata_files = ["dataset_description_file", "samples_file", "subjects_file", "submission_file", "code_description_file"]
 
 # retrieve the given dataset ID's export results; return to the user. 
 # TODO: translate export results into a format that is easier to read
 # TODO: Calibrate an ideal wait time if we keep one at all
 def validate_dataset_pipeline(ps_account, ps_dataset_id):
-    # Basic flow. 
-    # Assumes LATEST stores the export that completed after the most recent change in dataset permissions. 
-    # Assumes there is an export ready to be retrieved and that we do not have to wait if this is generating a users first export.
-    # Assumes the export is not of a failed validation run
-    # Assumes the export is created on a dataset that has metadata files
-    # Assummes that manifest_file is good enough to validate a dataset off of
-    # TODO: handle edge cases
-    #    - to handle case one: ensure that #/meta/timestamp_updated matches the dataset updated time you see on the Pennsieve portal.[ Done ]
-    #    - to handle case two: expect 404s until the export is ready.  [ Done ]
-    #    - to handle case three: Tom will look into adding ways having the exports contain metdata that indicates if the export is a success or failure. For now not sure. 
+
+    """
+        Retrieves the given dataset's export results, if the export is valid and available within 1 minute of requesting the export.
+        Valid exports come from datasets that have metadata files and have a timestamp matching the given Pennsieve dataset's 'updatedAt' timestamp.
+    """
+
+    # Constraints:
+    #    - LATEST stores the export that completed after the most recent change in dataset.
+    # Cases to handle: 
+    #    - An export in LATEST has a timestamp that does not correspond to the updatedAt timestamp for the Pennsieve dataset.
+    #    - An export does not exist at the time of requesting it.
+    #    - The export is of a failed validation run.
+    #    - An export is missing metadata files necessary to generate a path_error_report. 
+    # NOTE: the code handles/will handle the above cases in this way:
+    #    - to handle case one: ensure that #/meta/timestamp_updated matches the dataset updated time you see on the Pennsieve portal. Use a backoff to wait until they sync. [ Done ]
+    #    - to handle case two: expect 404s until the export is ready. Use a backoff to wait until it is. [ Done ]
+    #    - to handle case three: Tom will look into adding ways having the exports contain metdata that indicates if the export is a success or failure. For now not sure. [ TODO: WIP ]
     #    - to handle case four: Check if there are metadata files in the dataset. If not then alert the user validation can only be done with metadata files present. [ Done ]
-    #    - to handle case five: Verify if the export will be successful using the manifest_file entry. If not then alert the user that the export is not doable successful. [ WIP ]
+    #    - to handle case five: If there is only a manifest file it will not generate a path_error_report ( TODO: Double check ) so if none of the listed metadata files 
+    #      exist in the dataset then return back to the user they need metadta files to get a result. [ Done ]
         
 
     # get the timestamp for the latest change to the given pennsieve dataset
@@ -117,6 +129,8 @@ def validate_local_dataset(ds_path):
 
     # peel out the path_error_report object
     path_error_report = status.get('path_error_report')
+
+    print(path_error_report)
 
     # get the errors out of the report that do not have errors in their subpaths (see function comments for the explanation)
     parsed_path_error_report = parse(path_error_report)
