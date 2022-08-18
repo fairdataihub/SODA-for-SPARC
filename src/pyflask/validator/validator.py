@@ -3,13 +3,11 @@
 import os
 import os.path
 from pathlib import Path
-from urllib.error import HTTPError
 import requests
 import time 
 import datetime
 from flask import abort
 
-from sparcur.utils import PennsieveId
 from sparcur.simple.validate import main as validate
 
 from errorHandlers import handle_http_error
@@ -18,10 +16,6 @@ from .validatorUtils import (
     parse, 
     userpath, 
     check_prerequisites, 
-    sparc_organization_id, 
-    parent_folder, 
-    pyontutils_path, 
-    orthauth_path, 
     add_scigraph_path, 
     add_scicrunch_api_key
 )
@@ -46,7 +40,7 @@ metadata_files = ["dataset_description_file", "samples_file", "subjects_file", "
 # retrieve the given dataset ID's export results; return to the user. 
 # TODO: translate export results into a format that is easier to read
 # TODO: Calibrate an ideal wait time if we keep one at all
-def validate_dataset_pipeline(ps_account, ps_dataset_id):
+def validate_dataset_pipeline(ps_dataset_id):
 
     """
         Retrieves the given dataset's export results, if the export is valid and available within 1 minute of requesting the export.
@@ -69,77 +63,91 @@ def validate_dataset_pipeline(ps_account, ps_dataset_id):
     #      exist in the dataset then return back to the user they need metadta files to get a result. [ Done ]
         
 
-    # get the timestamp for the latest change to the given pennsieve dataset
+    # get the timestamp marking the latest change made to the given pennsieve dataset
     updated_at_timestamp = get_dataset_by_id(ps_dataset_id)["content"]["updatedAt"]
     
-    # 1. get the pennsieve export json file for the given dataset
-    export_json = request_pennsieve_export(ps_dataset_id, updated_at_timestamp)
+    # 1. get the pennsieve export object for the given dataset
+    export = request_pennsieve_export(ps_dataset_id, updated_at_timestamp)
 
-    # 2. check if the export was not available for retrieval yet even afer waiting for the current maximum wait time
-    if export_json == None:
-        abort(500, "We had trouble validating your dataset. Please try again. If the problem persists, please contact us at fairdataihub@gmail.com.")
-
-    # 3. check if the export was a failed validation run TODO: discern between a failed validation run and a dataset with no metadata files
-    # TODO: Check that all exports have an inputs. lol 
-    inputs = export_json.get('inputs')
-
-    # 3.1. check if there are any metadata files for the dataset
-    if not dataset_has_metadata_files(inputs):
-        abort(400, "Your dataset cannot be validated until you add metadata files. Please add metadata files and try again.")
+    # 2. validate the export
+    validate_export(export)
     
-    # 3.2. check if the export was a failed validation run TODO: eventually figure this out
-    
-    # 4. get the status of the export
-    status = export_json.get('status')
+    # 3. get the status of the export
+    status = export.get('status')
 
-    # 5. get the path error report from the status
+    # 4. get the path error report from the status
     path_error_report = status.get('path_error_report')
 
-    # 6. get the errors out of the report that do not have errors in their subpaths (see function comments for the explanation)
+    # 5. get the errors out of the report that do not have errors in their subpaths (see function comments for the explanation)
     return parse(path_error_report)
 
 
-def dataset_has_metadata_files(inputs):
-    return any(metadata_files_name in inputs for metadata_files_name in metadata_files) 
-
-
-# validate a local dataset at the target directory
 def validate_local_dataset(ds_path):
-    # convert the path to absolute from user's home directory
-    joined_path = os.path.join(userpath, ds_path.strip())
 
-    # check that the directory exists 
-    valid_directory = os.path.isdir(joined_path)
-
-    # give user an error 
-    if not valid_directory:
-        raise OSError(f"The given directory does not exist: {joined_path}")
-
-    # convert to Path object for Validator to function properly
-    norm_ds_path = Path(joined_path)
+    norm_ds_path = create_normalized_ds_path(ds_path)
 
     # validate the dataset
     blob = validate(norm_ds_path)
 
+    validate_export(blob)
+
     # peel out the status object 
     status = blob.get('status')
-
-    if 'path_error_report' not in status:
-        return "TODO: Handle this case later"
 
     # peel out the path_error_report object
     path_error_report = status.get('path_error_report')
 
-    print(path_error_report)
-
     # get the errors out of the report that do not have errors in their subpaths (see function comments for the explanation)
-    parsed_path_error_report = parse(path_error_report)
-
-    return parsed_path_error_report
+    return parse(path_error_report)
 
 
-# add scicrunch api key and api key name to the validator config files
+
+
+
+def validate_export(export):
+    """
+        Verifies the integriy of an export retrieved from remote or generated locally.
+        Input: export - A dictionary with sparcur.simple.validate or remote validation results.
+    """
+    # 1. check if the export was not available for retrieval yet even afer waiting for the current maximum wait time
+    if export is None:
+        abort(500, "We had trouble validating your dataset. Please try again. If the problem persists, please contact us at fairdataihub@gmail.com.")
+
+    # 2. check if the export was a failed validation run TODO: discern between a failed validation run and a dataset with no metadata files 
+    inputs = export.get('inputs')
+
+    # NOTE: May not be possible to be None but just in case
+    if inputs is None:
+        abort(500, "We had trouble validating your dataset. Please try again. If the problem persists, please contact us at.")
+
+    # 2.1. check if there are any metadata files for the dataset
+    if not dataset_has_metadata_files(inputs):
+        abort(400, "Your dataset cannot be validated until you add metadata files. Please add metadata files and try again.")
+    
+    # 2.2. check if the export was a failed validation run TODO: eventually figure this out
+    print("TODO")
+
+def create_normalized_ds_path(ds_path):
+    """
+        Given a path to a user's dataset, verify and create a normalized path to the dataset. 
+        Necessary for the sparcur.simple.validate function to work.
+    """
+
+    # convert the path to absolute from user's home directory
+    joined_path = os.path.join(userpath, ds_path.strip())
+
+    if not os.path.isdir(joined_path):
+        raise OSError(f"The given directory does not exist: {joined_path}")
+    
+    return Path(joined_path)
+
+def dataset_has_metadata_files(inputs):
+    return any(metadata_files_name in inputs for metadata_files_name in metadata_files)
+
 def add_scicrunch_to_validator_config(api_key, api_key_name, selected_account):
+    """
+        Add scicrunch api key and api key name to the validator config files
+    """
     # create the config files and folders if they do not already exist
     check_prerequisites(selected_account)
 
@@ -148,7 +156,6 @@ def add_scicrunch_to_validator_config(api_key, api_key_name, selected_account):
 
     # add the scigraph path to the pyontutils config yaml
     add_scigraph_path(api_key_name)
-
 
 def request_pennsieve_export(ps_dataset_id, dataset_latest_updated_at_timestamp):
     """ 
@@ -161,7 +168,6 @@ def request_pennsieve_export(ps_dataset_id, dataset_latest_updated_at_timestamp)
 
     backoff_time = 0
     while backoff_time <= 30:
-        print("Trying to get the export...")
         # wait for the backoff time 
         time.sleep(backoff_time)
 
@@ -187,9 +193,8 @@ def request_pennsieve_export(ps_dataset_id, dataset_latest_updated_at_timestamp)
         # update the backoff time for the next request - we want 10, 20, 30 for a total of about a minute max wait time
         backoff_time += 10 
 
-    # there is no pennsieve export for the given dataset; or there is not one that matches the most recent change in the dataset
+    # a pennsieve export for the given dataset does not exist yet; or there is not one that matches the most recent change in the dataset
     return None
-
 
 def verified_latest_export(export_json, dataset_latest_updated_at_timestamp):
     """
@@ -208,9 +213,6 @@ def verified_latest_export(export_json, dataset_latest_updated_at_timestamp):
     print(f"dataset timestamp: {dataset_latest_updated_at_timestamp}")
 
     return utc_timestamp_strings_match(timestamp_updated, dataset_latest_updated_at_timestamp)
-
-
-
 
 def utc_timestamp_strings_match(sparc_export_time, pennsieve_export_time):
     """

@@ -45,7 +45,7 @@ class ValidatePennsieveDataset(Resource):
         api.logger.info(f' /local_dataset_validation_result --  args -- path: {selected_dataset}')
 
         try:
-            return validate_dataset_pipeline(selected_account, selected_dataset)
+            return validate_dataset_pipeline(selected_dataset)
         except Exception as e:
             api.abort(500, str(e))
 
