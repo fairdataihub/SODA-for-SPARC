@@ -5273,7 +5273,7 @@ const addSubjectSpecificationTableRow = () => {
     //scroll to bottom of guided body so back/continue buttons are visible
     scrollToBottomOfGuidedBody();
     //CREATE EVENT LISTENER TO ON FOCUS
-    //confirmOnBlur("guided--subject-input");
+    confirmOnBlur("guided--subject-input");
 
     document
       .getElementById("guided-add-subject-instructions")
@@ -5297,14 +5297,14 @@ const addSampleSpecificationTableRow = (clickedSubjectAddSampleButton) => {
     // endConfirmOnBlur("guided--sample-input");
     //create a new table row Input element
     addSampleTableBody.innerHTML += generateSampleSpecificationRowElement();
-    // confirmOnBlur("guided--sample-input");
+    confirmOnBlur("guided--sample-input");
     const newSamplerow = addSampleTableBody.querySelector("tr:last-child");
     //Focus the new sample row element
     const newSampleInput = newSamplerow.querySelector(
       "input[name='guided-sample-id']"
     );
     newSampleInput.focus();
-    confirmOnBlur("guided--sample-input");
+    // confirmOnBlur("guided--sample-input");
   }
 };
 
@@ -5402,9 +5402,18 @@ const addPoolTableRow = () => {
     "input[name='guided-pool-id']"
   );
 
+
   if (poolSpecificationTableInput) {
     //focus on the input that already exists
-    poolSpecificationTableInput.focus();
+    //check if the pool has at least one subject
+    let subject_container = poolSpecificationTableInput.parentNode.parentNode.nextElementSibling;
+    if(subject_container.children.length === 0) {
+      poolSpecificationTableInput.focus();
+    } else {
+      //check if subjects have been assigned or else throw error
+      let poolAmount = poolsTableBody.children.length;
+      poolsTableBody.children[poolAmount - 1];
+    }
   } else {
     //insert a new table row container with js as select2 breaks when adding a new row
     //via template literals
