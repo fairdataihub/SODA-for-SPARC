@@ -7773,7 +7773,7 @@ $(document).ready(() => {
             },
           }
         );
-        datasetPiOwnerUploadText.innerHTML = `Successfully added PI owner: ${piOwnerObj["name"]}`;
+        datasetPiOwnerUploadText.innerHTML = `Successfully added PI: ${piOwnerObj["name"]}`;
         guidedUploadStatusIcon(
           "guided-dataset-pi-owner-upload-status",
           "success"
@@ -7789,7 +7789,7 @@ $(document).ready(() => {
       }
     } else {
       console.log("logged in user is already a PI owner");
-      datasetPiOwnerUploadText.innerHTML = `Successfully added PI owner: ${piOwnerObj["name"]}`;
+      datasetPiOwnerUploadText.innerHTML = `Successfully added PI: ${piOwnerObj["name"]}`;
       guidedUploadStatusIcon(
         "guided-dataset-pi-owner-upload-status",
         "success"
