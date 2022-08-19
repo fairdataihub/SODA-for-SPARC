@@ -5402,12 +5402,12 @@ const addPoolTableRow = () => {
     "input[name='guided-pool-id']"
   );
 
-
   if (poolSpecificationTableInput) {
     //focus on the input that already exists
     //check if the pool has at least one subject
-    let subject_container = poolSpecificationTableInput.parentNode.parentNode.nextElementSibling;
-    if(subject_container.children.length === 0) {
+    let subject_container =
+      poolSpecificationTableInput.parentNode.parentNode.nextElementSibling;
+    if (subject_container.children.length === 0) {
       poolSpecificationTableInput.focus();
     } else {
       //check if subjects have been assigned or else throw error
