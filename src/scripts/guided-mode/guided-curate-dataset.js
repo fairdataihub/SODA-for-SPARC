@@ -1706,17 +1706,26 @@ const traverseToTab = async (targetPageID) => {
       );
 
       if (Object.keys(submission_metadata).length > 0) {
-        dataDeliverableLottieContainer.innerHTML = "";
-        lottie.loadAnimation({
-          container: dataDeliverableLottieContainer,
-          animationData: successCheck,
-          renderer: "svg",
-          loop: false,
-          autoplay: true,
-        });
         if (submission_metadata["filepath"]) {
+          dataDeliverableLottieContainer.innerHTML = "";
+          lottie.loadAnimation({
+            container: dataDeliverableLottieContainer,
+            animationData: successCheck,
+            renderer: "svg",
+            loop: false,
+            autoplay: true,
+          });
           dataDeliverableParaText.innerHTML = submission_metadata["filepath"];
         } else {
+          //reset the code metadata lotties and para text
+          dataDeliverableLottieContainer.innerHTML = "";
+          lottie.loadAnimation({
+            container: dataDeliverableLottieContainer,
+            animationData: dragDrop,
+            renderer: "svg",
+            loop: true,
+            autoplay: true,
+          });
           dataDeliverableParaText.innerHTML = "";
         }
       } else {
@@ -3178,9 +3187,6 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   document.getElementById("guided-dataset-subtitle-input").value =
     datasetResumeJsonObj["digital-metadata"]["subtitle"];
   guidedTransitionFromDatasetNameSubtitlePage();
-
-  //skip to manifest files
-  traverseToTab("guided-manifest-file-generation-tab");
 
   guidedLockSideBar();
 };
