@@ -10540,6 +10540,13 @@ $(document).ready(() => {
           });
           throw errorArray;
         }
+        if (protocols.length === 0) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please add at least one protocol",
+          });
+          throw errorArray;
+        }
         sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] =
           protocols;
       }
