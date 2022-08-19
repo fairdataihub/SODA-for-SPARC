@@ -1666,7 +1666,7 @@ const traverseToTab = async (targetPageID) => {
           container: dataDeliverableLottieContainer,
           animationData: successCheck,
           renderer: "svg",
-          loop: true,
+          loop: false,
           autoplay: true,
         });
         if (submission_metadata["filepath"]) {
@@ -2195,6 +2195,46 @@ const traverseToTab = async (targetPageID) => {
       document.getElementById("guided-accordian-custom-fields").innerHTML = "";
       document.getElementById("guided-bootbox-subject-id").value = "";
       console.log(subjectsTableData);
+
+      //Add protocol titles to the protocol dropdown
+      const protocols =
+        sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
+
+      document.getElementById(
+        "guided-bootbox-subject-protocol-title"
+      ).innerHTML = `
+        <option value="">No protocols associated with this sample</option>
+        ${protocols
+          .map((protocol) => {
+            return `
+              <option
+                value="${protocol.description}"
+                data-protocol-link="${protocol.link}"
+              >
+                ${protocol.description}
+              </option>
+            `;
+          })
+          .join("\n")}))
+      `;
+
+      document.getElementById(
+        "guided-bootbox-subject-protocol-location"
+      ).innerHTML = `
+        <option value="">No protocols associated with this sample</option>
+        ${protocols
+          .map((protocol) => {
+            return `
+              <option
+                value="${protocol.link}"
+                data-protocol-description="${protocol.description}"
+              >
+                ${protocol.link}
+              </option>
+            `;
+          })
+          .join("\n")}))
+      `;
       renderSubjectsMetadataAsideItems();
       console.log(subjectsTableData);
       const subjectsMetadataBlackArrowLottieContainer = document.getElementById(
@@ -3792,14 +3832,13 @@ const generateContributorField = (
   return `
       <div
         class="guided--section mt-lg neumorphic guided-contributor-field-container"
-        style="width: 100%"
+        style="width: 100%; position: relative;"
         data-contributor-first-name="${
           contributorFirstName ? contributorFirstName : ""
         }"
         data-contributor-last-name="${
           contributorLastName ? contributorLastName : ""
         }"
-        style="position: relative"
       >
         <i 
           class="fas fa-times fa-2x"
@@ -4524,6 +4563,7 @@ const guidedLoadSubjectMetadataIfExists = (subjectMetadataId) => {
     }
   }
 };
+
 const guidedLoadSampleMetadataIfExists = (
   sampleMetadataId,
   subjectMetadataId
@@ -7296,6 +7336,30 @@ $(document).ready(() => {
         .find(":selected")
         .data("protocol-description");
       document.getElementById("guided-bootbox-sample-protocol-title").value =
+        newDescriptionAssociatedDescription
+          ? newDescriptionAssociatedDescription
+          : "";
+    });
+
+  document
+    .getElementById("guided-bootbox-subject-protocol-title")
+    .addEventListener("change", function () {
+      const newDescriptionAssociatedLink = $(this)
+        .find(":selected")
+        .data("protocol-link");
+      document.getElementById(
+        "guided-bootbox-subject-protocol-location"
+      ).value = newDescriptionAssociatedLink
+        ? newDescriptionAssociatedLink
+        : "";
+    });
+  document
+    .getElementById("guided-bootbox-subject-protocol-location")
+    .addEventListener("change", function () {
+      const newDescriptionAssociatedDescription = $(this)
+        .find(":selected")
+        .data("protocol-description");
+      document.getElementById("guided-bootbox-subject-protocol-title").value =
         newDescriptionAssociatedDescription
           ? newDescriptionAssociatedDescription
           : "";
