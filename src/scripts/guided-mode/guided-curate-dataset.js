@@ -105,11 +105,10 @@ const guidedModifyCurationTeamAccess = async (action) => {
           icon: "success",
           title: "Dataset successfully shared with the Curation Team",
           html: `It is now advised that you do not make changes to the dataset until
-          the Curation Team reaches out to you via....`,
+          the Curation Team follows up with you.`,
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
-          cancelButtonText: "No",
-          confirmButtonText: "Yes",
+          confirmButtonText: "OK",
           focusConfirm: true,
         });
       } catch (error) {
@@ -166,8 +165,7 @@ const guidedModifyCurationTeamAccess = async (action) => {
           ready to reshare with the Curation Team, please revisit this page.`,
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
-          cancelButtonText: "No",
-          confirmButtonText: "Yes",
+          confirmButtonText: "OK",
           focusConfirm: true,
         });
       } catch (error) {
