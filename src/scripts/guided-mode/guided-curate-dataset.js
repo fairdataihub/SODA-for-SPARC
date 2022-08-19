@@ -4998,13 +4998,16 @@ const specifyPool = (event, poolNameInput) => {
       `;
       const poolSubjectsDropdownCell = poolNameInput.parent().parent().next();
       const poolIdCellToAddNameTo = poolNameInput.parent();
+      let poolsTable = $("#pools-table");
       if (poolName.length > 0) {
         if (!subSamInputIsValid(poolName)) {
           //show alert message below pool name input if input is invalid and abort function
-          generateAlertMessage(poolNameInput);
+          console.log(poolNameInput);
+          console.log(poolsTable);
+          generateAlertMessage(poolsTable);
           return;
         }
-        removeAlertMessageIfExists(poolNameInput);
+        removeAlertMessageIfExists(poolsTable);
         if (poolNameInput.attr("data-prev-name")) {
           const poolFolderToRename = poolNameInput.attr("data-prev-name");
 
@@ -5478,23 +5481,35 @@ const addPoolTableRow = () => {
     "input[name='guided-pool-id']"
   );
 
-  let lastSubjectContainer = poolsTableBody.children[poolAmount - 1];
-  //check the last input and if no pool input check if samples were assigned to the ones created
+  // if(poolAmount > 0) {
+  //   let lastSubjectContainer = poolsTableBody.children[poolAmount - 1].children[1].children[1].children[0].children[0].children[0];
+  //   console.log(lastSubjectContainer); //could be null if none
+
+  //   if(lastSubjectContainer) {
+  //     //if not null hen handle here
+  //     console.log(lastSubjectContainer.children);
+  //     if(lastSubjectContainer.children.length === 0) {
+  //       //no subjects added to pool (throw error)
+  //       console.log("uuhhh")
+  //       let elementToWarn = document.getElementById("add-pool-table-button");
+
+  //       generateAlertMessage(elementToWarn);
+  //       return;
+  //     }
+  //     // let subjectItemsList = document.getElementById("select2-pool-dd-subjects-selection-dropdown-87-container");
+  //     // console.log(subjectItemsList);
+  //     // console.log(subjectItemsList.children.length);
+  //   }
+  // }
 
   if (poolSpecificationTableInput) {
     //focus on the input that already exists
-    //check if the pool has at least one subject
-    let subject_container =
-      poolSpecificationTableInput.parentNode.parentNode.nextElementSibling;
-    if (subject_container.children.length === 0) {
-      poolSpecificationTableInput.focus();
+    //check if pool has input
+    if(poolSpecificationTableInput.val != "") {
+      console.log(poolSpecificationTableInput);
+      confirmEnter(poolSpecificationTableInput);
     } else {
-      //check if subjects have been assigned or else throw error
-      let poolAmount = poolsTableBody.children.length;
-      let subject_container = poolsTableBody.children[poolAmount - 1];
-      let tag_container =
-        subject_container.children[1].children[1].children[0].children[0];
-      console.log(tag_container);
+      poolSpecificationTableInput.focus();
     }
   } else {
     //insert a new table row container with js as select2 breaks when adding a new row
@@ -5545,6 +5560,7 @@ const deletePool = (poolDeleteButton) => {
   //delete the table row element in the UI
   poolIdCellToDelete.remove();
   sodaJSONObj.deletePool(poolIdToDelete);
+  removeAlertMessageIfExists($("#pools-table"))
 };
 
 const deleteSample = (sampleDeleteButton) => {

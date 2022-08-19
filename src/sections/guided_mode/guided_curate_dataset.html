@@ -614,6 +614,9 @@
                   <table
                     class="ui celled striped table"
                     style="margin-bottom: 10px; width: 800px"
+                    id="pools-table"
+                    data-alert-message="Pool IDs may not contain spaces or special characters"
+                    data-alert-type="danger"
                   >
                     <thead>
                       <tr>
@@ -632,6 +635,8 @@
                   <button
                     class="ui primary basic button mt-0"
                     onclick="addPoolTableRow()"
+                    id="add-pool-table-button"
+                    style="margin-top: 1rem !important;"
                   >
                     <i class="fas fa-plus" style="margin-right: 7px"></i>Add a
                     new pool
