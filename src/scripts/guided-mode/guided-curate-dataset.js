@@ -5416,7 +5416,8 @@ const addPoolTableRow = () => {
       //check if subjects have been assigned or else throw error
       let poolAmount = poolsTableBody.children.length;
       let subject_container = poolsTableBody.children[poolAmount - 1];
-      let tag_container = subject_container.children[1].children[1].children[0].children[0];
+      let tag_container =
+        subject_container.children[1].children[1].children[0].children[0];
       console.log(tag_container);
     }
   } else {
