@@ -551,7 +551,8 @@
                     id="guided-add-subject-instructions"
                     style="margin-top: -7px"
                   >
-                    Hit enter after entering the subject ID to add a subject.
+                    Hit enter/click the checkbox after entering the subject ID
+                    to add a subject.
                   </p>
                   <button
                     class="ui primary basic button mt-0"
@@ -1741,7 +1742,11 @@
               <p class="guided--help-text">
                 The SPARC guidelines require each dataset to have specific
                 metadata files including manifest files, as described by the
-                SPARC Data Standards (SDS).
+                SPARC Data Standards (SDS). Specifically, a manifest.xlsx file
+                that lists all the data files is required in each high-level
+                SPARC folder. You can request SODA to create them automatically
+                and they will be included in your dataset when it is generated
+                in the last step of this guided workflow.
               </p>
             </div>
             <div class="guided--section">
@@ -1882,11 +1887,9 @@
               id="guided-section-manifest-auto-generation"
             >
               <p class="guided--help-text">
-                Soda will create .xlsx manifest files for each of your high
-                level folders with the filename, timestamp, and filetype
-                metadata generated automatically.<br /><br />
-                Click Save and Continue to confirm that you would like to have
-                your manifest files generated automatically.
+                SODA will create manifest.xlsx files for each of your high level
+                folders with the filename, timestamp, and filetype metadata
+                generated automatically. Click Save and Continue to confirm.
               </p>
             </div>
             <div
@@ -3256,13 +3259,13 @@
                   >
                   <div class="demo-controls-body w-100">
                     <div class="ui input modified">
-                      <input
+                      <select
                         type="text"
                         id="guided-bootbox-subject-protocol-title"
                         name="Protocol title"
-                        class="subjects-form-entry"
+                        class="ui selection dropdown subjects-form-entry"
                         placeholder="Type here..."
-                      />
+                      ></select>
                     </div>
                   </div>
                   <p class="guided--text-input-instructions mb-0">
@@ -3276,14 +3279,13 @@
                   >
                   <div class="demo-controls-body w-100">
                     <div class="ui input modified">
-                      <input
+                      <select
                         type="text"
                         id="guided-bootbox-subject-protocol-location"
                         name="protocol url or doi"
-                        class="subjects-form-entry"
+                        class="ui selection dropdown subjects-form-entry"
                         placeholder="Type here..."
-                        style="font-size: 1rem"
-                      />
+                      ></select>
                     </div>
                   </div>
                   <p class="guided--text-input-instructions mb-0">
@@ -3773,13 +3775,13 @@
                   >
                   <div class="demo-controls-body w-100">
                     <div class="ui input modified">
-                      <input
+                      <select
                         type="text"
                         id="guided-bootbox-sample-protocol-title"
                         name="Protocol title"
-                        class="samples-form-entry"
+                        class="ui selection dropdown samples-form-entry"
                         placeholder="Type here..."
-                      />
+                      ></select>
                     </div>
                   </div>
                   <p class="guided--text-input-instructions mb-0">
@@ -3793,14 +3795,13 @@
                   >
                   <div class="demo-controls-body w-100">
                     <div class="ui input modified">
-                      <input
+                      <select
                         type="text"
                         id="guided-bootbox-sample-protocol-location"
                         name="protocol url or doi"
-                        class="samples-form-entry"
+                        class="ui selection dropdown samples-form-entry"
                         placeholder="Type here..."
-                        style="font-size: 1rem"
-                      />
+                      ></select>
                     </div>
                   </div>
                   <p class="guided--text-input-instructions mb-0">
@@ -4824,7 +4825,7 @@
           <div id="guided-add-tags-tab" class="guided--panel hidden">
             <div class="guided--section">
               <h1 class="guided--text-sub-step">Dataset tags</h1>
-              <p class="guided--help-text text-center mb-lg">
+              <p class="guided--help-text mb-lg">
                 Dataset tags are keywords that indicate the key elements of your
                 research. They will improve the findability of your dataset when
                 it is published on the SPARC Data portal. The tags can be
@@ -5797,10 +5798,7 @@
               <h1 class="guided--text-sub-step">
                 Share with the SPARC Curation Team
               </h1>
-              <h2 class="guided--text-sub-step">
-                You can now review your dataset on Pennsieve using the link
-                below:
-              </h2>
+              <p class="guided--help-text text-center">Review dataset</p>
               <p
                 class="guided--help-text text-center"
                 style="font-size: large; margin: 5px !important"
@@ -5812,7 +5810,7 @@
               </p>
             </div>
             <div class="guided--section">
-              <h2 class="guided--text-sub-step">Make changes (optional)</h2>
+              <h2 class="guided--text-sub-step">Edit dataset</h2>
               <p class="guided--help-text">
                 Now that your initial dataset upload via Guided Mode has been
                 completed, modifications to your dataset can be made by clicking

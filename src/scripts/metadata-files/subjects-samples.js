@@ -1077,6 +1077,16 @@ function populateForms(subjectID, type, curationMode) {
   }
 
   if (subjectID !== "clear" && subjectID.trim() !== "") {
+    //Reset protocol title dropdowns to the default ("No protocols associated with this sample")
+    const protocolTitleDropdown = document.getElementById(
+      "guided-bootbox-subject-protocol-title"
+    );
+    const protocolURLDropdown = document.getElementById(
+      "guided-bootbox-subject-protocol-location"
+    );
+    protocolTitleDropdown.value = "";
+    protocolURLDropdown.value = "";
+
     // populate form
     var emptyEntries = ["nan", "nat"];
     var c = fieldArr.map(function (i, field) {
@@ -1118,6 +1128,26 @@ function populateForms(subjectID, type, curationMode) {
               infoJson[i]
             );
             switchSpeciesStrainInput("strain", "edit", curationMode);
+          } else if (
+            curationMode == "guided" &&
+            field.name === "protocol url or doi"
+          ) {
+            console.log("doing url");
+            //If the selected sample derived from
+            const previouslySavedProtocolURL = infoJson[i];
+
+            const protocols =
+              sodaJSONObj["dataset-metadata"]["description-metadata"][
+                "protocols"
+              ];
+            for (const protocol of protocols) {
+              if (protocol.link === previouslySavedProtocolURL) {
+                console.log("found a match");
+
+                protocolTitleDropdown.value = protocol.description;
+                protocolURLDropdown.value = protocol.link;
+              }
+            }
           } else {
             if (type === "import") {
               if (field.name === "subject id") {
@@ -1204,10 +1234,42 @@ function populateFormsSamples(subjectID, sampleID, type, curationMode) {
             curationMode == "guided" &&
             field.name === "was derived from"
           ) {
-            //If in guided mode, populate the derived from field with the sample previously
-            //selected as the derived from sample
-            if (!$(`#guided-bootbox-wasDerivedFromSample`).val(infoJson[i])) {
-              $(`#guided-bootbox-wasDerivedFromSample`).val("");
+            //If the selected sample derived from still exists, select it
+            //if not, reset the value
+            const previouslySavedDerivedFromSample = infoJson[i];
+            const wasDerivedFromDropdown = document.getElementById(
+              "guided-bootbox-wasDerivedFromSample"
+            );
+            wasDerivedFromDropdown.value = "";
+            for (const sample of wasDerivedFromDropdown.options) {
+              if (sample.value === previouslySavedDerivedFromSample) {
+                wasDerivedFromDropdown.value = sample.value;
+              }
+            }
+          } else if (
+            curationMode == "guided" &&
+            field.name === "protocol url or doi"
+          ) {
+            //If the selected sample derived from
+            const previouslySavedProtocolURL = infoJson[i];
+            const protocolTitleDropdown = document.getElementById(
+              "guided-bootbox-sample-protocol-title"
+            );
+            const protocolURLDropdown = document.getElementById(
+              "guided-bootbox-sample-protocol-location"
+            );
+            protocolTitleDropdown.value = "";
+            protocolURLDropdown.value = "";
+
+            const protocols =
+              sodaJSONObj["dataset-metadata"]["description-metadata"][
+                "protocols"
+              ];
+            for (const protocol of protocols) {
+              if (protocol.link === previouslySavedProtocolURL) {
+                protocolTitleDropdown.value = protocol.description;
+                protocolURLDropdown.value = protocol.link;
+              }
             }
           } else {
             if (type === "import") {
