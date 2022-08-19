@@ -5402,6 +5402,8 @@ const addPoolTableRow = () => {
     "input[name='guided-pool-id']"
   );
 
+  let lastSubjectContainer = poolsTableBody.children[poolAmount - 1];
+  //check the last input and if no pool input check if samples were assigned to the ones created
 
   if (poolSpecificationTableInput) {
     //focus on the input that already exists
@@ -5412,7 +5414,9 @@ const addPoolTableRow = () => {
     } else {
       //check if subjects have been assigned or else throw error
       let poolAmount = poolsTableBody.children.length;
-      poolsTableBody.children[poolAmount - 1];
+      let subject_container = poolsTableBody.children[poolAmount - 1];
+      let tag_container = subject_container.children[1].children[1].children[0].children[0];
+      console.log(tag_container);
     }
   } else {
     //insert a new table row container with js as select2 breaks when adding a new row
