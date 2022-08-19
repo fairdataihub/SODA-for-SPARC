@@ -386,7 +386,7 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   // Case 1: Local dataset
   if (type === "local") {
     sodaJSONObj["starting-point"]["local-path"] = localDatasetFolderPath;
@@ -458,7 +458,7 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
 
           // log the error to analytics
           logMetadataForAnalytics(
@@ -486,7 +486,7 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
           // log the error to analytics
           logMetadataForAnalytics(
             "Error",
@@ -513,7 +513,7 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
           // log the error to analytics
           logMetadataForAnalytics(
             "Error",
@@ -742,6 +742,8 @@ async function initiate_generate_manifest_bf() {
   try {
     curationResponse = await client.post(`/curate_datasets/curation`, {
       soda_json_structure: sodaJSONObj,
+    }, {
+      timeout: 0
     });
   } catch (error) {
     clientError(error);
@@ -928,6 +930,7 @@ async function extractBFDatasetForManifestFile(
   } catch (err) {
     result = [false, err];
   }
+
   if (!result[0]) {
     Swal.fire({
       icon: "error",
@@ -956,124 +959,138 @@ async function extractBFDatasetForManifestFile(
     $("#div-check-bf-create-manifest").hide();
     sodaJSONObj["bf-dataset-selected"]["dataset-name"] = "";
     return;
-  } else {
-    sodaJSONObj = result[1]["soda_object"];
-    if (JSON.stringify(sodaJSONObj["dataset-structure"]) !== "{}") {
-      datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-    } else {
-      datasetStructureJSONObj = { folders: {}, files: {} };
-    }
-    sodaJSONObj["manifest-files"] = { destination: "generate-dataset" };
-
-    sodaJSONObj["generate-dataset"] = {
-      destination: "bf",
-      "generate-option": "existing-bf",
-    };
-    sodaJSONObj["starting-point"] = { type: "bf" };
-    populate_existing_folders(datasetStructureJSONObj);
-    populate_existing_metadata(sodaJSONObj);
-    let continueProgressEmptyFolder = await checkEmptySubFolders(
-      sodaJSONObj["dataset-structure"]
-    );
-
-    if (!continueProgressEmptyFolder) {
-      Swal.fire({
-        title: "Failed to generate the manifest files.",
-        text: "The dataset contains one or more empty folder(s). Per SPARC guidelines, a dataset must not contain any empty folders. Please remove them before generating the manifest files.",
-        heightAuto: false,
-        showConfirmButton: true,
-        icon: "error",
-        backdrop: "rgba(0,0,0, 0.4)",
-        didOpen: () => {
-          Swal.hideLoading();
-        },
-      }).then((result) => {});
-      $("#Question-prepare-manifest-4").removeClass("show");
-      $("#Question-prepare-manifest-4").removeClass("prev");
-      $("#Question-prepare-manifest-3").removeClass("prev");
-      $("#bf_dataset_create_manifest").text("None");
-      defaultBfDataset = "Select dataset";
-      logMetadataForAnalytics(
-        "Error",
-        MetadataAnalyticsPrefix.MANIFEST,
-        AnalyticsGranularity.ALL_LEVELS,
-        "Generate",
-        Destinations.PENNSIEVE
-      );
-      return;
-    }
-    var continueErrorManifest;
-    try {
-      let res = await extractBFManifestFile();
-      continueErrorManifest = [false, res];
-    } catch (err) {
-      continueErrorManifest = [true, err];
-    }
-    if (continueErrorManifest[0]) {
-      Swal.fire({
-        title: "Failed to load the manifest files for edits.",
-        html: continueErrorManifest[1],
-        heightAuto: false,
-        showConfirmButton: true,
-        icon: "error",
-        backdrop: "rgba(0,0,0, 0.4)",
-        didOpen: () => {
-          Swal.hideLoading();
-        },
-      }).then((result) => {});
-      $("#Question-prepare-manifest-4").removeClass("show");
-      $("#Question-prepare-manifest-4").removeClass("prev");
-      $("#Question-prepare-manifest-3").removeClass("prev");
-      $("#bf_dataset_create_manifest").text("None");
-      defaultBfDataset = "Select dataset";
-      logMetadataForAnalytics(
-        "Error",
-        MetadataAnalyticsPrefix.MANIFEST,
-        AnalyticsGranularity.ALL_LEVELS,
-        "Generate",
-        Destinations.PENNSIEVE
-      );
-      return;
-    }
-    // check for no SPARC folders on a Pennsieve datasets (already include check for a local dataset)
-    let continueProgressNoSPARCFolders = await checkNoSparcFolders(
-      sodaJSONObj["dataset-structure"]
-    );
-    if (continueProgressNoSPARCFolders === true) {
-      Swal.fire({
-        title: "Failed to generate the manifest files.",
-        text: "The dataset does not contain any SPARC folder(s). Please choose a valid dataset before generating the manifest files.",
-        heightAuto: false,
-        showConfirmButton: true,
-        icon: "error",
-        backdrop: "rgba(0,0,0, 0.4)",
-        didOpen: () => {
-          Swal.hideLoading();
-        },
-      }).then((result) => {});
-      $("#Question-prepare-manifest-4").removeClass("show");
-      $("#Question-prepare-manifest-4").removeClass("prev");
-      $("#Question-prepare-manifest-3").removeClass("prev");
-      $("#bf_dataset_create_manifest").text("None");
-      defaultBfDataset = "Select dataset";
-      // log the error to analytics
-      logMetadataForAnalytics(
-        "Error",
-        MetadataAnalyticsPrefix.MANIFEST,
-        AnalyticsGranularity.ALL_LEVELS,
-        "Generate",
-        Destinations.PENNSIEVE
-      );
-      return;
-    }
   }
+
+  sodaJSONObj = result[1]["soda_object"];
+  if (JSON.stringify(sodaJSONObj["dataset-structure"]) !== "{}") {
+    datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+  } else {
+    datasetStructureJSONObj = { folders: {}, files: {} };
+  }
+  sodaJSONObj["manifest-files"] = { destination: "generate-dataset" };
+  sodaJSONObj["generate-dataset"] = {
+    destination: "bf",
+    "generate-option": "existing-bf",
+  };
+  sodaJSONObj["starting-point"] = { type: "bf" };
+
+  console.log("Populating existing folders...")
+  populate_existing_folders(datasetStructureJSONObj);
+  console.log("Populating existing metadata...")
+  populate_existing_metadata(sodaJSONObj);
+
+  let continueProgressEmptyFolder = await checkEmptySubFolders(
+    sodaJSONObj["dataset-structure"]
+  );
+
+  if (!continueProgressEmptyFolder) {
+    Swal.fire({
+      title: "Failed to generate the manifest files.",
+      text: "The dataset contains one or more empty folder(s). Per SPARC guidelines, a dataset must not contain any empty folders. Please remove them before generating the manifest files.",
+      heightAuto: false,
+      showConfirmButton: true,
+      icon: "error",
+      backdrop: "rgba(0,0,0, 0.4)",
+      didOpen: () => {
+        Swal.hideLoading();
+      },
+    }).then((result) => { });
+    $("#Question-prepare-manifest-4").removeClass("show");
+    $("#Question-prepare-manifest-4").removeClass("prev");
+    $("#Question-prepare-manifest-3").removeClass("prev");
+    $("#bf_dataset_create_manifest").text("None");
+    defaultBfDataset = "Select dataset";
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.MANIFEST,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Generate",
+      Destinations.PENNSIEVE
+    );
+    return;
+  }
+
+
+  var continueErrorManifest;
+  try {
+    console.log("Extracting manifest files...")
+    let res = await extractBFManifestFile();
+    console.log("Done doing that lol")
+    continueErrorManifest = [false, res];
+  } catch (err) {
+    continueErrorManifest = [true, err];
+  }
+
+
+  if (continueErrorManifest[0]) {
+    Swal.fire({
+      title: "Failed to load the manifest files for edits.",
+      html: continueErrorManifest[1],
+      heightAuto: false,
+      showConfirmButton: true,
+      icon: "error",
+      backdrop: "rgba(0,0,0, 0.4)",
+      didOpen: () => {
+        Swal.hideLoading();
+      },
+    }).then((result) => { });
+    $("#Question-prepare-manifest-4").removeClass("show");
+    $("#Question-prepare-manifest-4").removeClass("prev");
+    $("#Question-prepare-manifest-3").removeClass("prev");
+    $("#bf_dataset_create_manifest").text("None");
+    defaultBfDataset = "Select dataset";
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.MANIFEST,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Generate",
+      Destinations.PENNSIEVE
+    );
+    return;
+  }
+
+  // check for no SPARC folders on a Pennsieve datasets (already include check for a local dataset)
+  let continueProgressNoSPARCFolders = checkNoSparcFolders(
+    sodaJSONObj["dataset-structure"]
+  );
+  if (continueProgressNoSPARCFolders === true) {
+    Swal.fire({
+      title: "Failed to generate the manifest files.",
+      text: "The dataset does not contain any SPARC folder(s). Please choose a valid dataset before generating the manifest files.",
+      heightAuto: false,
+      showConfirmButton: true,
+      icon: "error",
+      backdrop: "rgba(0,0,0, 0.4)",
+      didOpen: () => {
+        Swal.hideLoading();
+      },
+    }).then((result) => { });
+    $("#Question-prepare-manifest-4").removeClass("show");
+    $("#Question-prepare-manifest-4").removeClass("prev");
+    $("#Question-prepare-manifest-3").removeClass("prev");
+    $("#bf_dataset_create_manifest").text("None");
+    defaultBfDataset = "Select dataset";
+    // log the error to analytics
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.MANIFEST,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Generate",
+      Destinations.PENNSIEVE
+    );
+    return;
+  }
+
+  
   if (!editBoolean) {
+    console.log("Generating a manifest file for the dataset directly on Pennsieve...")
     generateManifestOnPennsieve();
   } else {
     $("#preview-manifest-fake-confirm-pennsieve").click();
     $("#Question-prepare-manifest-4").removeClass("show");
     $("#Question-prepare-manifest-4").removeClass("prev");
     $(ev).hide();
+    console.log("Loading manifest preview into tree....")
     loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
     Swal.fire({
       title: "Successfully generated!",
@@ -1085,7 +1102,7 @@ async function extractBFDatasetForManifestFile(
       didOpen: () => {
         Swal.hideLoading();
       },
-    }).then((result) => {});
+    }).then((result) => { });
     localDatasetFolderPath = "";
   }
 }
@@ -1093,19 +1110,20 @@ async function extractBFDatasetForManifestFile(
 function extractBFManifestFile() {
   return new Promise((resolve, reject) => {
     client
-      .get("/prepare_metadata/manifest_files/pennsieve", {
-        params: {
+      .post("/prepare_metadata/manifest_files/pennsieve", {
+        
           soda_json_object: sodaJSONObj,
           selected_account: defaultBfAccount,
           selected_dataset: defaultBfDataset,
-        },
+      }, {
+        timeout: 0
       })
       .then((res) => {
         resolve(res);
       })
       .catch((err) => {
-        clientError(error);
-        reject(userErrorMessage(error));
+        clientError(err);
+        reject(userErrorMessage(err));
       });
   });
 }
@@ -1143,7 +1161,7 @@ function validateSPARCdataset() {
           $(".swal-popover").popover();
         },
         footer: footer,
-      }).then((result) => {});
+      }).then((result) => { });
       return false;
     } else {
       return true;
@@ -1340,7 +1358,7 @@ async function generateManifestFolderLocallyForEdit(ev) {
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       return;
     } else {
       createManifestLocally("local", true, "");
@@ -1376,7 +1394,8 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
       {
         generate_purpose: "edit-manifest",
         soda_json_object: sodaJSONObj,
-      }
+      }, 
+      {timeout: 0}
     );
     let res =
       generate_local_manifest.data.success_message_or_manifest_destination;
@@ -1385,6 +1404,8 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
       try {
         await client.post(`/curate_datasets/manifest_files/local`, {
           filepath: generatePath,
+        }, {
+          timeout: 0
         });
 
         Swal.fire({
@@ -1397,7 +1418,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
           didOpen: () => {
             Swal.hideLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         $("#preview-manifest-fake-confirm").click();
         $("#Question-prepare-manifest-4").removeClass("show");
         $("#Question-prepare-manifest-4").removeClass("prev");
@@ -1431,7 +1452,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       localDatasetFolderPath = "";
     } else {
       // SODA Manifest Files folder
@@ -1489,7 +1510,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
       didOpen: () => {
         Swal.hideLoading();
       },
-    }).then((result) => {});
+    }).then((result) => { });
     $("#Question-prepare-manifest-4").removeClass("show");
     $("#Question-prepare-manifest-4").removeClass("prev");
     $("#Question-prepare-manifest-3").removeClass("prev");

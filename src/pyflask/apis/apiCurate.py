@@ -27,14 +27,13 @@ model_check_empty_files_folders_response = api.model( "CheckEmptyFilesFoldersRes
 class CheckEmptyFilesFolders(Resource):
     # response types/codes
     @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request'}, description="Given a sodajsonobject return a list of empty files and folders should they exist, as well as the sodajsonobject.", params={'soda_json_structure': 'JSON structure of the SODA dataset'})
-    def get(self):
-        soda_json_structure = request.args.get("soda_json_structure")
+    def post(self):
+        data = request.get_json()
+
+        soda_json_structure = data["soda_json_structure"]
 
         if soda_json_structure is None:
             api.abort(400, "Missing parameter: soda_json_structure")
-
-        # parse soda json as dictionary
-        soda_json_structure = json.loads(soda_json_structure)
 
         try:
             return check_empty_files_folders(soda_json_structure)

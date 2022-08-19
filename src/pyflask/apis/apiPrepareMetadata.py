@@ -554,17 +554,15 @@ class GenerateManifestFilesPennsieve(Resource):
                     "selected_account": "The pennsieve account for the user", 
                     "selected_dataset": "The dataset that the user wants to generate manifest files for"})
     # @api.marshal_with(model_generate_manifest_locally_response, False, 200)
-    def get(self):
-        args = request.args.to_dict()
+    def post(self):
+        data = request.get_json()
 
-        selected_account = args.get("selected_account")
-        selected_dataset = args.get("selected_dataset")
-        soda_json_object = args.get("soda_json_object")
+        selected_account = data.get("selected_account")
+        selected_dataset = data.get("selected_dataset")
+        soda_json_object = data.get("soda_json_object")
 
         if not selected_account or not selected_dataset or not soda_json_object:
             api.abort(400, "Error: To generate manifest files for Pennsieve provide a selected_account, selected_dataset, and soda_json_object.")
-
-        soda_json_object = json.loads(soda_json_object)
 
         try:
             return import_bf_manifest_file(soda_json_object, selected_account, selected_dataset)
