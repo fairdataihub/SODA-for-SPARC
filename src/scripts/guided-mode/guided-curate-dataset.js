@@ -67,6 +67,11 @@ const guidedSetCurationTeamUI = (boolSharedWithCurationTeam) => {
 
 const guidedModifyCurationTeamAccess = async (action) => {
   if (action === "share") {
+    const guidedShareWithCurationTeamButton = document.getElementById(
+      "guided-button-share-dataset-with-curation-team"
+    );
+    guidedShareWithCurationTeamButton.disabled = true;
+    guidedShareWithCurationTeamButton.classList.add("loading");
     const { value: confirmShareWithCurationTeam } = await Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
@@ -95,12 +100,36 @@ const guidedModifyCurationTeamAccess = async (action) => {
           }
         );
         guidedSetCurationTeamUI(true);
+        swal.fire({
+          width: "550px",
+          icon: "success",
+          title: "Dataset successfully shared with the Curation Team",
+          html: `It is now advised that you do not make changes to the dataset until
+          the Curation Team reaches out to you via....`,
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          cancelButtonText: "No",
+          confirmButtonText: "Yes",
+          focusConfirm: true,
+        });
       } catch (error) {
-        log.error(error);
+        notyf.open({
+          duration: "5000",
+          type: "error",
+          message: "Error sharing dataset with the Curation Team",
+        });
       }
     }
+    guidedShareWithCurationTeamButton.disabled = false;
+    guidedShareWithCurationTeamButton.classList.remove("loading");
   }
   if (action === "unshare") {
+    const guidedUnshareWithCurationTeamButton = document.getElementById(
+      "guided-button-unshare-dataset-with-curation-team"
+    );
+    guidedUnshareWithCurationTeamButton.disabled = true;
+    guidedUnshareWithCurationTeamButton.classList.add("loading");
+
     const { value: confirmUnshareWithCurationTeam } = await Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
@@ -129,10 +158,28 @@ const guidedModifyCurationTeamAccess = async (action) => {
           }
         );
         guidedSetCurationTeamUI(false);
+        swal.fire({
+          width: "550px",
+          icon: "success",
+          title: "Dataset successfully unshared with the Curation Team",
+          html: `You are now free to make any necessary modifications to your dataset. Once you are
+          ready to reshare with the Curation Team, please revisit this page.`,
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          cancelButtonText: "No",
+          confirmButtonText: "Yes",
+          focusConfirm: true,
+        });
       } catch (error) {
-        log.error(error);
+        notyf.open({
+          duration: "5000",
+          type: "error",
+          message: "Error removing Curation Team access",
+        });
       }
     }
+    guidedUnshareWithCurationTeamButton.disabled = false;
+    guidedUnshareWithCurationTeamButton.classList.remove("loading");
   }
 };
 
