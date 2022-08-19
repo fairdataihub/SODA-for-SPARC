@@ -5508,6 +5508,7 @@ const addPoolTableRow = () => {
     if(poolSpecificationTableInput.val != "") {
       console.log(poolSpecificationTableInput);
       confirmEnter(poolSpecificationTableInput);
+      addPoolTableRow();
     } else {
       poolSpecificationTableInput.focus();
     }
