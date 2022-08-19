@@ -5505,7 +5505,7 @@ const addPoolTableRow = () => {
   if (poolSpecificationTableInput) {
     //focus on the input that already exists
     //check if pool has input
-    if(poolSpecificationTableInput.val != "") {
+    if (poolSpecificationTableInput.val != "") {
       console.log(poolSpecificationTableInput);
       confirmEnter(poolSpecificationTableInput);
       addPoolTableRow();
@@ -5561,7 +5561,7 @@ const deletePool = (poolDeleteButton) => {
   //delete the table row element in the UI
   poolIdCellToDelete.remove();
   sodaJSONObj.deletePool(poolIdToDelete);
-  removeAlertMessageIfExists($("#pools-table"))
+  removeAlertMessageIfExists($("#pools-table"));
 };
 
 const deleteSample = (sampleDeleteButton) => {
