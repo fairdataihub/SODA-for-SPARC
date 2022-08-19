@@ -1204,10 +1204,32 @@ function populateFormsSamples(subjectID, sampleID, type, curationMode) {
             curationMode == "guided" &&
             field.name === "was derived from"
           ) {
-            //If in guided mode, populate the derived from field with the sample previously
-            //selected as the derived from sample
-            if (!$(`#guided-bootbox-wasDerivedFromSample`).val(infoJson[i])) {
-              $(`#guided-bootbox-wasDerivedFromSample`).val("");
+            //If the selected sample derived from still exists, select it
+            //if not, reset the value
+            const previouslySavedDerivedFromSample = infoJson[i];
+            const wasDerivedFromDropdown = document.getElementById(
+              "guided-bootbox-wasDerivedFromSample"
+            );
+            wasDerivedFromDropdown.value = "";
+            for (const sample of wasDerivedFromDropdown.options) {
+              if (sample.value === previouslySavedDerivedFromSample) {
+                wasDerivedFromDropdown.value = sample.value;
+              }
+            }
+          } else if (
+            curationMode == "guided" &&
+            field.name === "Protocol title"
+          ) {
+            //If the selected sample derived from
+            const previouslySavedDerivedFromSample = infoJson[i];
+            const wasDerivedFromDropdown = document.getElementById(
+              "guided-bootbox-wasDerivedFromSample"
+            );
+            wasDerivedFromDropdown.value = "";
+            for (const sample of wasDerivedFromDropdown.options) {
+              if (sample.value === previouslySavedDerivedFromSample) {
+                wasDerivedFromDropdown.value = sample.value;
+              }
             }
           } else {
             if (type === "import") {

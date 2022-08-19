@@ -551,7 +551,8 @@
                     id="guided-add-subject-instructions"
                     style="margin-top: -7px"
                   >
-                    Hit enter after entering the subject ID to add a subject.
+                    Hit enter/click the checkbox after entering the subject ID
+                    to add a subject.
                   </p>
                   <button
                     class="ui primary basic button mt-0"
@@ -3773,13 +3774,13 @@
                   >
                   <div class="demo-controls-body w-100">
                     <div class="ui input modified">
-                      <input
+                      <select
                         type="text"
                         id="guided-bootbox-sample-protocol-title"
                         name="Protocol title"
-                        class="samples-form-entry"
+                        class="ui selection dropdown samples-form-entry"
                         placeholder="Type here..."
-                      />
+                      ></select>
                     </div>
                   </div>
                   <p class="guided--text-input-instructions mb-0">
@@ -3793,14 +3794,13 @@
                   >
                   <div class="demo-controls-body w-100">
                     <div class="ui input modified">
-                      <input
+                      <select
                         type="text"
                         id="guided-bootbox-sample-protocol-location"
                         name="protocol url or doi"
-                        class="samples-form-entry"
+                        class="ui selection dropdown samples-form-entry"
                         placeholder="Type here..."
-                        style="font-size: 1rem"
-                      />
+                      ></select>
                     </div>
                   </div>
                   <p class="guided--text-input-instructions mb-0">
@@ -4823,7 +4823,7 @@
           <div id="guided-add-tags-tab" class="guided--panel hidden">
             <div class="guided--section">
               <h1 class="guided--text-sub-step">Dataset tags</h1>
-              <p class="guided--help-text text-center mb-lg">
+              <p class="guided--help-text mb-lg">
                 Dataset tags are keywords that indicate the key elements of your
                 research. They will improve the findability of your dataset when
                 it is published on the SPARC Data portal. The tags can be

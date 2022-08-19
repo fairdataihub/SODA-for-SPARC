@@ -3639,7 +3639,7 @@ const highLevelFolderPageData = {
       "Provide the code data associated with your dataset in the interface below",
     contentsText: `You can also virtually structure the data and rename files/folders
     as you would like to have them in your dataset when it is generated (note that none of
-    your original data will be modified).`,
+    your original data will be modified).<br />`,
     pathSuffix: "code/",
     backPageId: "guided-code-folder-tab",
   },
@@ -4567,6 +4567,42 @@ const openModifySampleMetadataPage = (
    })
    .join("\n")}))
  `;
+
+  //Add protocol titles to the protocol dropdown
+  const protocols =
+    sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
+  document.getElementById("guided-bootbox-sample-protocol-title").innerHTML = `
+    <option value="">No protocols associated with this sample</option>
+    ${protocols
+      .map((protocol) => {
+        return `
+          <option
+            value="${protocol.description}"
+            data-protocol-link="${protocol.link}"
+          >
+            ${protocol.description}
+          </option>
+        `;
+      })
+      .join("\n")}))
+  `;
+  document.getElementById(
+    "guided-bootbox-sample-protocol-location"
+  ).innerHTML = `
+    <option value="">No protocols associated with this sample</option>
+    ${protocols
+      .map((protocol) => {
+        return `
+          <option
+            value="${protocol.link}"
+            data-protocol-description="${protocol.description}"
+          >
+            ${protocol.link}
+          </option>
+        `;
+      })
+      .join("\n")}))
+  `;
 
   guidedLoadSampleMetadataIfExists(sampleMetadataID, sampleMetadataSubjectID);
 
@@ -7243,6 +7279,27 @@ $(document).ready(() => {
   $(".guided--card-container > div").on("click", function () {
     handlePageBranching($(this));
   });
+
+  document
+    .getElementById("guided-bootbox-sample-protocol-title")
+    .addEventListener("change", function () {
+      const newDescriptionAssociatedLink = $(this)
+        .find(":selected")
+        .data("protocol-link");
+      document.getElementById("guided-bootbox-sample-protocol-location").value =
+        newDescriptionAssociatedLink ? newDescriptionAssociatedLink : "";
+    });
+  document
+    .getElementById("guided-bootbox-sample-protocol-location")
+    .addEventListener("change", function () {
+      const newDescriptionAssociatedDescription = $(this)
+        .find(":selected")
+        .data("protocol-description");
+      document.getElementById("guided-bootbox-sample-protocol-title").value =
+        newDescriptionAssociatedDescription
+          ? newDescriptionAssociatedDescription
+          : "";
+    });
 
   // function for importing a banner image if one already exists
   $("#guided-button-add-banner-image").click(async () => {
