@@ -3521,6 +3521,7 @@ const updateFolderStructureUI = (pageDataObj) => {
 
   // reconstruct div with new elements
 
+  //where folder section items will be created
   listItems(myPath, "#items", 500, (reset = true));
   getInFolder(
     ".single-item",
@@ -6142,6 +6143,9 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
           })
           .start();
       } else {
+        //render folder section in #items
+        //create an animation effect to the items box here
+        // $("#items")
         updateFolderStructureUI(samplePageData);
       }
     });
