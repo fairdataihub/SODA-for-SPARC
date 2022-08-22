@@ -3482,12 +3482,17 @@ const updateFolderStructureUI = (pageDataObj) => {
   //If the pageDataObj has header and contents, set element text and hide
   //If not, remove the elements from the screen
   console.log(pageDataObj);
+  const fileExplorer = document.getElementById("guided-file-explorer-elements");
   const structureFolderHeaderElement = document.getElementById(
     "structure-folder-header"
   );
   const structureFolderContentsElement = document.getElementById(
     "structure-folder-contents"
   );
+
+  // fileExplorer.style.webkitAnimation = "none";
+  fileExplorer.classList.remove("file-explorer-transition");
+
   if (pageDataObj.headerText) {
     structureFolderHeaderElement.innerHTML = pageDataObj.headerText;
     structureFolderHeaderElement.classList.remove("hidden");
@@ -3500,6 +3505,13 @@ const updateFolderStructureUI = (pageDataObj) => {
   } else {
     structureFolderContentsElement.classList.add("hidden");
   }
+
+  // if (fileExplorer.classList.contains("file-explorer-transition")) {
+  // }
+  // fileExplorer.style.webkitAnimation = "";
+  setTimeout(function () {
+    fileExplorer.classList.add("file-explorer-transition");
+  }, 200);
 
   $("#guided-input-global-path").val(
     `My_dataset_folder/${pageDataObj.pathSuffix}`
@@ -5964,19 +5976,14 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
     subjectsWithSamplesInPools
   )) {
     asideElementTemplateLiteral += `
-      <div class="poolContainer" style="border-radius: 5px;">
-      <div class="justify-center poolTitleContainer">
-        <label class="guided--form-label centered poolTitle" style="align-self: center; width: 98%; margin-bottom: .2rem; padding-top: 5px;">
-          ${poolName}
-        </label>
-      </div>
-        ${subjects
-          .map((subject) => {
-            return `
-              <div class="w-100" style="padding-left: .5rem; border: 1px solid black; background: var(--color-light-green); padding-top: 5px; padding-bottom: 5px;">
-                <label class="guided--form-label text-left" style="color: white !important;">
-                  ${subject.subjectName}
-                </label>
+    ${subjects
+      .map((subject) => {
+        return `
+        <div style="display: flex; flex-direction: column; width: 100%; border-radius: 4px; margin-bottom: 1rem">
+            <div class="justify-center" style="background: lightgray; padding: 5px 0 2px 0;">
+              <label class="guided--form-label centered" style="color: black;">
+                ${subject.subjectName}
+              </label>
               </div>
                 ${subject.samples
                   .map((sample) => {
@@ -5984,16 +5991,14 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
                     <a 
                       class="${highLevelFolderName}-selection-aside-item selection-aside-item"
                       data-path-suffix="${subject.poolName}/${subject.subjectName}/${sample}"
-                      style="padding-left: 1rem;"
+                      style="padding-left: 1rem; direction: ltr"
                     >${sample}</a>
                   `;
                   })
                   .join("\n")}
-            `;
-          })
-          .join("\n")}
-      </div>
-    `;
+            </div>`;
+      })
+      .join("\n")}`;
   }
 
   //filter out subjects that are not in a pool
@@ -6005,9 +6010,9 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
   //loop through the subjects and create an aside element for each
   for (const subject of subjectsWithSamplesOutsidePools) {
     asideElementTemplateLiteral += `
-      <div style="display: flex; flex-direction: column; width: 100%; border: 1px solid black; border-radius: 4px; margin-bottom: 1rem">
-      <div class="justify-center" style="background: var(--color-light-green); padding: 5px 0 2px 0;">
-        <label class="guided--form-label centered" style="color: white;">
+      <div style="display: flex; flex-direction: column; width: 100%; border-radius: 4px; margin-bottom: 1rem">
+      <div class="justify-center" style="background: lightgray; padding: 5px 0 2px 0;">
+        <label class="guided--form-label centered" style="color: black;">
           ${subject.subjectName}
         </label>
       </div>
@@ -6016,6 +6021,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
             return `  
               <a
                 class="${highLevelFolderName}-selection-aside-item selection-aside-item"
+                style="direction: ltr; padding-left: 1rem;"
                 data-path-suffix="${subject.subjectName}/${sample}"
               >${sample}</a>
             </div>`;
@@ -6178,7 +6184,7 @@ const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
       return `
           <a 
             class="${highLevelFolderName}-selection-aside-item selection-aside-item"
-            style="align-self: center; width: 97%;"
+            style="align-self: center; width: 97%; direction: ltr;"
             data-path-suffix="${
               subject.poolName ? subject.poolName + "/" : ""
             }${subject.subjectName}"

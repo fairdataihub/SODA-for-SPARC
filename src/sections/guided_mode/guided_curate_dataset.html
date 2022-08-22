@@ -760,29 +760,36 @@
                   <div
                     class="guided--container-subject-samples mt-md"
                     id="guided-primary-samples-file-explorer-container"
-                    style="margin-right: 0.5rem; padding-top: 10px"
+                    style="
+                      margin-right: 0.5rem;
+                      padding-top: 0;
+                      border: 2px solid lightgray;
+                    "
                   >
                     <div
                       class="guided--hlf-selection-container"
                       style="
-                        border: 2px solid lightgray;
                         padding-top: 0 !important;
+                        border-right: 2px solid lightgray;
+                        padding-bottom: 0;
+                        border-radius: 0;
                       "
                     >
                       <label
                         class="guided--form-label centered"
                         style="
-                          border-bottom: 2px solid var(--color-light-green);
-                          padding-bottom: 12px;
+                          border-bottom: 2px solid lightgray;
+                          padding-bottom: 15px;
                           padding-top: 12px;
-                          background: var(--color-light-green);
-                          color: white;
+                          background: lightgray;
+                          color: black;
                         "
                         >Dataset samples:
                       </label>
                       <aside
                         class="guided--hlf-selection-aside"
                         id="guided-primary-samples-aside"
+                        style="direction: rtl"
                       ></aside>
                     </div>
                     <div
@@ -793,7 +800,6 @@
                         padding: 25px;
                         border: black solid 2px;
                         width: 800px;
-                        margin-left: 0.5rem;
                         border-radius: 4px;
                       "
                     >
@@ -879,13 +885,15 @@
                   <div
                     class="guided--container-subject-samples mt-md"
                     id="guided-primary-subjects-file-explorer-container"
+                    style="border: 2px solid lightgray"
                   >
                     <div
                       class="guided--hlf-selection-container"
                       style="
                         padding-top: 0;
-                        border: 2px solid lightgray;
+                        border-right: 2px solid lightgray;
                         width: 350px;
+                        border-radius: 0;
                         height: 476px;
                       "
                     >
@@ -893,17 +901,17 @@
                         class="guided--form-label centered"
                         style="
                           padding: 12px 0 12px 0;
-                          border-bottom: 2px solid var(--color-light-green);
+                          border-bottom: 2px solid lightgray;
                           height: 48px;
-                          color: white;
-                          background: var(--color-light-green);
+                          color: black;
+                          background: lightgray;
                         "
                         >Dataset subjects:
                       </label>
                       <aside
                         class="guided--hlf-selection-aside"
                         id="guided-primary-subjects-aside"
-                        style="font-weight: 600"
+                        style="font-weight: 600; direction: rtl"
                       ></aside>
                     </div>
                     <div
@@ -1591,13 +1599,7 @@
             <div
               class="guided--section"
               id="guided-file-explorer-elements"
-              style="
-                padding: 0;
-                margin-left: 0.5rem;
-                border-radius: 4px;
-                border: 2px solid var(--color-light-green);
-                height: 476px;
-              "
+              style="padding: 0; border-radius: 4px; height: 476px"
             >
               <h2
                 class="guided--text-sub-step mt-0"
@@ -1701,10 +1703,7 @@
               <div
                 id="guided-folder-structure-container"
                 class="w-100"
-                style="
-                  border-top: 2px solid var(--color-light-green);
-                  margin-top: 0;
-                "
+                style="border-top: 2px solid lightgray; margin-top: 0"
               ></div>
             </div>
           </div>
