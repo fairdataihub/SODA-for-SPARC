@@ -3500,44 +3500,64 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       ]
     );
   };
-  sodaJSONObj.addSample = function (sampleName) {
-    if (
-      this["dataset-metadata"]["pool-subject-sample-structure"]["samples"][
-        sampleName
-      ]
-    ) {
-      throw new Error("Sample IDs must be unique for each subject.");
-    } else {
-      this["dataset-metadata"]["pool-subject-sample-structure"]["samples"][
-        sampleName
-      ] = {};
+
+  sodaJSONObj.getAllSamplesFromSubjects = function () {
+    let samplesInPools = [];
+    let samplesOutsidePools = [];
+
+    //get all the samples in subjects in pools
+    for (const [poolName, poolData] of Object.entries(
+      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
+    )) {
+      for (const [subjectName, subjectData] of Object.entries(poolData)) {
+        for (sampleName of Object.keys(subjectData)) {
+          samplesInPools.push({
+            sampleName: sampleName,
+            subjectName: subjectName,
+            poolName: poolName,
+          });
+        }
+      }
     }
+
+    //get all the samples in subjects not in pools
+    for (const [subjectName, subjectData] of Object.entries(
+      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
+    )) {
+      for (sampleName of Object.keys(subjectData)) {
+        samplesOutsidePools.push({
+          sampleName: sampleName,
+          subjectName: subjectName,
+        });
+      }
+    }
+    return [samplesInPools, samplesOutsidePools];
   };
+
   sodaJSONObj.addSampleToSubject = function (
     sampleName,
     subjectPoolName,
     subjectName
   ) {
-    console.log(sampleName, subjectPoolName, subjectName);
-    if (subjectPoolName) {
-      if (
-        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-          subjectPoolName
-        ][subjectName][sampleName]
-      ) {
-        throw new Error("Sample IDs must be unique for each subject.");
+    const [samplesInPools, samplesOutsidePools] =
+      sodaJSONObj.getAllSamplesFromSubjects();
+    //Combine sample data from samples in and out of pools
+    let samples = [...samplesInPools, ...samplesOutsidePools];
+
+    //Check samples already added and throw an error if a sample with the sample name already exists.
+    for (const sample of samples) {
+      if (sample.sampleName === sampleName) {
+        throw new Error(
+          `Sample names must be unique. \n${sampleName} already exists in ${sample.subjectName}`
+        );
       }
+    }
+
+    if (subjectPoolName) {
       this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
         subjectPoolName
       ][subjectName][sampleName] = {};
     } else {
-      if (
-        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
-          subjectName
-        ][sampleName]
-      ) {
-        throw new Error("Sample IDs must be unique for each subject.");
-      }
       this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
         subjectName
       ][sampleName] = {};
@@ -3635,40 +3655,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     }
     return [subjectsInPools, subjectsOutsidePools];
   };
-  sodaJSONObj.getAllSamplesFromSubjects = function () {
-    let samplesInPools = [];
-    let samplesOutsidePools = [];
 
-    //get all the samples in subjects in pools
-    for (const [poolName, poolData] of Object.entries(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
-    )) {
-      for (const [subjectName, subjectData] of Object.entries(poolData)) {
-        for (sampleName of Object.keys(subjectData)) {
-          samplesInPools.push({
-            sampleName: sampleName,
-            subjectName: subjectName,
-            poolName: poolName,
-          });
-        }
-      }
-    }
-
-    //get all the samples in subjects not in pools
-    for (const [subjectName, subjectData] of Object.entries(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
-    )) {
-      for (sampleName of Object.keys(subjectData)) {
-        samplesOutsidePools.push({
-          sampleName: sampleName,
-          subjectName: subjectName,
-        });
-      }
-    }
-    console.log(samplesInPools, samplesOutsidePools);
-
-    return [samplesInPools, samplesOutsidePools];
-  };
   sodaJSONObj.updatePrimaryDatasetStructure = function () {
     //Add pool keys to primary dataset structure
     for (const pool of Object.keys(
