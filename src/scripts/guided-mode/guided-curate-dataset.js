@@ -67,6 +67,11 @@ const guidedSetCurationTeamUI = (boolSharedWithCurationTeam) => {
 
 const guidedModifyCurationTeamAccess = async (action) => {
   if (action === "share") {
+    const guidedShareWithCurationTeamButton = document.getElementById(
+      "guided-button-share-dataset-with-curation-team"
+    );
+    guidedShareWithCurationTeamButton.disabled = true;
+    guidedShareWithCurationTeamButton.classList.add("loading");
     const { value: confirmShareWithCurationTeam } = await Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
@@ -95,12 +100,35 @@ const guidedModifyCurationTeamAccess = async (action) => {
           }
         );
         guidedSetCurationTeamUI(true);
+        swal.fire({
+          width: "550px",
+          icon: "success",
+          title: "Dataset successfully shared with the Curation Team",
+          html: `It is now advised that you do not make changes to the dataset until
+          the Curation Team follows up with you.`,
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          confirmButtonText: "OK",
+          focusConfirm: true,
+        });
       } catch (error) {
-        log.error(error);
+        notyf.open({
+          duration: "5000",
+          type: "error",
+          message: "Error sharing dataset with the Curation Team",
+        });
       }
     }
+    guidedShareWithCurationTeamButton.disabled = false;
+    guidedShareWithCurationTeamButton.classList.remove("loading");
   }
   if (action === "unshare") {
+    const guidedUnshareWithCurationTeamButton = document.getElementById(
+      "guided-button-unshare-dataset-with-curation-team"
+    );
+    guidedUnshareWithCurationTeamButton.disabled = true;
+    guidedUnshareWithCurationTeamButton.classList.add("loading");
+
     const { value: confirmUnshareWithCurationTeam } = await Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
@@ -129,10 +157,27 @@ const guidedModifyCurationTeamAccess = async (action) => {
           }
         );
         guidedSetCurationTeamUI(false);
+        swal.fire({
+          width: "550px",
+          icon: "success",
+          title: "Dataset successfully unshared with the Curation Team",
+          html: `You are now free to make any necessary modifications to your dataset. Once you are
+          ready to reshare with the Curation Team, please revisit this page.`,
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          confirmButtonText: "OK",
+          focusConfirm: true,
+        });
       } catch (error) {
-        log.error(error);
+        notyf.open({
+          duration: "5000",
+          type: "error",
+          message: "Error removing Curation Team access",
+        });
       }
     }
+    guidedUnshareWithCurationTeamButton.disabled = false;
+    guidedUnshareWithCurationTeamButton.classList.remove("loading");
   }
 };
 
@@ -1661,17 +1706,26 @@ const traverseToTab = async (targetPageID) => {
       );
 
       if (Object.keys(submission_metadata).length > 0) {
-        dataDeliverableLottieContainer.innerHTML = "";
-        lottie.loadAnimation({
-          container: dataDeliverableLottieContainer,
-          animationData: successCheck,
-          renderer: "svg",
-          loop: false,
-          autoplay: true,
-        });
         if (submission_metadata["filepath"]) {
+          dataDeliverableLottieContainer.innerHTML = "";
+          lottie.loadAnimation({
+            container: dataDeliverableLottieContainer,
+            animationData: successCheck,
+            renderer: "svg",
+            loop: false,
+            autoplay: true,
+          });
           dataDeliverableParaText.innerHTML = submission_metadata["filepath"];
         } else {
+          //reset the code metadata lotties and para text
+          dataDeliverableLottieContainer.innerHTML = "";
+          lottie.loadAnimation({
+            container: dataDeliverableLottieContainer,
+            animationData: dragDrop,
+            renderer: "svg",
+            loop: true,
+            autoplay: true,
+          });
           dataDeliverableParaText.innerHTML = "";
         }
       } else {
@@ -3134,9 +3188,6 @@ const guidedResumeProgress = async (resumeProgressButton) => {
     datasetResumeJsonObj["digital-metadata"]["subtitle"];
   guidedTransitionFromDatasetNameSubtitlePage();
 
-  //skip to manifest files
-  traverseToTab("guided-manifest-file-generation-tab");
-
   guidedLockSideBar();
 };
 
@@ -3449,44 +3500,64 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       ]
     );
   };
-  sodaJSONObj.addSample = function (sampleName) {
-    if (
-      this["dataset-metadata"]["pool-subject-sample-structure"]["samples"][
-        sampleName
-      ]
-    ) {
-      throw new Error("Sample IDs must be unique for each subject.");
-    } else {
-      this["dataset-metadata"]["pool-subject-sample-structure"]["samples"][
-        sampleName
-      ] = {};
+
+  sodaJSONObj.getAllSamplesFromSubjects = function () {
+    let samplesInPools = [];
+    let samplesOutsidePools = [];
+
+    //get all the samples in subjects in pools
+    for (const [poolName, poolData] of Object.entries(
+      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
+    )) {
+      for (const [subjectName, subjectData] of Object.entries(poolData)) {
+        for (sampleName of Object.keys(subjectData)) {
+          samplesInPools.push({
+            sampleName: sampleName,
+            subjectName: subjectName,
+            poolName: poolName,
+          });
+        }
+      }
     }
+
+    //get all the samples in subjects not in pools
+    for (const [subjectName, subjectData] of Object.entries(
+      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
+    )) {
+      for (sampleName of Object.keys(subjectData)) {
+        samplesOutsidePools.push({
+          sampleName: sampleName,
+          subjectName: subjectName,
+        });
+      }
+    }
+    return [samplesInPools, samplesOutsidePools];
   };
+
   sodaJSONObj.addSampleToSubject = function (
     sampleName,
     subjectPoolName,
     subjectName
   ) {
-    console.log(sampleName, subjectPoolName, subjectName);
-    if (subjectPoolName) {
-      if (
-        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-          subjectPoolName
-        ][subjectName][sampleName]
-      ) {
-        throw new Error("Sample IDs must be unique for each subject.");
+    const [samplesInPools, samplesOutsidePools] =
+      sodaJSONObj.getAllSamplesFromSubjects();
+    //Combine sample data from samples in and out of pools
+    let samples = [...samplesInPools, ...samplesOutsidePools];
+
+    //Check samples already added and throw an error if a sample with the sample name already exists.
+    for (const sample of samples) {
+      if (sample.sampleName === sampleName) {
+        throw new Error(
+          `Sample names must be unique. \n${sampleName} already exists in ${sample.subjectName}`
+        );
       }
+    }
+
+    if (subjectPoolName) {
       this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
         subjectPoolName
       ][subjectName][sampleName] = {};
     } else {
-      if (
-        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
-          subjectName
-        ][sampleName]
-      ) {
-        throw new Error("Sample IDs must be unique for each subject.");
-      }
       this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
         subjectName
       ][sampleName] = {};
@@ -3584,40 +3655,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     }
     return [subjectsInPools, subjectsOutsidePools];
   };
-  sodaJSONObj.getAllSamplesFromSubjects = function () {
-    let samplesInPools = [];
-    let samplesOutsidePools = [];
 
-    //get all the samples in subjects in pools
-    for (const [poolName, poolData] of Object.entries(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
-    )) {
-      for (const [subjectName, subjectData] of Object.entries(poolData)) {
-        for (sampleName of Object.keys(subjectData)) {
-          samplesInPools.push({
-            sampleName: sampleName,
-            subjectName: subjectName,
-            poolName: poolName,
-          });
-        }
-      }
-    }
-
-    //get all the samples in subjects not in pools
-    for (const [subjectName, subjectData] of Object.entries(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
-    )) {
-      for (sampleName of Object.keys(subjectData)) {
-        samplesOutsidePools.push({
-          sampleName: sampleName,
-          subjectName: subjectName,
-        });
-      }
-    }
-    console.log(samplesInPools, samplesOutsidePools);
-
-    return [samplesInPools, samplesOutsidePools];
-  };
   sodaJSONObj.updatePrimaryDatasetStructure = function () {
     //Add pool keys to primary dataset structure
     for (const pool of Object.keys(
@@ -8829,7 +8867,7 @@ $(document).ready(() => {
       let mainCurationProgressResponse;
       try {
         mainCurationProgressResponse = await client.get(
-          `/curate_datasetscuration/progress`
+          `/curate_datasets/curation/progress`
         );
       } catch (error) {
         clientError(error);

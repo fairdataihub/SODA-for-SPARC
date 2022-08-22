@@ -1,4 +1,4 @@
-const settings = require("electron-settings");
+// const settings = require("electron-settings");
 
 const demoBtns = document.querySelectorAll(".js-container-target");
 // Listen for demo button clicks
@@ -11,16 +11,16 @@ Array.prototype.forEach.call(demoBtns, (btn) => {
 
     // Saves the active demo if it is open, or clears it if the demo was user
     // collapsed by the user
-    if (parent.classList.contains("is-open")) {
-      settings.set("activeDemoButtonId", event.target.getAttribute("id"));
-    } else {
-      settings.delete("activeDemoButtonId");
-    }
+    // if (parent.classList.contains("is-open")) {
+    //   settings.set("activeDemoButtonId", event.target.getAttribute("id"));
+    // } else {
+    //   settings.delete("activeDemoButtonId");
+    // }
   });
 });
 
 // Default to the demo that was active the last time the app was open
-// const buttonId = settings.get('activeDemoButtonId')
+// const buttonId = settings.get("activeDemoButtonId");
 // if (buttonId) {
-//   document.getElementById(buttonId).click()
+//   document.getElementById(buttonId).click();
 // }
