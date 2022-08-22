@@ -1274,7 +1274,12 @@
                     class="div-organize-items shared-folder-structure-element"
                     ondrop="drop(event);"
                     ondragover="allowDrop(event);"
-                    style="box-shadow: none !important; border: none"
+                    style="
+                      box-shadow: none !important;
+                      border: none;
+                      overflow-y: auto;
+                      max-height: 400px;
+                    "
                   ></div>
                   <!-- "data" is jstree html element -->
                   <div id="data" style="display: none"></div>
