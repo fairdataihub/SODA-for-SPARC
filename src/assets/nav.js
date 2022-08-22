@@ -1,18 +1,12 @@
-const settings = require("electron-settings");
-const { existsSync } = require("original-fs");
-const { default: Swal } = require("sweetalert2");
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
-
-$(document).ready(function () {
-  document.body.addEventListener("click", (event) => {
-    if (event.target.dataset.section) {
-      handleSectionTrigger(event);
-    } else if (event.target.dataset.modal) {
-      handleModalTrigger(event);
-    } else if (event.target.classList.contains("modal-hide")) {
-      hideAllModals();
-    }
-  });
+document.body.addEventListener("click", (event) => {
+  if (event.target.dataset.section) {
+    handleSectionTrigger(event);
+  } else if (event.target.dataset.modal) {
+    handleModalTrigger(event);
+  } else if (event.target.classList.contains("modal-hide")) {
+    hideAllModals();
+  }
 });
 
 document.body.addEventListener("custom-back", (e) => {
@@ -134,10 +128,6 @@ async function handleSectionTrigger(event) {
   }
 
   considerNextBtn();
-
-  // Save currently active button in localStorage
-  const buttonId = event.target.getAttribute("id");
-  settings.set("activeSectionButtonId", buttonId);
 }
 
 function considerNextBtn() {
@@ -181,21 +171,7 @@ function hideAllSectionsAndDeselectButtons() {
   });
 }
 
-//function displayAbout () {
-//  document.querySelector('#curate-section').classList.add('is-shown')
-//}
-
-// Default to the view that was active the last time the app was open
-const sectionId = settings.get("activeSectionButtonId");
-if (sectionId) {
-  showMainContent();
-  // const section = document.getElementById(sectionId)
-  // if (section) section.click()
-} else {
-  showMainContent();
-  // activateDefaultSection()
-  //displayAbout()
-}
+showMainContent();
 
 // Set of functions for the footer shortcuts between sections
 // only required for when switching between section where the menu needs to change

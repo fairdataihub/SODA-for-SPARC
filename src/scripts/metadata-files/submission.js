@@ -2,6 +2,23 @@
 This file contains all of the functions related to the submission.xlsx file
 */
 
+// event listeners for opendropdown prompt
+document
+  .querySelectorAll(".submission-change-current-account")
+  .forEach((element) => {
+    element.addEventListener("click", function () {
+      openDropdownPrompt(null, "bf");
+    });
+  });
+
+document
+  .querySelectorAll(".submission-change-current-ds")
+  .forEach((element) => {
+    element.addEventListener("click", function () {
+      openDropdownPrompt(null, "dataset");
+    });
+  });
+
 /// save airtable api key
 const addAirtableKeyBtn = document.getElementById("button-add-airtable-key");
 
@@ -364,36 +381,20 @@ const getCheckedMilestones = () => {
   return checkedMilestoneData;
 };
 
-function openDDDimport() {
-  const dialog = require("electron").remote.dialog;
-  const BrowserWindow = require("electron").remote.BrowserWindow;
+async function openDDDimport() {
+  let filepath = await ipcRenderer.invoke("open-file-dialog-data-deliverables");
+  if (filepath.length > 0) {
+    document.getElementById("input-milestone-select").placeholder = filepath[0];
 
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
-    {
-      properties: ["openFile"],
-      filters: [{ name: "DOCX", extensions: ["docx"] }],
-    },
-    (filepath) => {
-      if (filepath) {
-        if (filepath.length > 0) {
-          if (filepath != null) {
-            document.getElementById("input-milestone-select").placeholder =
-              filepath[0];
-
-            // log the successful attempt to import a data deliverables document from the user's computer
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              "Prepare Metadata - submission - import-DDD",
-              "Data Deliverables Document",
-              1
-            );
-          }
-        }
-      }
-    }
-  );
+    // log the successful attempt to import a data deliverables document from the user's computer
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Prepare Metadata - submission - import-DDD",
+      "Data Deliverables Document",
+      1
+    );
+  }
 }
 
 // onboarding for submission file
@@ -831,7 +832,7 @@ async function generateSubmissionHelper(uploadBFBoolean) {
       );
 
       // get the size of the uploaded file from the result
-      const size = res;
+      const size = res.data.size;
 
       // log the size of the metadata file that was generated at varying levels of granularity
       logMetadataSizeForAnalytics(uploadBFBoolean, "submission.xlsx", size);

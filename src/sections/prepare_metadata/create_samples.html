@@ -1,0 +1,1792 @@
+<!DOCTYPE html>
+
+<section
+  id="create_samples-section"
+  class="section js-section u-category-windows"
+  style="padding-left: 15px; overflow-y: hidden"
+>
+  <div
+    class="main-tabs show"
+    id="create_samples-tab"
+    style="
+      height: calc(100% - 60px);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 0;
+    "
+  >
+    <header class="section-header">
+      <div
+        style="
+          display: inline-flex;
+          align-items: center;
+          flex-direction: row;
+          width: 94.5%;
+          padding-right: 20px;
+          margin-bottom: 50px;
+        "
+      >
+        <div
+          style="
+            width: 100%;
+            border-bottom: 3px solid #b80d49;
+            margin-bottom: -5px;
+          "
+        >
+          <div class="need-help-div">
+            <h2>Prepare Metadata - Create samples.xlsx</h2>
+            <a
+              target="_blank"
+              href="https://docs.sodaforsparc.io/docs/prepare-metadata/create-samples"
+              >Need help?</a
+            >
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Question 1: Loading previous progress or start anew -->
+    <div
+      class="individual-question prepare-samples show"
+      id="Question-prepare-samples-1"
+    >
+      <div class="ui form" style="width: 100%">
+        <div class="grouped fields">
+          <label style="font-size: 17px; color: var(--color-bg-plum)"
+            >Select an option below:
+          </label>
+          <div
+            style="display: flex; flex-direction: row; justify-content: center"
+          >
+            <div style="margin: 15px 0">
+              <div
+                class="option-card radio-button"
+                data-next="Question-prepare-samples-3"
+                data-current="Question-prepare-samples-1"
+                onclick="transitionFreeFormMode(this, 'Question-prepare-samples-1', 'create_samples-tab', '', 'individual-question prepare-samples')"
+                style="
+                  max-height: 160px;
+                  max-width: 180px;
+                  height: 160px !important;
+                  width: 180px !important;
+                "
+              >
+                <div class="card-head">
+                  <div class="folder-checkbox">
+                    <input
+                      class="folder-input-check"
+                      name="samples-1"
+                      type="radio"
+                      id="samples-1-B"
+                    />
+                    <label for="subjects-1-B"></label>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="40px"
+                    height="40px"
+                    fill="var(--color-accent)"
+                    class="bi bi-file-earmark-plus"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+                    />
+                    <path
+                      d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"
+                    />
+                  </svg>
+                  <h2>I want to start a new samples file</h2>
+                </div>
+              </div>
+            </div>
+            <div style="margin: 15px 0">
+              <div
+                class="option-card radio-button"
+                data-next="Question-prepare-samples-2"
+                data-current="Question-prepare-samples-1"
+                onclick="transitionFreeFormMode(this, 'Question-prepare-samples-1', 'create_samples-tab', '', 'individual-question prepare-samples')"
+                style="
+                  max-height: 160px;
+                  max-width: 180px;
+                  height: 160px !important;
+                  width: 180px !important;
+                "
+              >
+                <div class="card-head">
+                  <div class="folder-checkbox">
+                    <input
+                      class="folder-input-check"
+                      name="samples-1"
+                      type="radio"
+                      id="samples-1-A"
+                    />
+                    <label for="samples-1-A"></label>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <i
+                    class="far fa-save"
+                    style="color: var(--color-bg-orange)"
+                  ></i>
+                  <h2>
+                    I want to continue working on an existing samples.xlsx file
+                  </h2>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="individual-question prepare-samples"
+      id="Question-prepare-samples-2"
+    >
+      <div class="ui form" style="width: 100%">
+        <div class="grouped fields">
+          <label style="font-size: 17px; color: var(--color-bg-plum)"
+            >Where is the existing samples.xlsx file located?
+          </label>
+          <div
+            style="display: flex; flex-direction: row; justify-content: center"
+          >
+            <div style="margin: 15px 0">
+              <div
+                class="option-card radio-button"
+                id="Question-prepare-samples-2-new"
+                data-current="Question-prepare-samples-2"
+                data-next="Question-prepare-samples-5"
+                onclick="transitionFreeFormMode(this, 'Question-prepare-samples-2', 'create_samples-tab', '', 'individual-question prepare-samples')"
+                style="
+                  max-width: 180px;
+                  height: 220px !important;
+                  width: 180px !important;
+                "
+              >
+                <div class="card-head">
+                  <div class="folder-checkbox">
+                    <input
+                      class="folder-input-check"
+                      name="samples-3"
+                      type="radio"
+                      id="samples-3-B"
+                    />
+                    <label for="samples-3-B"></label>
+                  </div>
+                </div>
+                <div class="card-body metadata">
+                  <svg
+                    width="40px"
+                    height="40px"
+                    viewBox="0 0 16 16"
+                    class="bi bi-laptop"
+                    fill="var(--color-bg-plum)"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M13.5 3h-11a.5.5 0 0 0-.5.5V11h12V3.5a.5.5 0 0 0-.5-.5zm-11-1A1.5 1.5 0 0 0 1 3.5V12h14V3.5A1.5 1.5 0 0 0 13.5 2h-11z"
+                    />
+                    <path
+                      d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z"
+                    />
+                  </svg>
+                  <h2>On my computer</h2>
+                </div>
+              </div>
+            </div>
+            <div style="margin: 15px 0">
+              <div
+                class="option-card radio-button"
+                data-current="Question-prepare-samples-2"
+                data-next="Question-prepare-samples-4"
+                onclick="transitionFreeFormMode(this, 'Question-prepare-samples-2', 'create_samples-tab', '', 'individual-question prepare-samples')"
+                style="
+                  max-width: 180px;
+                  height: 220px !important;
+                  width: 180px !important;
+                "
+              >
+                <div class="card-head">
+                  <div class="folder-checkbox">
+                    <input
+                      class="folder-input-check"
+                      name="samples-3"
+                      type="radio"
+                      id="samples-3-A"
+                    />
+                    <label for="samples-3-A"></label>
+                  </div>
+                </div>
+                <div class="card-body metadata">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="50px"
+                    height="50px"
+                    fill="var(--tagify-dd-color-primary)"
+                    class="bi bi-cloud-check"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10.354 6.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708 0z"
+                    />
+                    <path
+                      d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"
+                    />
+                  </svg>
+                  <h2>On Pennsieve</h2>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Question 4: Ask for existing samples.xlsx file -->
+    <div
+      class="individual-question prepare-samples"
+      id="Question-prepare-samples-5"
+      style="width: 85%"
+    >
+      <div class="ui form" style="width: 450px">
+        <div class="grouped fields">
+          <label
+            style="
+              font-size: 17px;
+              color: var(--color-bg-plum);
+              text-align: center;
+            "
+            >Browse for your <i>samples.xlsx</i> file below:
+          </label>
+          <div
+            class="field"
+            style="margin: 15px auto; display: flex; justify-content: center"
+          >
+            <input
+              class="form-control"
+              style="width: 450px !important"
+              onclick="showExistingSamplesFile()"
+              id="existing-samples-file-destination"
+              type="text"
+              readonly
+              placeholder="Browse here"
+            />
+          </div>
+          <div
+            style="
+              display: none;
+              flex-direction: row;
+              justify-content: center;
+              margin: 10px auto;
+            "
+            id="div-confirm-existing-samples-import"
+          >
+            <button
+              onclick="importExistingSamplesFile()"
+              style="
+                cursor: pointer;
+                border-radius: 8px;
+                margin: 10px auto;
+                width: 100px;
+                height: 30px;
+                background: var(--color-light-green);
+                color: #fff;
+                font-weight: 600;
+                border: none;
+                font-size: 13px;
+              "
+            >
+              Confirm
+            </button>
+            <button
+              onclick="transitionFreeFormMode(this, 'Question-prepare-samples-5', 'create_samples-tab', 'delete', 'individual-question prepare-samples')"
+              data-next="Question-prepare-samples-3"
+              id="button-fake-confirm-existing-samples-file-load"
+              style="
+                cursor: pointer;
+                border-radius: 8px;
+                margin: 10px auto;
+                width: 100px;
+                height: 30px;
+                background: var(--color-light-green);
+                color: #fff;
+                font-weight: 600;
+                border: none;
+                font-size: 13px;
+                display: none;
+              "
+            >
+              Fake Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="individual-question prepare-samples"
+      id="Question-prepare-samples-4"
+    >
+      <div class="ui form" style="width: 100%">
+        <div class="grouped fields">
+          <label style="font-size: 17px; color: var(--color-bg-plum)"
+            >Which Pennsieve dataset is the samples.xlsx located at?
+          </label>
+          <div
+            class="field"
+            style="margin: 0 auto !important; width: 500px !important"
+          >
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                margin-top: 15px;
+                height: auto;
+                box-shadow: 0px 0px 10px #d5d5d5;
+                padding: 15px 25px;
+                border-radius: 5px;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;
+                "
+              >
+                <div class="card-container prepare-submission">
+                  <div style="width: 100%">
+                    <h5
+                      class="card-left"
+                      style="text-align: right; padding-right: 5px"
+                    >
+                      Current account:
+                    </h5>
+                    <div
+                      class="change-current-account samples-change-current-account"
+                    >
+                      <h5 class="card-right bf-account-span">None</h5>
+
+                      <svg
+                        class="svg-change-current-account bi bi-pencil-fill"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        fill="#000"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                style="display: flex; flex-direction: row; margin-bottom: 15px"
+              >
+                <div class="card-container prepare-submission">
+                  <div>
+                    <h5
+                      class="card-left"
+                      style="text-align: right; padding-right: 5px"
+                    >
+                      Account details:
+                    </h5>
+                    <h5 class="card-right bf-account-details-span">None</h5>
+                  </div>
+                </div>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;
+                "
+              >
+                <div class="card-container prepare-submission">
+                  <div style="width: 100%">
+                    <h5
+                      class="card-left"
+                      style="text-align: right; padding-right: 5px"
+                    >
+                      Current dataset:
+                    </h5>
+                    <div
+                      class="change-current-account samples-change-current-ds"
+                    >
+                      <h5
+                        id="bf_dataset_load_samples"
+                        class="card-right bf-dataset-span"
+                      >
+                        None
+                      </h5>
+
+                      <svg
+                        class="svg-change-current-account dataset bi bi-pencil-fill"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        fill="#000"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="ui active green inline loader small"
+                  style="display: none"
+                ></div>
+              </div>
+            </div>
+            <div
+              style="
+                display: none;
+                flex-direction: row;
+                justify-content: center;
+                margin: 10px auto;
+              "
+              id="div-check-bf-import-samples"
+            >
+              <button
+                onclick="checkBFImportSamples()"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                "
+              >
+                Confirm
+              </button>
+              <button
+                onclick="transitionFreeFormMode(this, 'Question-prepare-samples-4', 'create_samples-tab', '', 'individual-question prepare-samples')"
+                data-next="Question-prepare-samples-3"
+                id="button-fake-confirm-existing-bf-samples-file-load"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                  display: none;
+                "
+              >
+                Fake Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Question 3: Choose headers -->
+    <div
+      class="individual-question prepare-samples"
+      id="Question-prepare-samples-3"
+    >
+      <div class="ui form" style="width: 100%">
+        <div class="grouped fields">
+          <label style="font-size: 17px; color: var(--color-bg-plum)"
+            >Enter information about each sample from your study then click
+            "Generate"
+          </label>
+          <div
+            style="display: flex; flex-direction: column; margin: 10px auto"
+          ></div>
+          <table
+            class="ui celled table"
+            style="
+              text-align: center;
+              display: none;
+              width: auto;
+              min-width: 550px;
+              margin: 10px auto;
+            "
+            id="table-samples"
+          >
+            <style>
+              /* style for grabbed contributor row for moving contributors */
+              .grab {
+                cursor: grab;
+              }
+              .grabbed {
+                box-shadow: 0 0 6px #000;
+              }
+              .grabCursor,
+              .grabCursor * {
+                cursor: grabbing !important;
+              }
+            </style>
+            <thead class="full-width">
+              <tr>
+                <th style="width: 10%">Index</th>
+                <th style="width: 30%">subject_id</th>
+                <th style="width: 30%">sample_id</th>
+                <th style="width: 30%">
+                  Edit | Copy | Delete
+                  <!-- <i
+                      class="fas fa-info-circle popover-tooltip"
+                      data-content="Click on the corresponding button to edit/duplicate/delete a sample."
+                      rel="popover"
+                      data-placement="right"
+                      data-html="true"
+                      data-trigger="hover"
+                    ></i> -->
+                </th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <div
+            style="
+              display: flex;
+              flex-direction: row;
+              justify-content: center;
+              margin: 10px auto;
+            "
+          >
+            <button
+              onclick="showFormSamples('display', false)"
+              id="button-add-a-sample"
+              style="
+                cursor: pointer;
+                border-radius: 8px;
+                margin: 10px;
+                width: 140px;
+                height: 35px;
+                background: #fff;
+                color: var(--color-light-green);
+                font-weight: 600;
+                border: 1px solid var(--color-light-green);
+                font-size: 14px;
+              "
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                style="vertical-align: middle"
+                width="18"
+                height="18"
+                fill="currentColor"
+                class="bi bi-plus"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
+                />
+              </svg>
+              Add a sample
+            </button>
+            <button
+              type="button"
+              class="btn_animated popover-tooltip"
+              data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+              rel="popover"
+              data-placement="top"
+              data-trigger="hover"
+              data-next="Question-prepare-samples-6"
+              onclick="transitionFreeFormMode(this, 'Question-prepare-samples-3', 'create_samples-tab', 'delete', 'individual-question prepare-samples')"
+              style="
+                cursor: pointer;
+                border-radius: 8px;
+                margin: 10px;
+                width: 140px;
+                height: 35px;
+                background: var(--color-light-green);
+                color: #fff;
+                font-weight: 600;
+                border: none;
+                font-size: 15px;
+                display: none;
+              "
+              id="button-generate-samples"
+            >
+              Generate
+            </button>
+          </div>
+          <div
+            style="margin: 0 auto; text-decoration: underline"
+            id="div-import-primary-folder-samples"
+          >
+            <a
+              href="#"
+              onclick="showPrimaryBrowseFolderSamples()"
+              id="primary-folder-destination-input-samples"
+            >
+              I want to import subject and sample ID(s) from my primary folder
+            </a>
+          </div>
+          <div
+            id="generate-samples-spinner"
+            class="ui active green inline loader"
+            style="display: none; margin: 10px auto; width: 100%"
+          ></div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="individual-question prepare-samples"
+      id="Question-prepare-samples-6"
+    >
+      <div class="ui form" style="width: 100%">
+        <div class="grouped fields">
+          <label
+            style="
+              font-size: 17px;
+              color: var(--color-bg-plum);
+              text-align: center;
+            "
+            >Where would you like to generate your samples.xlsx file? <br />
+            <p class="sub-text">Please select one:</p></label
+          >
+
+          <div
+            style="display: flex; flex-direction: row; justify-content: center"
+          >
+            <div style="margin: 15px 0">
+              <div
+                class="option-card radio-button"
+                data-next="Question-prepare-samples-7"
+                onclick="transitionFreeFormMode(this, 'Question-prepare-samples-6', 'create_samples-tab', '', 'prepare-samples')"
+              >
+                <div class="card-head">
+                  <div class="folder-checkbox">
+                    <input
+                      class="folder-input-check"
+                      name="generate-samples-1"
+                      id="prepare-samples-local"
+                      type="radio"
+                    />
+                    <label for="prepare-samples-local"></label>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <svg
+                    width="40px"
+                    height="40px"
+                    viewBox="0 0 16 16"
+                    class="bi bi-laptop"
+                    fill="var(--color-bg-plum)"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M13.5 3h-11a.5.5 0 0 0-.5.5V11h12V3.5a.5.5 0 0 0-.5-.5zm-11-1A1.5 1.5 0 0 0 1 3.5V12h14V3.5A1.5 1.5 0 0 0 13.5 2h-11z"
+                    />
+                    <path
+                      d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z"
+                    />
+                  </svg>
+                  <h2>Generate on my computer</h2>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin: 15px 0">
+              <div
+                class="option-card radio-button"
+                data-next="Question-prepare-samples-8"
+                onclick="transitionFreeFormMode(this, 'Question-prepare-samples-6', 'create_samples-tab', '', 'prepare-samples')"
+              >
+                <div class="card-head">
+                  <div class="folder-checkbox">
+                    <input
+                      class="folder-input-check"
+                      name="generate-samples-1"
+                      id="prepare-samples-pennsieve"
+                      type="radio"
+                    />
+                    <label for="prepare-samples-pennsieve"></label>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <svg
+                    width="50px"
+                    height="50px"
+                    viewBox="0 0 16 16"
+                    class="bi bi-cloud-arrow-up"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"
+                      fill="#565E6B"
+                    />
+                    <path
+                      fill-rule="evenodd"
+                      d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2z"
+                      fill="#B80D49"
+                    />
+                  </svg>
+                  <h2>Generate directly on Pennsieve</h2>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="individual-question prepare-samples"
+      id="Question-prepare-samples-7"
+    >
+      <div class="ui form" style="width: 450px">
+        <div class="grouped fields">
+          <label
+            style="
+              font-size: 17px;
+              color: var(--color-bg-plum);
+              text-align: center;
+            "
+            >At which location should we generate the samples.xlsx file?</label
+          >
+          <div
+            class="field"
+            style="margin: 15px auto; display: flex; justify-content: center"
+          >
+            <input
+              class="form-control"
+              style="width: 450px !important"
+              onclick="openFileBrowserDestination('samples')"
+              id="input-destination-generate-samples-locally"
+              type="text"
+              readonly
+              placeholder="Browse here"
+            />
+          </div>
+        </div>
+        <div
+          id="div-confirm-destination-samples-locally"
+          style="
+            display: none;
+            flex-direction: row;
+            justify-content: center;
+            margin: 10px auto;
+          "
+        >
+          <button
+            id="btn-confirm-local-samples-destination"
+            onclick="generateSamplesFileHelper(false)"
+            type="button"
+            class="btn_animated popover-tooltip"
+            data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+            rel="popover"
+            data-placement="top"
+            data-trigger="hover"
+            style="
+              margin: 10px;
+              width: 140px;
+              border: none !important;
+              overflow: visible !important;
+            "
+          >
+            Generate
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="individual-question prepare-samples"
+      id="Question-prepare-samples-8"
+    >
+      <div class="ui form" style="width: 100%">
+        <div class="grouped fields">
+          <label style="font-size: 17px; color: var(--color-bg-plum)"
+            >Is this the Pennsieve dataset you want to upload the samples.xlsx
+            to?
+          </label>
+          <div
+            class="field"
+            style="margin: 0 auto !important; width: 500px !important"
+          >
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                margin-top: 15px;
+                height: auto;
+                box-shadow: 0px 0px 10px #d5d5d5;
+                padding: 15px 25px;
+                border-radius: 5px;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;
+                "
+              >
+                <div class="card-container prepare-submission">
+                  <div style="width: 100%">
+                    <h5
+                      class="card-left"
+                      style="text-align: right; padding-right: 5px"
+                    >
+                      Current account:
+                    </h5>
+                    <div
+                      class="change-current-account samples-change-current-account"
+                    >
+                      <h5 class="card-right bf-account-span">None</h5>
+
+                      <svg
+                        class="svg-change-current-account bi bi-pencil-fill"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        fill="#000"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                style="display: flex; flex-direction: row; margin-bottom: 15px"
+              >
+                <div class="card-container prepare-submission">
+                  <div>
+                    <h5
+                      class="card-left"
+                      style="text-align: right; padding-right: 5px"
+                    >
+                      Account details:
+                    </h5>
+                    <h5 class="card-right bf-account-details-span">None</h5>
+                  </div>
+                </div>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;
+                "
+              >
+                <div class="card-container prepare-submission">
+                  <div style="width: 100%">
+                    <h5
+                      class="card-left"
+                      style="text-align: right; padding-right: 5px"
+                    >
+                      Current dataset:
+                    </h5>
+                    <div
+                      class="change-current-account samples-change-current-ds"
+                    >
+                      <h5
+                        id="bf_dataset_generate_samples"
+                        class="card-right bf-dataset-span"
+                      >
+                        None
+                      </h5>
+
+                      <svg
+                        class="svg-change-current-account dataset bi bi-pencil-fill"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        fill="#000"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="ui active green inline loader small"
+                  style="display: none"
+                ></div>
+              </div>
+            </div>
+            <div
+              style="
+                display: none;
+                flex-direction: row;
+                justify-content: center;
+                margin: 10px auto;
+              "
+              id="div-check-bf-generate-samples"
+            >
+              <button
+                onclick="generateSamplesFileHelper(true)"
+                type="button"
+                class="btn_animated popover-tooltip"
+                data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+                rel="popover"
+                data-placement="top"
+                data-trigger="hover"
+                style="
+                  margin: 10px;
+                  width: 140px;
+                  border: none !important;
+                  overflow: visible !important;
+                "
+              >
+                Generate
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- main tabs' closing div -->
+  </div>
+  <!-- back button -->
+  <div class="footer-div" id="footer-div-samples" style="display: flex">
+    <button type="button" class="transition-btn prev" data-section="main_tabs">
+      <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+    </button>
+    <button onclick="resetSamples()" class="start-over">
+      <i
+        class="fas fa-sync-alt"
+        style="margin-right: 10px; font-size: inherit"
+      ></i>
+      Start over
+    </button>
+    <button
+      type="button"
+      class="transition-btn prev"
+      data-section="create_CHANGES"
+      style="width: auto"
+    >
+      Create CHANGES.txt<i
+        class="fas fa-arrow-right"
+        style="margin-left: 10px"
+      ></i>
+    </button>
+  </div>
+
+  <div
+    style="
+      width: 100%;
+      position: relative;
+      margin: 50px auto;
+      display: none;
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
+      height: 95%;
+    "
+    id="form-add-a-sample"
+  >
+    <h3 style="text-align: center; font-size: 18px; padding-bottom: 35px">
+      Enter sample information
+    </h3>
+    <div
+      class="row mandatory"
+      style="width: 90%; max-width: 850px; margin: 10px auto"
+    >
+      <div class="col" style="padding: 0">
+        <div class="div-dd-info" style="margin: 20px auto; margin-top: 5px">
+          <div class="demo-controls-head mandatory" style="width: 30%">
+            <div style="width: 100%">
+              <font color="black" style="font-weight: 600">
+                subject id <span style="color: red">*</span>:
+              </font>
+            </div>
+          </div>
+          <div class="demo-controls-body" style="width: fit-content">
+            <div class="ui input" style="margin-left: 10px">
+              <input
+                type="text"
+                id="bootbox-subject-id-samples"
+                name="subject id"
+                class="samples-form-entry"
+                placeholder="Type here..."
+                onkeyup="validateSubSamID(this)"
+              />
+            </div>
+          </div>
+          <div class="tooltipnew demo-controls-end">
+            <i
+              class="fas fa-info-circle popover-tooltip subjects-form"
+              data-content="Lab-based schema for identifying each subject. Should match folder names in the primary folder.
+                  <br>
+                              <i> Example: sub 1 <i>"
+              rel="popover"
+              data-placement="right"
+              data-html="true"
+              data-trigger="hover"
+            ></i>
+          </div>
+        </div>
+        <p
+          id="para-bootbox-subject-id-samples"
+          style="color: red; display: none; text-align: center"
+        >
+          Special characters are not allowed.
+        </p>
+      </div>
+      <div class="col" style="padding: 0">
+        <div class="div-dd-info" style="margin: 20px auto; margin-top: 5px">
+          <div class="demo-controls-head mandatory" style="width: fit-content">
+            <div style="width: 100%">
+              <font color="black" style="font-weight: 600">
+                sample id <span style="color: red">*</span>:</font
+              >
+            </div>
+          </div>
+          <div class="demo-controls-body" style="width: fit-content">
+            <div class="ui input" style="margin-left: 10px">
+              <input
+                type="text"
+                id="bootbox-sample-id"
+                name="sample id"
+                class="samples-form-entry"
+                placeholder="Type here..."
+                onkeyup="validateSubSamID(this)"
+              />
+            </div>
+          </div>
+          <div class="tooltipnew demo-controls-end">
+            <i
+              class="fas fa-info-circle popover-tooltip subjects-form"
+              data-content="Lab-based schema for identifying each sample, must be unique. <br>
+                    <i> Example: sub 1_sam 2 <i>"
+              rel="popover"
+              data-placement="right"
+              data-html="true"
+              data-trigger="hover"
+            ></i>
+          </div>
+        </div>
+        <p
+          id="para-bootbox-sample-id"
+          style="color: red; display: none; text-align: left"
+        >
+          Special characters are not allowed.
+        </p>
+      </div>
+    </div>
+    <div class="ui styled accordion">
+      <div class="title" style="background: var(--color-bg-light-green-button)">
+        <i class="dropdown icon"></i>
+        Experimental Setup
+        <span style="font-style: italic; opacity: 0.8"
+          >(Mandatory if available)</span
+        >
+      </div>
+      <div class="content">
+        <!-- Mandatory -->
+        <div
+          style="width: 90%; margin: 0 auto; font-size: 13px"
+          id="div-samples-mandatory-fields"
+        >
+          <div>
+            <form>
+              <div class="row mandatory">
+                <div class="col" style="padding: 0">
+                  <div class="div-dd-info" style="margin-top: 10px">
+                    <div
+                      class="demo-controls-head mandatory"
+                      style="width: fit-content"
+                    >
+                      <div style="width: 100%">
+                        <font color="black"> Was derived from: </font>
+                      </div>
+                    </div>
+                    <div class="demo-controls-body" style="width: fit-content">
+                      <div class="ui input modified">
+                        <input
+                          type="text"
+                          id="bootbox-wasDerivedFromSample"
+                          name="was derived from"
+                          class="samples-form-entry"
+                          placeholder="Type here..."
+                        />
+                      </div>
+                    </div>
+                    <div class="tooltipnew demo-controls-end">
+                      <i
+                        class="fas fa-info-circle popover-tooltip subjects-form"
+                        data-content="sample_id of the sample from which the current sample was derived (e.g., slice, tissue punch, biopsy, etc.).<br>
+                          <i>Example: sub 1_sam 1<i>"
+                        rel="popover"
+                        data-placement="right"
+                        data-html="true"
+                        data-trigger="hover"
+                      ></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="col" style="padding: 0">
+                  <div class="div-dd-info">
+                    <div
+                      class="demo-controls-head mandatory"
+                      style="width: fit-content"
+                    >
+                      <div style="width: 100%">
+                        <font color="black"> pool id: </font>
+                      </div>
+                    </div>
+                    <div class="demo-controls-body" style="width: fit-content">
+                      <div class="ui input modified">
+                        <input
+                          type="text"
+                          id="bootbox-sample-pool-id"
+                          name="pool id"
+                          class="samples-form-entry"
+                          placeholder="Type here..."
+                        />
+                      </div>
+                    </div>
+                    <div class="tooltipnew demo-controls-end">
+                      <i
+                        class="fas fa-info-circle popover-tooltip subjects-form"
+                        data-content="If data is collected on multiple subjects at the same time include the identifier of the pool where the data file will be found. If this is included it should be the name of the top level folder inside primary. <br>
+                          <i>Example: pool 1<i>"
+                        rel="popover"
+                        data-placement="right"
+                        data-html="true"
+                        data-trigger="hover"
+                      ></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mandatory">
+                <div class="col" style="padding: 0" style="width: fit-content">
+                  <div class="div-dd-info subjects" style="margin-bottom: 20px">
+                    <div class="demo-controls-head mandatory">
+                      <div style="width: 100%">
+                        <font color="black"> Sample experimental group: </font>
+                      </div>
+                    </div>
+                    <div class="demo-controls-body" style="width: fit-content">
+                      <div class="ui input modified">
+                        <input
+                          type="text"
+                          id="bootbox-sample-exp-group"
+                          name="sample experimental group"
+                          class="samples-form-entry"
+                          placeholder="Type here..."
+                        />
+                      </div>
+                    </div>
+                    <div class="tooltipnew demo-controls-end">
+                      <i
+                        class="fas fa-info-circle popover-tooltip subjects-form"
+                        data-content="Experimental group sample is assigned to in the study. <br>
+                          <i>Example: control<i>"
+                        rel="popover"
+                        data-placement="right"
+                        data-html="true"
+                        data-trigger="hover"
+                      ></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="title" style="background: #a8d08d">
+        <i class="dropdown icon"></i>
+        Specimen Information
+        <span style="font-style: italic; opacity: 0.8"
+          >(Mandatory if available)</span
+        >
+      </div>
+      <div class="content">
+        <div
+          id="div-samples-recommended-fields"
+          style="width: 90%; margin: 0 auto; font-size: 13px"
+        >
+          <div>
+            <div class="div-dd-info subjects">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Sample type: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <select
+                    type="text"
+                    id="bootbox-sample-specimen-type"
+                    name="sample type"
+                    class="ui selection dropdown samples-form-entry"
+                    placeholder="Type here..."
+                  >
+                    <option value="Select">Select a type</option>
+                    <option value="whole organism">whole organism</option>
+                    <option value="whole organ">whole organ</option>
+                    <option value="fluid specimen">fluid specimen</option>
+                    <option value="tissue">tissue</option>
+                    <option value="nerve">nerve</option>
+                    <option value="slice">slice</option>
+                    <option value="section">section</option>
+                    <option value="cryosection">cryosection</option>
+                    <option value="cell">cell</option>
+                    <option value="nucleus">nucleus</option>
+                    <option value="nucleic acid">nucleic acid</option>
+                    <option value="slide">slide</option>
+                    <option value="whole mount">whole mount</option>
+                  </select>
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Physical type of the specimen from which the data were extracted. <br>
+                          <i>Example: tissue<i>"
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Sample anatomical location: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    id="bootbox-sample-specimen-anatomical-location"
+                    name="sample anatomical location"
+                    class="samples-form-entry"
+                    placeholder="Type here..."
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="The organ, or subregion of organ from which the data were extracted. <br>
+                        <i>Example: dentate gyrus<i>"
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Member of: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    id="bootbox-sample-member-of"
+                    name="member of"
+                    class="samples-form-entry"
+                    placeholder="Type here"
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Provide a population that the specimen or sample belongs to. <br>For example: pop-1"
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects" style="margin-bottom: 20px">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Also in dataset: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    id="bootbox-sample-also-in-dataset"
+                    name="also in dataset"
+                    class="samples-form-entry"
+                    placeholder="Type here"
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Include the Pennsieve id(s) for other datasets that have data about the same specimen."
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="title" style="background: #ffd965">
+        <i class="dropdown icon"></i>
+        Protocol Information
+        <span style="font-style: italic; opacity: 0.8">(Optional)</span>
+      </div>
+      <div class="content">
+        <div style="width: 90%; margin: 0 auto; font-size: 13px">
+          <div>
+            <div class="div-dd-info subjects">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Protocol title on protocols.io: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body" id="samples-protocol-titles">
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    id="bootbox-sample-protocol-title"
+                    name="Protocol title"
+                    class="samples-form-entry"
+                    placeholder="Type here..."
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Title of the protocol on protocols.io associated with this study. <br>
+                    <i>Example: Spinal Cord extraction <i>"
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects" style="margin-bottom: 10px">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Protocol URL on protocols.io: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    id="bootbox-sample-protocol-location"
+                    name="protocol url or doi"
+                    class="samples-form-entry"
+                    placeholder="Type here..."
+                    style="font-size: 1rem"
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="The protocol.io URL for the protocol associated with this study.<br>
+                    <i>Example: https://www.protocols.io/view/corchea-paper-based-microfluidic-device-vtwe6pe <i>"
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div
+              style="
+                margin: 0 auto;
+                text-align: center;
+                margin-bottom: 20px;
+                font-size: 14px;
+              "
+            >
+              <a onclick="preliminaryProtocolStep('samples')" target="_blank">
+                Click here to import my protocol information
+              </a>
+              <i
+                class="fas fa-info-circle popover-tooltip subjects-form"
+                data-content="Connecting SODA with your protocol.io account to auto-fill your protocol information. Information including the protocol titles and links shared with the SPARC group will be extracted for your convenience."
+                rel="popover"
+                data-placement="right"
+                data-html="true"
+                data-trigger="hover"
+              ></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="title" style="background: #a8d08d">
+        <i class="dropdown icon"></i>
+        Additional fields
+        <span style="font-style: italic; opacity: 0.8">(Optional)</span>
+      </div>
+      <div class="content">
+        <div
+          id="div-samples-optional-fields"
+          style="width: 90%; margin: 0 auto; font-size: 13px"
+        >
+          <div>
+            <div class="div-dd-info subjects" style="margin-bottom: 20px">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Laboratory internal id: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    id="bootbox-sample-laboratory-internal-id"
+                    name="laboratory internal id"
+                    class="samples-form-entry"
+                    placeholder="Type here..."
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Provide a mapping for groups that have incompatible internal identifier conventions."
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects" style="margin-bottom: 20px">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Date of derivation: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <input
+                    type="date"
+                    id="bootbox-sample-date-of-derivation"
+                    name="date of derivation"
+                    class="samples-form-entry"
+                    placeholder="Type here..."
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Provide the date at which the subject was collected."
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects" style="margin-bottom: 20px">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Pathology: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    id="bootbox-sample-pathology"
+                    name="pathology"
+                    class="samples-form-entry"
+                    placeholder="Type here..."
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Provide the pathological condition of the sample if applicable."
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects" style="margin-bottom: 20px">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Laterality: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <select
+                    id="bootbox-sample-laterality"
+                    name="laterality"
+                    class="ui selection dropdown samples-form-entry"
+                  >
+                    <option value="Select">Select here</option>
+                    <option value="right">Right</option>
+                    <option value="left">Left</option>
+                  </select>
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="This indicates which one of a pair of organs (i.e: kidneys or lungs) the sample is. <br>For example: Left."
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects" style="margin-bottom: 20px">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Cell type: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    id="bootbox-sample-cell-type"
+                    name="cell type"
+                    class="samples-form-entry"
+                    placeholder="Type here..."
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Provide the cell type of your subject."
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects" style="margin-bottom: 20px">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Plane of section: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <select
+                    id="bootbox-sample-plane-of-section"
+                    name="plane of section"
+                    class="ui selection dropdown samples-form-entry"
+                  >
+                    <option value="Select">Select here</option>
+                    <option value="anatomical plane">Anatomical plane</option>
+                    <option value="transverse">Transverse</option>
+                    <option value="coronal">Coronal</option>
+                    <option value="sagittal">Sagittal</option>
+                    <option value="horizontal">Horizontal</option>
+                  </select>
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Provide the plane of section of your subject."
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Reference atlas: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    id="bootbox-sample-reference-atlas"
+                    name="Reference atlas"
+                    class="samples-form-entry"
+                    placeholder="Type here..."
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="The reference atlas and organ. </br>
+                    <i>Example: Paxinos Rat V3 <i>"
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+
+            <div class="div-dd-info subjects" style="margin-bottom: 20px">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black"> Experimental log file path: </font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    id="bootbox-sample-experimental-log-file-name"
+                    name="Experimental log file path"
+                    class="samples-form-entry"
+                    placeholder="Type here..."
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="A file containing experimental records for each sample."
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="title" style="background: #a8d08d">
+        <i class="dropdown icon"></i>
+        Custom fields
+        <span style="font-style: italic; opacity: 0.8">(Optional)</span>
+      </div>
+      <div class="content">
+        <div id="accordian-custom-fields-samples"></div>
+        <div
+          class="ui secondary submit button"
+          style="margin: 20px"
+          onclick="addCustomField('samples')"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            style="vertical-align: middle"
+            width="18"
+            height="18"
+            fill="currentColor"
+            class="bi bi-plus"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
+            />
+          </svg>
+          Add a field
+        </div>
+      </div>
+    </div>
+    <div
+      style="
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        margin: 40px auto;
+        width: 100%;
+        margin-left: 30px;
+      "
+    >
+      <button
+        class="start-over"
+        onclick="warningBeforeHideForm('samples')"
+        style="
+          width: 120px;
+          background: #fff;
+          color: red;
+          border: 1px solid red;
+          display: block;
+        "
+      >
+        <i class="fas fa-times" style="margin-right: 7px"></i>
+        Cancel
+      </button>
+      <button
+        class="btn_animated"
+        id="btn-edit-sample"
+        style="width: 140px; border: none !important; display: none"
+      >
+        <i class="fas fa-check" style="margin-right: 7px"></i>
+        Save
+      </button>
+      <button
+        class="btn_animated"
+        onclick="addSample()"
+        id="btn-add-sample"
+        style="width: 140px; border: none !important; display: inline-block"
+      >
+        <i class="fas fa-check" style="margin-right: 7px"></i>
+        Add sample
+      </button>
+    </div>
+  </div>
+</section>

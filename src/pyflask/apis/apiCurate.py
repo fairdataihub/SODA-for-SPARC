@@ -88,7 +88,7 @@ model_curation_progress_response = api.model( "CurationProgressResponse", {
     "elapsed_time_formatted": fields.String(description="Elapsed time of the main curation function"),
 })
 
-@api.route("curation/progress")
+@api.route("/curation/progress")
 class CurationProgress(Resource):
 
     @api.marshal_with(model_curation_progress_response, False, 200)
@@ -113,7 +113,7 @@ model_curation_file_details_response = api.model( "CurationFileDetailsResponse",
     "generated_dataset_id": fields.String(description="ID of the dataset that has been generated. ")
 })
 
-@api.route("curation/upload_details")
+@api.route("/curation/upload_details")
 class CurationFileDetails(Resource):
     
         @api.marshal_with(model_curation_file_details_response, False, 200)

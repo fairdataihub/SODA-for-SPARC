@@ -1,3 +1,18 @@
+// opendropdown event listeners
+document
+  .querySelectorAll(".manifest-change-current-account")
+  .forEach((element) => {
+    element.addEventListener("click", function () {
+      openDropdownPrompt(null, "bf");
+    });
+  });
+
+document.querySelectorAll(".manifest-change-current-ds").forEach((element) => {
+  element.addEventListener("click", function () {
+    openDropdownPrompt(null, "dataset");
+  });
+});
+
 var jstreePreviewManifest = document.getElementById(
   "div-dataset-tree-preview-manifest"
 );
@@ -1328,7 +1343,6 @@ async function generateManifestFolderLocallyForEdit(ev) {
       }).then((result) => {});
       return;
     } else {
-      console.log(ev);
       createManifestLocally("local", true, "");
     }
   } else {
