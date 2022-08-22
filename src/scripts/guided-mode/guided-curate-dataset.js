@@ -8848,7 +8848,7 @@ $(document).ready(() => {
       let mainCurationProgressResponse;
       try {
         mainCurationProgressResponse = await client.get(
-          `/curate_datasetscuration/progress`
+          `/curate_datasets/curation/progress`
         );
       } catch (error) {
         clientError(error);
