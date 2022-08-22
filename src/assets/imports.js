@@ -173,6 +173,7 @@ const insertScript = async () => {
   guidedMode.defer = true;
   guidedMode.type = "text/javascript";
   document.body.appendChild(guidedMode);
+  console.log("guided mode script appended");
 };
 
 const ws = (ms) => {
