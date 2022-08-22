@@ -165,6 +165,14 @@ const insertScript = async () => {
   submission.defer = true;
   submission.type = "text/javascript";
   document.body.appendChild(submission);
+
+  await ws(500);
+
+  const guidedMode = document.createElement("script");
+  guidedMode.src = "./scripts/guided-mode/guided-curate-dataset.js";
+  guidedMode.defer = true;
+  guidedMode.type = "text/javascript";
+  document.body.appendChild(guidedMode);
 };
 
 const ws = (ms) => {
