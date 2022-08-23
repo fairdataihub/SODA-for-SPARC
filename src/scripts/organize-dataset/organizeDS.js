@@ -2144,7 +2144,7 @@ var amount = 500;
 
 function beginScrollListen() {
   amount = 500;
-  scroll_box.addEventListener("scroll", lazyLoad);
+  item_box.addEventListener("scroll", lazyLoad);
   console.log("activating event listener");
 }
 
@@ -2154,15 +2154,20 @@ async function lazyLoad() {
   let myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
 
   //item_box height is at 420 when there is no overflow
-  if (item_box.offsetHeight === 420) {
-    scroll_box.removeEventListener("scroll", lazyLoad);
+  console.log(item_box.offsetHeight);
+  if (item_box.children.length > 23) {
+    item_box.removeEventListener("scroll", lazyLoad);
     amount = 500;
   }
 
   //load spinner is prepended to beginning to elements if any de-rendered
+  console.log(scroll_box.scrollTop);
+  console.log(item_box.scrollTop);
   if (item_box.childElementCount != 0) {
     if (item_box.children[0].id === "items_container") {
-      if (scroll_box.scrollTop < 280) {
+      //loading icon is there
+      if (item_box.scrollTop < 280) {
+        //for rerendering on scroll up
         //monitors when user scrolls back up to prepend elements
         let array_select = preprended_items - 1;
         let remove_limit = 5; //only prepend 500 elements at a time

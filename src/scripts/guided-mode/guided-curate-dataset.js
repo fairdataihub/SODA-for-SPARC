@@ -484,7 +484,6 @@ const getProgressFileData = async (progressFile) => {
     guidedProgressFilePath,
     progressFile + ".json"
   );
-  console.log(progressFilePath);
   return readFileAsync(progressFilePath);
 };
 const deleteProgressCard = async (progressCardDeleteButton) => {
@@ -643,7 +642,6 @@ const generateProgressCardElement = (progressFileJSONObj) => {
   `;
 };
 const renderProgressCards = (progressFileJSONdata) => {
-  console.log(progressFileJSONdata);
   //sort progressFileJSONdata by date to place newest cards on top
   progressFileJSONdata.sort((a, b) => {
     return new Date(b["last-modified"]) - new Date(a["last-modified"]);
@@ -698,7 +696,6 @@ const renderProgressCards = (progressFileJSONdata) => {
 const setActiveCapsule = (targetPageID) => {
   $(".guided--capsule").removeClass("active");
   let targetCapsuleID = targetPageID.replace("-tab", "-capsule");
-  console.log(targetCapsuleID);
   let targetCapsule = $(`#${targetCapsuleID}`);
   //check if targetCapsule parent has the class guided--capsule-container-branch
   if (targetCapsule.parent().hasClass("guided--capsule-container-branch")) {
@@ -710,12 +707,10 @@ const setActiveCapsule = (targetPageID) => {
 setActiveProgressionTab = (targetPageID) => {
   $(".guided--progression-tab").removeClass("selected-tab");
   let targetPageParentID = $(`#${targetPageID}`).parent().attr("id");
-  console.log(targetPageParentID);
   let targetProgressionTabID = targetPageParentID.replace(
     "parent-tab",
     "progression-tab"
   );
-  console.log(targetProgressionTabID);
   let targetProgressionTab = $(`#${targetProgressionTabID}`);
   targetProgressionTab.addClass("selected-tab");
 };
@@ -736,7 +731,6 @@ const handlePageBranching = (selectedCardElement) => {
     const pageBranchToRemoveSkip = selectedCardElement
       .attr("id")
       .replace("card", "branch-page");
-    console.log(pageBranchToRemoveSkip);
     $(`.${pageBranchToRemoveSkip}`).attr("data-skip-page", "false");
   }
 
@@ -1095,7 +1089,6 @@ const cleanUpEmptyGuidedStructureFolders = async (
       }
 
       if (subjectsWithEmptyFolders.length > 0) {
-        console.log(subjectsWithEmptyFolders);
         let result = await Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
@@ -1371,7 +1364,6 @@ const guidedLoadDescriptionStudyInformation = () => {
     sodaJSONObj["dataset-metadata"]["description-metadata"][
       "study-information"
     ];
-  console.log(studyInformationMetadata);
 
   if (studyInformationMetadata) {
     studyPurposeInput.value = studyInformationMetadata["study purpose"];
@@ -1393,7 +1385,6 @@ const guidedLoadDescriptionStudyInformation = () => {
     );
   } else {
     //reset the inputs
-    console.log("resetting inputs");
     studyPurposeInput.value = "";
     studyDataCollectionInput.value = "";
     studyPrimaryConclusionInput.value = "";
@@ -1428,7 +1419,6 @@ const guidedLoadDescriptionContributorInformation = () => {
 };
 
 const traverseToTab = async (targetPageID) => {
-  console.log(targetPageID);
   try {
     //reset the radio buttons for the page being navigated to
     resetGuidedRadioButtons(targetPageID);
@@ -1626,8 +1616,6 @@ const traverseToTab = async (targetPageID) => {
         data.instance.set_type(data.node, "folder open");
       });
       $(folderStructurePreview).on("close_node.jstree", function (event, data) {
-        console.log(event);
-        console.log(data);
         data.instance.set_type(data.node, "folder closed");
       });
       guidedShowTreePreview(
@@ -2234,8 +2222,6 @@ const traverseToTab = async (targetPageID) => {
         data.instance.set_type(data.node, "folder open");
       });
       $(folderStructurePreview).on("close_node.jstree", function (event, data) {
-        console.log(event);
-        console.log(data);
         data.instance.set_type(data.node, "folder closed");
       });
       guidedShowTreePreview(
@@ -2248,7 +2234,6 @@ const traverseToTab = async (targetPageID) => {
       //remove custom fields that may have existed from a previous session
       document.getElementById("guided-accordian-custom-fields").innerHTML = "";
       document.getElementById("guided-bootbox-subject-id").value = "";
-      console.log(subjectsTableData);
 
       //Add protocol titles to the protocol dropdown
       const protocols =
@@ -2290,7 +2275,6 @@ const traverseToTab = async (targetPageID) => {
           .join("\n")}))
       `;
       renderSubjectsMetadataAsideItems();
-      console.log(subjectsTableData);
       const subjectsMetadataBlackArrowLottieContainer = document.getElementById(
         "subjects-metadata-black-arrow-lottie-container"
       );
@@ -2315,9 +2299,7 @@ const traverseToTab = async (targetPageID) => {
       ).innerHTML = "";
       document.getElementById("guided-bootbox-subject-id-samples").value = "";
       document.getElementById("guided-bootbox-sample-id").value = "";
-      console.log(samplesTableData);
       renderSamplesMetadataAsideItems();
-      console.log(samplesTableData);
       const samplesMetadataBlackArrowLottieContainer = document.getElementById(
         "samples-metadata-black-arrow-lottie-container"
       );
@@ -2538,15 +2520,12 @@ const setActiveSubPage = (pageIdToActivate) => {
       //Combine sample data from subjects in and out of pools
       let subjects = [...subjectsInPools, ...subjectsOutsidePools];
 
-      console.log(subjects);
-
       //Create the HTML for the subjects
       const subjectSampleAdditionTables = subjects
         .map((subject) => {
           return renderSubjectSampleAdditionTable(subject);
         })
         .join("\n");
-      console.log(subjectSampleAdditionTables);
 
       //Add the subject sample addition elements to the DOM
       const subjectSampleAdditionTableContainer = document.getElementById(
@@ -2815,7 +2794,6 @@ const setActiveSubPage = (pageIdToActivate) => {
         sodaJSONObj["dataset-metadata"]["submission-metadata"][
           "temp-selected-milestones"
         ];
-      console.log(selectedMilestoneData);
 
       // get a unique set of completionDates from checkedMilestoneData
       const uniqueCompletionDates = Array.from(
@@ -2823,10 +2801,8 @@ const setActiveSubPage = (pageIdToActivate) => {
           selectedMilestoneData.map((milestone) => milestone.completionDate)
         )
       );
-      console.log(uniqueCompletionDates);
 
       if (uniqueCompletionDates.length === 1) {
-        console.log(uniqueCompletionDates);
         //save the completion date into sodaJSONObj
         const uniqueCompletionDate = uniqueCompletionDates[0];
         sodaJSONObj["dataset-metadata"]["submission-metadata"][
@@ -2919,7 +2895,6 @@ const setActiveSubPage = (pageIdToActivate) => {
   //Show target page and hide its siblings
   pageElementToActivate.classList.remove("hidden");
   const pageElementSiblings = pageElementToActivate.parentElement.children;
-  console.log(pageElementSiblings);
   //filter pageElementSiblings to only contain elements with class "sub-page"
   const pageElementSiblingsToHide = Array.from(pageElementSiblings).filter(
     (pageElementSibling) => {
@@ -2929,7 +2904,6 @@ const setActiveSubPage = (pageIdToActivate) => {
       );
     }
   );
-  console.log(pageElementSiblingsToHide);
   //hide all pageElementSiblingsToHide
   pageElementSiblingsToHide.forEach((pageElementSibling) => {
     pageElementSibling.classList.add("hidden");
@@ -2990,11 +2964,9 @@ const generateAlertElement = (alertType, warningMessageText) => {
 const generateAlertMessage = (elementToWarn) => {
   const alertMessage = elementToWarn.data("alert-message");
   const alertType = elementToWarn.data("alert-type");
-  console.log(elementToWarn);
   if (!elementToWarn.next().hasClass("alert")) {
     elementToWarn.after(generateAlertElement(alertType, alertMessage));
   }
-  console.log("here");
   enableProgressButton();
 };
 const removeAlertMessageIfExists = (elementToCheck) => {
@@ -3037,7 +3009,6 @@ const validateInput = (inputElementToValidate) => {
         $("#guided-same-amount-samples-form").css("display", "flex");
         inputIsValid = true;
       } else {
-        console.log(inputElementToValidate);
         generateAlertMessage(inputElementToValidate);
         $("#guided-same-amount-samples-form").hide();
       }
@@ -3139,7 +3110,6 @@ const patchPreviousGuidedModeVersions = () => {
     ]) {
       //if contributor is in old format (string), convert to new format (array)
       if (!Array.isArray(contributor.conAffliation)) {
-        console.log("Patching contributor affiliation");
         contributor.conAffliation = [contributor.conAffliation];
       }
     }
@@ -3149,7 +3119,6 @@ const patchPreviousGuidedModeVersions = () => {
   if (subjectsTableData.length > 0) {
     //check if subjectsTableData has "RRID for strain" field
     if (!subjectsTableData[0].includes("RRID for strain")) {
-      console.log("Patching subjectsTableData");
       //insert "RRID for strain" string as the 6th element of subjectsTableData[0]
       subjectsTableData[0].splice(6, 0, "RRID for strain");
       //Insert empty string as the 6th element for each subject in subjectsTableData
@@ -3324,7 +3293,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     //Check subjectsInPools for a subject matching previousSubjectName
     //if found, rename the subject
     for (const subjectData of subjectsInPools) {
-      console.log(subjectData);
       if (subjectData.subjectName === prevSubjectName) {
         this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
           subjectData.poolName
@@ -3393,8 +3361,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     return this["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
   };
   sodaJSONObj.moveSubjectIntoPool = function (subjectName, poolName) {
-    console.log(subjectName);
-    console.log(poolName);
     this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
       poolName
     ][subjectName] =
@@ -3406,23 +3372,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     ][subjectName];
   };
   sodaJSONObj.moveSubjectOutOfPool = function (subjectName, poolName) {
-    console.log(subjectName);
-    console.log(poolName);
-    console.log(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
-        subjectName
-      ]
-    );
-    console.log(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-        poolName
-      ][subjectName]
-    );
-    console.log(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-        poolName
-      ][subjectName]
-    );
     this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
       subjectName
     ] =
@@ -3447,7 +3396,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     ] = {};
   };
   sodaJSONObj.renamePool = function (prevPoolName, newPoolName) {
-    console.log(prevPoolName, newPoolName);
     //check if name already exists
     if (
       this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
@@ -3473,7 +3421,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     }
   };
   sodaJSONObj.deletePool = function (poolName) {
-    console.log(poolName);
     //empty the subjects in the pool back into subjects
     let pool =
       this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
@@ -3755,7 +3702,6 @@ const generateHighLevelFolderSubFolderPageData = (
 const updateFolderStructureUI = (pageDataObj) => {
   //If the pageDataObj has header and contents, set element text and hide
   //If not, remove the elements from the screen
-  console.log(pageDataObj);
   const fileExplorer = document.getElementById("guided-file-explorer-elements");
   const structureFolderHeaderElement = document.getElementById(
     "structure-folder-header"
@@ -3790,7 +3736,6 @@ const updateFolderStructureUI = (pageDataObj) => {
   $("#guided-input-global-path").val(
     `My_dataset_folder/${pageDataObj.pathSuffix}`
   );
-  console.log(organizeDSglobalPath);
   var filtered = getGlobalPath(organizeDSglobalPath);
   organizeDSglobalPath.value =
     filtered.slice(0, filtered.length).join("/") + "/";
@@ -3815,28 +3760,21 @@ const updateFolderStructureUI = (pageDataObj) => {
     organizeDSglobalPath,
     datasetStructureJSONObj
   );
-  console.log("loading done");
 };
 //Description metadata functions
 const editAdditionalLink = (clickedEditLinkButton) => {
-  console.log(clickedEditLinkButton);
   const tr = clickedEditLinkButton.parentNode.parentNode;
 };
 
 const deleteAdditionalLink = (clickedDeleteLinkButton) => {
   const tr = clickedDeleteLinkButton.parentNode.parentNode;
   const linkNameToDelete = tr.querySelector(".link-name-cell").innerHTML.trim();
-  console.log(linkNameToDelete);
   const additionalLinks =
     sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"];
   //filter additional links to remove the one to be deleted
   const filteredAdditionalLinks = additionalLinks.filter((link) => {
-    console.log(link);
-    console.log(link.link);
-    console.log(linkNameToDelete);
     return link.link != linkNameToDelete;
   });
-  console.log(filteredAdditionalLinks);
   sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"] =
     filteredAdditionalLinks;
   //update the UI
@@ -4204,7 +4142,6 @@ const renderContributorFields = (contributionMembersArray) => {
   //loop through curationMembers object
   let contributionMembersElements = contributionMembersArray
     .map((contributionMember) => {
-      console.log(contributionMember);
       return generateContributorField(
         contributionMember["contributorLastName"],
         contributionMember["contributorFirstName"],
@@ -4233,7 +4170,6 @@ const renderContributorFields = (contributionMembersArray) => {
         contributorAffiliationInput.dataset.initialContributorAffiliation;
       const initialAffiliationsArray = initialAffiliations.split(",");
       for (const initialAffiliation of initialAffiliationsArray) {
-        console.log(initialAffiliation);
         tagify.addTags([initialAffiliation]);
       }
     }
@@ -4279,7 +4215,6 @@ const renderContributorFields = (contributionMembersArray) => {
         contributorRoleElement.dataset.initialContributorRoles;
       const initialContributorsArray = initialContributors.split(",");
       for (const contirubtorRole of initialContributorsArray) {
-        console.log(contirubtorRole);
         tagify.addTags([contirubtorRole]);
       }
     }
@@ -4297,7 +4232,6 @@ const renderAdditionalLinksTable = () => {
   if (additionalLinkData.length != 0) {
     const additionalLinkElements = additionalLinkData
       .map((link) => {
-        console.log(link);
         return generateadditionalLinkRowElement(
           link.link,
           link.type,
@@ -4626,7 +4560,6 @@ const guidedLoadSampleMetadataIfExists = (
       samplesTableData[i][1] === sampleMetadataId
     ) {
       //if the id matches, load the metadata into the form
-      console.log("match found");
       populateFormsSamples(subjectMetadataId, sampleMetadataId, "", "guided");
       return;
     }
@@ -4640,8 +4573,6 @@ const openModifySampleMetadataPage = (
   sampleMetadataSubjectID,
   sampleMetadataPoolID
 ) => {
-  console.log(sampleMetadataID, sampleMetadataSubjectID, sampleMetadataPoolID);
-
   //Get all samples from the dataset and add all other samples to the was derived from dropdown
   const [samplesInPools, samplesOutsidePools] =
     sodaJSONObj.getAllSamplesFromSubjects();
@@ -4761,7 +4692,6 @@ const openCopySubjectMetadataPopup = async () => {
         const selectedCopyFromSubject = $(
           "input[name='copy-from']:checked"
         ).val();
-        console.log(selectedCopyFromSubject);
         //loop through checked copy-to checkboxes and return the value of the checkbox element if checked
         let selectedCopyToSubjects = [];
         $("input[name='copy-to']:checked").each(function () {
@@ -4774,7 +4704,6 @@ const openCopySubjectMetadataPopup = async () => {
             copyFromSubjectData = subjectsTableData[i].slice(2);
           }
         }
-        console.log(subjectsTableData);
         for (subject of selectedCopyToSubjects) {
           //loop through all subjectsTableData elements besides the first one
           for (let i = 1; i < subjectsTableData.length; i++) {
@@ -4788,7 +4717,6 @@ const openCopySubjectMetadataPopup = async () => {
             }
           }
         }
-        console.log(subjectsTableData);
         const currentSubjectOpenInView = document.getElementById(
           "guided-bootbox-subject-id"
         ).value;
@@ -4874,18 +4802,14 @@ const openCopySampleMetadataPopup = async () => {
         //Add the data from the selected copy fro sample to cpoyFromSampleData array
         for (var i = 1; i < samplesTableData.length; i++) {
           if (samplesTableData[i][1] === selectedCopyFromSample) {
-            console.log(samplesTableData[i]);
             //copy all elements from matching array except the first one
             wasDerivedFrom = samplesTableData[i][2];
             copyFromSampleData = samplesTableData[i].slice(4);
-            console.log(copyFromSampleData);
           }
         }
         for (sample of selectedCopyToSamples) {
           samplesTableData.forEach((sampleData, index) => {
-            console.log(sampleData);
             if (sampleData[1] === sample) {
-              console.log(samplesTableData);
               sampleData = [
                 sampleData[0],
                 sampleData[1],
@@ -4894,7 +4818,6 @@ const openCopySampleMetadataPopup = async () => {
               ];
               sampleData = sampleData.concat(copyFromSampleData);
               samplesTableData[index] = sampleData;
-              console.log(samplesTableData);
             }
           });
         }
@@ -5027,7 +4950,6 @@ const specifyPool = (event, poolNameInput) => {
   if (event.which == 13) {
     try {
       const poolName = `pool-${poolNameInput.val().trim()}`;
-      console.log(poolName);
       const poolNameElement = `
         <div class="space-between" style="width: 250px;">
           <span class="pool-id">${poolName}</span>
@@ -5053,8 +4975,6 @@ const specifyPool = (event, poolNameInput) => {
       if (poolName.length > 0) {
         if (!subSamInputIsValid(poolName)) {
           //show alert message below pool name input if input is invalid and abort function
-          console.log(poolNameInput);
-          console.log(poolsTable);
           generateAlertMessage(poolsTable);
           return;
         }
@@ -5339,7 +5259,6 @@ const confirmEnter = (button) => {
   });
 
   let input_field = button.previousElementSibling;
-  console.log(input_field.parentNode.children);
   if (input_field.tagName === "INPUT") {
     input_field.dispatchEvent(ke);
   } else {
@@ -5557,7 +5476,6 @@ const addPoolTableRow = () => {
     //focus on the input that already exists
     //check if pool has input
     if (poolSpecificationTableInput.val != "") {
-      console.log(poolSpecificationTableInput);
       confirmEnter(poolSpecificationTableInput);
       addPoolTableRow();
     } else {
@@ -5629,8 +5547,6 @@ const deleteSample = (sampleDeleteButton) => {
     const samplesSubjectsPool = subjectSampleAdditionTable
       .find(".samples-subjects-pool")
       .text();
-    console.log(samplesSubject);
-    console.log(samplesSubjectsPool);
 
     sodaJSONObj.deleteSample(
       sampleIdToDelete,
@@ -5876,9 +5792,6 @@ const removePermission = (clickedPermissionRemoveButton) => {
   if (permissionEntityType === "user") {
     const currentUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
     const filteredUsers = currentUsers.filter((user) => {
-      console.log(user.userString);
-      console.log(user.permission);
-      console.log(user.immutable);
       return !(
         user.userString == permissionNameToRemove &&
         user.permission == permissionTypeToRemove &&
@@ -5925,7 +5838,6 @@ const renderPermissionsTable = () => {
     createPermissionsTableRowElement("owner", owner, "owner")
   );
   for (user of users) {
-    console.log(users);
     permissionsTableElements.push(
       createPermissionsTableRowElement(
         user.loggedInUser ? "loggedInUser" : "user",
@@ -6080,9 +5992,7 @@ $("#guided-submission-completion-date").change(function () {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        console.log(result);
         const input_date = result.value.date;
-        console.log(input_date);
         //remove options from dropdown that already have input_date as value
         $("#guided-submission-completion-date option").each(function () {
           if (this.value == input_date) {
@@ -6171,7 +6081,6 @@ const setOrUpdateGuidedDatasetName = (newDatasetName) => {
       existingProgressNames.forEach((element, index) => {
         existingProgressNames[index] = element.replace(".json", "");
       });
-      console.log(existingProgressNames);
       //check if dataset name is already in use
       if (existingProgressNames.includes(newDatasetName)) {
         reject(
@@ -8346,7 +8255,6 @@ $(document).ready(() => {
     datasetName,
     submissionMetadataJSON
   ) => {
-    console.log(submissionMetadataJSON);
     document
       .getElementById("guided-submission-metadata-upload-tr")
       .classList.remove("hidden");
@@ -8649,35 +8557,30 @@ $(document).ready(() => {
         guidedDatasetName,
         guidedBannerImagePath
       );
-      console.log(datasetBannerImageResponse);
 
       let datasetLicenseResponse = await guidedAddDatasetLicense(
         guidedBfAccount,
         guidedDatasetName,
         guidedLicense
       );
-      console.log(datasetLicenseResponse);
 
       let datasetTagsResponse = await guidedAddDatasetTags(
         guidedBfAccount,
         guidedDatasetName,
         guidedTags
       );
-      console.log(datasetTagsResponse);
 
       let datasetPIOwnwerResponse = await guidedAddPiOwner(
         guidedBfAccount,
         guidedDatasetName,
         guidedPIOwner
       );
-      console.log(datasetPIOwnwerResponse);
 
       let datasetUsersResponse = await guidedAddUserPermissions(
         guidedBfAccount,
         guidedDatasetName,
         guidedUsers
       );
-      console.log(datasetUsersResponse);
       let datasetTeamsResponse = await guidedAddTeamPermissions(
         guidedBfAccount,
         guidedDatasetName,
@@ -8957,7 +8860,6 @@ $(document).ready(() => {
       //If the curate function is complete, clear the interval
       if (main_curate_status === "Done") {
         $("#sidebarCollapse").prop("disabled", false);
-        console.log("Dataset uploaded!");
         log.info("Done curate track");
         // then show the sidebar again
         // forceActionSidebar("show");
@@ -9025,8 +8927,6 @@ $(document).ready(() => {
   };
 
   const guided_main_curate = async () => {
-    console.log(sodaJSONObj);
-
     updateJSONStructureDSstructure();
 
     let emptyFilesFoldersResponse;
@@ -9092,7 +8992,6 @@ $(document).ready(() => {
         },
       }).then((result) => {
         if (result.isConfirmed) {
-          console.log("Ignoring file warnings, initiating dataset generation");
           guided_initiate_generate();
         } else {
           $("#sidebarCollapse").prop("disabled", false);
@@ -9102,7 +9001,6 @@ $(document).ready(() => {
         }
       });
     } else {
-      console.log("No file warnings, initiating dataset generation");
       guided_initiate_generate();
     }
   };
@@ -9162,25 +9060,20 @@ $(document).ready(() => {
     const otherLinkFieldsArray = Array.from(otherLinkFields);
     ///////////////////////////////////////////////////////////////////////////////
     otherLinkFieldsArray.forEach((otherLinkField) => {
-      console.log(otherLinkField);
       const linkUrl = otherLinkField.querySelector(
         ".guided-other-link-url-input"
       );
-      console.log(linkUrl);
       const linkDescription = otherLinkField.querySelector(
         ".guided-other-link-description-input"
       );
-      console.log(linkDescription);
       const linkRelation = otherLinkField.querySelector(
         ".guided-other-link-relation-dropdown"
       );
-      console.log(linkRelation);
-      console.log(linkRelation.value);
+
       const textInputs = [linkUrl, linkDescription];
 
       //check if all text inputs are valid
       textInputs.forEach((textInput) => {
-        console.log(textInput);
         if (textInput.value === "") {
           textInput.style.setProperty("border-color", "red", "important");
           allInputsValid = false;
@@ -10051,7 +9944,6 @@ $(document).ready(() => {
         }
 
         if (designateOtherButton.classList.contains("selected")) {
-          console.log("bar");
           let PiOwnerString = $("#guided_bf_list_users_pi option:selected")
             .text()
             .trim();
@@ -10088,7 +9980,6 @@ $(document).ready(() => {
           };
 
           guidedAddUserPermission(loggedInUserManagerObj);
-          console.log(loggedInUserManagerObj);
         }
       }
 
@@ -10502,14 +10393,12 @@ $(document).ready(() => {
             //replace last comma with closing bracket
             contributorInfoFilterString =
               contributorInfoFilterString.slice(0, -1) + ")";
-            console.log(contributorInfoFilterString);
             try {
               const contributorInfoResult = await base("sparc_members")
                 .select({
                   filterByFormula: contributorInfoFilterString,
                 })
                 .all();
-              console.log(contributorInfoResult);
 
               const contributorInfo = contributorInfoResult.map(
                 (contributor) => {
@@ -10581,7 +10470,6 @@ $(document).ready(() => {
         //loop through protocol fields and get protocol values
         const protocolFieldsArray = Array.from(protocolFields);
         protocolFieldsArray.forEach((protocolField) => {
-          console.log(protocolField);
           const protocolUrlInput = protocolField.querySelector(
             ".guided-protocol-url-input"
           );
@@ -10591,7 +10479,6 @@ $(document).ready(() => {
 
           //Validate all of the protocol fields
           const textInputs = [protocolUrlInput, protocolDescriptionInput];
-          console.log(textInputs);
           //check if all text inputs are valid
           textInputs.forEach((textInput) => {
             if (textInput.value === "") {
@@ -10792,10 +10679,8 @@ $(document).ready(() => {
           prevPage.attr("data-skip-page") &&
           prevPage.attr("data-skip-page") == "true"
         ) {
-          console.log("recursive back");
           return getPrevPageNotSkipped(prevPage);
         } else {
-          console.log("regular back");
           //element is valid and not to be skipped
           return prevPage;
         }
@@ -10829,8 +10714,6 @@ $(document).ready(() => {
     const currentParentPageID = CURRENT_PAGE.attr("id");
     //Get the id of the sub-page that's currently open
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
-    console.log(currentParentPageID);
-    console.log(openSubPageID);
 
     switch (currentParentPageID) {
       case "guided-subjects-folder-tab": {
