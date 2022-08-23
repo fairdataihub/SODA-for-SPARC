@@ -1308,11 +1308,12 @@ def get_name_extension(file_name):
     return name, ext
 
 
-def create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure):
+def create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, high_level_folders=["code", "derivative", "docs", "primary", "protocol", "source" ]):
     """
     Function to create manifest files for each high-level SPARC folder for an existing Pennsieve dataset.
     Args:
         soda_json_structure: soda dict with information about the dataset to be generated/modified
+        high_level_folders: (optional) list of high-level folders to generate manifests for. Defaults to all primary folders.
     Action:
         manifest_files_structure: dict including the local path of the manifest files
     """
@@ -1380,11 +1381,17 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
 
     dataset_structure = soda_json_structure["dataset-structure"]
 
-    # create local folder to save manifest files temporarily (delete any existing one first)
-    shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
-    makedirs(manifest_folder_path)
+    # create local folder to save manifest files temporarily if the existing files are stale (i.e. not from updating existing manfiest files)
+    if len(high_level_folders) == 6:
+        shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
+        makedirs(manifest_folder_path)
 
     for high_level_folder in list(dataset_structure["folders"]):
+
+        # do not overwrite an existing manifest file 
+        if high_level_folder not in high_level_folders:
+            continue
+
         high_level_folders_present.append(high_level_folder)
 
         folderpath = join(manifest_folder_path, high_level_folder)

@@ -920,7 +920,7 @@ def import_bf_RC(bfaccount, bfdataset, file_type):
 # path to local SODA folder for saving manifest files
 manifest_folder_path = join(userpath, "SODA", "manifest_files")
 
-
+# TODO: NOTE: ESSENTIAL: Remove the manifest_file even if the user does not generate before pulling again.
 def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
     bf = Pennsieve(bfaccount)
     myds = bf.get_dataset(bfdataset)
@@ -929,9 +929,10 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
     dataset_structure = soda_json_structure["dataset-structure"]
     recursive_item_path_create(dataset_structure, [])
 
+    high_level_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
+
     # handle updating any existing manifest files on Pennsieve
     for i in range(len(myds.items)):
-
         if myds.items[i].name in [
             "code",
             "derivative",
@@ -940,11 +941,13 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
             "protocol",
             "source",
         ]:
-            if not exists(join(manifest_folder_path, myds.items[i].name)):
-                # create the path
-                os.makedirs(join(manifest_folder_path, myds.items[i].name))
             for j in range(len(myds.items[i])):
                 if myds.items[i][j].name == "manifest.xlsx":
+
+                    if not exists(join(manifest_folder_path, myds.items[i].name)):
+                        # create the path
+                        os.makedirs(join(manifest_folder_path, myds.items[i].name))
+
                     item_id = myds.items[i][j].id
                     url = returnFileURL(bf, item_id)
 
@@ -956,8 +959,8 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
                         manifest_folder_path, myds.items[i].name, "manifest.xlsx"
                     )
 
-                    # TODO: Convert original data frame to a dicitonary then use the alternative algorithm: dict of path to all values for a row. Traverse 
-                    # original dictionary. If key exists add the values at that key to the new dictionary. Create the DF. Drow and empty columns. Return. 
+                    high_level_folders.remove(myds.items[i].name)
+
                     updated_manifest_dict = update_existing_pennsieve_manifest_file(dataset_structure["folders"][myds.items[i].name], manifest_df)
 
                     if not exists(join(manifest_folder_path, myds.items[i].name)):
@@ -973,8 +976,8 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
 
 
 
-    # first, create manifest files for all folders
-    # create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure)
+    # create manifest files from scratch for any high level folders that don't have a manifest file on Pennsieve
+    create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, high_level_folders)
 
     no_manifest_boolean = False
 
