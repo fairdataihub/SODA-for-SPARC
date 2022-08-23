@@ -3760,6 +3760,8 @@ const updateFolderStructureUI = (pageDataObj) => {
     organizeDSglobalPath,
     datasetStructureJSONObj
   );
+
+  beginScrollListen();
 };
 //Description metadata functions
 const editAdditionalLink = (clickedEditLinkButton) => {

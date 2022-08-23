@@ -1179,3 +1179,20 @@ h1.guided--text-sub-step {
     transform: translateX(0);
   }
 }
+
+.asideContainer {
+  border: 2px solid lightgray;
+}
+
+.asideTitleContainer {
+  padding-top: 0;
+  border-radius: 0;
+  border: none;
+  border-right: 2px solid lightgray;
+}
+
+.asideTitle {
+  background: lightgray;
+  padding: 12px 0 15px 0;
+  border-radius: 0;
+}

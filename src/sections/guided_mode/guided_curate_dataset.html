@@ -1025,9 +1025,11 @@
                 <div
                   class="guided--container-subject-samples mt-md"
                   id="guided-source-samples-file-explorer-container"
+                  style="border: 2px solid lightgray"
                 >
-                  <div class="guided--hlf-selection-container">
+                  <div class="guided--hlf-selection-container" style="padding-top: 0; border-radius: 0; border: none; border-right: 2px solid lightgray;">
                     <label class="guided--form-label centered"
+                      style="padding-top: 12px; padding-bottom: 15px; background: lightgray;"
                       >Dataset samples:
                     </label>
                     <aside
@@ -1122,14 +1124,17 @@
                 <div
                   class="guided--container-subject-samples mt-md"
                   id="guided-source-subjects-file-explorer-container"
+                  style="border: 2px solid lightgray"
                 >
-                  <div class="guided--hlf-selection-container">
-                    <label class="guided--form-label centered"
+                  <div class="guided--hlf-selection-container"
+                  style="border-radius: 0; padding-top: 0; border: none; border-right: 2px solid lightgray;">
+                    <label class="guided--form-label centered" style="background: lightgray; padding: 12px 0 15px 0;"
                       >Dataset subjects:
                     </label>
                     <aside
                       class="guided--hlf-selection-aside"
                       id="guided-source-subjects-aside"
+                      style="font-weight: 700 !important;"
                     ></aside>
                   </div>
                   <div
@@ -1253,9 +1258,10 @@
                 <div
                   class="guided--container-subject-samples mt-md"
                   id="guided-derivative-samples-file-explorer-container"
+                  style="border: 2px solid lightgray;"
                 >
-                  <div class="guided--hlf-selection-container">
-                    <label class="guided--form-label centered"
+                  <div class="guided--hlf-selection-container" style="padding-top: 0; border-radius: 0; border: none; border-right: 2px solid lightgray">
+                    <label class="guided--form-label centered" style="background: lightgray; padding: 12px 0 16px 0;"
                       >Dataset samples:
                     </label>
                     <aside
@@ -1351,16 +1357,17 @@
                   </p>
                 </div>
                 <div
-                  class="guided--container-subject-samples mt-md"
+                  class="guided--container-subject-samples mt-md asideContainer"
                   id="guided-derivative-subjects-file-explorer-container"
                 >
-                  <div class="guided--hlf-selection-container">
-                    <label class="guided--form-label centered"
+                  <div class="guided--hlf-selection-container asideTitleContainer">
+                    <label class="guided--form-label centered asideTitle"
                       >Dataset subjects:
                     </label>
                     <aside
                       class="guided--hlf-selection-aside"
                       id="guided-derivative-subjects-aside"
+                      style="font-weight: 600"
                     ></aside>
                   </div>
                   <div
@@ -1594,105 +1601,106 @@
               id="structure-folder-header"
             ></h2>
             <p class="guided--help-text" id="structure-folder-contents"></p>
-
-            <div
-              class="guided--folder-organization-buttons-container"
-              style="margin-top: 0.44rem; width: 97% !important"
-            >
+            <div style="width: 100%; border: 2px solid lightgray; text-align: -webkit-center;">
               <div
-                class="guided--folder-organization-buttons-container-sub"
-                style="flex-grow: 1"
+                class="guided--folder-organization-buttons-container"
+                style="margin-top: 0.44rem; width: 97% !important"
               >
-                <button
-                  class="ui secondary basic button small onHoverBlackBoxShadow"
-                  id="guided-button-back"
+                <div
+                  class="guided--folder-organization-buttons-container-sub"
+                  style="flex-grow: 1"
                 >
-                  <i class="fas fa-arrow-up"></i>
-                </button>
-                <input
-                  style="
-                    margin: 0px 7px;
-                    display: flex;
-                    flex-grow: 1;
-                    border: none;
-                    font-family: 'Raleway', sans-serif;
-                    font-size: 16px;
-                    font-weight: 600;
-                    cursor: default;
-                    color: #898989;
-                    display: none;
-                  "
-                  id="guided-input-global-path"
-                  value="My_dataset_folder/"
-                  readonly
-                />
-              </div>
-              <div class="guided--folder-organization-buttons-container-sub">
-                <button
-                  class="ui primary basic button small onHoverBlueBoxShadow"
-                  id="guided-new-folder"
-                  style="margin-right: 7px"
-                >
-                  <i class="fas fa-folder-plus" style="margin-right: 7px"></i
-                  >New folder
-                </button>
-                <button
-                  class="ui primary basic button small remove-margin-right onHoverBlueBoxShadow"
-                  id="guided-import-folder"
-                  style="width: 165px; margin-right: 7px !important"
-                >
-                  <svg
-                    style="margin-right: 7px"
-                    width="1em"
-                    height=".9em"
-                    viewbox="0 0 16 16"
-                    class="bi bi-upload"
-                    fill="currentColor"
-                    xmlns="http://www.w3.org/2000/svg"
+                  <button
+                    class="ui secondary basic button small onHoverBlackBoxShadow"
+                    id="guided-button-back"
                   >
-                    <path
-                      fill-rule="evenodd"
-                      d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"
-                    />
-                    <path
-                      fill-rule="evenodd"
-                      d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"
-                    />
-                  </svg>
-                  Import folder
-                </button>
-                <button
-                  class="ui primary basic button small remove-margin-right onHoverBlueBoxShadow"
-                  id="guided-imoprt-file"
-                  style="width: 165px"
-                >
-                  <svg
+                    <i class="fas fa-arrow-up"></i>
+                  </button>
+                  <input
+                    style="
+                      margin: 0px 7px;
+                      display: flex;
+                      flex-grow: 1;
+                      border: none;
+                      font-family: 'Raleway', sans-serif;
+                      font-size: 16px;
+                      font-weight: 600;
+                      cursor: default;
+                      color: #898989;
+                      display: none;
+                    "
+                    id="guided-input-global-path"
+                    value="My_dataset_folder/"
+                    readonly
+                  />
+                </div>
+                <div class="guided--folder-organization-buttons-container-sub">
+                  <button
+                    class="ui primary basic button small onHoverBlueBoxShadow"
+                    id="guided-new-folder"
                     style="margin-right: 7px"
-                    width="1em"
-                    height=".9em"
-                    viewbox="0 0 16 16"
-                    class="bi bi-upload"
-                    fill="currentColor"
-                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    <path
-                      fill-rule="evenodd"
-                      d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"
-                    />
-                    <path
-                      fill-rule="evenodd"
-                      d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"
-                    />
-                  </svg>
-                  Import file
-                </button>
+                    <i class="fas fa-folder-plus" style="margin-right: 7px"></i
+                    >New folder
+                  </button>
+                  <button
+                    class="ui primary basic button small remove-margin-right onHoverBlueBoxShadow"
+                    id="guided-import-folder"
+                    style="width: 165px; margin-right: 7px !important"
+                  >
+                    <svg
+                      style="margin-right: 7px"
+                      width="1em"
+                      height=".9em"
+                      viewbox="0 0 16 16"
+                      class="bi bi-upload"
+                      fill="currentColor"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"
+                      />
+                      <path
+                        fill-rule="evenodd"
+                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"
+                      />
+                    </svg>
+                    Import folder
+                  </button>
+                  <button
+                    class="ui primary basic button small remove-margin-right onHoverBlueBoxShadow"
+                    id="guided-imoprt-file"
+                    style="width: 165px"
+                  >
+                    <svg
+                      style="margin-right: 7px"
+                      width="1em"
+                      height=".9em"
+                      viewbox="0 0 16 16"
+                      class="bi bi-upload"
+                      fill="currentColor"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"
+                      />
+                      <path
+                        fill-rule="evenodd"
+                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"
+                      />
+                    </svg>
+                    Import file
+                  </button>
+                </div>
               </div>
+              <div
+                id="guided-folder-structure-container"
+                class="w-100"
+                style="border-top: 2px solid lightgray; margin-top: 0"
+              ></div>
             </div>
-            <div
-              id="guided-folder-structure-container"
-              class="w-100"
-              style="border-top: 2px solid lightgray; margin-top: 0"
-            ></div>
           </div>
         </div>
       </div>
@@ -2642,20 +2650,21 @@
               copy it for all other subjects.
             </p>
           </div>
-          <div class="guided--container-subject-samples w-100 mt-md">
-            <div class="guided--hlf-selection-container ml-2">
-              <label class="guided--form-label centered"
+          <div class="guided--container-subject-samples w-100 mt-md asideContainer">
+            <div class="guided--hlf-selection-container ml-2 asideTitleContainer" style="margin-left: 0 !important; border: 2px solid lightgray;">
+              <label class="guided--form-label centered asideTitle"
                 >Dataset subjects:
               </label>
               <aside
                 class="guided--hlf-selection-aside"
                 id="guided-subjects-metadata-aside"
+                style="font-weight: 600;"
               ></aside>
               <button
                 type="button"
                 class="btn btn-primary btn-sm"
                 onclick="openCopySubjectMetadataPopup()"
-                style="width: 100%; margin-top: 10px; height: 35px !important"
+                style="width: 88%; margin-top: 10px; height: 35px !important"
               >
                 Copy metadata from other subjects
               </button>

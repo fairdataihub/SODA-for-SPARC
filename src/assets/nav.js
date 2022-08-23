@@ -73,6 +73,7 @@ async function handleSectionTrigger(event) {
     dataset_path = document.getElementById("guided-input-global-path");
     scroll_box = document.querySelector("#guided-body");
     itemsContainer.innerHTML = "";
+    resetLazyLoading();
     $(".shared-folder-structure-element").appendTo(
       $("#guided-folder-structure-container")
     );
@@ -90,6 +91,9 @@ async function handleSectionTrigger(event) {
     $(".shared-folder-structure-element").appendTo(
       $("#free-form-folder-structure-container")
     );
+
+    //reset lazyloading values
+    resetLazyLoading();
 
     //Reset variables shared with guided-mode if they had been modified
     sodaJSONObj = {};
