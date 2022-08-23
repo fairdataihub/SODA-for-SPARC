@@ -1270,6 +1270,44 @@ def bf_create_new_dataset(datasetname, bf):
         raise e
 
 
+double_extensions = [
+    ".ome.tiff",
+    ".ome.tif",
+    ".ome.tf2,",
+    ".ome.tf8",
+    ".ome.btf",
+    ".ome.xml",
+    ".brukertiff.gz",
+    ".mefd.gz",
+    ".moberg.gz",
+    ".nii.gz",
+    ".mgh.gz",
+    ".tar.gz",
+    ".bcl.gz",
+]
+
+def get_name_extension(file_name):
+    double_ext = False
+    for ext in double_extensions:
+        if file_name.find(ext) != -1:
+            double_ext = True
+            break
+
+    ext = ""
+    name = ""
+
+    if double_ext == False:
+        name = os.path.splitext(file_name)[0]
+        ext = os.path.splitext(file_name)[1]
+    else:
+        ext = (
+            os.path.splitext(os.path.splitext(file_name)[0])[1]
+            + os.path.splitext(file_name)[1]
+        )
+        name = os.path.splitext(os.path.splitext(file_name)[0])[0]
+    return name, ext
+
+
 def create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure):
     """
     Function to create manifest files for each high-level SPARC folder for an existing Pennsieve dataset.
@@ -1281,43 +1319,6 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
     high_level_folders_present = []
     manifest_files_structure = {}
     local_timezone = TZLOCAL()
-
-    double_extensions = [
-        ".ome.tiff",
-        ".ome.tif",
-        ".ome.tf2,",
-        ".ome.tf8",
-        ".ome.btf",
-        ".ome.xml",
-        ".brukertiff.gz",
-        ".mefd.gz",
-        ".moberg.gz",
-        ".nii.gz",
-        ".mgh.gz",
-        ".tar.gz",
-        ".bcl.gz",
-    ]
-
-    def get_name_extension(file_name):
-        double_ext = False
-        for ext in double_extensions:
-            if file_name.find(ext) != -1:
-                double_ext = True
-                break
-
-        ext = ""
-        name = ""
-
-        if double_ext == False:
-            name = os.path.splitext(file_name)[0]
-            ext = os.path.splitext(file_name)[1]
-        else:
-            ext = (
-                os.path.splitext(os.path.splitext(file_name)[0])[1]
-                + os.path.splitext(file_name)[1]
-            )
-            name = os.path.splitext(os.path.splitext(file_name)[0])[0]
-        return name, ext
 
     def recursive_folder_traversal(folder, dict_folder_manifest):
         if "files" in folder.keys():
