@@ -467,9 +467,7 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
 });
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
-const run_pre_flight_checks = async (
-  check_update = false /*guided update over-ride*/
-) => {
+const run_pre_flight_checks = async (check_update = true) => {
   log.info("Running pre flight checks");
   return new Promise(async (resolve) => {
     let connection_response = "";
@@ -745,7 +743,7 @@ const apiVersionsMatch = async () => {
 
     await Swal.fire({
       icon: "error",
-      html: `The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+      html: `${serverAppVersion} ${appVersion} The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Close now",
@@ -770,7 +768,6 @@ const apiVersionsMatch = async () => {
   if (hasConnectedAccountWithPennsieve()) {
     updateBfAccountList();
   }
-  //guided-mode update over-ride
   checkNewAppVersion(); // Added so that version will be displayed for new users
 };
 
@@ -984,7 +981,7 @@ const checkNewAppVersion = () => {
 ipcRenderer.on("app_version", (event, arg) => {
   const version = document.getElementById("version");
   ipcRenderer.removeAllListeners("app_version");
-  version.innerText = "v. 7.0.4" /* + arg.version Guided beta over-ride*/;
+  version.innerText = arg.version;
 });
 
 // Check for update and show the pop up box

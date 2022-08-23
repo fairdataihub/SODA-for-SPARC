@@ -1,25 +1,26 @@
+
 name: env-electron-python
 channels:
-  - defaults
-  - conda-forge
+- defaults
+- conda-forge
 dependencies:
-  - python = 3.9.7
-  - PyInstaller = 4.7
-  - nodejs = 10.13.0
-  - git = 2.20.1
-  - pip
-  - pip:
-      - chardet == 4.0.0
-      - pandas == 1.4.2
-      - openpyxl == 3.0.9
-      - pennsieve == 6.1.2
-      - configparser == 4.0.2
-      - python-docx == 0.8.10
-      - xlrd == 2.0.1
-      - biopython == 1.79
-      - gevent == 21.12.0
-      - certifi == 2021.10.8
-      - flask == 2.0.2
-      - flask_restx
-      - protobuf == 3.20.0
-      - werkzeug == 2.0.2
+- python = 3.9.7
+- PyInstaller = 4.7
+- nodejs = 10.13.0
+- git = 2.20.1
+- pip
+- pip:
+  - chardet == 4.0.0
+  - pandas == 1.4.2
+  - openpyxl == 3.0.9
+  - pennsieve == 6.1.2
+  - configparser == 4.0.2
+  - python-docx == 0.8.10
+  - xlrd == 2.0.1
+  - biopython == 1.79
+  - gevent == 21.12.0
+  - certifi == 2021.10.8
+  - flask == 2.0.2
+  - flask_restx
+  - protobuf == 3.20.0
+  - werkzeug == 2.0.2
