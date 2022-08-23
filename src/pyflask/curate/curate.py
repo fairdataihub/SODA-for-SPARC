@@ -1379,7 +1379,7 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
 
     dataset_structure = soda_json_structure["dataset-structure"]
 
-    # create local folder to save manifest files temporarly (delete any existing one first)
+    # create local folder to save manifest files temporarily (delete any existing one first)
     shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
     makedirs(manifest_folder_path)
 
