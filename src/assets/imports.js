@@ -38,6 +38,15 @@ document.addEventListener("DOMContentLoaded", async function () {
   insertScript();
 });
 
+const insertScriptPromise = async (path) => {
+  return new Promise((resolve, reject) => {
+    const script = document.getElementById("script");
+    script.src = path;
+    script.type = "text/javascript";
+    document.body.appendChild(script);
+  });
+};
+
 // TODO: Enhance this to call next script once one is done. Additionally, ensure it is called when the DOM is ready if not doing so already.
 const insertScript = async () => {
   const exLinks = document.createElement("script");
