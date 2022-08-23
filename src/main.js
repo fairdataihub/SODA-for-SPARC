@@ -300,8 +300,7 @@ function initialize() {
           run_pre_flight_checks();
         }
         run_pre_flight_checks();
-        //guided mode update over-ride
-        //autoUpdater.checkForUpdatesAndNotify();
+        autoUpdater.checkForUpdatesAndNotify();
         updatechecked = true;
       }, 6000);
     });
