@@ -994,7 +994,6 @@ def update_existing_pennsieve_manifest_file(high_level_folder, manifest_df):
             SET_COLUMNS.append(column)
 
     # convert the old manifest into a dictionary to optimize the lookup time
-    # structure: { '[filename]': [row_value1, row_value_2], '[filename']': [row_value1, row_value_2] }
     old_manifest_dict = {x:manifest_df[x].values.tolist() for x in manifest_df}
 
     # create a mapping of filename to the idx of the row in the old_manidest_dict
