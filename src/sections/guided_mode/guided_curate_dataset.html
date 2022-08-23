@@ -1601,10 +1601,10 @@
               id="structure-folder-header"
             ></h2>
             <p class="guided--help-text" id="structure-folder-contents"></p>
-            <div style="width: 100%; border: 2px solid lightgray; text-align: -webkit-center;">
+            <div id="items-guided-container" style="width: 100%; display: flex; flex-direction: column;">
               <div
                 class="guided--folder-organization-buttons-container"
-                style="margin-top: 0.44rem; width: 97% !important"
+                style="margin-top: 0.44rem; width: 97% !important; align-self: center;"
               >
                 <div
                   class="guided--folder-organization-buttons-container-sub"
@@ -2650,7 +2650,7 @@
               copy it for all other subjects.
             </p>
           </div>
-          <div class="guided--container-subject-samples w-100 mt-md asideContainer">
+          <div class="guided--container-subject-samples w-100 mt-md">
             <div class="guided--hlf-selection-container ml-2 asideTitleContainer" style="margin-left: 0 !important; border: 2px solid lightgray;">
               <label class="guided--form-label centered asideTitle"
                 >Dataset subjects:
@@ -3348,8 +3348,8 @@
           </div>
 
           <div class="guided--container-subject-samples w-100 mt-md">
-            <div class="guided--hlf-selection-container ml-2">
-              <label class="guided--form-label centered"
+            <div class="guided--hlf-selection-container ml-2 asideContainer" style="padding-top: 0; padding-bottom: 5px;">
+              <label class="guided--form-label centered asideTitle" 
                 >Dataset samples:
               </label>
               <aside
@@ -3360,7 +3360,7 @@
                 type="button"
                 class="btn btn-primary btn-sm"
                 onclick="openCopySampleMetadataPopup()"
-                style="width: 100%; margin: 10px; height: 35px !important"
+                style="width: 88%; margin: 10px; height: 42px !important"
               >
                 Copy metadata from other samples
               </button>

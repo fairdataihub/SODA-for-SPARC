@@ -1419,6 +1419,10 @@ const guidedLoadDescriptionContributorInformation = () => {
 };
 
 const traverseToTab = async (targetPageID) => {
+  let itemsContainer = document.getElementById("items-guided-container");
+  if(itemsContainer.classList.contains("border-styling")) {
+    itemsContainer.classList.remove("border-styling");
+  }
   try {
     //reset the radio buttons for the page being navigated to
     resetGuidedRadioButtons(targetPageID);
@@ -1475,6 +1479,7 @@ const traverseToTab = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-code-folder-tab") {
+      itemsContainer.classList.add("border-styling")
       const codeFolder = datasetStructureJSONObj["folders"]["code"];
       if (!codeFolder) {
         //create a docs folder
@@ -1499,6 +1504,7 @@ const traverseToTab = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-protocol-folder-tab") {
+      itemsContainer.classList.add("border-styling")
       const protocolFolder = datasetStructureJSONObj["folders"]["protocol"];
       if (!protocolFolder) {
         //create a docs folder
@@ -1523,6 +1529,7 @@ const traverseToTab = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-docs-folder-tab") {
+      itemsContainer.classList.add("border-styling")
       const docsFolder = datasetStructureJSONObj["folders"]["docs"];
       if (!docsFolder) {
         //create a docs folder

@@ -1196,3 +1196,8 @@ h1.guided--text-sub-step {
   padding: 12px 0 15px 0;
   border-radius: 0;
 }
+
+
+.border-styling {
+  border: 2px solid lightgray;
+}
