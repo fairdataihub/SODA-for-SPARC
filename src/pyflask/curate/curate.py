@@ -1985,11 +1985,15 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
 
         return
 
-    # Add a new key containing the path to all the files and folders on the
-    # local data structure.
-    # Allows us to see if the folder path of a specfic file already
-    # exists on Pennsieve.
+
     def recursive_item_path_create(folder, path):
+        """
+        Recursively create the path for the item    # Add a new key containing the path to all the files and folders on the
+        local data structure.
+        Allows us to see if the folder path of a specfic file already
+        exists on Pennsieve.
+        """
+        
         if "files" in folder.keys():
             for item in list(folder["files"]):
                 if "folderpath" not in folder["files"][item]:
