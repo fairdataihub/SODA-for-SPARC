@@ -409,7 +409,6 @@ const guidedTransitionFromDatasetNameSubtitlePage = () => {
 };
 
 const saveGuidedProgress = (guidedProgressFileName) => {
-  //create a Guided-Progress folder if one does not yet exist
   //Destination: HOMEDIR/SODA/Guided-Progress
   sodaJSONObj["last-modified"] = new Date();
 
@@ -775,7 +774,7 @@ const guidedPrepareHomeScreen = async () => {
   guidedResetProgressVariables();
   //Check if Guided-Progress folder exists. If not, create it.
   if (!fs.existsSync(guidedProgressFilePath)) {
-    fs.mkdirSync(guidedProgressFilePath);
+    fs.mkdirSync(guidedProgressFilePath, { recursive: true });
   }
 
   //Refresh Home page UI
@@ -7478,7 +7477,7 @@ $(document).ready(() => {
           .then(async (file) => {
             console.log("starting tiff conversion");
             if (!fs.existsSync(destination_image_path)) {
-              fs.mkdirSync(destination_image_path);
+              fs.mkdirSync(destination_image_path, { recursive: true });
             }
 
             try {
