@@ -8814,7 +8814,7 @@ $(document).ready(() => {
     client
       .post(`/curate_datasets/curation`, {
         soda_json_structure: sodaJSONObj,
-      })
+      }, {timeout: 0})
       .then(async (curationRes) => {
         main_total_generate_dataset_size =
           curationRes["main_total_generate_dataset_size"];
@@ -9011,13 +9011,13 @@ $(document).ready(() => {
 
     let emptyFilesFoldersResponse;
     try {
-      emptyFilesFoldersResponse = await client.get(
+      emptyFilesFoldersResponse = await client.post(
         `/curate_datasets/empty_files_and_folders`,
         {
-          params: {
-            soda_json_structure: JSON.stringify(sodaJSONObj),
-          },
-        }
+          soda_json_structure,
+        
+        }, 
+        { timeout: 0}
       );
     } catch (error) {
       clientError(error);
