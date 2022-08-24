@@ -2783,14 +2783,14 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
         $(".metadata-button[data-next='inputsMetadataUpload']").addClass(
           "done"
         );
-        $($("#para-inputsMetadata-file-path").parents()[1])
+        $($("#para-codeParamMetadata-file-path").parents()[1])
           .find(".div-metadata-confirm")
           .css("display", "flex");
-        $($("#para-inputsMetadata-file-path").parents()[1])
+        $($("#para-codeParamMetadata-file-path").parents()[1])
           .find(".div-metadata-go-back")
           .css("display", "none");
         if (metadataobject[key]["type"] == "bf") {
-          $("#para-inputsMetadata-file-path").html(
+          $("#para-codeParamMetadata-file-path").html(
             "Using file present on Pennsieve. <br> File name: " + key
           );
           $("#metadata-inputsMetadata-pennsieve").css(
@@ -2801,7 +2801,7 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
           metadataobject[key]["type"] == "local" &&
           metadataobject[key]["action"].includes("existing")
         ) {
-          $("#para-inputsMetadata-file-path").text(metadataobject[key]["path"]);
+          $("#para-codeParamMetadata-file-path").text(metadataobject[key]["path"]);
         }
         break;
       case "outputs_metadata":
@@ -3088,8 +3088,8 @@ const updateJSONStructureMetadataFiles = () => {
     var codeDescriptionFilePath = document.getElementById(
       "para-codeDescription-file-path"
     ).innerHTML;
-    var inputsMetadataFilePath = document.getElementById(
-      "para-inputsMetadata-file-path"
+    var codeParamMetadataFilePath = document.getElementById(
+      "para-codeParamMetadata-file-path"
     ).innerHTML;
     var outputsMetadataFilePath = document.getElementById(
       "para-outputsMetadata-file-path"
@@ -3102,8 +3102,8 @@ const updateJSONStructureMetadataFiles = () => {
     );
     populateMetadataObject(
       invalidOptionsList,
-      inputsMetadataFilePath,
-      "inputs_metadata",
+      codeParamMetadataFilePath,
+      "code_parameters",
       sodaJSONObj
     );
     populateMetadataObject(
