@@ -2537,6 +2537,7 @@ $("#button-submit-dataset").click(async () => {
           selected_account: selectedbfaccount,
           selected_dataset: selectedbfdataset,
         },
+        timeout: 0
       }
     )
     .then(async () => {
