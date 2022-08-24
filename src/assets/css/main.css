@@ -1616,7 +1616,7 @@ details[open] > summary::before {
 .getting-started-overview {
   padding: 0 !important;
   display: grid;
-  grid-template-rows: 15% 70% 16% 3%;
+  grid-template-rows: 14% 68% 15% 3%;
   align-items: center;
 }
 
@@ -1791,7 +1791,7 @@ details[open] > summary::before {
   }
 
   .getting-started-overview {
-    grid-template-rows: 15% 65% 10% 21%;
+    grid-template-rows: 12% 65% 10% 21%;
   }
 
   .front-page_logo {
