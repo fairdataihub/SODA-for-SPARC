@@ -18,9 +18,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   let contentIndex = document.querySelector("#content");
 
   // Import and add each page to the DOM
-  for (let linkIdx = 0; linkIdx < links.length; linkIdx++) {
-    let link = links[linkIdx];
-
+  for (const link of links) {
     let doc = await fetch(link.href, {
       headers: {
         "Content-Type": "text/html",
@@ -29,14 +27,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     let content = await doc.text();
 
-    var range = document.createRange();
-    range.setStart(contentIndex, 0);
-    contentIndex.appendChild(range.createContextualFragment(content));
+    //Add the HTML Section to the #content container
+    contentIndex.innerHTML += content;
   }
-
-  //set 1000ms timeout to wait for all HTML files to be appended to DOM
-  //TODO: Refactor sleep so JavaScript files are included immediately after all children appended to #content
-  await sleep(1000);
 
   //Synchronously include js files
   includeJavaScriptFile("./assets/ex-links.js");
@@ -55,6 +48,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   includeJavaScriptFile("./scripts/metadata-files/readme-changes.js");
   includeJavaScriptFile("./scripts/metadata-files/subjects-samples.js");
   includeJavaScriptFile("./scripts/metadata-files/submission.js");
+  includeJavaScriptFile("./scripts/guided-mode/lottieJSON.js");
   includeJavaScriptFile("./scripts/guided-mode/guided-curate-dataset.js");
 });
 
@@ -64,12 +58,4 @@ const includeJavaScriptFile = (jsFilePath) => {
   js.type = "text/javascript";
   js.src = jsFilePath;
   document.body.appendChild(js);
-};
-
-const sleep = (ms) => {
-  return new Promise((resolve) =>
-    setTimeout(() => {
-      resolve();
-    }, ms)
-  );
 };
