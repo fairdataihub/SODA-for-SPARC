@@ -7421,16 +7421,18 @@ $(document).ready(() => {
   });
 
   // Action when user click on "Import image" button for banner image
-  $("#guided-button-import-banner-image").click(() => {
+  $("#guided-button-import-banner-image").click(async () => {
     $("#guided-para-dataset-banner-image-status").html("");
-    ipcRenderer.send("guided-open-file-dialog-import-banner-image");
+    let filePaths = await ipcRenderer.invoke(
+      "open-file-dialog-import-banner-image"
+    );
+    guidedHandleSelectedBannerImage(filePaths);
   });
   /////////////////////////////////////////////////////////
   //////////    GUIDED IPC RENDERER LISTENERS    //////////
   /////////////////////////////////////////////////////////
 
-  ipcRenderer.on("guided-selected-banner-image", async (event, path) => {
-    console.log(path);
+  const guidedHandleSelectedBannerImage = async (path) => {
     if (path.length > 0) {
       let original_image_path = path[0];
       let image_path = original_image_path;
@@ -7574,14 +7576,8 @@ $(document).ready(() => {
 
         $("#guided-save-banner-image").css("visibility", "visible");
       }
-    } else {
-      if ($("#para-current-banner-img").text() === "None") {
-        $("#save-banner-image").css("visibility", "hidden");
-      } else {
-        $("#save-banner-image").css("visibility", "visible");
-      }
     }
-  });
+  };
 
   $("#guided-input-destination-getting-started-locally").on("click", () => {
     ipcRenderer.send("guided-open-file-dialog-local-destination-curate");
