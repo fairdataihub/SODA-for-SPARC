@@ -1524,7 +1524,7 @@ function delete_current_sample_id(ev) {
   });
 }
 
-function delete_current_protocol_id(ev, curationMode) {
+function delete_current_protocol_id(ev) {
   Swal.fire({
     title: "Are you sure you want to delete this protocol?",
     showCancelButton: true,
@@ -1541,22 +1541,12 @@ function delete_current_protocol_id(ev, curationMode) {
       var currentRow = $(ev).parents()[2];
       var currentRowid = $(currentRow).prop("id");
       document.getElementById(currentRowid).outerHTML = "";
-      let protocolLinkTable;
-      if (curationMode === "free-form") {
-        protocolLinkTable = document.getElementById("protocol-link-table-dd");
-      }
-      if (curationMode === "guided") {
-        protocolLinkTable = document.getElementById(
-          "guided-protocol-link-table-dd"
-        );
-      }
-
-      updateIndexForTable(protocolLinkTable);
+      updateIndexForTable(document.getElementById("protocol-link-table-dd"));
     }
   });
 }
 
-function delete_current_additional_link_id(ev, curationMode) {
+function delete_current_additional_link_id(ev) {
   Swal.fire({
     title: "Are you sure you want to delete this link?",
     showCancelButton: true,
@@ -1573,14 +1563,7 @@ function delete_current_additional_link_id(ev, curationMode) {
       var currentRow = $(ev).parents()[2];
       var currentRowid = $(currentRow).prop("id");
       document.getElementById(currentRowid).outerHTML = "";
-      if (curationMode === "free-form") {
-        updateIndexForTable(document.getElementById("other-link-table-dd"));
-      }
-      if (curationMode === "guided") {
-        updateIndexForTable(
-          document.getElementById("guided-other-link-table-dd")
-        );
-      }
+      updateIndexForTable(document.getElementById("other-link-table-dd"));
     }
   });
 }
