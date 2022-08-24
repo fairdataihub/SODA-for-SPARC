@@ -1446,9 +1446,18 @@ const traverseToTab = async (targetPageID) => {
     //update the radio buttons using the button config from sodaJSONObj
     updateGuidedRadioButtonsFromJSON(targetPageID);
     //refresh selectPickers if page has them
+
     if (targetPageID === "guided-designate-pi-owner-tab") {
-      //Refresh select pickers so items can be selected
-      $(".selectpicker").selectpicker("refresh");
+      $("#guided_bf_list_users_pi").selectpicker("refresh");
+
+      const PiOwnerUUID = sodaJSONObj["digital-metadata"]["pi-owner"]["UUID"];
+
+      if (PiOwnerUUID) {
+        $("#guided_bf_list_users_pi").val(
+          sodaJSONObj["digital-metadata"]["pi-owner"]["UUID"]
+        );
+        $("#guided_bf_list_users_pi").selectpicker("refresh");
+      }
     }
 
     if (
@@ -10022,12 +10031,14 @@ $(document).ready(() => {
         }
 
         if (designateOtherButton.classList.contains("selected")) {
-          console.log("bar");
           let PiOwnerString = $("#guided_bf_list_users_pi option:selected")
             .text()
             .trim();
 
-          if (PiOwnerString === "Select PI") {
+          if (
+            !$("#guided_bf_list_users_pi").val() ||
+            PiOwnerString === "Select PI"
+          ) {
             errorArray.push({
               type: "notyf",
               message: "Please select a PI from the dropdown",
