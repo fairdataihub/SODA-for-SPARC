@@ -4701,6 +4701,8 @@ ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
           generation_destination_path: filepath[0],
           dataset_name: newDSName,
           soda_json_directory_structure: datasetStructureJSONObj,
+        }, {
+          timeout: 0
         });
 
         document.getElementById("para-organize-datasets-error").style.display =
@@ -7021,7 +7023,8 @@ ipcRenderer.on(
                     root_folder_path: root_folder_path,
                     irregular_folders: irregularFolderArray,
                     replaced: replaced,
-                  }
+                  }, 
+                  {timeout: 0}
                 );
                 let { data } = importLocalDatasetResponse;
                 sodajsonobject = data;
@@ -7365,13 +7368,12 @@ document
 
     let emptyFilesFoldersResponse;
     try {
-      emptyFilesFoldersResponse = await client.get(
+      emptyFilesFoldersResponse = await client.post(
         `/curate_datasets/empty_files_and_folders`,
         {
-          params: {
-            soda_json_structure: JSON.stringify(sodaJSONObj),
-          },
-        }
+            soda_json_structure: sodaJSONObj,
+        }, 
+        {timeout: 0}
       );
     } catch (error) {
       clientError(error);
@@ -7590,7 +7592,7 @@ async function initiate_generate() {
   client
     .post(`/curate_datasets/curation`, {
       soda_json_structure: sodaJSONObj,
-    })
+    }, { timeout: 0})
     .then(async (response) => {
       let { data } = response;
 
@@ -7899,7 +7901,7 @@ async function initiate_generate() {
     let mainCurationProgressResponse;
     try {
       mainCurationProgressResponse = await client.get(
-        `/curate_datasetscuration/progress`
+        `/curate_datasets/curation/progress`
       );
     } catch (error) {
       clientError(error);
@@ -8798,7 +8800,8 @@ ipcRenderer.on("selected-manifest-folder", async (event, result) => {
       await client.post(`/curate_datasets/manifest_files`, {
         generate_purpose: "",
         soda_json_object: temp_sodaJSONObj,
-      });
+      }, 
+      {timeout: 0});
 
       $("body").removeClass("waiting");
       logCurationForAnalytics(
