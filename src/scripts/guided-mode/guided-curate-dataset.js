@@ -5269,6 +5269,16 @@ const generateSampleSpecificationRowElement = () => {
 };
 
 const confirmEnter = (button) => {
+  let input_id = button.previousElementSibling.id;
+  let sampleTable = false;
+  let addSampleButton = "";
+  if(input_id === "guided--sample-input") {
+    //confirming the sample input, manually create another one
+    addSampleButton = button.parentElement.parentElement.parentElement.parentElement.previousElementSibling.children[0].children[0].children[1];
+    sampleTable = true;
+    console.log(addSampleButton);
+    // addSampleSpecificationTableRow();
+  }
   const ke = new KeyboardEvent("keyup", {
     bubbles: true,
     cancelable: true,
@@ -5282,6 +5292,11 @@ const confirmEnter = (button) => {
     //alert message is the previousElement
     input_field.parentNode.children[1].dispatchEvent(ke);
   }
+  // if(sampleTable) {  //for adding a new sample row
+  //   addSampleButton.click();
+  //   // confirmOnBlur
+  // }
+
 };
 
 const keydownListener = (event) => {
@@ -5307,6 +5322,7 @@ var enterKey = false;
 const confirmOnBlur = (element) => {
   window.addEventListener("keydown", keydownListener);
   document.getElementById(element).addEventListener("blur", onBlurEvent);
+  console.log(document.getElementById((element)));
 };
 
 const addSubjectSpecificationTableRow = () => {
@@ -5364,6 +5380,7 @@ const addSampleSpecificationTableRow = (clickedSubjectAddSampleButton) => {
     //create a new table row Input element
     addSampleTableBody.innerHTML += generateSampleSpecificationRowElement();
     confirmOnBlur("guided--sample-input");
+    console.log("event should be on")
     const newSamplerow = addSampleTableBody.querySelector("tr:last-child");
     //Focus the new sample row element
     const newSampleInput = newSamplerow.querySelector(
