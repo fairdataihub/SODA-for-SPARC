@@ -1308,12 +1308,13 @@ def get_name_extension(file_name):
     return name, ext
 
 
-def create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, high_level_folders=["code", "derivative", "docs", "primary", "protocol", "source" ]):
+def create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, high_level_folders=["code", "derivative", "docs", "primary", "protocol", "source" ], manifest_progress={}):
     """
     Function to create manifest files for each high-level SPARC folder for an existing Pennsieve dataset.
     Args:
         soda_json_structure: soda dict with information about the dataset to be generated/modified
         high_level_folders: (optional) list of high-level folders to generate manifests for. Defaults to all primary folders.
+        manifest_progress: (optional) dictionary with information about the progress of the manifest generation. Defaults to empty dictionary.
     Action:
         manifest_files_structure: dict including the local path of the manifest files
     """
@@ -1412,6 +1413,12 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
 
         df = pd.DataFrame.from_dict(dict_folder_manifest)
         df.to_excel(manifestfilepath, index=None, header=True)
+
+        # update the progress of manifest file generation 
+        if manifest_progress != {}:
+            manifest_progress["manifest_files_uploaded"] += 1
+        
+        # add the path to the manifest into the structure
         manifest_files_structure[high_level_folder] = manifestfilepath
 
     return manifest_files_structure

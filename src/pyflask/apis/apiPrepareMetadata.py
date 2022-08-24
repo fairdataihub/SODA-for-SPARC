@@ -13,7 +13,8 @@ from prepareMetadata import (
     upload_RC_file,
     delete_manifest_dummy_folders,
     set_template_path, 
-    import_bf_manifest_file
+    import_bf_manifest_file,
+    manifest_creation_progress
 )
 from flask import request
 import json
@@ -568,3 +569,22 @@ class GenerateManifestFilesPennsieve(Resource):
             return import_bf_manifest_file(soda_json_object, selected_account, selected_dataset)
         except Exception as e:
             api.abort(500, str(e))
+
+
+
+manifest_creation_progress_model = api.model('ManifestCreationProgress', {
+    'total_manifest_files': fields.Integer(description='Total amount of manifest files that need to be created for the current dataset.'),
+    'manifest_files_uploaded': fields.Integer(description='Total amount of manifest files that have been created for the client.'),
+})
+
+@api.route('/manifest_files/pennsieve/progress')
+class GetManifestFilesPennsieveProgress(Resource):
+    
+        @api.doc(responses={500: 'There was an internal server error'}, 
+                description="Get the progress of the manifest file generation for Pennsieve. This is used to update the progress bar on the client side.")
+        @api.marshal_with(manifest_creation_progress_model, False, 200)
+        def get(self):
+            try:
+                return manifest_creation_progress()
+            except Exception as e:
+                api.abort(500, str(e))

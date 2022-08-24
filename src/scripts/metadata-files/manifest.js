@@ -386,7 +386,7 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   // Case 1: Local dataset
   if (type === "local") {
     sodaJSONObj["starting-point"]["local-path"] = localDatasetFolderPath;
@@ -458,7 +458,7 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
 
           // log the error to analytics
           logMetadataForAnalytics(
@@ -486,7 +486,7 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
           // log the error to analytics
           logMetadataForAnalytics(
             "Error",
@@ -513,7 +513,7 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
           // log the error to analytics
           logMetadataForAnalytics(
             "Error",
@@ -997,7 +997,7 @@ async function extractBFDatasetForManifestFile(
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       $("#Question-prepare-manifest-4").removeClass("show");
       $("#Question-prepare-manifest-4").removeClass("prev");
       $("#Question-prepare-manifest-3").removeClass("prev");
@@ -1013,11 +1013,12 @@ async function extractBFDatasetForManifestFile(
       return;
     }
 
+    trackManifestImportProgress()
+
     var continueErrorManifest;
     try {
       console.log("Extracting manifest files...");
       let res = await extractBFManifestFile();
-      console.log("Done doing that lol");
       continueErrorManifest = [false, res];
     } catch (err) {
       continueErrorManifest = [true, err];
@@ -1034,7 +1035,7 @@ async function extractBFDatasetForManifestFile(
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       $("#Question-prepare-manifest-4").removeClass("show");
       $("#Question-prepare-manifest-4").removeClass("prev");
       $("#Question-prepare-manifest-3").removeClass("prev");
@@ -1065,7 +1066,7 @@ async function extractBFDatasetForManifestFile(
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       $("#Question-prepare-manifest-4").removeClass("show");
       $("#Question-prepare-manifest-4").removeClass("prev");
       $("#Question-prepare-manifest-3").removeClass("prev");
@@ -1104,7 +1105,7 @@ async function extractBFDatasetForManifestFile(
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       localDatasetFolderPath = "";
     }
   }
@@ -1167,7 +1168,7 @@ function validateSPARCdataset() {
           $(".swal-popover").popover();
         },
         footer: footer,
-      }).then((result) => {});
+      }).then((result) => { });
       return false;
     } else {
       return true;
@@ -1277,6 +1278,75 @@ function resetManifest(skip_permission) {
   }
 }
 
+const trackManifestImportProgress = async () => {
+  // show the progress container - it is hidden by default once the dataset import is complete
+  let progress_container = document.getElementById("loading_pennsieve_dataset_manifest");
+
+  progress_container.style.display = "flex";
+
+  let percentage_text = document.getElementById(
+    "pennsieve_loading_dataset_percentage"
+  );
+  let left_progress_bar = document.getElementById(
+    "pennsieve_left-side_less_than_50"
+  );
+  let right_progress_bar = document.getElementById(
+    "pennsieve_right-side_greater_than_50"
+  );
+
+  const manifest_creation_progress_pennsieve = async () => {
+
+    let progressResponse;
+    try {
+      progressResponse = await client.get(
+        "/prepare_metadata/manifest_files/pennsieve/progress"
+      );
+    } catch (error) {
+      clientError(error);
+      clearInterval(manifestProgressInterval);
+      return;
+    }
+
+    let manifestProgress = progressResponse.data;
+
+    let totalManifestFiles = manifestProgress.total_manifest_files;
+    let totalManifestFilesCreated = manifestProgress.manifest_files_uploaded;
+
+    let manifestProgressPercentage = Math.round(
+      (totalManifestFilesCreated / totalManifestFiles) * 100
+    );
+    ;
+    percentage_text.innerText = manifestProgressPercentage + "%";
+    if (manifestProgressPercentage <= 50) {
+      left_progress_bar.style.transform = `rotate(${manifestProgressPercentage * 0.01 * 360
+        }deg)`;
+    } else {
+      left_progress_bar.style.transition = "";
+      left_progress_bar.classList.add("notransition");
+      left_progress_bar.style.transform = `rotate(180deg)`;
+      right_progress_bar.style.transform = `rotate(${manifestProgressPercentage * 0.01 * 180
+        }deg)`;
+    }
+
+    if (totalManifestFiles === totalManifestFilesCreated) {
+      percentage_text.innerText = "100%";
+      left_progress_bar.style.transform = `rotate(180deg)`;
+      right_progress_bar.style.transform = `rotate(180deg)`;
+      right_progress_bar.classList.remove("notransition");
+      clearInterval(manifestProgressInterval);
+      setTimeout(() => {
+        progress_container.style.display = "none";
+      }, 2000);
+    }
+
+  }
+
+  // create an interval with a .5 second timer
+  let manifestProgressInterval = setInterval(manifest_creation_progress_pennsieve, 500);
+
+}
+
+
 // check for empty sub-folders before continuing to generate manifest files
 // to avoid changes made to the dataset structure when we call the main curate function for manifest files
 function checkEmptySubFolders(datasetStructure) {
@@ -1306,18 +1376,6 @@ function checkEmptySubFolders(datasetStructure) {
 // Parameter: dataset structure object
 // Return: manifest file folder path
 async function generateManifestFolderLocallyForEdit(ev) {
-  // Show loading popup
-  Swal.fire({
-    title: `Generating manifest files for edits`,
-    html: "Please wait...",
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  });
   var type = "local";
   if (
     $('input[name="generate-manifest-1"]:checked').prop("id") ===
@@ -1364,7 +1422,7 @@ async function generateManifestFolderLocallyForEdit(ev) {
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       return;
     } else {
       createManifestLocally("local", true, "");
@@ -1428,7 +1486,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
           didOpen: () => {
             Swal.hideLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         $("#preview-manifest-fake-confirm").click();
         $("#Question-prepare-manifest-4").removeClass("show");
         $("#Question-prepare-manifest-4").removeClass("prev");
@@ -1462,7 +1520,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       localDatasetFolderPath = "";
     } else {
       // SODA Manifest Files folder
@@ -1520,7 +1578,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
       didOpen: () => {
         Swal.hideLoading();
       },
-    }).then((result) => {});
+    }).then((result) => { });
     $("#Question-prepare-manifest-4").removeClass("show");
     $("#Question-prepare-manifest-4").removeClass("prev");
     $("#Question-prepare-manifest-3").removeClass("prev");

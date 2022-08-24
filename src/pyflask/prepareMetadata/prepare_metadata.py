@@ -919,18 +919,43 @@ def import_bf_RC(bfaccount, bfdataset, file_type):
 
 # path to local SODA folder for saving manifest files
 manifest_folder_path = join(userpath, "SODA", "manifest_files")
+manifest_progress = {
+    "total_manifest_files": 0,
+    "manifest_files_uploaded": 0,
+}
 
 # TODO: NOTE: ESSENTIAL: Remove the manifest_file even if the user does not generate before pulling again.
 def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
     bf = Pennsieve(bfaccount)
     myds = bf.get_dataset(bfdataset)
 
-    # create the path to the dataset files and folders on Pennsieve and add them to the dataset structure stored in soda_json_structure
+    global manifest_progress
+
+    high_level_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
+
     dataset_structure = soda_json_structure["dataset-structure"]
+
+        # get the count of the total number of high level folders in soda_json_structure
+    for folder in list(dataset_structure["folders"]):
+        if folder in high_level_folders:
+            manifest_progress["total_manifest_files"] += 1
+
+    # create the path to the dataset files and folders on Pennsieve and add them to the dataset structure stored in soda_json_structure
     recursive_item_path_create(dataset_structure, [])
 
     high_level_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
 
+    # handle updating any existing manifest files on Pennsieve
+    update_existing_pennsieve_manifest_files(myds, bf, dataset_structure, high_level_folders)
+
+    # create manifest files from scratch for any high level folders that don't have a manifest file on Pennsieve
+    create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, high_level_folders, manifest_progress)
+
+    no_manifest_boolean = False
+
+
+def update_existing_pennsieve_manifest_files(myds, bf, dataset_structure, high_level_folders):
+    global manifest_progress
     # handle updating any existing manifest files on Pennsieve
     for i in range(len(myds.items)):
         if myds.items[i].name in [
@@ -969,17 +994,13 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
 
                     new_manifest = pd.DataFrame.from_dict(updated_manifest_dict)
                     new_manifest.to_excel(filepath, index=False)
+
+                    manifest_progress["manifest_files_uploaded"] += 1
+
                     no_manifest_boolean = True
 
                     # break because we only need to read the "manifest.xlsx" file in each high level folder.
                     break
-
-
-
-    # create manifest files from scratch for any high level folders that don't have a manifest file on Pennsieve
-    create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, high_level_folders)
-
-    no_manifest_boolean = False
 
 
 def update_existing_pennsieve_manifest_file(high_level_folder, manifest_df):
@@ -1052,7 +1073,16 @@ def update_existing_pennsieve_manifest_file_helper(folder, old_manifest_dict, ne
     return 
 
 
+def manifest_creation_progress():
+    """
+        Monitors the progress of the manifest creation process.
+    """
+    global manifest_progress
 
+    return {
+            "manifest_files_uploaded": manifest_progress["manifest_files_uploaded"], 
+            "total_manifest_files": manifest_progress["total_manifest_files"]
+           }
 
 
 def remove_high_level_folder_from_path(paths):

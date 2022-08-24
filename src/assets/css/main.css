@@ -1455,6 +1455,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   cursor: pointer;
   box-shadow: 0 0 3px 0 var(--color-bg-plum);
 }
+
 #div-manifest-edit {
   margin-top: 20px;
   max-height: 70vh;

@@ -409,84 +409,27 @@
               </button>
             </div>
           </div>
+
+
+          <div id="loading_pennsieve_dataset_manifest" class="circular " style="align-self: center; display: none;">
+            <div class="inner"></div>
+            <div class="pennsieve_loading_dataset_percentage" class="number">100%</div>
+            <div class="circle">
+              <div class="bar left">
+                <div class="pennsieve_left-side_less_than_50" class="progress notransition" style="transform: rotate(180deg);"></div>
+              </div>
+              <div class="bar right">
+                <div class="pennsieve_right-side_greater_than_50" class="progress" style="transform: rotate(180deg);"></div>
+              </div>
+            </div>
+          </div>
+          <span id="loading_pennsieve_dataset_manifest_span" style="margin:auto;">Importing your Pennsieve dataset...</span>
+
+
         </div>
       </div>
     </div>
 
-    <div
-      class="individual-question prepare-manifest"
-      id="Question-prepare-manifest-4"
-    >
-      <div class="ui form" style="width: 100%">
-        <div class="grouped fields">
-          <label style="font-size: 17px; color: var(--color-bg-plum)"
-            >Do you want to add any additional metadata to the manifest files?
-            <br />
-            <p class="sub-text">Please select one:</p>
-          </label>
-          <div class="field" style="margin: auto; width: 500px">
-            <div
-              style="display: flex; justify-content: center; margin-top: 25px"
-            >
-              <button
-                onclick="generateManifestPrecheck(false, this)"
-                class="btn_question"
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin-right: 15px;
-                  background: var(--color-light-green);
-                  color: #fff;
-                  font-weight: 600;
-                  border: none;
-                  width: 160px;
-                  padding: 10px;
-                  font-size: 14px;
-                "
-              >
-                No, generate now
-              </button>
-              <button
-                class="btn_question"
-                onclick="generateManifestFolderLocallyForEdit()"
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  background: #fff;
-                  color: var(--color-light-green);
-                  font-weight: 600;
-                  border: 1px solid var(--color-light-green);
-                  width: 160px;
-                  padding: 10px;
-                  font-size: 14px;
-                "
-              >
-                Yes, let's edit the manifest files
-              </button>
-              <button
-                class="btn_question"
-                data-next="Question-prepare-manifest-5"
-                id="preview-manifest-fake-confirm"
-                onclick="transitionFreeFormMode(this, 'Question-prepare-manifest-4', 'create_manifest-tab', '', 'individual-question prepare-manifest')"
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  background: #fff;
-                  color: var(--color-light-green);
-                  font-weight: 600;
-                  border: 1px solid var(--color-light-green);
-                  width: 160px;
-                  padding: 10px;
-                  display: none;
-                "
-              >
-                Fake confirm
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <div
       class="individual-question prepare-manifest"
