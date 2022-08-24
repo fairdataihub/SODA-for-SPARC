@@ -2027,3 +2027,19 @@ details[open] > summary::before {
   -o-transition: none !important;
   transition: none !important;
 }
+
+.freeform-file-explorer {
+  border: 2px solid lightgray;
+  margin-top: 5px;
+  height: auto;
+  border-radius: 3px;
+}
+
+.freeform-file-explorer-buttons {
+  display: flex;
+  margin-top: .5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  width: 100%;
+  border-bottom: 2px solid lightgray;
+}
