@@ -950,7 +950,7 @@ function combineLinksSections() {
 }
 
 // add protocol function for DD file
-async function addProtocol(curationMode) {
+async function addProtocol() {
   const { value: values } = await Swal.fire({
     title: "Add a protocol",
     html:
@@ -1012,13 +1012,7 @@ async function addProtocol(curationMode) {
   });
   if (values) {
     console.log(values);
-    addProtocolLinktoTableDD(
-      values[0],
-      values[1],
-      values[2],
-      values[3],
-      "free-form"
-    );
+    addProtocolLinktoTableDD(values[0], values[1], values[2], values[3]);
   }
 }
 
@@ -1036,27 +1030,11 @@ function addProtocolLinktoTableDD(
   protocolLink,
   protocolType,
   protocolRelation,
-  protocolDesc,
-  curationMode
+  protocolDesc
 ) {
-  let protocolTable;
-  let rowModificationIcons;
-  if (curationMode === "free-form") {
-    protocolTable = document.getElementById("protocol-link-table-dd");
-    protocolTable.style.display = "block";
-    document.getElementById("div-protocol-link-table-dd").style.display =
-      "block";
-    rowModificationIcons =
-      "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_protocol_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_protocol_id(this, \"free-form\")'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>";
-  }
-  if (curationMode === "guided") {
-    protocolTable = document.getElementById("guided-protocol-link-table-dd");
-    protocolTable.style.display = "block";
-    document.getElementById("guided-div-protocol-link-table-dd").style.display =
-      "block";
-    rowModificationIcons =
-      "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_protocol_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_protocol_id(this, \"guided\")'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>";
-  }
+  var protocolTable = document.getElementById("protocol-link-table-dd");
+  protocolTable.style.display = "block";
+  document.getElementById("div-protocol-link-table-dd").style.display = "block";
   var rowcount = protocolTable.rows.length;
   /// append row to table from the bottom
   var rowIndex = rowcount;
@@ -1079,33 +1057,13 @@ function addProtocolLinktoTableDD(
     protocolRelation +
     "</td><td class='contributor-table-row' style='display:none'>" +
     protocolDesc +
-    rowModificationIcons);
+    "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_protocol_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_protocol_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
 }
 
-function addAdditionalLinktoTableDD(
-  link,
-  linkType,
-  linkRelation,
-  description,
-  curationMode
-) {
-  let linkTable;
-  let rowModificationIcons;
-  if (curationMode === "free-form") {
-    linkTable = document.getElementById("other-link-table-dd");
-    linkTable.style.display = "block";
-    document.getElementById("div-other-link-table-dd").style.display = "block";
-    rowModificationIcons =
-      "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_additional_link_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_additional_link_id(this, \"free-form\")'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>";
-  }
-  if (curationMode === "guided") {
-    linkTable = document.getElementById("guided-other-link-table-dd");
-    linkTable.style.display = "block";
-    document.getElementById("guided-div-other-link-table-dd").style.display =
-      "block";
-    rowModificationIcons =
-      "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_additional_link_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_additional_link_id(this, \"guided\")'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>";
-  }
+function addAdditionalLinktoTableDD(link, linkType, linkRelation, description) {
+  var linkTable = document.getElementById("other-link-table-dd");
+  linkTable.style.display = "block";
+  document.getElementById("div-other-link-table-dd").style.display = "block";
   var rowcount = linkTable.rows.length;
   /// append row to table from the bottom
   var rowIndex = rowcount;
@@ -1116,7 +1074,6 @@ function addAdditionalLinktoTableDD(
     rowIndex
   );
   var indexNumber = rowIndex;
-
   var row = (linkTable.insertRow(rowIndex).outerHTML =
     "<tr id='row-current-other" +
     newRowIndex +
@@ -1132,7 +1089,7 @@ function addAdditionalLinktoTableDD(
     linkRelation +
     "</td><td class='contributor-table-row' style='display:none'>" +
     description +
-    rowModificationIcons);
+    "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_additional_link_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_additional_link_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
 }
 
 const guidedSetImportedSPARCAward = (awardString) => {
@@ -2841,9 +2798,9 @@ function loadRelatedInfoToTable(array) {
     if (arr[2].trim() !== "") {
       var protocolBoolean = protocolCheck(arr);
       if (protocolBoolean) {
-        addProtocolLinktoTableDD(arr[2], arr[3], arr[1], arr[0], "free-form");
+        addProtocolLinktoTableDD(arr[2], arr[3], arr[1], arr[0]);
       } else {
-        addAdditionalLinktoTableDD(arr[2], arr[3], arr[1], arr[0], "free-form");
+        addAdditionalLinktoTableDD(arr[2], arr[3], arr[1], arr[0]);
       }
     }
   }

@@ -3059,12 +3059,11 @@ function loadDataFrametoUISamples(type) {
   }
 }
 
-function preliminaryProtocolStep(type, curationMode) {
-  //TODO - add guided mode functionality
+function preliminaryProtocolStep(type) {
   var credentials = loadExistingProtocolInfo();
   if (credentials[0]) {
     // show email for protocol account
-    showProtocolCredentials(credentials[1], type, curationMode);
+    showProtocolCredentials(credentials[1], type);
   } else {
     protocolAccountQuestion(type, false);
   }
@@ -3297,7 +3296,7 @@ function grabResearcherProtocolList(username, email, token, type, filetype) {
                 Swal.showLoading();
               },
             }).then((result) => {
-              showProtocolCredentials(email, filetype, curationMode);
+              showProtocolCredentials(email, filetype);
             });
           }
         } else {
@@ -3316,7 +3315,7 @@ function grabResearcherProtocolList(username, email, token, type, filetype) {
   });
 }
 
-async function showProtocolCredentials(email, filetype, curationMode) {
+async function showProtocolCredentials(email, filetype) {
   if (Object.keys(protocolResearcherList).length === 0) {
     var warningText = "You currently don't have any protocols.";
   } else {
