@@ -252,12 +252,14 @@ a {
   margin-right: 0px;
   padding: 5px 10px;
 }
+
 .button-grp button:disabled,
 button[disabled] {
   border: 1px solid #999999;
   background-color: #cccccc;
   color: #666666;
 }
+
 .active-btn {
   background-color: #6c6c6c !important;
   border: 1px #6c6c6c solid !important;
@@ -281,12 +283,12 @@ button[data-id="guided_bf_list_users_and_teams"] {
   height: 35px;
 }
 
-#pi_bootstrap_select_div > .dropdown.bootstrap-select {
+#pi_bootstrap_select_div>.dropdown.bootstrap-select {
   width: 550px;
 }
 
-#guided_pi_bootstrap_select_div > .dropdown.bootstrap-select,
-#guided_permissions_select_div > .dropdown.bootstrap-select {
+#guided_pi_bootstrap_select_div>.dropdown.bootstrap-select,
+#guided_permissions_select_div>.dropdown.bootstrap-select {
   width: 100%;
 }
 
@@ -294,6 +296,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   background-color: var(--color-teal);
   height: 100%;
 }
+
 .sidebar_title {
   color: #f3f3f3;
   text-transform: uppercase;
@@ -304,6 +307,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   user-select: none;
   -webkit-user-select: none;
 }
+
 .sidebar_links {
   list-style-type: none;
   padding: 0;
@@ -515,9 +519,11 @@ button[data-id="guided_bf_list_users_and_teams"] {
   0% {
     background-color: #ffffff;
   }
+
   50% {
     background-color: #85ceff;
   }
+
   100% {
     background-color: #ffffff;
   }
@@ -527,9 +533,11 @@ button[data-id="guided_bf_list_users_and_teams"] {
   0% {
     background-color: #ffffff;
   }
+
   50% {
     background-color: #85ceff;
   }
+
   100% {
     background-color: #ffffff;
   }
@@ -562,7 +570,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   -webkit-transition: all 0.15s linear;
 }
 
-.single-item:hover + #myspan {
+.single-item:hover+#myspan {
   display: block;
 }
 
@@ -661,9 +669,11 @@ button[data-id="guided_bf_list_users_and_teams"] {
 .button-back:hover {
   box-shadow: 0 0 3px 0px #666666;
 }
+
 .button-back:active {
   transform: translateY(-4px);
 }
+
 .button-back:focus {
   outline: none;
 }
@@ -690,8 +700,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
 }
 
 .myButton:hover {
-  background: var(--color-teal)
-    radial-gradient(circle, transparent 1%, var(--color-teal) 1%) center/15000%;
+  background: var(--color-teal) radial-gradient(circle, transparent 1%, var(--color-teal) 1%) center/15000%;
   color: white;
   box-shadow: 0 0 5px #3b5998;
   transition: all 0.5s ease;
@@ -703,13 +712,13 @@ button[data-id="guided_bf_list_users_and_teams"] {
   transition: background 0s;
   transform: translateY(-3px);
 }
+
 .myButton:focus {
   outline: none;
 }
 
 .myButton.second:hover {
-  background: var(--color-teal)
-    radial-gradient(circle, transparent 1%, var(--color-teal) 1%) center/15000%;
+  background: var(--color-teal) radial-gradient(circle, transparent 1%, var(--color-teal) 1%) center/15000%;
   color: #fff;
   box-shadow: 0 0 5px #3b5998;
   transition: all 0.5s ease;
@@ -730,8 +739,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   height: 35px;
   cursor: pointer;
   border-radius: 5px;
-  background: linear-gradient(to left, #fff 50%, var(--color-light-green) 50%)
-    right;
+  background: linear-gradient(to left, #fff 50%, var(--color-light-green) 50%) right;
   background-size: 200%;
   transition: 0.5s ease-out;
 }
@@ -745,6 +753,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   background-size: 100%;
   transform: translateY(-3px);
 }
+
 .confirmButton:focus {
   outline: none;
 }
@@ -966,6 +975,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.doc:before {
   background: url("../img/doc-file.png");
   content: "";
@@ -975,6 +985,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.docx:before {
   background: url("../img/doc-file.png");
   content: "";
@@ -984,6 +995,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.png:before {
   background: url("../img/png-file.png");
   content: "";
@@ -993,6 +1005,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.PNG:before {
   background: url("../img/png-file.png");
   content: "";
@@ -1002,6 +1015,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.jpg:before {
   background: url("../img/jpeg-file.png");
   content: "";
@@ -1011,6 +1025,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.jpeg:before {
   background: url("../img/jpeg-file.png");
   content: "";
@@ -1020,6 +1035,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.JPEG:before {
   background: url("../img/jpeg-file.png");
   content: "";
@@ -1029,6 +1045,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.pdf:before {
   background: url("../img/pdf-file.png");
   content: "";
@@ -1038,6 +1055,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.txt:before {
   background: url("../img/txt-file.png");
   content: "";
@@ -1047,6 +1065,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.xlsx:before {
   background: url("../img/excel-file.png");
   content: "";
@@ -1249,6 +1268,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   position: relative;
   /* background: url('http://www.csslab.cl/ejemplos/timelinr/latest/images/dot.gif') 3px top repeat-y; */
 }
+
 #metadata-content {
   max-width: 100%;
   height: auto;
@@ -1455,8 +1475,11 @@ button[data-id="guided_bf_list_users_and_teams"] {
   cursor: pointer;
   box-shadow: 0 0 3px 0 var(--color-bg-plum);
 }
+
 #div-manifest-edit {
   margin-top: 20px;
+  max-height: 70vh;
+  overflow-y: scroll;
 }
 
 .sparc-logo {
@@ -1500,19 +1523,19 @@ button[data-id="guided_bf_list_users_and_teams"] {
   justify-content: center;
 }
 
-details > summary {
+details>summary {
   list-style-type: none;
 }
 
-details > summary::-webkit-details-marker {
+details>summary::-webkit-details-marker {
   display: none;
 }
 
-details > summary::before {
+details>summary::before {
   content: url("data:image/svg+xml,%3Csvg style='transform: scale(0.2);' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 576 512'%3E%3C!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --%3E%3Cpath d='M416 288h-95.1c-17.67 0-32 14.33-32 32s14.33 32 32 32H416c17.67 0 32-14.33 32-32S433.7 288 416 288zM544 32h-223.1c-17.67 0-32 14.33-32 32s14.33 32 32 32H544c17.67 0 32-14.33 32-32S561.7 32 544 32zM352 416h-32c-17.67 0-32 14.33-32 32s14.33 32 32 32h32c17.67 0 31.1-14.33 31.1-32S369.7 416 352 416zM480 160h-159.1c-17.67 0-32 14.33-32 32s14.33 32 32 32H480c17.67 0 32-14.33 32-32S497.7 160 480 160zM192.4 330.7L160 366.1V64.03C160 46.33 145.7 32 128 32S96 46.33 96 64.03v302L63.6 330.7c-6.312-6.883-14.94-10.38-23.61-10.38c-7.719 0-15.47 2.781-21.61 8.414c-13.03 11.95-13.9 32.22-1.969 45.27l87.1 96.09c12.12 13.26 35.06 13.26 47.19 0l87.1-96.09c11.94-13.05 11.06-33.31-1.969-45.27C224.6 316.8 204.4 317.7 192.4 330.7z'/%3E%3C/svg%3E");
 }
 
-details[open] > summary::before {
+details[open]>summary::before {
   content: none;
 }
 
@@ -1720,6 +1743,7 @@ details[open] > summary::before {
 .sodaVideo-button:hover {
   box-shadow: 0 0 6px #b0b0b0;
 }
+
 .direct-to-doc-btn:hover {
   box-shadow: 0 0 6px #b0b0b0;
 }
@@ -1966,6 +1990,7 @@ details[open] > summary::before {
   position: relative;
   transform: scale(1);
 }
+
 .circular .inner {
   position: absolute;
   z-index: 6;
@@ -1977,6 +2002,7 @@ details[open] > summary::before {
   background: #f5f5f5;
   border-radius: 100%;
 }
+
 .circular .number {
   position: absolute;
   top: 50%;
@@ -1987,6 +2013,7 @@ details[open] > summary::before {
   font-weight: 500;
   color: black;
 }
+
 .circular .bar {
   position: absolute;
   height: 100%;
@@ -1995,6 +2022,7 @@ details[open] > summary::before {
   -webkit-border-radius: 100%;
   clip: rect(0px, 100px, 100px, 50px);
 }
+
 .circle .bar .progress {
   position: absolute;
   height: 100%;
@@ -2003,6 +2031,7 @@ details[open] > summary::before {
   clip: rect(0px, 50px, 100px, 0px);
   background: var(--color-light-green);
 }
+
 .circle .left .progress {
   z-index: 1;
   transition: transform 500ms ease-in-out;
@@ -2013,6 +2042,7 @@ details[open] > summary::before {
   transition: linear;
   z-index: 3;
 }
+
 .circle .right .progress {
   transition: transform 500ms ease-in-out;
 }
