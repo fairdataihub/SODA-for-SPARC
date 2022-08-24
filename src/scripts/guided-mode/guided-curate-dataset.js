@@ -775,7 +775,7 @@ const guidedPrepareHomeScreen = async () => {
   guidedResetProgressVariables();
   //Check if Guided-Progress folder exists. If not, create it.
   if (!fs.existsSync(guidedProgressFilePath)) {
-    fs.mkdirSync(guidedProgressFilePath);
+    fs.mkdirSync(guidedProgressFilePath, { recursive: true});
   }
 
   //Refresh Home page UI

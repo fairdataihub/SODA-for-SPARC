@@ -7371,7 +7371,7 @@ document
       emptyFilesFoldersResponse = await client.post(
         `/curate_datasets/empty_files_and_folders`,
         {
-            soda_json_structure
+            soda_json_structure: sodaJSONObj,
         }, 
         {timeout: 0}
       );
@@ -7901,7 +7901,7 @@ async function initiate_generate() {
     let mainCurationProgressResponse;
     try {
       mainCurationProgressResponse = await client.get(
-        `/curate_datasetscuration/progress`
+        `/curate_datasets/curation/progress`
       );
     } catch (error) {
       clientError(error);
