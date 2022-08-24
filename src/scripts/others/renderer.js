@@ -6229,6 +6229,7 @@ function sortObjByKeys(object) {
 const listItems = async (jsonObj, uiItem, amount_req, reset) => {
   //allow amount to choose how many elements to create
   //break elements into sets of 100
+  console.log(uiItem);
   var appendString = "";
   var sortedObj = sortObjByKeys(jsonObj);
   let file_elements = [],
@@ -6543,8 +6544,9 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     } else if (folderType === "sample") {
       dragDropInstructionsText = `Drag and drop folders and files associated with the sample ${currentFolder}`;
     }
+    console.log($('#items'));
 
-    $(uiItem).html(
+    $("#items").html(
       `<div class="drag-drop-container-instructions">
         <div id="dragDropLottieContainer" style="height: 100px; width: 100px;"></div>
         <p class="text-center large">
@@ -6560,6 +6562,8 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     const dragDropLottieContainer = document.getElementById(
       "dragDropLottieContainer"
     );
+
+    // console.log(dragDropLottieContainer);
     dragDropLottieContainer.innerHTML = ``;
 
     let dragDropAnimation = lottie.loadAnimation({
