@@ -7893,40 +7893,52 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
   }
 });
 
-
-
 /**
- * Reset the progress display of a given progress tracking container. 
- * @param {HTMLElement} progress_container 
- * @param {HTMLElement} percentage_text 
- * @param {HTMLElement} left_progress_bar 
- * @param {HTMLElement} right_progress_bar 
+ * Reset the progress display of a given progress tracking container.
+ * @param {HTMLElement} progress_container
+ * @param {HTMLElement} percentage_text
+ * @param {HTMLElement} left_progress_bar
+ * @param {HTMLElement} right_progress_bar
  */
-const resetProgressContainer = (progress_container, percentage_text, left_progress_bar, right_progress_bar) => {
-    percentage_text.innerText = "0%";
-    progress_container.style.display = "block";
-    left_progress_bar.style.transform = `rotate(0deg)`;
-    right_progress_bar.style.transform = `rotate(0deg)`;
-}
-
+const resetProgressContainer = (
+  progress_container,
+  percentage_text,
+  left_progress_bar,
+  right_progress_bar
+) => {
+  percentage_text.innerText = "0%";
+  progress_container.style.display = "block";
+  left_progress_bar.style.transform = `rotate(0deg)`;
+  right_progress_bar.style.transform = `rotate(0deg)`;
+};
 
 /**
  * Given a progress tracking container, update the progress display to show the user the progress of their dataset import.
  * Once the import has been completed (i.e. the progress is 100%), the progress container will be hidden. The interval will be cleared.
  * NOTE: The interval also clears on error.
- * @param {HTMLElement} progress_container 
- * @param {setInterval} interval 
- * @returns 
+ * @param {HTMLElement} progress_container
+ * @param {setInterval} interval
+ * @returns
  */
 async function requestAndPopulateDatasetProgress(progress_container, interval) {
+  console.log(progress_container);
 
-  console.log(progress_container)
+  let percentage_text = progress_container.querySelector(
+    ".pennsieve_loading_dataset_percentage"
+  );
+  let left_progress_bar = progress_container.querySelector(
+    ".pennsieve_left-side_less_than_50"
+  );
+  let right_progress_bar = progress_container.querySelector(
+    ".pennsieve_right-side_greater_than_50"
+  );
 
-  let percentage_text = progress_container.querySelector(".pennsieve_loading_dataset_percentage");
-  let left_progress_bar = progress_container.querySelector(".pennsieve_left-side_less_than_50");
-  let right_progress_bar = progress_container.querySelector(".pennsieve_right-side_greater_than_50");
-
-  resetProgressContainer(progress_container, percentage_text, left_progress_bar, right_progress_bar);
+  resetProgressContainer(
+    progress_container,
+    percentage_text,
+    left_progress_bar,
+    right_progress_bar
+  );
 
   let progressResponse;
   try {
@@ -7979,9 +7991,12 @@ async function requestAndPopulateDatasetProgress(progress_container, interval) {
  * }
  */
 var bf_request_and_populate_dataset = async (sodaJSONObj) => {
-
-  let pennsieve_progress = setInterval(requestAndPopulateDatasetProgress, 500, document.querySelector("#loading_pennsieve_dataset"), pennsieve_progress);
-
+  let pennsieve_progress = setInterval(
+    requestAndPopulateDatasetProgress,
+    500,
+    document.querySelector("#loading_pennsieve_dataset"),
+    pennsieve_progress
+  );
 
   try {
     let filesFoldersResponse = await client.get(
