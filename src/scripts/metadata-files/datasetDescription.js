@@ -1865,16 +1865,7 @@ function delete_current_con_id(ev) {
       var currentRow = $(ev).parents()[2];
       var currentRowid = $(currentRow).prop("id");
       document.getElementById(currentRowid).outerHTML = "";
-      let contributorTable;
-      if (curationMode === "free-form") {
-        contributorTable = document.getElementById("contributor-table-dd");
-      }
-      if (curationMode === "guided") {
-        contributorTable = document.getElementById(
-          "guided-contributor-table-dd"
-        );
-      }
-      updateIndexForTable(contributorTable);
+      updateIndexForTable(document.getElementById("contributor-table-dd"));
       // 2. Delete from JSON
       var contributorName = $(currentRow)[0].cells[1].innerText;
       for (var i = 0; i < contributorArray.length; i++) {
