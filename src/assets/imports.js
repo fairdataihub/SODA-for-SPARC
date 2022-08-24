@@ -31,6 +31,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     contentIndex.innerHTML += content;
   }
 
+  //sleep for a second to allow templates to be inserted into the DOM
+  await new Promise((r) => setTimeout(r, 1000));
+
   //Synchronously include js files
   includeJavaScriptFile("./assets/ex-links.js");
   includeJavaScriptFile("./assets/nav.js");
@@ -58,4 +61,8 @@ const includeJavaScriptFile = (jsFilePath) => {
   js.type = "text/javascript";
   js.src = jsFilePath;
   document.body.appendChild(js);
+};
+
+const sleep = (milliseconds) => {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
 };

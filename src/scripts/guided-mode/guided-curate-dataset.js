@@ -412,6 +412,8 @@ const saveGuidedProgress = (guidedProgressFileName) => {
   //create a Guided-Progress folder if one does not yet exist
   //Destination: HOMEDIR/SODA/Guided-Progress
   sodaJSONObj["last-modified"] = new Date();
+  console.log(CURRENT_PAGE.attr("id"));
+  sodaJSONObj["page-before-exit"] = CURRENT_PAGE.attr("id");
   try {
     //create Guided-Progress folder if one does not exist
     fs.mkdirSync(guidedProgressFilePath, { recursive: true });
@@ -3162,8 +3164,14 @@ const guidedResumeProgress = async (resumeProgressButton) => {
     datasetResumeJsonObj["digital-metadata"]["name"];
   document.getElementById("guided-dataset-subtitle-input").value =
     datasetResumeJsonObj["digital-metadata"]["subtitle"];
+
   guidedTransitionFromDatasetNameSubtitlePage();
 
+  //Return the user to the last page they exited on
+  const pageBeforeExit = datasetResumeJsonObj["page-before-exit"];
+  if (pageBeforeExit) {
+    traverseToTab(pageBeforeExit);
+  }
   guidedLockSideBar();
 };
 
