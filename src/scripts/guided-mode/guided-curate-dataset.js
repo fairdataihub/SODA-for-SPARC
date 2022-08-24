@@ -1433,6 +1433,12 @@ const guidedLoadDescriptionContributorInformation = () => {
   }
 };
 
+const guidedResetUserTeamPermissionsDropdowns = () => {
+  $("#guided_bf_list_users_and_teams").val("Select individuals or teams");
+  $("#guided_bf_list_users_and_teams").selectpicker("refresh");
+  $("#select-permission-list-users-and-teams").val("Select role");
+};
+
 const traverseToTab = async (targetPageID) => {
   console.log(targetPageID);
   try {
@@ -1956,6 +1962,7 @@ const traverseToTab = async (targetPageID) => {
     }
     if (targetPageID === "guided-designate-permissions-tab") {
       renderPermissionsTable();
+      guidedResetUserTeamPermissionsDropdowns();
     }
     if (targetPageID === "guided-add-description-tab") {
       const studyPurposeInput = document.getElementById(
@@ -7125,6 +7132,7 @@ $(document).ready(() => {
   $("#guided-import-existing-dataset").on("click", () => {
     $("#guided-next-button").click();
   });
+
   $("#guided-button-add-permission-user-or-team").on("click", function () {
     try {
       //get the selected permission element
@@ -7183,6 +7191,7 @@ $(document).ready(() => {
       $(this)[0].scrollIntoView({
         behavior: "smooth",
       });
+      guidedResetUserTeamPermissionsDropdowns();
     } catch (error) {
       notyf.open({
         duration: "4000",
