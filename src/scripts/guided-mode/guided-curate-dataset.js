@@ -5494,7 +5494,9 @@ const addPoolTableRow = () => {
     //check if pool has input
     if (poolSpecificationTableInput.val != "") {
       confirmEnter(poolSpecificationTableInput);
-      addPoolTableRow();
+      // addPoolTableRow();
+      // let newPoolTableRow = poolsTableBody.insertRow(-1);
+      // newPoolTableRow.innerHTML = generatePoolSpecificationRowElement();
     } else {
       poolSpecificationTableInput.focus();
     }
