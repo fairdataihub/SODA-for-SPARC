@@ -412,8 +412,12 @@ const saveGuidedProgress = (guidedProgressFileName) => {
   //create a Guided-Progress folder if one does not yet exist
   //Destination: HOMEDIR/SODA/Guided-Progress
   sodaJSONObj["last-modified"] = new Date();
-  console.log(CURRENT_PAGE.attr("id"));
-  sodaJSONObj["page-before-exit"] = CURRENT_PAGE.attr("id");
+
+  //If the user is past the intro/name+subtitle page, save the current page to be resumed later
+  if (CURRENT_PAGE) {
+    sodaJSONObj["page-before-exit"] = CURRENT_PAGE.attr("id");
+  }
+
   try {
     //create Guided-Progress folder if one does not exist
     fs.mkdirSync(guidedProgressFilePath, { recursive: true });
