@@ -409,7 +409,6 @@ const guidedTransitionFromDatasetNameSubtitlePage = () => {
 };
 
 const saveGuidedProgress = (guidedProgressFileName) => {
-  //create a Guided-Progress folder if one does not yet exist
   //Destination: HOMEDIR/SODA/Guided-Progress
   sodaJSONObj["last-modified"] = new Date();
 
@@ -775,7 +774,7 @@ const guidedPrepareHomeScreen = async () => {
   guidedResetProgressVariables();
   //Check if Guided-Progress folder exists. If not, create it.
   if (!fs.existsSync(guidedProgressFilePath)) {
-    fs.mkdirSync(guidedProgressFilePath, { recursive: true});
+    fs.mkdirSync(guidedProgressFilePath, { recursive: true });
   }
 
   //Refresh Home page UI
@@ -1433,6 +1432,12 @@ const guidedLoadDescriptionContributorInformation = () => {
   }
 };
 
+const guidedResetUserTeamPermissionsDropdowns = () => {
+  $("#guided_bf_list_users_and_teams").val("Select individuals or teams");
+  $("#guided_bf_list_users_and_teams").selectpicker("refresh");
+  $("#select-permission-list-users-and-teams").val("Select role");
+};
+
 const traverseToTab = async (targetPageID) => {
   console.log(targetPageID);
   try {
@@ -1441,9 +1446,18 @@ const traverseToTab = async (targetPageID) => {
     //update the radio buttons using the button config from sodaJSONObj
     updateGuidedRadioButtonsFromJSON(targetPageID);
     //refresh selectPickers if page has them
+
     if (targetPageID === "guided-designate-pi-owner-tab") {
-      //Refresh select pickers so items can be selected
-      $(".selectpicker").selectpicker("refresh");
+      $("#guided_bf_list_users_pi").selectpicker("refresh");
+
+      const PiOwnerUUID = sodaJSONObj["digital-metadata"]["pi-owner"]["UUID"];
+
+      if (PiOwnerUUID) {
+        $("#guided_bf_list_users_pi").val(
+          sodaJSONObj["digital-metadata"]["pi-owner"]["UUID"]
+        );
+        $("#guided_bf_list_users_pi").selectpicker("refresh");
+      }
     }
 
     if (
@@ -1956,6 +1970,7 @@ const traverseToTab = async (targetPageID) => {
     }
     if (targetPageID === "guided-designate-permissions-tab") {
       renderPermissionsTable();
+      guidedResetUserTeamPermissionsDropdowns();
     }
     if (targetPageID === "guided-add-description-tab") {
       const studyPurposeInput = document.getElementById(
@@ -7125,6 +7140,7 @@ $(document).ready(() => {
   $("#guided-import-existing-dataset").on("click", () => {
     $("#guided-next-button").click();
   });
+
   $("#guided-button-add-permission-user-or-team").on("click", function () {
     try {
       //get the selected permission element
@@ -7183,6 +7199,7 @@ $(document).ready(() => {
       $(this)[0].scrollIntoView({
         behavior: "smooth",
       });
+      guidedResetUserTeamPermissionsDropdowns();
     } catch (error) {
       notyf.open({
         duration: "4000",
@@ -7469,7 +7486,7 @@ $(document).ready(() => {
           .then(async (file) => {
             console.log("starting tiff conversion");
             if (!fs.existsSync(destination_image_path)) {
-              fs.mkdirSync(destination_image_path);
+              fs.mkdirSync(destination_image_path, { recursive: true });
             }
 
             try {
@@ -10014,12 +10031,14 @@ $(document).ready(() => {
         }
 
         if (designateOtherButton.classList.contains("selected")) {
-          console.log("bar");
           let PiOwnerString = $("#guided_bf_list_users_pi option:selected")
             .text()
             .trim();
 
-          if (PiOwnerString === "Select PI") {
+          if (
+            !$("#guided_bf_list_users_pi").val() ||
+            PiOwnerString === "Select PI"
+          ) {
             errorArray.push({
               type: "notyf",
               message: "Please select a PI from the dropdown",
