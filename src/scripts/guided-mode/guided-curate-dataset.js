@@ -5488,10 +5488,12 @@ const addPoolTableRow = () => {
   //     // console.log(subjectItemsList.children.length);
   //   }
   // }
+  const re = new RegExp('/^(\d|\w)+$/g');
 
   if (poolSpecificationTableInput) {
     //focus on the input that already exists
     //check if pool has input
+    // console.log(re.test(poolSpecificationTableInput.val));
     if (poolSpecificationTableInput.val != "") {
       confirmEnter(poolSpecificationTableInput);
       // addPoolTableRow();
