@@ -1790,57 +1790,10 @@
                               font-family: 'Raleway', sans-serif;
                             "
                           >
-                            inputs_metadata
+                            code_parameters
                           </p>
                         </button>
 
-                        <button
-                          class="metadata-button button-generate-dataset code-metadata"
-                          data-next="outputsMetadataUpload"
-                          style="display: block"
-                        >
-                          <svg
-                            width="50px"
-                            height="50px"
-                            viewBox="0 0 16 16"
-                            class="bi bi-file-earmark-plus"
-                            fill="#13716D"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
-                            ></path>
-                            <path
-                              d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"
-                            ></path>
-                            <path
-                              fill-rule="evenodd"
-                              d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
-                            ></path>
-                          </svg>
-                          <svg
-                            style="display: none"
-                            width="50px"
-                            height="50px"
-                            viewBox="0 0 16 16"
-                            class="bi bi-check2"
-                            fill="var(--color-light-green)"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              fill-rule="evenodd"
-                              d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
-                            ></path>
-                          </svg>
-                          <p
-                            style="
-                              margin-top: 30px;
-                              font-family: 'Raleway', sans-serif;
-                            "
-                          >
-                            outputs_metadata
-                          </p>
-                        </button>
                       </div>
                     </div>
                   </div>
@@ -2950,14 +2903,14 @@
             <!-- inputs_metadata -->
             <div id="inputsMetadataUpload" class="div-individual-metadata">
               <h5 style="text-align: center; color: #585858; font-size: 16px">
-                inputs_metadata <br />(must be in .xlsx format)
+                code_parameters <br />(must be in .csv, .tsv, .json or .xlsx format)
               </h5>
               <div style="margin-top: 25px; text-align: center">
                 <h5 style="text-align: center"></h5>
                 <div
                   class="div-file-import"
                   droppable="true"
-                  ondrop="dropHandler(event, 'para-inputsMetadata-file-path', 'inputs_metadata', 'free-form');"
+                  ondrop="dropHandler(event, 'para-codeParamMetadata-file-path', 'code_parameters', 'free-form');"
                   ondragover="return false"
                 >
                   <p style="font-weight: bold">Import existing file</p>
@@ -3006,7 +2959,7 @@
                   </p>
                   <button
                     id="button-sub"
-                    onclick="importMetadataFiles(this, 'inputs_metadata', ['.xlsx'], 'para-inputsMetadata-file-path', 'free-form')"
+                    onclick="importMetadataFiles(this, 'code_parameters', ['.xlsx', '.csv', '.tsv', '.json'], 'para-codeParamMetadata-file-path', 'free-form')"
                     class="div-file-import-button"
                   >
                     Choose file
@@ -3048,7 +3001,7 @@
                     on Pennsieve
                   </p>
                   <button
-                    onclick="importPennsieveMetadataFiles(this, 'inputsMetadata', ['.xlsx'], 'para-inputsMetadata-file-path')"
+                    onclick="importPennsieveMetadataFiles(this, 'inputsMetadata', ['.xlsx'], 'para-codeParamMetadata-file-path')"
                     class="div-file-import-button"
                   >
                     Use file
@@ -3058,7 +3011,7 @@
               <div style="width: 80%; margin: 10px auto">
                 <p
                   class="para-metadata-file-status"
-                  id="para-inputsMetadata-file-path"
+                  id="para-codeParamMetadata-file-path"
                 ></p>
               </div>
               <div
