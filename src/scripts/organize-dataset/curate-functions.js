@@ -233,20 +233,21 @@ async function dropHandler(
             //create a string with today's date in the format xxxx/xx/xx
             const today = new Date();
             const todayString = `
-                  ${today.getFullYear()}-${today.getMonth() + 1
-              }-${today.getDate()}
+                  ${today.getFullYear()}-${
+              today.getMonth() + 1
+            }-${today.getDate()}
                 `;
             //add a custom milestone row for when the user wants to add a custom milestone
             //not included in the dataset deliverables document
             guidedMilestoneData[
               "Not included in the Dataset Deliverables document"
             ] = [
-                {
-                  "Description of data":
-                    "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
-                  "Expected date of completion": "N/A",
-                },
-              ];
+              {
+                "Description of data":
+                  "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
+                "Expected date of completion": "N/A",
+              },
+            ];
             console.log(guidedMilestoneData);
 
             //save the unselected milestones into sodaJSONObj
@@ -361,11 +362,13 @@ const checkAvailableSpace = () => {
 
     let datasetSizeResponse;
     try {
-      datasetSizeResponse = await client.post("/curate_datasets/dataset_size", {
-
-        soda_json_structure: sodaJSONObj,
-
-      }, {timeout: 0});
+      datasetSizeResponse = await client.post(
+        "/curate_datasets/dataset_size",
+        {
+          soda_json_structure: sodaJSONObj,
+        },
+        { timeout: 0 }
+      );
 
       let tempFolderSize = datasetSizeResponse.data.dataset_size;
       let folderSizeMB = roundToHundredth(tempFolderSize / 1024 ** 2);
@@ -1358,9 +1361,9 @@ async function moveItems(ev, category) {
   for (var highLevelFol in datasetStructureJSONObj["folders"]) {
     if (
       "manifest.xlsx" in
-      datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
+        datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
       datasetStructureJSONObj["folders"][highLevelFol]["files"][
-      "manifest.xlsx"
+        "manifest.xlsx"
       ]["forTreeview"] === true
     ) {
       delete datasetStructureJSONObj["folders"][highLevelFol]["files"][
@@ -1614,6 +1617,15 @@ function moveItemsHelper(item, destination, category) {
     ["Step 3", "Move", category === "files" ? "File" : "Folder"],
     determineDatasetLocation()
   );
+}
+
+function updateManifestLabelColor(el) {
+  document.getElementById("label-manifest").style.color = el.checked
+    ? "var(--color-light-green)"
+    : "#303030";
+  document.getElementById("label-manifest").style.fontWeight = el.checked
+    ? "bold"
+    : "normal";
 }
 
 // helper functions to add "moved" to leaf nodes a.k.a files
