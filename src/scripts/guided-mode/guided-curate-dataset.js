@@ -1102,14 +1102,8 @@ const cleanUpEmptyGuidedStructureFolders = async (
       if (subjectsWithEmptyFolders.length > 0) {
         console.log(subjectsWithEmptyFolders);
         let result = await Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
+          backdrop: "rgba(0,0,0,0.4)",
           icon: "warning",
           title: "Missing data",
           html: `${highLevelFolder} data was not added to the following subjects:<br /><br />
@@ -6626,6 +6620,15 @@ const renderSubjectsMetadataAsideItems = () => {
   //Combine sample data from subjects in and out of pools
   let subjects = [...subjectsInPools, ...subjectsOutsidePools];
 
+  const subjectMetadataCopyButton = document.getElementById(
+    "guided-button-subject-metadata-copy"
+  );
+  if (subjects.length > 1) {
+    subjectMetadataCopyButton.classList.remove("hidden");
+  } else {
+    subjectMetadataCopyButton.classList.add("hidden");
+  }
+
   const subjectsFormEntries = guidedSubjectsFormDiv.querySelectorAll(
     ".subjects-form-entry"
   );
@@ -6764,6 +6767,15 @@ const renderSamplesMetadataAsideItems = () => {
     sodaJSONObj.getAllSamplesFromSubjects();
   //Combine sample data from samples in and out of pools
   let samples = [...samplesInPools, ...samplesOutsidePools];
+
+  const sampleMetadataCopyButton = document.getElementById(
+    "guided-button-sample-metadata-copy"
+  );
+  if (samples.length > 1) {
+    sampleMetadataCopyButton.classList.remove("hidden");
+  } else {
+    sampleMetadataCopyButton.classList.add("hidden");
+  }
 
   const samplesFormEntries = guidedSamplesFormDiv.querySelectorAll(
     ".samples-form-entry"
@@ -9917,6 +9929,8 @@ $(document).ready(() => {
         const subjectsInTableDataCount = subjectsTableData.length - 1;
         if (subjectsAsideItemsCount !== subjectsInTableDataCount) {
           let result = await Swal.fire({
+            heightAuto: false,
+            backdrop: "rgba(0,0,0,0.4)",
             title: "Continue without adding subject metadata to all subjects?",
             text: "In order for your dataset to be in compliance with SPARC's dataset structure, you must add subject metadata for all subjects.",
             icon: "warning",
@@ -9944,6 +9958,8 @@ $(document).ready(() => {
         const samplesInTableDataCount = samplesTableData.length - 1;
         if (samplesAsideItemsCount !== samplesInTableDataCount) {
           let result = await Swal.fire({
+            heightAuto: false,
+            backdrop: "rgba(0,0,0,0.4)",
             title: "Continue without adding sample metadata to all samples?",
             text: "In order for your dataset to be in compliance with SPARC's dataset structure, you must add sample metadata for all samples.",
             icon: "warning",
