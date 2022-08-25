@@ -554,7 +554,7 @@ class GenerateManifestFilesPennsieve(Resource):
                     "selected_account": "The pennsieve account for the user", 
                     "selected_dataset": "The dataset that the user wants to generate manifest files for"})
     # @api.marshal_with(model_generate_manifest_locally_response, False, 200)
-    def get(self):
+    def post(self):
         data = request.get_json()
 
         selected_account = data["selected_account"]
