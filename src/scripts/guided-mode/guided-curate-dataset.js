@@ -4893,7 +4893,7 @@ const openCopySampleMetadataPopup = async () => {
           }
         }
         for (sample of selectedCopyToSamples) {
-          samplesTableData.forEach((sampleData, index) => {
+          samplesTableDajta.forEach((sampleData, index) => {
             console.log(sampleData);
             if (sampleData[1] === sample) {
               console.log(samplesTableData);
@@ -10086,19 +10086,23 @@ $(document).ready(() => {
             UUID: PiUUID,
             name: PiName,
           };
-          setGuidedDatasetPiOwner(newPiOwner);
 
-          //set the logged in user as a manager
-          const loggedInUserManagerObj = {
-            userString: loggedInUserString,
-            userName: loggedInUserName,
-            UUID: loggedInUserUUID,
-            permission: "manager",
-            loggedInUser: true,
-          };
+          if (PiUUID === loggedInUserUUID) {
+            setGuidedDatasetPiOwner(newPiOwner);
+          } else {
+            setGuidedDatasetPiOwner(newPiOwner);
 
-          guidedAddUserPermission(loggedInUserManagerObj);
-          console.log(loggedInUserManagerObj);
+            //set the logged in user as a manager
+            const loggedInUserManagerObj = {
+              userString: loggedInUserString,
+              userName: loggedInUserName,
+              UUID: loggedInUserUUID,
+              permission: "manager",
+              loggedInUser: true,
+            };
+
+            guidedAddUserPermission(loggedInUserManagerObj);
+          }
         }
       }
 
