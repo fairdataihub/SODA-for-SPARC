@@ -690,7 +690,10 @@ function populateMetadataProgress(
     README: ["para-readme-file-path", metadataButtonsArray[4]],
     CHANGES: ["para-changes-file-path", metadataButtonsArray[5]],
     code_description: ["para-readme-file-path", metadataButtonsArray[6]],
-    code_parameters: ["para-codeParamMetadata-file-path", metadataButtonsArray[7]],
+    code_parameters: [
+      "para-codeParamMetadata-file-path",
+      metadataButtonsArray[7],
+    ],
   };
   if (populateBoolean) {
     if (metadataFileName in correspondingMetadataParaElement) {
@@ -1658,6 +1661,15 @@ function addMovedRecursively(object) {
     }
   });
 }
+
+$(document).ready(function () {
+  $(".button-display-details").click(function () {
+    $(this).parent().toggleClass("show");
+  });
+  $(".button-generate-dataset i").bind("click", function () {
+    $($(this).parents()[0]).click();
+  });
+});
 
 $(jstreeInstance).on("changed.jstree", function (e, data) {
   if (data.node) {

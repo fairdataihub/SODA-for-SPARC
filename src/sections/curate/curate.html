@@ -1793,7 +1793,6 @@
                             code_parameters
                           </p>
                         </button>
-
                       </div>
                     </div>
                   </div>
@@ -2903,7 +2902,8 @@
             <!-- inputs_metadata -->
             <div id="inputsMetadataUpload" class="div-individual-metadata">
               <h5 style="text-align: center; color: #585858; font-size: 16px">
-                code_parameters <br />(must be in .csv, .tsv, .json or .xlsx format)
+                code_parameters <br />(must be in .csv, .tsv, .json or .xlsx
+                format)
               </h5>
               <div style="margin-top: 25px; text-align: center">
                 <h5 style="text-align: center"></h5>
@@ -4849,13 +4849,3 @@
     </div>
   </main>
 </section>
-
-<script>
-  $(".button-display-details").click(function () {
-    $(this).parent().toggleClass("show");
-  });
-
-  $(".button-generate-dataset i").bind("click", function () {
-    $($(this).parents()[0]).click();
-  });
-</script>
