@@ -8837,7 +8837,8 @@ $(document).ready(() => {
           main_total_generate_dataset_size,
           dataset_name,
           dataset_destination,
-          uploadedFiles
+          uploadedFiles,
+          true
         );
 
         try {
@@ -8872,6 +8873,23 @@ $(document).ready(() => {
         } catch (error) {
           clientError(error);
         }
+
+        // wait to see if the uploaded files or size will grow once the client has time to ask for the updated information
+        // if they stay zero that means nothing was uploaded
+        if (uploadedFiles === 0 || uploadedFilesSize === 0) {
+          await wait(2000);
+        }
+
+        // log the curation errors to Google Analytics
+        logCurationErrorsToAnalytics(
+          uploadedFiles,
+          uploadedFilesSize,
+          dataset_destination,
+          main_total_generate_dataset_size,
+          increaseInFileSize,
+          datasetUploadSession,
+          true
+        );
       });
 
     const guidedUpdateUploadStatus = async () => {

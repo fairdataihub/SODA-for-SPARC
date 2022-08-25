@@ -7604,7 +7604,8 @@ async function initiate_generate() {
         main_total_generate_dataset_size,
         dataset_name,
         dataset_destination,
-        uploadedFiles
+        uploadedFiles,
+        false
       );
 
       try {
@@ -7700,7 +7701,8 @@ async function initiate_generate() {
         dataset_destination,
         main_total_generate_dataset_size,
         increaseInFileSize,
-        datasetUploadSession
+        datasetUploadSession,
+        false
       );
     });
 
