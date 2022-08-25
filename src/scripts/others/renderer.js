@@ -7058,12 +7058,13 @@ document
 
     let emptyFilesFoldersResponse;
     try {
-      emptyFilesFoldersResponse = await client.get(
+      emptyFilesFoldersResponse = await client.post(
         `/curate_datasets/empty_files_and_folders`,
         {
-          params: {
-            soda_json_structure: JSON.stringify(sodaJSONObj),
-          },
+            soda_json_structure: sodaJSONObj,
+        }, 
+        {
+          timeout: 0
         }
       );
     } catch (error) {
@@ -7283,7 +7284,7 @@ async function initiate_generate() {
   client
     .post(`/curate_datasets/curation`, {
       soda_json_structure: sodaJSONObj,
-    })
+    }, {timeout: 0})
     .then(async (response) => {
       let { data } = response;
 
@@ -7954,12 +7955,12 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
   }
 
   try {
-    let filesFoldersResponse = await client.get(
+    let filesFoldersResponse = await client.post(
       `/organize_datasets/dataset_files_and_folders`,
       {
-        params: {
           sodajsonobject: sodaJSONObj,
-        },
+      }, {
+        timeout: 0
       }
     );
 
@@ -8274,6 +8275,8 @@ ipcRenderer.on("selected-manifest-folder", async (event, result) => {
       await client.post(`/curate_datasets/manifest_files`, {
         generate_purpose: "",
         soda_json_object: temp_sodaJSONObj,
+      }, {
+        timeout: 0
       });
 
       $("body").removeClass("waiting");
