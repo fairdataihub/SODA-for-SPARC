@@ -4912,6 +4912,12 @@ const openCopySampleMetadataPopup = async () => {
         const currentSampleOpenInView = document.getElementById(
           "guided-bootbox-sample-id"
         ).value;
+        const currentSampleSubjectOpenInView = document.getElementById(
+          "guided-bootbox-subject-id-samples"
+        ).value;
+        const currentSamplePoolOpenInView = document.getElementById(
+          "guided-bootbox-sample-pool-id"
+        ).value;
 
         //If a sample was open in the UI, update it with the new metadata
         if (currentSampleOpenInView) {
