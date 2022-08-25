@@ -224,11 +224,9 @@ const checkAvailableSpace = () => {
 
     let datasetSizeResponse;
     try {
-      datasetSizeResponse = await client.get("/curate_datasets/dataset_size", {
-        params: {
+      datasetSizeResponse = await client.post("/curate_datasets/dataset_size", {
           soda_json_structure: sodaJSONObj,
-        },
-      });
+      }, { timeout: 0});
 
       let tempFolderSize = datasetSizeResponse.data.dataset_size;
       let folderSizeMB = roundToHundredth(tempFolderSize / 1024 ** 2);
