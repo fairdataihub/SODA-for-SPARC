@@ -911,7 +911,6 @@ function showParentSwal(duplicateArray) {
 
 function handleDuplicateImports(btnId, duplicateArray, curationMode) {
   Swal.close();
-  console.log(curationMode);
   //creates the html for sweetalert
   function createSwalDuplicateContent(btnId, list) {
     if (btnId === "replace" || btnId === "skip") {
@@ -1004,13 +1003,9 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
       },
     ],
   });
-  var filtered = "";
-  if (curationMode === "free-form") {
-    filtered = getGlobalPath(organizeDSglobalPath);
-  }
-  if (curationMode === "guided") {
-    filtered = getGlobalPath(organizeDSglobalPath);
-  }
+
+  var filtered = getGlobalPath(organizeDSglobalPath);
+
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
 
   //SKIP OPTION
@@ -2326,8 +2321,7 @@ function loadDetailsContextMenu(
   filePath,
   textareaID1,
   textareaID2,
-  paraLocalPath,
-  curationMode
+  paraLocalPath
 ) {
   if ("description" in filePath["files"][fileName]) {
     document.getElementById(textareaID1).value =
