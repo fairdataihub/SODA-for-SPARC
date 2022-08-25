@@ -195,7 +195,7 @@ const guidedSaveAndExit = async (exitPoint) => {
       cancelButtonColor: "#d33",
       confirmButtonText: "Exit guided mode",
       heightAuto: false,
-      backDrop: "rgba(0,0,0,0.4)",
+      backdrop: "rgba(0,0,0,0.4)",
     });
     if (returnToGuidedHomeScreen) {
       guidedUnLockSideBar();
@@ -217,7 +217,7 @@ const guidedSaveAndExit = async (exitPoint) => {
       cancelButtonColor: "#d33",
       confirmButtonText: "Exit guided mode",
       heightAuto: false,
-      backDrop: "rgba(0,0,0,0.4)",
+      backdrop: "rgba(0,0,0,0.4)",
     });
     if (returnToGuidedHomeScreen) {
       guidedUnLockSideBar();
