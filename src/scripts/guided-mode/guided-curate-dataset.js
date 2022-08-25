@@ -3213,7 +3213,10 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   //Return the user to the last page they exited on
   const pageBeforeExit = datasetResumeJsonObj["page-before-exit"];
   if (pageBeforeExit) {
-    traverseToTab(pageBeforeExit);
+    //If the last page the exited was the upload page, take them to the review page
+    pageBeforeExit === "guided-dataset-generation-tab"
+      ? traverseToTab("guided-dataset-generation-confirmation-tab")
+      : traverseToTab(pageBeforeExit);
   }
   guidedLockSideBar();
 };
