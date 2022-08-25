@@ -161,8 +161,7 @@ const metadataFileExtensionObject = {
   README: [".txt"],
   CHANGES: [".txt"],
   code_description: [".xlsx"],
-  inputs_metadata: [".xlsx"],
-  outputs_metadata: [".xlsx"],
+  code_parameters: [".xlsx", ".csv", ".tsv", ".json"],
   data_deliverable: [".docx", ".doc"],
 };
 
@@ -688,11 +687,7 @@ function populateMetadataProgress(
     README: ["para-readme-file-path", metadataButtonsArray[4]],
     CHANGES: ["para-changes-file-path", metadataButtonsArray[5]],
     code_description: ["para-readme-file-path", metadataButtonsArray[6]],
-    inputs_metadata: ["para-inputsMetadata-file-path", metadataButtonsArray[7]],
-    outputs_metadata: [
-      "para-outputs_metadata-file-path",
-      metadataButtonsArray[8],
-    ],
+    code_parameters: ["para-codeParamMetadata-file-path", metadataButtonsArray[7]],
   };
   if (populateBoolean) {
     if (metadataFileName in correspondingMetadataParaElement) {
