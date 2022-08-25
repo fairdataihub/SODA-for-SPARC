@@ -4573,12 +4573,16 @@ ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
       log.info("Generating a new dataset organize datasets at ${filepath}");
 
       try {
-        await client.post(`/organize_datasets/datasets`, {
-          generation_type: "create-new",
-          generation_destination_path: filepath[0],
-          dataset_name: newDSName,
-          soda_json_directory_structure: datasetStructureJSONObj,
-        }, { timeout: 0});
+        await client.post(
+          `/organize_datasets/datasets`,
+          {
+            generation_type: "create-new",
+            generation_destination_path: filepath[0],
+            dataset_name: newDSName,
+            soda_json_directory_structure: datasetStructureJSONObj,
+          },
+          { timeout: 0 }
+        );
 
         document.getElementById("para-organize-datasets-error").style.display =
           "none";
@@ -6818,8 +6822,8 @@ ipcRenderer.on(
                     root_folder_path: root_folder_path,
                     irregular_folders: irregularFolderArray,
                     replaced: replaced,
-                  }, 
-                  {timeout: 0}
+                  },
+                  { timeout: 0 }
                 );
                 let { data } = importLocalDatasetResponse;
                 sodajsonobject = data;
