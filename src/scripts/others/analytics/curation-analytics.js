@@ -174,12 +174,23 @@ const logCurationErrorsToAnalytics = async (
   }
 };
 
+
+/**
+ * If curation was successful for a given dataset, log important information regarding size and number of files that were uploaded.
+ * @param {boolean} manifest_files_requested 
+ * @param {number} main_total_generate_dataset_size 
+ * @param {string} dataset_name 
+ * @param {string} dataset_destination 
+ * @param {number} uploadedFiles 
+ * @param {boolean} guidedMode 
+ */
 const logCurationSuccessToAnalytics = async (
   manifest_files_requested,
   main_total_generate_dataset_size,
   dataset_name,
   dataset_destination,
-  uploadedFiles
+  uploadedFiles, 
+  guidedMode
 ) => {
   // get dataset id if available
   let datasetLocation = determineDatasetLocation();
