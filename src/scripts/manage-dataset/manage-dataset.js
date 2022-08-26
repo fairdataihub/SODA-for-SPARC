@@ -788,7 +788,7 @@ $("#button-add-subtitle").click(async () => {
 
     let selectedBfAccount = defaultBfAccount;
     let selectedBfDataset = defaultBfDataset;
-    let inputSubtitle = "subtitle test";
+    let inputSubtitle = $("#bf-dataset-subtitle").val().trim();
 
     log.info("Adding subtitle to dataset");
     log.info(inputSubtitle);
@@ -2537,7 +2537,7 @@ $("#button-submit-dataset").click(async () => {
           selected_account: selectedbfaccount,
           selected_dataset: selectedbfdataset,
         },
-        timeout: 0
+        timeout: 0,
       }
     )
     .then(async () => {

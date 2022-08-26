@@ -1378,8 +1378,8 @@ var datasetTagsInput = document.getElementById("tagify-dataset-tags"),
   datasetTagsTagify = new Tagify(datasetTagsInput);
 
 var guidedDatasetTagsInput = document.getElementById(
-  "guided-tagify-dataset-tags"
-),
+    "guided-tagify-dataset-tags"
+  ),
   // initialize Tagify on the above input node reference
   guidedDatasetTagsTagify = new Tagify(guidedDatasetTagsInput);
 
@@ -1540,7 +1540,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => { });
+            }).then((result) => {});
             generateSubjectsFileHelper(false);
           }
         });
@@ -1556,7 +1556,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => { });
+        }).then((result) => {});
         generateSubjectsFileHelper(false);
       }
     }
@@ -1610,7 +1610,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   let bfdataset = document
     .getElementById("bf_dataset_load_subjects")
@@ -1713,7 +1713,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => { });
+            }).then((result) => {});
             generateSamplesFileHelper(uploadBFBoolean);
           }
         });
@@ -1729,7 +1729,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => { });
+        }).then((result) => {});
         generateSamplesFileHelper(uploadBFBoolean);
       }
     }
@@ -1783,7 +1783,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   try {
     let samplesFileResponse = await client.post(
@@ -2271,12 +2271,12 @@ function createStrain(id, type, curationMode) {
           info.setAttribute(
             "onclick",
             "populateRRID('" +
-            data.query +
-            "', '" +
-            type +
-            "', '" +
-            curationMode +
-            "')"
+              data.query +
+              "', '" +
+              type +
+              "', '" +
+              curationMode +
+              "')"
           );
           info.innerHTML = `Click here to check <strong>"${data.query}"</strong>`;
         }
@@ -2311,7 +2311,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   try {
     let load_taxonomy_species = await client.get(`/taxonomy/species`, {
       params: {
@@ -3029,9 +3029,9 @@ function detectEmptyRequiredFields(funding) {
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
   var emptyMessageArray = [
     "- Missing required fields under Dataset Info section: " +
-    dsEmptyField.join(", "),
+      dsEmptyField.join(", "),
     "- Missing required fields under Contributor Info section: " +
-    conEmptyField.join(", "),
+      conEmptyField.join(", "),
     "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
   ];
   var allFieldsSatisfied = true;
@@ -4696,14 +4696,18 @@ ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
       log.info("Generating a new dataset organize datasets at ${filepath}");
 
       try {
-        await client.post(`/organize_datasets/datasets`, {
-          generation_type: "create-new",
-          generation_destination_path: filepath[0],
-          dataset_name: newDSName,
-          soda_json_directory_structure: datasetStructureJSONObj,
-        }, {
-          timeout: 0
-        });
+        await client.post(
+          `/organize_datasets/datasets`,
+          {
+            generation_type: "create-new",
+            generation_destination_path: filepath[0],
+            dataset_name: newDSName,
+            soda_json_directory_structure: datasetStructureJSONObj,
+          },
+          {
+            timeout: 0,
+          }
+        );
 
         document.getElementById("para-organize-datasets-error").style.display =
           "none";
@@ -6478,7 +6482,6 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
   let items = [folder_elements, file_elements];
 
   if (amount_req != undefined) {
-
     //add items using a different function
     //want the initial files to be imported
     let itemDisplay = new Promise(async (resolved) => {
@@ -6553,8 +6556,9 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
           ${dragDropInstructionsText}
         </p>
         <p class="text-center">
-          You may also <b>add</b> or <b>import</b> ${folderType === undefined ? "folders or files" : folderType + " data"
-      } using the buttons in the upper right corner
+          You may also <b>add</b> or <b>import</b> ${
+            folderType === undefined ? "folders or files" : folderType + " data"
+          } using the buttons in the upper right corner
         </p>
       </div>`
     );
@@ -6571,7 +6575,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
       autoplay: true,
     });
   }
-}
+};
 
 async function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
   $(singleUIItem).dblclick(async function () {
@@ -6881,14 +6885,16 @@ ipcRenderer.on(
 
                     numb.innerText = percentage_amount + "%";
                     if (percentage_amount <= 50) {
-                      progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
-                        }deg)`;
+                      progressBar_rightSide.style.transform = `rotate(${
+                        percentage_amount * 0.01 * 360
+                      }deg)`;
                     } else {
                       progressBar_rightSide.style.transition = "";
                       progressBar_rightSide.classList.add("notransition");
                       progressBar_rightSide.style.transform = `rotate(180deg)`;
-                      progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
-                        }deg)`;
+                      progressBar_leftSide.style.transform = `rotate(${
+                        percentage_amount * 0.01 * 180
+                      }deg)`;
                     }
 
                     if (finished === 1) {
@@ -6963,14 +6969,16 @@ ipcRenderer.on(
 
                   numb.innerText = percentage_amount + "%";
                   if (percentage_amount <= 50) {
-                    progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
-                      }deg)`;
+                    progressBar_rightSide.style.transform = `rotate(${
+                      percentage_amount * 0.01 * 360
+                    }deg)`;
                   } else {
                     progressBar_rightSide.style.transition = "";
                     progressBar_rightSide.classList.add("notransition");
                     progressBar_rightSide.style.transform = `rotate(180deg)`;
-                    progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
-                      }deg)`;
+                    progressBar_leftSide.style.transform = `rotate(${
+                      percentage_amount * 0.01 * 180
+                    }deg)`;
                   }
                   if (finished === 1) {
                     progressBar_leftSide.style.transform = `rotate(180deg)`;
@@ -7344,9 +7352,9 @@ document
     for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
       if (
         "manifest.xlsx" in
-        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
         sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-        "manifest.xlsx"
+          "manifest.xlsx"
         ]["forTreeview"]
       ) {
         delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
@@ -7579,9 +7587,13 @@ async function initiate_generate() {
   clearQueue();
 
   client
-    .post(`/curate_datasets/curation`, {
-      soda_json_structure: sodaJSONObj,
-    }, { timeout: 0 })
+    .post(
+      `/curate_datasets/curation`,
+      {
+        soda_json_structure: sodaJSONObj,
+      },
+      { timeout: 0 }
+    )
     .then(async (response) => {
       let { data } = response;
 
@@ -7937,7 +7949,7 @@ async function initiate_generate() {
           "track-event",
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE +
-          " - Step 7 - Generate - Dataset - Number of Files",
+            " - Step 7 - Generate - Dataset - Number of Files",
           `${datasetUploadSession.id}`,
           uploadedFiles
         );
@@ -7947,7 +7959,7 @@ async function initiate_generate() {
           "track-event",
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE +
-          " - Step 7 - Generate - Dataset - Size",
+            " - Step 7 - Generate - Dataset - Size",
           `${datasetUploadSession.id}`,
           increaseInFileSize
         );
@@ -8230,7 +8242,7 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
  * }
  */
 var bf_request_and_populate_dataset = async (sodaJSONObj) => {
-  console.log("REquested and poulated")
+  console.log("REquested and poulated");
   let progress_container = document.getElementById("loading_pennsieve_dataset");
   let percentage_text = document.getElementById(
     "pennsieve_loading_dataset_percentage"
@@ -8264,14 +8276,16 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
     finished = res["import_completed_items"];
     percentage_text.innerText = percentage_amount + "%";
     if (percentage_amount <= 50) {
-      left_progress_bar.style.transform = `rotate(${percentage_amount * 0.01 * 360
-        }deg)`;
+      left_progress_bar.style.transform = `rotate(${
+        percentage_amount * 0.01 * 360
+      }deg)`;
     } else {
       left_progress_bar.style.transition = "";
       left_progress_bar.classList.add("notransition");
       left_progress_bar.style.transform = `rotate(180deg)`;
-      right_progress_bar.style.transform = `rotate(${percentage_amount * 0.01 * 180
-        }deg)`;
+      right_progress_bar.style.transform = `rotate(${
+        percentage_amount * 0.01 * 180
+      }deg)`;
     }
 
     if (finished === 1) {
@@ -8603,11 +8617,14 @@ ipcRenderer.on("selected-manifest-folder", async (event, result) => {
     }
 
     try {
-      await client.post(`/curate_datasets/manifest_files`, {
-        generate_purpose: "",
-        soda_json_object: temp_sodaJSONObj,
-      },
-        { timeout: 0 });
+      await client.post(
+        `/curate_datasets/manifest_files`,
+        {
+          generate_purpose: "",
+          soda_json_object: temp_sodaJSONObj,
+        },
+        { timeout: 0 }
+      );
 
       $("body").removeClass("waiting");
       logCurationForAnalytics(
@@ -9155,12 +9172,6 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
 
   // set the license's status
   statuses.license = license && license.length ? true : false;
-
-  let role = await api.getDatasetRole(defaultBfDataset);
-
-  if (role !== "owner") {
-    return;
-  }
 
   // declare the orcidId
   let orcidId;
