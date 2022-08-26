@@ -1432,6 +1432,10 @@ const guidedResetUserTeamPermissionsDropdowns = () => {
   $("#select-permission-list-users-and-teams").val("Select role");
 };
 
+//Main function that prepares individual pages based on the state of the sodaJSONObj
+//The general flow is to check if there is values for the keys relevant to the page
+//If the keys exist, extract the data from the sodaJSONObj and populate the page
+//If the keys do not exist, reset the page (inputs, tables etc.) to the default state
 const traverseToTab = async (targetPageID) => {
   console.log(targetPageID);
   try {
@@ -1661,6 +1665,7 @@ const traverseToTab = async (targetPageID) => {
         ),
         { recursive: true }
       );
+
       for (const highLevelFolder of Object.keys(
         datasetStructureJSONObj["folders"]
       )) {
