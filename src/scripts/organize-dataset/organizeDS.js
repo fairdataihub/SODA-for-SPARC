@@ -663,7 +663,6 @@ function renameFolder(
 }
 
 function getGlobalPath(path) {
-  console.log(path);
   var currentPath = path.value.trim();
   var jsonPathArray = currentPath.split("/");
   var filtered = jsonPathArray.filter(function (el) {
@@ -775,13 +774,9 @@ function loadFileFolder(myPath) {
 }
 
 function getRecursivePath(filteredList, inputObj) {
-  console.log(filteredList);
-  console.log(inputObj);
   var myPath = inputObj;
   for (var item of filteredList) {
     if (item.trim() !== "") {
-      console.log(myPath);
-      console.log(item);
       myPath = myPath["folders"][item];
     }
   }
@@ -2116,7 +2111,7 @@ function observeElement(element, property, callback, delay = 0) {
 //when on top layer of dataset eventListener is removed
 function check_dataset_value() {
   if (dataset_path.value === "My_dataset_folder/") {
-    scroll_box.removeEventListener("scroll", lazyLoad, true);
+    item_box.removeEventListener("scroll", lazyLoad, true);
   }
   if (dataset_path.value != "My_dataset_folder/") {
     var filtered = getGlobalPath(dataset_path);
@@ -2139,7 +2134,7 @@ var amount = 500;
 
 function beginScrollListen() {
   amount = 500;
-  scroll_box.addEventListener("scroll", lazyLoad);
+  item_box.addEventListener("scroll", lazyLoad);
   console.log("activating event listener");
 }
 
@@ -2148,16 +2143,25 @@ async function lazyLoad() {
   let filtered = getGlobalPath(dataset_path);
   let myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
 
-  //item_box height is at 420 when there is no overflow
-  if (item_box.offsetHeight === 420) {
-    scroll_box.removeEventListener("scroll", lazyLoad);
-    amount = 500;
-  }
+  //if there's less than 20 items event listener will be removed
+  console.log(item_box.offsetHeight);
+  // if (item_box.children.length < 20) {
+  //   console.log("removing event listener");
+  //   item_box.removeEventListener("scroll", lazyLoad);
+  //   amount = 500;
+  // }
 
   //load spinner is prepended to beginning to elements if any de-rendered
+  //itemscrollTop is > item_box.scrollHeight - 280 (for scrolling bottom)
+  //item.scrollTop is < 280 (scrolling the top)
+
   if (item_box.childElementCount != 0) {
-    if (item_box.children[0].id === "items_container") {
-      if (scroll_box.scrollTop < 280) {
+    if (item_box.children[0].id === "items_container" || item_box.children[item_box.childElementCount - 1].id === "items_container") {
+      //loading icon is there
+      if (item_box.scrollTop > item_box.scrollHeight - 300 || (item_box.scrollTop < 300 && item_box.children[0].id === "items_container")) {
+        console.log(item_box.scrollTop);
+        console.log(scroll_box.scrollTop);
+        //for rerendering on scroll up
         //monitors when user scrolls back up to prepend elements
         let array_select = preprended_items - 1;
         let remove_limit = 5; //only prepend 500 elements at a time
@@ -2170,7 +2174,7 @@ async function lazyLoad() {
         item_box.children[0].remove(); //remove loading spinner
         //add elements back to top of item_box
         for (let i = 0; i < remove_limit; i++) {
-          $(uiItems).prepend(already_created_elem[array_select]);
+          $(uiItems).prepend(already_created_elem[array_select]); //adding on scroll up
           array_select--;
         }
         array_select += 1;
@@ -2197,8 +2201,8 @@ async function lazyLoad() {
         for (let i = 0; i <= 500; i++) {
           item_box.lastChild.remove();
         }
-        if (item_box.childElementCount > 1001) {
-          while (item_box.childElementCount > 1001) {
+        if (item_box.childElementCount > 1000) {
+          while (item_box.childElementCount > 1000) {
             item_box.lastChild.remove();
           }
           if (item_box.children[0].id != "items_container") {
@@ -2209,7 +2213,7 @@ async function lazyLoad() {
         start -= 5;
         amount -= 500;
         preprended_items -= 5;
-        $("#items").append(load_spinner);
+        $("#items").append(load_spinner); //loading spinner reattached
         item_box.lastChild.style.setProperty("margin-top", "5px");
         item_box.lastChild.style.setProperty("margin-bottom", "30px");
       }
@@ -2225,8 +2229,8 @@ async function lazyLoad() {
     }
   } else {
     if (
-      scroll_box.scrollTop + 50 >
-      scroll_box.scrollHeight - scroll_box.offsetHeight
+      item_box.scrollTop + 50 >
+      item_box.scrollHeight - item_box.offsetHeight
     ) {
       //user scrolls down, render more items if available
       let wait4items = new Promise(async (resolved) => {
@@ -2278,7 +2282,7 @@ async function add_items_to_view(list, amount_req, reset) {
     }
   }
   if (item_box.children[0] != undefined) {
-    if (item_box.children[0].id === "items_container") {
+    if (item_box.children[0].id === "items_container" || item_box.children[0].classList.contains("drag-drop-container-instructions")) {
       item_box.children[0].remove();
     }
   }
@@ -2286,7 +2290,7 @@ async function add_items_to_view(list, amount_req, reset) {
   //folders and files stored in one array
   already_created_elem = list[0].concat(list[1]);
 
-  if (element_items >= 1001) {
+  if (element_items >= 1000) {
     //at most we want 1000 items rendered
     preprended_items += 5;
 
@@ -2297,6 +2301,8 @@ async function add_items_to_view(list, amount_req, reset) {
     item_box.children[0].style.setProperty("margin-top", "20px");
   }
 
+  console.log(start);
+  console.log(elements_req);
   for (let i = start; i < elements_req; i++) {
     if (i < already_created_elem.length) {
       $(uiItems).append(already_created_elem[i]);
@@ -2312,6 +2318,14 @@ async function add_items_to_view(list, amount_req, reset) {
     item_box.lastChild.style.setProperty("margin-top", "5px");
     item_box.lastChild.style.setProperty("margin-bottom", "30px");
   }
+}
+
+const resetLazyLoading = () => {
+already_created_elem = [];
+listed_count = 0;
+start = 0;
+preprended_items = 0;
+amount = 500;
 }
 
 ///// function to load details to show in display once

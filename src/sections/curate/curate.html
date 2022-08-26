@@ -100,7 +100,7 @@
 <section
   id="organize-section"
   class="section js-section u-category-windows"
-  style="padding-left: 15px; overflow-y: hidden"
+  style="padding-left: 15px; overflow-y: hidden; margin-left: -25px"
 >
   <main
     class="dash-content"
@@ -1101,7 +1101,6 @@
 
             <div
               style="
-                border-top: 1px solid #f0f0f0;
                 padding: 0 0;
                 margin: 3px 3px;
                 margin-left: 60px;
@@ -1110,15 +1109,14 @@
                 justify-content: space-between;
               "
             >
-              <div style="width: 100%; display: flex; flex-direction: row">
+              <div style="width: 100%; display: flex; flex-direction: row; margin-right: 1.rem;">
                 <div
-                  class="container-fluid"
+                  class="container-fluid freeform-file-explorer"
                   id="free-form-folder-structure-container"
-                  style="margin-top: 5px; height: auto; border-radius: 3px"
                 >
                   <div
                     id="organize-path-and-back-button-div"
-                    style="display: flex"
+                    class="freeform-file-explorer-buttons"
                   >
                     <!-- <div> -->
                     <!-- <h5 style="cursor: pointer;float:left;font-size:15px;color:var(--tagify-dd-color-primary)">
@@ -1274,6 +1272,12 @@
                     class="div-organize-items shared-folder-structure-element"
                     ondrop="drop(event);"
                     ondragover="allowDrop(event);"
+                    style="
+                      box-shadow: none !important;
+                      border: none;
+                      overflow-y: auto;
+                      max-height: 400px;
+                    "
                   ></div>
                   <!-- "data" is jstree html element -->
                   <div id="data" style="display: none"></div>
@@ -4687,6 +4691,7 @@
           flex-direction: row;
           justify-content: space-between;
           height: 80px;
+          margin-right: 3.7rem;
         "
       >
         <div style="display: flex; flex-direction: row">

@@ -2,7 +2,7 @@
 <section
   id="guided_mode-section"
   class="section js-section u-category-windows"
-  style="padding-left: 15px; overflow-y: hidden"
+  style="padding-left: 5px; overflow-y: hidden; margin-left: -15px"
 >
   <div
     class="main-tabs show"
@@ -751,20 +751,37 @@
                 <div
                   class="guided--container-subject-samples mt-md"
                   id="guided-primary-samples-file-explorer-container"
-                  style="margin-right: 0.5rem; padding-top: 10px"
+                  style="
+                    margin-right: 0.5rem;
+                    padding-top: 0;
+                    border: 2px solid lightgray;
+                    max-width: 1153px !important;
+                  "
                 >
                   <div
                     class="guided--hlf-selection-container"
-                    style="padding-top: 0 !important"
+                    style="
+                      padding-top: 0 !important;
+                      border-right: 2px solid lightgray;
+                      padding-bottom: 0;
+                      border-radius: 0;
+                    "
                   >
                     <label
                       class="guided--form-label centered"
-                      style="padding-bottom: 12px; padding-top: 12px"
+                      style="
+                        border-bottom: 2px solid lightgray;
+                        padding-bottom: 15px;
+                        padding-top: 12px;
+                        background: lightgray;
+                        color: black;
+                      "
                       >Dataset samples:
                     </label>
                     <aside
                       class="guided--hlf-selection-aside"
                       id="guided-primary-samples-aside"
+                      style="direction: rtl"
                     ></aside>
                   </div>
                   <div
@@ -775,7 +792,6 @@
                       padding: 25px;
                       border: black solid 2px;
                       width: 800px;
-                      margin-left: 0.5rem;
                       border-radius: 4px;
                     "
                   >
@@ -858,19 +874,33 @@
                 <div
                   class="guided--container-subject-samples mt-md"
                   id="guided-primary-subjects-file-explorer-container"
+                  style="border: 2px solid lightgray"
                 >
                   <div
                     class="guided--hlf-selection-container"
-                    style="padding-top: 0"
+                    style="
+                      padding-top: 0;
+                      border-right: 2px solid lightgray;
+                      width: 350px;
+                      border-radius: 0;
+                      height: 476px;
+                    "
                   >
                     <label
                       class="guided--form-label centered"
-                      style="padding: 12px 0 12px 0; height: 48px"
+                      style="
+                        padding: 12px 0 12px 0;
+                        border-bottom: 2px solid lightgray;
+                        height: 48px;
+                        color: black;
+                        background: lightgray;
+                      "
                       >Dataset subjects:
                     </label>
                     <aside
                       class="guided--hlf-selection-aside"
                       id="guided-primary-subjects-aside"
+                      style="font-weight: 600; direction: rtl"
                     ></aside>
                   </div>
                   <div
@@ -993,9 +1023,24 @@
                 <div
                   class="guided--container-subject-samples mt-md"
                   id="guided-source-samples-file-explorer-container"
+                  style="border: 2px solid lightgray"
                 >
-                  <div class="guided--hlf-selection-container">
-                    <label class="guided--form-label centered"
+                  <div
+                    class="guided--hlf-selection-container"
+                    style="
+                      padding-top: 0;
+                      border-radius: 0;
+                      border: none;
+                      border-right: 2px solid lightgray;
+                    "
+                  >
+                    <label
+                      class="guided--form-label centered"
+                      style="
+                        padding-top: 12px;
+                        padding-bottom: 15px;
+                        background: lightgray;
+                      "
                       >Dataset samples:
                     </label>
                     <aside
@@ -1090,14 +1135,26 @@
                 <div
                   class="guided--container-subject-samples mt-md"
                   id="guided-source-subjects-file-explorer-container"
+                  style="border: 2px solid lightgray"
                 >
-                  <div class="guided--hlf-selection-container">
-                    <label class="guided--form-label centered"
+                  <div
+                    class="guided--hlf-selection-container"
+                    style="
+                      border-radius: 0;
+                      padding-top: 0;
+                      border: none;
+                      border-right: 2px solid lightgray;
+                    "
+                  >
+                    <label
+                      class="guided--form-label centered"
+                      style="background: lightgray; padding: 12px 0 15px 0"
                       >Dataset subjects:
                     </label>
                     <aside
                       class="guided--hlf-selection-aside"
                       id="guided-source-subjects-aside"
+                      style="font-weight: 700 !important"
                     ></aside>
                   </div>
                   <div
@@ -1221,9 +1278,20 @@
                 <div
                   class="guided--container-subject-samples mt-md"
                   id="guided-derivative-samples-file-explorer-container"
+                  style="border: 2px solid lightgray"
                 >
-                  <div class="guided--hlf-selection-container">
-                    <label class="guided--form-label centered"
+                  <div
+                    class="guided--hlf-selection-container"
+                    style="
+                      padding-top: 0;
+                      border-radius: 0;
+                      border: none;
+                      border-right: 2px solid lightgray;
+                    "
+                  >
+                    <label
+                      class="guided--form-label centered"
+                      style="background: lightgray; padding: 12px 0 16px 0"
                       >Dataset samples:
                     </label>
                     <aside
@@ -1319,16 +1387,19 @@
                   </p>
                 </div>
                 <div
-                  class="guided--container-subject-samples mt-md"
+                  class="guided--container-subject-samples mt-md asideContainer"
                   id="guided-derivative-subjects-file-explorer-container"
                 >
-                  <div class="guided--hlf-selection-container">
-                    <label class="guided--form-label centered"
+                  <div
+                    class="guided--hlf-selection-container asideTitleContainer"
+                  >
+                    <label class="guided--form-label centered asideTitle"
                       >Dataset subjects:
                     </label>
                     <aside
                       class="guided--hlf-selection-aside"
                       id="guided-derivative-subjects-aside"
+                      style="font-weight: 600"
                     ></aside>
                   </div>
                   <div
@@ -1555,117 +1626,120 @@
           <div
             class="guided--section"
             id="guided-file-explorer-elements"
-            style="
-              padding: 0;
-              margin-left: 0.5rem;
-              border-radius: 4px;
-              height: 476px;
-            "
+            style="padding: 0; border-radius: 4px; height: 476px"
           >
             <h2
               class="guided--text-sub-step mt-0"
               id="structure-folder-header"
             ></h2>
             <p class="guided--help-text" id="structure-folder-contents"></p>
-
             <div
-              class="guided--folder-organization-buttons-container"
-              style="margin-top: 0.44rem; width: 97% !important"
+              id="items-guided-container"
+              style="width: 100%; display: flex; flex-direction: column"
             >
               <div
-                class="guided--folder-organization-buttons-container-sub"
-                style="flex-grow: 1"
+                class="guided--folder-organization-buttons-container"
+                style="
+                  margin-top: 0.44rem;
+                  width: 97% !important;
+                  align-self: center;
+                "
               >
-                <button
-                  class="ui secondary basic button small onHoverBlackBoxShadow"
-                  id="guided-button-back"
+                <div
+                  class="guided--folder-organization-buttons-container-sub"
+                  style="flex-grow: 1"
                 >
-                  <i class="fas fa-arrow-up"></i>
-                </button>
-                <input
-                  style="
-                    margin: 0px 7px;
-                    display: flex;
-                    flex-grow: 1;
-                    border: none;
-                    font-family: 'Raleway', sans-serif;
-                    font-size: 16px;
-                    font-weight: 600;
-                    cursor: default;
-                    color: #898989;
-                    display: none;
-                  "
-                  id="guided-input-global-path"
-                  value="My_dataset_folder/"
-                  readonly
-                />
-              </div>
-              <div class="guided--folder-organization-buttons-container-sub">
-                <button
-                  class="ui primary basic button small onHoverBlueBoxShadow"
-                  id="guided-new-folder"
-                  style="margin-right: 7px"
-                >
-                  <i class="fas fa-folder-plus" style="margin-right: 7px"></i
-                  >New folder
-                </button>
-                <button
-                  class="ui primary basic button small remove-margin-right onHoverBlueBoxShadow"
-                  id="guided-import-folder"
-                  style="width: 165px; margin-right: 7px !important"
-                >
-                  <svg
-                    style="margin-right: 7px"
-                    width="1em"
-                    height=".9em"
-                    viewbox="0 0 16 16"
-                    class="bi bi-upload"
-                    fill="currentColor"
-                    xmlns="http://www.w3.org/2000/svg"
+                  <button
+                    class="ui secondary basic button small onHoverBlackBoxShadow"
+                    id="guided-button-back"
                   >
-                    <path
-                      fill-rule="evenodd"
-                      d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"
-                    />
-                    <path
-                      fill-rule="evenodd"
-                      d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"
-                    />
-                  </svg>
-                  Import folder
-                </button>
-                <button
-                  class="ui primary basic button small remove-margin-right onHoverBlueBoxShadow"
-                  id="guided-imoprt-file"
-                  style="width: 165px"
-                >
-                  <svg
+                    <i class="fas fa-arrow-up"></i>
+                  </button>
+                  <input
+                    style="
+                      margin: 0px 7px;
+                      display: flex;
+                      flex-grow: 1;
+                      border: none;
+                      font-family: 'Raleway', sans-serif;
+                      font-size: 16px;
+                      font-weight: 600;
+                      cursor: default;
+                      color: #898989;
+                      display: none;
+                    "
+                    id="guided-input-global-path"
+                    value="My_dataset_folder/"
+                    readonly
+                  />
+                </div>
+                <div class="guided--folder-organization-buttons-container-sub">
+                  <button
+                    class="ui primary basic button small onHoverBlueBoxShadow"
+                    id="guided-new-folder"
                     style="margin-right: 7px"
-                    width="1em"
-                    height=".9em"
-                    viewbox="0 0 16 16"
-                    class="bi bi-upload"
-                    fill="currentColor"
-                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    <path
-                      fill-rule="evenodd"
-                      d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"
-                    />
-                    <path
-                      fill-rule="evenodd"
-                      d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"
-                    />
-                  </svg>
-                  Import file
-                </button>
+                    <i class="fas fa-folder-plus" style="margin-right: 7px"></i
+                    >New folder
+                  </button>
+                  <button
+                    class="ui primary basic button small remove-margin-right onHoverBlueBoxShadow"
+                    id="guided-import-folder"
+                    style="width: 165px; margin-right: 7px !important"
+                  >
+                    <svg
+                      style="margin-right: 7px"
+                      width="1em"
+                      height=".9em"
+                      viewbox="0 0 16 16"
+                      class="bi bi-upload"
+                      fill="currentColor"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"
+                      />
+                      <path
+                        fill-rule="evenodd"
+                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"
+                      />
+                    </svg>
+                    Import folder
+                  </button>
+                  <button
+                    class="ui primary basic button small remove-margin-right onHoverBlueBoxShadow"
+                    id="guided-imoprt-file"
+                    style="width: 165px"
+                  >
+                    <svg
+                      style="margin-right: 7px"
+                      width="1em"
+                      height=".9em"
+                      viewbox="0 0 16 16"
+                      class="bi bi-upload"
+                      fill="currentColor"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"
+                      />
+                      <path
+                        fill-rule="evenodd"
+                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"
+                      />
+                    </svg>
+                    Import file
+                  </button>
+                </div>
               </div>
+              <div
+                id="guided-folder-structure-container"
+                class="w-100"
+                style="border-top: 2px solid lightgray; margin-top: 0"
+              ></div>
             </div>
-            <div
-              id="guided-folder-structure-container"
-              class="w-100"
-              style="margin-top: 0"
-            ></div>
           </div>
         </div>
       </div>
@@ -1675,10 +1749,6 @@
         class="guided--parent-tab hidden"
       >
         <div class="guided--capsule-container">
-          <div
-            class="guided--capsule"
-            id="guided-manifest-file-generation-capsule"
-          ></div>
           <div class="guided--capsule" id="guided-airtable-award-capsule"></div>
           <div
             class="guided--capsule"
@@ -1705,170 +1775,6 @@
           <div
             class="guided--capsule"
             id="guided-create-readme-metadata-capsule"
-          ></div>
-        </div>
-        <div
-          class="guided--panel hidden"
-          id="guided-manifest-file-generation-tab"
-        >
-          <div class="guided--section">
-            <h1 class="guided--text-sub-step">Manifest files</h1>
-            <p class="guided--help-text">
-              The SPARC guidelines require each dataset to have specific
-              metadata files including manifest files, as described by the SPARC
-              Data Standards (SDS). Specifically, a manifest.xlsx file that
-              lists all the data files is required in each high-level SPARC
-              folder. You can request SODA to create them automatically and they
-              will be included in your dataset when it is generated in the last
-              step of this guided workflow.
-            </p>
-          </div>
-          <div class="guided--section">
-            <h2 class="guided--text-sub-step">
-              Would you like SODA to auto-generate your 'mandatory' manifest
-              files?
-            </h2>
-            <div class="guided--radio-button-container">
-              <button
-                class="guided--radio-button tile-button"
-                data-next-element="guided-section-manifest-auto-generation"
-                data-button-config-value="manifest-files-generated-automatically"
-                data-button-config-value-state="yes"
-              >
-                <div class="guided--tile-button-icon">
-                  <img
-                    src="assets/img/logo-new-green.png"
-                    alt="SODA logo"
-                    style="height: 50px; width: 40px"
-                  />
-                </div>
-                <div class="guided--tile-body">
-                  <h2>Yes, auto-generate my manifest files</h2>
-                </div>
-              </button>
-              <button
-                class="guided--radio-button tile-button"
-                id="guided-button-data-derivative-manual"
-                style="
-                  opacity: 0.5;
-                  cursor: default !important;
-                  pointer-events: none;
-                "
-              >
-                <div class="guided--tile-button-icon">
-                  <svg
-                    height="50"
-                    width="50"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewbox="0 0 80.48 98.35"
-                  >
-                    <defs>
-                      <style>
-                        .cls-1,
-                        .cls-2 {
-                          fill: none;
-                        }
-
-                        .cls-1,
-                        .cls-2,
-                        .cls-3 {
-                          stroke-miterlimit: 10;
-                        }
-
-                        .cls-1 {
-                          stroke-width: 6px;
-                        }
-
-                        .cls-2 {
-                          stroke-width: 8px;
-                        }
-                      </style>
-                    </defs>
-                    <g id="Layer_2" data-name="Layer 2">
-                      <g id="Layer_2-2" data-name="Layer 2">
-                        <rect
-                          class="cls-1"
-                          x="65.2"
-                          y="70.64"
-                          width="0.17"
-                          height="25.22"
-                          stroke="#B80D49"
-                        ></rect>
-                        <rect
-                          class="cls-1"
-                          x="65.29"
-                          y="70.64"
-                          width="0.17"
-                          height="25.22"
-                          transform="translate(148.62 17.88) rotate(90)"
-                          stroke="#B80D49"
-                        ></rect>
-                        <path
-                          class="cls-2"
-                          d="M43.72,83.16l-32.67.09a7.83,7.83,0,0,1-8-7.58V10.58A7.82,7.82,0,0,1,11.05,3H48.81L65.54,17.54V64.8"
-                          stroke="#565E6B"
-                        ></path>
-                        <path
-                          class="cls-3"
-                          d="M65.54,17.54v3.23H52.61a7.31,7.31,0,0,1-7.52-7.09V3h3.72Z"
-                          stroke="#565E6B"
-                          fill="#565E6B"
-                        ></path>
-                        <line
-                          class="cls-1"
-                          x1="4.4"
-                          y1="46.35"
-                          x2="63.26"
-                          y2="46.35"
-                          stroke="#13716D"
-                        ></line>
-                        <line
-                          class="cls-1"
-                          x1="4.4"
-                          y1="62.64"
-                          x2="63.26"
-                          y2="62.64"
-                          stroke="#13716D"
-                        ></line>
-                        <line
-                          class="cls-1"
-                          x1="22.4"
-                          y1="46.35"
-                          x2="22.4"
-                          y2="80.5"
-                          stroke="#13716D"
-                        ></line>
-                        <line
-                          class="cls-1"
-                          x1="40.4"
-                          y1="46.35"
-                          x2="40.4"
-                          y2="80.5"
-                          stroke="#13716D"
-                        ></line>
-                      </g>
-                    </g>
-                  </svg>
-                </div>
-                <div class="guided--tile-body">
-                  <h2>No, I alredy have manifest files prepared</h2>
-                </div>
-              </button>
-            </div>
-          </div>
-          <div
-            class="guided--section hidden"
-            id="guided-section-manifest-auto-generation"
-          >
-            <p class="guided--help-text">
-              SODA will create manifest.xlsx files for each of your high level
-              folders with the filename, timestamp, and filetype metadata
-              generated automatically. Click Save and Continue to confirm.
-            </p>
-          </div>
-          <div
-            class="guided--section hidden"
-            id="guided-section-data-derivative-manual"
           ></div>
         </div>
         <div class="guided--panel hidden" id="guided-airtable-award-tab">
@@ -2784,20 +2690,24 @@
             </p>
           </div>
           <div class="guided--container-subject-samples w-100 mt-md">
-            <div class="guided--hlf-selection-container ml-2">
-              <label class="guided--form-label centered"
+            <div
+              class="guided--hlf-selection-container ml-2 asideTitleContainer"
+              style="margin-left: 0 !important; border: 2px solid lightgray"
+            >
+              <label class="guided--form-label centered asideTitle"
                 >Dataset subjects:
               </label>
               <aside
                 class="guided--hlf-selection-aside"
                 id="guided-subjects-metadata-aside"
+                style="font-weight: 600"
               ></aside>
               <button
                 type="button"
                 id="guided-button-subject-metadata-copy"
                 class="btn btn-primary btn-sm"
                 onclick="openCopySubjectMetadataPopup()"
-                style="width: 100%; margin-top: 10px; height: 35px !important"
+                style="width: 88%; margin-top: 10px; height: 35px !important"
               >
                 Copy metadata from other subjects
               </button>
@@ -3481,8 +3391,11 @@
           </div>
 
           <div class="guided--container-subject-samples w-100 mt-md">
-            <div class="guided--hlf-selection-container ml-2">
-              <label class="guided--form-label centered"
+            <div
+              class="guided--hlf-selection-container ml-2 asideContainer"
+              style="padding-top: 0; padding-bottom: 5px"
+            >
+              <label class="guided--form-label centered asideTitle"
                 >Dataset samples:
               </label>
               <aside
@@ -3494,7 +3407,7 @@
                 class="btn btn-primary btn-sm"
                 id="guided-button-sample-metadata-copy"
                 onclick="openCopySampleMetadataPopup()"
-                style="width: 100%; margin: 10px; height: 35px !important"
+                style="width: 88%; margin: 10px; height: 42px !important"
               >
                 Copy metadata from other samples
               </button>

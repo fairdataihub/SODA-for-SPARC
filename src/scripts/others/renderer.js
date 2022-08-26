@@ -6228,7 +6228,7 @@ function sortObjByKeys(object) {
   return orderedObject;
 }
 
-async function listItems(jsonObj, uiItem, amount_req, reset) {
+const listItems = async (jsonObj, uiItem, amount_req, reset) => {
   //allow amount to choose how many elements to create
   //break elements into sets of 100
   var appendString = "";
@@ -6475,18 +6475,12 @@ async function listItems(jsonObj, uiItem, amount_req, reset) {
   if (file_elements[0] === "") {
     file_elements.splice(0, 1);
   }
-  console.log(folder_elements);
-  console.log(file_elements);
   let items = [folder_elements, file_elements];
 
-  console.log(items);
   if (amount_req != undefined) {
-    console.log(folder_elements);
-    console.log(file_elements);
 
     //add items using a different function
     //want the initial files to be imported
-    console.log(reset);
     let itemDisplay = new Promise(async (resolved) => {
       if (reset != undefined) {
         await add_items_to_view(items, amount_req, reset);

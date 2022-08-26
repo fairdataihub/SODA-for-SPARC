@@ -608,7 +608,6 @@ h1.guided--text-sub-step {
 .guided--container-subject-samples {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
   align-items: flex-start;
   max-width: 1200px;
   width: 90%;
@@ -1077,9 +1076,10 @@ h1.guided--text-sub-step {
   display: flex;
   flex-direction: column;
   width: 100%;
-  border: 1px solid black;
-  border-radius: 4px;
+  border: 1px solid lightgray;
+  border-radius: 4px !important;
   margin-bottom: 1rem;
+  direction: ltr;
 }
 
 .poolTitleContainer {
@@ -1096,4 +1096,108 @@ h1.guided--text-sub-step {
   width: 100%;
   margin: 0 !important;
   padding-bottom: 6px;
+}
+
+.guided-subjects-aside {
+  padding-left: 0.5rem;
+  border: 1px solid lightgray;
+  background: lightgray;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  text-align-last: center;
+}
+
+.file-explorer-transition {
+  -webkit-animation: swing 0.5s ease;
+  animation: swing 0.5s ease;
+  -webkit-animation-iteration-count: 1;
+  animation-iteration-count: 1;
+}
+
+@-webkit-keyframes swing {
+  15% {
+    opacity: 0;
+    -webkit-transform: translateX(-7px);
+    transform: translateX(-7px);
+  }
+  30% {
+    opacity: 0.3;
+    -webkit-transform: translateX(-7px);
+    transform: translateX(-7px);
+  }
+  50% {
+    opacity: 0.5;
+    -webkit-transform: translateX(-7px);
+    transform: translateX(-7px);
+  }
+  65% {
+    opacity: 0.65;
+    -webkit-transform: translateX(-5px);
+    transform: translateX(-5px);
+  }
+  80% {
+    opacity: 0.8;
+    -webkit-transform: translateX(0px);
+    transform: translateX(0px);
+  }
+  100% {
+    opacity: 1;
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+  }
+}
+
+@keyframes swing {
+  15% {
+    opacity: 0;
+    -webkit-transform: translateX(-7px);
+    transform: translateX(-7px);
+  }
+  30% {
+    opacity: 0.3;
+    -webkit-transform: translateX(-7px);
+    transform: translateX(-7px);
+  }
+  50% {
+    opacity: 0.5;
+    -webkit-transform: translateX(-7px);
+    transform: translateX(-7px);
+  }
+  65% {
+    opacity: 0.65;
+    -webkit-transform: translateX(-5px);
+    transform: translateX(-5px);
+  }
+  80% {
+    opacity: 0.8;
+    -webkit-transform: translateX(0px);
+    transform: translateX(0px);
+  }
+  100% {
+    opacity: 1;
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+  }
+}
+
+.asideContainer {
+  border: 2px solid lightgray;
+}
+
+.asideTitleContainer {
+  padding-top: 0;
+  border-radius: 0;
+  border: none;
+  border-right: 2px solid lightgray;
+}
+
+.asideTitle {
+  background: lightgray;
+  padding: 12px 0 15px 0;
+  border-radius: 0;
+}
+
+
+.border-styling {
+  border: 2px solid lightgray;
 }

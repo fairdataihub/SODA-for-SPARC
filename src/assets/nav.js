@@ -63,6 +63,8 @@ async function handleSectionTrigger(event) {
   // Display the current section
   const sectionId = `${event.target.dataset.section}-section`;
   const itemsContainer = document.getElementById("items");
+  const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
+  const freeFormButtons = document.getElementById("organize-path-and-back-button-div")
 
   console.log(sectionId);
 
@@ -73,6 +75,9 @@ async function handleSectionTrigger(event) {
     dataset_path = document.getElementById("guided-input-global-path");
     scroll_box = document.querySelector("#guided-body");
     itemsContainer.innerHTML = "";
+    resetLazyLoading();
+    freeFormItemsContainer.classList.remove("freeform-file-explorer"); //add styling for free form mode
+    freeFormButtons.classList.remove("freeform-file-explorer-buttons");
     $(".shared-folder-structure-element").appendTo(
       $("#guided-folder-structure-container")
     );
@@ -81,7 +86,7 @@ async function handleSectionTrigger(event) {
   }
 
   if (sectionId === "main_tabs-section") {
-    //Transition file explorer elements to guided mode
+    //Transition file explorer elements to freeform mode
     organizeDSglobalPath = document.getElementById("input-global-path");
     organizeDSglobalPath.value = "My_dataset_folder/";
     dataset_path = document.getElementById("input-global-path");
@@ -90,6 +95,11 @@ async function handleSectionTrigger(event) {
     $(".shared-folder-structure-element").appendTo(
       $("#free-form-folder-structure-container")
     );
+    freeFormItemsContainer.classList.add("freeform-file-explorer"); //add styling for free form mode
+    freeFormButtons.classList.add("freeform-file-explorer-buttons");
+
+    //reset lazyloading values
+    resetLazyLoading();
 
     //Reset variables shared with guided-mode if they had been modified
     sodaJSONObj = {};
