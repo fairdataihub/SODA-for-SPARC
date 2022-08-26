@@ -217,7 +217,7 @@ def excel_columns(start_index=0):
     single_letter = list(ascii_uppercase[start_index:])
     two_letter = [a + b for a, b in itertools.product(ascii_uppercase, ascii_uppercase)]
     return single_letter + two_letter
-
+  
 
 def rename_headers(workbook, max_len, start_index):
     """
@@ -245,7 +245,7 @@ def rename_headers(workbook, max_len, start_index):
     else:
 
         delete_range = len(columns_list) - max_len
-        workbook.delete_cols(4 + max_len, delete_range)
+        workbook.delete_cols(3 + max_len, delete_range)
 
 
 def grayout_subheaders(workbook, max_len, start_index):
@@ -430,6 +430,9 @@ def save_ds_description_file(
     rename_headers(ws1, max_len, 3)
     grayout_subheaders(ws1, max_len, 3)
     grayout_single_value_rows(ws1, max_len, 3)
+
+    if ws1["G1"].value == "Value n":
+        ws1.delete_cols(7)
 
     wb.save(destination)
 
@@ -1110,6 +1113,7 @@ def load_existing_DD_file(import_type, filepath):
 
     # check for at least 1 value is included
     non_empty_1st_value = checkEmptyColumn(DD_df["Value"])
+
     if non_empty_1st_value:
         abort(400, 
             "At least 1 value is required to import an existing dataset_description file"
@@ -1117,6 +1121,8 @@ def load_existing_DD_file(import_type, filepath):
 
     # drop Description and Examples columns
     DD_df = DD_df.drop(columns=["Description", "Example"])
+
+
 
     ## convert DD_df to array of arrays (a matrix)
     DD_matrix = DD_df.to_numpy().tolist()
