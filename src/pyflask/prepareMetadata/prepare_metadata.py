@@ -245,7 +245,7 @@ def rename_headers(workbook, max_len, start_index):
     else:
 
         delete_range = len(columns_list) - max_len
-        workbook.delete_cols(3 + max_len, delete_range)
+        workbook.delete_cols(4 + max_len, delete_range)
 
 
 def grayout_subheaders(workbook, max_len, start_index):
