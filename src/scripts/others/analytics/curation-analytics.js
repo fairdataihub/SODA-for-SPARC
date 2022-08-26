@@ -30,111 +30,192 @@ const logCurationErrorsToAnalytics = async (
   uploadedFilesSize,
   dataset_destination,
   mainTotalGenerateDatasetSize,
-  increaseInFileSize
+  increaseInFileSize,
+  guidedMode
 ) => {
-  logCurationForAnalytics(
-    "Error",
-    PrepareDatasetsAnalyticsPrefix.CURATE,
-    AnalyticsGranularity.PREFIX,
-    [],
-    determineDatasetLocation()
-  );
 
-  logCurationForAnalytics(
-    "Error",
-    PrepareDatasetsAnalyticsPrefix.CURATE,
-    AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-    ["Step 7", "Generate", "dataset", `${dataset_destination}`],
-    determineDatasetLocation()
-  );
+  if (!guidedMode) {
+    logCurationForAnalytics(
+      "Error",
+      PrepareDatasetsAnalyticsPrefix.CURATE,
+      AnalyticsGranularity.PREFIX,
+      [],
+      determineDatasetLocation()
+    );
+
+    logCurationForAnalytics(
+      "Error",
+      PrepareDatasetsAnalyticsPrefix.CURATE,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      ["Step 7", "Generate", "dataset", `${dataset_destination}`],
+      determineDatasetLocation()
+    );
+  } else {
+    // track that an Error in the upload has occurred
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      `Guided Mode - Generate - Dataset`,
+      "Generate",
+      1
+    );
+  }
 
   file_counter = 0;
   folder_counter = 0;
   get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
 
-  // when we fail we want to know the total amount of files we were trying to generate; whether not not we did a Pennsieve upload or Local, New, Saved
-  ipcRenderer.send(
-    "track-event",
-    "Error",
-    `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
-    "Number of Files",
-    file_counter
-  );
-
-  // when we fail we want to know the total size that we are trying to generate; whether not not we did a Pennsieve upload or Local, New, Saved
-  // does not need to be logged for Success as that isn't a good way to log the size of the aggregate successful uploads
-  ipcRenderer.send(
-    "track-event",
-    "Error",
-    "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
-    "Size",
-    mainTotalGenerateDatasetSize
-  );
-
-  let datasetLocation = determineDatasetLocation();
-
-  // log failed Local, Saved, or New dataset generation to Google Analytics
-  if (datasetLocation !== "Pennsieve") {
-    // when we fail we want to know how many files were generated
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
-      datasetLocation,
-      uploadedFiles
-    );
-
+  if (!guidedMode) {
+    // when we fail we want to know the total amount of files we were trying to generate; whether not not we did a Pennsieve upload or Local, New, Saved
     ipcRenderer.send(
       "track-event",
       "Error",
       `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
-      datasetLocation,
+      "Number of Files",
       file_counter
     );
 
-    ipcRenderer.send(
-      "track-event",
-      "Error",
-      `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Number of Files`,
-      datasetLocation,
-      file_counter
-    );
-
-    // log the size that was successfully generated
-    // TODO: Make this the last uploaded chunk
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
-      datasetLocation,
-      uploadedFilesSize
-    );
-
+    // when we fail we want to know the total size that we are trying to generate; whether not not we did a Pennsieve upload or Local, New, Saved
+    // does not need to be logged for Success as that isn't a good way to log the size of the aggregate successful uploads
     ipcRenderer.send(
       "track-event",
       "Error",
       "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
-      datasetLocation,
+      "Size",
       mainTotalGenerateDatasetSize
     );
 
-    // get dataset id if available
+  } else {
+    // when we fail we want to know the total amount of files we were trying to generate; whether not not we did a Pennsieve upload or Local, New, Saved
     ipcRenderer.send(
       "track-event",
       "Error",
-      `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Size`,
-      datasetLocation,
+      `Guided Mode - Generate - Dataset - Number of Files`,
+      "Number of Files",
+      file_counter
+    );
+
+    // when we fail we want to know the total size that we are trying to generate; whether not not we did a Pennsieve upload or Local, New, Saved
+    // does not need to be logged for Success as that isn't a good way to log the size of the aggregate successful uploads
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Guided Mode - Generate - Dataset - Size",
+      "Size",
       mainTotalGenerateDatasetSize
     );
+  }
+
+  if (!guidedMode) {
+
+    let datasetLocation = determineDatasetLocation();
+
+    // log failed Local, Saved, or New dataset generation to Google Analytics
+    if (datasetLocation !== "Pennsieve") {
+      // when we fail we want to know how many files were generated
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
+        datasetLocation,
+        uploadedFiles
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
+        datasetLocation,
+        file_counter
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Number of Files`,
+        datasetLocation,
+        file_counter
+      );
+
+      // log the size that was successfully generated
+      // TODO: Make this the last uploaded chunk
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+        datasetLocation,
+        uploadedFilesSize
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+        datasetLocation,
+        mainTotalGenerateDatasetSize
+      );
+
+      // get dataset id if available
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Size`,
+        datasetLocation,
+        mainTotalGenerateDatasetSize
+      );
+    } else {
+      // log the Pennsieve upload session information
+      // TODO: Check when an upload has started instead of assuming we fail on upload to Pennsieve
+      // some files have been successfully uploaded before the crash occurred. Reasonable to say half of the bucket.
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        PrepareDatasetsAnalyticsPrefix.CURATE +
+        " - Step 7 - Generate - Dataset - Number of Files",
+        `${datasetUploadSession.id}`,
+        Math.floor(BUCKET_SIZE / 2)
+      );
+
+      // track that a session failed so we can answer: "How many files were uploaded in a session before failure?" and "Did any session fail?"
+      // the last question is analagous to "Did any uploads to Pennsieve fail?" but has the benefit of helping us answer question one;
+      // without an explicit log of a session failing with the amount of files that were attempted that this provides we couldn't answer
+      // the first question.
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        PrepareDatasetsAnalyticsPrefix.CURATE +
+        " - Step 7 - Generate - Dataset - Number of Files",
+        `${datasetUploadSession.id}`,
+        file_counter
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+        `${datasetUploadSession.id}`,
+        // doesn't need to be incremented like uploadedFiles as this represents the final amount returned from the upload progress function;
+        // or just a little less
+        increaseInFileSize
+      );
+
+      // log the size that was attempted to be uploaded for the given session
+      // as above this helps us answer how much was uploaded out of the total before the session failed
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+        `${datasetUploadSession.id}`,
+        mainTotalGenerateDatasetSize
+      );
+    }
   } else {
     // log the Pennsieve upload session information
-    // TODO: Check when an upload has started instead of assuming we fail on upload to Pennsieve
     // some files have been successfully uploaded before the crash occurred. Reasonable to say half of the bucket.
     ipcRenderer.send(
       "track-event",
       "Success",
-      PrepareDatasetsAnalyticsPrefix.CURATE +
-        " - Step 7 - Generate - Dataset - Number of Files",
+      "Guided Mode - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
       Math.floor(BUCKET_SIZE / 2)
     );
@@ -146,8 +227,7 @@ const logCurationErrorsToAnalytics = async (
     ipcRenderer.send(
       "track-event",
       "Error",
-      PrepareDatasetsAnalyticsPrefix.CURATE +
-        " - Step 7 - Generate - Dataset - Number of Files",
+      "Guided Mode - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
       file_counter
     );
@@ -155,7 +235,7 @@ const logCurationErrorsToAnalytics = async (
     ipcRenderer.send(
       "track-event",
       "Success",
-      "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+      "Guided Mode - Generate - Dataset - Size",
       `${datasetUploadSession.id}`,
       // doesn't need to be incremented like uploadedFiles as this represents the final amount returned from the upload progress function;
       // or just a little less
@@ -167,7 +247,7 @@ const logCurationErrorsToAnalytics = async (
     ipcRenderer.send(
       "track-event",
       "Error",
-      "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+      "Guided Mode - Generate - Dataset - Size",
       `${datasetUploadSession.id}`,
       mainTotalGenerateDatasetSize
     );
