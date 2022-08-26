@@ -5295,6 +5295,18 @@ const generateSampleSpecificationRowElement = () => {
 };
 
 const confirmEnter = (button) => {
+  let input_id = button.previousElementSibling.id;
+  let sampleTable = false;
+  let addSampleButton = "";
+  let sampleTableContainers = "";
+  if(input_id === "guided--sample-input") {
+    //confirming the sample input, manually create another one
+    addSampleButton = button.parentElement.parentElement.parentElement.parentElement.previousElementSibling.children[0].children[0].children[1];
+    sampleTableContainers = document.getElementById("guided-div-add-samples-tables").children;
+    sampleTable = true;
+    console.log(addSampleButton);
+    // addSampleSpecificationTableRow();
+  }
   const ke = new KeyboardEvent("keyup", {
     bubbles: true,
     cancelable: true,
@@ -5308,6 +5320,33 @@ const confirmEnter = (button) => {
     //alert message is the previousElement
     input_field.parentNode.children[1].dispatchEvent(ke);
   }
+  if(sampleTable) {  //for adding a new sample row
+    console.log(sampleTableContainers)
+    let clickSampleButton = true;
+    for(let i = 0; i < sampleTableContainers.length; i++) {
+      sampleEntries = sampleTableContainers[i].children[1];
+      console.log(sampleEntries.children);
+      if(sampleEntries.children.length > 0) {
+        //entries have been create so look at the last one if an input is there
+        let lastEntryCount = sampleEntries.children.length - 1;
+        let lastEntry = sampleEntries.children[lastEntryCount];
+        let lastEntryTagType = lastEntry.children[0].children[0].children[1];
+        console.log(lastEntryTagType);
+        if(lastEntryTagType === "INPUT") {
+          //an input is already made (duplicates will have duplicate ids)
+          clickSampleButton = false;
+          break;
+        }
+      }
+      console.log(clickSampleButton);
+      if(clickSampleButton) {addSampleButton.click();}
+      // sampleEntries = sampleTableContainers[i].children[1].children;
+      // console.log(sampleEntries);
+      // console.log(sampleEntries[sampleEntries.length - 1].children[0].children[0]);
+      // if(sampleEntries[sampleEntries.length - 1].children)
+    }
+  }
+
 };
 
 const keydownListener = (event) => {
@@ -5333,6 +5372,7 @@ var enterKey = false;
 const confirmOnBlur = (element) => {
   window.addEventListener("keydown", keydownListener);
   document.getElementById(element).addEventListener("blur", onBlurEvent);
+  console.log(document.getElementById((element)));
 };
 
 const addSubjectSpecificationTableRow = () => {
@@ -5380,23 +5420,23 @@ const addSampleSpecificationTableRow = (clickedSubjectAddSampleButton) => {
   const sampleSpecificationTableInput = addSampleTableBody.querySelector(
     "input[name='guided-sample-id']"
   );
+  //check for any 
 
   if (sampleSpecificationTableInput) {
     //focus on the input that already exists
     //No need to create a new row
     sampleSpecificationTableInput.focus();
   } else {
-    // endConfirmOnBlur("guided--sample-input");
     //create a new table row Input element
     addSampleTableBody.innerHTML += generateSampleSpecificationRowElement();
-    confirmOnBlur("guided--sample-input");
     const newSamplerow = addSampleTableBody.querySelector("tr:last-child");
     //Focus the new sample row element
     const newSampleInput = newSamplerow.querySelector(
       "input[name='guided-sample-id']"
     );
+    window.addEventListener("keydown", keydownListener);
+    newSampleInput.addEventListener("blur", onBlurEvent);
     newSampleInput.focus();
-    // confirmOnBlur("guided--sample-input");
   }
 };
 
