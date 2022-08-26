@@ -35,24 +35,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   await new Promise((r) => setTimeout(r, 1000));
 
   //Synchronously include js files
-  includeJavaScriptFile("./assets/ex-links.js");
-  includeJavaScriptFile("./assets/nav.js");
-  includeJavaScriptFile("./assets/demo-btns.js");
-  includeJavaScriptFile("./preload.js");
-  includeJavaScriptFile("./scripts/others/renderer.js");
-  includeJavaScriptFile("./scripts/others/tab-effects.js");
-  includeJavaScriptFile("./scripts/disseminate/disseminate.js");
-  includeJavaScriptFile("./scripts/disseminate/prePublishingReview.js");
-  includeJavaScriptFile("./scripts/manage-dataset/manage-dataset.js");
-  includeJavaScriptFile("./scripts/metadata-files/datasetDescription.js");
-  includeJavaScriptFile("./scripts/organize-dataset/curate-functions.js");
-  includeJavaScriptFile("./scripts/organize-dataset/organizeDS.js");
-  includeJavaScriptFile("./scripts/metadata-files/manifest.js");
-  includeJavaScriptFile("./scripts/metadata-files/readme-changes.js");
-  includeJavaScriptFile("./scripts/metadata-files/subjects-samples.js");
-  includeJavaScriptFile("./scripts/metadata-files/submission.js");
-  includeJavaScriptFile("./scripts/guided-mode/lottieJSON.js");
-  includeJavaScriptFile("./scripts/guided-mode/guided-curate-dataset.js");
+  includeJavascriptFiles()
 });
 
 //Synchronously attaches a javascript file to the DOM
@@ -62,6 +45,34 @@ const includeJavaScriptFile = (jsFilePath) => {
   js.src = jsFilePath;
   document.body.appendChild(js);
 };
+
+const includeJavascriptFiles = () => {
+  includeJavaScriptFile("./assets/ex-links.js");
+  includeJavaScriptFile("./assets/nav.js");
+  includeJavaScriptFile("./assets/demo-btns.js");
+  includeJavaScriptFile("./preload.js");
+
+  var js = document.createElement("script");
+  js.type = "text/javascript";
+  js.src = './scripts/others/renderer.js';
+  js.onload = () => {
+    includeJavaScriptFile("./scripts/others/tab-effects.js");
+    includeJavaScriptFile("./scripts/disseminate/disseminate.js");
+    includeJavaScriptFile("./scripts/disseminate/prePublishingReview.js");
+    includeJavaScriptFile("./scripts/manage-dataset/manage-dataset.js");
+    includeJavaScriptFile("./scripts/metadata-files/datasetDescription.js");
+    includeJavaScriptFile("./scripts/organize-dataset/curate-functions.js");
+    includeJavaScriptFile("./scripts/organize-dataset/organizeDS.js");
+    includeJavaScriptFile("./scripts/metadata-files/manifest.js");
+    includeJavaScriptFile("./scripts/metadata-files/readme-changes.js");
+    includeJavaScriptFile("./scripts/metadata-files/subjects-samples.js");
+    includeJavaScriptFile("./scripts/metadata-files/submission.js");
+    includeJavaScriptFile("./scripts/guided-mode/lottieJSON.js");
+    includeJavaScriptFile("./scripts/guided-mode/guided-curate-dataset.js");
+  }
+
+  document.body.appendChild(js);
+}
 
 const sleep = (milliseconds) => {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
