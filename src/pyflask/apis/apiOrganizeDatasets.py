@@ -10,6 +10,7 @@ from namespaces import NamespaceEnum, get_namespace
 from flask_restx import Resource, fields, reqparse
 from errorHandlers import notBadRequestException
 import json
+from flask import request
 
 api = get_namespace(NamespaceEnum.ORGANIZE_DATASETS)
 
@@ -36,16 +37,13 @@ class BfGetDatasetFilesFolders(Resource):
     @api.expect(parser_file_folders)
     @api.doc(responses={200: "Success", 400: "Bad Request", 500: "Internal Server Error"}, description="Import a dataset from Pennsieve and populate the local SODA JSON object.")
     #@api.marshal_with(model_get_dataset_files_folders_response)
-    def get(self):
-        args = self.parser_file_folders.parse_args()
+    def post(self):
+        data = request.get_json()
 
-        sodajsonobject = args.get("sodajsonobject")
-
-        if sodajsonobject is None:
+        if "sodajsonobject" not in data:
             api.abort(400, "Missing parameter: sodajsonobject")
 
-        # convert sodajsonobject to object
-        sodajsonobject = json.loads(sodajsonobject)
+        sodajsonobject = data.get("sodajsonobject")
 
         try:
             return import_pennsieve_dataset(sodajsonobject)

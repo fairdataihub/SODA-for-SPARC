@@ -4573,12 +4573,16 @@ ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
       log.info("Generating a new dataset organize datasets at ${filepath}");
 
       try {
-        await client.post(`/organize_datasets/datasets`, {
-          generation_type: "create-new",
-          generation_destination_path: filepath[0],
-          dataset_name: newDSName,
-          soda_json_directory_structure: datasetStructureJSONObj,
-        });
+        await client.post(
+          `/organize_datasets/datasets`,
+          {
+            generation_type: "create-new",
+            generation_destination_path: filepath[0],
+            dataset_name: newDSName,
+            soda_json_directory_structure: datasetStructureJSONObj,
+          },
+          { timeout: 0 }
+        );
 
         document.getElementById("para-organize-datasets-error").style.display =
           "none";
@@ -6818,7 +6822,8 @@ ipcRenderer.on(
                     root_folder_path: root_folder_path,
                     irregular_folders: irregularFolderArray,
                     replaced: replaced,
-                  }
+                  },
+                  { timeout: 0 }
                 );
                 let { data } = importLocalDatasetResponse;
                 sodajsonobject = data;
@@ -7053,12 +7058,13 @@ document
 
     let emptyFilesFoldersResponse;
     try {
-      emptyFilesFoldersResponse = await client.get(
+      emptyFilesFoldersResponse = await client.post(
         `/curate_datasets/empty_files_and_folders`,
         {
-          params: {
-            soda_json_structure: JSON.stringify(sodaJSONObj),
-          },
+          soda_json_structure: sodaJSONObj,
+        },
+        {
+          timeout: 0,
         }
       );
     } catch (error) {
@@ -7276,9 +7282,13 @@ async function initiate_generate() {
   clearQueue();
 
   client
-    .post(`/curate_datasets/curation`, {
-      soda_json_structure: sodaJSONObj,
-    })
+    .post(
+      `/curate_datasets/curation`,
+      {
+        soda_json_structure: sodaJSONObj,
+      },
+      { timeout: 0 }
+    )
     .then(async (response) => {
       let { data } = response;
 
@@ -7949,12 +7959,13 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
   }
 
   try {
-    let filesFoldersResponse = await client.get(
+    let filesFoldersResponse = await client.post(
       `/organize_datasets/dataset_files_and_folders`,
       {
-        params: {
-          sodajsonobject: sodaJSONObj,
-        },
+        sodajsonobject: sodaJSONObj,
+      },
+      {
+        timeout: 0,
       }
     );
 
@@ -8266,10 +8277,16 @@ ipcRenderer.on("selected-manifest-folder", async (event, result) => {
     }
 
     try {
-      await client.post(`/curate_datasets/manifest_files`, {
-        generate_purpose: "",
-        soda_json_object: temp_sodaJSONObj,
-      });
+      await client.post(
+        `/curate_datasets/manifest_files`,
+        {
+          generate_purpose: "",
+          soda_json_object: temp_sodaJSONObj,
+        },
+        {
+          timeout: 0,
+        }
+      );
 
       $("body").removeClass("waiting");
       logCurationForAnalytics(

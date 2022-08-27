@@ -740,9 +740,13 @@ async function initiate_generate_manifest_bf() {
   clearQueue();
   let curationResponse;
   try {
-    curationResponse = await client.post(`/curate_datasets/curation`, {
-      soda_json_structure: sodaJSONObj,
-    });
+    curationResponse = await client.post(
+      `/curate_datasets/curation`,
+      {
+        soda_json_structure: sodaJSONObj,
+      },
+      { timeout: 0 }
+    );
   } catch (error) {
     clientError(error);
     file_counter = 0;
@@ -1093,19 +1097,21 @@ async function extractBFDatasetForManifestFile(
 function extractBFManifestFile() {
   return new Promise((resolve, reject) => {
     client
-      .get("/prepare_metadata/manifest_files/pennsieve", {
-        params: {
+      .post(
+        "/prepare_metadata/manifest_files/pennsieve",
+        {
           soda_json_object: sodaJSONObj,
           selected_account: defaultBfAccount,
           selected_dataset: defaultBfDataset,
         },
-      })
+        { timeout: 0 }
+      )
       .then((res) => {
         resolve(res);
       })
       .catch((err) => {
-        clientError(error);
-        reject(userErrorMessage(error));
+        clientError(err);
+        reject(userErrorMessage(err));
       });
   });
 }
@@ -1376,16 +1382,23 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
       {
         generate_purpose: "edit-manifest",
         soda_json_object: sodaJSONObj,
-      }
+      },
+      { timeout: 0 }
     );
     let res =
       generate_local_manifest.data.success_message_or_manifest_destination;
     if (editBoolean) {
       //// else: create locally for the purpose of generating of manifest files locally
       try {
-        await client.post(`/curate_datasets/manifest_files/local`, {
-          filepath: generatePath,
-        });
+        await client.post(
+          `/curate_datasets/manifest_files/local`,
+          {
+            filepath: generatePath,
+          },
+          {
+            timeout: 0,
+          }
+        );
 
         Swal.fire({
           title: "Successfully generated!",
