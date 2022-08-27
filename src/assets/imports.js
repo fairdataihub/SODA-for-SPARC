@@ -35,37 +35,38 @@ document.addEventListener("DOMContentLoaded", async function () {
   await new Promise((r) => setTimeout(r, 2000));
 
   //Synchronously include js files
-  includeJavaScriptFile("./assets/ex-links.js");
-  includeJavaScriptFile("./assets/nav.js");
-  includeJavaScriptFile("./assets/demo-btns.js");
-  includeJavaScriptFile("./preload.js");
-  includeJavaScriptFile("./scripts/others/renderer.js");
-  includeJavaScriptFile("./scripts/others/tab-effects.js");
-  includeJavaScriptFile("./scripts/disseminate/disseminate.js");
-  includeJavaScriptFile("./scripts/disseminate/prePublishingReview.js");
-  includeJavaScriptFile("./scripts/manage-dataset/manage-dataset.js");
-  includeJavaScriptFile("./scripts/metadata-files/datasetDescription.js");
-  includeJavaScriptFile("./scripts/organize-dataset/curate-functions.js");
-  includeJavaScriptFile("./scripts/organize-dataset/organizeDS.js");
-  includeJavaScriptFile("./scripts/metadata-files/manifest.js");
-  includeJavaScriptFile("./scripts/metadata-files/readme-changes.js");
-  includeJavaScriptFile("./scripts/metadata-files/subjects-samples.js");
-  includeJavaScriptFile("./scripts/metadata-files/submission.js");
-  includeJavaScriptFile("./scripts/guided-mode/lottieJSON.js");
-  includeJavaScriptFile("./scripts/guided-mode/guided-curate-dataset.js");
+  await includeJavaScriptFile("./assets/ex-links.js");
+  await includeJavaScriptFile("./assets/nav.js");
+  await includeJavaScriptFile("./assets/demo-btns.js");
+  await includeJavaScriptFile("./preload.js");
+  await includeJavaScriptFile("./scripts/others/renderer.js");
+  await includeJavaScriptFile("./scripts/others/tab-effects.js");
+  await includeJavaScriptFile("./scripts/disseminate/disseminate.js");
+  await includeJavaScriptFile("./scripts/disseminate/prePublishingReview.js");
+  await includeJavaScriptFile("./scripts/manage-dataset/manage-dataset.js");
+  await includeJavaScriptFile("./scripts/metadata-files/datasetDescription.js");
+  await includeJavaScriptFile("./scripts/organize-dataset/curate-functions.js");
+  await includeJavaScriptFile("./scripts/organize-dataset/organizeDS.js");
+  await includeJavaScriptFile("./scripts/metadata-files/manifest.js");
+  await includeJavaScriptFile("./scripts/metadata-files/readme-changes.js");
+  await includeJavaScriptFile("./scripts/metadata-files/subjects-samples.js");
+  await includeJavaScriptFile("./scripts/metadata-files/submission.js");
+  await includeJavaScriptFile("./scripts/guided-mode/lottieJSON.js");
+  await includeJavaScriptFile("./scripts/guided-mode/guided-curate-dataset.js");
 });
 
-//Synchronously attaches a javascript file to the DOM
-const includeJavaScriptFile = (jsFilePath) => {
-  var js = document.createElement("script");
-  js.type = "text/javascript";
-  js.src = jsFilePath;
-  js.async = false;
-  document.body.appendChild(js);
-};
-
-const includeJavascriptFiles = () => {};
-
-const sleep = (milliseconds) => {
-  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+const includeJavaScriptFile = async (filePath) => {
+  return new Promise((resolve, reject) => {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = filePath;
+    script.async = false;
+    script.onload = () => {
+      resolve();
+    };
+    script.onerror = () => {
+      reject("cannot load script " + filePath);
+    };
+    document.body.appendChild(script);
+  });
 };
