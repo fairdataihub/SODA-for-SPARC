@@ -3188,6 +3188,11 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   //Return the user to the last page they exited on
   const pageBeforeExit = datasetResumeJsonObj["page-before-exit"];
   if (pageBeforeExit) {
+    //Hide the sub-page navigation and show the main page navigation footer
+    //If the user traverses to a page that requires the sub-page navigation,
+    //the sub-page will be shown during traverseToTab() function
+    $("#guided-sub-page-navigation-footer-div").hide();
+    $("#guided-footer-div").css("display", "flex");
     //If the last page the exited was the upload page, take them to the review page
     pageBeforeExit === "guided-dataset-generation-tab"
       ? traverseToTab("guided-dataset-generation-confirmation-tab")
@@ -9230,6 +9235,7 @@ $(document).ready(() => {
         hideClass: {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
+        allowOutsideClick: false,
       }).then((result) => {
         if (result.isConfirmed) {
           guided_initiate_generate();

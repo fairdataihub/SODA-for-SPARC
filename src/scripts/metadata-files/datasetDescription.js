@@ -1210,12 +1210,10 @@ async function helpSPARCAward(filetype, curationMode) {
         showCancelButton: true,
         confirmButtonText: "Confirm",
         didOpen: () => {
-          if (curationMode === "free-form") {
-            $("#select-sparc-award-submission-spinner").css("display", "none");
-            populateSelectSPARCAward(awardObj, "select-SPARC-award-submission");
-            $("#select-SPARC-award-submission").selectpicker();
-            $("#select-SPARC-award-submission").selectpicker("refresh");
-          }
+          $("#select-sparc-award-submission-spinner").css("display", "none");
+          populateSelectSPARCAward(awardObj, "select-SPARC-award-submission");
+          $("#select-SPARC-award-submission").selectpicker();
+          $("#select-SPARC-award-submission").selectpicker("refresh");
         },
         preConfirm: () => {
           if ($("#select-SPARC-award-submission").val() === "Select") {
