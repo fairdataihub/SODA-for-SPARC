@@ -176,7 +176,6 @@ const killAllPreviousProcesses = async () => {
     promisesArray.push(
       axios.get(`http://127.0.0.1:${currentPort}/sodaforsparc_server_shutdown`, {})
     );
-    console.log(currentPort)
   }
 
   // wait for all the promises to resolve

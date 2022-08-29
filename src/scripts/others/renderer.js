@@ -216,6 +216,7 @@ document.getElementById("getting_starting_tab").click();
 
 let client = null;
 
+// TODO: change the default port so it is based off the discovered port in Main.js
 client = axios.create({
   baseURL: "http://127.0.0.1:4242/",
   timeout: 300000,
