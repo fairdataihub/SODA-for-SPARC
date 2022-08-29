@@ -2523,6 +2523,10 @@ const setActiveSubPage = (pageIdToActivate) => {
           tags: true,
           width: "100%",
           closeOnSelect: false,
+          createTag: function () {
+            // Disable tagging
+            return null;
+          },
         });
         //update the newPoolSubjectsElement with the subjects in the pool
         updatePoolDropdown($(newPoolSubjectsSelectElement), poolName);

@@ -63,12 +63,20 @@ async function handleSectionTrigger(event) {
   // Display the current section
   const sectionId = `${event.target.dataset.section}-section`;
   const itemsContainer = document.getElementById("items");
-  const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
-  const freeFormButtons = document.getElementById("organize-path-and-back-button-div")
-
-  console.log(sectionId);
+  const freeFormItemsContainer = document.getElementById(
+    "free-form-folder-structure-container"
+  );
+  const freeFormButtons = document.getElementById(
+    "organize-path-and-back-button-div"
+  );
 
   if (sectionId === "guided_mode-section") {
+    //Reset variables shared between guided and free form mode
+    sodaJSONObj = {};
+    datasetStructureJSONObj = {};
+    subjectsTableData = [];
+    samplesTableData = [];
+
     //Transition file explorer elements to guided mode
     organizeDSglobalPath = document.getElementById("guided-input-global-path");
     organizeDSglobalPath.value = "";
@@ -86,6 +94,12 @@ async function handleSectionTrigger(event) {
   }
 
   if (sectionId === "main_tabs-section") {
+    //Reset variables shared between guided and free form mode
+    sodaJSONObj = {};
+    datasetStructureJSONObj = {};
+    subjectsTableData = [];
+    samplesTableData = [];
+
     //Transition file explorer elements to freeform mode
     organizeDSglobalPath = document.getElementById("input-global-path");
     organizeDSglobalPath.value = "My_dataset_folder/";
@@ -100,12 +114,6 @@ async function handleSectionTrigger(event) {
 
     //reset lazyloading values
     resetLazyLoading();
-
-    //Reset variables shared with guided-mode if they had been modified
-    sodaJSONObj = {};
-    datasetStructureJSONObj = {};
-    subjectsTableData = [];
-    samplesTableData = [];
   }
 
   hideAllSectionsAndDeselectButtons();
