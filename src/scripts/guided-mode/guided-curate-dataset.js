@@ -5015,10 +5015,13 @@ const specifyPool = (event, poolNameInput) => {
       const poolSubjectsDropdownCell = poolNameInput.parent().parent().next();
       const poolIdCellToAddNameTo = poolNameInput.parent();
       let poolsTable = $("#pools-table");
-      if (poolName.length > 0) {
+      if (poolName !== "pool-") {
         if (!subSamInputIsValid(poolName)) {
-          //show alert message below pool name input if input is invalid and abort function
-          generateAlertMessage(poolsTable);
+          notyf.open({
+            duration: "3000",
+            type: "error",
+            message: "Pool IDs may not contain spaces or special characters",
+          });
           return;
         }
         removeAlertMessageIfExists(poolsTable);
@@ -5299,10 +5302,14 @@ const confirmEnter = (button) => {
   let sampleTable = false;
   let addSampleButton = "";
   let sampleTableContainers = "";
-  if(input_id === "guided--sample-input") {
+  if (input_id === "guided--sample-input") {
     //confirming the sample input, manually create another one
-    addSampleButton = button.parentElement.parentElement.parentElement.parentElement.previousElementSibling.children[0].children[0].children[1];
-    sampleTableContainers = document.getElementById("guided-div-add-samples-tables").children;
+    addSampleButton =
+      button.parentElement.parentElement.parentElement.parentElement
+        .previousElementSibling.children[0].children[0].children[1];
+    sampleTableContainers = document.getElementById(
+      "guided-div-add-samples-tables"
+    ).children;
     sampleTable = true;
     console.log(addSampleButton);
     // addSampleSpecificationTableRow();
@@ -5320,33 +5327,35 @@ const confirmEnter = (button) => {
     //alert message is the previousElement
     input_field.parentNode.children[1].dispatchEvent(ke);
   }
-  if(sampleTable) {  //for adding a new sample row
-    console.log(sampleTableContainers)
+  if (sampleTable) {
+    //for adding a new sample row
+    console.log(sampleTableContainers);
     let clickSampleButton = true;
-    for(let i = 0; i < sampleTableContainers.length; i++) {
+    for (let i = 0; i < sampleTableContainers.length; i++) {
       sampleEntries = sampleTableContainers[i].children[1];
       console.log(sampleEntries.children);
-      if(sampleEntries.children.length > 0) {
+      if (sampleEntries.children.length > 0) {
         //entries have been create so look at the last one if an input is there
         let lastEntryCount = sampleEntries.children.length - 1;
         let lastEntry = sampleEntries.children[lastEntryCount];
         let lastEntryTagType = lastEntry.children[0].children[0].children[1];
         console.log(lastEntryTagType);
-        if(lastEntryTagType === "INPUT") {
+        if (lastEntryTagType === "INPUT") {
           //an input is already made (duplicates will have duplicate ids)
           clickSampleButton = false;
           break;
         }
       }
       console.log(clickSampleButton);
-      if(clickSampleButton) {addSampleButton.click();}
+      if (clickSampleButton) {
+        addSampleButton.click();
+      }
       // sampleEntries = sampleTableContainers[i].children[1].children;
       // console.log(sampleEntries);
       // console.log(sampleEntries[sampleEntries.length - 1].children[0].children[0]);
       // if(sampleEntries[sampleEntries.length - 1].children)
     }
   }
-
 };
 
 const keydownListener = (event) => {
@@ -5372,7 +5381,7 @@ var enterKey = false;
 const confirmOnBlur = (element) => {
   window.addEventListener("keydown", keydownListener);
   document.getElementById(element).addEventListener("blur", onBlurEvent);
-  console.log(document.getElementById((element)));
+  console.log(document.getElementById(element));
 };
 
 const addSubjectSpecificationTableRow = () => {
@@ -5420,7 +5429,7 @@ const addSampleSpecificationTableRow = (clickedSubjectAddSampleButton) => {
   const sampleSpecificationTableInput = addSampleTableBody.querySelector(
     "input[name='guided-sample-id']"
   );
-  //check for any 
+  //check for any
 
   if (sampleSpecificationTableInput) {
     //focus on the input that already exists
