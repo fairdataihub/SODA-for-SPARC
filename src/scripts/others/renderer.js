@@ -6079,12 +6079,19 @@ function fileContextMenu(event) {
 }
 
 $(document).ready(function () {
-  tippy("[data-tippy-content]", {
+  tippy("[data-tippy-content]:not(.tippy-content-main)", {
     allowHTML: true,
     interactive: true,
     placement: "top",
     theme: "light",
   });
+
+  tippy(".tippy-content-main", {
+    allowHTML: true,
+    interactive: true,
+    placement: "bottom",
+    theme: "light",
+  })
 });
 
 // Trigger action when the contexmenu is about to be shown
