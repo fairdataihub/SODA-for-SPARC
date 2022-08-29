@@ -1106,15 +1106,17 @@ function populateForms(subjectID, type, curationMode) {
   }
 
   if (subjectID !== "clear" && subjectID.trim() !== "") {
-    //Reset protocol title dropdowns to the default ("No protocols associated with this sample")
-    const protocolTitleDropdown = document.getElementById(
-      "guided-bootbox-subject-protocol-title"
-    );
-    const protocolURLDropdown = document.getElementById(
-      "guided-bootbox-subject-protocol-location"
-    );
-    protocolTitleDropdown.value = "";
-    protocolURLDropdown.value = "";
+    if (curationMode === "guided") {
+      //Reset protocol title dropdowns to the default ("No protocols associated with this sample")
+      const protocolTitleDropdown = document.getElementById(
+        "guided-bootbox-subject-protocol-title"
+      );
+      const protocolURLDropdown = document.getElementById(
+        "guided-bootbox-subject-protocol-location"
+      );
+      protocolTitleDropdown.value = "";
+      protocolURLDropdown.value = "";
+    }
 
     // populate form
     var emptyEntries = ["nan", "nat"];
@@ -2970,7 +2972,6 @@ function loadDataFrametoUI(type) {
     .find(".subjects-form-entry")) {
     fieldSubjectEntries.push(field.name.toLowerCase());
   }
-  alert(fieldSubjectEntries);
   // separate regular headers and custom headers
   const lowercasedHeaders = subjectsTableData[0].map((header) =>
     header.toLowerCase()
