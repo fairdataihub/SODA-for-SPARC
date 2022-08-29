@@ -216,9 +216,14 @@ document.getElementById("getting_starting_tab").click();
 
 let client = null;
 
+// get port number from the main process
+const port = ipcRenderer.sendSync("get-port");
+
+console.log("The port is: ", port);
+
 // TODO: change the default port so it is based off the discovered port in Main.js
 client = axios.create({
-  baseURL: "http://127.0.0.1:4242/",
+  baseURL: `http://127.0.0.1:${port}/`,
   timeout: 300000,
 });
 
@@ -6079,12 +6084,19 @@ function fileContextMenu(event) {
 }
 
 $(document).ready(function () {
-  tippy("[data-tippy-content]", {
+  tippy("[data-tippy-content]:not(.tippy-content-main)", {
     allowHTML: true,
     interactive: true,
     placement: "top",
     theme: "light",
   });
+
+  tippy(".tippy-content-main", {
+    allowHTML: true,
+    interactive: true,
+    placement: "bottom",
+    theme: "light",
+  })
 });
 
 // Trigger action when the contexmenu is about to be shown

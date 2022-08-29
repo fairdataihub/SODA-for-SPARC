@@ -34,6 +34,7 @@ const PY_FLASK_MODULE = "app";
 let pyflaskProcess = null;
 
 let PORT = 4242;
+let selectedPort = null; 
 const portRange = 100;
 
 /**
@@ -124,6 +125,8 @@ const createPyProc = async () => {
       } else {
         console.error("child process failed to start on port" + port);
       }
+
+      selectedPort = port 
     })
     .catch((err) => {
       console.log(err);
@@ -482,3 +485,7 @@ ipcMain.on("orcid", (event, url) => {
     }
   });
 });
+
+ipcMain.on("get-port", (event) => {
+  event.returnValue = selectedPort
+})
