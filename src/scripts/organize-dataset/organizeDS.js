@@ -2156,9 +2156,16 @@ async function lazyLoad() {
   //item.scrollTop is < 280 (scrolling the top)
 
   if (item_box.childElementCount != 0) {
-    if (item_box.children[0].id === "items_container" || item_box.children[item_box.childElementCount - 1].id === "items_container") {
+    if (
+      item_box.children[0].id === "items_container" ||
+      item_box.children[item_box.childElementCount - 1].id === "items_container"
+    ) {
       //loading icon is there
-      if (item_box.scrollTop > item_box.scrollHeight - 300 || (item_box.scrollTop < 300 && item_box.children[0].id === "items_container")) {
+      if (
+        item_box.scrollTop > item_box.scrollHeight - 300 ||
+        (item_box.scrollTop < 300 &&
+          item_box.children[0].id === "items_container")
+      ) {
         console.log(item_box.scrollTop);
         console.log(scroll_box.scrollTop);
         //for rerendering on scroll up
@@ -2282,7 +2289,12 @@ async function add_items_to_view(list, amount_req, reset) {
     }
   }
   if (item_box.children[0] != undefined) {
-    if (item_box.children[0].id === "items_container" || item_box.children[0].classList.contains("drag-drop-container-instructions")) {
+    if (
+      item_box.children[0].id === "items_container" ||
+      item_box.children[0].classList.contains(
+        "drag-drop-container-instructions"
+      )
+    ) {
       item_box.children[0].remove();
     }
   }
@@ -2321,12 +2333,12 @@ async function add_items_to_view(list, amount_req, reset) {
 }
 
 const resetLazyLoading = () => {
-already_created_elem = [];
-listed_count = 0;
-start = 0;
-preprended_items = 0;
-amount = 500;
-}
+  already_created_elem = [];
+  listed_count = 0;
+  start = 0;
+  preprended_items = 0;
+  amount = 500;
+};
 
 ///// function to load details to show in display once
 ///// users click Show details

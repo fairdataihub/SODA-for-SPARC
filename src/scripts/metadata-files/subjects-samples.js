@@ -2189,12 +2189,9 @@ async function addCustomField(type, curationMode) {
   }
 
   if (type === "subjects") {
-    var lowercaseCasedArray = $.map(
-      subjectsHeaderArray,
-      function (item, index) {
-        return item.toLowerCase();
-      }
-    );
+    var lowerCasedArray = $.map(subjectsHeaderArray, function (item, index) {
+      return item.toLowerCase();
+    });
     const { value: customField } = await Swal.fire({
       title: "Enter a custom field:",
       input: "text",
@@ -2206,7 +2203,7 @@ async function addCustomField(type, curationMode) {
         if (!value) {
           return "Please enter a custom field";
         } else {
-          if (lowercaseCasedArray.includes(value.toLowerCase())) {
+          if (lowerCasedArray.includes(value.toLowerCase())) {
             return "Duplicate field name! <br> You entered a custom field that is already listed.";
           }
         }
@@ -2222,9 +2219,10 @@ async function addCustomField(type, curationMode) {
       }
     }
   } else if (type === "samples") {
-    var lowercaseCasedArray = $.map(samplesHeaderArray, function (item, index) {
+    var lowerCasedArray = samplesHeaderArray.map((item) => {
       return item.toLowerCase();
     });
+
     const { value: customField } = await Swal.fire({
       title: "Enter a custom field:",
       input: "text",
