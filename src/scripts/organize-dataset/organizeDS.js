@@ -2422,9 +2422,10 @@ function triggerManageDetailsPrompts(
 function organizeLandingUIEffect() {
   if ($("#input-global-path").val() === "My_dataset_folder/") {
     $(".div-organize-dataset-menu").css("visibility", "hidden");
-    $("#organize-path-and-back-button-div").css("visibility", "hidden");
+    // $("#organize-path-and-back-button-div").css("visibility", "hidden");
+    $("#organize-path-and-back-button-div").css("display", "none");
   } else {
-    $("#organize-path-and-back-button-div").css("visibility", "visible");
+    $("#organize-path-and-back-button-div").css("display", "flex");
     $(".div-organize-dataset-menu").css("visibility", "visible");
   }
 }
