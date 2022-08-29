@@ -14,8 +14,11 @@ function docReady(fn) {
 // adds the apps HTML pages to the DOM
 document.addEventListener("DOMContentLoaded", async function () {
   const links = document.querySelectorAll('link[rel="import"]');
-
   let contentIndex = document.querySelector("#content");
+
+  // Array that will contain all of the sectionIDs that are to be
+  // inserted into contentIndex
+  let sectionIds = [];
 
   // Import and add each page to the DOM
   for (const link of links) {
@@ -26,13 +29,39 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
 
     let content = await doc.text();
+    //get the id of the first section in content
+    let id = content.match(/id="(.*)"/)[1];
+    sectionIds.push(id);
 
     //Add the HTML Section to the #content container
     contentIndex.innerHTML += content;
   }
 
-  //sleep for 2 seconds to allow templates to be inserted into the DOM
-  await new Promise((r) => setTimeout(r, 2000));
+  //Check to see if the links have been added to the DOM
+  //If not, try again in 100ms
+  const waitForHtmlSectionsToInsertIntoDOM = () => {
+    return new Promise((resolve) => {
+      let interval = setInterval(() => {
+        let allPresentInDom = true;
+        for (const sectionId of sectionIds) {
+          if (!document.getElementById(sectionId)) {
+            allPresentInDom = false;
+            break;
+          }
+        }
+        if (allPresentInDom) {
+          clearInterval(interval);
+          resolve();
+        } else {
+          console.log(
+            "Rechecking for all sections to be inserted into DOM in 100ms"
+          );
+        }
+      }, 100);
+    });
+  };
+
+  await waitForHtmlSectionsToInsertIntoDOM();
 
   //Synchronously include js files
   await includeJavaScriptFile("./assets/ex-links.js");
