@@ -7213,6 +7213,7 @@ document
 ipcRenderer.on(
   "selected-local-destination-datasetCurate-generate",
   (event, filepath) => {
+    console.log(filepath)
     if (filepath.length > 0) {
       if (filepath != null) {
         $("#div-confirm-destination-locally").css("display", "flex");
@@ -7220,6 +7221,9 @@ ipcRenderer.on(
         document.getElementById(
           "input-destination-generate-dataset-locally"
         ).placeholder = filepath[0];
+        document.getElementById(
+          "input-destination-generate-dataset-locally"
+        ).value = filepath[0];
         document.getElementById("nextBtn").disabled = true;
       } else {
         $("#div-confirm-destination-locally").css("display", "none");
