@@ -53,9 +53,6 @@ document.addEventListener("DOMContentLoaded", async function () {
           clearInterval(interval);
           resolve();
         } else {
-          console.log(
-            "Rechecking for all sections to be inserted into DOM in 100ms"
-          );
         }
       }, 100);
     });

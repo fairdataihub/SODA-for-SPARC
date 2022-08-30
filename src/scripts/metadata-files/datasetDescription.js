@@ -254,10 +254,10 @@ function populateProtocolLink(ev) {
       for (var key of Object.keys(protocolResearcherList)) {
         $("#select-misc-links").append(
           '<option value="' +
-            protocolResearcherList[key] +
-            '">' +
-            key +
-            "</option>"
+          protocolResearcherList[key] +
+          '">' +
+          key +
+          "</option>"
         );
       }
     }
@@ -359,7 +359,7 @@ function cancelOtherContributors(table) {
   var rowIndex = rowcount - 1;
   var currentRow =
     document.getElementById(table).rows[
-      document.getElementById(table).rows.length - 1
+    document.getElementById(table).rows.length - 1
     ];
   currentRow.cells[0].outerHTML =
     "<td class='grab'><select id='ds-description-contributor-list-last-" +
@@ -383,7 +383,7 @@ function addOtherContributors(table) {
   var rowIndex = rowcount;
   var currentRow =
     document.getElementById(table).rows[
-      document.getElementById(table).rows.length - 1
+    document.getElementById(table).rows.length - 1
     ];
   currentRow.cells[0].outerHTML =
     "<td><input type='text' placeholder='Type here' contenteditable='true' id='other-contributors-last-" +
@@ -460,7 +460,7 @@ function resetDDUI(table) {
   var rowIndex = rowcount - 1;
   var currentRow =
     document.getElementById(table).rows[
-      document.getElementById(table).rows.length - 1
+    document.getElementById(table).rows.length - 1
     ];
 
   $("#SPARC-Award-raw-input-div-dd").css("display", "none");
@@ -762,7 +762,7 @@ async function generateDDFile(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   var datasetInfoValueObj = grabDSInfoEntries();
   var studyInfoValueObject = grabStudyInfoEntries();
   //// grab entries from contributor info section and pass values to conSectionArray
@@ -1011,7 +1011,6 @@ async function addProtocol() {
     },
   });
   if (values) {
-    console.log(values);
     addProtocolLinktoTableDD(values[0], values[1], values[2], values[3]);
   }
 }
@@ -1314,7 +1313,7 @@ function changeAward(award, curationMode) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   $("#ds-description-award-input").val(award);
   $("#submission-sparc-award").val(award);
   loadContributorInfofromAirtable(award, curationMode);
@@ -2261,7 +2260,7 @@ function addNewRow(table) {
   var rowIndex = rowcount;
   var currentRow =
     document.getElementById(table).rows[
-      document.getElementById(table).rows.length - 1
+    document.getElementById(table).rows.length - 1
     ];
   if (table === "doi-table") {
     if (
@@ -2694,7 +2693,7 @@ function importExistingDDFile() {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       setTimeout(loadDDfileDataframe(filePath), 1000);
     }
   }

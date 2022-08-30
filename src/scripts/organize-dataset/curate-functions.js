@@ -185,10 +185,7 @@ async function dropHandler(
       var metadataWithoutExtension = file.name.slice(0, file.name.indexOf("."));
       var extension = file.name.slice(file.name.indexOf("."));
 
-      console.log(dataDeliverables);
-      console.log("CHECK bool above");
-      console.log(extension);
-      console.log(metadataWithoutExtension);
+
       if (dataDeliverables === true) {
         let filepath = file.path;
         var award = $("#submission-sparc-award");
@@ -232,22 +229,20 @@ async function dropHandler(
             //create a string with today's date in the format xxxx/xx/xx
             const today = new Date();
             const todayString = `
-                  ${today.getFullYear()}-${
-              today.getMonth() + 1
-            }-${today.getDate()}
+                  ${today.getFullYear()}-${today.getMonth() + 1
+              }-${today.getDate()}
                 `;
             //add a custom milestone row for when the user wants to add a custom milestone
             //not included in the dataset deliverables document
             guidedMilestoneData[
               "Not included in the Dataset Deliverables document"
             ] = [
-              {
-                "Description of data":
-                  "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
-                "Expected date of completion": "N/A",
-              },
-            ];
-            console.log(guidedMilestoneData);
+                {
+                  "Description of data":
+                    "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
+                  "Expected date of completion": "N/A",
+                },
+              ];
 
             //save the unselected milestones into sodaJSONObj
             sodaJSONObj["dataset-metadata"]["submission-metadata"][
@@ -279,7 +274,6 @@ async function dropHandler(
               loop: true,
               autoplay: true,
             });
-            console.log("lottie should be playing");
           }
         } catch (error) {
           clientError(error);
@@ -310,7 +304,6 @@ async function dropHandler(
               //get the value of data-code-metadata-file-type from dragDropContainer
               const metadataFileType =
                 dragDropContainer.dataset.codeMetadataFileType;
-              console.log(metadataFileType);
               //save the path of the metadata file to the json object
               sodaJSONObj["dataset-metadata"]["code-metadata"][
                 metadataFileType
@@ -467,7 +460,6 @@ const progressFileParse = (ev) => {
     var filePath = path.join(progressFilePath, fileName);
     try {
       var content = fs.readFileSync(filePath);
-      console.log(content);
       contentJson = JSON.parse(content);
       return contentJson;
     } catch (error) {
@@ -1359,9 +1351,9 @@ async function moveItems(ev, category) {
   for (var highLevelFol in datasetStructureJSONObj["folders"]) {
     if (
       "manifest.xlsx" in
-        datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
+      datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
       datasetStructureJSONObj["folders"][highLevelFol]["files"][
-        "manifest.xlsx"
+      "manifest.xlsx"
       ]["forTreeview"] === true
     ) {
       delete datasetStructureJSONObj["folders"][highLevelFol]["files"][

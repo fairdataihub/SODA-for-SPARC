@@ -1273,7 +1273,7 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
                   if (one_input === true) {
                     confirm_button[0].disabled = true;
                   } else {
-                    input_fields.forEach(function (element) {});
+                    input_fields.forEach(function (element) { });
                     confirm_button[0].disabled = false;
                   }
                 }
@@ -2084,9 +2084,7 @@ let dataset_path = document.getElementById("input-global-path");
 //will observe if property of element changes to decide of eventListener is needed
 function observeElement(element, property, callback, delay = 0) {
   let elementPrototype = Object.getPrototypeOf(element);
-  console.log(elementPrototype);
   if (elementPrototype.hasOwnProperty(property)) {
-    console.log(property);
     let descriptor = Object.getOwnPropertyDescriptor(
       elementPrototype,
       property
@@ -2125,7 +2123,6 @@ function check_dataset_value() {
       datasetStructureJSONObj
     );
     beginScrollListen();
-    console.log("scroll listening will begin here");
   }
 }
 observeElement(dataset_path, "value", check_dataset_value);
@@ -2135,7 +2132,6 @@ var amount = 500;
 function beginScrollListen() {
   amount = 500;
   item_box.addEventListener("scroll", lazyLoad);
-  console.log("activating event listener");
 }
 
 async function lazyLoad() {
@@ -2144,12 +2140,7 @@ async function lazyLoad() {
   let myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
 
   //if there's less than 20 items event listener will be removed
-  console.log(item_box.offsetHeight);
-  // if (item_box.children.length < 20) {
-  //   console.log("removing event listener");
-  //   item_box.removeEventListener("scroll", lazyLoad);
-  //   amount = 500;
-  // }
+
 
   //load spinner is prepended to beginning to elements if any de-rendered
   //itemscrollTop is > item_box.scrollHeight - 280 (for scrolling bottom)
@@ -2166,8 +2157,6 @@ async function lazyLoad() {
         (item_box.scrollTop < 300 &&
           item_box.children[0].id === "items_container")
       ) {
-        console.log(item_box.scrollTop);
-        console.log(scroll_box.scrollTop);
         //for rerendering on scroll up
         //monitors when user scrolls back up to prepend elements
         let array_select = preprended_items - 1;
@@ -2313,8 +2302,6 @@ async function add_items_to_view(list, amount_req, reset) {
     item_box.children[0].style.setProperty("margin-top", "20px");
   }
 
-  console.log(start);
-  console.log(elements_req);
   for (let i = start; i < elements_req; i++) {
     if (i < already_created_elem.length) {
       $(uiItems).append(already_created_elem[i]);
@@ -2364,8 +2351,6 @@ function loadDetailsContextMenu(
   path_label = document.querySelector(
     "#organize-dataset-tab > div > div > div > div.div-display-details.file > div:nth-child(2) > label"
   );
-  console.log(path_label);
-  console.log(filePath);
   if (filePath["files"][fileName]["type"] === "bf") {
     path_label.innerHTML = "<b>Pennsieve path:<br></b>";
     bf_path = "";
