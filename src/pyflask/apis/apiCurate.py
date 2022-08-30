@@ -33,6 +33,7 @@ class CheckEmptyFilesFolders(Resource):
         if "soda_json_structure" not in data:
             api.abort(400, "Missing parameter: soda_json_structure")
 
+        # parse soda json as dictionary
         soda_json_structure = data["soda_json_structure"]
 
         try:

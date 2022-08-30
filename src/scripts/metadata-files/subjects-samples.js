@@ -28,13 +28,18 @@ document.querySelectorAll(".samples-change-current-ds").forEach((element) => {
 });
 
 var subjectsFormDiv = document.getElementById("form-add-a-subject");
+var guidedSubjectsFormDiv = document.getElementById(
+  "guided-form-add-a-subject"
+);
 var samplesFormDiv = document.getElementById("form-add-a-sample");
+var guidedSamplesFormDiv = document.getElementById("guided-form-add-a-sample");
 var subjectsTableData = [];
 var subjectsFileData = [];
 var samplesTableData = [];
 var samplesFileData = [];
 var headersArrSubjects = [];
 var headersArrSamples = [];
+let guidedSamplesTableData = [];
 
 function showForm(type, editBoolean) {
   if (type !== "edit") {
@@ -99,7 +104,7 @@ function promptImportPrevInfoSamples(arr1, arr2) {
         $("#previous-subject").val() !== "Select" &&
         $("#previous-sample").val() !== "Select"
       ) {
-        populateFormsSamples(prevSubID, prevSamID, "import");
+        populateFormsSamples(prevSubID, prevSamID, "import", "free-form");
       }
     } else {
       hideForm("sample");
@@ -187,7 +192,7 @@ function promptImportPrevInfoSubject(arr1) {
     if (result.isConfirmed) {
       if ($("#previous-subject-single").val() !== "Select") {
         prevSubIDSingle = $("#previous-subject-single").val();
-        populateForms(prevSubIDSingle, "import");
+        populateForms(prevSubIDSingle, "import", "free-form");
       }
     } else {
       hideForm("subject");
@@ -226,27 +231,41 @@ function confirmSample() {
 }
 
 // for "Done adding" button - subjects
-function addSubject() {
-  var subjectID = $("#bootbox-subject-id").val();
-  addSubjectIDtoDataBase(subjectID);
-  if (subjectsTableData.length !== 0) {
-    $("#div-import-primary-folder-subjects").hide();
+function addSubject(curationMode) {
+  let subjectID = "";
+  if (curationMode === "free-form") {
+    subjectID = $("#bootbox-subject-id").val();
+    addSubjectIDtoDataBase(subjectID);
+    if (subjectsTableData.length !== 0) {
+      $("#div-import-primary-folder-subjects").hide();
+    }
+    if (subjectsTableData.length === 2) {
+      onboardingMetadata("subject");
+    }
   }
-  if (subjectsTableData.length === 2) {
-    onboardingMetadata("subject");
+  if (curationMode === "guided") {
+    addSubjectMetadataEntriesIntoJSON("guided");
   }
 }
 
 // for "Done adding" button - samples
-function addSample() {
-  var sampleID = $("#bootbox-sample-id").val();
-  var subjectID = $("#bootbox-subject-id-samples").val();
-  addSampleIDtoDataBase(sampleID, subjectID);
-  if (samplesTableData.length !== 0) {
-    $("#div-import-primary-folder-samples").hide();
+function addSample(curationMode) {
+  let sampleID = "";
+  let subjectID = "";
+  if (curationMode === "free-form") {
+    sampleID = $("#bootbox-sample-id").val();
+    subjectID = $("#bootbox-subject-id-samples").val();
+    addSampleIDtoDataBase(sampleID, subjectID);
+    if (samplesTableData.length !== 0) {
+      $("#div-import-primary-folder-samples").hide();
+    }
+    if (samplesTableData.length === 2) {
+      onboardingMetadata("sample");
+    }
   }
-  if (samplesTableData.length === 2) {
-    onboardingMetadata("sample");
+
+  if (curationMode === "guided") {
+    addSampleMetadataEntriesIntoJSON("guided");
   }
 }
 
@@ -463,15 +482,29 @@ function clearAllSubjectFormFields(form) {
   $(form).find(".content").removeClass("active");
 
   // hide Strains and Species
-  if (form === subjectsFormDiv) {
-    var keyword = "subject";
-    $("#bootbox-" + keyword + "-species").css("display", "none");
-    $("#bootbox-" + keyword + "-strain").css("display", "none");
+  if (form === subjectsFormDiv || form === guidedSubjectsFormDiv) {
+    let curationModeSelectorPrefix = "";
+    if (form === subjectsFormDiv) {
+      curationModeSelectorPrefix = "";
+    }
+    if (form === guidedSubjectsFormDiv) {
+      curationModeSelectorPrefix = "guided-";
+    }
 
-    $("#button-add-species-" + keyword + "").html(
+    var keyword = "subject";
+    $(`#${curationModeSelectorPrefix}bootbox-${keyword}-species`).css(
+      "display",
+      "none"
+    );
+    $(`#${curationModeSelectorPrefix}bootbox-${keyword}-strain`).css(
+      "display",
+      "none"
+    );
+
+    $(`#${curationModeSelectorPrefix}button-add-species-${keyword}`).html(
       `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
     );
-    $("#button-add-strain-" + keyword + "").html(
+    $(`#${curationModeSelectorPrefix}button-add-strain-${keyword}`).html(
       `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
     );
   }
@@ -480,13 +513,18 @@ function clearAllSubjectFormFields(form) {
 // add new subject ID to JSON file (main file to be converted to excel)
 function addSubjectIDToJSON(subjectID) {
   if ($("#form-add-a-subject").length > 0) {
-    addTheRestSubjectEntriesToJSON();
+    addSubjectMetadataEntriesIntoJSON("free-form");
   }
 }
 
 /// function to add Species - subjects + samples
-async function addSpecies(ev, type) {
-  $("#bootbox-" + type + "-species").val("");
+async function addSpecies(ev, type, curationMode) {
+  let curationModeSelectorPrefix = "";
+  if (curationMode == "guided") {
+    curationModeSelectorPrefix = "guided-";
+  }
+
+  $(`#${curationModeSelectorPrefix}bootbox-${type}-species`).val("");
   const { value: value } = await Swal.fire({
     title: "Add/Edit a species",
     html: `<input type="text" id="sweetalert-${type}-species" placeholder="Search for species..." style="font-size: 14px;"/>`,
@@ -499,44 +537,64 @@ async function addSpecies(ev, type) {
     },
     didOpen: () => {
       $(".swal2-confirm").attr("id", "btn-confirm-species");
-      createSpeciesAutocomplete("sweetalert-" + type + "-species");
+      createSpeciesAutocomplete(`sweetalert-${type}-species`);
     },
     preConfirm: () => {
-      if (
-        document.getElementById("sweetalert-" + type + "-species").value === ""
-      ) {
+      if (document.getElementById(`sweetalert-${type}-species`).value === "") {
         Swal.showValidationMessage("Please enter a species.");
       }
-      return document.getElementById("sweetalert-" + type + "-species").value;
+      return document.getElementById(`sweetalert-${type}-species`).value;
     },
   });
   if (value) {
     if (value !== "") {
-      $("#bootbox-" + type + "-species").val(value);
-      switchSpeciesStrainInput("species", "edit");
+      $(`#${curationModeSelectorPrefix}bootbox-${type}-species`).val(value);
+      switchSpeciesStrainInput("species", "edit", curationMode);
     }
   } else {
-    switchSpeciesStrainInput("species", "add");
+    switchSpeciesStrainInput("species", "add", curationMode);
   }
 }
 
-function switchSpeciesStrainInput(type, mode) {
+function switchSpeciesStrainInput(type, mode, curationMode) {
+  let curationModeSelectorPrefix = "";
+  if (curationMode == "guided") {
+    curationModeSelectorPrefix = "guided-";
+  }
   if (mode === "add") {
-    $("#button-add-" + type + "-subject").html(
+    $(`#${curationModeSelectorPrefix}button-add-${type}-subject`).html(
       `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add ${type}`
     );
-    $(`#bootbox-subject-${type}`).css("display", "none");
-    $(`#bootbox-subject-${type}`).val("");
+    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).css(
+      "display",
+      "none"
+    );
+    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).val("");
   } else if (mode === "edit") {
-    $(`#bootbox-subject-${type}`).css("display", "block");
-    $(`#bootbox-subject-${type}`).attr("readonly", true);
-    $(`#bootbox-subject-${type}`).css("background", "#f5f5f5");
-    $("#button-add-" + type + "-subject").html("<i class='pen icon'></i>Edit");
+    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).css(
+      "display",
+      "block"
+    );
+    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).attr(
+      "readonly",
+      true
+    );
+    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).css(
+      "background",
+      "#f5f5f5"
+    );
+    $(`#${curationModeSelectorPrefix}button-add-${type}-subject`).html(
+      "<i class='pen icon'></i>Edit"
+    );
   }
 }
 
-async function addStrain(ev, type) {
-  $("#bootbox-" + type + "-strain").val("");
+async function addStrain(ev, type, curationMode) {
+  let curationModeSelectorPrefix = "";
+  if (curationMode == "guided") {
+    curationModeSelectorPrefix = "guided-";
+  }
+  $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
   const { value: value } = await Swal.fire({
     title: "Add/Edit a strain",
     html: `<input type="text" id="sweetalert-${type}-strain" placeholder="Search for strain..." style="font-size: 14px;"/>`,
@@ -549,7 +607,7 @@ async function addStrain(ev, type) {
     },
     didOpen: () => {
       $(".swal2-confirm").attr("id", "btn-confirm-strain");
-      createStrain("sweetalert-" + type + "-strain", type);
+      createStrain("sweetalert-" + type + "-strain", type, curationMode);
     },
     preConfirm: () => {
       if (
@@ -562,16 +620,20 @@ async function addStrain(ev, type) {
   });
   if (value) {
     if (value !== "") {
-      $("#bootbox-" + type + "-strain").val(value);
-      switchSpeciesStrainInput("strain", "edit");
+      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val(value);
+      switchSpeciesStrainInput("strain", "edit", curationMode);
     }
   } else {
-    switchSpeciesStrainInput("strain", "add");
+    switchSpeciesStrainInput("strain", "add", curationMode);
   }
 }
 
 // populate RRID
-function populateRRID(strain, type) {
+function populateRRID(strain, type, curationMode) {
+  let curationModeSelectorPrefix = "";
+  if (curationMode == "guided") {
+    curationModeSelectorPrefix = "guided-";
+  }
   var rridHostname = "scicrunch.org";
   // this is to handle spaces and other special characters in strain name
   var encodedStrain = encodeURIComponent(strain);
@@ -592,7 +654,8 @@ function populateRRID(strain, type) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => {
+  });
   https.get(rridInfo, (res) => {
     if (res.statusCode === 200) {
       let data = "";
@@ -601,7 +664,7 @@ function populateRRID(strain, type) {
         data += d;
       });
       res.on("end", () => {
-        var returnRes = readXMLScicrunch(data, type);
+        var returnRes = readXMLScicrunch(data, type, curationMode);
         if (!returnRes) {
           Swal.fire({
             title: `Failed to retrieve the RRID for ${strain} from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
@@ -610,30 +673,46 @@ function populateRRID(strain, type) {
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
           });
-          $("#bootbox-" + type + "-strain").val("");
-          $("#bootbox-" + type + "-strain-RRID").val("");
-          $("#bootbox-" + type + "-strain").css("display", "none");
+          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
+          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain-RRID`).val(
+            ""
+          );
+          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css(
+            "display",
+            "none"
+          );
           if (type.includes("subject")) {
-            $("#button-add-strain-subject").html(
+            $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
               `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
             );
           } else {
-            $("#button-add-strain-sample").html(
+            $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
               `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
             );
           }
         } else {
-          $("#bootbox-" + type + "-strain").val(strain);
+          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val(strain);
           $("#btn-confirm-strain").removeClass("confirm-disabled");
-          $("#bootbox-" + type + "-strain").css("display", "block");
-          $("#bootbox-" + type + "-strain").attr("readonly", true);
-          $("#bootbox-" + type + "-strain").css("background", "#f5f5f5");
+          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css(
+            "display",
+            "block"
+          );
+          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).attr(
+            "readonly",
+            true
+          );
+          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css(
+            "background",
+            "#f5f5f5"
+          );
           if (type.includes("subject")) {
-            $("#button-add-strain-subject").html(
+            $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
               "<i class='pen icon'></i>Edit"
             );
           } else {
-            $("#button-add-strain-sample").html("<i class='pen icon'></i>Edit");
+            $(`#${curationModeSelectorPrefix}button-add-strain-sample`).html(
+              "<i class='pen icon'></i>Edit"
+            );
           }
           Swal.fire({
             title: `Successfully retrieved the RRID for "${strain}".`,
@@ -644,8 +723,8 @@ function populateRRID(strain, type) {
         }
       });
     } else {
-      $("#bootbox-" + type + "-strain").val("");
-      $("#bootbox-" + type + "-strain-RRID").val("");
+      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
+      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain-RRID`).val("");
       Swal.fire({
         title: `Failed to retrieve the RRID for "${strain}" from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
         text: "Please check your Internet Connection or contact us at help@fairdataihub.org",
@@ -657,11 +736,19 @@ function populateRRID(strain, type) {
   });
 }
 
-function addTheRestSubjectEntriesToJSON() {
-  var dataLength = subjectsTableData.length;
+function addSubjectMetadataEntriesIntoJSON(curationMode) {
+  let curationModeSelectorPrefix;
+  let dataLength = subjectsTableData.length;
+
+  if (curationMode === "free-form") {
+    curationModeSelectorPrefix = "";
+  }
+  if (curationMode === "guided") {
+    curationModeSelectorPrefix = "guided-";
+  }
   var valuesArr = [];
   headersArrSubjects = [];
-  for (var field of $("#form-add-a-subject")
+  for (var field of $(`#${curationModeSelectorPrefix}form-add-a-subject`)
     .children()
     .find(".subjects-form-entry")) {
     if (
@@ -670,21 +757,30 @@ function addTheRestSubjectEntriesToJSON() {
       field.value === "Select"
     ) {
       field.value = null;
+    } else {
     }
     headersArrSubjects.push(field.name);
     // if it's age, then add age info input (day/week/month/year)
     if (field.name === "Age") {
       if (
-        $("#bootbox-subject-age-info").val() !== "Select" &&
-        $("#bootbox-subject-age-info").val() !== "N/A"
+        $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val() !==
+        "Select" &&
+        $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val() !==
+        "N/A"
       ) {
-        field.value = field.value + " " + $("#bootbox-subject-age-info").val();
+        field.value =
+          field.value +
+          " " +
+          $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val();
       } else {
         field.value = field.value;
       }
     }
     if (field.name === "Sex") {
-      if ($("#bootbox-subject-sex").val() === "Unknown") {
+      if (
+        $(`#${curationModeSelectorPrefix}bootbox-subject-sex`).val() ===
+        "Unknown"
+      ) {
         field.value = "";
       } else {
         field.value = field.value;
@@ -693,24 +789,47 @@ function addTheRestSubjectEntriesToJSON() {
     valuesArr.push(field.value);
   }
   subjectsTableData[0] = headersArrSubjects;
+
   if (valuesArr !== undefined && valuesArr.length !== 0) {
-    if (subjectsTableData[dataLength] !== undefined) {
-      subjectsTableData[dataLength + 1] = valuesArr;
-    } else {
-      subjectsTableData[dataLength] = valuesArr;
+    if (curationMode === "free-form") {
+      if (subjectsTableData[dataLength] !== undefined) {
+        subjectsTableData[dataLength + 1] = valuesArr;
+      } else {
+        subjectsTableData[dataLength] = valuesArr;
+      }
+    }
+    if (curationMode === "guided") {
+      let subjectID = document.getElementById(
+        "guided-bootbox-subject-id"
+      ).value;
+      //Overwrite existing subject data with new subject data
+      for (let i = 1; i < subjectsTableData.length; i++) {
+        if (subjectsTableData[i][0] === subjectID) {
+          subjectsTableData[i] = valuesArr;
+        }
+      }
     }
   }
-  $("#table-subjects").css("display", "block");
-  $("#button-generate-subjects").css("display", "block");
-  clearAllSubjectFormFields(subjectsFormDiv);
-  hideForm("subject");
+  if (curationMode === "free-form") {
+    $("#table-subjects").css("display", "block");
+    $("#button-generate-subjects").css("display", "block");
+    clearAllSubjectFormFields(subjectsFormDiv);
+    hideForm("subject");
+  }
 }
 
-function addTheRestSampleEntriesToJSON() {
+function addSampleMetadataEntriesIntoJSON(curationMode) {
+  let curationModeSelectorPrefix = "";
   var dataLength = samplesTableData.length;
+  if (curationMode === "free-form") {
+    curationModeSelectorPrefix = "";
+  }
+  if (curationMode === "guided") {
+    curationModeSelectorPrefix = "guided-";
+  }
   var valuesArr = [];
   headersArrSamples = [];
-  for (var field of $("#form-add-a-sample")
+  for (var field of $(`#${curationModeSelectorPrefix}form-add-a-sample`)
     .children()
     .find(".samples-form-entry")) {
     if (
@@ -724,10 +843,15 @@ function addTheRestSampleEntriesToJSON() {
     // if it's age, then add age info input (day/week/month/year)
     if (field.name === "Age") {
       if (
-        $("#bootbox-sample-age-info").val() !== "Select" &&
-        $("#bootbox-sample-age-info").val() !== "N/A"
+        $(`#${curationModeSelectorPrefix}bootbox-sample-age-info`).val() !==
+        "Select" &&
+        $(`#${curationModeSelectorPrefix}bootbox-sample-age-info`).val() !==
+        "N/A"
       ) {
-        field.value = field.value + " " + $("#bootbox-sample-age-info").val();
+        field.value =
+          field.value +
+          " " +
+          $(`#${curationModeSelectorPrefix}#bootbox-sample-age-info`).val();
       } else {
         field.value = field.value;
       }
@@ -736,21 +860,40 @@ function addTheRestSampleEntriesToJSON() {
   }
   samplesTableData[0] = headersArrSamples;
   if (valuesArr !== undefined && valuesArr.length !== 0) {
-    if (samplesTableData[dataLength] !== undefined) {
-      samplesTableData[dataLength + 1] = valuesArr;
-    } else {
-      samplesTableData[dataLength] = valuesArr;
+    if (curationMode === "free-form") {
+      if (samplesTableData[dataLength] !== undefined) {
+        samplesTableData[dataLength + 1] = valuesArr;
+      } else {
+        samplesTableData[dataLength] = valuesArr;
+      }
     }
   }
-  $("#table-samples").css("display", "block");
-  $("#button-generate-samples").css("display", "block");
-  clearAllSubjectFormFields(samplesFormDiv);
-  hideForm("sample");
+  if (curationMode === "guided") {
+    let subjectID = document.getElementById(
+      "guided-bootbox-subject-id-samples"
+    ).value;
+    let sampleID = document.getElementById("guided-bootbox-sample-id").value;
+    for (let i = 1; i < samplesTableData.length; i++) {
+      if (
+        samplesTableData[i][0] === subjectID &&
+        samplesTableData[i][1] === sampleID
+      ) {
+        samplesTableData[i] = valuesArr;
+        break;
+      }
+    }
+  }
+  if (curationMode === "free-form") {
+    $("#table-samples").css("display", "block");
+    $("#button-generate-samples").css("display", "block");
+    clearAllSubjectFormFields(samplesFormDiv);
+    hideForm("sample");
+  }
 }
 
 function addSampleIDtoJSON(sampleID) {
   if ($("#form-add-a-sample").length > 0) {
-    addTheRestSampleEntriesToJSON();
+    addSampleMetadataEntriesIntoJSON("free-form");
   }
 }
 
@@ -766,7 +909,6 @@ function edit_current_sample_id(ev) {
   var sampleID = $(currentRow)[0].cells[2].innerText;
   loadSampleInformation(ev, subjectID, sampleID);
 }
-
 async function edit_current_protocol_id(ev) {
   var currentRow = $(ev).parents()[2];
   var link = $(currentRow)[0].cells[1].innerText;
@@ -838,6 +980,7 @@ async function edit_current_protocol_id(ev) {
       ];
     },
   });
+
   if (values) {
     $(currentRow)[0].cells[1].innerHTML =
       "<a href='" + values[0] + "' target='_blank'>" + values[0] + "</a>";
@@ -909,7 +1052,7 @@ function loadSubjectInformation(ev, subjectID) {
   $("#btn-edit-subject").css("display", "inline-block");
   $("#btn-add-subject").css("display", "none");
   clearAllSubjectFormFields(subjectsFormDiv);
-  populateForms(subjectID, "");
+  populateForms(subjectID, "", "free-form");
   $("#btn-edit-subject").unbind("click");
   $("#btn-edit-subject").click(function () {
     editSubject(ev, subjectID);
@@ -924,19 +1067,45 @@ function loadSubjectInformation(ev, subjectID) {
   });
 }
 
-function populateForms(subjectID, type) {
-  if (subjectID !== "clear" && subjectID.trim() !== "") {
-    var infoJson = [];
-    if (subjectsTableData.length > 1) {
-      for (var i = 1; i < subjectsTableData.length; i++) {
-        if (subjectsTableData[i][0] === subjectID) {
-          infoJson = subjectsTableData[i];
-          break;
-        }
+function populateForms(subjectID, type, curationMode) {
+  //Initialize variables shared between different curation modes and set them
+  //based on curationMode passed in as parameter
+  let fieldArr;
+  let curationModeSelectorPrefix;
+  let infoJson;
+
+  if (curationMode === "free-form") {
+    curationModeSelectorPrefix = "";
+    fieldArr = $(subjectsFormDiv).children().find(".subjects-form-entry");
+  }
+  if (curationMode === "guided") {
+    curationModeSelectorPrefix = "guided-";
+    fieldArr = $(guidedSubjectsFormDiv).children().find(".subjects-form-entry");
+  }
+
+  if (subjectsTableData.length > 1) {
+    for (var i = 1; i < subjectsTableData.length; i++) {
+      if (subjectsTableData[i][0] === subjectID) {
+        infoJson = subjectsTableData[i];
+        break;
       }
     }
+  }
+
+  if (subjectID !== "clear" && subjectID.trim() !== "") {
+    if (curationMode === "guided") {
+      //Reset protocol title dropdowns to the default ("No protocols associated with this sample")
+      const protocolTitleDropdown = document.getElementById(
+        "guided-bootbox-subject-protocol-title"
+      );
+      const protocolURLDropdown = document.getElementById(
+        "guided-bootbox-subject-protocol-location"
+      );
+      protocolTitleDropdown.value = "";
+      protocolURLDropdown.value = "";
+    }
+
     // populate form
-    var fieldArr = $(subjectsFormDiv).children().find(".subjects-form-entry");
     var emptyEntries = ["nan", "nat"];
     var c = fieldArr.map(function (i, field) {
       if (infoJson[i]) {
@@ -949,24 +1118,52 @@ function populateForms(subjectID, type) {
             for (var unit of unitArr) {
               if (fullAge[1]) {
                 if (unit.includes(fullAge[1].toLowerCase())) {
-                  $("#bootbox-subject-age-info").val(unit);
+                  $(
+                    `#${curationModeSelectorPrefix}bootbox-subject-age-info`
+                  ).val(unit);
                   breakBoolean = true;
                   break;
                 }
                 if (!breakBoolean) {
-                  $("#bootbox-subject-age-info").val("N/A");
+                  $(
+                    `#${curationModeSelectorPrefix}bootbox-subject-age-info`
+                  ).val("N/A");
                 }
               } else {
-                $("#bootbox-subject-age-info").val("N/A");
+                $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val(
+                  "N/A"
+                );
               }
             }
           } else if (field.name === "Species" && infoJson[i] !== "") {
-            $("#bootbox-subject-species").val(infoJson[i]);
+            $(`#${curationModeSelectorPrefix}bootbox-subject-species`).val(
+              infoJson[i]
+            );
             // manipulate the Add Strains/Species UI accordingly
-            switchSpeciesStrainInput("species", "edit");
+            switchSpeciesStrainInput("species", "edit", curationMode);
           } else if (field.name === "Strain" && infoJson[i] !== "") {
-            $("#bootbox-subject-strain").val(infoJson[i]);
-            switchSpeciesStrainInput("strain", "edit");
+            $(`#${curationModeSelectorPrefix}bootbox-subject-strain`).val(
+              infoJson[i]
+            );
+            switchSpeciesStrainInput("strain", "edit", curationMode);
+          } else if (
+            curationMode == "guided" &&
+            field.name === "protocol url or doi"
+          ) {
+            //If the selected sample derived from
+            const previouslySavedProtocolURL = infoJson[i];
+
+            const protocols =
+              sodaJSONObj["dataset-metadata"]["description-metadata"][
+              "protocols"
+              ];
+            for (const protocol of protocols) {
+              if (protocol.link === previouslySavedProtocolURL) {
+
+                protocolTitleDropdown.value = protocol.description;
+                protocolURLDropdown.value = protocol.link;
+              }
+            }
           } else {
             if (type === "import") {
               if (field.name === "subject id") {
@@ -990,22 +1187,35 @@ function populateForms(subjectID, type) {
   }
 }
 
-function populateFormsSamples(subjectID, sampleID, type) {
-  if (sampleID !== "clear" && sampleID.trim() !== "") {
-    var infoJson = [];
-    if (samplesTableData.length > 1) {
-      for (var i = 1; i < samplesTableData.length; i++) {
-        if (
-          samplesTableData[i][0] === subjectID &&
-          samplesTableData[i][1] === sampleID
-        ) {
-          infoJson = samplesTableData[i];
-          break;
-        }
+function populateFormsSamples(subjectID, sampleID, type, curationMode) {
+  //Initialize variables shared between different curation modes and set them
+  //based on curationMode passed in as parameter
+  let fieldArr;
+  let curationModeSelectorPrefix;
+  let infoJson;
+
+  if (curationMode === "free-form") {
+    curationModeSelectorPrefix = "";
+    fieldArr = $(samplesFormDiv).children().find(".samples-form-entry");
+  }
+  if (curationMode === "guided") {
+    curationModeSelectorPrefix = "guided-";
+    fieldArr = $(guidedSamplesFormDiv).children().find(".samples-form-entry");
+  }
+  if (samplesTableData.length > 1) {
+    for (var i = 1; i < samplesTableData.length; i++) {
+      if (
+        samplesTableData[i][0] === subjectID &&
+        samplesTableData[i][1] === sampleID
+      ) {
+        infoJson = samplesTableData[i];
+        break;
       }
     }
+  }
+
+  if (sampleID !== "clear" && sampleID.trim() !== "") {
     // populate form
-    var fieldArr = $(samplesFormDiv).children().find(".samples-form-entry");
     var emptyEntries = ["nan", "nat"];
     var c = fieldArr.map(function (i, field) {
       if (infoJson[i]) {
@@ -1018,16 +1228,57 @@ function populateFormsSamples(subjectID, sampleID, type) {
             if (fullAge[1]) {
               for (var unit of unitArr) {
                 if (unit.includes(fullAge[1].toLowerCase())) {
-                  $("#bootbox-sample-age-info").val(unit);
+                  $(`#${curationModePrefix}bootbox-sample-age-info`).val(unit);
                   breakBoolean = true;
                   break;
                 }
                 if (!breakBoolean) {
-                  $("#bootbox-sample-age-info").val("N/A");
+                  $(`#${curationModePrefix}bootbox-sample-age-info`).val("N/A");
                 }
               }
             } else {
-              $("#bootbox-sample-age-info").val("N/A");
+              $(`#${curationModePrefix}bootbox-sample-age-info`).val("N/A");
+            }
+          } else if (
+            curationMode == "guided" &&
+            field.name === "was derived from"
+          ) {
+            //If the selected sample derived from still exists, select it
+            //if not, reset the value
+            const previouslySavedDerivedFromSample = infoJson[i];
+            const wasDerivedFromDropdown = document.getElementById(
+              "guided-bootbox-wasDerivedFromSample"
+            );
+            wasDerivedFromDropdown.value = "";
+            for (const sample of wasDerivedFromDropdown.options) {
+              if (sample.value === previouslySavedDerivedFromSample) {
+                wasDerivedFromDropdown.value = sample.value;
+              }
+            }
+          } else if (
+            curationMode == "guided" &&
+            field.name === "protocol url or doi"
+          ) {
+            //If the selected sample derived from
+            const previouslySavedProtocolURL = infoJson[i];
+            const protocolTitleDropdown = document.getElementById(
+              "guided-bootbox-sample-protocol-title"
+            );
+            const protocolURLDropdown = document.getElementById(
+              "guided-bootbox-sample-protocol-location"
+            );
+            protocolTitleDropdown.value = "";
+            protocolURLDropdown.value = "";
+
+            const protocols =
+              sodaJSONObj["dataset-metadata"]["description-metadata"][
+              "protocols"
+              ];
+            for (const protocol of protocols) {
+              if (protocol.link === previouslySavedProtocolURL) {
+                protocolTitleDropdown.value = protocol.description;
+                protocolURLDropdown.value = protocol.link;
+              }
             }
           } else {
             if (type === "import") {
@@ -1056,7 +1307,7 @@ function loadSampleInformation(ev, subjectID, sampleID) {
   $("#btn-edit-sample").css("display", "inline-block");
   $("#btn-add-sample").css("display", "none");
   clearAllSubjectFormFields(samplesFormDiv);
-  populateFormsSamples(subjectID, sampleID, "");
+  populateFormsSamples(subjectID, sampleID, "", "free-form");
   $("#btn-edit-sample").unbind("click");
   $("#btn-edit-sample").click(function () {
     editSample(ev, sampleID);
@@ -1383,6 +1634,7 @@ async function copy_current_sample_id(ev) {
 
 function updateIndexForTable(table) {
   // disable table to prevent further row-moving action before the updateIndexForTable finishes
+
   if (table === document.getElementById("table-subjects")) {
     $("#table-subjects").css("pointer-events", "none");
   } else if (table === document.getElementById("table-samples")) {
@@ -1409,9 +1661,24 @@ function updateIndexForTable(table) {
       document.getElementById("protocol-link-table-dd").style.display = "none";
       document.getElementById("div-protocol-link-table-dd").style.display =
         "none";
+    } else if (
+      table === document.getElementById("guided-protocol-link-table-dd")
+    ) {
+      document.getElementById("guided-protocol-link-table-dd").style.display =
+        "none";
+      document.getElementById(
+        "guided-div-protocol-link-table-dd"
+      ).style.display = "none";
     } else if (table === document.getElementById("other-link-table-dd")) {
       document.getElementById("other-link-table-dd").style.display = "none";
       document.getElementById("div-other-link-table-dd").style.display = "none";
+    } else if (
+      table === document.getElementById("guided-other-link-table-dd")
+    ) {
+      document.getElementById("guided-other-link-table-dd").style.display =
+        "none";
+      document.getElementById("guided-div-other-link-table-dd").style.display =
+        "none";
     }
   }
   $("#table-subjects").css("pointer-events", "auto");
@@ -1885,9 +2152,21 @@ function resetSamples() {
 }
 
 // functions below are to show/add/cancel a custom header
-async function addCustomField(type) {
+async function addCustomField(type, curationMode) {
+  let subjectsHeaderArray = null;
+  let samplesHeaderArray = null;
+  if (curationMode == "free-form") {
+    subjectsHeaderArray = headersArrSubjects;
+    samplesHeaderArray = headersArrSamples;
+  }
+
+  if (curationMode == "guided") {
+    subjectsHeaderArray = subjectsTableData[0];
+    samplesHeaderArray = samplesTableData[0];
+  }
+
   if (type === "subjects") {
-    var lowercaseCasedArray = $.map(headersArrSubjects, function (item, index) {
+    var lowerCasedArray = $.map(subjectsHeaderArray, function (item, index) {
       return item.toLowerCase();
     });
     const { value: customField } = await Swal.fire({
@@ -1901,19 +2180,26 @@ async function addCustomField(type) {
         if (!value) {
           return "Please enter a custom field";
         } else {
-          if (lowercaseCasedArray.includes(value.toLowerCase())) {
+          if (lowerCasedArray.includes(value.toLowerCase())) {
             return "Duplicate field name! <br> You entered a custom field that is already listed.";
           }
         }
       },
     });
     if (customField) {
-      addCustomHeader("subjects", customField);
+      addCustomHeader("subjects", customField, curationMode);
+      if (curationMode == "guided") {
+        subjectsTableData[0].push(customField);
+        for (let i = 1; i < subjectsTableData.length; i++) {
+          subjectsTableData[i].push("");
+        }
+      }
     }
   } else if (type === "samples") {
-    var lowercaseCasedArray = $.map(headersArrSamples, function (item, index) {
+    var lowerCasedArray = samplesHeaderArray.map((item) => {
       return item.toLowerCase();
     });
+
     const { value: customField } = await Swal.fire({
       title: "Enter a custom field:",
       input: "text",
@@ -1925,59 +2211,104 @@ async function addCustomField(type) {
         if (!value) {
           return "Please enter a custom field";
         } else {
-          if (headersArrSamples.includes(value.toLowerCase())) {
+          if (samplesHeaderArray.includes(value.toLowerCase())) {
             return "Duplicate field name! <br> You entered a custom field that is already listed.";
           }
         }
       },
     });
     if (customField) {
-      addCustomHeader("samples", customField);
+      if (curationMode == "guided") {
+        samplesTableData[0].push(customField);
+        for (let i = 1; i < samplesTableData.length; i++) {
+          samplesTableData[i].push("");
+        }
+      }
+      addCustomHeader("samples", customField, curationMode);
     }
   }
 }
 
-function addCustomHeader(type, customHeaderValue) {
+function addCustomHeader(type, customHeaderValue, curationMode) {
+  let curationModeSelectorPrefix = "";
+  if (curationMode == "guided") {
+    curationModeSelectorPrefix = "guided-";
+  }
   var customName = customHeaderValue.trim();
   if (type === "subjects") {
-    var divElement =
-      '<div class="div-dd-info"><div class="demo-controls-head"><div style="width: 100%;"><font color="black">' +
-      customName +
-      ':</font></div></div><div class="demo-controls-body"><div class="ui input modified"><input class="subjects-form-entry" type="text" placeholder="Type here..." id="bootbox-subject-' +
-      customName +
-      '" name="' +
-      customName +
-      '"></input></div></div><div class="tooltipnew demo-controls-end"><svg onclick="deleteCustomField(this, \'' +
-      customName +
-      '\', 0)" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></div></div>';
-    $("#accordian-custom-fields").append(divElement);
-    headersArrSubjects.push(customName);
-    // add empty entries for all of the other sub_ids to normalize the size of matrix
-    for (var subId of subjectsTableData.slice(1, subjectsTableData.length)) {
-      subId.push("");
+    var divElement = `
+      <div class="div-dd-info">
+        <div class="demo-controls-head">
+          <div style="width: 100%;">
+            <font color="black">
+              ${customName}
+            </font>
+          </div>
+        </div>
+        <div class="demo-controls-body">
+          <div class="ui input modified">
+            <input class="subjects-form-entry" type="text" placeholder="Type here..." id="bootbox-subject-${customName}" name="${customName}">
+            </input>
+          </div>
+        </div>
+        <div class="tooltipnew demo-controls-end">
+          <svg onclick="deleteCustomField(this,'${customName}',0,'${curationMode}')" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16">
+            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+          </svg>
+        </div>
+      </div>
+    `;
+
+    $(`#${curationModeSelectorPrefix}accordian-custom-fields`).append(
+      divElement
+    );
+    if (curationMode == "free-form") {
+      headersArrSubjects.push(customName);
+      // add empty entries for all of the other sub_ids to normalize the size of matrix
+      for (var subId of subjectsTableData.slice(1, subjectsTableData.length)) {
+        subId.push("");
+      }
     }
   } else if (type === "samples") {
-    var divElement =
-      '<div class="div-dd-info"><div class="demo-controls-head"><div style="width: 100%;"><font color="black">' +
-      customName +
-      ':</font></div></div><div class="demo-controls-body"><div class="ui input modified"><input class="samples-form-entry" type="text" placeholder="Type here..." id="bootbox-subject-' +
-      customName +
-      '" name="' +
-      customName +
-      '"></input></div></div><div class="tooltipnew demo-controls-end"><svg onclick="deleteCustomField(this, \'' +
-      customName +
-      '\', 1)" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></div></div>';
-    $("#accordian-custom-fields-samples").append(divElement);
-    headersArrSamples.push(customName);
-    // add empty entries for all of the other sub_ids to normalize the size of matrix
-    for (var sampleId of samplesTableData.slice(1, samplesTableData.length)) {
-      sampleId.push("");
+    var divElement = `
+        <div class="div-dd-info">
+          <div class="demo-controls-head">
+            <div style="width: 100%;">
+              <font color="black">
+                ${customName}
+              </font>
+            </div>
+          </div>
+          <div class="demo-controls-body">
+            <div class="ui input modified">
+              <input class="samples-form-entry" type="text" placeholder="Type here..." id="bootbox-subject-${customName}" name="${customName}">
+              </input>
+            </div>
+          </div>
+          <div class="tooltipnew demo-controls-end">
+            <svg onclick="deleteCustomField(this,'${customName}',1,'${curationMode}')" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16">
+              <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+              <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+            </svg>
+          </div>
+        </div>
+      `;
+    $(`#${curationModeSelectorPrefix}accordian-custom-fields-samples`).append(
+      divElement
+    );
+    if (curationMode == "free-form") {
+      headersArrSamples.push(customName);
+      // add empty entries for all of the other sub_ids to normalize the size of matrix
+      for (var sampleId of samplesTableData.slice(1, samplesTableData.length)) {
+        sampleId.push("");
+      }
     }
   }
 }
 
-function deleteCustomField(ev, customField, category) {
-  //  category 0 => subjects;
+function deleteCustomField(ev, customField, category, curationMode) {
+  // category 0 => subjects;
   // category 1 => samples
   Swal.fire({
     text: "Are you sure you want to delete this custom field?",
@@ -1989,46 +2320,96 @@ function deleteCustomField(ev, customField, category) {
     confirmButtonText: "Yes",
   }).then((result) => {
     if (result.isConfirmed) {
+      if (curationMode == "free-form") {
+        $(ev).parents()[1].remove();
+        if (category === 0) {
+          if (headersArrSubjects.includes(customField)) {
+            headersArrSubjects.splice(
+              headersArrSubjects.indexOf(customField),
+              1
+            );
+          }
+        } else {
+          if (headersArrSamples.includes(customField)) {
+            headersArrSamples.splice(headersArrSamples.indexOf(customField), 1);
+          }
+        }
+      }
+    }
+    if (curationMode == "guided") {
       $(ev).parents()[1].remove();
       if (category === 0) {
-        if (headersArrSubjects.includes(customField)) {
-          headersArrSubjects.splice(headersArrSubjects.indexOf(customField), 1);
+        // get the index of the custom field in the subjectsTableData
+        const indexToRemove = subjectsTableData[0].indexOf(customField);
+        // remove the element at indexToRemove for each element in subjectsTableData
+        for (let i = 0; i < subjectsTableData.length; i++) {
+          subjectsTableData[i].splice(indexToRemove, 1);
         }
-      } else {
-        if (headersArrSamples.includes(customField)) {
-          headersArrSamples.splice(headersArrSamples.indexOf(customField), 1);
-        }
+      }
+    }
+    if (category === 1) {
+      // get the index of the custom field in the samplesTableData
+      const indexToRemove = samplesTableData[0].indexOf(customField);
+      // remove the element at indexToRemove for each element in samplesTableData
+      for (let i = 0; i < samplesTableData.length; i++) {
+        samplesTableData[i].splice(indexToRemove, 1);
       }
     }
   });
 }
 
 function addExistingCustomHeader(customName) {
-  var divElement =
-    '<div class="div-dd-info"><div class="demo-controls-head"><div style="width: 100%;"><font color="black">' +
-    customName +
-    ':</font></div></div><div class="demo-controls-body"><div class="ui input"><input class="subjects-form-entry" type="text" placeholder="Type here..." id="bootbox-subject-' +
-    customName +
-    '" name="' +
-    customName +
-    '"></input></div></div><div class="tooltipnew demo-controls-end"><svg onclick="deleteCustomField(this, \'' +
-    customName +
-    '\', 0)" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></div></div>';
+  var divElement = `
+    <div class="div-dd-info">
+      <div class="demo-controls-head">
+        <div style="width: 100%;">
+          <font color="black">
+            ${customName}
+          </font>
+        </div>
+      </div>
+      <div class="demo-controls-body">
+        <div class="ui input modified">
+          <input class="subjects-form-entry" type="text" placeholder="Type here..." id="bootbox-subject-${customName}" name="${customName}">
+          </input>
+        </div>
+      </div>
+      <div class="tooltipnew demo-controls-end">
+        <svg onclick="deleteCustomField(this,'${customName}',0,'free-form')" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16">
+          <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+          <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+        </svg>
+      </div>
+    </div>
+  `;
   $("#accordian-custom-fields").append(divElement);
   headersArrSubjects.push(customName);
 }
 
 function addExistingCustomHeaderSamples(customName) {
-  var divElement =
-    '<div class="div-dd-info"><div class="demo-controls-head"><div style="width: 100%;"><font color="black">' +
-    customName +
-    ':</font></div></div><div class="demo-controls-body"><div class="ui input"><input class="samples-form-entry" type="text" placeholder="Type here..." id="bootbox-subject-' +
-    customName +
-    '" name="' +
-    customName +
-    '"></input></div></div><div class="tooltipnew demo-controls-end"><svg onclick="deleteCustomField(this, \'' +
-    customName +
-    '\', 1)" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></div></div>';
+  var divElement = `
+    <div class="div-dd-info">
+      <div class="demo-controls-head">
+        <div style="width: 100%;">
+          <font color="black">
+            ${customName}
+          </font>
+        </div>
+      </div>
+      <div class="demo-controls-body">
+        <div class="ui input modified">
+          <input class="samples-form-entry" type="text" placeholder="Type here..." id="bootbox-subject-${customName}" name="${customName}">
+          </input>
+        </div>
+      </div>
+      <div class="tooltipnew demo-controls-end">
+        <svg onclick="deleteCustomField(this,'${customName}',0,'free-form')" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16">
+          <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+          <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+        </svg>
+      </div>
+    </div>
+  `;
   $("#accordian-custom-fields-samples").append(divElement);
   headersArrSamples.push(customName);
 }
@@ -2358,7 +2739,7 @@ function importExistingSubjectsFile() {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       setTimeout(loadSubjectsFileToDataframe, 1000, filePath);
     }
   }
@@ -2412,7 +2793,7 @@ function importExistingSamplesFile() {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       setTimeout(loadSamplesFileToDataframe(filePath), 1000);
     }
   }
@@ -2432,7 +2813,7 @@ async function checkBFImportSubjects() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   var fieldEntries = [];
   for (var field of $("#form-add-a-subject")
     .children()
@@ -2502,7 +2883,7 @@ async function checkBFImportSamples() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   var fieldEntries = [];
   for (var field of $("#form-add-a-sample")
     .children()
@@ -2838,7 +3219,7 @@ function grabResearcherProtocolList(username, email, token, type, filetype) {
   var protocolInfoList = {
     hostname: protocolHostname,
     port: 443,
-    path: `/api/v3/researchers/${username}/protocols?filter="user_all"`,
+    path: `/api/v3/protocols?filter="shared_with_user"`,
     headers: { Authorization: `Bearer ${token}` },
   };
   https.get(protocolInfoList, (res) => {
@@ -3133,12 +3514,18 @@ function showAgeSection(ev, div, type) {
   }
 }
 
-function readXMLScicrunch(xml, type) {
+function readXMLScicrunch(xml, type, curationMode) {
   var parser = new DOMParser();
   var xmlDoc = parser.parseFromString(xml, "text/xml");
   var resultList = xmlDoc.getElementsByTagName("name"); // THE XML TAG NAME.
   var rrid = "";
   var res;
+
+  let curationModeSelectorPrefix = "";
+  if (curationMode == "guided") {
+    curationModeSelectorPrefix = "guided-";
+  }
+
   for (var i = 0; i < resultList.length; i++) {
     if (resultList[i].childNodes[0].nodeValue === "Proper Citation") {
       rrid = resultList[i].nextSibling.childNodes[0].nodeValue;
@@ -3147,10 +3534,12 @@ function readXMLScicrunch(xml, type) {
   }
   if (type === "subject") {
     if (rrid.trim() !== "") {
-      $("#bootbox-subject-strain-RRID").val(rrid.trim());
+      $(`#${curationModeSelectorPrefix}bootbox-subject-strain-RRID`).val(
+        rrid.trim()
+      );
       res = true;
     } else {
-      $("#bootbox-subject-strain-RRID").val("");
+      $(`#${curationModeSelectorPrefix}bootbox-subject-strain-RRID`).val("");
       res = false;
     }
   } else {

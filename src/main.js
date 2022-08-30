@@ -34,6 +34,7 @@ const PY_FLASK_MODULE = "app";
 let pyflaskProcess = null;
 
 let PORT = 4242;
+let selectedPort = null; 
 const portRange = 100;
 
 /**
@@ -124,6 +125,8 @@ const createPyProc = async () => {
       } else {
         console.error("child process failed to start on port" + port);
       }
+
+      selectedPort = port 
     })
     .catch((err) => {
       console.log(err);
@@ -169,10 +172,12 @@ const killAllPreviousProcesses = async () => {
   // kill all previous python processes that could be running.
   let promisesArray = [];
 
+  let endRange = PORT + portRange;
+
   // create a loop of 100
-  for (let i = 0; i < portRange; i++) {
+  for (let currentPort = PORT; currentPort <= endRange; currentPort++) {
     promisesArray.push(
-      axios.post(`http://127.0.0.1:${PORT + i}/fairshare_server_shutdown`, {})
+      axios.get(`http://127.0.0.1:${currentPort}/sodaforsparc_server_shutdown`, {})
     );
   }
 
@@ -480,3 +485,7 @@ ipcMain.on("orcid", (event, url) => {
     }
   });
 });
+
+ipcMain.on("get-port", (event) => {
+  event.returnValue = selectedPort
+})

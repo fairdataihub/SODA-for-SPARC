@@ -27,6 +27,10 @@
     />
     <link
       rel="stylesheet"
+      href="node_modules/select2/dist/css/select2.min.css"
+    />
+    <link
+      rel="stylesheet"
       href="node_modules/@toast-ui/editor/dist/toastui-editor.css"
     />
     <link
@@ -65,6 +69,7 @@
       rel="stylesheet"
       href="node_modules/intro.js/minified/introjs.min.css"
     />
+    <link rel="stylesheet" href="assets/css/guided.css" />
 
     <link
       rel="stylesheet"
@@ -102,6 +107,7 @@
     <link rel="import" href="sections/documentation/documentation.html" />
     <link rel="import" href="sections/validate/validate_dataset.html" />
     <link rel="import" href="sections/contact-us/contact_us.html" />
+    <link rel="import" href="sections/guided_mode/guided_curate_dataset.html" />
     <script
       src="./assets/lotties/license-lottie.js"
       type="text/javascript"
@@ -200,44 +206,7 @@
             </li>
 
             <li>
-              <a href="#" data-section="main_tabs" id="main_tabs_view">
-                <svg
-                  style="margin-right: 30px; margin-bottom: -5px"
-                  width="20px"
-                  height="20px"
-                  viewBox="0 0 16 16"
-                  class="bi bi-kanban-fill"
-                  fill="white"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M2.5 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2h-11zm5 2h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm-5 1a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V3zm9-1h1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"
-                  ></path>
-                </svg>
-                Free Form Mode
-              </a>
-            </li>
-
-            <li
-              class="coming-soon-div"
-              data-content="Coming soon..."
-              rel="popover"
-              data-placement="right"
-              data-trigger="hover"
-              data-original-title=""
-              title=""
-            >
-              <a
-                href="#"
-                data-section="guided_mode"
-                class="coming-soon-div"
-                data-content="Coming soon..."
-                rel="popover"
-                data-placement="right"
-                data-trigger="hover"
-                data-original-title=""
-                title=""
-              >
+              <a href="#" data-section="guided_mode" id="guided_mode_view">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="20px"
@@ -255,6 +224,25 @@
                   ></path>
                 </svg>
                 Guided Mode
+              </a>
+            </li>
+
+            <li>
+              <a href="#" data-section="main_tabs" id="main_tabs_view">
+                <svg
+                  style="margin-right: 30px; margin-bottom: -5px"
+                  width="20px"
+                  height="20px"
+                  viewBox="0 0 16 16"
+                  class="bi bi-kanban-fill"
+                  fill="white"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M2.5 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2h-11zm5 2h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm-5 1a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V3zm9-1h1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"
+                  ></path>
+                </svg>
+                Free Form Mode
               </a>
             </li>
 

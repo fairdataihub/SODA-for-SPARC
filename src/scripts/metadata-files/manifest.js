@@ -1104,7 +1104,9 @@ function extractBFManifestFile() {
           selected_account: defaultBfAccount,
           selected_dataset: defaultBfDataset,
         },
-        { timeout: 0 }
+        {
+          timeout: 0,
+        }
       )
       .then((res) => {
         resolve(res);

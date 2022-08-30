@@ -100,7 +100,7 @@
 <section
   id="organize-section"
   class="section js-section u-category-windows"
-  style="padding-left: 15px; overflow-y: hidden"
+  style="padding-left: 15px; overflow-y: hidden; margin-left: -25px"
 >
   <main
     class="dash-content"
@@ -1101,7 +1101,6 @@
 
             <div
               style="
-                border-top: 1px solid #f0f0f0;
                 padding: 0 0;
                 margin: 3px 3px;
                 margin-left: 60px;
@@ -1110,14 +1109,14 @@
                 justify-content: space-between;
               "
             >
-              <div style="width: 100%; display: flex; flex-direction: row">
+              <div style="width: 100%; display: flex; flex-direction: row; margin-right: 1.rem;">
                 <div
-                  class="container-fluid"
-                  style="margin-top: 5px; height: auto; border-radius: 3px"
+                  class="container-fluid freeform-file-explorer"
+                  id="free-form-folder-structure-container"
                 >
                   <div
                     id="organize-path-and-back-button-div"
-                    style="display: flex"
+                    class="freeform-file-explorer-buttons"
                   >
                     <!-- <div> -->
                     <!-- <h5 style="cursor: pointer;float:left;font-size:15px;color:var(--tagify-dd-color-primary)">
@@ -1222,7 +1221,9 @@
                     </div>
                   </div>
                   <!-- These are the context menu options, will not appear on the UI until prompted -->
-                  <ul class="menu reg-folder off">
+                  <ul
+                    class="menu reg-folder off shared-folder-structure-element"
+                  >
                     <li id="reg-folder-rename">
                       <i class="fas fa-edit fa-fw"></i>Rename
                     </li>
@@ -1233,7 +1234,9 @@
                       <i class="far fa-trash-alt fa-fw"></i>Delete
                     </li>
                   </ul>
-                  <ul class="menu high-level-folder off">
+                  <ul
+                    class="menu high-level-folder off shared-folder-structure-element"
+                  >
                     <li id="high-folder-rename">
                       <i class="fas fa-edit fa-fw"></i>Rename
                     </li>
@@ -1244,7 +1247,7 @@
                       <i class="fas fa-info fa-fw"></i>Details
                     </li>
                   </ul>
-                  <ul class="menu file off">
+                  <ul class="menu file off shared-folder-structure-element">
                     <li id="file-rename">
                       <i class="fas fa-edit fa-fw"></i>Rename
                     </li>
@@ -1259,13 +1262,22 @@
                     </li>
                   </ul>
                   <!-- <span class="hoverPath" style="display: none"></span> -->
-                  <span class="hoverFullName" style="display: none"></span>
+                  <span
+                    class="hoverFullName shared-folder-structure-element"
+                    style="display: none"
+                  ></span>
                   <!-- END -->
                   <div
                     id="items"
-                    class="div-organize-items"
+                    class="div-organize-items shared-folder-structure-element"
                     ondrop="drop(event);"
                     ondragover="allowDrop(event);"
+                    style="
+                      box-shadow: none !important;
+                      border: none;
+                      overflow-y: auto;
+                      max-height: 400px;
+                    "
                   ></div>
                   <!-- "data" is jstree html element -->
                   <div id="data" style="display: none"></div>
@@ -1782,55 +1794,7 @@
                               font-family: 'Raleway', sans-serif;
                             "
                           >
-                            inputs_metadata
-                          </p>
-                        </button>
-
-                        <button
-                          class="metadata-button button-generate-dataset code-metadata"
-                          data-next="outputsMetadataUpload"
-                          style="display: block"
-                        >
-                          <svg
-                            width="50px"
-                            height="50px"
-                            viewBox="0 0 16 16"
-                            class="bi bi-file-earmark-plus"
-                            fill="#13716D"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
-                            ></path>
-                            <path
-                              d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"
-                            ></path>
-                            <path
-                              fill-rule="evenodd"
-                              d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
-                            ></path>
-                          </svg>
-                          <svg
-                            style="display: none"
-                            width="50px"
-                            height="50px"
-                            viewBox="0 0 16 16"
-                            class="bi bi-check2"
-                            fill="var(--color-light-green)"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              fill-rule="evenodd"
-                              d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
-                            ></path>
-                          </svg>
-                          <p
-                            style="
-                              margin-top: 30px;
-                              font-family: 'Raleway', sans-serif;
-                            "
-                          >
-                            outputs_metadata
+                            code_parameters
                           </p>
                         </button>
                       </div>
@@ -1850,7 +1814,7 @@
                 <div
                   class="div-file-import"
                   droppable="true"
-                  ondrop="dropHandler(event, 'para-submission-file-path', 'submission');"
+                  ondrop="dropHandler(event, 'para-submission-file-path', 'submission', 'free-form');"
                   ondragover="return false"
                 >
                   <p style="font-weight: bold">Import existing file</p>
@@ -1900,7 +1864,7 @@
                   </p>
                   <button
                     id="button-sub"
-                    onclick="importMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
+                    onclick="importMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path', 'free-form')"
                     class="div-file-import-button"
                   >
                     Choose file
@@ -2020,7 +1984,7 @@
                 <div
                   class="div-file-import"
                   droppable="true"
-                  ondrop="dropHandler(event, 'para-ds-description-file-path', 'dataset_description');"
+                  ondrop="dropHandler(event, 'para-ds-description-file-path', 'dataset_description', 'free-form');"
                   ondragover="return false"
                 >
                   <p style="font-weight: bold">Import existing file</p>
@@ -2054,7 +2018,7 @@
                     file here OR
                   </p>
                   <button
-                    onclick="importMetadataFiles(this, 'dataset_description', ['.csv', '.xlsx', '.xls', '.json'], 'para-ds-description-file-path')"
+                    onclick="importMetadataFiles(this, 'dataset_description', ['.csv', '.xlsx', '.xls', '.json'], 'para-ds-description-file-path', 'free-form')"
                     class="div-file-import-button"
                   >
                     Choose file
@@ -2172,7 +2136,7 @@
                 <div
                   class="div-file-import"
                   droppable="true"
-                  ondrop="dropHandler(event, 'para-subjects-file-path', 'subjects');"
+                  ondrop="dropHandler(event, 'para-subjects-file-path', 'subjects', 'free-form');"
                   ondragover="return false"
                 >
                   <p style="font-weight: bold">Import existing file</p>
@@ -2206,7 +2170,7 @@
                     file here OR
                   </p>
                   <button
-                    onclick="importMetadataFiles(this, 'subjects', ['.csv', '.xlsx', '.xls', '.json'], 'para-subjects-file-path')"
+                    onclick="importMetadataFiles(this, 'subjects', ['.csv', '.xlsx', '.xls', '.json'], 'para-subjects-file-path', 'free-form')"
                     class="div-file-import-button"
                   >
                     Choose file
@@ -2324,7 +2288,7 @@
                 <div
                   class="div-file-import"
                   droppable="true"
-                  ondrop="dropHandler(event,'para-samples-file-path', 'samples');"
+                  ondrop="dropHandler(event,'para-samples-file-path', 'samples', 'free-form');"
                   ondragover="return false"
                 >
                   <p style="font-weight: bold">Import existing file</p>
@@ -2358,7 +2322,7 @@
                     file here OR
                   </p>
                   <button
-                    onclick="importMetadataFiles(this, 'samples', ['.csv', '.xlsx', '.xls', '.json'], 'para-samples-file-path')"
+                    onclick="importMetadataFiles(this, 'samples', ['.csv', '.xlsx', '.xls', '.json'], 'para-samples-file-path', 'free-form')"
                     class="div-file-import-button"
                   >
                     Choose file
@@ -2476,7 +2440,7 @@
                 <div
                   class="div-file-import"
                   droppable="true"
-                  ondrop="dropHandler(event, 'para-changes-file-path', 'CHANGES');"
+                  ondrop="dropHandler(event, 'para-changes-file-path', 'CHANGES', 'free-form');"
                   ondragover="return false"
                 >
                   <p style="font-weight: bold">Import existing file</p>
@@ -2510,7 +2474,7 @@
                     file here OR
                   </p>
                   <button
-                    onclick="importMetadataFiles(this, 'CHANGES', ['.txt'], 'para-changes-file-path')"
+                    onclick="importMetadataFiles(this, 'CHANGES', ['.txt'], 'para-changes-file-path', 'free-form')"
                     class="div-file-import-button"
                   >
                     Choose file
@@ -2629,7 +2593,7 @@
                 <div
                   class="div-file-import"
                   droppable="true"
-                  ondrop="dropHandler(event, 'para-readme-file-path', 'README');"
+                  ondrop="dropHandler(event, 'para-readme-file-path', 'README', 'free-form');"
                   ondragover="return false"
                 >
                   <p style="font-weight: bold">Import existing file</p>
@@ -2663,7 +2627,7 @@
                     file here OR
                   </p>
                   <button
-                    onclick="importMetadataFiles(this, 'README', ['.txt'], 'para-readme-file-path')"
+                    onclick="importMetadataFiles(this, 'README', ['.txt'], 'para-readme-file-path', 'free-form')"
                     class="div-file-import-button"
                   >
                     Choose file
@@ -2782,7 +2746,7 @@
                 <div
                   class="div-file-import"
                   droppable="true"
-                  ondrop="dropHandler(event, 'para-codeDescription-file-path', 'code_description');"
+                  ondrop="dropHandler(event, 'para-codeDescription-file-path', 'code_description', 'free-form');"
                   ondragover="return false"
                 >
                   <p style="font-weight: bold">Import existing file</p>
@@ -2831,7 +2795,7 @@
                   </p>
                   <button
                     id="button-sub"
-                    onclick="importMetadataFiles(this, 'code_description', ['.xlsx'], 'para-codeDescription-file-path')"
+                    onclick="importMetadataFiles(this, 'code_description', ['.xlsx'], 'para-codeDescription-file-path', 'free-form')"
                     class="div-file-import-button"
                   >
                     Choose file
@@ -2942,14 +2906,15 @@
             <!-- inputs_metadata -->
             <div id="inputsMetadataUpload" class="div-individual-metadata">
               <h5 style="text-align: center; color: #585858; font-size: 16px">
-                inputs_metadata <br />(must be in .xlsx format)
+                code_parameters <br />(must be in .csv, .tsv, .json or .xlsx
+                format)
               </h5>
               <div style="margin-top: 25px; text-align: center">
                 <h5 style="text-align: center"></h5>
                 <div
                   class="div-file-import"
                   droppable="true"
-                  ondrop="dropHandler(event, 'para-inputsMetadata-file-path', 'inputs_metadata');"
+                  ondrop="dropHandler(event, 'para-codeParamMetadata-file-path', 'code_parameters', 'free-form');"
                   ondragover="return false"
                 >
                   <p style="font-weight: bold">Import existing file</p>
@@ -2998,7 +2963,7 @@
                   </p>
                   <button
                     id="button-sub"
-                    onclick="importMetadataFiles(this, 'inputs_metadata', ['.xlsx'], 'para-inputsMetadata-file-path')"
+                    onclick="importMetadataFiles(this, 'code_parameters', ['.xlsx', '.csv', '.tsv', '.json'], 'para-codeParamMetadata-file-path', 'free-form')"
                     class="div-file-import-button"
                   >
                     Choose file
@@ -3040,7 +3005,7 @@
                     on Pennsieve
                   </p>
                   <button
-                    onclick="importPennsieveMetadataFiles(this, 'inputsMetadata', ['.xlsx'], 'para-inputsMetadata-file-path')"
+                    onclick="importPennsieveMetadataFiles(this, 'inputsMetadata', ['.xlsx'], 'para-codeParamMetadata-file-path')"
                     class="div-file-import-button"
                   >
                     Use file
@@ -3050,7 +3015,7 @@
               <div style="width: 80%; margin: 10px auto">
                 <p
                   class="para-metadata-file-status"
-                  id="para-inputsMetadata-file-path"
+                  id="para-codeParamMetadata-file-path"
                 ></p>
               </div>
               <div
@@ -3116,7 +3081,7 @@
                 <div
                   class="div-file-import"
                   droppable="true"
-                  ondrop="dropHandler(event, 'para-outputsMetadata-file-path', 'outputs_metadata');"
+                  ondrop="dropHandler(event, 'para-outputsMetadata-file-path', 'outputs_metadata', 'free-form');"
                   ondragover="return false"
                 >
                   <p style="font-weight: bold">Import existing file</p>
@@ -3165,7 +3130,7 @@
                   </p>
                   <button
                     id="button-sub"
-                    onclick="importMetadataFiles(this, 'outputs_metadata', ['.xlsx'], 'para-outputsMetadata-file-path')"
+                    onclick="importMetadataFiles(this, 'outputs_metadata', ['.xlsx'], 'para-outputsMetadata-file-path', 'free-form')"
                     class="div-file-import-button"
                   >
                     Choose file
@@ -4726,6 +4691,7 @@
           flex-direction: row;
           justify-content: space-between;
           height: 80px;
+          margin-right: 3.7rem;
         "
       >
         <div style="display: flex; flex-direction: row">
@@ -4888,22 +4854,3 @@
     </div>
   </main>
 </section>
-
-<script>
-  $(".button-display-details").click(function () {
-    $(this).parent().toggleClass("show");
-  });
-
-  $(".button-generate-dataset i").bind("click", function () {
-    $($(this).parents()[0]).click();
-  });
-  //Manifest file label color change if checked
-  function updateManifestLabelColor(el) {
-    document.getElementById("label-manifest").style.color = el.checked
-      ? "var(--color-light-green)"
-      : "#303030";
-    document.getElementById("label-manifest").style.fontWeight = el.checked
-      ? "bold"
-      : "normal";
-  }
-</script>

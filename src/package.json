@@ -1,7 +1,7 @@
 {
   "name": "soda-for-sparc",
   "productName": "SODA for SPARC",
-  "version": "8.0.1",
+  "version": "9.0.0",
   "description": "Keep Calm and Curate ",
   "main": "main.js",
   "scripts": {
@@ -140,6 +140,7 @@
     "popper.js": "^1.16.1",
     "prop-types": "^15.7.2",
     "remove-markdown": "^0.3.0",
+    "select2": "^4.1.0-rc.0",
     "spur-template": "^1.1.0",
     "sweetalert2": "^10.16.9",
     "tippy.js": "^6.3.1",
