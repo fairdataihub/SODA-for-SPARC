@@ -1781,7 +1781,7 @@ details[open]>summary::before {
   color: #666666;
   border-width: 1px;
   border-color: var(--color-accent);
-  margin: 5px;
+  margin: 8px;
   width: 250px;
 }
 
