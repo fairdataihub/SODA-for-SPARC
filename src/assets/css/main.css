@@ -2082,3 +2082,24 @@ details[open]>summary::before {
   width: 100%;
   border-bottom: 2px solid lightgray;
 }
+
+#guided-pennsieve-copy-dataset-link {
+  background: var(--button-color);
+  border: none;
+  color: white;
+  height: 40px;
+  width: 45px;
+  margin-left: -1px;
+}
+
+#guided-pennsieve-copy-dataset-link:hover {
+  background: #1c687e !important;
+}
+
+#guided-pennsieve-dataset-link {
+  border-bottom: none !important;
+}
+
+#guided-pennsieve-dataset-link:hover {
+  border-bottom: 1px solid !important;
+}
