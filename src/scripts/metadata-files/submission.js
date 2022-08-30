@@ -85,7 +85,6 @@ const renderMilestoneSelectionTable = (milestoneData) => {
       const milestoneDescriptionArray = milestoneData[milestoneKey];
       const milestoneDescriptionTableRows = milestoneDescriptionArray.map(
         (milestoneDescription) => {
-          console.log(milestoneDescription);
           const descriptionString = milestoneDescription["Description of data"];
           const milestoneString = milestoneKey;
           const completionDateString =
@@ -226,13 +225,12 @@ async function helpMilestoneSubmission(curationMode) {
         guidedMilestoneData[
           "Not included in the Dataset Deliverables document"
         ] = [
-          {
-            "Description of data":
-              "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
-            "Expected date of completion": "N/A",
-          },
-        ];
-        console.log(guidedMilestoneData);
+            {
+              "Description of data":
+                "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
+              "Expected date of completion": "N/A",
+            },
+          ];
 
         //save the unselected milestones into sodaJSONObj
         sodaJSONObj["dataset-metadata"]["submission-metadata"][
@@ -309,17 +307,14 @@ const handleMilestoneClick = () => {
   );
   const completionDatesToCheck = [];
   for (const milestone of checkedMilestonesValues) {
-    console.log(milestone);
     for (const task of guidedMilestoneData[milestone]) {
       completionDatesToCheck.push(task["Expected date of completion"]);
     }
   }
-  console.log(completionDatesToCheck);
 
   const completionDatesToCheckArray = Array.from(
     new Set(completionDatesToCheck)
   );
-  console.log(completionDatesToCheckArray);
   const completionDateRadioElements = completionDatesToCheckArray
     .map((completionDate) =>
       createCompletionDateRadioElement("completion-date", completionDate)
@@ -364,7 +359,6 @@ const getCheckedMilestones = () => {
     "input[name='milestone']:checked"
   );
   const checkedMilestonesArray = Array.from(checkedMilestones);
-  console.log(checkedMilestonesArray);
   //get first tr parent for each checkedMilestonesArray element
   const checkedMilestoneData = checkedMilestonesArray.map((checkMilestone) => {
     const tableRow = checkMilestone.parentElement.parentElement.parentElement;
@@ -785,12 +779,6 @@ async function generateSubmissionHelper(uploadBFBoolean) {
   }
 
   let datasetName = $("#bf_dataset_load_submission").text().trim();
-  console.log(json_arr);
-  console.log(submissionDestinationPath);
-  console.log(typeof submissionDestinationPath);
-  console.log(uploadBFBoolean);
-  console.log(defaultBfAccount);
-  console.log(datasetName);
   client
     .post(
       `/prepare_metadata/submission_file`,
@@ -935,7 +923,7 @@ function changeAirtableDiv(divHide, divShow, buttonHide, buttonShow) {
 function showExistingSubmissionFile(type) {
   if (
     $(`#existing-submission-file-destination`).prop("placeholder") !==
-      "Browse here" &&
+    "Browse here" &&
     $(`#Question-prepare-submission-2`).hasClass("show")
   ) {
     Swal.fire({
@@ -1015,7 +1003,7 @@ function importExistingSubmissionFile(type) {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       setTimeout(loadExistingSubmissionFile(filePath), 1000);
     }
   }
@@ -1130,7 +1118,7 @@ async function checkBFImportSubmission() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   let bfDataset = $("#bf_dataset_load_submission").text().trim();
   log.info(`Loading submission file from Pennsieve dataset: ${bfDataset}`);
   try {

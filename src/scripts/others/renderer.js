@@ -219,7 +219,6 @@ let client = null;
 // get port number from the main process
 const port = ipcRenderer.sendSync("get-port");
 
-console.log("The port is: ", port);
 
 // TODO: change the default port so it is based off the discovered port in Main.js
 client = axios.create({
@@ -1384,8 +1383,8 @@ var datasetTagsInput = document.getElementById("tagify-dataset-tags"),
   datasetTagsTagify = new Tagify(datasetTagsInput);
 
 var guidedDatasetTagsInput = document.getElementById(
-    "guided-tagify-dataset-tags"
-  ),
+  "guided-tagify-dataset-tags"
+),
   // initialize Tagify on the above input node reference
   guidedDatasetTagsTagify = new Tagify(guidedDatasetTagsInput);
 
@@ -1546,7 +1545,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => {});
+            }).then((result) => { });
             generateSubjectsFileHelper(false);
           }
         });
@@ -1562,7 +1561,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         generateSubjectsFileHelper(false);
       }
     }
@@ -1616,7 +1615,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   let bfdataset = document
     .getElementById("bf_dataset_load_subjects")
@@ -1719,7 +1718,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => {});
+            }).then((result) => { });
             generateSamplesFileHelper(uploadBFBoolean);
           }
         });
@@ -1735,7 +1734,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         generateSamplesFileHelper(uploadBFBoolean);
       }
     }
@@ -1789,7 +1788,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   try {
     let samplesFileResponse = await client.post(
@@ -2277,12 +2276,12 @@ function createStrain(id, type, curationMode) {
           info.setAttribute(
             "onclick",
             "populateRRID('" +
-              data.query +
-              "', '" +
-              type +
-              "', '" +
-              curationMode +
-              "')"
+            data.query +
+            "', '" +
+            type +
+            "', '" +
+            curationMode +
+            "')"
           );
           info.innerHTML = `Click here to check <strong>"${data.query}"</strong>`;
         }
@@ -2317,7 +2316,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   try {
     let load_taxonomy_species = await client.get(`/taxonomy/species`, {
       params: {
@@ -3035,9 +3034,9 @@ function detectEmptyRequiredFields(funding) {
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
   var emptyMessageArray = [
     "- Missing required fields under Dataset Info section: " +
-      dsEmptyField.join(", "),
+    dsEmptyField.join(", "),
     "- Missing required fields under Contributor Info section: " +
-      conEmptyField.join(", "),
+    conEmptyField.join(", "),
     "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
   ];
   var allFieldsSatisfied = true;
@@ -5205,15 +5204,12 @@ async function drop(ev) {
   targetElement = ev.target;
   // get global path
   var currentPath = organizeDSglobalPath.value;
-  console.log(currentPath);
   var jsonPathArray = currentPath.split("/");
   var filtered = jsonPathArray.slice(1).filter(function (el) {
     return el != "";
   });
-  console.log(filtered);
-  console.log(datasetStructureJSONObj);
+
   var myPath = getRecursivePath(filtered, datasetStructureJSONObj);
-  console.log(myPath);
   irregularFolderArray = [];
   var action = "";
   filesElement = ev.dataTransfer.files;
@@ -5398,7 +5394,6 @@ async function dropHelper(
         } else {
           //check if fileName is in to-be-imported object keys
           if (importedFiles.hasOwnProperty(originalFileName)) {
-            console.log("filename is in to-be-imported obj keys");
             nonAllowedDuplicate = true;
             nonAllowedDuplicateFiles.push(itemPath);
             continue;
@@ -6248,7 +6243,6 @@ function sortObjByKeys(object) {
 const listItems = async (jsonObj, uiItem, amount_req, reset) => {
   //allow amount to choose how many elements to create
   //break elements into sets of 100
-  console.log(uiItem);
   var appendString = "";
   var sortedObj = sortObjByKeys(jsonObj);
   let file_elements = [],
@@ -6562,7 +6556,6 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     } else if (folderType === "sample") {
       dragDropInstructionsText = `Drag and drop folders and files associated with the sample ${currentFolder}`;
     }
-    console.log($('#items'));
 
     $("#items").html(
       `<div class="drag-drop-container-instructions">
@@ -6571,9 +6564,8 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
           ${dragDropInstructionsText}
         </p>
         <p class="text-center">
-          You may also <b>add</b> or <b>import</b> ${
-            folderType === undefined ? "folders or files" : folderType + " data"
-          } using the buttons in the upper right corner
+          You may also <b>add</b> or <b>import</b> ${folderType === undefined ? "folders or files" : folderType + " data"
+      } using the buttons in the upper right corner
         </p>
       </div>`
     );
@@ -6581,7 +6573,6 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
       "dragDropLottieContainer"
     );
 
-    // console.log(dragDropLottieContainer);
     dragDropLottieContainer.innerHTML = ``;
 
     let dragDropAnimation = lottie.loadAnimation({
@@ -6902,16 +6893,14 @@ ipcRenderer.on(
 
                     numb.innerText = percentage_amount + "%";
                     if (percentage_amount <= 50) {
-                      progressBar_rightSide.style.transform = `rotate(${
-                        percentage_amount * 0.01 * 360
-                      }deg)`;
+                      progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
+                        }deg)`;
                     } else {
                       progressBar_rightSide.style.transition = "";
                       progressBar_rightSide.classList.add("notransition");
                       progressBar_rightSide.style.transform = `rotate(180deg)`;
-                      progressBar_leftSide.style.transform = `rotate(${
-                        percentage_amount * 0.01 * 180
-                      }deg)`;
+                      progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
+                        }deg)`;
                     }
 
                     if (finished === 1) {
@@ -6986,16 +6975,14 @@ ipcRenderer.on(
 
                   numb.innerText = percentage_amount + "%";
                   if (percentage_amount <= 50) {
-                    progressBar_rightSide.style.transform = `rotate(${
-                      percentage_amount * 0.01 * 360
-                    }deg)`;
+                    progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
+                      }deg)`;
                   } else {
                     progressBar_rightSide.style.transition = "";
                     progressBar_rightSide.classList.add("notransition");
                     progressBar_rightSide.style.transform = `rotate(180deg)`;
-                    progressBar_leftSide.style.transform = `rotate(${
-                      percentage_amount * 0.01 * 180
-                    }deg)`;
+                    progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
+                      }deg)`;
                   }
                   if (finished === 1) {
                     progressBar_leftSide.style.transform = `rotate(180deg)`;
@@ -7226,7 +7213,6 @@ document
 ipcRenderer.on(
   "selected-local-destination-datasetCurate-generate",
   (event, filepath) => {
-    console.log(filepath)
     if (filepath.length > 0) {
       if (filepath != null) {
         $("#div-confirm-destination-locally").css("display", "flex");
@@ -7373,9 +7359,9 @@ document
     for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
       if (
         "manifest.xlsx" in
-          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
         sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-          "manifest.xlsx"
+        "manifest.xlsx"
         ]["forTreeview"]
       ) {
         delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
@@ -7970,7 +7956,7 @@ async function initiate_generate() {
           "track-event",
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE +
-            " - Step 7 - Generate - Dataset - Number of Files",
+          " - Step 7 - Generate - Dataset - Number of Files",
           `${datasetUploadSession.id}`,
           uploadedFiles
         );
@@ -7980,7 +7966,7 @@ async function initiate_generate() {
           "track-event",
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE +
-            " - Step 7 - Generate - Dataset - Size",
+          " - Step 7 - Generate - Dataset - Size",
           `${datasetUploadSession.id}`,
           increaseInFileSize
         );
@@ -8175,7 +8161,6 @@ function importPennsieveMetadataFiles(
 }
 
 ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
-  console.log(event);
   if (mypath.length > 0) {
     var dotCount = path.basename(mypath[0]).trim().split(".").length - 1;
     if (dotCount === 1) {
@@ -8263,7 +8248,6 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
  * }
  */
 var bf_request_and_populate_dataset = async (sodaJSONObj) => {
-  console.log("REquested and poulated");
   let progress_container = document.getElementById("loading_pennsieve_dataset");
   let percentage_text = document.getElementById(
     "pennsieve_loading_dataset_percentage"
@@ -8297,16 +8281,14 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
     finished = res["import_completed_items"];
     percentage_text.innerText = percentage_amount + "%";
     if (percentage_amount <= 50) {
-      left_progress_bar.style.transform = `rotate(${
-        percentage_amount * 0.01 * 360
-      }deg)`;
+      left_progress_bar.style.transform = `rotate(${percentage_amount * 0.01 * 360
+        }deg)`;
     } else {
       left_progress_bar.style.transition = "";
       left_progress_bar.classList.add("notransition");
       left_progress_bar.style.transform = `rotate(180deg)`;
-      right_progress_bar.style.transform = `rotate(${
-        percentage_amount * 0.01 * 180
-      }deg)`;
+      right_progress_bar.style.transform = `rotate(${percentage_amount * 0.01 * 180
+        }deg)`;
     }
 
     if (finished === 1) {
@@ -9467,7 +9449,6 @@ function openFeedbackForm() {
   }, 5);
 }
 function gatherLogs() {
-  console.log("Gathering logs...");
   //function will be used to gather all logs on all OS's
   let homedir = os.homedir();
   let file_path = "";
@@ -9475,7 +9456,6 @@ function gatherLogs() {
   let serverLogsPath = path.join(homedir, "SODA", "logs");
   let logFiles = ["main.log", "renderer.log", "out.log", "api.log"];
 
-  console.log(os.type());
 
   if (os.platform() === "darwin") {
     clientLogsPath = path.join(homedir, "/Library/Logs/SODA for SPARC/");

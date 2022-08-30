@@ -630,8 +630,6 @@ async function addStrain(ev, type, curationMode) {
 
 // populate RRID
 function populateRRID(strain, type, curationMode) {
-  console.log("populateRRID");
-  console.log(strain, type, curationMode);
   let curationModeSelectorPrefix = "";
   if (curationMode == "guided") {
     curationModeSelectorPrefix = "guided-";
@@ -657,9 +655,7 @@ function populateRRID(strain, type, curationMode) {
       Swal.showLoading();
     },
   }).then((result) => {
-    console.log("then");
   });
-  console.log("swal fire done");
   https.get(rridInfo, (res) => {
     if (res.statusCode === 200) {
       let data = "";
@@ -755,25 +751,22 @@ function addSubjectMetadataEntriesIntoJSON(curationMode) {
   for (var field of $(`#${curationModeSelectorPrefix}form-add-a-subject`)
     .children()
     .find(".subjects-form-entry")) {
-    console.log(field.value);
     if (
       field.value === "" ||
       field.value === undefined ||
       field.value === "Select"
     ) {
-      console.log("empty");
       field.value = null;
     } else {
-      console.log(field);
     }
     headersArrSubjects.push(field.name);
     // if it's age, then add age info input (day/week/month/year)
     if (field.name === "Age") {
       if (
         $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val() !==
-          "Select" &&
+        "Select" &&
         $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val() !==
-          "N/A"
+        "N/A"
       ) {
         field.value =
           field.value +
@@ -815,8 +808,6 @@ function addSubjectMetadataEntriesIntoJSON(curationMode) {
           subjectsTableData[i] = valuesArr;
         }
       }
-
-      console.log(subjectsTableData);
     }
   }
   if (curationMode === "free-form") {
@@ -853,9 +844,9 @@ function addSampleMetadataEntriesIntoJSON(curationMode) {
     if (field.name === "Age") {
       if (
         $(`#${curationModeSelectorPrefix}bootbox-sample-age-info`).val() !==
-          "Select" &&
+        "Select" &&
         $(`#${curationModeSelectorPrefix}bootbox-sample-age-info`).val() !==
-          "N/A"
+        "N/A"
       ) {
         field.value =
           field.value +
@@ -868,8 +859,6 @@ function addSampleMetadataEntriesIntoJSON(curationMode) {
     valuesArr.push(field.value);
   }
   samplesTableData[0] = headersArrSamples;
-  console.log(headersArrSamples);
-  console.log(valuesArr);
   if (valuesArr !== undefined && valuesArr.length !== 0) {
     if (curationMode === "free-form") {
       if (samplesTableData[dataLength] !== undefined) {
@@ -884,13 +873,11 @@ function addSampleMetadataEntriesIntoJSON(curationMode) {
       "guided-bootbox-subject-id-samples"
     ).value;
     let sampleID = document.getElementById("guided-bootbox-sample-id").value;
-    console.log(subjectID, sampleID, samplesTableData);
     for (let i = 1; i < samplesTableData.length; i++) {
       if (
         samplesTableData[i][0] === subjectID &&
         samplesTableData[i][1] === sampleID
       ) {
-        console.log("overwriting samples table data");
         samplesTableData[i] = valuesArr;
         break;
       }
@@ -1163,17 +1150,15 @@ function populateForms(subjectID, type, curationMode) {
             curationMode == "guided" &&
             field.name === "protocol url or doi"
           ) {
-            console.log("doing url");
             //If the selected sample derived from
             const previouslySavedProtocolURL = infoJson[i];
 
             const protocols =
               sodaJSONObj["dataset-metadata"]["description-metadata"][
-                "protocols"
+              "protocols"
               ];
             for (const protocol of protocols) {
               if (protocol.link === previouslySavedProtocolURL) {
-                console.log("found a match");
 
                 protocolTitleDropdown.value = protocol.description;
                 protocolURLDropdown.value = protocol.link;
@@ -1203,7 +1188,6 @@ function populateForms(subjectID, type, curationMode) {
 }
 
 function populateFormsSamples(subjectID, sampleID, type, curationMode) {
-  console.log(subjectID, sampleID, type, curationMode);
   //Initialize variables shared between different curation modes and set them
   //based on curationMode passed in as parameter
   let fieldArr;
@@ -1218,7 +1202,6 @@ function populateFormsSamples(subjectID, sampleID, type, curationMode) {
     curationModeSelectorPrefix = "guided-";
     fieldArr = $(guidedSamplesFormDiv).children().find(".samples-form-entry");
   }
-  console.log(fieldArr);
   if (samplesTableData.length > 1) {
     for (var i = 1; i < samplesTableData.length; i++) {
       if (
@@ -1230,18 +1213,13 @@ function populateFormsSamples(subjectID, sampleID, type, curationMode) {
       }
     }
   }
-  console.log(infoJson);
-  console.log(fieldArr);
 
   if (sampleID !== "clear" && sampleID.trim() !== "") {
     // populate form
-    console.log(fieldArr);
     var emptyEntries = ["nan", "nat"];
     var c = fieldArr.map(function (i, field) {
       if (infoJson[i]) {
         if (!emptyEntries.includes(infoJson[i].toLowerCase())) {
-          console.log(field.name);
-          console.log(curationMode);
           if (field.name === "Age") {
             var fullAge = infoJson[i].split(" ");
             var unitArr = ["hours", "days", "weeks", "months", "years"];
@@ -1294,7 +1272,7 @@ function populateFormsSamples(subjectID, sampleID, type, curationMode) {
 
             const protocols =
               sodaJSONObj["dataset-metadata"]["description-metadata"][
-                "protocols"
+              "protocols"
               ];
             for (const protocol of protocols) {
               if (protocol.link === previouslySavedProtocolURL) {
@@ -1312,7 +1290,6 @@ function populateFormsSamples(subjectID, sampleID, type, curationMode) {
                 field.value = infoJson[i];
               }
             } else {
-              console.log(`setting ${field.name} to ${infoJson[i]}`);
               field.value = infoJson[i];
             }
           }
@@ -1656,7 +1633,6 @@ async function copy_current_sample_id(ev) {
 }
 
 function updateIndexForTable(table) {
-  console.log(table);
   // disable table to prevent further row-moving action before the updateIndexForTable finishes
 
   if (table === document.getElementById("table-subjects")) {
@@ -1672,7 +1648,6 @@ function updateIndexForTable(table) {
   }
   if (rowcount === 1) {
     table.style.display = "none";
-    console.log(table);
     if (table === document.getElementById("table-subjects")) {
       $("#button-generate-subjects").css("display", "none");
     } else if (table === document.getElementById("table-samples")) {
@@ -2333,7 +2308,6 @@ function addCustomHeader(type, customHeaderValue, curationMode) {
 }
 
 function deleteCustomField(ev, customField, category, curationMode) {
-  console.log(customField, category, curationMode);
   // category 0 => subjects;
   // category 1 => samples
   Swal.fire({
@@ -2765,7 +2739,7 @@ function importExistingSubjectsFile() {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       setTimeout(loadSubjectsFileToDataframe, 1000, filePath);
     }
   }
@@ -2819,7 +2793,7 @@ function importExistingSamplesFile() {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       setTimeout(loadSamplesFileToDataframe(filePath), 1000);
     }
   }
@@ -2839,7 +2813,7 @@ async function checkBFImportSubjects() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   var fieldEntries = [];
   for (var field of $("#form-add-a-subject")
     .children()
@@ -2909,7 +2883,7 @@ async function checkBFImportSamples() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   var fieldEntries = [];
   for (var field of $("#form-add-a-sample")
     .children()
@@ -3327,7 +3301,6 @@ async function showProtocolCredentials(email, filetype) {
     },
   });
   if (protocol) {
-    console.log(protocol);
     if (filetype === "subjects") {
       $("#bootbox-subject-protocol-title").val(
         protocolResearcherList[protocol]

@@ -88,14 +88,13 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   var textValue = $(`#textarea-create-${fileType}`).val().trim();
   let bfDataset = document
     .getElementById(`bf_dataset_load_${fileType}`)
     .innerText.trim();
   if (uploadBFBoolean) {
     try {
-      console.log(upperCaseLetters);
       let upload_rc_file = await client.post(
         "/prepare_metadata/readme_changes_file",
         {
@@ -459,7 +458,7 @@ async function saveRCFile(type) {
 function showExistingRCFile(type) {
   if (
     $(`#existing-${type}-file-destination`).prop("placeholder") !==
-      "Browse here" &&
+    "Browse here" &&
     $(`#Question-prepare-${type}-2`).hasClass("show")
   ) {
     Swal.fire({
@@ -557,7 +556,7 @@ const getRC = async (type) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   if (type === "CHANGES.txt") {
     var shortName = "changes";
   } else {
@@ -691,7 +690,7 @@ function importExistingRCFile(type) {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       setTimeout(loadExistingRCFile(filePath, type), 1000);
     }
   }
