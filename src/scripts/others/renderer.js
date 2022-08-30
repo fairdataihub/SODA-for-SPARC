@@ -6091,7 +6091,7 @@ $(document).ready(function () {
     interactive: true,
     placement: "bottom",
     theme: "light",
-  })
+  });
 });
 
 // Trigger action when the contexmenu is about to be shown
@@ -9616,16 +9616,26 @@ function directToDocumentation() {
   document.getElementById("overview-column-2").blur();
   // window.open('https://docs.sodaforsparc.io', '_blank');
 }
+const directToGuidedMode = () => {
+  const guidedModeLinkButton = document.getElementById("guided_mode_view");
+  guidedModeLinkButton.click();
+};
+const directToFreeFormMode = () => {
+  const freeFormModeLinkButton = document.getElementById("main_tabs_view");
+  freeFormModeLinkButton.click();
+};
 document
   .getElementById("doc-btn")
   .addEventListener("click", directToDocumentation);
-document.getElementById("sodaVideo-btn").addEventListener("click", sodaVideo);
 document
-  .getElementById("direct-to-doc-button")
-  .addEventListener("click", directToDocumentation);
+  .getElementById("home-button-interface-instructions-link")
+  .addEventListener("click", sodaVideo);
 document
-  .getElementById("getting-started-button")
-  .addEventListener("click", gettingStarted);
+  .getElementById("home-button-guided-mode-link")
+  .addEventListener("click", directToGuidedMode);
+document
+  .getElementById("home-button-free-form-mode-link")
+  .addEventListener("click", directToFreeFormMode);
 
 let docu_lottie_section = document.getElementById("documentation-section");
 let doc_lottie = document.getElementById("documentation-lottie");
