@@ -935,6 +935,8 @@ async function extractBFDatasetForManifestFile(
     result = [false, err];
   }
 
+  console.log("Finished extracting dataset")
+
   if (!result[0]) {
     Swal.fire({
       icon: "error",
@@ -1279,6 +1281,7 @@ function resetManifest(skip_permission) {
 }
 
 const trackManifestImportProgress = async () => {
+  console.log("Manifest tracking error?")
   // show the progress container - it is hidden by default once the dataset import is complete
   let progress_container = document.getElementById(
     "loading_pennsieve_dataset_manifest"
@@ -1378,6 +1381,7 @@ function checkEmptySubFolders(datasetStructure) {
 // Parameter: dataset structure object
 // Return: manifest file folder path
 async function generateManifestFolderLocallyForEdit(ev) {
+  console.log("Starting generation woo woo")
   var type = "local";
   if (
     $('input[name="generate-manifest-1"]:checked').prop("id") ===
@@ -1430,6 +1434,7 @@ async function generateManifestFolderLocallyForEdit(ev) {
       createManifestLocally("local", true, "");
     }
   } else {
+    console.log("Going to extract from Pennsieve")
     // Case 2: bf dataset
     sodaJSONObj["bf-account-selected"] = { "account-name": defaultBfAccount };
     sodaJSONObj["bf-dataset-selected"] = { "dataset-name": defaultBfDataset };
