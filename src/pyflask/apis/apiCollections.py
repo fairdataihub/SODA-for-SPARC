@@ -5,6 +5,8 @@ from collectionsDataset import (
     upload_new_names
 )
 
+from errorHandlers import notBadRequestException
+
 api = get_namespace(NamespaceEnum.COLLECTIONS)
 
 

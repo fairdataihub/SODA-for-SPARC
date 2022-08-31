@@ -291,7 +291,7 @@ const uploadNewTags = async (account, dataset, tags) => {
     //put collection ids to dataset
     try {
       let newTagsUpload = await client.put(
-        `datasets/${defaultBfDataset}/collection_ids?selected_account=${defaultBfAccount}`,
+        `datasets/${defaultBfDataset}/collections?selected_account=${defaultBfAccount}`,
         {
           collection: newUploadedTags,
         }
@@ -308,7 +308,7 @@ const removeCollectionTags = async (account, dataset, tags) => {
   //PARAMS: tags = list of collection IDs
   try {
     let removedTags = await client.delete(
-      `datasets/${dataset}/collection_ids?selected_account=${account}`,
+      `datasets/${dataset}/collections?selected_account=${account}`,
       {
         data: { collection: tags },
       }
@@ -324,7 +324,7 @@ const uploadCollectionTags = async (account, dataset, tags) => {
   //PARAMS: tags = list of collection IDs
   try {
     let uploadedTags = await client.put(
-      `datasets/${dataset}/collection_ids`,
+      `datasets/${dataset}/collections`,
       {
         collection: tags,
       },

@@ -78,10 +78,7 @@ class datasetCollection(Resource):
                 api.abort(500, str(e))
             raise e
 
-
-@api.route("/<string:dataset_name>/collection_ids")
-class uploadCollectionNames(Resource):
-    #remove selected dataset from add argument
+        #remove selected dataset from add argument
     #change the urls to have dataset ids when being used
     upload_collection_parse = reqparse.RequestParser(bundle_errors=True)
     upload_collection_parse.add_argument('selected_account', type=str, required=True, help="The target account to work with.", location="args")
@@ -120,3 +117,4 @@ class uploadCollectionNames(Resource):
             if notBadRequestException(e):
                 api.abort(500, str(e))
             raise e
+
