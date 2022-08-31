@@ -627,14 +627,14 @@ def parse_port():
         port = int(sys.argv[1])
     except:
         pass
-    return "{}".format(port)
+    return f"{port}"
 
 
 def main():
-    addr = "tcp://127.0.0.1:" + parse_port()
+    addr = f"tcp://127.0.0.1:{parse_port()}"
     s = zerorpc.Server(SodaApi())
     s.bind(addr)
-    print("start running on {}".format(addr))
+    print(f"start running on {addr}")
     s.run()
 
 
