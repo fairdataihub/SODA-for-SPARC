@@ -3766,6 +3766,15 @@ $(document).ready(() => {
   $(".content-button").click(function () {
     let section = $(this).data("section");
 
+    if (section === "add_edit_bf_dataset_collection") {
+      let rename_dataset_name = $("#rename_dataset_name").html();
+      if (rename_dataset_name.trim() != "None" && rename_dataset_name != "") {
+        $("#bf-rename-dataset-name").val(rename_dataset_name);
+      } else {
+        $("#bf-rename-dataset-name").val("");
+      }
+    }
+
     if (section === "rename_existing_bf_dataset") {
       let rename_dataset_name = $("#rename_dataset_name").html();
       if (rename_dataset_name.trim() != "None" && rename_dataset_name != "") {

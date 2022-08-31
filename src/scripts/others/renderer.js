@@ -1292,6 +1292,10 @@ const guidedManifestFilePath = path.join(
   "Guided-Manifest-Files"
 );
 var protocolConfigPath = path.join(metadataPath, protocolConfigFileName);
+var allCollectionTags = {};
+var currentTags = {};
+var currentCollectionTags = [];
+
 
 //initialize Tagify input field for guided submission milestones
 const guidedSubmissionTagsInput = document.getElementById(
@@ -1336,6 +1340,23 @@ var otherFundingInput = document.getElementById("ds-other-funding"),
   otherFundingTagify = new Tagify(otherFundingInput, {
     duplicates: false,
   });
+
+var collectionDatasetInput = document.getElementById("tagify-collection-tags"),
+  collectionDatasetTags = new Tagify(collectionDatasetInput, {
+    whitelist: [],
+    duplicates: false,
+    dropdown: {
+      enabled: 0,
+      closeOnSelect: true,
+      enforceWhitelist: true,
+      maxItems: 100,
+    },
+    autoComplete: {
+      enabled: true,
+      rightKey: true,
+    },
+  });
+
 
 var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
   studyOrganSystemsTagify = new Tagify(studyOrganSystemsInput, {
@@ -9314,7 +9335,6 @@ const userIsDatasetOwner = async (datasetIdOrName) => {
   }
 
   // get the dataset the user wants to edit
-  // TODO: Replace with Flask call -- READY
   let role = await getCurrentUserPermissions(datasetIdOrName);
 
   return userIsOwner(role);

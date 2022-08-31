@@ -345,7 +345,7 @@ def check_forbidden_characters(my_string):
         False: no forbidden character
         True: presence of forbidden character(s)
     """
-    regex = re.compile("[" + forbidden_characters + "]")
+    regex = re.compile(f"[{forbidden_characters}]")
     if regex.search(my_string) == None and "\\" not in r"%r" % my_string:
         return False
     else:
@@ -362,7 +362,7 @@ def check_forbidden_characters_bf(my_string):
         False: no forbidden character
         True: presence of forbidden character(s)
     """
-    regex = re.compile("[" + forbidden_characters_bf + "]")
+    regex = re.compile(f"[{forbidden_characters_bf}]")
     if regex.search(my_string) == None and "\\" not in r"%r" % my_string:
         return False
     else:
@@ -479,7 +479,6 @@ def bf_dataset_account(accountname):
     
     # bfaccountname = bf.profile.id
     datasets_list = bf.datasets()
-
     # all_bf_datasets = []
 
     def filter_dataset(datasets_list, store=None):
@@ -510,7 +509,6 @@ def bf_dataset_account(accountname):
     [t.join() for t in threads]
 
     sorted_bf_datasets = sorted(store, key=lambda k: k["name"].upper())
-
     return {"datasets": sorted_bf_datasets}
 
 
@@ -526,7 +524,7 @@ def get_username(accountname):
     except Exception as e:
         abort(400, "Please select a valid Pennsieve account.")
     
-    bfname = bf.profile.first_name + " " + bf.profile.last_name
+    bfname = f"{bf.profile.first_name} {bf.profile.last_name}"
 
     return {"username": bfname}
 
@@ -545,8 +543,8 @@ def bf_account_details(accountname):
     except Exception as e:
         abort(400, str(e))
 
-    acc_details = "User email: " + bf.profile.email + "<br>"
-    acc_details = acc_details + "Organization: " + bf.context.name
+    acc_details = f"User email: {bf.profile.email}<br>"
+    acc_details = f"{acc_details}Organization: {bf.context.name}"
 
     try: 
         if exists(configpath):
@@ -593,17 +591,17 @@ def bf_new_dataset_folder(datasetname, accountname):
             c += 1
 
         if not datasetname:
-            error = error + "Please enter valid dataset name" + "<br>"
+            error = f"{error}Please enter valid dataset name<br>"
             c += 1
 
         if datasetname.isspace():
-            error = error + "Please enter valid dataset name" + "<br>"
+            error = f"{error}Please enter valid dataset name<br>"
             c += 1
 
         try:
             bf = Pennsieve(accountname)
         except Exception as e:
-            error = error + "Please select a valid Pennsieve account" + "<br>"
+            error = f"{error}Please select a valid Pennsieve account<br>"
             c += 1
 
         if c > 0:
@@ -643,17 +641,17 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
         c += 1
 
     if not datasetname:
-        error = error + "Please enter valid new dataset name" + "<br>"
+        error = f"{error}Please enter valid new dataset name<br>"
         c += 1
 
     if datasetname.isspace():
-        error = error + "Please enter valid new dataset name" + "<br>"
+        error = f"{error}Please enter valid new dataset name<br>"
         c += 1
 
     try:
         bf = Pennsieve(accountname)
     except Exception as e:
-        error = error + "Please select a valid Pennsieve account" + "<br>"
+        error = f"{error}Please select a valid Pennsieve account<br>"
         c += 1
 
     if c > 0:
@@ -685,8 +683,7 @@ def clear_queue():
 
     command = [agent_cmd(), "upload-status", "--cancel-all"]
 
-    proc = subprocess.run(command, check=True)  # env=agent_env(?settings?)
-    return proc
+    return subprocess.run(command, check=True)  # env=agent_env(?settings?)
 
 
 def agent_running():
@@ -800,12 +797,14 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         submitdatastatus = "Done"
         did_fail = True
         did_upload = False
-        error_message = error_message + "Please select a valid Pennsieve dataset" + "<br>"
+        error_message = f"{error_message}Please select a valid Pennsieve dataset<br>"
         c += 1
 
     if not isdir(pathdataset):
         submitdatastatus = "Done"
-        error_message = error_message + "Please select a valid local dataset folder" + "<br>"
+        error_message = (
+            f"{error_message}Please select a valid local dataset folder<br>"
+        )
         did_fail = True
         did_upload = False
         c += 1
@@ -823,7 +822,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                 if mypathsize == 0:
                     c += 1
                     error = error + fp + " is 0 KB <br>"
-                elif f[0:1] == ".":
+                elif f[:1] == ".":
                     c += 1
                     error = (
                         error
@@ -989,7 +988,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                         current_os = platform.system()
 
                         # Mac builds not able to spawn subprocess from Python at the moment
-                        if not current_os == "Darwin":
+                        if current_os != "Darwin":
                             # clear the pennsieve queue
                             clear_queue()
 
@@ -1025,7 +1024,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                         current_os = platform.system()
 
                         # Mac builds not able to spawn subprocess from Python at the moment
-                        if not current_os == "Darwin":
+                        if current_os != "Darwin":
                             # clear the pennsieve queue
                             clear_queue()
 
@@ -1149,7 +1148,7 @@ def bf_get_users(selected_bfaccount):
     try:
         # organization_name = bf.context.name
         organization_id = bf.context.id
-        list_users = bf._api._get("/organizations/" + str(organization_id) + "/members")
+        list_users = bf._api._get(f"/organizations/{str(organization_id)}/members")
         list_users_first_last = []
         for i in range(len(list_users)):
             # first_last = list_users[i]['firstName'] + ' ' + list_users[i]['lastName']
@@ -1223,7 +1222,7 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
         # user permissions
         selected_dataset_id = myds.id
         list_dataset_permission = bf._api._get(
-            "/datasets/" + str(selected_dataset_id) + "/collaborators/users"
+            f"/datasets/{str(selected_dataset_id)}/collaborators/users"
         )
         list_dataset_permission_first_last_role = []
         for i in range(len(list_dataset_permission)):
@@ -1231,7 +1230,7 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
             last_name = list_dataset_permission[i]["lastName"]
             role = list_dataset_permission[i]["role"]
             list_dataset_permission_first_last_role.append(
-                "User: " + first_name + " " + last_name + " , role: " + role
+                f"User: {first_name} {last_name} , role: {role}"
             )
 
         # team permissions
@@ -2202,5 +2201,3 @@ def update_dataset_tags(selected_account, selected_dataset, updated_tags):
     ps._api._put(f"/datasets/{myds.id}", json={"tags": updated_tags})
 
     return {"message": "Tags updated"}
-
-    

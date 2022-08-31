@@ -1018,4 +1018,3 @@ class BfGetDatasetTags(Resource):
           api.abort(500, str(e))
         raise e
 
-

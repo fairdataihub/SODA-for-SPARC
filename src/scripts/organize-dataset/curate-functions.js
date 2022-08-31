@@ -4,46 +4,70 @@ var metadataFile = "";
 var jstreePreview = document.getElementById("div-dataset-tree-preview");
 const nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
 
-// Event listeners for opening the dropdown prompt
-document
-  .querySelector("#Question-getting-started-BF-account .change-current-account")
-  .addEventListener("click", function () {
-    openDropdownPrompt(this, "bf");
-  });
+// per change event of current dataset span text
+function confirm_click_function() {
+  let temp = $(".bf-dataset-span").html();
+  if (
+    $(".bf-dataset-span").html() == "None" ||
+    $(".bf-dataset-span").html() == ""
+  ) {
+    $($(this).parents().find(".field").find(".div-confirm-button")).css(
+      "display",
+      "none"
+    );
+    $("#para-review-dataset-info-disseminate").text("None");
+  } else {
+    $($(this).parents().find(".field").find(".div-confirm-button")).css(
+      "display",
+      "flex"
+    );
+    if ($($(this).parents().find(".field").find(".synced-progress")).length) {
+      if (
+        $($(this).parents().find(".field").find(".synced-progress")).css(
+          "display"
+        ) === "none"
+      ) {
+        $(".confirm-button").click();
+      }
+    } else {
+      $(".confirm-button").click();
+    }
+  }
+}
 
-document
-  .querySelector("#Question-getting-started-BF-dataset .change-current-account")
-  .addEventListener("click", function () {
-    openDropdownPrompt(this, "dataset", false);
-  });
+// per change event of current dataset span text
+function confirm_click_function() {
+  let temp = $(".bf-dataset-span").html();
 
-document
-  .querySelector(
-    "#Question-generate-dataset-BF-dataset .change-current-account"
-  )
-  .addEventListener("click", function () {
-    openDropdownPrompt(this, "dataset", false);
-  });
+  if (
+    $(".bf-dataset-span").html() == "None" ||
+    $(".bf-dataset-span").html() == ""
+  ) {
+    $($(this).parents().find(".field").find(".div-confirm-button")).css(
+      "display",
+      "none"
+    );
+    $("#para-review-dataset-info-disseminate").text("None");
+  } else {
+    $($(this).parents().find(".field").find(".div-confirm-button")).css(
+      "display",
+      "flex"
+    );
+    if ($($(this).parents().find(".field").find(".synced-progress")).length) {
+      if (
+        $($(this).parents().find(".field").find(".synced-progress")).css(
+          "display"
+        ) === "none"
+      ) {
+        $(".confirm-button").click();
+      }
+    } else {
+      $(".confirm-button").click();
+    }
+  }
+}
 
-document
-  .querySelector(
-    "#Question-generate-dataset-BF-account .change-current-account"
-  )
-  .addEventListener("click", function () {
-    openDropdownPrompt(this, "bf");
-  });
 
-// document
-//   .querySelector("#svg-change-current-account-generate-dropdown")
-//   .addEventListener("click", function () {
-//     openDropdownPrompt(this, "bf");
-//   });
-
-// document
-//   .querySelector("#change-current-account-new-ds-name")
-//   .addEventListener("click", function () {
-//     openDropdownPrompt(this, "dataset");
-//   });
 
 $(".button-individual-metadata.remove").click(function () {
   var metadataFileStatus = $($(this).parents()[1]).find(
