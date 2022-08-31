@@ -1720,6 +1720,7 @@ details[open]>summary::before {
 }
 
 .tip-content {
+  text-align: justify;
   color: #898989 !important;
   font-size: 12px;
   font-weight: 700;

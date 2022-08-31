@@ -1,3 +1,14 @@
+/*
+******************************************************
+******************************************************
+Pre-publishing Submission Workflow Section 
+
+Note: Some frontend elements of the workflow are in the renderer.js file as well. They are can be found under postCurationListChange() function.
+      All backend requests can be found in the renderer.js file.
+******************************************************
+******************************************************
+*/
+
 // Main functions
 async function disseminatePublish() {
   // check that the user completed all pre-publishing checklist items for the given dataset
@@ -635,12 +646,3 @@ function checkDatasetDisseminate() {
   }
 }
 
-// $(".bf-dataset-span.submit-review").on("DOMSubtreeModified", function () {
-//   if ($(this).html() !== "None") {
-//     $("#submit-withdraw-prepublishing-btns-container").show();
-//     $("#submit-withdraw-prepublishing-btns-container button").show();
-//   } else {
-//     $("#submit-withdraw-prepublishing-btns-container").hide();
-//     $("#submit-withdraw-prepublishing-btns-container button").hide();
-//   }
-// });

@@ -79,6 +79,8 @@ document.addEventListener("DOMContentLoaded", async function () {
   await includeJavaScriptFile("./scripts/metadata-files/submission.js");
   await includeJavaScriptFile("./scripts/guided-mode/lottieJSON.js");
   await includeJavaScriptFile("./scripts/guided-mode/guided-curate-dataset.js");
+  await includeJavaScriptFile("./scripts/collections/collections.js");
+
 });
 
 const includeJavaScriptFile = async (filePath) => {

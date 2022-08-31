@@ -6225,6 +6225,7 @@ const guidedShowBannerImagePreview = (imagePath) => {
   );
 
   bannerImagePreviewelement.innerHTML = '';
+
   guidedBannerImageElement = `
     <img
       src="${imagePath}"
@@ -6232,7 +6233,7 @@ const guidedShowBannerImagePreview = (imagePath) => {
       style="max-height: 300px;"
     />
   `;
-  
+
   bannerImagePreviewelement.innerHTML = guidedBannerImageElement;
   $("#guided-banner-image-preview-container").show();
   $("#guided-button-add-banner-image").html("Edit banner image");
@@ -6902,6 +6903,7 @@ const renderSamplesMetadataAsideItems = () => {
     });
   });
 };
+
 
 $(document).ready(async () => {
   $("#guided-button-start-new-curate").on("click", () => {
@@ -9663,6 +9665,7 @@ $(document).ready(async () => {
               hideClass: {
                 popup: "animate__animated animate__zoomOut animate__faster",
               },
+
             }).then(async (result) => {
               if (result.isConfirmed) {
                 guidedSaveBannerImage();

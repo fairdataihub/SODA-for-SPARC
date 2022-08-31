@@ -246,8 +246,8 @@ const addNewDatasetToList = (newDataset) => {
   datasetList.push({ name: newDataset, role: "owner" });
 };
 
-// Rename dataset on bf //
-$("#button-rename-dataset").click(async () => {
+// Rename dataset on pennsieve
+$("#button-rename-dataset").on("click", async () => {
   setTimeout(async function () {
     var selectedbfaccount = defaultBfAccount;
     var currentDatasetName = defaultBfDataset;
