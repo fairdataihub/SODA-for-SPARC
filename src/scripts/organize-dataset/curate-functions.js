@@ -4,22 +4,6 @@ var metadataFile = "";
 var jstreePreview = document.getElementById("div-dataset-tree-preview");
 const nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
 
-// Function to clear the confirm options in the curate feature
-const confirm_click_account_function = () => {
-  let temp = $(".bf-account-span")
-    .html()
-    .replace(/^\s+|\s+$/g, "");
-  if (temp == "None" || temp == "") {
-    $("#div-create_empty_dataset-account-btns").css("display", "none");
-    $("#div-bf-account-btns-getting-started").css("display", "none");
-    $("#div-bf-account-btns-getting-started button").hide();
-  } else {
-    $("#div-create_empty_dataset-account-btns").css("display", "flex");
-    $("#div-bf-account-btns-getting-started").css("display", "flex");
-    $("#div-bf-account-btns-getting-started button").show();
-  }
-};
-
 // per change event of current dataset span text
 function confirm_click_function() {
   let temp = $(".bf-dataset-span").html();
