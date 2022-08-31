@@ -2423,8 +2423,8 @@ const traverseToTab = async (targetPageID) => {
           copyIcon.classList.add("fa-check");
 
           notyf.open({
-            duration: "3000",
-            type: "Success",
+            duration: "2000",
+            type: "success",
             message: "Link copied!",
           });
         });
