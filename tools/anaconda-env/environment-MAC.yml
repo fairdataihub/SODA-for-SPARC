@@ -23,9 +23,5 @@ dependencies:
   - flask == 2.0.2
   - flask_restx
   - protobuf == 3.20.0
-<<<<<<< .merge_file_8IwVRT
   - werkzeug == 2.0.2
   - opencv-python == 4.6.0.66
-=======
-  - werkzeug == 2.0.2
->>>>>>> .merge_file_MQnprI
