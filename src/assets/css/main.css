@@ -2089,7 +2089,7 @@ details[open]>summary::before {
   color: white;
   height: 40px;
   width: 45px;
-  margin-left: -1px;
+  margin-left: 2px;
 }
 
 #guided-pennsieve-copy-dataset-link:hover {
@@ -2098,6 +2098,11 @@ details[open]>summary::before {
 
 #guided-pennsieve-dataset-link {
   border-bottom: none !important;
+  width: 431px;
+  display: inline-flex;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 #guided-pennsieve-dataset-link:hover {

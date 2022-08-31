@@ -2412,13 +2412,21 @@ const traverseToTab = async (targetPageID) => {
         const copyIcon = document.getElementById("guided-pennsieve-copy-icon");
 
         let datasetLink = `https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/datasets/${pennsieveDatasetID}/overview`;
+        let linkIcon = `<i class="fas fa-link" style="margin-right: 0.4rem; margin-left: 0.4rem"></i>`;
 
+        pennsieveDatasetLink.innerHTML = linkIcon + datasetLink;
         pennsieveDatasetLink.href = datasetLink;
 
         pennsieveCopy.addEventListener("click", function () {
           Clipboard.writeText(datasetLink);
           copyIcon.classList.remove("fa-copy");
           copyIcon.classList.add("fa-check");
+
+          notyf.open({
+            duration: "3000",
+            type: "Success",
+            message: "Link copied!",
+          });
         });
       }
 
