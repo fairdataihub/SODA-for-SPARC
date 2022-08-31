@@ -929,13 +929,11 @@ async function extractBFDatasetForManifestFile(
 ) {
   var result;
   try {
-    var res = await bf_request_and_populate_dataset(sodaJSONObj);
+    var res = await bf_request_and_populate_dataset(sodaJSONObj, document.querySelector("#loading_pennsieve_dataset_manifest"));
     result = [true, res];
   } catch (err) {
     result = [false, err];
   }
-
-  console.log("Finished extracting dataset")
 
   if (!result[0]) {
     Swal.fire({
@@ -1068,7 +1066,7 @@ async function extractBFDatasetForManifestFile(
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       $("#Question-prepare-manifest-4").removeClass("show");
       $("#Question-prepare-manifest-4").removeClass("prev");
       $("#Question-prepare-manifest-3").removeClass("prev");
@@ -1107,7 +1105,7 @@ async function extractBFDatasetForManifestFile(
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       localDatasetFolderPath = "";
     }
   }
@@ -1281,23 +1279,22 @@ function resetManifest(skip_permission) {
 }
 
 const trackManifestImportProgress = async () => {
-  console.log("Manifest tracking error?")
   // show the progress container - it is hidden by default once the dataset import is complete
   let progress_container = document.getElementById(
     "loading_pennsieve_dataset_manifest"
   );
 
-  progress_container.style.display = "flex";
+  let percentage_text = progress_container.querySelector(
+    ".pennsieve_loading_dataset_percentage"
+  );
+  let left_progress_bar = progress_container.querySelector(
+    ".pennsieve_left-side_less_than_50"
+  );
+  let right_progress_bar = progress_container.querySelector(
+    ".pennsieve_right-side_greater_than_50"
+  );
 
-  let percentage_text = document.getElementById(
-    "pennsieve_loading_dataset_percentage"
-  );
-  let left_progress_bar = document.getElementById(
-    "pennsieve_left-side_less_than_50"
-  );
-  let right_progress_bar = document.getElementById(
-    "pennsieve_right-side_greater_than_50"
-  );
+  resetProgressContainer(progress_container, percentage_text, left_progress_bar, right_progress_bar)
 
   const manifest_creation_progress_pennsieve = async () => {
     let progressResponse;
@@ -1316,32 +1313,10 @@ const trackManifestImportProgress = async () => {
     let totalManifestFiles = manifestProgress.total_manifest_files;
     let totalManifestFilesCreated = manifestProgress.manifest_files_uploaded;
 
-    let manifestProgressPercentage = Math.round(
-      (totalManifestFilesCreated / totalManifestFiles) * 100
-    );
-    percentage_text.innerText = manifestProgressPercentage + "%";
-    if (manifestProgressPercentage <= 50) {
-      left_progress_bar.style.transform = `rotate(${
-        manifestProgressPercentage * 0.01 * 360
-      }deg)`;
-    } else {
-      left_progress_bar.style.transition = "";
-      left_progress_bar.classList.add("notransition");
-      left_progress_bar.style.transform = `rotate(180deg)`;
-      right_progress_bar.style.transform = `rotate(${
-        manifestProgressPercentage * 0.01 * 180
-      }deg)`;
-    }
+    updateProgressContainer(progress_container, percentage_text, left_progress_bar, right_progress_bar, manifestProgress)
 
     if (totalManifestFiles === totalManifestFilesCreated) {
-      percentage_text.innerText = "100%";
-      left_progress_bar.style.transform = `rotate(180deg)`;
-      right_progress_bar.style.transform = `rotate(180deg)`;
-      right_progress_bar.classList.remove("notransition");
-      clearInterval(manifestProgressInterval);
-      setTimeout(() => {
-        progress_container.style.display = "none";
-      }, 2000);
+        clearInterval(manifestProgressInterval);
     }
   };
 

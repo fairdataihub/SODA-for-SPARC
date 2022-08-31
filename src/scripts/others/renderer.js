@@ -4724,22 +4724,22 @@ ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
 
       try {
         await client.post(
-          
+
           `/organize_datasets/datasets`,
-         
+
           {
-              generation_type: "create-new",
-              generation_destination_path: filepath[0],
-              dataset_name: newDSName,
-              soda_json_directory_structure: datasetStructureJSONObj,
+            generation_type: "create-new",
+            generation_destination_path: filepath[0],
+            dataset_name: newDSName,
+            soda_json_directory_structure: datasetStructureJSONObj,
           },
           {
             timeout: 0,
-            },
+          },
           {
             timeout: 0,
           }
-        
+
         );
 
         document.getElementById("para-organize-datasets-error").style.display =
@@ -8266,120 +8266,45 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
   }
 });
 
-/**
- * Reset the progress display of a given progress tracking container.
- * @param {HTMLElement} progress_container
- * @param {HTMLElement} percentage_text
- * @param {HTMLElement} left_progress_bar
- * @param {HTMLElement} right_progress_bar
- */
-const resetProgressContainer = (
-  progress_container,
-  percentage_text,
-  left_progress_bar,
-  right_progress_bar
-) => {
-  percentage_text.innerText = "0%";
-  progress_container.style.display = "block";
-  left_progress_bar.style.transform = `rotate(0deg)`;
-  right_progress_bar.style.transform = `rotate(0deg)`;
-};
 
-/**
- * Given a progress tracking container, update the progress display to show the user the progress of their dataset import.
- * Once the import has been completed (i.e. the progress is 100%), the progress container will be hidden. The interval will be cleared.
- * NOTE: The interval also clears on error.
- * @param {HTMLElement} progress_container
- * @param {setInterval} interval
- * @returns
- */
-async function requestAndPopulateDatasetProgress(progress_container, interval) {
-  console.log(progress_container);
-
-  let percentage_text = progress_container.querySelector(
-    ".pennsieve_loading_dataset_percentage"
-  );
-  let left_progress_bar = progress_container.querySelector(
-    ".pennsieve_left-side_less_than_50"
-  );
-  let right_progress_bar = progress_container.querySelector(
-    ".pennsieve_right-side_greater_than_50"
-  );
-
-  resetProgressContainer(
-    progress_container,
-    percentage_text,
-    left_progress_bar,
-    right_progress_bar
-  );
-
-  let progressResponse;
-  try {
-    progressResponse = await client.get(
-      "/organize_datasets/dataset_files_and_folders/progress"
-    );
-  } catch (error) {
-    clientError(error);
-    clearInterval(interval);
-    return;
-  }
-
-  let res = progressResponse.data;
-
-  let percentage_amount = res["import_progress_percentage"].toFixed(2);
-  finished = res["import_completed_items"];
-  percentage_text.innerText = percentage_amount + "%";
-  if (percentage_amount <= 50) {
-    left_progress_bar.style.transform = `rotate(${
-      percentage_amount * 0.01 * 360
-    }deg)`;
-  } else {
-    left_progress_bar.style.transition = "";
-    left_progress_bar.classList.add("notransition");
-    left_progress_bar.style.transform = `rotate(180deg)`;
-    right_progress_bar.style.transform = `rotate(${
-      percentage_amount * 0.01 * 180
-    }deg)`;
-  }
-
-  if (finished === 1) {
-    percentage_text.innerText = "100%";
-    left_progress_bar.style.transform = `rotate(180deg)`;
-    right_progress_bar.style.transform = `rotate(180deg)`;
-    right_progress_bar.classList.remove("notransition");
-    clearInterval(interval);
-    setTimeout(() => {
-      progress_container.style.display = "none";
-    }, 2000);
-  }
-}
 
 /**
  *
  * @param {object} sodaJSONObj - The SODA json object used for tracking files, folders, and basic dataset curation information such as providence (local or Pennsieve).
+ * @param {HTMLElement} progressContainer - The progress container element that will be used to display the progress of the import.
  * @returns {
  *    "soda_json_structure": {}
  *    "success_message": ""
  *    "manifest_error_message": ""
  * }
  */
-var bf_request_and_populate_dataset = async (sodaJSONObj) => {
-  let progress_container = document.getElementById("loading_pennsieve_dataset");
-  let percentage_text = document.getElementById(
-    "pennsieve_loading_dataset_percentage"
-  );
-  let left_progress_bar = document.getElementById(
-    "pennsieve_left-side_less_than_50"
-  );
-  let right_progress_bar = document.getElementById(
-    "pennsieve_right-side_greater_than_50"
-  );
-  percentage_text.innerText = "0%";
-  progress_container.style.display = "block";
-  left_progress_bar.style.transform = `rotate(0deg)`;
-  right_progress_bar.style.transform = `rotate(0deg)`;
-  let pennsieve_progress = setInterval(progressReport, 500);
-  async function progressReport() {
+var bf_request_and_populate_dataset = async (sodaJSONObj, progressContainer) => {
+  /**
+  * Given a progress tracking container, update the progress display to show the user the progress of their dataset import.
+  * Once the import has been completed (i.e. the progress is 100%), the progress container will be hidden. The interval will be cleared.
+  * NOTE: The interval also clears on error.
+  * @param {HTMLElement} progress_container
+  * @returns
+  */
+  const requestDatasetImportProgress = async (progress_container) => {
+
+    let percentage_text = progress_container.querySelector(
+      ".pennsieve_loading_dataset_percentage"
+    );
+    let left_progress_bar = progress_container.querySelector(
+      ".pennsieve_left-side_less_than_50"
+    );
+    let right_progress_bar = progress_container.querySelector(
+      ".pennsieve_right-side_greater_than_50"
+    );
+
+    resetProgressContainer(
+      progress_container,
+      percentage_text,
+      left_progress_bar,
+      right_progress_bar
+    );
+
     let progressResponse;
     try {
       progressResponse = await client.get(
@@ -8387,37 +8312,24 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
       );
     } catch (error) {
       clientError(error);
-      clearInterval(pennsieve_progress);
+      clearInterval(interval);
       return;
     }
 
-    let res = progressResponse.data;
+    let progressReport = progressResponse.data;
 
-    let percentage_amount = res["import_progress_percentage"].toFixed(2);
-    finished = res["import_completed_items"];
-    percentage_text.innerText = percentage_amount + "%";
-    if (percentage_amount <= 50) {
-      left_progress_bar.style.transform = `rotate(${percentage_amount * 0.01 * 360
-        }deg)`;
-    } else {
-      left_progress_bar.style.transition = "";
-      left_progress_bar.classList.add("notransition");
-      left_progress_bar.style.transform = `rotate(180deg)`;
-      right_progress_bar.style.transform = `rotate(${percentage_amount * 0.01 * 180
-        }deg)`;
-    }
+    updateProgressContainer(progress_container, percentage_text, left_progress_bar, right_progress_bar, progressReport)
 
     if (finished === 1) {
-      percentage_text.innerText = "100%";
-      left_progress_bar.style.transform = `rotate(180deg)`;
-      right_progress_bar.style.transform = `rotate(180deg)`;
-      right_progress_bar.classList.remove("notransition");
-      clearInterval(pennsieve_progress);
-      setTimeout(() => {
-        progress_container.style.display = "none";
-      }, 2000);
+      clearInterval(interval);
     }
   }
+
+  let interval = setInterval(
+    requestDatasetImportProgress,
+    500,
+    progressContainer,
+  );
 
   try {
     let filesFoldersResponse = await client.post(
@@ -8441,7 +8353,7 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
 
     return data;
   } catch (error) {
-    clearInterval(pennsieve_progress);
+    clearInterval(interval);
     progress_container.style.display = "none";
     clientError(error);
     ipcRenderer.send(
@@ -8452,6 +8364,9 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
     );
     throw Error(userErrorMessage(error));
   }
+
+
+
 };
 
 // When mode = "update", the buttons won't be hidden or shown to prevent button flickering effect
