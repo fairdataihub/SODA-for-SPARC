@@ -31,6 +31,7 @@ const diskCheck = require("check-disk-space").default;
 const validator = require("validator");
 const doiRegex = require("doi-regex");
 const lottie = require("lottie-web");
+const select2 = require("select2")();
 // TODO: Test with a build
 const {
   datasetUploadSession,
@@ -215,8 +216,13 @@ document.getElementById("getting_starting_tab").click();
 
 let client = null;
 
+// get port number from the main process
+const port = ipcRenderer.sendSync("get-port");
+
+
+// TODO: change the default port so it is based off the discovered port in Main.js
 client = axios.create({
-  baseURL: "http://127.0.0.1:4242/",
+  baseURL: `http://127.0.0.1:${port}/`,
   timeout: 300000,
 });
 
@@ -742,7 +748,7 @@ const apiVersionsMatch = async () => {
 
     await Swal.fire({
       icon: "error",
-      html: `The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+      html: `${serverAppVersion} ${appVersion} The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Close now",
@@ -767,7 +773,6 @@ const apiVersionsMatch = async () => {
   if (hasConnectedAccountWithPennsieve()) {
     updateBfAccountList();
   }
-
   checkNewAppVersion(); // Added so that version will be displayed for new users
 };
 
@@ -981,7 +986,7 @@ const checkNewAppVersion = () => {
 ipcRenderer.on("app_version", (event, arg) => {
   const version = document.getElementById("version");
   ipcRenderer.removeAllListeners("app_version");
-  version.innerText = "v. " + arg.version;
+  version.innerText = arg.version;
 });
 
 // Check for update and show the pop up box
@@ -1060,7 +1065,8 @@ const downloadDescription = document.getElementById("a-description");
 const downloadManifest = document.getElementById("a-manifest");
 
 /////// New Organize Datasets /////////////////////
-const organizeDSglobalPath = document.getElementById("input-global-path");
+let organizeDSglobalPath = "";
+
 const organizeDSbackButton = document.getElementById("button-back");
 const organizeDSaddFiles = document.getElementById("add-files");
 const organizeDSaddNewFolder = document.getElementById("new-folder");
@@ -1142,11 +1148,18 @@ const bfDatasetSubtitleCharCount = document.querySelector(
 const bfCurrentBannerImg = document.getElementById("current-banner-img");
 
 const bfViewImportedImage = document.querySelector("#image-banner");
+const guidedBfViewImportedImage = document.querySelector(
+  "#guided-image-banner"
+);
+
 const bfSaveBannerImageBtn = document.getElementById("save-banner-image");
 const datasetBannerImageStatus = document.querySelector(
   "#para-dataset-banner-image-status"
 );
 const formBannerHeight = document.getElementById("form-banner-height");
+const guidedFormBannerHeight = document.getElementById(
+  "guided-form-banner-height"
+);
 const currentDatasetLicense = document.querySelector(
   "#para-dataset-license-current"
 );
@@ -1174,6 +1187,12 @@ const bfListRolesTeam = document.querySelector("#bf_list_roles_team");
 const bfAddPermissionTeamBtn = document.getElementById(
   "button-add-permission-team"
 );
+// Guided mode dropdowns
+const guidedBfListUsersPi = document.querySelector("#guided_bf_list_users_pi");
+const guidedBfListUsersAndTeams = document.querySelector(
+  "#guided_bf_list_users_and_teams"
+);
+
 //Pennsieve dataset status
 const bfCurrentDatasetStatusProgress = document.querySelector(
   "#div-bf-current-dataset-status-progress"
@@ -1262,10 +1281,54 @@ var affiliationConfigPath = path.join(metadataPath, affiliationFileName);
 var milestonePath = path.join(metadataPath, milestoneFileName);
 var airtableConfigPath = path.join(metadataPath, airtableConfigFileName);
 var progressFilePath = path.join(homeDirectory, "SODA", "Progress");
+var guidedProgressFilePath = path.join(
+  homeDirectory,
+  "Soda",
+  "Guided-Progress"
+);
+const guidedManifestFilePath = path.join(
+  homeDirectory,
+  "Soda",
+  "Guided-Manifest-Files"
+);
 var protocolConfigPath = path.join(metadataPath, protocolConfigFileName);
 var allCollectionTags = {};
 var currentTags = {};
 var currentCollectionTags = [];
+
+
+//initialize Tagify input field for guided submission milestones
+const guidedSubmissionTagsInput = document.getElementById(
+  "guided-tagify-submission-milestone-tags-import"
+);
+
+const guidedSubmissionTagsTagify = new Tagify(guidedSubmissionTagsInput, {
+  duplicates: false,
+  delimiters: null,
+  dropdown: {
+    classname: "color-blue",
+    maxItems: Infinity,
+    enabled: 0,
+    closeOnSelect: true,
+  },
+});
+
+const guidedSubmissionTagsInputManual = document.getElementById(
+  "guided-tagify-submission-milestone-tags-manual"
+);
+const guidedSubmissionTagsTagifyManual = new Tagify(
+  guidedSubmissionTagsInputManual,
+  {
+    duplicates: false,
+    delimiters: null,
+    dropdown: {
+      classname: "color-blue",
+      maxItems: Infinity,
+      enabled: 0,
+      closeOnSelect: true,
+    },
+  }
+);
 
 // initiate Tagify input fields for Dataset description file
 var keywordInput = document.getElementById("ds-keywords"),
@@ -1293,6 +1356,7 @@ var collectionDatasetInput = document.getElementById("tagify-collection-tags"),
       rightKey: true,
     },
   });
+
 
 var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
   studyOrganSystemsTagify = new Tagify(studyOrganSystemsInput, {
@@ -1338,6 +1402,12 @@ var studyApproachesInput = document.getElementById("ds-study-approach"),
 var datasetTagsInput = document.getElementById("tagify-dataset-tags"),
   // initialize Tagify on the above input node reference
   datasetTagsTagify = new Tagify(datasetTagsInput);
+
+var guidedDatasetTagsInput = document.getElementById(
+  "guided-tagify-dataset-tags"
+),
+  // initialize Tagify on the above input node reference
+  guidedDatasetTagsTagify = new Tagify(guidedDatasetTagsInput);
 
 ///////////////////// Airtable Authentication /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -1496,7 +1566,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => {});
+            }).then((result) => { });
             generateSubjectsFileHelper(false);
           }
         });
@@ -1512,7 +1582,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         generateSubjectsFileHelper(false);
       }
     }
@@ -1566,7 +1636,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   let bfdataset = document
     .getElementById("bf_dataset_load_subjects")
@@ -1669,7 +1739,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => {});
+            }).then((result) => { });
             generateSamplesFileHelper(uploadBFBoolean);
           }
         });
@@ -1685,7 +1755,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         generateSamplesFileHelper(uploadBFBoolean);
       }
     }
@@ -1739,7 +1809,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   try {
     let samplesFileResponse = await client.post(
@@ -2185,7 +2255,7 @@ function createSpeciesAutocomplete(id) {
   });
 }
 
-function createStrain(id, type) {
+function createStrain(id, type, curationMode) {
   var autoCompleteJS4 = new autoComplete({
     selector: "#" + id,
     data: {
@@ -2226,7 +2296,13 @@ function createStrain(id, type) {
           info.setAttribute("class", "no_results_species");
           info.setAttribute(
             "onclick",
-            "populateRRID('" + data.query + "', '" + type + "')"
+            "populateRRID('" +
+            data.query +
+            "', '" +
+            type +
+            "', '" +
+            curationMode +
+            "')"
           );
           info.innerHTML = `Click here to check <strong>"${data.query}"</strong>`;
         }
@@ -2244,7 +2320,7 @@ function createStrain(id, type) {
     document.querySelector("#" + id).value = selection;
     var strain = $("#sweetalert-" + type + "-strain").val();
     if (strain !== "") {
-      populateRRID(strain, type);
+      populateRRID(strain, type, curationMode);
     }
     autoCompleteJS4.input.value = selection;
   });
@@ -2261,7 +2337,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   try {
     let load_taxonomy_species = await client.get(`/taxonomy/species`, {
       params: {
@@ -2979,9 +3055,9 @@ function detectEmptyRequiredFields(funding) {
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
   var emptyMessageArray = [
     "- Missing required fields under Dataset Info section: " +
-      dsEmptyField.join(", "),
+    dsEmptyField.join(", "),
     "- Missing required fields under Contributor Info section: " +
-      conEmptyField.join(", "),
+    conEmptyField.join(", "),
     "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
   ];
   var allFieldsSatisfied = true;
@@ -3126,6 +3202,41 @@ var cropOptions = {
     }
 
     // formBannerWidth.value = Math.round(data.width)
+  },
+};
+const guidedCropOptions = {
+  aspectRatio: 1,
+  movable: false,
+  // Enable to rotate the image
+  rotatable: false,
+  // Enable to scale the image
+  scalable: false,
+  // Enable to zoom the image
+  zoomable: false,
+  // Enable to zoom the image by dragging touch
+  zoomOnTouch: false,
+  // Enable to zoom the image by wheeling mouse
+  zoomOnWheel: false,
+  // preview: '.preview',
+  viewMode: 1,
+  responsive: true,
+  crop: function (event) {
+    var data = event.detail;
+    let image_height = Math.round(data.height);
+
+    guidedFormBannerHeight.value = image_height;
+
+    if (image_height < 512 || image_height > 2048) {
+      $("#guided-save-banner-image").prop("disabled", true);
+      $("#guided-form-banner-height").css("color", "red");
+      $("#guided-form-banner-height").css("border", "1px solid red");
+      $(".crop-image-text").css("color", "red");
+    } else {
+      $("#guided-save-banner-image").prop("disabled", false);
+      $("#guided-form-banner-height").css("color", "black");
+      $("#guided-form-banner-height").css("border", "1px solid black");
+      $(".crop-image-text").css("color", "black");
+    }
   },
 };
 
@@ -3784,6 +3895,16 @@ function refreshBfUsersList() {
         // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
         $("#bf_list_users").selectpicker("refresh");
         $("#bf_list_users").find("option:not(:first)").remove();
+        $("#guided_bf_list_users_and_teams").selectpicker("refresh");
+
+        //delete all elements with data-permission-type of "team"
+        const userDropdownElements = document.querySelectorAll(
+          "#guided_bf_list_users_and_teams option[permission-type='user']"
+        );
+        userDropdownElements.forEach((element) => {
+          element.remove();
+        });
+
         $("#button-add-permission-user").hide();
         $("#bf_list_users_pi").selectpicker("refresh");
         $("#bf_list_users_pi").find("option:not(:first)").remove();
@@ -3797,6 +3918,11 @@ function refreshBfUsersList() {
           bfListUsers.appendChild(optionUser);
           var optionUser2 = optionUser.cloneNode(true);
           bfListUsersPI.appendChild(optionUser2);
+          var optionUser3 = optionUser.cloneNode(true);
+          guidedBfListUsersPi.appendChild(optionUser3);
+          var guidedOptionUser = optionUser.cloneNode(true);
+          guidedOptionUser.setAttribute("permission-type", "user");
+          guidedBfListUsersAndTeams.appendChild(guidedOptionUser);
         }
       })
       .catch((error) => {
@@ -3822,6 +3948,7 @@ function refreshBfTeamsList(teamList) {
         // The removeoptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
         $("#bf_list_teams").selectpicker("refresh");
         $("#bf_list_teams").find("option:not(:first)").remove();
+        $("#guided_bf_list_users_and_teams").selectpicker("refresh");
         $("#button-add-permission-team").hide();
         for (var myItem in teams) {
           var myTeam = teams[myItem];
@@ -3829,6 +3956,9 @@ function refreshBfTeamsList(teamList) {
           optionTeam.textContent = myTeam;
           optionTeam.value = myTeam;
           teamList.appendChild(optionTeam);
+          var guidedOptionTeam = optionTeam.cloneNode(true);
+          guidedOptionTeam.setAttribute("permission-type", "team");
+          guidedBfListUsersAndTeams.appendChild(guidedOptionTeam);
         }
         confirm_click_account_function();
       })
@@ -4592,12 +4722,18 @@ ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
       log.info("Generating a new dataset organize datasets at ${filepath}");
 
       try {
-        await client.post(`/organize_datasets/datasets`, {
-          generation_type: "create-new",
-          generation_destination_path: filepath[0],
-          dataset_name: newDSName,
-          soda_json_directory_structure: datasetStructureJSONObj,
-        });
+        await client.post(
+          `/organize_datasets/datasets`,
+          {
+            generation_type: "create-new",
+            generation_destination_path: filepath[0],
+            dataset_name: newDSName,
+            soda_json_directory_structure: datasetStructureJSONObj,
+          },
+          {
+            timeout: 0,
+          }
+        );
 
         document.getElementById("para-organize-datasets-error").style.display =
           "none";
@@ -5009,10 +5145,10 @@ async function addFoldersfunction(
             <div class="swal-button-container">
               <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
               list +
-              `')">Skip Folders</button>
-              <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}')">Replace Existing Folders</button>
-              <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}')">Import Duplicates</button>
-              <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
+              `', 'free-form')">Skip Folders</button>
+              <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}', 'free-form')">Replace Existing Folders</button>
+              <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}', 'free-form')">Import Duplicates</button>
+              <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel', '', 'free-form')">Cancel</button>
               </div>`,
           });
         }
@@ -5093,13 +5229,19 @@ async function drop(ev) {
   var filtered = jsonPathArray.slice(1).filter(function (el) {
     return el != "";
   });
+
   var myPath = getRecursivePath(filtered, datasetStructureJSONObj);
+  irregularFolderArray = [];
+  var action = "";
+  filesElement = ev.dataTransfer.files;
+  targetElement = ev.target;
   var importedFiles = {};
   var importedFolders = {};
   var nonAllowedDuplicateFiles = [];
   ev.preventDefault();
   var uiFiles = {};
   var uiFolders = {};
+
   $("body").addClass("waiting");
 
   for (var file in myPath["files"]) {
@@ -5312,7 +5454,6 @@ async function dropHelper(
       }
     } else if (statsObj.isDirectory()) {
       /// drop a folder
-      var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
       if (slashCount === 1) {
         await Swal.fire({
           icon: "error",
@@ -5513,10 +5654,10 @@ async function dropHelper(
       <div class="swal-button-container">
         <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
         list +
-        `')">Skip Folders</button>
-        <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}')">Replace Existing Folders</button>
-        <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}')">Import Duplicates</button>
-        <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
+        `', 'free-form')">Skip Folders</button>
+        <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}', 'free-form')">Replace Existing Folders</button>
+        <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}', 'free-form')">Import Duplicates</button>
+        <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel', '', 'free-form')">Cancel</button>
         </div>`,
     });
   }
@@ -5558,10 +5699,10 @@ async function dropHelper(
       <div class="swal-button-container">
         <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
         list +
-        `')">Skip Files</button>
-        <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}')">Replace Existing Files</button>
-        <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}')">Import Duplicates</button>
-        <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
+        `', 'free-form')">Skip Files</button>
+        <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}', 'free-form')">Replace Existing Files</button>
+        <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}', 'free-form')">Import Duplicates</button>
+        <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel', '', 'free-form')">Cancel</button>
         </div>`,
     });
   }
@@ -5666,6 +5807,7 @@ async function dropHelper(
     hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
     hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   }
+  beginScrollListen();
   $("body").removeClass("waiting");
 }
 
@@ -5958,10 +6100,17 @@ function fileContextMenu(event) {
 }
 
 $(document).ready(function () {
-  tippy("[data-tippy-content]", {
+  tippy("[data-tippy-content]:not(.tippy-content-main)", {
     allowHTML: true,
     interactive: true,
     placement: "top",
+    theme: "light",
+  });
+
+  tippy(".tippy-content-main", {
+    allowHTML: true,
+    interactive: true,
+    placement: "bottom",
     theme: "light",
   });
 });
@@ -6112,7 +6261,7 @@ function sortObjByKeys(object) {
   return orderedObject;
 }
 
-async function listItems(jsonObj, uiItem, amount_req, reset) {
+const listItems = async (jsonObj, uiItem, amount_req, reset) => {
   //allow amount to choose how many elements to create
   //break elements into sets of 100
   var appendString = "";
@@ -6360,6 +6509,7 @@ async function listItems(jsonObj, uiItem, amount_req, reset) {
     file_elements.splice(0, 1);
   }
   let items = [folder_elements, file_elements];
+
   if (amount_req != undefined) {
     //add items using a different function
     //want the initial files to be imported
@@ -6397,7 +6547,64 @@ async function listItems(jsonObj, uiItem, amount_req, reset) {
     select_items_ctrl(items, event, isDragging);
   });
   drag_event_fired = false;
-}
+
+  //check if folder_elements is an empty object and file_elements is an empty array
+  if (folder_elements.length == 0 && file_elements.length == 0) {
+    //Fired when no folders are to be appended to the folder structure element.
+    //Gets the name of the current folder from organizeDSglobalPath and instructs the user
+    //on what to do in the empty folder.
+    let currentFolder = "";
+    let folderType;
+
+    if (organizeDSglobalPath.value == undefined) {
+      currentFolder = "My_dataset_folder";
+    } else {
+      //Get the name of the folder the user is currently in.
+      currentFolder = organizeDSglobalPath.value.split("/").slice(-2)[0];
+      if (currentFolder.startsWith("sub-")) {
+        folderType = "subject";
+      }
+      if (currentFolder.startsWith("sam-")) {
+        folderType = "sample";
+      }
+    }
+
+    let dragDropInstructionsText;
+    if (folderType === undefined) {
+      dragDropInstructionsText = `Drag and Drop folders and files to be included in the <b>${currentFolder}</b> folder.`;
+    } else if (folderType == "subject") {
+      dragDropInstructionsText = `Drag and drop folders and files associated with the subject ${currentFolder}`;
+    } else if (folderType === "sample") {
+      dragDropInstructionsText = `Drag and drop folders and files associated with the sample ${currentFolder}`;
+    }
+
+    $("#items").html(
+      `<div class="drag-drop-container-instructions">
+        <div id="dragDropLottieContainer" style="height: 100px; width: 100px;"></div>
+        <p class="text-center large">
+          ${dragDropInstructionsText}
+        </p>
+        <p class="text-center">
+          You may also <b>add</b> or <b>import</b> ${folderType === undefined ? "folders or files" : folderType + " data"
+      } using the buttons in the upper right corner
+        </p>
+      </div>`
+    );
+    const dragDropLottieContainer = document.getElementById(
+      "dragDropLottieContainer"
+    );
+
+    dragDropLottieContainer.innerHTML = ``;
+
+    let dragDropAnimation = lottie.loadAnimation({
+      container: dragDropLottieContainer,
+      animationData: dragDrop,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+    });
+  }
+};
 
 async function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
   $(singleUIItem).dblclick(async function () {
@@ -6416,14 +6623,19 @@ async function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
       var myPath = getRecursivePath(filtered, globalObj);
       if (myPath.length === 2) {
         filtered = myPath[1];
-        document.getElementById("input-global-path").value =
-          "My_dataset_folder/" + filtered.join("/") + "/";
+        currentLocation.value = "My_dataset_folder/" + filtered.join("/") + "/";
       }
       $("#items").empty();
       already_created_elem = [];
       let items = loadFileFolder(myPath);
       //we have some items to display
       listItems(myPath, "#items", 500, (reset = true));
+      getInFolder(
+        ".single-item",
+        "#items",
+        organizeDSglobalPath,
+        datasetStructureJSONObj
+      );
       organizeLandingUIEffect();
       // reconstruct folders and files (child elements after emptying the Div)
       // getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
@@ -6702,16 +6914,14 @@ ipcRenderer.on(
 
                     numb.innerText = percentage_amount + "%";
                     if (percentage_amount <= 50) {
-                      progressBar_rightSide.style.transform = `rotate(${
-                        percentage_amount * 0.01 * 360
-                      }deg)`;
+                      progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
+                        }deg)`;
                     } else {
                       progressBar_rightSide.style.transition = "";
                       progressBar_rightSide.classList.add("notransition");
                       progressBar_rightSide.style.transform = `rotate(180deg)`;
-                      progressBar_leftSide.style.transform = `rotate(${
-                        percentage_amount * 0.01 * 180
-                      }deg)`;
+                      progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
+                        }deg)`;
                     }
 
                     if (finished === 1) {
@@ -6786,16 +6996,14 @@ ipcRenderer.on(
 
                   numb.innerText = percentage_amount + "%";
                   if (percentage_amount <= 50) {
-                    progressBar_rightSide.style.transform = `rotate(${
-                      percentage_amount * 0.01 * 360
-                    }deg)`;
+                    progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
+                      }deg)`;
                   } else {
                     progressBar_rightSide.style.transition = "";
                     progressBar_rightSide.classList.add("notransition");
                     progressBar_rightSide.style.transform = `rotate(180deg)`;
-                    progressBar_leftSide.style.transform = `rotate(${
-                      percentage_amount * 0.01 * 180
-                    }deg)`;
+                    progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
+                      }deg)`;
                   }
                   if (finished === 1) {
                     progressBar_leftSide.style.transform = `rotate(180deg)`;
@@ -6837,7 +7045,8 @@ ipcRenderer.on(
                     root_folder_path: root_folder_path,
                     irregular_folders: irregularFolderArray,
                     replaced: replaced,
-                  }
+                  },
+                  { timeout: 0 }
                 );
                 let { data } = importLocalDatasetResponse;
                 sodajsonobject = data;
@@ -6896,6 +7105,115 @@ ipcRenderer.on(
   }
 );
 
+ipcRenderer.on(
+  "guided-selected-local-destination-datasetCurate",
+  (event, filepath) => {
+    if (filepath.length > 0) {
+      if (filepath != null) {
+        sodaJSONObj["starting-point"]["local-path"] = "";
+        sodaJSONObj["starting-point"]["type"] = "local";
+
+        $("#guided-input-destination-getting-started-locally").val(filepath[0]);
+        $(".guidedDatasetPath").text(filepath[0]);
+
+        valid_dataset = verify_sparc_folder(filepath[0]);
+        if (valid_dataset == true) {
+          var action = "";
+          irregularFolderArray = [];
+          detectIrregularFolders(path.basename(filepath[0]), filepath[0]);
+          var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
+          if (irregularFolderArray.length > 0) {
+            Swal.fire({
+              title:
+                "The following folders contain non-allowed characters in their names. How should we handle them?",
+              html:
+                "<div style='max-height:300px; overflow-y:auto'>" +
+                irregularFolderArray.join("</br>") +
+                "</div>",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              showDenyButton: true,
+              showCancelButton: true,
+              confirmButtonText: "Replace characters with (-)",
+              denyButtonText: "Remove characters",
+              cancelButtonText: "Cancel",
+              didOpen: () => {
+                $(".swal-popover").popover();
+              },
+              footer: footer,
+            }).then((result) => {
+              /* Read more about isConfirmed, isDenied below */
+              if (result.isConfirmed) {
+                action = "replace";
+              } else if (result.isDenied) {
+                action = "remove";
+              } else {
+                $("#guided-input-destination-getting-started-locally").val(
+                  "Browse here"
+                );
+                sodaJSONObj["starting-point"]["local-path"] = "";
+                $("#para-continue-location-dataset-getting-started").text("");
+                return;
+              }
+              sodaJSONObj["starting-point"]["local-path"] = filepath[0];
+
+              let root_folder_path = $(
+                "#guided-input-destination-getting-started-locally"
+              ).val();
+
+              create_json_object(action, sodaJSONObj, root_folder_path);
+              datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+              populate_existing_folders(datasetStructureJSONObj);
+              populate_existing_metadata(sodaJSONObj);
+              enableProgressButton();
+            });
+          } else {
+            action = "";
+            let root_folder_path = $(
+              "#guided-input-destination-getting-started-locally"
+            ).val();
+            sodaJSONObj["starting-point"]["local-path"] = filepath[0];
+            create_json_object(action, sodaJSONObj, root_folder_path);
+            datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+            populate_existing_folders(datasetStructureJSONObj);
+            populate_existing_metadata(sodaJSONObj);
+          }
+        } else {
+          Swal.fire({
+            icon: "warning",
+            html: `This folder does not seems to include any SPARC folders. Please select a folder that has a valid SPARC dataset structure.
+              <br/>
+              If you are trying to create a new dataset folder, select the 'Prepare a new dataset' option.`,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            showConfirmButton: false,
+            showCancelButton: true,
+            focusCancel: true,
+            cancelButtonText: "Okay",
+            reverseButtons: reverseSwalButtons,
+            showClass: {
+              popup: "animate__animated animate__zoomIn animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__zoomOut animate__faster",
+            },
+          }).then((result) => {
+            if (result.isConfirmed) {
+            } else {
+              $("#guided-input-destination-getting-started-locally").val(
+                "Browse here"
+              );
+              $(".guidedDatasetPath").text("");
+              sodaJSONObj["starting-point"]["local-path"] = "";
+            }
+          });
+        }
+      }
+    } else {
+    }
+  }
+);
+
 //// Select to choose a local dataset (generate dataset)
 document
   .getElementById("input-destination-generate-dataset-locally")
@@ -6923,6 +7241,9 @@ ipcRenderer.on(
         document.getElementById(
           "input-destination-generate-dataset-locally"
         ).placeholder = filepath[0];
+        document.getElementById(
+          "input-destination-generate-dataset-locally"
+        ).value = filepath[0];
         document.getElementById("nextBtn").disabled = true;
       } else {
         $("#div-confirm-destination-locally").css("display", "none");
@@ -7059,9 +7380,9 @@ document
     for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
       if (
         "manifest.xlsx" in
-          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
         sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-          "manifest.xlsx"
+        "manifest.xlsx"
         ]["forTreeview"]
       ) {
         delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
@@ -7072,13 +7393,12 @@ document
 
     let emptyFilesFoldersResponse;
     try {
-      emptyFilesFoldersResponse = await client.get(
+      emptyFilesFoldersResponse = await client.post(
         `/curate_datasets/empty_files_and_folders`,
         {
-          params: {
-            soda_json_structure: JSON.stringify(sodaJSONObj),
-          },
-        }
+          soda_json_structure: sodaJSONObj,
+        },
+        { timeout: 0 }
       );
     } catch (error) {
       clientError(error);
@@ -7295,9 +7615,13 @@ async function initiate_generate() {
   clearQueue();
 
   client
-    .post(`/curate_datasets/curation`, {
-      soda_json_structure: sodaJSONObj,
-    })
+    .post(
+      `/curate_datasets/curation`,
+      {
+        soda_json_structure: sodaJSONObj,
+      },
+      { timeout: 0 }
+    )
     .then(async (response) => {
       let { data } = response;
 
@@ -7314,7 +7638,8 @@ async function initiate_generate() {
         main_total_generate_dataset_size,
         dataset_name,
         dataset_destination,
-        uploadedFiles
+        uploadedFiles,
+        false
       );
 
       try {
@@ -7410,7 +7735,8 @@ async function initiate_generate() {
         dataset_destination,
         main_total_generate_dataset_size,
         increaseInFileSize,
-        datasetUploadSession
+        datasetUploadSession,
+        false
       );
     });
 
@@ -7651,7 +7977,7 @@ async function initiate_generate() {
           "track-event",
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE +
-            " - Step 7 - Generate - Dataset - Number of Files",
+          " - Step 7 - Generate - Dataset - Number of Files",
           `${datasetUploadSession.id}`,
           uploadedFiles
         );
@@ -7661,7 +7987,7 @@ async function initiate_generate() {
           "track-event",
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE +
-            " - Step 7 - Generate - Dataset - Size",
+          " - Step 7 - Generate - Dataset - Size",
           `${datasetUploadSession.id}`,
           increaseInFileSize
         );
@@ -7798,12 +8124,20 @@ function backend_to_frontend_warning_message(error_array) {
 var metadataIndividualFile = "";
 var metadataAllowedExtensions = [];
 var metadataParaElement = "";
+var metadataCurationMode = "";
 
-function importMetadataFiles(ev, metadataFile, extensionList, paraEle) {
+function importMetadataFiles(
+  ev,
+  metadataFile,
+  extensionList,
+  paraEle,
+  curationMode
+) {
   document.getElementById(paraEle).innerHTML = "";
   metadataIndividualFile = metadataFile;
   metadataAllowedExtensions = extensionList;
   metadataParaElement = paraEle;
+  metadataCurationMode = curationMode;
   ipcRenderer.send("open-file-dialog-metadata-curate");
 }
 
@@ -7882,12 +8216,37 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
       if (metadataWithoutExtension === metadataIndividualFile) {
         if (metadataAllowedExtensions.includes(extension)) {
           document.getElementById(metadataParaElement).innerHTML = mypath[0];
-          $($("#" + metadataParaElement).parents()[1])
-            .find(".div-metadata-confirm")
-            .css("display", "flex");
-          $($("#" + metadataParaElement).parents()[1])
-            .find(".div-metadata-go-back")
-            .css("display", "none");
+          if (metadataCurationMode === "free-form") {
+            $($("#" + metadataParaElement).parents()[1])
+              .find(".div-metadata-confirm")
+              .css("display", "flex");
+            $($("#" + metadataParaElement).parents()[1])
+              .find(".div-metadata-go-back")
+              .css("display", "none");
+          }
+          if (metadataCurationMode === "guided") {
+            //Add success checkmark lottie animation inside metadata card
+            const dragDropContainer =
+              document.getElementById(metadataParaElement).parentElement;
+            //get the value of data-code-metadata-file-type from dragDropContainer
+            const metadataFileType =
+              dragDropContainer.dataset.codeMetadataFileType;
+            //save the path of the metadata file to the json object
+            sodaJSONObj["dataset-metadata"]["code-metadata"][metadataFileType] =
+              mypath[0];
+
+            const lottieContainer = dragDropContainer.querySelector(
+              ".code-metadata-lottie-container"
+            );
+            lottieContainer.innerHTML = "";
+            lottie.loadAnimation({
+              container: lottieContainer,
+              animationData: successCheck,
+              renderer: "svg",
+              loop: false,
+              autoplay: true,
+            });
+          }
         } else {
           document.getElementById(metadataParaElement).innerHTML =
             "<span style='color:red'>Your SPARC metadata file must be in one of the formats listed above!</span>";
@@ -7943,16 +8302,14 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
     finished = res["import_completed_items"];
     percentage_text.innerText = percentage_amount + "%";
     if (percentage_amount <= 50) {
-      left_progress_bar.style.transform = `rotate(${
-        percentage_amount * 0.01 * 360
-      }deg)`;
+      left_progress_bar.style.transform = `rotate(${percentage_amount * 0.01 * 360
+        }deg)`;
     } else {
       left_progress_bar.style.transition = "";
       left_progress_bar.classList.add("notransition");
       left_progress_bar.style.transform = `rotate(180deg)`;
-      right_progress_bar.style.transform = `rotate(${
-        percentage_amount * 0.01 * 180
-      }deg)`;
+      right_progress_bar.style.transform = `rotate(${percentage_amount * 0.01 * 180
+        }deg)`;
     }
 
     if (finished === 1) {
@@ -7968,13 +8325,12 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
   }
 
   try {
-    let filesFoldersResponse = await client.get(
+    let filesFoldersResponse = await client.post(
       `/organize_datasets/dataset_files_and_folders`,
       {
-        params: {
-          sodajsonobject: sodaJSONObj,
-        },
-      }
+        sodajsonobject: sodaJSONObj,
+      },
+      { timeout: 0 }
     );
 
     let data = filesFoldersResponse.data;
@@ -8285,10 +8641,14 @@ ipcRenderer.on("selected-manifest-folder", async (event, result) => {
     }
 
     try {
-      await client.post(`/curate_datasets/manifest_files`, {
-        generate_purpose: "",
-        soda_json_object: temp_sodaJSONObj,
-      });
+      await client.post(
+        `/curate_datasets/manifest_files`,
+        {
+          generate_purpose: "",
+          soda_json_object: temp_sodaJSONObj,
+        },
+        { timeout: 0 }
+      );
 
       $("body").removeClass("waiting");
       logCurationForAnalytics(
@@ -8837,12 +9197,6 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // set the license's status
   statuses.license = license && license.length ? true : false;
 
-  let role = await api.getDatasetRole(defaultBfDataset);
-
-  if (role !== "owner") {
-    return;
-  }
-
   // declare the orcidId
   let orcidId;
 
@@ -9115,7 +9469,6 @@ function openFeedbackForm() {
   }, 5);
 }
 function gatherLogs() {
-  console.log("Gathering logs...");
   //function will be used to gather all logs on all OS's
   let homedir = os.homedir();
   let file_path = "";
@@ -9123,7 +9476,6 @@ function gatherLogs() {
   let serverLogsPath = path.join(homedir, "SODA", "logs");
   let logFiles = ["main.log", "renderer.log", "out.log", "api.log"];
 
-  console.log(os.type());
 
   if (os.platform() === "darwin") {
     clientLogsPath = path.join(homedir, "/Library/Logs/SODA for SPARC/");
@@ -9284,16 +9636,26 @@ function directToDocumentation() {
   document.getElementById("overview-column-2").blur();
   // window.open('https://docs.sodaforsparc.io', '_blank');
 }
+const directToGuidedMode = () => {
+  const guidedModeLinkButton = document.getElementById("guided_mode_view");
+  guidedModeLinkButton.click();
+};
+const directToFreeFormMode = () => {
+  const freeFormModeLinkButton = document.getElementById("main_tabs_view");
+  freeFormModeLinkButton.click();
+};
 document
   .getElementById("doc-btn")
   .addEventListener("click", directToDocumentation);
-document.getElementById("sodaVideo-btn").addEventListener("click", sodaVideo);
 document
-  .getElementById("direct-to-doc-button")
-  .addEventListener("click", directToDocumentation);
+  .getElementById("home-button-interface-instructions-link")
+  .addEventListener("click", sodaVideo);
 document
-  .getElementById("getting-started-button")
-  .addEventListener("click", gettingStarted);
+  .getElementById("home-button-guided-mode-link")
+  .addEventListener("click", directToGuidedMode);
+document
+  .getElementById("home-button-free-form-mode-link")
+  .addEventListener("click", directToFreeFormMode);
 
 let docu_lottie_section = document.getElementById("documentation-section");
 let doc_lottie = document.getElementById("documentation-lottie");

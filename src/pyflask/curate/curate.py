@@ -2563,6 +2563,8 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
         namespace_logger.info("bf_generate_new_dataset step 5 upload files, rename and add to tracking list")
         main_initial_bfdataset_size = bf_dataset_size()
         start_generate = 1
+        clear_queue()
+
         for item in list_upload_files:
             # main_curate_progress_message = "In file one"
             list_upload = item[0]

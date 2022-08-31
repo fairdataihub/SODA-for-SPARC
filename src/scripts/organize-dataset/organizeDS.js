@@ -892,19 +892,19 @@ function showParentSwal(duplicateArray) {
     <div class="swal-button-container">
       <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
       newList +
-      `')">Skip ${html_word}</button>
+      `', 'free-form')">Skip ${html_word}</button>
       <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '` +
       newList +
-      `')">Replace Existing ${html_word}</button>
+      `', 'free-form')">Replace Existing ${html_word}</button>
       <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '` +
       newList +
-      `')">Import Duplicates</button>
-      <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
+      `', 'free-form')">Import Duplicates</button>
+      <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel','', 'free-form')">Cancel</button>
       </div>`,
   });
 }
 
-function handleDuplicateImports(btnId, duplicateArray) {
+function handleDuplicateImports(btnId, duplicateArray, curationMode) {
   Swal.close();
   //creates the html for sweetalert
   function createSwalDuplicateContent(btnId, list) {
@@ -998,6 +998,10 @@ function handleDuplicateImports(btnId, duplicateArray) {
       },
     ],
   });
+
+  var filtered = getGlobalPath(organizeDSglobalPath);
+
+  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
 
   //SKIP OPTION
   if (btnId === "skip") {
@@ -1174,24 +1178,21 @@ function handleDuplicateImports(btnId, duplicateArray) {
           <div class="swal-button-container">
             <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
             newList +
-            `')">Skip ${html_word}</button>
+            `', 'free-form')">Skip ${html_word}</button>
             <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '` +
             newList +
-            `')">Replace Existing ${html_word}</button>
+            `', 'free-form')">Replace Existing ${html_word}</button>
             <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '` +
             newList +
-            `')">Import Duplicates</button>
-            <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
+            `', 'free-form')">Import Duplicates</button>
+            <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel', '', 'free-form')">Cancel</button>
             </div>`,
         });
       }
     });
   }
-
   //RENAME OPTION
   if (btnId === "rename") {
-    var filtered = getGlobalPath(organizeDSglobalPath);
-    var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
     var temp = "";
     if (duplicateArray.substring(0, 1) === "[") {
       temp = duplicateArray.substring(1, duplicateArray.length - 1);
@@ -1272,7 +1273,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
                   if (one_input === true) {
                     confirm_button[0].disabled = true;
                   } else {
-                    input_fields.forEach(function (element) {});
+                    input_fields.forEach(function (element) { });
                     confirm_button[0].disabled = false;
                   }
                 }
@@ -1477,9 +1478,6 @@ function handleDuplicateImports(btnId, duplicateArray) {
       });
   }
   if (btnId === "replace") {
-    //new prompt with list of files/folders and input fields to rename files/folders
-    var filtered = getGlobalPath(organizeDSglobalPath);
-    var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
     var tempFile = [];
     var temp = duplicateArray.substring(1, duplicateArray.length - 1);
     temp = temp.split(",");
@@ -2079,9 +2077,9 @@ async function addFilesfunction(
 }
 
 //create intersection observ
-const scroll_box = document.querySelector("#organize-dataset-tab");
-const item_box = document.querySelector("#items");
-const dataset_path = document.getElementById("input-global-path");
+let scroll_box = document.querySelector("#organize-dataset-tab");
+let item_box = document.querySelector("#items");
+let dataset_path = document.getElementById("input-global-path");
 
 //will observe if property of element changes to decide of eventListener is needed
 function observeElement(element, property, callback, delay = 0) {
@@ -2111,10 +2109,10 @@ function observeElement(element, property, callback, delay = 0) {
 //when on top layer of dataset eventListener is removed
 function check_dataset_value() {
   if (dataset_path.value === "My_dataset_folder/") {
-    scroll_box.removeEventListener("scroll", lazyLoad, true);
+    item_box.removeEventListener("scroll", lazyLoad, true);
   }
   if (dataset_path.value != "My_dataset_folder/") {
-    var filtered = getGlobalPath(document.getElementById("input-global-path"));
+    var filtered = getGlobalPath(dataset_path);
     var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
     amount = 500;
     listItems(myPath, "items", 500);
@@ -2133,24 +2131,33 @@ var amount = 500;
 
 function beginScrollListen() {
   amount = 500;
-  scroll_box.addEventListener("scroll", lazyLoad);
+  item_box.addEventListener("scroll", lazyLoad);
 }
 
 async function lazyLoad() {
   let total_items = already_created_elem.length;
-  let filtered = getGlobalPath(document.getElementById("input-global-path"));
+  let filtered = getGlobalPath(dataset_path);
   let myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
 
-  //item_box height is at 420 when there is no overflow
-  if (item_box.offsetHeight === 420) {
-    scroll_box.removeEventListener("scroll", lazyLoad);
-    amount = 500;
-  }
+  //if there's less than 20 items event listener will be removed
+
 
   //load spinner is prepended to beginning to elements if any de-rendered
+  //itemscrollTop is > item_box.scrollHeight - 280 (for scrolling bottom)
+  //item.scrollTop is < 280 (scrolling the top)
+
   if (item_box.childElementCount != 0) {
-    if (item_box.children[0].id === "items_container") {
-      if (scroll_box.scrollTop < 280) {
+    if (
+      item_box.children[0].id === "items_container" ||
+      item_box.children[item_box.childElementCount - 1].id === "items_container"
+    ) {
+      //loading icon is there
+      if (
+        item_box.scrollTop > item_box.scrollHeight - 300 ||
+        (item_box.scrollTop < 300 &&
+          item_box.children[0].id === "items_container")
+      ) {
+        //for rerendering on scroll up
         //monitors when user scrolls back up to prepend elements
         let array_select = preprended_items - 1;
         let remove_limit = 5; //only prepend 500 elements at a time
@@ -2163,7 +2170,7 @@ async function lazyLoad() {
         item_box.children[0].remove(); //remove loading spinner
         //add elements back to top of item_box
         for (let i = 0; i < remove_limit; i++) {
-          $(uiItems).prepend(already_created_elem[array_select]);
+          $(uiItems).prepend(already_created_elem[array_select]); //adding on scroll up
           array_select--;
         }
         array_select += 1;
@@ -2190,8 +2197,8 @@ async function lazyLoad() {
         for (let i = 0; i <= 500; i++) {
           item_box.lastChild.remove();
         }
-        if (item_box.childElementCount > 1001) {
-          while (item_box.childElementCount > 1001) {
+        if (item_box.childElementCount > 1000) {
+          while (item_box.childElementCount > 1000) {
             item_box.lastChild.remove();
           }
           if (item_box.children[0].id != "items_container") {
@@ -2202,7 +2209,7 @@ async function lazyLoad() {
         start -= 5;
         amount -= 500;
         preprended_items -= 5;
-        $("#items").append(load_spinner);
+        $("#items").append(load_spinner); //loading spinner reattached
         item_box.lastChild.style.setProperty("margin-top", "5px");
         item_box.lastChild.style.setProperty("margin-bottom", "30px");
       }
@@ -2218,8 +2225,8 @@ async function lazyLoad() {
     }
   } else {
     if (
-      scroll_box.scrollTop + 50 >
-      scroll_box.scrollHeight - scroll_box.offsetHeight
+      item_box.scrollTop + 50 >
+      item_box.scrollHeight - item_box.offsetHeight
     ) {
       //user scrolls down, render more items if available
       let wait4items = new Promise(async (resolved) => {
@@ -2271,7 +2278,12 @@ async function add_items_to_view(list, amount_req, reset) {
     }
   }
   if (item_box.children[0] != undefined) {
-    if (item_box.children[0].id === "items_container") {
+    if (
+      item_box.children[0].id === "items_container" ||
+      item_box.children[0].classList.contains(
+        "drag-drop-container-instructions"
+      )
+    ) {
       item_box.children[0].remove();
     }
   }
@@ -2279,7 +2291,7 @@ async function add_items_to_view(list, amount_req, reset) {
   //folders and files stored in one array
   already_created_elem = list[0].concat(list[1]);
 
-  if (element_items >= 1001) {
+  if (element_items >= 1000) {
     //at most we want 1000 items rendered
     preprended_items += 5;
 
@@ -2306,6 +2318,14 @@ async function add_items_to_view(list, amount_req, reset) {
     item_box.lastChild.style.setProperty("margin-bottom", "30px");
   }
 }
+
+const resetLazyLoading = () => {
+  already_created_elem = [];
+  listed_count = 0;
+  start = 0;
+  preprended_items = 0;
+  amount = 500;
+};
 
 ///// function to load details to show in display once
 ///// users click Show details
@@ -2387,9 +2407,10 @@ function triggerManageDetailsPrompts(
 function organizeLandingUIEffect() {
   if ($("#input-global-path").val() === "My_dataset_folder/") {
     $(".div-organize-dataset-menu").css("visibility", "hidden");
-    $("#organize-path-and-back-button-div").css("visibility", "hidden");
+    // $("#organize-path-and-back-button-div").css("visibility", "hidden");
+    $("#organize-path-and-back-button-div").css("display", "none");
   } else {
-    $("#organize-path-and-back-button-div").css("visibility", "visible");
+    $("#organize-path-and-back-button-div").css("display", "flex");
     $(".div-organize-dataset-menu").css("visibility", "visible");
   }
 }

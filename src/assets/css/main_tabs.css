@@ -272,7 +272,8 @@
   -webkit-transition: all 0.25s linear;
 }
 
-.content-button h2 {
+.content-button h2,
+.tile-button h2 {
   color: #4d4a4a;
   font-weight: 400;
   font-size: 14px;

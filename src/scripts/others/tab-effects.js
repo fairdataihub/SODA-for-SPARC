@@ -110,7 +110,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
         .find(".option-card")
         .hasClass("checked") ||
       $("#input-destination-generate-dataset-locally")[0].placeholder !==
-        "Browse here"
+      "Browse here"
     ) {
       $("#nextBtn").prop("disabled", false);
     } else {
@@ -597,9 +597,9 @@ const nextPrev = (n) => {
     for (var highLevelFol in datasetStructureJSONObj["folders"]) {
       if (
         "manifest.xlsx" in
-          datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
+        datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
         datasetStructureJSONObj["folders"][highLevelFol]["files"][
-          "manifest.xlsx"
+        "manifest.xlsx"
         ]["forTreeview"] === true
       ) {
         delete datasetStructureJSONObj["folders"][highLevelFol]["files"][
@@ -919,13 +919,13 @@ const raiseWarningGettingStarted = (ev) => {
       !(
         JSON.stringify(sodaJSONObj) === "{}" ||
         JSON.stringify(sodaJSONObj) ===
-          '{"starting-point":{"type":"new"},"dataset-structure":{},"metadata-files":{}}' ||
+        '{"starting-point":{"type":"new"},"dataset-structure":{},"metadata-files":{}}' ||
         JSON.stringify(sodaJSONObj) ===
-          '{"starting-point":{"type":""},"dataset-structure":{},"metadata-files":{}}' ||
+        '{"starting-point":{"type":""},"dataset-structure":{},"metadata-files":{}}' ||
         JSON.stringify(sodaJSONObj) ===
-          '{"bf-account-selected":{},"bf-dataset-selected":{},"dataset-structure":{},"metadata-files":{},"manifest-files":{},"generate-dataset":{},"starting-point":{ "type": "local","local-path":""}}' ||
+        '{"bf-account-selected":{},"bf-dataset-selected":{},"dataset-structure":{},"metadata-files":{},"manifest-files":{},"generate-dataset":{},"starting-point":{ "type": "local","local-path":""}}' ||
         JSON.stringify(sodaJSONObj) ===
-          '{"bf-account-selected":{"account-name":{}}, "bf-dataset-selected":{"dataset-name":{}}, "dataset-structure":{},"metadata-files":{}, "manifest-files":{}, "generate-dataset":{}, "starting-point": {"type": "bf"}}'
+        '{"bf-account-selected":{"account-name":{}}, "bf-dataset-selected":{"dataset-name":{}}, "dataset-structure":{},"metadata-files":{}, "manifest-files":{}, "generate-dataset":{}, "starting-point": {"type": "bf"}}'
       )
     ) {
       Swal.fire({
@@ -1094,7 +1094,7 @@ async function transitionSubQuestions(
   if (
     !(
       ev.getAttribute("data-next") ===
-        "Question-generate-dataset-existing-files-options" &&
+      "Question-generate-dataset-existing-files-options" &&
       target.classList.contains("prev")
     )
   ) {
@@ -1474,29 +1474,29 @@ const recursive_structure_create = (
           ]) {
             if (
               sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                item
+              item
               ]["A"] == relative_path
             ) {
               if (
                 sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                  item
+                item
                 ]["C"] != undefined
               ) {
                 manifest_object["description"] =
                   sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                    item
+                  item
                   ]["C"];
               } else {
                 manifest_object["description"] = "";
               }
               if (
                 sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                  item
+                item
                 ]["E"] != undefined
               ) {
                 manifest_object["additional-metadata"] =
                   sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                    item
+                  item
                   ]["E"];
               } else {
                 manifest_object["additional-metadata"] = "";
@@ -1514,29 +1514,29 @@ const recursive_structure_create = (
           ]) {
             if (
               sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                item
+              item
               ]["filename"] == relative_path
             ) {
               if (
                 sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                  item
+                item
                 ]["description"] != undefined
               ) {
                 manifest_object["description"] =
                   sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                    item
+                  item
                   ]["description"];
               } else {
                 manifest_object["description"] = "";
               }
               if (
                 sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                  item
+                item
                 ]["AdditionalMetadata"] != undefined
               ) {
                 manifest_object["additional-metadata"] =
                   sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                    item
+                  item
                   ]["AdditionalMetadata"];
               } else {
                 manifest_object["additional-metadata"] = "";
@@ -1642,29 +1642,29 @@ const recursive_structure_create_include_manifest = (
           ]) {
             if (
               sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                item
+              item
               ]["A"] == relative_path
             ) {
               if (
                 sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                  item
+                item
                 ]["C"] != undefined
               ) {
                 manifest_object["description"] =
                   sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                    item
+                  item
                   ]["C"];
               } else {
                 manifest_object["description"] = "";
               }
               if (
                 sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                  item
+                item
                 ]["E"] != undefined
               ) {
                 manifest_object["additional-metadata"] =
                   sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                    item
+                  item
                   ]["E"];
               } else {
                 manifest_object["additional-metadata"] = "";
@@ -1682,29 +1682,29 @@ const recursive_structure_create_include_manifest = (
           ]) {
             if (
               sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                item
+              item
               ]["filename"] == relative_path
             ) {
               if (
                 sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                  item
+                item
                 ]["description"] != undefined
               ) {
                 manifest_object["description"] =
                   sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                    item
+                  item
                   ]["description"];
               } else {
                 manifest_object["description"] = "";
               }
               if (
                 sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                  item
+                item
                 ]["AdditionalMetadata"] != undefined
               ) {
                 manifest_object["additional-metadata"] =
                   sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                    item
+                  item
                   ]["AdditionalMetadata"];
               } else {
                 manifest_object["additional-metadata"] = "";
@@ -2011,7 +2011,7 @@ async function transitionSubQuestionsButton(
   if (
     !(
       ev.getAttribute("data-next") ===
-        "Question-generate-dataset-existing-files-options" &&
+      "Question-generate-dataset-existing-files-options" &&
       target.classList.contains("prev")
     )
   ) {
@@ -2782,14 +2782,14 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
         $(".metadata-button[data-next='inputsMetadataUpload']").addClass(
           "done"
         );
-        $($("#para-inputsMetadata-file-path").parents()[1])
+        $($("#para-codeParamMetadata-file-path").parents()[1])
           .find(".div-metadata-confirm")
           .css("display", "flex");
-        $($("#para-inputsMetadata-file-path").parents()[1])
+        $($("#para-codeParamMetadata-file-path").parents()[1])
           .find(".div-metadata-go-back")
           .css("display", "none");
         if (metadataobject[key]["type"] == "bf") {
-          $("#para-inputsMetadata-file-path").html(
+          $("#para-codeParamMetadata-file-path").html(
             "Using file present on Pennsieve. <br> File name: " + key
           );
           $("#metadata-inputsMetadata-pennsieve").css(
@@ -2800,7 +2800,7 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
           metadataobject[key]["type"] == "local" &&
           metadataobject[key]["action"].includes("existing")
         ) {
-          $("#para-inputsMetadata-file-path").text(metadataobject[key]["path"]);
+          $("#para-codeParamMetadata-file-path").text(metadataobject[key]["path"]);
         }
         break;
       case "outputs_metadata":
@@ -3085,8 +3085,8 @@ const updateJSONStructureMetadataFiles = () => {
     var codeDescriptionFilePath = document.getElementById(
       "para-codeDescription-file-path"
     ).innerHTML;
-    var inputsMetadataFilePath = document.getElementById(
-      "para-inputsMetadata-file-path"
+    var codeParamMetadataFilePath = document.getElementById(
+      "para-codeParamMetadata-file-path"
     ).innerHTML;
     var outputsMetadataFilePath = document.getElementById(
       "para-outputsMetadata-file-path"
@@ -3099,8 +3099,8 @@ const updateJSONStructureMetadataFiles = () => {
     );
     populateMetadataObject(
       invalidOptionsList,
-      inputsMetadataFilePath,
-      "inputs_metadata",
+      codeParamMetadataFilePath,
+      "code_parameters",
       sodaJSONObj
     );
     populateMetadataObject(
@@ -3521,7 +3521,7 @@ const exitCurate = async (resetProgressTabs, start_over = false) => {
   }
 };
 
-const wipeOutCurateProgress = () => {
+const wipeOutCurateProgress = async () => {
   // set SODA json object back
   sodaJSONObj = {
     "starting-point": { type: "" },
@@ -3650,9 +3650,9 @@ const saveSODAJSONProgress = (progressFileName) => {
   for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
     if (
       "manifest.xlsx" in
-        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+      sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
       sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-        "manifest.xlsx"
+      "manifest.xlsx"
       ]["forTreeview"] === true
     ) {
       delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][

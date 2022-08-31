@@ -14,13 +14,14 @@ function docReady(fn) {
 // adds the apps HTML pages to the DOM
 document.addEventListener("DOMContentLoaded", async function () {
   const links = document.querySelectorAll('link[rel="import"]');
-
   let contentIndex = document.querySelector("#content");
 
-  // Import and add each page to the DOM
-  for (let linkIdx = 0; linkIdx < links.length; linkIdx++) {
-    let link = links[linkIdx];
+  // Array that will contain all of the sectionIDs that are to be
+  // inserted into contentIndex
+  let sectionIds = [];
 
+  // Import and add each page to the DOM
+  for (const link of links) {
     let doc = await fetch(link.href, {
       headers: {
         "Content-Type": "text/html",
@@ -28,157 +29,71 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
 
     let content = await doc.text();
+    //get the id of the first section in content
+    let id = content.match(/id="(.*)"/)[1];
+    sectionIds.push(id);
 
-    var range = document.createRange();
-    range.setStart(contentIndex, 0);
-    contentIndex.appendChild(range.createContextualFragment(content));
+    //Add the HTML Section to the #content container
+    contentIndex.innerHTML += content;
   }
 
-  // insert the script tags
-  insertScript();
+  //Check to see if the links have been added to the DOM
+  //If not, try again in 100ms
+  const waitForHtmlSectionsToInsertIntoDOM = () => {
+    return new Promise((resolve) => {
+      let interval = setInterval(() => {
+        let allPresentInDom = true;
+        for (const sectionId of sectionIds) {
+          if (!document.getElementById(sectionId)) {
+            allPresentInDom = false;
+            break;
+          }
+        }
+        if (allPresentInDom) {
+          clearInterval(interval);
+          resolve();
+        } else {
+        }
+      }, 100);
+    });
+  };
+
+  await waitForHtmlSectionsToInsertIntoDOM();
+
+  //Synchronously include js files
+  await includeJavaScriptFile("./assets/ex-links.js");
+  await includeJavaScriptFile("./assets/nav.js");
+  await includeJavaScriptFile("./assets/demo-btns.js");
+  await includeJavaScriptFile("./preload.js");
+  await includeJavaScriptFile("./scripts/others/renderer.js");
+  await includeJavaScriptFile("./scripts/others/tab-effects.js");
+  await includeJavaScriptFile("./scripts/disseminate/disseminate.js");
+  await includeJavaScriptFile("./scripts/disseminate/prePublishingReview.js");
+  await includeJavaScriptFile("./scripts/manage-dataset/manage-dataset.js");
+  await includeJavaScriptFile("./scripts/metadata-files/datasetDescription.js");
+  await includeJavaScriptFile("./scripts/organize-dataset/curate-functions.js");
+  await includeJavaScriptFile("./scripts/organize-dataset/organizeDS.js");
+  await includeJavaScriptFile("./scripts/metadata-files/manifest.js");
+  await includeJavaScriptFile("./scripts/metadata-files/readme-changes.js");
+  await includeJavaScriptFile("./scripts/metadata-files/subjects-samples.js");
+  await includeJavaScriptFile("./scripts/metadata-files/submission.js");
+  await includeJavaScriptFile("./scripts/guided-mode/lottieJSON.js");
+  await includeJavaScriptFile("./scripts/guided-mode/guided-curate-dataset.js");
+  await includeJavaScriptFile("./scripts/collections/collections.js");
 });
 
-// TODO: Enhance this to call next script once one is done. Additionally, ensure it is called when the DOM is ready if not doing so already.
-const insertScript = async () => {
-  const exLinks = document.createElement("script");
-  exLinks.src = "./assets/ex-links.js";
-  exLinks.defer = true;
-  exLinks.type = "text/javascript";
-  document.body.appendChild(exLinks);
-
-  await ws(500);
-
-  const nav = document.createElement("script");
-  nav.src = "./assets/nav.js";
-  nav.defer = true;
-  nav.type = "text/javascript";
-  document.body.appendChild(nav);
-
-  await ws(500);
-
-  const demotBtns = document.createElement("script");
-  demotBtns.src = "./assets/demo-btns.js";
-  demotBtns.defer = true;
-  demotBtns.type = "text/javascript";
-  document.body.appendChild(demotBtns);
-
-  await ws(500);
-
-  const preload = document.createElement("script");
-  preload.src = "./preload.js";
-  preload.defer = true;
-  preload.type = "text/javascript";
-  document.body.appendChild(preload);
-
-  await ws(500);
-
-  const script = document.createElement("script");
-  script.src = "./scripts/others/renderer.js";
-  script.defer = true;
-  script.type = "text/javascript";
-  document.body.appendChild(script);
-
-  await ws(500);
-
-  const tabEffects = document.createElement("script");
-  tabEffects.src = "./scripts/others/tab-effects.js";
-  tabEffects.defer = true;
-  tabEffects.type = "text/javascript";
-  document.body.appendChild(tabEffects);
-
-  await ws(500);
-
-  const disseminate = document.createElement("script");
-  disseminate.src = "./scripts/disseminate/disseminate.js";
-  disseminate.defer = true;
-  disseminate.type = "text/javascript";
-  document.body.appendChild(disseminate);
-
-  await ws(500);
-
-  const prePublishingReview = document.createElement("script");
-  prePublishingReview.src = "./scripts/disseminate/prePublishingReview.js";
-  prePublishingReview.defer = true;
-  prePublishingReview.type = "text/javascript";
-  document.body.appendChild(prePublishingReview);
-
-  await ws(500);
-
-  const manageDatasets = document.createElement("script");
-  manageDatasets.src = "./scripts/manage-dataset/manage-dataset.js";
-  manageDatasets.defer = true;
-  manageDatasets.type = "text/javascript";
-  document.body.appendChild(manageDatasets);
-
-  await ws(500);
-
-  const datasetDescription = document.createElement("script");
-  datasetDescription.src = "./scripts/metadata-files/datasetDescription.js";
-  datasetDescription.defer = true;
-  datasetDescription.type = "text/javascript";
-  document.body.appendChild(datasetDescription);
-
-  await ws(500);
-
-  const curateFunctions = document.createElement("script");
-  curateFunctions.src = "./scripts/organize-dataset/curate-functions.js";
-  curateFunctions.defer = true;
-  curateFunctions.type = "text/javascript";
-  document.body.appendChild(curateFunctions);
-
-  await ws(500);
-
-  const organizeDataset = document.createElement("script");
-  organizeDataset.src = "./scripts/organize-dataset/organizeDS.js";
-  organizeDataset.defer = true;
-  organizeDataset.type = "text/javascript";
-  document.body.appendChild(organizeDataset);
-
-  await ws(500);
-
-  const manifest = document.createElement("script");
-  manifest.src = "./scripts/metadata-files/manifest.js";
-  manifest.defer = true;
-  manifest.type = "text/javascript";
-  document.body.appendChild(manifest);
-
-  await ws(500);
-
-  const readmeChanges = document.createElement("script");
-  readmeChanges.src = "./scripts/metadata-files/readme-changes.js";
-  readmeChanges.defer = true;
-  readmeChanges.type = "text/javascript";
-  document.body.appendChild(readmeChanges);
-
-  await ws(500);
-
-  const subjectsSamples = document.createElement("script");
-  subjectsSamples.src = "./scripts/metadata-files/subjects-samples.js";
-  subjectsSamples.defer = true;
-  subjectsSamples.type = "text/javascript";
-  document.body.appendChild(subjectsSamples);
-
-  await ws(500);
-
-  const submission = document.createElement("script");
-  submission.src = "./scripts/metadata-files/submission.js";
-  submission.defer = true;
-  submission.type = "text/javascript";
-  document.body.appendChild(submission);
-
-  await ws(500);
-
-  const datasetCollections = document.createElement("script");
-  datasetCollections.src = "./scripts/collections/collections.js";
-  datasetCollections.defer = true;
-  datasetCollections.type = "text/javascript";
-  document.body.appendChild(datasetCollections);
-};
-
-const ws = (ms) => {
-  return new Promise((resolve) =>
-    setTimeout(() => {
+const includeJavaScriptFile = async (filePath) => {
+  return new Promise((resolve, reject) => {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = filePath;
+    script.async = false;
+    script.onload = () => {
       resolve();
-    }, ms)
-  );
+    };
+    script.onerror = () => {
+      reject("cannot load script " + filePath);
+    };
+    document.body.appendChild(script);
+  });
 };

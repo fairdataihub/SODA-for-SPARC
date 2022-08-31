@@ -4,12 +4,36 @@ var metadataFile = "";
 var jstreePreview = document.getElementById("div-dataset-tree-preview");
 const nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
 
-// Event listeners for opening the dropdown prompt
-document
-  .querySelector("#Question-getting-started-BF-account .change-current-account")
-  .addEventListener("click", function () {
-    openDropdownPrompt(this, "bf");
-  });
+// per change event of current dataset span text
+function confirm_click_function() {
+  let temp = $(".bf-dataset-span").html();
+  if (
+    $(".bf-dataset-span").html() == "None" ||
+    $(".bf-dataset-span").html() == ""
+  ) {
+    $($(this).parents().find(".field").find(".div-confirm-button")).css(
+      "display",
+      "none"
+    );
+    $("#para-review-dataset-info-disseminate").text("None");
+  } else {
+    $($(this).parents().find(".field").find(".div-confirm-button")).css(
+      "display",
+      "flex"
+    );
+    if ($($(this).parents().find(".field").find(".synced-progress")).length) {
+      if (
+        $($(this).parents().find(".field").find(".synced-progress")).css(
+          "display"
+        ) === "none"
+      ) {
+        $(".confirm-button").click();
+      }
+    } else {
+      $(".confirm-button").click();
+    }
+  }
+}
 
 // per change event of current dataset span text
 function confirm_click_function() {
@@ -42,6 +66,8 @@ function confirm_click_function() {
     }
   }
 }
+
+
 
 $(".button-individual-metadata.remove").click(function () {
   var metadataFileStatus = $($(this).parents()[1]).find(
@@ -159,11 +185,17 @@ const metadataFileExtensionObject = {
   README: [".txt"],
   CHANGES: [".txt"],
   code_description: [".xlsx"],
-  inputs_metadata: [".xlsx"],
-  outputs_metadata: [".xlsx"],
+  code_parameters: [".xlsx", ".csv", ".tsv", ".json"],
+  data_deliverable: [".docx", ".doc"],
 };
 
-function dropHandler(ev, paraElement, metadataFile) {
+async function dropHandler(
+  ev,
+  paraElement,
+  metadataFile,
+  curationMode,
+  dataDeliverables = false
+) {
   // Prevent default behavior (Prevent file from being opened)
   ev.preventDefault();
   document.getElementById(paraElement).innerHTML = "";
@@ -177,28 +209,152 @@ function dropHandler(ev, paraElement, metadataFile) {
       var metadataWithoutExtension = file.name.slice(0, file.name.indexOf("."));
       var extension = file.name.slice(file.name.indexOf("."));
 
-      if (metadataWithoutExtension === metadataFile) {
-        if (metadataFileExtensionObject[metadataFile].includes(extension)) {
-          document.getElementById(paraElement).innerHTML = file.path;
-          $($("#" + paraElement).parents()[1])
-            .find(".div-metadata-confirm")
-            .css("display", "flex");
-          $($("#" + paraElement).parents()[1])
-            .find(".div-metadata-go-back")
-            .css("display", "none");
-        } else {
-          document.getElementById(paraElement).innerHTML =
-            "<span style='color:red'>Your SPARC metadata file must be in one of the formats listed above!</span>";
+
+      if (dataDeliverables === true) {
+        let filepath = file.path;
+        var award = $("#submission-sparc-award");
+        log.info(`Importing Data Deliverables document: ${filepath}`);
+        try {
+          let extract_milestone = await client.get(
+            `/prepare_metadata/import_milestone`,
+            {
+              params: {
+                path: filepath,
+              },
+            }
+          );
+          let res = extract_milestone.data;
+          milestoneObj = res;
+
+          //Handle free-form mode submission data
+          if (curationMode === "free-form") {
+            createMetadataDir();
+            var informationJson = {};
+            informationJson = parseJson(milestonePath);
+            informationJson[award] = milestoneObj;
+            fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
+            Swal.fire({
+              backdrop: "rgba(0,0,0, 0.4)",
+              heightAuto: false,
+              timer: 3000,
+              timerProgressBar: true,
+              icon: "success",
+              text: `Successfully loaded your DataDeliverables.docx document`,
+            });
+            removeOptions(descriptionDateInput);
+            milestoneTagify1.removeAllTags();
+            milestoneTagify1.settings.whitelist = [];
+            changeAwardInput();
+          }
+
+          //Handle guided mode submission data
+          if (curationMode === "guided") {
+            const guidedMilestoneData = res;
+            //create a string with today's date in the format xxxx/xx/xx
+            const today = new Date();
+            const todayString = `
+                  ${today.getFullYear()}-${today.getMonth() + 1
+              }-${today.getDate()}
+                `;
+            //add a custom milestone row for when the user wants to add a custom milestone
+            //not included in the dataset deliverables document
+            guidedMilestoneData[
+              "Not included in the Dataset Deliverables document"
+            ] = [
+                {
+                  "Description of data":
+                    "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
+                  "Expected date of completion": "N/A",
+                },
+              ];
+
+            //save the unselected milestones into sodaJSONObj
+            sodaJSONObj["dataset-metadata"]["submission-metadata"][
+              "temp-imported-milestones"
+            ] = guidedMilestoneData;
+
+            sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] =
+              filepath;
+
+            renderMilestoneSelectionTable(guidedMilestoneData);
+
+            guidedSubmissionTagsTagify.settings.whitelist = [];
+
+            unHideAndSmoothScrollToElement(
+              "guided-div-data-deliverables-import"
+            );
+
+            let dragDropContainer =
+              document.getElementById(paraElement).parentElement;
+
+            let lottieContainer = dragDropContainer.querySelector(
+              ".code-metadata-lottie-container"
+            );
+            lottieContainer.innerHTML = "";
+            lottie.loadAnimation({
+              container: lottieContainer,
+              animationData: successCheck,
+              renderer: "svg",
+              loop: true,
+              autoplay: true,
+            });
+          }
+        } catch (error) {
+          clientError(error);
+          Swal.fire({
+            backdrop: "rgba(0,0,0, 0.4)",
+            heightAuto: false,
+            icon: "error",
+            text: userErrorMessage(error),
+          });
         }
       } else {
-        document.getElementById(paraElement).innerHTML =
-          "<span style='color:red'>Your SPARC metadata file must be named and formatted exactly as listed above!</span>";
-        $($("#" + paraElement).parents()[1])
-          .find(".div-metadata-confirm")
-          .css("display", "none");
-        $($("#" + paraElement).parents()[1])
-          .find(".div-metadata-go-back")
-          .css("display", "flex");
+        //dataDelieravles is true for the name to be however it needs to be, just check extension is doc or docx
+        if (metadataWithoutExtension === metadataFile) {
+          if (metadataFileExtensionObject[metadataFile].includes(extension)) {
+            document.getElementById(paraElement).innerHTML = file.path;
+            if (curationMode === "free-form") {
+              $($("#" + paraElement).parents()[1])
+                .find(".div-metadata-confirm")
+                .css("display", "flex");
+              $($("#" + paraElement).parents()[1])
+                .find(".div-metadata-go-back")
+                .css("display", "none");
+            }
+            if (curationMode === "guided") {
+              //Add success checkmark lottie animation inside metadata card
+              const dragDropContainer =
+                document.getElementById(paraElement).parentElement;
+              //get the value of data-code-metadata-file-type from dragDropContainer
+              const metadataFileType =
+                dragDropContainer.dataset.codeMetadataFileType;
+              //save the path of the metadata file to the json object
+              sodaJSONObj["dataset-metadata"]["code-metadata"][
+                metadataFileType
+              ] = file.path;
+              const lottieContainer = dragDropContainer.querySelector(
+                ".code-metadata-lottie-container"
+              );
+              lottieContainer.innerHTML = "";
+              lottie.loadAnimation({
+                container: lottieContainer,
+                animationData: successCheck,
+                renderer: "svg",
+                loop: false,
+                autoplay: true,
+              });
+            }
+          }
+        } else {
+          document.getElementById(paraElement).innerHTML =
+            "<span style='color:red'>Your SPARC metadata file must be named and formatted exactly as listed above!</span>";
+          $($("#" + paraElement).parents()[1])
+            .find(".div-metadata-confirm")
+            .css("display", "none");
+          $($("#" + paraElement).parents()[1])
+            .find(".div-metadata-go-back")
+            .css("display", "flex");
+        }
       }
     } else {
       document.getElementById(paraElement).innerHTML =
@@ -222,11 +378,13 @@ const checkAvailableSpace = () => {
 
     let datasetSizeResponse;
     try {
-      datasetSizeResponse = await client.get("/curate_datasets/dataset_size", {
-        params: {
+      datasetSizeResponse = await client.post(
+        "/curate_datasets/dataset_size",
+        {
           soda_json_structure: sodaJSONObj,
         },
-      });
+        { timeout: 0 }
+      );
 
       let tempFolderSize = datasetSizeResponse.data.dataset_size;
       let folderSizeMB = roundToHundredth(tempFolderSize / 1024 ** 2);
@@ -548,10 +706,9 @@ function populateMetadataProgress(
     README: ["para-readme-file-path", metadataButtonsArray[4]],
     CHANGES: ["para-changes-file-path", metadataButtonsArray[5]],
     code_description: ["para-readme-file-path", metadataButtonsArray[6]],
-    inputs_metadata: ["para-inputsMetadata-file-path", metadataButtonsArray[7]],
-    outputs_metadata: [
-      "para-outputs_metadata-file-path",
-      metadataButtonsArray[8],
+    code_parameters: [
+      "para-codeParamMetadata-file-path",
+      metadataButtonsArray[7],
     ],
   };
   if (populateBoolean) {
@@ -840,6 +997,11 @@ $(document).ready(async function () {
   $("#bf_list_teams").selectpicker("refresh");
   $("#bf_list_roles_team").selectpicker();
   $("#bf_list_roles_team").selectpicker("refresh");
+
+  $("#guided_bf_list_users_pi").selectpicker();
+  $("#guided_bf_list_users_pi").selectpicker("refresh");
+  $("#guided_bf_list_users_and_teams").selectpicker();
+  $("#guided_bf_list_users_and_teams").selectpicker("refresh");
 });
 
 const get_api_key = (login, password, key_name) => {
@@ -1213,9 +1375,9 @@ async function moveItems(ev, category) {
   for (var highLevelFol in datasetStructureJSONObj["folders"]) {
     if (
       "manifest.xlsx" in
-        datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
+      datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
       datasetStructureJSONObj["folders"][highLevelFol]["files"][
-        "manifest.xlsx"
+      "manifest.xlsx"
       ]["forTreeview"] === true
     ) {
       delete datasetStructureJSONObj["folders"][highLevelFol]["files"][
@@ -1471,6 +1633,15 @@ function moveItemsHelper(item, destination, category) {
   );
 }
 
+function updateManifestLabelColor(el) {
+  document.getElementById("label-manifest").style.color = el.checked
+    ? "var(--color-light-green)"
+    : "#303030";
+  document.getElementById("label-manifest").style.fontWeight = el.checked
+    ? "bold"
+    : "normal";
+}
+
 // helper functions to add "moved" to leaf nodes a.k.a files
 function addMovedRecursively(object) {
   Object.keys(object["files"]).forEach((key) => {
@@ -1506,6 +1677,15 @@ function addMovedRecursively(object) {
     }
   });
 }
+
+$(document).ready(function () {
+  $(".button-display-details").click(function () {
+    $(this).parent().toggleClass("show");
+  });
+  $(".button-generate-dataset i").bind("click", function () {
+    $($(this).parents()[0]).click();
+  });
+});
 
 $(jstreeInstance).on("changed.jstree", function (e, data) {
   if (data.node) {

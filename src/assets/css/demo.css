@@ -1066,7 +1066,8 @@ progress.progresstrack[value]::-webkit-progress-value {
   /*  padding-bottom: 30%;*/
 }
 
-#div-img-container-holder {
+#div-img-container-holder,
+#guided-div-img-container-holder {
   color: black;
   text-align: center;
   font-size: 20px;
@@ -1117,6 +1118,7 @@ label.input-banner-img {
 }
 
 .tagify {
+  width: 100%;
   border: 1px solid rgba(34, 36, 38, 0.15) !important;
   /* border-left: 2px solid var(--color-light-green) !important; */
   border-radius: 5px !important;
