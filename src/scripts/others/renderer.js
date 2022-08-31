@@ -1329,6 +1329,39 @@ const guidedSubmissionTagsTagifyManual = new Tagify(
   }
 );
 
+//initialize Tagify input field for guided submission milestones
+const guidedSubmissionTagsInput = document.getElementById(
+  "guided-tagify-submission-milestone-tags-import"
+);
+
+const guidedSubmissionTagsTagify = new Tagify(guidedSubmissionTagsInput, {
+  duplicates: false,
+  delimiters: null,
+  dropdown: {
+    classname: "color-blue",
+    maxItems: Infinity,
+    enabled: 0,
+    closeOnSelect: true,
+  },
+});
+
+const guidedSubmissionTagsInputManual = document.getElementById(
+  "guided-tagify-submission-milestone-tags-manual"
+);
+const guidedSubmissionTagsTagifyManual = new Tagify(
+  guidedSubmissionTagsInputManual,
+  {
+    duplicates: false,
+    delimiters: null,
+    dropdown: {
+      classname: "color-blue",
+      maxItems: Infinity,
+      enabled: 0,
+      closeOnSelect: true,
+    },
+  }
+);
+
 // initiate Tagify input fields for Dataset description file
 var keywordInput = document.getElementById("ds-keywords"),
   keywordTagify = new Tagify(keywordInput, {
@@ -3187,8 +3220,8 @@ var cropOptions = {
     let image_height = Math.round(data.height);
 
     formBannerHeight.value = image_height;
-
-    if (image_height < 512 || image_height > 2048) {
+    //if image-height exceeds 2048 then prompt about scaling image down
+    if (image_height < 512) {
       $("#save-banner-image").prop("disabled", true);
       $("#form-banner-height").css("color", "red");
       $("#form-banner-height").css("border", "1px solid red");
@@ -3225,7 +3258,7 @@ const guidedCropOptions = {
 
     guidedFormBannerHeight.value = image_height;
 
-    if (image_height < 512 || image_height > 2048) {
+    if (image_height < 512) {
       $("#guided-save-banner-image").prop("disabled", true);
       $("#guided-form-banner-height").css("color", "red");
       $("#guided-form-banner-height").css("border", "1px solid red");
@@ -9462,6 +9495,29 @@ $("#validate_dataset_bttn").on("click", async () => {
   $("#dataset_validator_spinner").hide();
 });
 
+//function used to scale banner images
+const scaleBannerImage = async (imagePath) => {
+  console.log("scaling");
+  try {
+    let imageScaled = await client.post(
+      `/manage_datasets/bf_banner_image/scale_image`,
+      {
+        image_file_path: imagePath,
+      },
+      {
+        params: {
+          selected_account: defaultBfAccount,
+          selected_dataset: defaultBfDataset,
+        },
+      }
+    );
+    return imageScaled.data.scaled_image_path;
+  } catch (error) {
+    clientError(error);
+    return error.response;
+  }
+};
+
 function openFeedbackForm() {
   let feedback_btn = document.getElementById("feedback-btn");
   if (!feedback_btn.classList.contains("is-open")) {
@@ -9721,3 +9777,4 @@ contact_us_lottie_observer.observe(contact_section, {
   attributes: true,
   attributeFilter: ["class"],
 });
+

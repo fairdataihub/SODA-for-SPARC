@@ -320,6 +320,7 @@
             <a
               target="_blank"
               href="https://docs.sodaforsparc.io/docs/manage-dataset/add-dataset-to-collection"
+
               >Need help?</a
             >
           </div>
@@ -328,16 +329,20 @@
     </header>
 
     <div
+
       id="bf_collection-tab"
       style="overflow-y: auto; height: calc(100% - 150px); margin-left: -70px"
     >
       <div
         class="individual-question manage-dataset show"
+
         id="collection_BF_account_tab"
+
         style="height: auto"
       >
         <div class="ui form" style="width: 100%">
           <div class="grouped fields">
+
             <div class="about-container">
               <label
                 class="about-title"
@@ -356,6 +361,7 @@
             </div>
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >Which Pennsieve dataset would you like to work on
+
             </label>
             <div class="field" style="margin: auto; width: 550px">
               <div
@@ -386,6 +392,7 @@
                         Current account:
                       </h5>
                       <div
+
                         class="change-current-account"
                         onclick="openDropdownPrompt(this, 'bf')"
                       >
@@ -423,7 +430,9 @@
                     <div>
                       <h5
                         class="card-left"
+
                         style="text-align: right; padding-right: 1.5rem"
+
                       >
                         Account details:
                       </h5>
@@ -452,6 +461,7 @@
                       >
                         <h5
                           id="collection_dataset_name"
+
                           class="card-right bf-dataset-span"
                           style="width: fit-content"
                         >
@@ -531,6 +541,7 @@
                 width: 100%;
                 text-align: center;
               "
+
               >Add dataset to a new collection or remove from an existing one
             </label>
             <div
@@ -796,6 +807,23 @@
                   ></div>
                 </div>
               </div>
+            </div>
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                margin: 0 auto;
+              "
+            >
+              <button
+                id="button-rename-dataset"
+                class="btn_animated"
+                style="width: 140px; border: none !important"
+              >
+                <div>Rename dataset</div>
+              </button>
               <div
                 class="div-confirm-button"
                 style="
@@ -827,9 +855,19 @@
                 </button>
               </div>
             </div>
+            <p
+              id="para-rename-dataset-status"
+              style="
+                text-align: center;
+                font-weight: 400;
+                color: var(--color-light-green);
+                font-size: 15px;
+              "
+            ></p>
           </div>
         </div>
       </div>
+    </div>
 
       <div
         class="individual-question manage-dataset show"
@@ -1525,6 +1563,7 @@
                 >
                   <div class="card-container manage-dataset">
                     <div style="width: 100%; display: flex">
+
                       <h5
                         class="card-left"
                         style="
@@ -3642,16 +3681,17 @@
                 >
                   Import image
                 </button>
+
               </div>
             </div>
 
             <div class="container-cropped-image">
               <div
                 class="banner-image-size"
-                style="width: 380px; text-align: center"
+                style="width: 380px; text-align: right"
               >
-                <span class="crop-image-text"
-                  >Cropped dimensions (must be between 512px and 2048px):
+                <span class="crop-image-text" style="margin-right: 2rem;"
+                  >Cropped dimensions (must be greater than 512px):
                 </span>
               </div>
               <input
@@ -3943,7 +3983,7 @@
           </div>
         </div>
       </div>
-
+    </div>
       <div
         class="individual-question manage-dataset"
         id="div_add_license"
