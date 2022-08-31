@@ -288,6 +288,343 @@
 </section>
 
 <section
+  id="add_edit_bf_dataset_collection-section"
+  class="section js-section u-category-windows"
+  style="padding-left: 15px; overflow-y: hidden"
+>
+  <div
+    class="main-tabs show"
+    id="add_edit_collection_dataset"
+    style="display: flex; height: 100%; overflow-y: hidden"
+  >
+    <header class="section-header">
+      <div
+        style="
+          display: inline-flex;
+          align-items: center;
+          flex-direction: row;
+          width: 94.5%;
+          padding-right: 20px;
+          margin-bottom: 50px;
+        "
+      >
+        <div
+          style="
+            width: 100%;
+            border-bottom: 3px solid #b80d49;
+            margin-bottom: -5px;
+          "
+        >
+          <div class="need-help-div">
+            <h2>Manage Datasets - Add dataset to a collection</h2>
+            <a
+              target="_blank"
+              href="https://docs.sodaforsparc.io/docs/manage-dataset/add-dataset-to-collection"
+              >Need help?</a
+            >
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div
+      id="bf_collection-tab"
+      style="overflow-y: auto; height: calc(100% - 150px); margin-left: -70px"
+    >
+      <div
+        class="individual-question manage-dataset show"
+        id="collection_BF_account_tab"
+        style="height: auto"
+      >
+        <div class="ui form" style="width: 100%">
+          <div class="grouped fields">
+            <div class="about-container">
+              <label
+                class="about-title"
+                style="color: var(--color-bg-plum) !important"
+                >About</label
+              >
+              <p class="about-text">
+                A collection allows you to associate and consolidate multiple
+                datasets into a single grouping. By doing so, you can catalog
+                your datasets in a myriad of ways, including by scientific
+                theme, by publication, and more. Ultimately, this can allow for
+                better organization of your datasets and provides the ability to
+                streamline collaboration by providing a link to a collection
+                instead of multiple, distinct datasets.
+              </p>
+            </div>
+            <label style="font-size: 17px; color: var(--color-bg-plum)"
+              >Which Pennsieve dataset would you like to work on
+            </label>
+            <div class="field" style="margin: auto; width: 550px">
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: space-between;
+                  margin-top: 15px;
+                  height: auto;
+                  box-shadow: 0px 0px 10px #d5d5d5;
+                  padding: 15px 25px;
+                  border-radius: 5px;
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                  "
+                >
+                  <div class="card-container manage-dataset">
+                    <div style="display: flex">
+                      <h5
+                        class="card-left"
+                        style="text-align: right; padding-right: 5px"
+                      >
+                        Current account:
+                      </h5>
+                      <div
+                        class="change-current-account"
+                        onclick="openDropdownPrompt(this, 'bf')"
+                      >
+                        <h5
+                          class="card-right bf-account-span"
+                          style="width: fit-content"
+                        >
+                          None
+                        </h5>
+
+                        <svg
+                          class="svg-change-current-account bi bi-pencil-fill"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18"
+                          height="18"
+                          fill="#000"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    margin-bottom: 15px;
+                  "
+                >
+                  <div class="card-container manage-dataset">
+                    <div>
+                      <h5
+                        class="card-left"
+                        style="text-align: right; padding-right: 1.5rem"
+                      >
+                        Account details:
+                      </h5>
+                      <h5 class="card-right bf-account-details-span">None</h5>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                  "
+                >
+                  <div class="card-container manage-dataset">
+                    <div style="display: flex">
+                      <h5
+                        class="card-left"
+                        style="text-align: right; padding-right: 5px"
+                      >
+                        Current dataset:
+                      </h5>
+                      <div
+                        class="change-current-account"
+                        onclick="openDropdownPrompt(this, 'dataset')"
+                      >
+                        <h5
+                          id="collection_dataset_name"
+                          class="card-right bf-dataset-span"
+                          style="width: fit-content"
+                        >
+                          None
+                        </h5>
+
+                        <svg
+                          class="svg-change-current-account dataset bi bi-pencil-fill"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18"
+                          height="18"
+                          fill="#000"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="ui active green inline loader small"
+                    style="display: none"
+                  ></div>
+                </div>
+              </div>
+              <div
+                class="div-confirm-button"
+                style="
+                  display: none;
+                  flex-direction: row;
+                  justify-content: center;
+                  margin: 10px auto;
+                "
+              >
+                <button
+                  id="button-collection-dataset-confirm"
+                  onclick="transitionFreeFormMode(this, 'collection_BF_account_tab', 'bf_collection-tab', 'delete', 'individual-question manage-dataset')"
+                  data-next="div-collection-bf-dataset"
+                  class="confirm-button"
+                  style="
+                    cursor: pointer;
+                    border-radius: 8px;
+                    margin: 10px auto;
+                    width: 100px;
+                    height: 30px;
+                    background: var(--color-light-green);
+                    color: #fff;
+                    font-weight: 600;
+                    border: none;
+                    font-size: 13px;
+                  "
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="individual-question manage-dataset"
+        id="div-collection-bf-dataset"
+        style="height: auto"
+      >
+        <div
+          class="ui form"
+          style="width: 550px !important; align-self: center"
+        >
+          <div class="grouped fields">
+            <label
+              style="
+                font-size: 17px;
+                color: var(--color-bg-plum);
+                width: 100%;
+                text-align: center;
+              "
+              >Add dataset to a new collection or remove from an existing one
+            </label>
+            <div
+              class="field"
+              style="
+                color: black;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                width: 100%;
+                align-self: center;
+                margin-bottom: 20px;
+              "
+            >
+              <input
+                class="form-container-input-bf"
+                id="tagify-collection-tags"
+                name="Collection Name"
+                type="text"
+                style="font-size: 14px"
+                placeholder="Enter/select collection name"
+              />
+              <div style="border-radius: 0.5rem; margin-top: 7px">
+                <p class="tip-content">
+                  Note that a dataset can be added to multiple collections.
+                  Collections that the dataset belongs to (if any) will appear.
+                  Click to see a list of existing collections in the SPARC
+                  consortium that you can select for your dataset.
+                  Alternatively, you can enter a new collection name (type and
+                  press enter on your keyboard to register).
+                </p>
+              </div>
+            </div>
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                margin: 0 auto;
+              "
+            >
+              <button
+                id="button-bf-collection"
+                class="btn_animated"
+                style="
+                  width: 140px;
+                  border: none !important;
+                  margin-left: -6px !important;
+                "
+              >
+                <div>Update collections</div>
+              </button>
+              <div
+                id="bf-collection-dataset-spinner"
+                class="spinner"
+                style="visibility: hidden"
+              >
+                <div class="rect1"></div>
+                <div class="rect2"></div>
+                <div class="rect3"></div>
+                <div class="rect4"></div>
+                <div class="rect5"></div>
+              </div>
+            </div>
+            <p
+              id="para-collection-dataset-status"
+              style="
+                text-align: center;
+                font-weight: 400;
+                color: var(--color-light-green);
+                font-size: 15px;
+              "
+            ></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-div">
+      <div style="display: flex; flex-direction: row; width: 120px">
+        <button
+          type="button"
+          class="transition-btn prev"
+          data-section="main_tabs"
+        >
+          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section
   id="rename_existing_bf_dataset-section"
   class="section js-section u-category-windows"
   style="padding-left: 5px; overflow-y: hidden; margin-left: -25px"
