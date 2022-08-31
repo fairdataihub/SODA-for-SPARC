@@ -6223,6 +6223,8 @@ const guidedShowBannerImagePreview = (imagePath) => {
   const bannerImagePreviewelement = document.getElementById(
     "guided-banner-image-preview"
   );
+
+  bannerImagePreviewelement.innerHTML = '';
   guidedBannerImageElement = `
     <img
       src="${imagePath}"
@@ -6230,6 +6232,7 @@ const guidedShowBannerImagePreview = (imagePath) => {
       style="max-height: 300px;"
     />
   `;
+  
   bannerImagePreviewelement.innerHTML = guidedBannerImageElement;
   $("#guided-banner-image-preview-container").show();
   $("#guided-button-add-banner-image").html("Edit banner image");
@@ -6900,7 +6903,7 @@ const renderSamplesMetadataAsideItems = () => {
   });
 };
 
-$(document).ready(() => {
+$(document).ready(async () => {
   $("#guided-button-start-new-curate").on("click", () => {
     guidedTransitionFromHome();
   });
@@ -9585,7 +9588,7 @@ $(document).ready(() => {
     guidedPennsieveDatasetUpload();
   });
 
-  const guidedSaveBannerImage = () => {
+  const guidedSaveBannerImage = async () => {
     $("#guided-para-dataset-banner-image-status").html("Please wait...");
     //Save cropped image locally and check size
     let imageFolder = path.join(homeDirectory, "SODA", "guided-banner-images");
@@ -9604,7 +9607,7 @@ $(document).ready(() => {
     let imagePath = path.join(imageFolder, `${datasetName}.` + imageExtension);
     let croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType);
 
-    imageDataURI.outputFile(croppedImageDataURI, imagePath).then(() => {
+    imageDataURI.outputFile(croppedImageDataURI, imagePath).then(async() => {
       let image_file_size = fs.statSync(imagePath)["size"];
       if (image_file_size < 5 * 1024 * 1024) {
         $("#guided-para-dataset-banner-image-status").html("");
@@ -9612,16 +9615,17 @@ $(document).ready(() => {
         $("#guided-banner-image-modal").modal("hide");
         $("#guided-button-add-banner-image").text("Edit banner image");
       } else {
-        $("#guided-para-dataset-banner-image-status").html(
-          "<span style='color: red;'> " +
-          "Final image size must be less than 5 MB" +
-          "</span>"
-        );
+        //image needs to be scaled
+        $("#guided-para-dataset-banner-image-status").html("");
+        let scaledImagePath = await scaleBannerImage(imagePath);
+        setGuidedBannerImage(scaledImagePath);
+        $("#guided-banner-image-modal").modal("hide");
+        $("#guided-button-add-banner-image").text("Edit banner image");
       }
     });
   };
   /**************************************/
-  $("#guided-save-banner-image").click((event) => {
+  $("#guided-save-banner-image").click(async (event) => {
     $("#guided-para-dataset-banner-image-status").html("");
     if (guidedBfViewImportedImage.src.length > 0) {
       if (guidedFormBannerHeight.value > 511) {
@@ -9641,7 +9645,7 @@ $(document).ready(() => {
           hideClass: {
             popup: "animate__animated animate__zoomOut animate__faster",
           },
-        }).then((result) => {
+        }).then(async (result) => {
           if (guidedFormBannerHeight.value < 1024) {
             Swal.fire({
               icon: "warning",
@@ -9659,12 +9663,35 @@ $(document).ready(() => {
               hideClass: {
                 popup: "animate__animated animate__zoomOut animate__faster",
               },
-            }).then((result) => {
+            }).then(async (result) => {
               if (result.isConfirmed) {
                 guidedSaveBannerImage();
               }
             });
-          } else {
+          } else if (guidedFormBannerHeight.value > 2048) {
+            Swal.fire({
+              icon: "warning",
+              text: `Your cropped image is ${formBannerHeight.value} px and is bigger than the 2048px standard. Would you like to scale this image down to fit the entire cropped image?`,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              showCancelButton: true,
+              focusCancel: true,
+              confirmButtonText: "Yes",
+              cancelButtonText: "No",
+              reverseButtons: reverseSwalButtons,
+              showClass: {
+                popup: "animate__animated animate__zoomIn animate__faster",
+              },
+              hideClass: {
+                popup: "animate__animated animate__zoomOut animate__faster",
+              },
+            }).then(async (result) => {
+              if (result.isConfirmed) {
+                guidedSaveBannerImage();
+              }
+            });
+          }
+           else {
             guidedSaveBannerImage();
           }
         });

@@ -1797,27 +1797,6 @@ $("#button-import-banner-image").click(async () => {
   displayBannerImage(filePaths);
 });
 
-const scaleBannerImage = async (imagePath) => {
-  try {
-    let imageScaled = await client.post(
-      `/manage_datasets/scale_image`,
-      {
-        image_file_path: imagePath,
-      },
-      {
-        params: {
-          selected_account: defaultBfAccount,
-          selected_dataset: defaultBfDataset,
-        },
-      }
-    );
-    return imageScaled.data.scaled_image_path;
-  } catch (error) {
-    clientError(error);
-    return error.response;
-  }
-};
-
 const uploadBannerImage = async () => {
   $("#para-dataset-banner-image-status").html("Please wait...");
   //Save cropped image locally and check size
