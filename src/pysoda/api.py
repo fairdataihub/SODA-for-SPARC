@@ -85,6 +85,11 @@ from organize_datasets import (
     monitor_local_json_progress,
     monitor_pennsieve_json_progress,
     import_pennsieve_dataset,
+    get_all_collections,
+    get_current_collection_tags,
+    upload_collection_tags,
+    remove_collection_tags,
+    upload_new_tags,
 )
 
 import sys
@@ -139,6 +144,21 @@ class SodaApi(object):
         return save_subjects_file(
             upload_boolean, bfaccount, bfdataset, filepath, datastructure
         )
+
+    def api_get_all_collections(self, account):
+        return get_all_collections(account)
+
+    def api_get_current_collection_tags(self, account, dataset):
+        return get_current_collection_tags(account, dataset)
+
+    def api_upload_collection_tags(self, account, dataset, tags):
+        return upload_collection_tags(account, dataset, tags)
+
+    def api_remove_collection_tags(self, account, dataset, tags):
+        return remove_collection_tags(account, dataset, tags)
+
+    def api_upload_new_tags(self, account, dataset, tags):
+        return upload_new_tags(account, dataset, tags)
 
     def api_convert_subjects_samples_file_to_df(self, type, filepath, fields):
         return convert_subjects_samples_file_to_df(type, filepath, fields)
@@ -418,16 +438,11 @@ class SodaApi(object):
             raise e
 
     def api_bf_add_banner_image(
-        self,
-        selected_bfaccount,
-        selected_bfdataset,
-        selected_banner_image,
+        self, selected_bfaccount, selected_bfdataset, selected_banner_image
     ):
         try:
             return bf_add_banner_image(
-                selected_bfaccount,
-                selected_bfdataset,
-                selected_banner_image,
+                selected_bfaccount, selected_bfdataset, selected_banner_image
             )
         except Exception as e:
             raise e
