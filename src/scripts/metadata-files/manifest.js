@@ -740,10 +740,14 @@ async function initiate_generate_manifest_bf() {
   clearQueue();
   let curationResponse;
   try {
-    curationResponse = await client.post(`/curate_datasets/curation`, {
-      soda_json_structure: sodaJSONObj,
-    },
-      { timeout: 0 }
+    curationResponse = await client.post(
+      `/curate_datasets/curation`,
+      {
+        soda_json_structure: sodaJSONObj,
+      },
+      {
+        timeout: 0,
+      }
     );
   } catch (error) {
     clientError(error);
@@ -930,6 +934,7 @@ async function extractBFDatasetForManifestFile(
   } catch (err) {
     result = [false, err];
   }
+
   if (!result[0]) {
     Swal.fire({
       icon: "error",
@@ -966,14 +971,17 @@ async function extractBFDatasetForManifestFile(
       datasetStructureJSONObj = { folders: {}, files: {} };
     }
     sodaJSONObj["manifest-files"] = { destination: "generate-dataset" };
-
     sodaJSONObj["generate-dataset"] = {
       destination: "bf",
       "generate-option": "existing-bf",
     };
     sodaJSONObj["starting-point"] = { type: "bf" };
+
+    console.log("Populating existing folders...");
     populate_existing_folders(datasetStructureJSONObj);
+    console.log("Populating existing metadata...");
     populate_existing_metadata(sodaJSONObj);
+
     let continueProgressEmptyFolder = await checkEmptySubFolders(
       sodaJSONObj["dataset-structure"]
     );
@@ -1004,13 +1012,18 @@ async function extractBFDatasetForManifestFile(
       );
       return;
     }
+
+    trackManifestImportProgress();
+
     var continueErrorManifest;
     try {
+      console.log("Extracting manifest files...");
       let res = await extractBFManifestFile();
       continueErrorManifest = [false, res];
     } catch (err) {
       continueErrorManifest = [true, err];
     }
+
     if (continueErrorManifest[0]) {
       Swal.fire({
         title: "Failed to load the manifest files for edits.",
@@ -1037,8 +1050,9 @@ async function extractBFDatasetForManifestFile(
       );
       return;
     }
+
     // check for no SPARC folders on a Pennsieve datasets (already include check for a local dataset)
-    let continueProgressNoSPARCFolders = await checkNoSparcFolders(
+    let continueProgressNoSPARCFolders = checkNoSparcFolders(
       sodaJSONObj["dataset-structure"]
     );
     if (continueProgressNoSPARCFolders === true) {
@@ -1052,7 +1066,7 @@ async function extractBFDatasetForManifestFile(
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       $("#Question-prepare-manifest-4").removeClass("show");
       $("#Question-prepare-manifest-4").removeClass("prev");
       $("#Question-prepare-manifest-3").removeClass("prev");
@@ -1068,49 +1082,55 @@ async function extractBFDatasetForManifestFile(
       );
       return;
     }
-  }
-  if (!editBoolean) {
-    generateManifestOnPennsieve();
-  } else {
-    $("#preview-manifest-fake-confirm-pennsieve").click();
-    $("#Question-prepare-manifest-4").removeClass("show");
-    $("#Question-prepare-manifest-4").removeClass("prev");
-    $(ev).hide();
-    loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
-    Swal.fire({
-      title: "Successfully generated!",
-      heightAuto: false,
-      showConfirmButton: false,
-      timer: 800,
-      icon: "success",
-      backdrop: "rgba(0,0,0, 0.4)",
-      didOpen: () => {
-        Swal.hideLoading();
-      },
-    }).then((result) => { });
-    localDatasetFolderPath = "";
+
+    if (!editBoolean) {
+      console.log(
+        "Generating a manifest file for the dataset directly on Pennsieve..."
+      );
+      generateManifestOnPennsieve();
+    } else {
+      $("#preview-manifest-fake-confirm-pennsieve").click();
+      $("#Question-prepare-manifest-4").removeClass("show");
+      $("#Question-prepare-manifest-4").removeClass("prev");
+      $(ev).hide();
+      console.log("Loading manifest preview into tree....");
+      loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
+      Swal.fire({
+        title: "Successfully generated!",
+        heightAuto: false,
+        showConfirmButton: false,
+        timer: 800,
+        icon: "success",
+        backdrop: "rgba(0,0,0, 0.4)",
+        didOpen: () => {
+          Swal.hideLoading();
+        },
+      }).then((result) => {});
+      localDatasetFolderPath = "";
+    }
   }
 }
 
 function extractBFManifestFile() {
   return new Promise((resolve, reject) => {
     client
-      .post("/prepare_metadata/manifest_files/pennsieve",
+      .post(
+        "/prepare_metadata/manifest_files/pennsieve",
         {
           soda_json_object: sodaJSONObj,
           selected_account: defaultBfAccount,
           selected_dataset: defaultBfDataset,
         },
         {
-          timeout: 0
+          timeout: 0,
         }
       )
       .then((res) => {
         resolve(res);
       })
       .catch((err) => {
-        clientError(error);
-        reject(userErrorMessage(error));
+        clientError(err);
+        reject(userErrorMessage(err));
       });
   });
 }
@@ -1258,6 +1278,77 @@ function resetManifest(skip_permission) {
   }
 }
 
+const trackManifestImportProgress = async () => {
+  // show the progress container - it is hidden by default once the dataset import is complete
+  let progress_container = document.getElementById(
+    "loading_pennsieve_dataset_manifest"
+  );
+
+  progress_container.style.display = "flex";
+
+  let percentage_text = document.getElementById(
+    "pennsieve_loading_dataset_percentage"
+  );
+  let left_progress_bar = document.getElementById(
+    "pennsieve_left-side_less_than_50"
+  );
+  let right_progress_bar = document.getElementById(
+    "pennsieve_right-side_greater_than_50"
+  );
+
+  const manifest_creation_progress_pennsieve = async () => {
+    let progressResponse;
+    try {
+      progressResponse = await client.get(
+        "/prepare_metadata/manifest_files/pennsieve/progress"
+      );
+    } catch (error) {
+      clientError(error);
+      clearInterval(manifestProgressInterval);
+      return;
+    }
+
+    let manifestProgress = progressResponse.data;
+
+    let totalManifestFiles = manifestProgress.total_manifest_files;
+    let totalManifestFilesCreated = manifestProgress.manifest_files_uploaded;
+
+    let manifestProgressPercentage = Math.round(
+      (totalManifestFilesCreated / totalManifestFiles) * 100
+    );
+    percentage_text.innerText = manifestProgressPercentage + "%";
+    if (manifestProgressPercentage <= 50) {
+      left_progress_bar.style.transform = `rotate(${
+        manifestProgressPercentage * 0.01 * 360
+      }deg)`;
+    } else {
+      left_progress_bar.style.transition = "";
+      left_progress_bar.classList.add("notransition");
+      left_progress_bar.style.transform = `rotate(180deg)`;
+      right_progress_bar.style.transform = `rotate(${
+        manifestProgressPercentage * 0.01 * 180
+      }deg)`;
+    }
+
+    if (totalManifestFiles === totalManifestFilesCreated) {
+      percentage_text.innerText = "100%";
+      left_progress_bar.style.transform = `rotate(180deg)`;
+      right_progress_bar.style.transform = `rotate(180deg)`;
+      right_progress_bar.classList.remove("notransition");
+      clearInterval(manifestProgressInterval);
+      setTimeout(() => {
+        progress_container.style.display = "none";
+      }, 2000);
+    }
+  };
+
+  // create an interval with a .5 second timer
+  let manifestProgressInterval = setInterval(
+    manifest_creation_progress_pennsieve,
+    500
+  );
+};
+
 // check for empty sub-folders before continuing to generate manifest files
 // to avoid changes made to the dataset structure when we call the main curate function for manifest files
 function checkEmptySubFolders(datasetStructure) {
@@ -1287,18 +1378,6 @@ function checkEmptySubFolders(datasetStructure) {
 // Parameter: dataset structure object
 // Return: manifest file folder path
 async function generateManifestFolderLocallyForEdit(ev) {
-  // Show loading popup
-  Swal.fire({
-    title: `Generating manifest files for edits`,
-    html: "Please wait...",
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  });
   var type = "local";
   if (
     $('input[name="generate-manifest-1"]:checked').prop("id") ===
@@ -1389,11 +1468,15 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
     if (editBoolean) {
       //// else: create locally for the purpose of generating of manifest files locally
       try {
-        await client.post(`/curate_datasets/manifest_files/local`, {
-          filepath: generatePath,
-        }, {
-          timeout: 0
-        });
+        await client.post(
+          `/curate_datasets/manifest_files/local`,
+          {
+            filepath: generatePath,
+          },
+          {
+            timeout: 0,
+          }
+        );
 
         Swal.fire({
           title: "Successfully generated!",

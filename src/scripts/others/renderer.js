@@ -3167,6 +3167,7 @@ const { resolve } = require("path");
 const { background } = require("jimp");
 const { rename } = require("fs");
 const { resolveSoa } = require("dns");
+const internal = require("stream");
 var cropOptions = {
   aspectRatio: 1,
   movable: false,
@@ -4723,16 +4724,22 @@ ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
 
       try {
         await client.post(
+          
           `/organize_datasets/datasets`,
+         
           {
-            generation_type: "create-new",
-            generation_destination_path: filepath[0],
-            dataset_name: newDSName,
-            soda_json_directory_structure: datasetStructureJSONObj,
+              generation_type: "create-new",
+              generation_destination_path: filepath[0],
+              dataset_name: newDSName,
+              soda_json_directory_structure: datasetStructureJSONObj,
           },
           {
             timeout: 0,
+            },
+          {
+            timeout: 0,
           }
+        
         );
 
         document.getElementById("para-organize-datasets-error").style.display =
@@ -8260,6 +8267,94 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
 });
 
 /**
+ * Reset the progress display of a given progress tracking container.
+ * @param {HTMLElement} progress_container
+ * @param {HTMLElement} percentage_text
+ * @param {HTMLElement} left_progress_bar
+ * @param {HTMLElement} right_progress_bar
+ */
+const resetProgressContainer = (
+  progress_container,
+  percentage_text,
+  left_progress_bar,
+  right_progress_bar
+) => {
+  percentage_text.innerText = "0%";
+  progress_container.style.display = "block";
+  left_progress_bar.style.transform = `rotate(0deg)`;
+  right_progress_bar.style.transform = `rotate(0deg)`;
+};
+
+/**
+ * Given a progress tracking container, update the progress display to show the user the progress of their dataset import.
+ * Once the import has been completed (i.e. the progress is 100%), the progress container will be hidden. The interval will be cleared.
+ * NOTE: The interval also clears on error.
+ * @param {HTMLElement} progress_container
+ * @param {setInterval} interval
+ * @returns
+ */
+async function requestAndPopulateDatasetProgress(progress_container, interval) {
+  console.log(progress_container);
+
+  let percentage_text = progress_container.querySelector(
+    ".pennsieve_loading_dataset_percentage"
+  );
+  let left_progress_bar = progress_container.querySelector(
+    ".pennsieve_left-side_less_than_50"
+  );
+  let right_progress_bar = progress_container.querySelector(
+    ".pennsieve_right-side_greater_than_50"
+  );
+
+  resetProgressContainer(
+    progress_container,
+    percentage_text,
+    left_progress_bar,
+    right_progress_bar
+  );
+
+  let progressResponse;
+  try {
+    progressResponse = await client.get(
+      "/organize_datasets/dataset_files_and_folders/progress"
+    );
+  } catch (error) {
+    clientError(error);
+    clearInterval(interval);
+    return;
+  }
+
+  let res = progressResponse.data;
+
+  let percentage_amount = res["import_progress_percentage"].toFixed(2);
+  finished = res["import_completed_items"];
+  percentage_text.innerText = percentage_amount + "%";
+  if (percentage_amount <= 50) {
+    left_progress_bar.style.transform = `rotate(${
+      percentage_amount * 0.01 * 360
+    }deg)`;
+  } else {
+    left_progress_bar.style.transition = "";
+    left_progress_bar.classList.add("notransition");
+    left_progress_bar.style.transform = `rotate(180deg)`;
+    right_progress_bar.style.transform = `rotate(${
+      percentage_amount * 0.01 * 180
+    }deg)`;
+  }
+
+  if (finished === 1) {
+    percentage_text.innerText = "100%";
+    left_progress_bar.style.transform = `rotate(180deg)`;
+    right_progress_bar.style.transform = `rotate(180deg)`;
+    right_progress_bar.classList.remove("notransition");
+    clearInterval(interval);
+    setTimeout(() => {
+      progress_container.style.display = "none";
+    }, 2000);
+  }
+}
+
+/**
  *
  * @param {object} sodaJSONObj - The SODA json object used for tracking files, folders, and basic dataset curation information such as providence (local or Pennsieve).
  * @returns {
@@ -8334,6 +8429,8 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
     );
 
     let data = filesFoldersResponse.data;
+
+    console.log(`Files and folders retrieved: ${JSON.stringify(data)}`);
 
     ipcRenderer.send(
       "track-event",

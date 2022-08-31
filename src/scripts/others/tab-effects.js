@@ -2542,6 +2542,7 @@ async function switchMetadataManifestQuestion() {
           data: {
             paths: [userpath1, userpath2],
           },
+          timeout: 0,
         });
 
         sodaJSONObj = {
