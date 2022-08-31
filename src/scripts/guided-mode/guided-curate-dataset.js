@@ -5032,7 +5032,7 @@ const specifyPool = (event, poolNameInput) => {
           setActiveSubPage("guided-organize-subjects-into-pools-page");
           return;
         } else {
-          //Add left border back to subject dropdown cell to seperate pool name and subject dropdown
+          //Add left border back to subject dropdown cell to separate pool name and subject dropdown
           poolSubjectsDropdownCell.removeClass("remove-left-border");
 
           //Add the new pool to sodaJSONObj
@@ -6197,7 +6197,7 @@ const getExistingPennsieveDatasetNames = async () => {
   );
 
   if (!datasetNamesResponse.ok) {
-    const message = `An error has occured: ${response.status}`;
+    const message = `An error has occurred: ${response.status}`;
     throw new Error(message);
   }
 
