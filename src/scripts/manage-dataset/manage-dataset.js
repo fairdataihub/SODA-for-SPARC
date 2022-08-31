@@ -1,3 +1,18 @@
+// event listeners for opening dataset or account selection dropdown
+document.querySelectorAll(".ds-dd").forEach((dropdownElement) => {
+  dropdownElement.addEventListener("click", function () {
+    openDropdownPrompt(this, "dataset");
+  });
+});
+
+document
+  .querySelectorAll(".md-change-current-account")
+  .forEach((dropdownElement) => {
+    dropdownElement.addEventListener("click", function () {
+      openDropdownPrompt(this, "bf");
+    });
+  });
+
 var forbidden_characters_bf = '/:*?"<>';
 
 const check_forbidden_characters_bf = (my_string) => {
@@ -299,9 +314,9 @@ $("#button-rename-dataset").click(async () => {
           "Error",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_RENAME_DATASET,
           `${defaultBfDatasetId}: ` +
-            currentDatasetName +
-            " to " +
-            renamedDatasetName
+          currentDatasetName +
+          " to " +
+          renamedDatasetName
         );
 
         return;
@@ -329,9 +344,9 @@ $("#button-rename-dataset").click(async () => {
         "Success",
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_RENAME_DATASET,
         `${defaultBfDatasetId}: ` +
-          currentDatasetName +
-          " to " +
-          renamedDatasetName
+        currentDatasetName +
+        " to " +
+        renamedDatasetName
       );
 
       // in case the user does not select a dataset after changing the name add the new datasetID to name mapping
@@ -773,7 +788,7 @@ $("#button-add-subtitle").click(async () => {
 
     let selectedBfAccount = defaultBfAccount;
     let selectedBfDataset = defaultBfDataset;
-    let inputSubtitle = $("#bf-dataset-subtitle").val();
+    let inputSubtitle = $("#bf-dataset-subtitle").val().trim();
 
     log.info("Adding subtitle to dataset");
     log.info(inputSubtitle);
@@ -1022,7 +1037,7 @@ const showCurrentDescription = async () => {
     // if so add it to the first section
     $("#ds-description-study-purpose").val(
       parsedReadme[requiredSections.studyPurpose].replace(/\r?\n|\r/g, "") +
-        parsedReadme[requiredSections.invalidText].replace(/\r?\n|\r/g, "")
+      parsedReadme[requiredSections.invalidText].replace(/\r?\n|\r/g, "")
     );
   }
 };
@@ -1347,13 +1362,13 @@ const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
     readme.search(`[*][*]${requiredSections.studyPurpose}[ ]*:[*][*]`) !== -1 ||
     readme.search(`[*][*]${requiredSections.studyPurpose}[*][*][ ]*:`) !== -1 ||
     readme.search(`[*][*]${requiredSections.dataCollection}[ ]*:[*][*]`) !==
-      -1 ||
+    -1 ||
     readme.search(`[*][*]${requiredSections.dataCollection}[*][*][ ]*:`) !==
-      -1 ||
+    -1 ||
     readme.search(`[*][*]${requiredSections.primaryConclusion}[ ]*:[*][*]`) !==
-      -1 ||
+    -1 ||
     readme.search(`[*][*]${requiredSections.primaryConclusion}[*][*][ ]*:`) !==
-      -1
+    -1
   ) {
     throw new Error("There was a problem with reading your description file.");
   }
@@ -1485,7 +1500,7 @@ const showDatasetDescription = async () => {
       "track-event",
       "Success",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE +
-        " - Get Subtitle",
+      " - Get Subtitle",
       defaultBfDatasetId
     );
     $("#ds-description").html(subtitle);
@@ -1502,7 +1517,7 @@ const showDatasetDescription = async () => {
       "track-event",
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE +
-        " - Get Subtitle",
+      " - Get Subtitle",
       defaultBfDatasetId
     );
   }
@@ -1628,10 +1643,158 @@ $("#edit_banner_image_button").click(async () => {
   }
 });
 
+// displays the user selected banner image using Jimp in the edit banner image modal
+const displayBannerImage = async (path) => {
+  if (path.length > 0) {
+    let original_image_path = path[0];
+    let image_path = original_image_path;
+    let destination_image_path = require("path").join(
+      homeDirectory,
+      "SODA",
+      "banner-image-conversion"
+    );
+    let converted_image_file = require("path").join(
+      destination_image_path,
+      "converted-tiff.jpg"
+    );
+    let conversion_success = true;
+    imageExtension = path[0].split(".").pop();
+
+    if (imageExtension.toLowerCase() == "tiff") {
+      $("body").addClass("waiting");
+      Swal.fire({
+        title: "Image conversion in progress!",
+        html: "Pennsieve does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: "animate__animated animate__fadeInDown animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp animate__faster",
+        },
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      await Jimp.read(original_image_path)
+        .then(async (file) => {
+          if (!fs.existsSync(destination_image_path)) {
+            fs.mkdirSync(destination_image_path);
+          }
+
+          try {
+            if (fs.existsSync(converted_image_file)) {
+              fs.unlinkSync(converted_image_file);
+            }
+          } catch (err) {
+            conversion_success = false;
+            console.error(err);
+          }
+
+          return file.write(converted_image_file, async () => {
+            if (fs.existsSync(converted_image_file)) {
+              let stats = fs.statSync(converted_image_file);
+              let fileSizeInBytes = stats.size;
+              let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
+
+              if (fileSizeInMegabytes > 5) {
+                fs.unlinkSync(converted_image_file);
+
+                await Jimp.read(original_image_path)
+                  .then((file) => {
+                    return file
+                      .resize(1024, 1024)
+                      .write(converted_image_file, () => {
+                        document.getElementById(
+                          "div-img-container-holder"
+                        ).style.display = "none";
+                        document.getElementById(
+                          "div-img-container"
+                        ).style.display = "block";
+
+                        $("#para-path-image").html(image_path);
+                        bfViewImportedImage.src = converted_image_file;
+                        myCropper.destroy();
+                        myCropper = new Cropper(
+                          bfViewImportedImage,
+                          cropOptions
+                        );
+                        $("#save-banner-image").css("visibility", "visible");
+                        $("body").removeClass("waiting");
+                      });
+                  })
+                  .catch((err) => {
+                    conversion_success = false;
+                    console.error(err);
+                  });
+                if (fs.existsSync(converted_image_file)) {
+                  let stats = fs.statSync(converted_image_file);
+                  let fileSizeInBytes = stats.size;
+                  let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
+
+                  if (fileSizeInMegabytes > 5) {
+                    conversion_success = false;
+                    // SHOW ERROR
+                  }
+                }
+              }
+              image_path = converted_image_file;
+              imageExtension = "jpg";
+              $("#para-path-image").html(image_path);
+              bfViewImportedImage.src = image_path;
+              myCropper.destroy();
+              myCropper = new Cropper(bfViewImportedImage, cropOptions);
+              $("#save-banner-image").css("visibility", "visible");
+            }
+          });
+        })
+        .catch((err) => {
+          conversion_success = false;
+          console.error(err);
+          Swal.fire({
+            icon: "error",
+            text: "Something went wrong",
+            confirmButtonText: "OK",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+        });
+      if (conversion_success == false) {
+        $("body").removeClass("waiting");
+        return;
+      } else {
+        Swal.close();
+      }
+    } else {
+      document.getElementById("div-img-container-holder").style.display =
+        "none";
+      document.getElementById("div-img-container").style.display = "block";
+
+      $("#para-path-image").html(image_path);
+      bfViewImportedImage.src = image_path;
+      myCropper.destroy();
+      myCropper = new Cropper(bfViewImportedImage, cropOptions);
+
+      $("#save-banner-image").css("visibility", "visible");
+    }
+  } else {
+    if ($("#para-current-banner-img").text() === "None") {
+      $("#save-banner-image").css("visibility", "hidden");
+    } else {
+      $("#save-banner-image").css("visibility", "visible");
+    }
+  }
+};
+
 // Action when user click on "Import image" button for banner image
-$("#button-import-banner-image").click(() => {
+$("#button-import-banner-image").click(async () => {
   $("#para-dataset-banner-image-status").html("");
-  ipcRenderer.send("open-file-dialog-import-banner-image");
+  let filePaths = await ipcRenderer.invoke(
+    "open-file-dialog-import-banner-image"
+  );
+  displayBannerImage(filePaths);
 });
 
 const scaleBannerImage = async (imagePath) => {
@@ -1715,7 +1878,7 @@ const uploadBannerImage = async () => {
           "track-event",
           "Success",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
-            " - Size",
+          " - Size",
           "Size",
           image_file_size
         );
@@ -1725,7 +1888,7 @@ const uploadBannerImage = async () => {
           "track-event",
           "Success",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
-            " - Size",
+          " - Size",
           defaultBfDatasetId,
           image_file_size
         );
@@ -1898,8 +2061,8 @@ $("#save-banner-image").click((event) => {
     } else {
       $("#para-dataset-banner-image-status").html(
         "<span style='color: red;'> " +
-          "Dimensions of cropped area must be at least 512 px" +
-          "</span>"
+        "Dimensions of cropped area must be at least 512 px" +
+        "</span>"
       );
     }
   } else {
@@ -1907,158 +2070,6 @@ $("#save-banner-image").click((event) => {
       "<span style='color: red;'> " + "Please import an image first" + "</span>"
     );
   }
-});
-
-$(document).ready(() => {
-  ipcRenderer.on("selected-banner-image", async (event, path) => {
-    if (path.length > 0) {
-      let original_image_path = path[0];
-      let image_path = original_image_path;
-      let destination_image_path = require("path").join(
-        homeDirectory,
-        "SODA",
-        "banner-image-conversion"
-      );
-      let converted_image_file = require("path").join(
-        destination_image_path,
-        "converted-tiff.jpg"
-      );
-      let conversion_success = true;
-      imageExtension = path[0].split(".").pop();
-
-      if (imageExtension.toLowerCase() == "tiff") {
-        $("body").addClass("waiting");
-        Swal.fire({
-          title: "Image conversion in progress!",
-          html: "Pennsieve does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          showClass: {
-            popup: "animate__animated animate__fadeInDown animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__fadeOutUp animate__faster",
-          },
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        });
-
-        await Jimp.read(original_image_path)
-          .then(async (file) => {
-            if (!fs.existsSync(destination_image_path)) {
-              fs.mkdirSync(destination_image_path);
-            }
-
-            try {
-              if (fs.existsSync(converted_image_file)) {
-                fs.unlinkSync(converted_image_file);
-              }
-            } catch (err) {
-              conversion_success = false;
-              console.error(err);
-            }
-
-            return file.write(converted_image_file, async () => {
-              if (fs.existsSync(converted_image_file)) {
-                let stats = fs.statSync(converted_image_file);
-                let fileSizeInBytes = stats.size;
-                let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
-
-                if (fileSizeInMegabytes > 5) {
-                  fs.unlinkSync(converted_image_file);
-
-                  await Jimp.read(original_image_path)
-                    .then((file) => {
-                      return file
-                        .resize(1024, 1024)
-                        .write(converted_image_file, () => {
-                          document.getElementById(
-                            "div-img-container-holder"
-                          ).style.display = "none";
-                          document.getElementById(
-                            "div-img-container"
-                          ).style.display = "block";
-
-                          $("#para-path-image").html(image_path);
-                          bfViewImportedImage.src = converted_image_file;
-                          myCropper.destroy();
-                          myCropper = new Cropper(
-                            bfViewImportedImage,
-                            cropOptions
-                          );
-                          $("#save-banner-image").css("visibility", "visible");
-                          $("body").removeClass("waiting");
-                        });
-                    })
-                    .catch((err) => {
-                      conversion_success = false;
-                      console.error(err);
-                    });
-                  if (fs.existsSync(converted_image_file)) {
-                    let stats = fs.statSync(converted_image_file);
-                    let fileSizeInBytes = stats.size;
-                    let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
-
-                    if (fileSizeInMegabytes > 5) {
-                      conversion_success = false;
-                      // SHOW ERROR
-                    }
-                  }
-                }
-                image_path = converted_image_file;
-                imageExtension = "jpg";
-                $("#para-path-image").html(image_path);
-                bfViewImportedImage.src = image_path;
-                myCropper.destroy();
-                myCropper = new Cropper(bfViewImportedImage, cropOptions);
-                $("#save-banner-image").css("visibility", "visible");
-              }
-            });
-          })
-          .catch((err) => {
-            conversion_success = false;
-            console.error(err);
-            Swal.fire({
-              icon: "error",
-              text: "Something went wrong",
-              confirmButtonText: "OK",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
-          });
-        if (conversion_success == false) {
-          $("body").removeClass("waiting");
-          return;
-        } else {
-          Swal.close();
-        }
-      } else {
-        document.getElementById("div-img-container-holder").style.display =
-          "none";
-        document.getElementById("div-img-container").style.display = "block";
-
-        $("#para-path-image").html(image_path);
-        bfViewImportedImage.src = image_path;
-        myCropper.destroy();
-        myCropper = new Cropper(bfViewImportedImage, cropOptions);
-
-        $("#save-banner-image").css("visibility", "visible");
-      }
-    } else {
-      if ($("#para-current-banner-img").text() === "None") {
-        $("#save-banner-image").css("visibility", "hidden");
-      } else {
-        $("#save-banner-image").css("visibility", "visible");
-      }
-    }
-  });
-
-  ipcRenderer.on("show-banner-image-below-1024", (event, index) => {
-    if (index === 0) {
-      uploadBannerImage();
-    }
-  });
 });
 
 const showCurrentBannerImage = async () => {
@@ -2157,7 +2168,7 @@ $("#button-add-tags").click(async () => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   // get the current tags from the input inside of the manage_datasets.html file inside of the tags section
   const tags = Array.from(datasetTagsTagify.getTagElms()).map((tag) => {
@@ -2443,74 +2454,73 @@ const showCurrentLicense = async () => {
   }
 };
 
-$("#selected-local-dataset-submit").click(() => {
-  ipcRenderer.send("open-file-dialog-submit-dataset");
-});
+// verify the dataset is valid before allowing a user to upload
+const handleSelectedSubmitDirectory = async (filepath) => {
+  if (filepath.length > 0) {
+    if (filepath != null) {
+      $("#selected-local-dataset-submit").attr("placeholder", `${filepath[0]}`);
 
-$(document).ready(() => {
-  ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
-    if (filepath.length > 0) {
-      if (filepath != null) {
-        $("#selected-local-dataset-submit").attr(
-          "placeholder",
-          `${filepath[0]}`
-        );
+      valid_dataset = verify_sparc_folder(filepath[0], "pennsieve");
 
-        valid_dataset = verify_sparc_folder(filepath[0], "pennsieve");
+      if (valid_dataset == true) {
+        $("#button_upload_local_folder_confirm").click();
+        $("#button-submit-dataset").show();
+        $("#button-submit-dataset").addClass("pulse-blue");
 
-        if (valid_dataset == true) {
-          $("#button_upload_local_folder_confirm").click();
-          $("#button-submit-dataset").show();
-          $("#button-submit-dataset").addClass("pulse-blue");
+        // remove pulse class after 4 seconds
+        // pulse animation lasts 2 seconds => 2 pulses
+        setTimeout(() => {
+          $(".pulse-blue").removeClass("pulse-blue");
+        }, 4000);
+      } else {
+        Swal.fire({
+          icon: "warning",
+          text: "This folder does not seem to be a SPARC dataset folder. Are you sure you want to proceed?",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showCancelButton: true,
+          focusCancel: true,
+          confirmButtonText: "Yes",
+          cancelButtonText: "Cancel",
+          reverseButtons: reverseSwalButtons,
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $("#button_upload_local_folder_confirm").click();
+            $("#button-submit-dataset").show();
+            $("#button-submit-dataset").addClass("pulse-blue");
 
-          // remove pulse class after 4 seconds
-          // pulse animation lasts 2 seconds => 2 pulses
-          setTimeout(() => {
-            $(".pulse-blue").removeClass("pulse-blue");
-          }, 4000);
-        } else {
-          Swal.fire({
-            icon: "warning",
-            text: "This folder does not seem to be a SPARC dataset folder. Are you sure you want to proceed?",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            showCancelButton: true,
-            focusCancel: true,
-            confirmButtonText: "Yes",
-            cancelButtonText: "Cancel",
-            reverseButtons: reverseSwalButtons,
-            showClass: {
-              popup: "animate__animated animate__zoomIn animate__faster",
-            },
-            hideClass: {
-              popup: "animate__animated animate__zoomOut animate__faster",
-            },
-          }).then((result) => {
-            if (result.isConfirmed) {
-              $("#button_upload_local_folder_confirm").click();
-              $("#button-submit-dataset").show();
-              $("#button-submit-dataset").addClass("pulse-blue");
-
-              // remove pulse class after 4 seconds
-              // pulse animation lasts 2 seconds => 2 pulses
-              setTimeout(() => {
-                $(".pulse-blue").removeClass("pulse-blue");
-              }, 4000);
-            } else {
-              $("#input-destination-getting-started-locally").attr(
-                "placeholder",
-                "Browse here"
-              );
-              $("#selected-local-dataset-submit").attr(
-                "placeholder",
-                "Browse here"
-              );
-            }
-          });
-        }
+            // remove pulse class after 4 seconds
+            // pulse animation lasts 2 seconds => 2 pulses
+            setTimeout(() => {
+              $(".pulse-blue").removeClass("pulse-blue");
+            }, 4000);
+          } else {
+            $("#input-destination-getting-started-locally").attr(
+              "placeholder",
+              "Browse here"
+            );
+            $("#selected-local-dataset-submit").attr(
+              "placeholder",
+              "Browse here"
+            );
+          }
+        });
       }
     }
-  });
+  }
+};
+
+$("#selected-local-dataset-submit").click(async () => {
+  let datasetDirectory = await ipcRenderer.invoke(
+    "open-file-dialog-submit-dataset"
+  );
+  handleSelectedSubmitDirectory(datasetDirectory);
 });
 
 function walk(directory, filepaths = []) {
@@ -2635,6 +2645,7 @@ $("#button-submit-dataset").click(async () => {
           selected_account: selectedbfaccount,
           selected_dataset: selectedbfdataset,
         },
+        timeout: 0,
       }
     )
     .then(async () => {
@@ -2666,7 +2677,7 @@ $("#button-submit-dataset").click(async () => {
           "track-event",
           "Error",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-            ` - Number of Folders`,
+          ` - Number of Folders`,
           `${datasetUploadSession.id}`
         );
         return;
@@ -2681,7 +2692,7 @@ $("#button-submit-dataset").click(async () => {
         "track-event",
         "Success",
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-          ` - Number of Folders`,
+        ` - Number of Folders`,
         `${datasetUploadSession.id}`,
         num_of_folders
       );
@@ -2737,7 +2748,7 @@ $("#button-submit-dataset").click(async () => {
         "track-event",
         "Error",
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-          " - size",
+        " - size",
         "Size",
         totalFileSize
       );
@@ -2763,7 +2774,7 @@ $("#button-submit-dataset").click(async () => {
         "track-event",
         "Error",
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-          ` - Number of Folders`,
+        ` - Number of Folders`,
         "Number of folders local dataset",
         num_of_folders
       );
@@ -2774,7 +2785,7 @@ $("#button-submit-dataset").click(async () => {
         "track-event",
         "Error",
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-          ` - Number of Files`,
+        ` - Number of Files`,
         "Number of files local dataset",
         num_of_files
       );
@@ -2850,12 +2861,12 @@ $("#button-submit-dataset").click(async () => {
             cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%";
             $("#para-progress-bar-status").html(
               statusMessage +
-                "Progress: " +
-                value.toFixed(2) +
-                "%" +
-                " (total size: " +
-                totalSizePrint +
-                ")"
+              "Progress: " +
+              value.toFixed(2) +
+              "%" +
+              " (total size: " +
+              totalSizePrint +
+              ")"
             );
           }
         }
@@ -2867,7 +2878,7 @@ $("#button-submit-dataset").click(async () => {
           "track-event",
           "Error",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-            ` - Progress track`,
+          ` - Progress track`,
           defaultBfDatasetId
         );
         organizeDatasetButton.disabled = false;
@@ -2925,7 +2936,7 @@ $("#button-submit-dataset").click(async () => {
             "track-event",
             "Success",
             ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-              ` - Progress track`,
+            ` - Progress track`,
             defaultBfDatasetId
           );
         }
@@ -2941,7 +2952,7 @@ $("#button-submit-dataset").click(async () => {
           "track-event",
           "Success",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-            ` - Progress track`,
+          ` - Progress track`,
           defaultBfDatasetId
         );
       }
@@ -2981,7 +2992,7 @@ $("#button-submit-dataset").click(async () => {
               "track-event",
               "Success",
               ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-                ` - Number of Files`,
+              ` - Number of Files`,
               `${datasetUploadSession.id}`,
               250
             );
@@ -2990,7 +3001,7 @@ $("#button-submit-dataset").click(async () => {
               "track-event",
               "Success",
               ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-                " - size",
+              " - size",
               `${datasetUploadSession.id}`,
               incrementInFileSize
             );
@@ -3006,7 +3017,7 @@ $("#button-submit-dataset").click(async () => {
               "track-event",
               "Success",
               ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-                ` - Number of Files`,
+              ` - Number of Files`,
               `${datasetUploadSession.id}`,
               uploadedFiles
             );
@@ -3015,7 +3026,7 @@ $("#button-submit-dataset").click(async () => {
               "track-event",
               "Success",
               ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-                " - size",
+              " - size",
               `${datasetUploadSession.id}`,
               incrementInFileSize
             );
@@ -3172,7 +3183,7 @@ async function showCurrentDatasetStatus(callback) {
       "track-event",
       "Success",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS +
-        ` - Get dataset Status`,
+      ` - Get dataset Status`,
       defaultBfDatasetId
     );
 

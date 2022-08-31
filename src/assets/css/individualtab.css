@@ -100,7 +100,6 @@
 }
 
 .option-card.radio-button.non-selected {
-  background: #f6f6f6;
   /* pointer-events: none; */
   color: #585858;
   opacity: 0.7;

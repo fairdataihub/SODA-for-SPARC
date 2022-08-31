@@ -79,7 +79,6 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
     except Exception as e:
         abort(400, "Please select a valid Pennsieve dataset")
 
-
     role = bf_get_current_user_permission(bf, myds)
     if role not in ["owner", "manager"]:
         abort(403, "You don't have permissions to view/edit DOI for this Pennsieve dataset")
@@ -240,7 +239,6 @@ def get_files_excluded_from_publishing(selected_dataset, pennsieve_account):
         List of files excluded from publishing
     """
 
-
     ps = get_authenticated_ps(pennsieve_account)
 
     myds = get_dataset(ps, selected_dataset)
@@ -251,7 +249,6 @@ def get_files_excluded_from_publishing(selected_dataset, pennsieve_account):
 
     if "ignoreFiles" in resp:
         return {"ignore_files": resp["ignoreFiles"]}
-
     return {"ignore_files": []}
 
 

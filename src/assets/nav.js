@@ -1,6 +1,4 @@
-const settings = require("electron-settings");
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
-
 document.body.addEventListener("click", (event) => {
   if (event.target.dataset.section) {
     handleSectionTrigger(event);
@@ -15,7 +13,109 @@ document.body.addEventListener("custom-back", (e) => {
   handleSectionTrigger(e);
 });
 
-function handleSectionTrigger(event) {
+async function handleSectionTrigger(event) {
+  function saveTempSodaProgress(progressFileName, sodaObject) {
+    try {
+      fs.mkdirSync(progressFilePath, { recursive: true });
+    } catch (error) {
+      log.error(error);
+      console.log(error);
+    }
+    var filePath = path.join(progressFilePath, progressFileName + ".json");
+    //update json obj progress
+
+    // delete sodaObject["dataset-structure"] value that was added only for the Preview tree view
+    if ("files" in sodaObject["dataset-structure"]) {
+      sodaObject["dataset-structure"]["files"] = {};
+    }
+    //delete manifest files added for treeview
+    // delete manifest files added for treeview
+    for (var highLevelFol in sodaObject["dataset-structure"]["folders"]) {
+      if (
+        "manifest.xlsx" in
+          sodaObject["dataset-structure"]["folders"][highLevelFol]["files"] &&
+        sodaObject["dataset-structure"]["folders"][highLevelFol]["files"][
+          "manifest.xlsx"
+        ]["forTreeview"] === true
+      ) {
+        delete sodaObject["dataset-structure"]["folders"][highLevelFol][
+          "files"
+        ]["manifest.xlsx"];
+      }
+    }
+    fs.writeFileSync(filePath, JSON.stringify(sodaObject));
+
+    Swal.fire({
+      icon: "success",
+      text: "Successfully saved progress!",
+      showConfirmButton: "OK",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showClass: {
+        popup: "animate__animated animate__fadeInDown animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__fadeOutUp animate__faster",
+      },
+    });
+  }
+
+  // Display the current section
+  const sectionId = `${event.target.dataset.section}-section`;
+  const itemsContainer = document.getElementById("items");
+  const freeFormItemsContainer = document.getElementById(
+    "free-form-folder-structure-container"
+  );
+  const freeFormButtons = document.getElementById(
+    "organize-path-and-back-button-div"
+  );
+
+  if (sectionId === "guided_mode-section") {
+    //Reset variables shared between guided and free form mode
+    sodaJSONObj = {};
+    datasetStructureJSONObj = {};
+    subjectsTableData = [];
+    samplesTableData = [];
+
+    //Transition file explorer elements to guided mode
+    organizeDSglobalPath = document.getElementById("guided-input-global-path");
+    organizeDSglobalPath.value = "";
+    dataset_path = document.getElementById("guided-input-global-path");
+    scroll_box = document.querySelector("#guided-body");
+    itemsContainer.innerHTML = "";
+    resetLazyLoading();
+    freeFormItemsContainer.classList.remove("freeform-file-explorer"); //add styling for free form mode
+    freeFormButtons.classList.remove("freeform-file-explorer-buttons");
+    $(".shared-folder-structure-element").appendTo(
+      $("#guided-folder-structure-container")
+    );
+
+    guidedPrepareHomeScreen();
+  }
+
+  if (sectionId === "main_tabs-section") {
+    //Reset variables shared between guided and free form mode
+    sodaJSONObj = {};
+    datasetStructureJSONObj = {};
+    subjectsTableData = [];
+    samplesTableData = [];
+
+    //Transition file explorer elements to freeform mode
+    organizeDSglobalPath = document.getElementById("input-global-path");
+    organizeDSglobalPath.value = "My_dataset_folder/";
+    dataset_path = document.getElementById("input-global-path");
+    scroll_box = document.querySelector("#organize-dataset-tab");
+    itemsContainer.innerHTML = "";
+    $(".shared-folder-structure-element").appendTo(
+      $("#free-form-folder-structure-container")
+    );
+    freeFormItemsContainer.classList.add("freeform-file-explorer"); //add styling for free form mode
+    freeFormButtons.classList.add("freeform-file-explorer-buttons");
+
+    //reset lazyloading values
+    resetLazyLoading();
+  }
+
   hideAllSectionsAndDeselectButtons();
 
   if (event.detail.target) {
@@ -25,9 +125,8 @@ function handleSectionTrigger(event) {
     return;
   }
 
-  event.target.classList.add("is-selected");
-  // Display the current section
-  const sectionId = `${event.target.dataset.section}-section`;
+  // Render guided mode resume progress cards if guided mode section is chosen
+  // and move the folder structuring elements to guided mode
 
   document.getElementById(sectionId).classList.add("is-shown");
 
@@ -47,10 +146,6 @@ function handleSectionTrigger(event) {
   }
 
   considerNextBtn();
-
-  // Save currently active button in localStorage
-  const buttonId = event.target.getAttribute("id");
-  settings.set("activeSectionButtonId", buttonId);
 }
 
 function considerNextBtn() {
@@ -94,21 +189,7 @@ function hideAllSectionsAndDeselectButtons() {
   });
 }
 
-//function displayAbout () {
-//  document.querySelector('#curate-section').classList.add('is-shown')
-//}
-
-// Default to the view that was active the last time the app was open
-const sectionId = settings.get("activeSectionButtonId");
-if (sectionId) {
-  showMainContent();
-  // const section = document.getElementById(sectionId)
-  // if (section) section.click()
-} else {
-  showMainContent();
-  // activateDefaultSection()
-  //displayAbout()
-}
+showMainContent();
 
 // Set of functions for the footer shortcuts between sections
 // only required for when switching between section where the menu needs to change

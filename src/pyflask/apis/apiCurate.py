@@ -27,14 +27,14 @@ model_check_empty_files_folders_response = api.model( "CheckEmptyFilesFoldersRes
 class CheckEmptyFilesFolders(Resource):
     # response types/codes
     @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request'}, description="Given a sodajsonobject return a list of empty files and folders should they exist, as well as the sodajsonobject.", params={'soda_json_structure': 'JSON structure of the SODA dataset'})
-    def get(self):
-        soda_json_structure = request.args.get("soda_json_structure")
+    def post(self):
+        data = request.get_json()
 
-        if soda_json_structure is None:
+        if "soda_json_structure" not in data:
             api.abort(400, "Missing parameter: soda_json_structure")
 
         # parse soda json as dictionary
-        soda_json_structure = json.loads(soda_json_structure)
+        soda_json_structure = data["soda_json_structure"]
 
         try:
             return check_empty_files_folders(soda_json_structure)
@@ -88,7 +88,7 @@ model_curation_progress_response = api.model( "CurationProgressResponse", {
     "elapsed_time_formatted": fields.String(description="Elapsed time of the main curation function"),
 })
 
-@api.route("curation/progress")
+@api.route("/curation/progress")
 class CurationProgress(Resource):
 
     @api.marshal_with(model_curation_progress_response, False, 200)
@@ -113,7 +113,7 @@ model_curation_file_details_response = api.model( "CurationFileDetailsResponse",
     "generated_dataset_id": fields.String(description="ID of the dataset that has been generated. ")
 })
 
-@api.route("curation/upload_details")
+@api.route("/curation/upload_details")
 class CurationFileDetails(Resource):
     
         @api.marshal_with(model_curation_file_details_response, False, 200)
@@ -195,15 +195,15 @@ class DatasetSize(Resource):
     description="Estimate the size of a dataset that will be generated on a user's device.", 
     params={'soda_json_structure': "SODA dataset structure"})
     @api.marshal_with(model_dataset_size_response, False, 200)
-    def get(self):
+    def post(self):
 
         # get the soda_json_structure from the request object
-        soda_json_structure = request.args.get("soda_json_structure")
+        data = request.get_json()
 
-        if soda_json_structure is None:
+        if "soda_json_structure" not in data:
             api.abort(400, "No SODA dataset structure provided.")
 
-        soda_json_structure = json.loads(soda_json_structure)
+        soda_json_structure = data["soda_json_structure"]
 
         try:
             return check_JSON_size(soda_json_structure)

@@ -4,6 +4,7 @@ from flask import Flask, request
 # from flask_cors import CORS
 from namespaces import configure_namespaces
 from flask_restx import Resource
+import sys
 
 configure_namespaces()
 
@@ -36,7 +37,10 @@ class Shutdown(Resource):
         func()
 
 
+if __name__ == '__main__':
+    port = sys.argv[1]
+    api.logger.info(f"Starting server on port {port}")
+    app.run(host="127.0.0.1", port=port)
 
-
-app.run(host="127.0.0.1", port='4242')
+# app.run(host="127.0.0.1", port='4242')
 

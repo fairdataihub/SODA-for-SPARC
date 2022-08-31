@@ -2,6 +2,23 @@
 This file contains all of the functions related to the submission.xlsx file
 */
 
+// event listeners for opendropdown prompt
+document
+  .querySelectorAll(".submission-change-current-account")
+  .forEach((element) => {
+    element.addEventListener("click", function () {
+      openDropdownPrompt(null, "bf");
+    });
+  });
+
+document
+  .querySelectorAll(".submission-change-current-ds")
+  .forEach((element) => {
+    element.addEventListener("click", function () {
+      openDropdownPrompt(null, "dataset");
+    });
+  });
+
 /// save airtable api key
 const addAirtableKeyBtn = document.getElementById("button-add-airtable-key");
 
@@ -61,6 +78,33 @@ function resetSubmission() {
   });
 }
 
+const renderMilestoneSelectionTable = (milestoneData) => {
+  //create a table row element for each description array element for each milestone key in guidedMilestoneData
+  const milestoneTableRows = Object.keys(milestoneData)
+    .map((milestoneKey) => {
+      const milestoneDescriptionArray = milestoneData[milestoneKey];
+      const milestoneDescriptionTableRows = milestoneDescriptionArray.map(
+        (milestoneDescription) => {
+          const descriptionString = milestoneDescription["Description of data"];
+          const milestoneString = milestoneKey;
+          const completionDateString =
+            milestoneDescription["Expected date of completion"];
+          return generateMilestoneRowElement(
+            descriptionString,
+            milestoneString,
+            completionDateString
+          );
+        }
+      );
+      return milestoneDescriptionTableRows.join("");
+    })
+    .join("\n");
+  const milestonesTableContainer = document.getElementById(
+    "milestones-table-container"
+  );
+  milestonesTableContainer.innerHTML = milestoneTableRows;
+};
+
 function resetSubmissionFields() {
   $("#existing-submission-file-destination").attr("placeholder", "Browse here");
 
@@ -110,115 +154,241 @@ function resetSubmissionFields() {
   checkAirtableStatus("");
 }
 
-async function helpMilestoneSubmission() {
+async function helpMilestoneSubmission(curationMode) {
   var filepath = "";
   var informationJson = {};
+
   Swal.fire({
-    title: "Do you have the Data Deliverables document ready to import?",
-    showCancelButton: true,
-    showConfirmButton: true,
-    confirmButtonText: "Yes, let's import it",
-    cancelButtonText: "No",
+    title: "Importing the Data Deliverables document",
+    html: `<div class="container-milestone-upload" style="display: flex;margin:10px"><input class="milestone-upload-text" id="input-milestone-select" onclick="openDDDimport()" style="text-align: center;height: 40px;border-radius: 0;background: #f5f5f5; border: 1px solid #d0d0d0; width: 100%" type="text" readonly placeholder="Browse here"/></div>`,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
+    preConfirm: () => {
+      if ($("#input-milestone-select").attr("placeholder") === "Browse here") {
+        Swal.showValidationMessage("Please select a file");
+      } else {
+        filepath = $("#input-milestone-select").attr("placeholder");
+        return {
+          filepath: filepath,
+        };
+      }
+    },
   }).then(async (result) => {
-    if (result.isConfirmed) {
-      Swal.fire({
-        title: "Importing the Data Deliverables document",
-        html: `<div class="container-milestone-upload" style="display: flex;margin:10px"><input class="milestone-upload-text" id="input-milestone-select" onclick="openDDDimport()" style="text-align: center;height: 40px;border-radius: 0;background: #f5f5f5; border: 1px solid #d0d0d0; width: 100%" type="text" readonly placeholder="Browse here"/></div>`,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        preConfirm: () => {
-          if (
-            $("#input-milestone-select").attr("placeholder") === "Browse here"
-          ) {
-            Swal.showValidationMessage("Please select a file");
-          } else {
-            filepath = $("#input-milestone-select").attr("placeholder");
-            return {
-              filepath: filepath,
-            };
-          }
-        },
-      }).then(async (result) => {
-        Swal.close();
+    Swal.close();
 
-        const filepath = result.value.filepath;
-        var award = $("#submission-sparc-award");
-        log.info(`Importing Data Deliverables document: ${filepath}`);
-        try {
-          let extract_milestone = await client.get(
-            `/prepare_metadata/import_milestone`,
-            {
-              params: {
-                path: filepath,
-              },
-            }
-          );
-
-          let res = extract_milestone.data;
-          milestoneObj = res;
-          createMetadataDir();
-          var informationJson = {};
-          informationJson = parseJson(milestonePath);
-          informationJson[award] = milestoneObj;
-          fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
-          Swal.fire({
-            backdrop: "rgba(0,0,0, 0.4)",
-            heightAuto: false,
-            timer: 3000,
-            timerProgressBar: true,
-            icon: "success",
-            text: `Successfully loaded your DataDeliverables.docx document`,
-          });
-          removeOptions(descriptionDateInput);
-          milestoneTagify1.removeAllTags();
-          milestoneTagify1.settings.whitelist = [];
-          changeAwardInput();
-        } catch (error) {
-          clientError(error);
-          Swal.fire({
-            backdrop: "rgba(0,0,0, 0.4)",
-            heightAuto: false,
-            icon: "error",
-            text: userErrorMessage(error),
-          });
+    const filepath = result.value.filepath;
+    var award = $("#submission-sparc-award");
+    log.info(`Importing Data Deliverables document: ${filepath}`);
+    try {
+      let extract_milestone = await client.get(
+        `/prepare_metadata/import_milestone`,
+        {
+          params: {
+            path: filepath,
+          },
         }
+      );
+      let res = extract_milestone.data;
+      milestoneObj = res;
+
+      //Handle free-form mode submission data
+      if (curationMode === "free-form") {
+        createMetadataDir();
+        var informationJson = {};
+        informationJson = parseJson(milestonePath);
+        informationJson[award] = milestoneObj;
+        fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
+        Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          timer: 3000,
+          timerProgressBar: true,
+          icon: "success",
+          text: `Successfully loaded your DataDeliverables.docx document`,
+        });
+        removeOptions(descriptionDateInput);
+        milestoneTagify1.removeAllTags();
+        milestoneTagify1.settings.whitelist = [];
+        changeAwardInput();
+      }
+
+      //Handle guided mode submission data
+      if (curationMode === "guided") {
+        const guidedMilestoneData = res;
+        //create a string with today's date in the format xxxx/xx/xx
+        const today = new Date();
+        const todayString = `
+              ${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}
+            `;
+        //add a custom milestone row for when the user wants to add a custom milestone
+        //not included in the dataset deliverables document
+        guidedMilestoneData[
+          "Not included in the Dataset Deliverables document"
+        ] = [
+            {
+              "Description of data":
+                "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
+              "Expected date of completion": "N/A",
+            },
+          ];
+
+        //save the unselected milestones into sodaJSONObj
+        sodaJSONObj["dataset-metadata"]["submission-metadata"][
+          "temp-imported-milestones"
+        ] = guidedMilestoneData;
+
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] =
+          filepath;
+
+        renderMilestoneSelectionTable(guidedMilestoneData);
+
+        guidedSubmissionTagsTagify.settings.whitelist = [];
+
+        unHideAndSmoothScrollToElement("guided-div-data-deliverables-import");
+      }
+    } catch (error) {
+      clientError(error);
+      Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        icon: "error",
+        text: userErrorMessage(error),
       });
     }
   });
 }
 
-function openDDDimport() {
-  const dialog = require("electron").remote.dialog;
-  const BrowserWindow = require("electron").remote.BrowserWindow;
+let guidedMilestoneData = {};
 
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
-    {
-      properties: ["openFile"],
-      filters: [{ name: "DOCX", extensions: ["docx"] }],
-    },
-    (filepath) => {
-      if (filepath) {
-        if (filepath.length > 0) {
-          if (filepath != null) {
-            document.getElementById("input-milestone-select").placeholder =
-              filepath[0];
+const createCompletionDateRadioElement = (name, label) => {
+  return `
+    <div class="field" style="width: auto !important">
+      <div class="ui radio checkbox">
+        <input type="radio" name='${name}' value='${label}'>
+        <label>${label}</label>
+      </div>
+    </div>
+  `;
+};
 
-            // log the successful attempt to import a data deliverables document from the user's computer
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              "Prepare Metadata - submission - import-DDD",
-              "Data Deliverables Document",
-              1
-            );
-          }
-        }
-      }
-    }
+// function that removes hidden class from js element by id and smooth scrolls to it
+const unHideAndSmoothScrollToElement = (id) => {
+  elementToUnhideAndScrollTo = document.getElementById(id);
+  elementToUnhideAndScrollTo.classList.remove("hidden");
+  elementToUnhideAndScrollTo.scrollIntoView({
+    behavior: "smooth",
+  });
+};
+
+const smoothScrollToElement = (idOrElement) => {
+  //check if idOrElement is an element
+  if (typeof idOrElement === "string") {
+    elementToScrollTo = document.getElementById(id);
+    elementToScrollTo.scrollIntoView({
+      behavior: "smooth",
+    });
+  } else {
+    idOrElement.scrollIntoView({
+      behavior: "smooth",
+    });
+  }
+};
+
+const handleMilestoneClick = () => {
+  //get all checked checkboxes with name "milestone" vanilla js
+  const checkedMilestones = document.querySelectorAll(
+    "input[name='milestone']:checked"
   );
+  //convert checkMilestones to array of checkMilestones values
+  const checkedMilestonesArray = Array.from(checkedMilestones);
+  //get the values of checkedMilestonesArray
+  const checkedMilestonesValues = checkedMilestonesArray.map(
+    (checkMilestone) => checkMilestone.value
+  );
+  const completionDatesToCheck = [];
+  for (const milestone of checkedMilestonesValues) {
+    for (const task of guidedMilestoneData[milestone]) {
+      completionDatesToCheck.push(task["Expected date of completion"]);
+    }
+  }
+
+  const completionDatesToCheckArray = Array.from(
+    new Set(completionDatesToCheck)
+  );
+  const completionDateRadioElements = completionDatesToCheckArray
+    .map((completionDate) =>
+      createCompletionDateRadioElement("completion-date", completionDate)
+    )
+    .join("\n");
+  //replace the current completion-date-radio-elements with the new ones
+  const completionDateRadioElementContainer = document.getElementById(
+    "guided-completion-date-checkbox-container"
+  );
+  completionDateRadioElementContainer.innerHTML = completionDateRadioElements;
+};
+
+const generateMilestoneRowElement = (
+  dataDescription,
+  milestoneString,
+  dateString
+) => {
+  return `
+    <tr>
+      <td class="middle aligned collapsing text-center">
+        <div class="ui fitted checkbox">
+          <input type="checkbox" name="milestone" value="${dataDescription}">
+          <label></label>
+        </div>
+      </td>
+      <td class="middle aligned">
+        ${dataDescription}
+      </td>
+      <td class="middle aligned">
+        ${milestoneString}
+      </td>
+      <td class="middle aligned collapsing"> 
+        ${dateString}
+      </td>
+    </tr>
+  `;
+};
+
+//create an array of values for checked checkboxes with the name "milestone"
+const getCheckedMilestones = () => {
+  const checkedMilestones = document.querySelectorAll(
+    "input[name='milestone']:checked"
+  );
+  const checkedMilestonesArray = Array.from(checkedMilestones);
+  //get first tr parent for each checkedMilestonesArray element
+  const checkedMilestoneData = checkedMilestonesArray.map((checkMilestone) => {
+    const tableRow = checkMilestone.parentElement.parentElement.parentElement;
+    const description = tableRow.children[1].innerHTML.trim();
+    const milestone = tableRow.children[2].innerHTML.trim();
+    const completionDate = tableRow.children[3].innerHTML.trim();
+
+    return {
+      description: description,
+      milestone: milestone,
+      completionDate: completionDate,
+    };
+  });
+  return checkedMilestoneData;
+};
+
+async function openDDDimport() {
+  let filepath = await ipcRenderer.invoke("open-file-dialog-data-deliverables");
+  if (filepath.length > 0) {
+    document.getElementById("input-milestone-select").placeholder = filepath[0];
+
+    // log the successful attempt to import a data deliverables document from the user's computer
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Prepare Metadata - submission - import-DDD",
+      "Data Deliverables Document",
+      1
+    );
+  }
 }
 
 // onboarding for submission file
@@ -241,6 +411,7 @@ function onboardingSubmission() {
                 "Click here to import your Data Deliverables document for SODA to automatically retrieve your milestone and completion date.",
             },
           ],
+          dontShowAgain: true,
           exitOnEsc: false,
           exitOnOverlayClick: false,
           disableInteraction: false,
@@ -649,7 +820,7 @@ async function generateSubmissionHelper(uploadBFBoolean) {
       );
 
       // get the size of the uploaded file from the result
-      const size = res;
+      const size = res.data.size;
 
       // log the size of the metadata file that was generated at varying levels of granularity
       logMetadataSizeForAnalytics(uploadBFBoolean, "submission.xlsx", size);
@@ -752,7 +923,7 @@ function changeAirtableDiv(divHide, divShow, buttonHide, buttonShow) {
 function showExistingSubmissionFile(type) {
   if (
     $(`#existing-submission-file-destination`).prop("placeholder") !==
-      "Browse here" &&
+    "Browse here" &&
     $(`#Question-prepare-submission-2`).hasClass("show")
   ) {
     Swal.fire({
@@ -832,7 +1003,7 @@ function importExistingSubmissionFile(type) {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       setTimeout(loadExistingSubmissionFile(filePath), 1000);
     }
   }
@@ -947,7 +1118,7 @@ async function checkBFImportSubmission() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   let bfDataset = $("#bf_dataset_load_submission").text().trim();
   log.info(`Loading submission file from Pennsieve dataset: ${bfDataset}`);
   try {

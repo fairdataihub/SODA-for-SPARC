@@ -1790,7 +1790,11 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
         # delete banner image folder if it is located in SODA
         gevent.spawn(upload_image())
         image_folder = dirname(banner_image_path)
-        if isdir(image_folder) and ("SODA" in image_folder):
+        if (
+            isdir(image_folder)
+            and ("SODA" in image_folder)
+            and ("guided-banner-images" not in image_folder)
+        ):
             shutil.rmtree(image_folder, ignore_errors=True)
         return {"message": "Uploaded!"}
     except Exception as e:

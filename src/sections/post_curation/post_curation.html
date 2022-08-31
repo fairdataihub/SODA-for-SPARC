@@ -1,1181 +1,895 @@
 <!DOCTYPE html>
-<template class="task-template">
-  <section
-    id="share_curation_team-section"
-    class="section js-section u-category-windows"
-    style="padding-left: 15px; overflow-y: hidden"
+
+<section
+  id="share_curation_team-section"
+  class="section js-section u-category-windows"
+  style="padding-left: 5px; overflow-y: hidden; margin-left: -25px"
+>
+  <div
+    class="main-tabs show"
+    style="display: flex; height: 100%; overflow-y: hidden"
   >
-    <div
-      class="main-tabs show"
-      style="display: flex; height: 100%; overflow-y: hidden"
-    >
-      <header class="section-header">
-        <div
-          style="
-            display: inline-flex;
-            align-items: center;
-            flex-direction: row;
-            width: 94.5%;
-            padding-right: 20px;
-            margin-bottom: 50px;
-          "
-        >
-          <div class="need-help-div">
-            <h2>Disseminate Datasets - Share with Curation Team</h2>
-            <a
-              target="_blank"
-              href="https://docs.sodaforsparc.io/docs/disseminate-dataset/share-with-curation-team"
-              >Need help?</a
-            >
-          </div>
+    <header class="section-header">
+      <div
+        style="
+          display: inline-flex;
+          align-items: center;
+          flex-direction: row;
+          width: 94.5%;
+          padding-right: 20px;
+          margin-bottom: 50px;
+        "
+      >
+        <div class="need-help-div">
+          <h2>Disseminate Datasets - Share with Curation Team</h2>
+          <a
+            target="_blank"
+            href="https://docs.sodaforsparc.io/docs/disseminate-dataset/share-with-curation-team"
+            >Need help?</a
+          >
         </div>
-      </header>
+      </div>
+    </header>
 
-      <div id="share_curation_team-tab" style="overflow-y: auto; height: 70%">
-        <div
-          class="individual-question post-curation show"
-          id="share_curation_team-question-1"
-          style="height: auto"
-        >
-          <div class="ui form" style="width: 100%">
-            <div class="grouped fields">
-              <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Select a dataset:
-              </label>
-              <div class="field" style="margin: auto; width: 500px">
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: space-between;
-                    margin-top: 15px;
-                    height: auto;
-                    box-shadow: 0px 0px 10px #d5d5d5;
-                    padding: 15px 25px;
-                    border-radius: 5px;
-                  "
-                >
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      justify-content: space-between;
-                    "
-                  >
-                    <div class="card-container manage-dataset">
-                      <div style="display: flex">
-                        <h5
-                          class="card-left"
-                          style="text-align: right; padding-right: 5px"
-                        >
-                          Current account:
-                        </h5>
-                        <div
-                          class="change-current-account"
-                          style="width: 100%"
-                          onclick="openDropdownPrompt(this, 'bf')"
-                        >
-                          <h5 class="card-right bf-account-span">None</h5>
-
-                          <svg
-                            class="svg-change-current-account bi bi-pencil-fill"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="18"
-                            height="18"
-                            fill="#000"
-                            viewBox="0 0 16 16"
-                          >
-                            <path
-                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                            />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      margin-bottom: 15px;
-                    "
-                  >
-                    <div class="card-container manage-dataset">
-                      <div>
-                        <h5
-                          class="card-left"
-                          style="text-align: right; padding-right: 5px"
-                        >
-                          Account details:
-                        </h5>
-                        <h5 class="card-right bf-account-details-span">None</h5>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      justify-content: space-between;
-                    "
-                  >
-                    <div class="card-container manage-dataset">
-                      <div style="display: flex">
-                        <h5
-                          class="card-left"
-                          style="text-align: right; padding-right: 5px"
-                        >
-                          Current dataset:
-                        </h5>
-                        <div
-                          class="change-current-account"
-                          style="width: 100%"
-                          onclick="openDropdownPrompt(this, 'dataset')"
-                        >
-                          <h5 class="card-right bf-dataset-span">None</h5>
-
-                          <svg
-                            class="svg-change-current-account dataset bi bi-pencil-fill"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="18"
-                            height="18"
-                            fill="#000"
-                            viewBox="0 0 16 16"
-                          >
-                            <path
-                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                            />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      class="ui active green inline loader small"
-                      style="display: none"
-                    ></div>
-                  </div>
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      justify-content: space-between;
-                    "
-                  >
-                    <div class="card-container manage-dataset">
-                      <div>
-                        <h5
-                          class="card-left"
-                          style="text-align: right; padding-right: 5px"
-                        >
-                          Current status:
-                        </h5>
-                        <h5
-                          id="current_curation_team_status"
-                          class="card-right"
-                          style="
-                            width: auto;
-                            margin-left: 0px;
-                            margin-top: 0px;
-                            padding-left: 5px;
-                          "
-                        >
-                          None
-                        </h5>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="div-confirm-button"
-                  style="
-                    display: none;
-                    flex-direction: row;
-                    justify-content: center;
-                    margin: 10px auto;
-                  "
-                >
-                  <button
-                    onclick="transitionFreeFormMode(this, 'share_curation_team-question-1', 'share_curation_team-tab', 'delete', 'individual-question post-curation')"
-                    data-next="share_curation_team-question-2"
-                    class="confirm-button"
-                    style="
-                      cursor: pointer;
-                      border-radius: 8px;
-                      margin: 10px auto;
-                      width: 100px;
-                      height: 30px;
-                      background: var(--color-light-green);
-                      color: #fff;
-                      font-weight: 600;
-                      border: none;
-                      font-size: 13px;
-                    "
-                  >
-                    Confirm
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          class="individual-question disseminate-dataset"
-          id="share_curation_team-question-2"
-          style="height: auto"
-        >
-          <div class="ui form" style="width: 450px">
-            <div class="grouped fields">
-              <label
-                style="
-                  font-size: 17px;
-                  color: var(--color-bg-plum);
-                  width: 100%;
-                  text-align: center;
-                "
-              ></label>
+    <div id="share_curation_team-tab" style="overflow-y: auto; height: 70%">
+      <div
+        class="individual-question post-curation show"
+        id="share_curation_team-question-1"
+        style="height: auto"
+      >
+        <div class="ui form" style="width: 100%">
+          <div class="grouped fields">
+            <label style="font-size: 17px; color: var(--color-bg-plum)"
+              >Select a dataset:
+            </label>
+            <div class="field" style="margin: auto; width: 500px">
               <div
-                id="div-confirm-share_curation_team"
                 style="
                   display: flex;
                   flex-direction: column;
-                  justify-content: center;
-                  align-items: center;
-                  margin: 0 auto;
+                  justify-content: space-between;
+                  margin-top: 15px;
+                  height: auto;
+                  box-shadow: 0px 0px 10px #d5d5d5;
+                  padding: 15px 25px;
+                  border-radius: 5px;
                 "
               >
-                <div style="display: flex; justify-content: space-between">
-                  <button
-                    onclick="unshareDataset('share-with-curation-team')"
-                    id="curation-team-unshare-btn"
-                    class="btn_animated md skip"
-                    style="
-                      cursor: pointer;
-                      border-radius: 8px;
-                      margin: 10px auto;
-                      width: 140px;
-                      height: 40px;
-                      background: #fff;
-                      color: red;
-                      font-weight: 600;
-                      border: 1px solid red;
-                      font-size: 15px;
-                      display: none;
-                    "
-                  >
-                    <i class="fas fa-share" style="padding-right: 5px"></i>
-                    Unshare
-                  </button>
-                  <button
-                    id="curation-team-share-btn"
-                    onclick="disseminateDataset('share-with-curation-team')"
-                    class="btn_animated md"
-                    style="
-                      margin: 10px auto;
-                      width: 140px;
-                      height: 40px;
-                      font-size: 15px;
-                      border: none !important;
-                      display: none;
-                    "
-                  >
-                    <i class="fas fa-share" style="padding-right: 5px"></i>
-                    Share now
-                  </button>
-                </div>
-                <div
-                  id="share-curation-team-spinner"
-                  class="spinner post-curation"
-                  style="display: none"
-                >
-                  <div class="rect1"></div>
-                  <div class="rect2"></div>
-                  <div class="rect3"></div>
-                  <div class="rect4"></div>
-                  <div class="rect5"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="footer-div">
-        <div style="display: flex; flex-direction: row; width: 120px">
-          <button
-            type="button"
-            class="transition-btn prev"
-            data-section="main_tabs"
-          >
-            <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
-          </button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section
-    id="share_sparc_consortium-section"
-    class="section js-section u-category-windows"
-    style="padding-left: 15px; overflow-y: hidden"
-  >
-    <div
-      class="main-tabs show"
-      style="display: flex; height: 100%; overflow-y: hidden"
-    >
-      <header class="section-header">
-        <div
-          style="
-            display: inline-flex;
-            align-items: center;
-            flex-direction: row;
-            width: 94.5%;
-            padding-right: 20px;
-            margin-bottom: 50px;
-          "
-        >
-          <div class="need-help-div">
-            <h2>Disseminate Datasets - Share with SPARC Consortium</h2>
-            <a
-              target="_blank"
-              href="https://docs.sodaforsparc.io/docs/disseminate-dataset/share-with-sparc-consortium"
-              >Need help?</a
-            >
-          </div>
-        </div>
-      </header>
-
-      <div
-        id="share_sparc_consortium-tab"
-        style="overflow-y: auto; height: 70%"
-      >
-        <div
-          class="individual-question post-curation show"
-          id="share_sparc_consortium-question-1"
-          style="height: auto"
-        >
-          <div class="ui form" style="width: 100%">
-            <div class="grouped fields">
-              <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Select a dataset:
-              </label>
-              <div class="field" style="margin: auto; width: 500px">
                 <div
                   style="
                     display: flex;
-                    flex-direction: column;
+                    flex-direction: row;
                     justify-content: space-between;
-                    margin-top: 15px;
-                    height: auto;
-                    box-shadow: 0px 0px 10px #d5d5d5;
-                    padding: 15px 25px;
-                    border-radius: 5px;
                   "
                 >
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      justify-content: space-between;
-                    "
-                  >
-                    <div class="card-container manage-dataset">
-                      <div style="display: flex">
-                        <h5
-                          class="card-left"
-                          style="text-align: right; padding-right: 5px"
-                        >
-                          Current account:
-                        </h5>
-                        <div
-                          class="change-current-account"
-                          onclick="openDropdownPrompt(this, 'bf')"
-                        >
-                          <h5 class="card-right bf-account-span">None</h5>
+                  <div class="card-container manage-dataset">
+                    <div style="display: flex">
+                      <h5
+                        class="card-left"
+                        style="text-align: right; padding-right: 5px"
+                      >
+                        Current account:
+                      </h5>
+                      <div
+                        class="change-current-account"
+                        style="width: 100%"
+                        onclick="openDropdownPrompt(this, 'bf')"
+                      >
+                        <h5 class="card-right bf-account-span">None</h5>
 
-                          <svg
-                            class="svg-change-current-account bi bi-pencil-fill"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="18"
-                            height="18"
-                            fill="#000"
-                            viewBox="0 0 16 16"
-                          >
-                            <path
-                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                            />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      margin-bottom: 15px;
-                    "
-                  >
-                    <div class="card-container manage-dataset">
-                      <div>
-                        <h5
-                          class="card-left"
-                          style="text-align: right; padding-right: 5px"
+                        <svg
+                          class="svg-change-current-account bi bi-pencil-fill"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18"
+                          height="18"
+                          fill="#000"
+                          viewBox="0 0 16 16"
                         >
-                          Account details:
-                        </h5>
-                        <h5 class="card-right bf-account-details-span">None</h5>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      justify-content: space-between;
-                    "
-                  >
-                    <div class="card-container manage-dataset">
-                      <div style="display: flex">
-                        <h5
-                          class="card-left"
-                          style="text-align: right; padding-right: 5px"
-                        >
-                          Current dataset:
-                        </h5>
-                        <div
-                          class="change-current-account"
-                          onclick="openDropdownPrompt(this, 'dataset')"
-                        >
-                          <h5 class="card-right bf-dataset-span">None</h5>
-
-                          <svg
-                            class="svg-change-current-account dataset bi bi-pencil-fill"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="18"
-                            height="18"
-                            fill="#000"
-                            viewBox="0 0 16 16"
-                          >
-                            <path
-                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                            />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      class="ui active green inline loader small"
-                      style="display: none"
-                    ></div>
-                  </div>
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      justify-content: space-between;
-                    "
-                  >
-                    <div class="card-container manage-dataset">
-                      <div>
-                        <h5
-                          class="card-left"
-                          style="text-align: right; padding-right: 5px"
-                        >
-                          Current status:
-                        </h5>
-                        <h5
-                          id="current_sparc_consortium_status"
-                          class="card-right"
-                          style="
-                            width: auto;
-                            margin-left: 0px;
-                            margin-top: 0px;
-                            padding-left: 5px;
-                          "
-                        >
-                          None
-                        </h5>
+                          <path
+                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                          />
+                        </svg>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div
-                  class="div-confirm-button"
                   style="
-                    display: none;
+                    display: flex;
                     flex-direction: row;
-                    justify-content: center;
-                    margin: 10px auto;
+                    margin-bottom: 15px;
                   "
                 >
-                  <button
-                    onclick="transitionFreeFormMode(this, 'share_sparc_consortium-question-1', 'share_sparc_consortium-tab', 'delete', 'individual-question post-curation')"
-                    data-next="share_sparc_consortium-question-2"
-                    class="confirm-button"
-                    style="
-                      cursor: pointer;
-                      border-radius: 8px;
-                      margin: 10px auto;
-                      width: 100px;
-                      height: 30px;
-                      background: var(--color-light-green);
-                      color: #fff;
-                      font-weight: 600;
-                      border: none;
-                      font-size: 13px;
-                    "
-                  >
-                    Confirm
-                  </button>
+                  <div class="card-container manage-dataset">
+                    <div>
+                      <h5
+                        class="card-left"
+                        style="text-align: right; padding-right: 5px"
+                      >
+                        Account details:
+                      </h5>
+                      <h5 class="card-right bf-account-details-span">None</h5>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                  "
+                >
+                  <div class="card-container manage-dataset">
+                    <div style="display: flex">
+                      <h5
+                        class="card-left"
+                        style="text-align: right; padding-right: 5px"
+                      >
+                        Current dataset:
+                      </h5>
+                      <div
+                        class="change-current-account"
+                        style="width: 100%"
+                        onclick="openDropdownPrompt(this, 'dataset')"
+                      >
+                        <h5 class="card-right bf-dataset-span">None</h5>
+
+                        <svg
+                          class="svg-change-current-account dataset bi bi-pencil-fill"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18"
+                          height="18"
+                          fill="#000"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="ui active green inline loader small"
+                    style="display: none"
+                  ></div>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                  "
+                >
+                  <div class="card-container manage-dataset">
+                    <div>
+                      <h5
+                        class="card-left"
+                        style="text-align: right; padding-right: 5px"
+                      >
+                        Current status:
+                      </h5>
+                      <h5
+                        id="current_curation_team_status"
+                        class="card-right"
+                        style="
+                          width: auto;
+                          margin-left: 0px;
+                          margin-top: 0px;
+                          padding-left: 5px;
+                        "
+                      >
+                        None
+                      </h5>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          class="individual-question post-curation"
-          id="share_sparc_consortium-question-2"
-          style="height: auto"
-        >
-          <div class="ui form" style="width: 450px">
-            <div class="grouped fields">
-              <label
-                style="
-                  font-size: 17px;
-                  color: var(--color-bg-plum);
-                  width: 100%;
-                  text-align: center;
-                "
-              ></label>
               <div
-                id="div-confirm-share_sparc_consortium"
+                class="div-confirm-button"
                 style="
-                  display: flex;
-                  flex-direction: column;
+                  display: none;
+                  flex-direction: row;
                   justify-content: center;
-                  align-items: center;
-                  margin: 0 auto;
+                  margin: 10px auto;
                 "
               >
-                <div style="display: flex; justify-content: space-between">
-                  <button
-                    onclick="unshareDataset('share-with-sparc-consortium')"
-                    id="sparc-consortium-unshare-btn"
-                    class="btn_animated md skip"
-                    style="
-                      cursor: pointer;
-                      border-radius: 8px;
-                      margin: 20px 10px;
-                      width: 140px;
-                      height: 40px;
-                      background: #fff;
-                      color: red;
-                      font-weight: 600;
-                      border: 1px solid red;
-                      font-size: 15px;
-                      display: none;
-                    "
-                  >
-                    <i class="fas fa-share" style="padding-right: 5px"></i>
-                    Unshare
-                  </button>
-                  <button
-                    id="sparc-consortium-share-btn"
-                    onclick="disseminateDataset('share-with-sparc-consortium')"
-                    class="btn_animated md"
-                    style="
-                      margin: 10px auto;
-                      width: 140px;
-                      height: 40px;
-                      font-size: 15px;
-                      border: none !important;
-                      display: none;
-                    "
-                  >
-                    <i class="fas fa-share" style="padding-right: 5px"></i>
-                    Share now
-                  </button>
-                </div>
-                <div
-                  id="share-with-sparc-consortium-spinner"
-                  class="spinner post-curation"
-                  style="display: none"
-                >
-                  <div class="rect1"></div>
-                  <div class="rect2"></div>
-                  <div class="rect3"></div>
-                  <div class="rect4"></div>
-                  <div class="rect5"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="footer-div">
-        <div style="display: flex; flex-direction: row; width: 120px">
-          <button
-            type="button"
-            class="transition-btn prev"
-            data-section="main_tabs"
-          >
-            <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
-          </button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section
-    id="submit_prepublishing_review-section"
-    class="section js-section u-category-windows"
-    style="padding-left: 15px; overflow-y: hidden"
-  >
-    <div
-      class="main-tabs show"
-      style="display: flex; height: 100%; overflow-y: hidden"
-    >
-      <header class="section-header">
-        <div
-          style="
-            display: inline-flex;
-            align-items: center;
-            flex-direction: row;
-            width: 94.5%;
-            padding-right: 20px;
-            margin-bottom: 50px;
-          "
-        >
-          <div class="need-help-div">
-            <h2>Disseminate Datasets - Submit for pre-publishing review</h2>
-            <a
-              target="_blank"
-              href="https://docs.sodaforsparc.io/docs/disseminate-dataset/submit-for-pre-publishing-review"
-              >Need help?</a
-            >
-          </div>
-        </div>
-      </header>
-
-      <div
-        id="submit_prepublishing_review-tab"
-        style="overflow-y: auto; height: 80%"
-      >
-        <div
-          class="individual-question post-curation show"
-          id="submit_prepublishing_review-question-1"
-          style="height: auto"
-        >
-          <div class="ui form" style="width: 100%">
-            <div class="grouped fields">
-              <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Select a dataset:
-              </label>
-              <div class="field" style="margin: auto; width: 500px">
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: space-between;
-                    margin-top: 15px;
-                    height: auto;
-                    box-shadow: 0px 0px 10px #d5d5d5;
-                    padding: 15px 25px;
-                    border-radius: 5px;
-                  "
-                >
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      justify-content: space-between;
-                    "
-                  >
-                    <div class="card-container manage-dataset">
-                      <div style="display: flex">
-                        <h5
-                          class="card-left"
-                          style="text-align: right; padding-right: 5px"
-                        >
-                          Current account:
-                        </h5>
-                        <div
-                          class="change-current-account"
-                          style="width: 100%"
-                          onclick="openDropdownPrompt(this, 'bf')"
-                        >
-                          <h5 class="card-right bf-account-span">None</h5>
-
-                          <svg
-                            class="svg-change-current-account bi bi-pencil-fill"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="18"
-                            height="18"
-                            fill="#000"
-                            viewBox="0 0 16 16"
-                          >
-                            <path
-                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                            />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      margin-bottom: 15px;
-                    "
-                  >
-                    <div class="card-container manage-dataset">
-                      <div>
-                        <h5
-                          class="card-left"
-                          style="text-align: right; padding-right: 5px"
-                        >
-                          Account details:
-                        </h5>
-                        <h5 class="card-right bf-account-details-span">None</h5>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      justify-content: space-between;
-                    "
-                  >
-                    <div class="card-container manage-dataset">
-                      <div style="display: flex">
-                        <h5
-                          class="card-left"
-                          style="text-align: right; padding-right: 5px"
-                        >
-                          Current dataset:
-                        </h5>
-                        <div
-                          class="change-current-account"
-                          onclick="openDropdownPrompt(this, 'dataset')"
-                          style="width: 100%"
-                        >
-                          <h5 class="card-right bf-dataset-span">None</h5>
-
-                          <svg
-                            class="svg-change-current-account dataset bi bi-pencil-fill"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="18"
-                            height="18"
-                            fill="#000"
-                            viewBox="0 0 16 16"
-                          >
-                            <path
-                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                            />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      class="ui active green inline loader small"
-                      style="display: none"
-                    ></div>
-                  </div>
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      justify-content: space-between;
-                      margin-bottom: 15px;
-                    "
-                  >
-                    <div class="card-container manage-dataset">
-                      <div style="display: flex">
-                        <h5
-                          class="card-left"
-                          style="
-                            color: #808080;
-                            font-size: 15px;
-                            text-align: right;
-                            padding-right: 5px;
-                          "
-                        >
-                          Review status:
-                        </h5>
-                        <div
-                          class="change-current-account"
-                          style="width: 100%"
-                          onclick="refreshDatasetStatus()"
-                        >
-                          <span
-                            id="para-review-dataset-info-disseminate"
-                            style="
-                              color: #000;
-                              font-weight: 600;
-                              margin-left: 5px;
-                              font-size: 15px;
-                            "
-                          >
-                            None
-                          </span>
-
-                          <i
-                            class="fas fa-sync svg-change-current-account"
-                            id="button-refresh-publishing-status"
-                            style="color: #000"
-                          ></i>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="div-confirm-button"
-                  style="
-                    display: none;
-                    flex-direction: row;
-                    justify-content: center;
-                    margin: 10px auto;
-                  "
-                >
-                  <button
-                    onclick="transitionFreeFormMode(this, 'submit_prepublishing_review-question-1', 'submit_prepublishing_review-tab', 'delete', 'individual-question post-curation')"
-                    data-next="submit_prepublishing_review-question-2"
-                    class="confirm-button"
-                    style="
-                      cursor: pointer;
-                      border-radius: 8px;
-                      margin: 10px auto;
-                      width: 100px;
-                      height: 30px;
-                      background: var(--color-light-green);
-                      color: #fff;
-                      font-weight: 600;
-                      border: none;
-                      font-size: 13px;
-                    "
-                  >
-                    Confirm
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          class="individual-question post-curation"
-          id="submit_prepublishing_review-question-2"
-          style="height: auto"
-        >
-          <div id="begin-prepublishing-button-container">
-            <button
-              id="begin-prepublishing-btn"
-              class="btn_animated md"
-              style="width: 200px; height: 40px; font-size: 15px"
-              data-current="submit_prepublishing_review-question-2"
-              data-next="submit_prepublishing_review-question-3"
-            >
-              Begin Submission
-            </button>
-          </div>
-        </div>
-
-        <div
-          class="individual-question post-curation"
-          id="submit_prepublishing_review-question-3"
-        >
-          <div class="ui form" style="width: 450px">
-            <div class="grouped fields">
-              <div id="prepublishing-checklist-container">
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                  "
-                >
-                  <label
-                    id="pre_publishing_checklist_label"
-                    style="
-                      font-size: 17px;
-                      color: var(--color-bg-plum);
-                      width: 100%;
-                      text-align: center;
-                      margin-bottom: 1rem;
-                    "
-                    >Pre-publishing checklist:
-                    <i
-                      class="fas fa-info-circle popover-tooltip"
-                      data-content="Use the pre-publishing checklist below to verify your dataset meets all of the SPARC requirements for a publishable dataset. 
-                                Click on any missing checklist items and you will be navigated to where you may add that item. "
-                      rel="popover"
-                      data-html="true"
-                      data-placement="right"
-                      data-trigger="hover"
-                    ></i>
-                  </label>
-
-                  <table
-                    class="ui fixed table"
-                    id="prepublishing-checklist"
-                    style="max-height: 250px; width: 780px; margin-top: 0px"
-                  >
-                    <thead>
-                      <tr>
-                        <th style="width: 190px">Item</th>
-                        <th>Description</th>
-                      </tr>
-                    </thead>
-                    <tbody style="height: 250px">
-                      <tr style="height: 15px">
-                        <td>
-                          <div
-                            class="icon-wrapper"
-                            style="display: inline-block; padding-right: 5px"
-                          >
-                            <i
-                              class="check icon"
-                              style="color: green"
-                              id="prepublishing-checklist-icon-subtitle"
-                            ></i>
-                          </div>
-                          <button
-                            onClick="transitionFromPrePublishingChecklist('add_edit_subtitle-section')"
-                          >
-                            Add a subtitle
-                          </button>
-                        </td>
-                        <td>
-                          Give others a brief description of your dataset.
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <div
-                            class="icon-wrapper"
-                            style="display: inline-block; padding-right: 5px"
-                          >
-                            <i
-                              class="check icon"
-                              style="color: green; margin-right: 5px"
-                              id="prepublishing-checklist-icon-tags"
-                            ></i>
-                          </div>
-                          <button
-                            onClick="transitionFromPrePublishingChecklist('add_tags-section')"
-                          >
-                            Add tags
-                          </button>
-                        </td>
-                        <td>
-                          Make it easier for people to find your dataset in
-                          Discover.
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <div
-                            class="icon-wrapper"
-                            style="display: inline-block; padding-right: 5px"
-                          >
-                            <i
-                              class="check icon"
-                              style="color: green; margin-right: 5px"
-                              id="prepublishing-checklist-icon-readme"
-                            ></i>
-                          </div>
-                          <button
-                            onClick="transitionFromPrePublishingChecklist('add_edit_description-section')"
-                          >
-                            Add a description
-                          </button>
-                        </td>
-                        <td>
-                          Give others a detailed overview of your dataset and
-                          outline your findings and analysis.
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <div
-                            class="icon-wrapper"
-                            style="display: inline-block; padding-right: 5px"
-                          >
-                            <i
-                              class="check icon"
-                              style="color: green; margin-right: 5px"
-                              id="prepublishing-checklist-icon-banner"
-                            ></i>
-                          </div>
-                          <button
-                            onClick="transitionFromPrePublishingChecklist('add_edit_banner-section')"
-                          >
-                            Add a banner image
-                          </button>
-                        </td>
-                        <td>
-                          Add a banner image to help your dataset stand out in
-                          listings.
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <div
-                            class="icon-wrapper"
-                            style="display: inline-block; padding-right: 5px"
-                          >
-                            <i
-                              class="check icon"
-                              style="color: green; margin-right: 5px"
-                              id="prepublishing-checklist-icon-license"
-                            ></i>
-                          </div>
-                          <button
-                            onClick="transitionFromPrePublishingChecklist('add_license-section')"
-                          >
-                            Add a license
-                          </button>
-                        </td>
-                        <td>
-                          Let others know how they can use this data in their
-                          own research.
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <div
-                            class="icon-wrapper"
-                            style="display: inline-block; padding-right: 5px"
-                          >
-                            <i
-                              class="check icon"
-                              style="color: green; margin-right: 5px"
-                              id="prepublishing-checklist-icon-ORCID"
-                            ></i>
-                          </div>
-                          <button id="ORCID-btn">Link ORCID iD</button>
-                        </td>
-                        <td>
-                          Link your ORCID iD to Pennsieve in order to
-                          distinguish yourself from other researchers.
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              <!--Continue Button comes before filetree and excluded files section-->
-              <div class="pre-publishing-continue-container">
                 <button
-                  class="pre-publishing-continue btn_animated"
+                  onclick="transitionFreeFormMode(this, 'share_curation_team-question-1', 'share_curation_team-tab', 'delete', 'individual-question post-curation')"
+                  data-next="share_curation_team-question-2"
+                  class="confirm-button"
                   style="
-                    width: 200px;
-                    height: 40px;
-                    font-size: 15px;
-                    margin-top: 2rem;
+                    cursor: pointer;
+                    border-radius: 8px;
+                    margin: 10px auto;
+                    width: 100px;
+                    height: 30px;
+                    background: var(--color-light-green);
+                    color: #fff;
+                    font-weight: 600;
+                    border: none;
+                    font-size: 13px;
                   "
-                  data-current="submit_prepublishing_review-question-3"
-                  data-next="submit_prepublishing_review-question-4"
                 >
-                  Continue
+                  Confirm
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-              <!--Withdraw dataset from review when Review status shows dataset is under review-->
-              <div
-                style="width: 100%; display: flex; justify-content: center"
-                id="prepublishing-withdraw-btn-container"
-              >
+      <div
+        class="individual-question disseminate-dataset"
+        id="share_curation_team-question-2"
+        style="height: auto"
+      >
+        <div class="ui form" style="width: 450px">
+          <div class="grouped fields">
+            <label
+              style="
+                font-size: 17px;
+                color: var(--color-bg-plum);
+                width: 100%;
+                text-align: center;
+              "
+            ></label>
+            <div
+              id="div-confirm-share_curation_team"
+              style="
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                margin: 0 auto;
+              "
+            >
+              <div style="display: flex; justify-content: space-between">
                 <button
-                  id="btn-withdraw-review-dataset"
-                  onclick="withdrawDatasetSubmission()"
+                  onclick="unshareDataset('share-with-curation-team')"
+                  id="curation-team-unshare-btn"
                   class="btn_animated md skip"
                   style="
                     cursor: pointer;
                     border-radius: 8px;
-                    width: 200px;
+                    margin: 10px auto;
+                    width: 140px;
                     height: 40px;
                     background: #fff;
                     color: red;
                     font-weight: 600;
                     border: 1px solid red;
                     font-size: 15px;
+                    display: none;
                   "
                 >
-                  <i class="fas fa-ban" style="padding-right: 5px"></i>
-                  Withdraw from review
+                  <i class="fas fa-share" style="padding-right: 5px"></i>
+                  Unshare
+                </button>
+                <button
+                  id="curation-team-share-btn"
+                  onclick="disseminateDataset('share-with-curation-team')"
+                  class="btn_animated md"
+                  style="
+                    margin: 10px auto;
+                    width: 140px;
+                    height: 40px;
+                    font-size: 15px;
+                    border: none !important;
+                    display: none;
+                  "
+                >
+                  <i class="fas fa-share" style="padding-right: 5px"></i>
+                  Share now
+                </button>
+              </div>
+              <div
+                id="share-curation-team-spinner"
+                class="spinner post-curation"
+                style="display: none"
+              >
+                <div class="rect1"></div>
+                <div class="rect2"></div>
+                <div class="rect3"></div>
+                <div class="rect4"></div>
+                <div class="rect5"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-div">
+      <div style="display: flex; flex-direction: row; width: 120px">
+        <button
+          type="button"
+          class="transition-btn prev"
+          data-section="main_tabs"
+        >
+          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section
+  id="share_sparc_consortium-section"
+  class="section js-section u-category-windows"
+  style="padding-left: 5px; overflow-y: hidden; margin-left: -25px"
+>
+  <div
+    class="main-tabs show"
+    style="display: flex; height: 100%; overflow-y: hidden"
+  >
+    <header class="section-header">
+      <div
+        style="
+          display: inline-flex;
+          align-items: center;
+          flex-direction: row;
+          width: 94.5%;
+          padding-right: 20px;
+          margin-bottom: 50px;
+        "
+      >
+        <div class="need-help-div">
+          <h2>Disseminate Datasets - Share with SPARC Consortium</h2>
+          <a
+            target="_blank"
+            href="https://docs.sodaforsparc.io/docs/disseminate-dataset/share-with-sparc-consortium"
+            >Need help?</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <div id="share_sparc_consortium-tab" style="overflow-y: auto; height: 70%">
+      <div
+        class="individual-question post-curation show"
+        id="share_sparc_consortium-question-1"
+        style="height: auto"
+      >
+        <div class="ui form" style="width: 100%">
+          <div class="grouped fields">
+            <label style="font-size: 17px; color: var(--color-bg-plum)"
+              >Select a dataset:
+            </label>
+            <div class="field" style="margin: auto; width: 500px">
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: space-between;
+                  margin-top: 15px;
+                  height: auto;
+                  box-shadow: 0px 0px 10px #d5d5d5;
+                  padding: 15px 25px;
+                  border-radius: 5px;
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                  "
+                >
+                  <div class="card-container manage-dataset">
+                    <div style="display: flex">
+                      <h5
+                        class="card-left"
+                        style="text-align: right; padding-right: 5px"
+                      >
+                        Current account:
+                      </h5>
+                      <div
+                        class="change-current-account"
+                        onclick="openDropdownPrompt(this, 'bf')"
+                      >
+                        <h5 class="card-right bf-account-span">None</h5>
+
+                        <svg
+                          class="svg-change-current-account bi bi-pencil-fill"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18"
+                          height="18"
+                          fill="#000"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    margin-bottom: 15px;
+                  "
+                >
+                  <div class="card-container manage-dataset">
+                    <div>
+                      <h5
+                        class="card-left"
+                        style="text-align: right; padding-right: 5px"
+                      >
+                        Account details:
+                      </h5>
+                      <h5 class="card-right bf-account-details-span">None</h5>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                  "
+                >
+                  <div class="card-container manage-dataset">
+                    <div style="display: flex">
+                      <h5
+                        class="card-left"
+                        style="text-align: right; padding-right: 5px"
+                      >
+                        Current dataset:
+                      </h5>
+                      <div
+                        class="change-current-account"
+                        onclick="openDropdownPrompt(this, 'dataset')"
+                      >
+                        <h5 class="card-right bf-dataset-span">None</h5>
+
+                        <svg
+                          class="svg-change-current-account dataset bi bi-pencil-fill"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18"
+                          height="18"
+                          fill="#000"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="ui active green inline loader small"
+                    style="display: none"
+                  ></div>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                  "
+                >
+                  <div class="card-container manage-dataset">
+                    <div>
+                      <h5
+                        class="card-left"
+                        style="text-align: right; padding-right: 5px"
+                      >
+                        Current status:
+                      </h5>
+                      <h5
+                        id="current_sparc_consortium_status"
+                        class="card-right"
+                        style="
+                          width: auto;
+                          margin-left: 0px;
+                          margin-top: 0px;
+                          padding-left: 5px;
+                        "
+                      >
+                        None
+                      </h5>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="div-confirm-button"
+                style="
+                  display: none;
+                  flex-direction: row;
+                  justify-content: center;
+                  margin: 10px auto;
+                "
+              >
+                <button
+                  onclick="transitionFreeFormMode(this, 'share_sparc_consortium-question-1', 'share_sparc_consortium-tab', 'delete', 'individual-question post-curation')"
+                  data-next="share_sparc_consortium-question-2"
+                  class="confirm-button"
+                  style="
+                    cursor: pointer;
+                    border-radius: 8px;
+                    margin: 10px auto;
+                    width: 100px;
+                    height: 30px;
+                    background: var(--color-light-green);
+                    color: #fff;
+                    font-weight: 600;
+                    border: none;
+                    font-size: 13px;
+                  "
+                >
+                  Confirm
                 </button>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <div
-          class="individual-question post-curation"
-          id="submit_prepublishing_review-question-4"
+      <div
+        class="individual-question post-curation"
+        id="share_sparc_consortium-question-2"
+        style="height: auto"
+      >
+        <div class="ui form" style="width: 450px">
+          <div class="grouped fields">
+            <label
+              style="
+                font-size: 17px;
+                color: var(--color-bg-plum);
+                width: 100%;
+                text-align: center;
+              "
+            ></label>
+            <div
+              id="div-confirm-share_sparc_consortium"
+              style="
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                margin: 0 auto;
+              "
+            >
+              <div style="display: flex; justify-content: space-between">
+                <button
+                  onclick="unshareDataset('share-with-sparc-consortium')"
+                  id="sparc-consortium-unshare-btn"
+                  class="btn_animated md skip"
+                  style="
+                    cursor: pointer;
+                    border-radius: 8px;
+                    margin: 20px 10px;
+                    width: 140px;
+                    height: 40px;
+                    background: #fff;
+                    color: red;
+                    font-weight: 600;
+                    border: 1px solid red;
+                    font-size: 15px;
+                    display: none;
+                  "
+                >
+                  <i class="fas fa-share" style="padding-right: 5px"></i>
+                  Unshare
+                </button>
+                <button
+                  id="sparc-consortium-share-btn"
+                  onclick="disseminateDataset('share-with-sparc-consortium')"
+                  class="btn_animated md"
+                  style="
+                    margin: 10px auto;
+                    width: 140px;
+                    height: 40px;
+                    font-size: 15px;
+                    border: none !important;
+                    display: none;
+                  "
+                >
+                  <i class="fas fa-share" style="padding-right: 5px"></i>
+                  Share now
+                </button>
+              </div>
+              <div
+                id="share-with-sparc-consortium-spinner"
+                class="spinner post-curation"
+                style="display: none"
+              >
+                <div class="rect1"></div>
+                <div class="rect2"></div>
+                <div class="rect3"></div>
+                <div class="rect4"></div>
+                <div class="rect5"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-div">
+      <div style="display: flex; flex-direction: row; width: 120px">
+        <button
+          type="button"
+          class="transition-btn prev"
+          data-section="main_tabs"
         >
-          <div class="ui form" style="width: 450px">
-            <div class="grouped fields">
-              <!--Metadata file viewer-->
-              <div id="excluded-files-container">
-                <!--Pennsieve file tree header-->
+          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section
+  id="submit_prepublishing_review-section"
+  class="section js-section u-category-windows"
+  style="padding-left: 5px; overflow-y: hidden; margin-left: -25px"
+>
+  <div
+    class="main-tabs show"
+    style="display: flex; height: 100%; overflow-y: hidden"
+  >
+    <header class="section-header">
+      <div
+        style="
+          display: inline-flex;
+          align-items: center;
+          flex-direction: row;
+          width: 94.5%;
+          padding-right: 20px;
+          margin-bottom: 50px;
+        "
+      >
+        <div class="need-help-div">
+          <h2>Disseminate Datasets - Submit for pre-publishing review</h2>
+          <a
+            target="_blank"
+            href="https://docs.sodaforsparc.io/docs/disseminate-dataset/submit-for-pre-publishing-review"
+            >Need help?</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <div
+      id="submit_prepublishing_review-tab"
+      style="overflow-y: auto; height: 80%"
+    >
+      <div
+        class="individual-question post-curation show"
+        id="submit_prepublishing_review-question-1"
+        style="height: auto"
+      >
+        <div class="ui form" style="width: 100%">
+          <div class="grouped fields">
+            <label style="font-size: 17px; color: var(--color-bg-plum)"
+              >Select a dataset:
+            </label>
+            <div class="field" style="margin: auto; width: 500px">
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: space-between;
+                  margin-top: 15px;
+                  height: auto;
+                  box-shadow: 0px 0px 10px #d5d5d5;
+                  padding: 15px 25px;
+                  border-radius: 5px;
+                "
+              >
                 <div
                   style="
                     display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
+                    flex-direction: row;
+                    justify-content: space-between;
                   "
                 >
-                  <label
-                    id="pre-publishing-file-viewer-label"
-                    style="
-                      font-size: 17px;
-                      color: var(--color-bg-plum);
-                      width: 100%;
-                      text-align: center;
-                      margin-top: 1.5rem;
-                    "
-                    >Optionally exclude metadata files from publishing:
-                    <i
-                      class="fas fa-info-circle popover-tooltip"
-                      data-content="Excluded metadata files will not be visible to the public once your dataset has been published."
-                      rel="popover"
-                      data-html="true"
-                      data-placement="right"
-                      data-trigger="hover"
-                    ></i>
-                  </label>
+                  <div class="card-container manage-dataset">
+                    <div style="display: flex">
+                      <h5
+                        class="card-left"
+                        style="text-align: right; padding-right: 5px"
+                      >
+                        Current account:
+                      </h5>
+                      <div
+                        class="change-current-account"
+                        style="width: 100%"
+                        onclick="openDropdownPrompt(this, 'bf')"
+                      >
+                        <h5 class="card-right bf-account-span">None</h5>
+
+                        <svg
+                          class="svg-change-current-account bi bi-pencil-fill"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18"
+                          height="18"
+                          fill="#000"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    margin-bottom: 15px;
+                  "
+                >
+                  <div class="card-container manage-dataset">
+                    <div>
+                      <h5
+                        class="card-left"
+                        style="text-align: right; padding-right: 5px"
+                      >
+                        Account details:
+                      </h5>
+                      <h5 class="card-right bf-account-details-span">None</h5>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                  "
+                >
+                  <div class="card-container manage-dataset">
+                    <div style="display: flex">
+                      <h5
+                        class="card-left"
+                        style="text-align: right; padding-right: 5px"
+                      >
+                        Current dataset:
+                      </h5>
+                      <div
+                        class="change-current-account"
+                        onclick="openDropdownPrompt(this, 'dataset')"
+                        style="width: 100%"
+                      >
+                        <h5 class="card-right bf-dataset-span">None</h5>
 
-                <!--Pennsieve metadata file viewer-->
-                <div id="pre-publication-items-container">
-                  <div id="items-pre-publication"></div>
-
+                        <svg
+                          class="svg-change-current-account dataset bi bi-pencil-fill"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18"
+                          height="18"
+                          fill="#000"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
                   <div
-                    class="ui active medium text loader items-spinner"
-                    style="
-                      position: absolute;
-                      top: 10rem;
-                      margin-left: auto;
-                      margin-right: auto;
-                    "
-                  >
-                    Fetching Files
+                    class="ui active green inline loader small"
+                    style="display: none"
+                  ></div>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                    margin-bottom: 15px;
+                  "
+                >
+                  <div class="card-container manage-dataset">
+                    <div style="display: flex">
+                      <h5
+                        class="card-left"
+                        style="
+                          color: #808080;
+                          font-size: 15px;
+                          text-align: right;
+                          padding-right: 5px;
+                        "
+                      >
+                        Review status:
+                      </h5>
+                      <div
+                        class="change-current-account"
+                        style="width: 100%"
+                        onclick="refreshDatasetStatus()"
+                      >
+                        <span
+                          id="para-review-dataset-info-disseminate"
+                          style="
+                            color: #000;
+                            font-weight: 600;
+                            margin-left: 5px;
+                            font-size: 15px;
+                          "
+                        >
+                          None
+                        </span>
+
+                        <i
+                          class="fas fa-sync svg-change-current-account"
+                          id="button-refresh-publishing-status"
+                          style="color: #000"
+                        ></i>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
+              <div
+                class="div-confirm-button"
+                style="
+                  display: none;
+                  flex-direction: row;
+                  justify-content: center;
+                  margin: 10px auto;
+                "
+              >
+                <button
+                  onclick="transitionFreeFormMode(this, 'submit_prepublishing_review-question-1', 'submit_prepublishing_review-tab', 'delete', 'individual-question post-curation')"
+                  data-next="submit_prepublishing_review-question-2"
+                  class="confirm-button"
+                  style="
+                    cursor: pointer;
+                    border-radius: 8px;
+                    margin: 10px auto;
+                    width: 100px;
+                    height: 30px;
+                    background: var(--color-light-green);
+                    color: #fff;
+                    font-weight: 600;
+                    border: none;
+                    font-size: 13px;
+                  "
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-              <!--Submit Button-->
-              <!--#submit-withdraw-prepublishing-btns-container-->
+      <div
+        class="individual-question post-curation"
+        id="submit_prepublishing_review-question-2"
+        style="height: auto"
+      >
+        <div id="begin-prepublishing-button-container">
+          <button
+            id="begin-prepublishing-btn"
+            class="btn_animated md"
+            style="width: 200px; height: 40px; font-size: 15px"
+            data-current="submit_prepublishing_review-question-2"
+            data-next="submit_prepublishing_review-question-3"
+          >
+            Begin Submission
+          </button>
+        </div>
+      </div>
+
+      <div
+        class="individual-question post-curation"
+        id="submit_prepublishing_review-question-3"
+      >
+        <div class="ui form" style="width: 450px">
+          <div class="grouped fields">
+            <div id="prepublishing-checklist-container">
               <div
                 style="
                   display: flex;
@@ -1183,41 +897,321 @@
                   align-items: center;
                   justify-content: center;
                 "
-                id="prepublishing-submit-btn-container"
               >
-                <button
-                  onclick="disseminateDataset('submit-pre-publishing')"
-                  class="btn_animated md"
+                <label
+                  id="pre_publishing_checklist_label"
                   style="
-                    margin: 1.5rem 23%;
-                    width: 200px;
-                    height: 40px;
-                    font-size: 15px;
-                    border: none !important; ;
+                    font-size: 17px;
+                    color: var(--color-bg-plum);
+                    width: 100%;
+                    text-align: center;
+                    margin-bottom: 1rem;
                   "
+                  >Pre-publishing checklist:
+                  <i
+                    class="fas fa-info-circle popover-tooltip"
+                    data-content="Use the pre-publishing checklist below to verify your dataset meets all of the SPARC requirements for a publishable dataset. 
+                                Click on any missing checklist items and you will be navigated to where you may add that item. "
+                    rel="popover"
+                    data-html="true"
+                    data-placement="right"
+                    data-trigger="hover"
+                  ></i>
+                </label>
+
+                <table
+                  class="ui fixed table"
+                  id="prepublishing-checklist"
+                  style="max-height: 250px; width: 780px; margin-top: 0px"
                 >
-                  <i class="fas fa-sign-in-alt" style="padding-right: 5px"></i>
-                  Submit
-                </button>
+                  <thead>
+                    <tr>
+                      <th style="width: 190px">Item</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody style="height: 250px">
+                    <tr style="height: 15px">
+                      <td>
+                        <div
+                          class="icon-wrapper"
+                          style="display: inline-block; padding-right: 5px"
+                        >
+                          <i
+                            class="check icon"
+                            style="color: green"
+                            id="prepublishing-checklist-icon-subtitle"
+                          ></i>
+                        </div>
+                        <button
+                          onClick="transitionFromPrePublishingChecklist('add_edit_subtitle-section')"
+                        >
+                          Add a subtitle
+                        </button>
+                      </td>
+                      <td>Give others a brief description of your dataset.</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div
+                          class="icon-wrapper"
+                          style="display: inline-block; padding-right: 5px"
+                        >
+                          <i
+                            class="check icon"
+                            style="color: green; margin-right: 5px"
+                            id="prepublishing-checklist-icon-tags"
+                          ></i>
+                        </div>
+                        <button
+                          onClick="transitionFromPrePublishingChecklist('add_tags-section')"
+                        >
+                          Add tags
+                        </button>
+                      </td>
+                      <td>
+                        Make it easier for people to find your dataset in
+                        Discover.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div
+                          class="icon-wrapper"
+                          style="display: inline-block; padding-right: 5px"
+                        >
+                          <i
+                            class="check icon"
+                            style="color: green; margin-right: 5px"
+                            id="prepublishing-checklist-icon-readme"
+                          ></i>
+                        </div>
+                        <button
+                          onClick="transitionFromPrePublishingChecklist('add_edit_description-section')"
+                        >
+                          Add a description
+                        </button>
+                      </td>
+                      <td>
+                        Give others a detailed overview of your dataset and
+                        outline your findings and analysis.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div
+                          class="icon-wrapper"
+                          style="display: inline-block; padding-right: 5px"
+                        >
+                          <i
+                            class="check icon"
+                            style="color: green; margin-right: 5px"
+                            id="prepublishing-checklist-icon-banner"
+                          ></i>
+                        </div>
+                        <button
+                          onClick="transitionFromPrePublishingChecklist('add_edit_banner-section')"
+                        >
+                          Add a banner image
+                        </button>
+                      </td>
+                      <td>
+                        Add a banner image to help your dataset stand out in
+                        listings.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div
+                          class="icon-wrapper"
+                          style="display: inline-block; padding-right: 5px"
+                        >
+                          <i
+                            class="check icon"
+                            style="color: green; margin-right: 5px"
+                            id="prepublishing-checklist-icon-license"
+                          ></i>
+                        </div>
+                        <button
+                          onClick="transitionFromPrePublishingChecklist('add_license-section')"
+                        >
+                          Add a license
+                        </button>
+                      </td>
+                      <td>
+                        Let others know how they can use this data in their own
+                        research.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div
+                          class="icon-wrapper"
+                          style="display: inline-block; padding-right: 5px"
+                        >
+                          <i
+                            class="check icon"
+                            style="color: green; margin-right: 5px"
+                            id="prepublishing-checklist-icon-ORCID"
+                          ></i>
+                        </div>
+                        <button id="ORCID-btn">Link ORCID iD</button>
+                      </td>
+                      <td>
+                        Link your ORCID iD to Pennsieve in order to distinguish
+                        yourself from other researchers.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
+            </div>
+
+            <!--Continue Button comes before filetree and excluded files section-->
+            <div class="pre-publishing-continue-container">
+              <button
+                class="pre-publishing-continue btn_animated"
+                style="
+                  width: 200px;
+                  height: 40px;
+                  font-size: 15px;
+                  margin-top: 2rem;
+                "
+                data-current="submit_prepublishing_review-question-3"
+                data-next="submit_prepublishing_review-question-4"
+              >
+                Continue
+              </button>
+            </div>
+
+            <!--Withdraw dataset from review when Review status shows dataset is under review-->
+            <div
+              style="width: 100%; display: flex; justify-content: center"
+              id="prepublishing-withdraw-btn-container"
+            >
+              <button
+                id="btn-withdraw-review-dataset"
+                onclick="withdrawDatasetSubmission()"
+                class="btn_animated md skip"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  width: 200px;
+                  height: 40px;
+                  background: #fff;
+                  color: red;
+                  font-weight: 600;
+                  border: 1px solid red;
+                  font-size: 15px;
+                "
+              >
+                <i class="fas fa-ban" style="padding-right: 5px"></i>
+                Withdraw from review
+              </button>
             </div>
           </div>
         </div>
-
-        <!--End of tab-->
       </div>
 
-      <div class="footer-div">
-        <div style="display: flex; flex-direction: row; width: 120px">
-          <button
-            type="button"
-            class="transition-btn prev"
-            data-section="main_tabs"
-          >
-            <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
-          </button>
+      <div
+        class="individual-question post-curation"
+        id="submit_prepublishing_review-question-4"
+      >
+        <div class="ui form" style="width: 450px">
+          <div class="grouped fields">
+            <!--Metadata file viewer-->
+            <div id="excluded-files-container">
+              <!--Pennsieve file tree header-->
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
+                <label
+                  id="pre-publishing-file-viewer-label"
+                  style="
+                    font-size: 17px;
+                    color: var(--color-bg-plum);
+                    width: 100%;
+                    text-align: center;
+                    margin-top: 1.5rem;
+                  "
+                  >Optionally exclude metadata files from publishing:
+                  <i
+                    class="fas fa-info-circle popover-tooltip"
+                    data-content="Excluded metadata files will not be visible to the public once your dataset has been published."
+                    rel="popover"
+                    data-html="true"
+                    data-placement="right"
+                    data-trigger="hover"
+                  ></i>
+                </label>
+              </div>
+
+              <!--Pennsieve metadata file viewer-->
+              <div id="pre-publication-items-container">
+                <div id="items-pre-publication"></div>
+
+                <div
+                  class="ui active medium text loader items-spinner"
+                  style="
+                    position: absolute;
+                    top: 10rem;
+                    margin-left: auto;
+                    margin-right: auto;
+                  "
+                >
+                  Fetching Files
+                </div>
+              </div>
+            </div>
+
+            <!--Submit Button-->
+            <!--#submit-withdraw-prepublishing-btns-container-->
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+              "
+              id="prepublishing-submit-btn-container"
+            >
+              <button
+                onclick="disseminateDataset('submit-pre-publishing')"
+                class="btn_animated md"
+                style="
+                  margin: 1.5rem 23%;
+                  width: 200px;
+                  height: 40px;
+                  font-size: 15px;
+                  border: none !important; ;
+                "
+              >
+                <i class="fas fa-sign-in-alt" style="padding-right: 5px"></i>
+                Submit
+              </button>
+            </div>
+          </div>
         </div>
       </div>
+
+      <!--End of tab-->
     </div>
-  </section>
-</template>
+
+    <div class="footer-div">
+      <div style="display: flex; flex-direction: row; width: 120px">
+        <button
+          type="button"
+          class="transition-btn prev"
+          data-section="main_tabs"
+        >
+          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,7 +1,9 @@
 const { app, BrowserWindow, dialog, shell } = require("electron");
+require("@electron/remote/main").initialize();
 app.showExitPrompt = true;
 const path = require("path");
 const glob = require("glob");
+const fp = require("find-free-port");
 const os = require("os");
 const contextMenu = require("electron-context-menu");
 const log = require("electron-log");
@@ -29,8 +31,11 @@ const nodeStorage = new JSONStorage(app.getPath("userData"));
 const PY_FLASK_DIST_FOLDER = "pyflaskdist";
 const PY_FLASK_FOLDER = "pyflask";
 const PY_FLASK_MODULE = "app";
-let PORT = "4242";
 let pyflaskProcess = null;
+
+let PORT = 4242;
+let selectedPort = null; 
+const portRange = 100;
 
 /**
  * Determine if the application is running from a packaged version or from a dev version.
@@ -77,44 +82,63 @@ const getScriptPath = () => {
 };
 
 const selectPort = () => {
-  PORT = 4242;
   return PORT;
 };
 
-const createPyProc = () => {
+const createPyProc = async () => {
   let script = getScriptPath();
+  log.info(script);
+
   let port = "" + selectPort();
 
-  log.info(script);
+  await killAllPreviousProcesses();
+
   if (require("fs").existsSync(script)) {
-    log.info("file exists");
+    log.info("server exists at specified location");
   } else {
-    log.info("file does not exist");
-  }
-  if (guessPackaged()) {
-    log.info("execFile");
-    pyflaskProcess = require("child_process").execFile(script, [port], {
-      stdio: "ignore",
-    });
-  } else {
-    log.info("spawn");
-    pyflaskProcess = require("child_process").spawn("python", [script, port], {
-      stdio: "ignore",
-    });
+    log.info("server does not exist at specified location");
   }
 
-  if (pyflaskProcess != null) {
-    console.log("child process success on port " + port);
-    log.info("child process success on port " + port);
-  } else {
-    console.error("child process failed to start on port" + PORT);
-  }
+  fp(PORT, PORT + portRange)
+    .then(([freePort]) => {
+      let port = freePort;
+
+      if (guessPackaged()) {
+        log.info("Application is packaged");
+        pyflaskProcess = require("child_process").execFile(script, [port], {
+          stdio: "ignore",
+        });
+      } else {
+        log.info("Application is not packaged");
+        pyflaskProcess = require("child_process").spawn(
+          "python",
+          [script, port],
+          {
+            stdio: "ignore",
+          }
+        );
+      }
+
+      if (pyflaskProcess != null) {
+        console.log("child process success on port " + port);
+        log.info("child process success on port " + port);
+      } else {
+        console.error("child process failed to start on port" + port);
+      }
+
+      selectedPort = port 
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 /**
  * Kill the python server process. Needs to be called before SODA closes.
  */
 const exitPyProc = async () => {
+  log.info("Killing python server process");
+
   // Windows does not properly shut off the python server process. This ensures it is killed.
   const killPythonProcess = () => {
     // kill pyproc with command line
@@ -126,17 +150,39 @@ const exitPyProc = async () => {
     ]);
   };
 
+  await killAllPreviousProcesses();
+
   // check if the platform is Windows
   if (process.platform === "win32") {
     killPythonProcess();
     pyflaskProcess = null;
     PORT = null;
-  } else {
-    // send kill GET request to endpoint localhost:4242/sodaforsparc_server_shutdown using axios
-    await axios.get("http://localhost:4242/sodaforsparc_server_shutdown");
-    pyflaskProcess = null;
-    PORT = null;
+    return;
   }
+
+  // kill signal to pyProc
+  pyflaskProcess.kill();
+  pyflaskProcess = null;
+  PORT = null;
+};
+
+const killAllPreviousProcesses = async () => {
+  console.log("Killing all previous processes");
+
+  // kill all previous python processes that could be running.
+  let promisesArray = [];
+
+  let endRange = PORT + portRange;
+
+  // create a loop of 100
+  for (let currentPort = PORT; currentPort <= endRange; currentPort++) {
+    promisesArray.push(
+      axios.get(`http://127.0.0.1:${currentPort}/sodaforsparc_server_shutdown`, {})
+    );
+  }
+
+  // wait for all the promises to resolve
+  await Promise.allSettled(promisesArray);
 };
 
 // 5.4.1 change: We call createPyProc in a spearate ready event
@@ -170,31 +216,30 @@ function initialize() {
       }
     });
 
-    mainWindow.on("close", (e) => {
+    mainWindow.on("close", async (e) => {
       if (!user_restart_confirmed) {
         if (app.showExitPrompt) {
           e.preventDefault(); // Prevents the window from closing
-          dialog.showMessageBox(
-            BrowserWindow.getFocusedWindow(),
-            {
+          dialog
+            .showMessageBox(BrowserWindow.getFocusedWindow(), {
               type: "question",
               buttons: ["Yes", "No"],
               title: "Confirm",
               message:
                 "Any running process will be stopped. Are you sure you want to quit?",
-            },
-            function (response) {
+            })
+            .then((responseObject) => {
+              let { response } = responseObject;
               if (response === 0) {
                 // Runs the following if 'Yes' is clicked
                 quit_app();
               }
-            }
-          );
+            });
         }
       } else {
         var first_launch = nodeStorage.getItem("firstlaunch");
         nodeStorage.setItem("firstlaunch", true);
-        exitPyProc();
+        await exitPyProc();
         app.exit();
       }
     });
@@ -214,8 +259,6 @@ function initialize() {
   app.on("ready", () => {
     createPyProc();
 
-    console.log("Creating py proc");
-
     const windowOptions = {
       minWidth: 1121,
       minHeight: 735,
@@ -227,10 +270,14 @@ function initialize() {
       webPreferences: {
         nodeIntegration: true,
         enableRemoteModule: true,
+        contextIsolation: false,
+        sandbox: false,
+        // preload: path.join(__dirname, "preload.js"),
       },
     };
 
     mainWindow = new BrowserWindow(windowOptions);
+    require("@electron/remote/main").enable(mainWindow.webContents);
     mainWindow.loadURL(path.join("file://", __dirname, "/index.html"));
 
     const splash = new BrowserWindow({
@@ -275,7 +322,6 @@ function initialize() {
   });
 
   app.on("ready", () => {
-    //createWindow()
     trackEvent(
       "Success",
       "App Launched - OS",
@@ -284,14 +330,13 @@ function initialize() {
     trackEvent("Success", "App Launched - SODA", app.getVersion());
   });
 
-  app.on("window-all-closed", () => {
-    // if (process.platform !== 'darwin') {
+  app.on("window-all-closed", async () => {
+    await exitPyProc();
     app.quit();
-    // }
   });
 
   app.on("will-quit", () => {
-    exitPyProc();
+    app.quit();
   });
 }
 
@@ -440,3 +485,7 @@ ipcMain.on("orcid", (event, url) => {
     }
   });
 });
+
+ipcMain.on("get-port", (event) => {
+  event.returnValue = selectedPort
+})
