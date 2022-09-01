@@ -143,7 +143,7 @@ log.info("User OS:", os.type(), os.platform(), "version:", os.release());
 console.log("User OS:", os.type(), os.platform(), "version:", os.release());
 
 // Check current app version //
-const appVersion = app.getVersion();
+let appVersion = app.getVersion();
 log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
 
@@ -426,7 +426,7 @@ const startupServerAndApiCheck = async () => {
     await apiVersionsMatch();
   } catch (e) {
     // api versions do not match
-    app.exit();
+    // app.exit();
   }
 
   apiVersionChecked = true;
@@ -472,7 +472,9 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
 });
 
 //TODO: check for announcements here
-const checkForAnnouncements = async () => {
+const checkForAnnouncements = async (state) => {
+  //state will be either "update" or blank
+  //when "update" is passed it will know there user needs to update
   const url = `https://raw.githubusercontent.com/fairdataihub/SODA-for-SPARC/staging-dup/src/scripts/meta/announcements.json?timestamp=${new Date().getTime()}`;
 
   const axiosInstance = axios.create({
@@ -535,6 +537,23 @@ const checkForAnnouncements = async () => {
               });
             }
           }
+        } else {
+          //app version is not up to date
+          Swal.fire({
+            title: res["older"]["all"]["title"],
+            html: `<p>${res[key]["all"]["message"]}</p>`,
+            icon: res[key]["all"]["type"],
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            confirmButtonText: "Okay",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+              let swal_alert =
+                document.getElementsByClassName("swal2-popup")[0];
+              swal_alert.style.width = "40rem";
+            },
+          });
         }
       }
     });
@@ -815,7 +834,10 @@ const apiVersionsMatch = async () => {
   let serverAppVersion = responseObject.data.version;
 
   log.info(`Server version is ${serverAppVersion}`);
-
+  console.log(serverAppVersion);
+  // console.log(appVersion);
+  appVersion = "8.0.0";
+  console.log(appVersion);
   if (serverAppVersion !== appVersion) {
     log.info("Server version does not match client version");
     console.error("Server version does not match client version");
@@ -826,15 +848,8 @@ const apiVersionsMatch = async () => {
       "Server version does not match client version"
     );
 
-    await Swal.fire({
-      icon: "error",
-      html: `${serverAppVersion} ${appVersion} The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: "Close now",
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-    });
+    console.log("bruh");
+    await checkForAnnouncements("update");
 
     throw new Error();
   }
@@ -1082,6 +1097,7 @@ ipcRenderer.on("update_available", () => {
     type: "app_update",
     message: "A new update is available. Downloading now...",
   });
+  // checkForAnnouncements("update");
 });
 
 // When the update is downloaded, show the restart notification
