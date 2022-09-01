@@ -1305,7 +1305,7 @@ const trackManifestImportProgress = async () => {
     let totalManifestFiles = manifestProgress.total_manifest_files;
     let totalManifestFilesCreated = manifestProgress.manifest_files_uploaded;
 
-    updateProgressContainer(progress_container, percentage_text, left_progress_bar, right_progress_bar, manifestProgress)
+    updateProgressContainer(progress_container, percentage_text, left_progress_bar, right_progress_bar, manifestProgress, "manifest")
 
     if (totalManifestFiles === totalManifestFilesCreated) {
       clearInterval(manifestProgressInterval);

@@ -8279,6 +8279,17 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
  * }
  */
 var bf_request_and_populate_dataset = async (sodaJSONObj, progressContainer) => {
+
+  let { percentage_text, left_progress_bar, right_progress_bar } = getProgressContainerElements(progressContainer)
+
+  resetProgressContainer(
+    progressContainer,
+    percentage_text,
+    left_progress_bar,
+    right_progress_bar
+  );
+
+
   /**
   * Given a progress tracking container, update the progress display to show the user the progress of their dataset import.
   * Once the import has been completed (i.e. the progress is 100%), the progress container will be hidden. The interval will be cleared.
@@ -8288,22 +8299,7 @@ var bf_request_and_populate_dataset = async (sodaJSONObj, progressContainer) => 
   */
   const requestDatasetImportProgress = async (progress_container) => {
 
-    let percentage_text = progress_container.querySelector(
-      ".pennsieve_loading_dataset_percentage"
-    );
-    let left_progress_bar = progress_container.querySelector(
-      ".pennsieve_left-side_less_than_50"
-    );
-    let right_progress_bar = progress_container.querySelector(
-      ".pennsieve_right-side_greater_than_50"
-    );
 
-    resetProgressContainer(
-      progress_container,
-      percentage_text,
-      left_progress_bar,
-      right_progress_bar
-    );
 
     let progressResponse;
     try {
@@ -8318,7 +8314,7 @@ var bf_request_and_populate_dataset = async (sodaJSONObj, progressContainer) => 
 
     let progressReport = progressResponse.data;
 
-    updateProgressContainer(progress_container, percentage_text, left_progress_bar, right_progress_bar, progressReport)
+    updateProgressContainer(progress_container, percentage_text, left_progress_bar, right_progress_bar, progressReport, "pennsieve_import")
 
     if (finished === 1) {
       clearInterval(interval);
@@ -8341,8 +8337,6 @@ var bf_request_and_populate_dataset = async (sodaJSONObj, progressContainer) => 
     );
 
     let data = filesFoldersResponse.data;
-
-    console.log(`Files and folders retrieved: ${JSON.stringify(data)}`);
 
     ipcRenderer.send(
       "track-event",

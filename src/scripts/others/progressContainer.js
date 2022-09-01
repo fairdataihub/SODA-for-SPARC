@@ -33,6 +33,9 @@ const updateProgressContainer = (progress_container, percentage_text, left_progr
  * @param {*} manifestProgress 
  */
 const updateProgressContainerManifest = (progress_container, percentage_text, left_progress_bar, right_progress_bar, manifestProgress) => {
+    console.log("Manifest updating...");
+    console.log(manifestProgress);
+
     let totalManifestFiles = manifestProgress.total_manifest_files;
     let totalManifestFilesCreated = manifestProgress.manifest_files_uploaded;
 
@@ -74,6 +77,7 @@ const updateProgressContainerManifest = (progress_container, percentage_text, le
  * @param {*} pennsieveImportProgress 
  */
 const updateProgressContainerPennsieveImport = (progress_container, percentage_text, left_progress_bar, right_progress_bar, pennsieveImportProgress) => {
+    console.log("Pennsieve import updating...");
     let percentage_amount = pennsieveImportProgress["import_progress_percentage"].toFixed(2);
     finished = pennsieveImportProgress["import_completed_items"];
     percentage_text.innerText = percentage_amount + "%";
@@ -120,7 +124,7 @@ const resetProgressContainer = (
     right_progress_bar.style.transform = `rotate(0deg)`;
 
     // dispaly the progress container again
-    progress_container.style.display = "flex";
+    // progress_container.style.display = "flex";
 };
 
 /**
@@ -132,10 +136,14 @@ const getProgressContainerElements = (progress_container) => {
     let percentage_text = progress_container.querySelector(
         ".pennsieve_loading_dataset_percentage"
     );
+
+    console.log(percentage_text)
     
     let left_progress_bar = progress_container.querySelector(
         ".pennsieve_left-side_less_than_50"
     );
+
+    console.log(left_progress_bar)
 
     let right_progress_bar = progress_container.querySelector(
         ".pennsieve_right-side_greater_than_50"
