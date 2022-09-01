@@ -80,6 +80,15 @@ async function handleSectionTrigger(event) {
   );
 
   if (sectionId === "organize-section") {
+    //reset lazyloading values
+    resetLazyLoading();
+    //Transition file explorer elements to freeform mode
+    scroll_box = document.querySelector("#organize-dataset-tab");
+    $(".shared-folder-structure-element").appendTo(
+      $("#free-form-folder-structure-container")
+    );
+    freeFormItemsContainer.classList.add("freeform-file-explorer"); //add styling for free form mode
+    freeFormButtons.classList.add("freeform-file-explorer-buttons");
     organizeDSglobalPath = document.getElementById("input-global-path");
     dataset_path = document.getElementById("input-global-path");
 
@@ -87,13 +96,18 @@ async function handleSectionTrigger(event) {
       sodaJSONObj = savedOrganizeDsSate.OdsTempSodaJSONObj;
       datasetStructureJSONObj = savedOrganizeDsSate.OdsTempDsJSONObj;
       itemsContainer.innerHTML = savedOrganizeDsSate.OdsTempSodaJSONObj;
-      document.getElementById("nextBtn").disabled =
-        savedOrganizeDsSate.OdsTempNextButtonDisabledState;
+      var filtered = getGlobalPath(organizeDSglobalPath);
+      var myPat = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+      listItems(myPat, "#items", 500, (reset = true));
+
+      setTimeout(() => {
+        document.getElementById("nextBtn").disabled =
+          savedOrganizeDsSate.OdsTempNextButtonDisabledState;
+      }, 200);
     } else {
       sodaJSONObj = {};
       datasetStructureJSONObj = {};
       itemsContainer.innerHTML = "";
-
       organizeDSglobalPath.value = "My_dataset_folder/";
     }
     saveOrganizeDsState = true;
@@ -101,15 +115,13 @@ async function handleSectionTrigger(event) {
     if (saveOrganizeDsState === true) {
       //Save the progress of the Organize datasets section
       //When user clicks out of the section
-      let boolNextButtonStatus = document.getElementById("nextBtn").disabled
-        ? true
-        : false;
+      const nextButtonDisabled = document.getElementById("nextBtn").disabled;
 
       savedOrganizeDsSate = {
         OdsTempSodaJSONObj: sodaJSONObj,
         OdsTempDsJSONObj: datasetStructureJSONObj,
         OdsTempSodaJSONObj: itemsContainer.innerHTML,
-        OdsTempNextButtonDisabledState: boolNextButtonStatus,
+        OdsTempNextButtonDisabledState: nextButtonDisabled,
         OdsTempOrganizeDSglobalPathValue: organizeDSglobalPath.value,
       };
       console.log(savedOrganizeDsSate);
@@ -145,17 +157,6 @@ async function handleSectionTrigger(event) {
     //Reset variables shared between guided and free form mode
     subjectsTableData = [];
     samplesTableData = [];
-
-    //Transition file explorer elements to freeform mode
-    scroll_box = document.querySelector("#organize-dataset-tab");
-    $(".shared-folder-structure-elemenjt").appendTo(
-      $("#free-form-folder-structure-container")
-    );
-    freeFormItemsContainer.classList.add("freeform-file-explorer"); //add styling for free form mode
-    freeFormButtons.classList.add("freeform-file-explorer-buttons");
-
-    //reset lazyloading values
-    resetLazyLoading();
   }
 
   hideAllSectionsAndDeselectButtons();
