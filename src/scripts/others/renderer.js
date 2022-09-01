@@ -430,10 +430,6 @@ const startupServerAndApiCheck = async () => {
   }
 
   apiVersionChecked = true;
-
-  //After everything has been checked then check for announcements
-  console.log("check here");
-  await checkForAnnouncements();
 };
 
 startupServerAndApiCheck();
@@ -485,18 +481,24 @@ const checkForAnnouncements = async () => {
   });
 
   try {
-    axiosInstance.get().then((response) => {
+    axiosInstance.get().then(async (response) => {
       let res = response.data;
       let platform = String(os.platform);
+      console.log(res);
 
       for (var key of Object.keys(res)) {
+        console.log(appVersion);
+        console.log(platform);
         if (appVersion === key) {
+          console.log("herdaflkj");
           //check for app version
           if (Object.keys(res[key]).includes(platform)) {
+            console.log("herheadf");
             //check for platform
             if (res[key][platform]["show"] === true) {
+              console.log("should fire here");
               //if platform found then use that object to create announcement
-              Swal.fire({
+              await Swal.fire({
                 title: res[key][platform]["title"],
                 html: `<p>${res[key][platform]["message"]}</p>`,
                 icon: res[key][platform]["type"],
@@ -856,7 +858,7 @@ const check_internet_connection = async (show_notification = true) => {
   }
   await wait(800);
 
-  return require("dns").resolve("www.google.com", (err) => {
+  return require("dns").resolve("www.google.com", async (err) => {
     if (err) {
       console.error("No internet connection");
       log.error("No internet connection");
@@ -881,6 +883,10 @@ const check_internet_connection = async (show_notification = true) => {
         });
       }
       connected_to_internet = true;
+      //after check for announcements
+      //After everything has been checked then check for announcements
+      console.log("check here");
+      await checkForAnnouncements();
       return connected_to_internet;
     }
   });

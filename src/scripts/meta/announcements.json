@@ -1,5 +1,5 @@
 {
-  "6.0.0": {
+  "8.0.1": {
     "all": {
       "show": true,
       "title": "App version outdated",
@@ -8,22 +8,22 @@
     }
   },
 
-  "6.1.0": {
+  "9.0.0": {
     "win32": {
       "show": true,
-      "title": "Welcome to version 6.1.0 for Windows!",
+      "title": "Welcome to version 9.0.0 for Windows!",
       "message": "New features have been added!<br> <li>You can now import hidden files to your dataset (.DS_Store files are not accepted). </li><li>README.txt is now a mandatory metadata file for all datasets.</li><li>The login prompts have been updated to look more appealing.</li>",
       "type": "info"
     },
     "linux": {
       "show": true,
-      "title": "Welcome to version 6.1.0 for Linux!",
+      "title": "Welcome to version 9.0.0 for Linux!",
       "message": "New features have been added!<br> <li>You can now import hidden files to your dataset (.DS_Store files are not accepted). </li><li>README.txt is now a mandatory metadata file for all datasets.</li><li>The login prompts have been updated to look more appealing.</li>",
       "type": "info"
     },
     "darwin": {
       "show": true,
-      "title": "Welcome to version 6.1.0 for MacOS!",
+      "title": "Welcome to version 9.0.0 for MacOS!",
       "message": "New features have been added!<br> <li>You can now import hidden files to your dataset (.DS_Store files are not accepted). </li><li>README.txt is now a mandatory metadata file for all datasets.</li><li>The login prompts have been updated to look more appealing.</li>",
       "type": "info"
     }
