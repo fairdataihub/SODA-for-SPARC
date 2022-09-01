@@ -430,6 +430,10 @@ const startupServerAndApiCheck = async () => {
   }
 
   apiVersionChecked = true;
+
+  //After everything has been checked then check for announcements
+  console.log("check here");
+  await checkForAnnouncements();
 };
 
 startupServerAndApiCheck();
@@ -440,6 +444,7 @@ startupServerAndApiCheck();
 ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
   // run pre flight checks once the server connection is confirmed
   // wait until soda is connected to the backend server
+  console.log("run pre_flight starts here");
   while (!sodaIsConnected || !apiVersionChecked) {
     await wait(1000);
   }
@@ -469,6 +474,72 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
 
   ipcRenderer.send("track-event", "Success", "Setting Templates Path");
 });
+
+//TODO: check for announcements here
+const checkForAnnouncements = async () => {
+  const url = `https://raw.githubusercontent.com/fairdataihub/SODA-for-SPARC/announcements/src/scripts/meta/announcements.json?timestamp=${new Date().getTime()}`;
+
+  const axiosInstance = axios.create({
+    baseURL: url,
+    timeout: 0,
+  });
+
+  try {
+    axiosInstance.get().then((response) => {
+      let res = response.data;
+      let platform = String(os.platform);
+
+      for (var key of Object.keys(res)) {
+        if (appVersion === key) {
+          //check for app version
+          if (Object.keys(res[key]).includes(platform)) {
+            //check for platform
+            if (res[key][platform]["show"] === true) {
+              //if platform found then use that object to create announcement
+              Swal.fire({
+                title: res[key][platform]["title"],
+                html: `<p>${res[key][platform]["message"]}</p>`,
+                icon: res[key][platform]["type"],
+                heightAuto: false,
+                backdrop: "rgba(0,0,0, 0.4)",
+                confirmButtonText: "Okay",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                  let swal_alert =
+                    document.getElementsByClassName("swal2-popup")[0];
+                  swal_alert.style.width = "40rem";
+                },
+              });
+            }
+          } else {
+            //check if all is in json structure
+            //announcements for all OS's
+            if (Object.keys(res[key]).includes("all")) {
+              Swal.fire({
+                title: res[key]["all"]["title"],
+                html: `<p>${res[key]["all"]["message"]}</p>`,
+                icon: res[key]["all"]["type"],
+                heightAuto: false,
+                backdrop: "rgba(0,0,0, 0.4)",
+                confirmButtonText: "Okay",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                  let swal_alert =
+                    document.getElementsByClassName("swal2-popup")[0];
+                  swal_alert.style.width = "40rem";
+                },
+              });
+            }
+          }
+        }
+      }
+    });
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
