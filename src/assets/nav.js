@@ -12,6 +12,13 @@ document.body.addEventListener("click", (event) => {
 document.body.addEventListener("custom-back", (e) => {
   handleSectionTrigger(e);
 });
+let saveOrganizeDsState = false;
+
+let prevSideBarSection;
+let OdsTempDsJSONObj;
+let OdsTempSodaJSONObj;
+let prevSection;
+let savedOrganizeDsSate = {};
 
 async function handleSectionTrigger(event) {
   function saveTempSodaProgress(progressFileName, sodaObject) {
@@ -62,6 +69,8 @@ async function handleSectionTrigger(event) {
 
   // Display the current section
   const sectionId = `${event.target.dataset.section}-section`;
+  prevSection = sectionId;
+  console.log(sectionId);
   const itemsContainer = document.getElementById("items");
   const freeFormItemsContainer = document.getElementById(
     "free-form-folder-structure-container"
@@ -69,6 +78,71 @@ async function handleSectionTrigger(event) {
   const freeFormButtons = document.getElementById(
     "organize-path-and-back-button-div"
   );
+
+  if (sectionId === "organize-section") {
+    /************ Happens every time user clicks organize dataset ****************************/
+    //reset lazyloading values
+    resetLazyLoading();
+    //Transition file explorer elements to freeform mode
+    scroll_box = document.querySelector("#organize-dataset-tab");
+    $(".shared-folder-structure-element").appendTo(
+      $("#free-form-folder-structure-container")
+    );
+    freeFormItemsContainer.classList.add("freeform-file-explorer"); //add styling for free form mode
+    freeFormButtons.classList.add("freeform-file-explorer-buttons");
+    organizeDSglobalPath = document.getElementById("input-global-path");
+    dataset_path = document.getElementById("input-global-path");
+    /**********************************************************************************/
+
+    if (Object.keys(savedOrganizeDsSate).length !== 0) {
+      /**** Happens when temp DS data is saved in the savedOrganizeDsState variable ******/
+      sodaJSONObj = savedOrganizeDsSate.OdsTempSodaJSONObj;
+      datasetStructureJSONObj = savedOrganizeDsSate.OdsTempDsJSONObj;
+
+      organizeDSglobalPath.value =
+        savedOrganizeDsSate.OdsTempOrganizeDSglobalPathValue;
+
+      var filtered = getGlobalPath(organizeDSglobalPath);
+      var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+      listItems(myPath, "#items", 500, (reset = true));
+      console.log(myPath);
+      getInFolder(
+        ".single-item",
+        "#items",
+        organizeDSglobalPath,
+        datasetStructureJSONObj
+      );
+
+      setTimeout(() => {
+        document.getElementById("nextBtn").disabled =
+          savedOrganizeDsSate.OdsTempNextButtonDisabledState;
+      }, 200);
+    } else {
+      /******When no progress is saved, reset this stuff ********/
+      sodaJSONObj = {};
+      datasetStructureJSONObj = {};
+      itemsContainer.innerHTML = "";
+      organizeDSglobalPath.value = "My_dataset_folder/";
+    }
+    /** set var as saved because we always want to save after exiting organize ds ******/
+    saveOrganizeDsState = true;
+  } else {
+    if (saveOrganizeDsState === true) {
+      //Save the progress of the Organize datasets section
+      //When user clicks out of the section
+      const nextButtonDisabled = document.getElementById("nextBtn").disabled;
+
+      savedOrganizeDsSate = {
+        OdsTempSodaJSONObj: sodaJSONObj,
+        OdsTempDsJSONObj: datasetStructureJSONObj,
+        OdsTempNextButtonDisabledState: nextButtonDisabled,
+        OdsTempOrganizeDSglobalPathValue: organizeDSglobalPath.value,
+      };
+      console.log(savedOrganizeDsSate);
+      //reset the var to false so it won't save until the user goes back to organize DS
+      saveOrganizeDsState = false;
+    }
+  }
 
   if (sectionId === "guided_mode-section") {
     //Reset variables shared between guided and free form mode
@@ -95,25 +169,8 @@ async function handleSectionTrigger(event) {
 
   if (sectionId === "main_tabs-section") {
     //Reset variables shared between guided and free form mode
-    sodaJSONObj = {};
-    datasetStructureJSONObj = {};
     subjectsTableData = [];
     samplesTableData = [];
-
-    //Transition file explorer elements to freeform mode
-    organizeDSglobalPath = document.getElementById("input-global-path");
-    organizeDSglobalPath.value = "My_dataset_folder/";
-    dataset_path = document.getElementById("input-global-path");
-    scroll_box = document.querySelector("#organize-dataset-tab");
-    itemsContainer.innerHTML = "";
-    $(".shared-folder-structure-element").appendTo(
-      $("#free-form-folder-structure-container")
-    );
-    freeFormItemsContainer.classList.add("freeform-file-explorer"); //add styling for free form mode
-    freeFormButtons.classList.add("freeform-file-explorer-buttons");
-
-    //reset lazyloading values
-    resetLazyLoading();
   }
 
   hideAllSectionsAndDeselectButtons();
@@ -124,9 +181,6 @@ async function handleSectionTrigger(event) {
     forceActionSidebar("show");
     return;
   }
-
-  // Render guided mode resume progress cards if guided mode section is chosen
-  // and move the folder structuring elements to guided mode
 
   document.getElementById(sectionId).classList.add("is-shown");
 

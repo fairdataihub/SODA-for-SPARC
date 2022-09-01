@@ -7494,6 +7494,9 @@ var uploadComplete = new Notyf({
 
 // Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
 async function initiate_generate() {
+  // Disable the Guided Mode sidebar button to prevent the sodaJSONObj from being modified
+  document.getElementById("guided_mode_view").style.pointerEvents = "none";
+
   // Initiate curation by calling Python function
   let manifest_files_requested = false;
   var main_curate_status = "Solving";
@@ -7624,6 +7627,8 @@ async function initiate_generate() {
         uploadedFiles,
         false
       );
+      //Allow guided_mode_view to be clicked again
+      document.getElementById("guided_mode_view").style.pointerEvents = "";
 
       try {
         let responseObject = await client.get(
@@ -7641,6 +7646,9 @@ async function initiate_generate() {
       }
     })
     .catch(async (error) => {
+      //Allow guided_mode_view to be clicked again
+      document.getElementById("guided_mode_view").style.pointerEvents = "";
+
       clientError(error);
       let emessage = userErrorMessage(error);
       organizeDataset_option_buttons.style.display = "flex";

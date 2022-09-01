@@ -166,6 +166,9 @@ const showParentTab = (tabNow, nextOrPrev) => {
   if (tabNow == x.length - 1) {
     // If in step 6, show the generate button and the preview tab
     $("#nextBtn").css("display", "none");
+    console.log(sodaJSONObj);
+    console.log(datasetStructureJSONObj);
+    console.log("fill info details function called");
 
     let dataset_name = fill_info_details();
     datasetStructureJSONObj["files"] = sodaJSONObj["metadata-files"];
@@ -187,6 +190,11 @@ const showParentTab = (tabNow, nextOrPrev) => {
 
 // function to fill the card details in the preview tab of step 7
 const fill_info_details = () => {
+  if (Object.keys(sodaJSONObj).length === 0) {
+    sodaJSONObj = savedOrganizeDsSate.OdsTempDsJSONObj;
+    console.log(sodaJSONObj);
+  }
+
   let new_dataset_name = "My_dataset_folder";
   $(".card-container.generate-preview").remove();
   if (sodaJSONObj["starting-point"]["type"] === "bf") {
