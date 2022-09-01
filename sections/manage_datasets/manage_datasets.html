@@ -862,91 +862,90 @@
       </div>
     </div>
 
+    <div
+      class="individual-question manage-dataset show"
+      id="div-rename-bf-dataset"
+      style="height: auto"
+    >
       <div
-        class="individual-question manage-dataset show"
-        id="div-rename-bf-dataset"
-        style="height: auto"
+        class="ui form"
+        style="width: 550px !important; display: none; align-self: center"
       >
-        <div
-          class="ui form"
-          style="width: 550px !important; display: none; align-self: center"
-        >
-          <div class="grouped fields">
-            <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                width: 100%;
-                text-align: center;
-              "
-              >What is the new name of the dataset?
-            </label>
-            <div
-              class="field"
-              style="
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                width: 100%;
-                align-self: center;
-                margin-bottom: 20px;
-              "
-            >
-              <input
-                type="text"
-                class="form-control"
-                style="background: #fff !important; /* width: 550px; */"
-                id="bf-rename-dataset-name"
-                placeholder="Type here"
-                data-alert-message='A Pennsieve dataset name cannot contain any of the following characters: " / : * ? < > \'
-                data-alert-type="danger"
-              />
-              <div style="border-radius: 0.5rem; margin-top: 7px">
-                <p class="tip-content">
-                  When renaming your dataset, ensure that the name is different
-                  than your other dataset names and it is relatively
-                  informative.
-                </p>
-              </div>
+        <div class="grouped fields">
+          <label
+            style="
+              font-size: 17px;
+              color: var(--color-bg-plum);
+              width: 100%;
+              text-align: center;
+            "
+            >What is the new name of the dataset?
+          </label>
+          <div
+            class="field"
+            style="
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              width: 100%;
+              align-self: center;
+              margin-bottom: 20px;
+            "
+          >
+            <input
+              type="text"
+              class="form-control"
+              style="background: #fff !important; /* width: 550px; */"
+              id="bf-rename-dataset-name"
+              placeholder="Type here"
+              data-alert-message='A Pennsieve dataset name cannot contain any of the following characters: " / : * ? < > \'
+              data-alert-type="danger"
+            />
+            <div style="border-radius: 0.5rem; margin-top: 7px">
+              <p class="tip-content">
+                When renaming your dataset, ensure that the name is different
+                than your other dataset names and it is relatively
+                informative.
+              </p>
             </div>
-            <div
-              style="
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                margin: 0 auto;
-              "
-            >
-              <button
-                id="button-rename-dataset"
-                class="btn_animated"
-                style="width: 140px; border: none !important"
-              >
-                <div>Rename dataset</div>
-              </button>
-              <div
-                id="bf-rename-dataset-spinner"
-                class="spinner"
-                style="visibility: hidden"
-              >
-                <div class="rect1"></div>
-                <div class="rect2"></div>
-                <div class="rect3"></div>
-                <div class="rect4"></div>
-                <div class="rect5"></div>
-              </div>
-            </div>
-            <p
-              id="para-rename-dataset-status"
-              style="
-                text-align: center;
-                font-weight: 400;
-                color: var(--color-light-green);
-                font-size: 15px;
-              "
-            ></p>
           </div>
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              align-items: center;
+              margin: 0 auto;
+            "
+          >
+            <button
+              id="button-rename-dataset"
+              class="btn_animated"
+              style="width: 140px; border: none !important"
+            >
+              <div>Rename dataset</div>
+            </button>
+            <div
+              id="bf-rename-dataset-spinner"
+              class="spinner"
+              style="visibility: hidden"
+            >
+              <div class="rect1"></div>
+              <div class="rect2"></div>
+              <div class="rect3"></div>
+              <div class="rect4"></div>
+              <div class="rect5"></div>
+            </div>
+          </div>
+          <p
+            id="para-rename-dataset-status"
+            style="
+              text-align: center;
+              font-weight: 400;
+              color: var(--color-light-green);
+              font-size: 15px;
+            "
+          ></p>
         </div>
       </div>
     </div>
@@ -962,6 +961,7 @@
         </button>
       </div>
     </div>
+    
   </div>
 </section>
 
