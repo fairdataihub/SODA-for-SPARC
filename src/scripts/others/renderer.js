@@ -705,6 +705,10 @@ const run_pre_flight_checks = async (check_update = true) => {
                   type: "final",
                   message: "You're all set!",
                 });
+                //after check for announcements
+                //After everything has been checked then check for announcements
+                console.log("check here");
+                await checkForAnnouncements();
                 resolve(true);
               }
             });
@@ -717,6 +721,10 @@ const run_pre_flight_checks = async (check_update = true) => {
               type: "final",
               message: "You're all set!",
             });
+            //after check for announcements
+            //After everything has been checked then check for announcements
+            console.log("check here");
+            await checkForAnnouncements();
             resolve(true);
           }
         }
@@ -883,10 +891,6 @@ const check_internet_connection = async (show_notification = true) => {
         });
       }
       connected_to_internet = true;
-      //after check for announcements
-      //After everything has been checked then check for announcements
-      console.log("check here");
-      await checkForAnnouncements();
       return connected_to_internet;
     }
   });
