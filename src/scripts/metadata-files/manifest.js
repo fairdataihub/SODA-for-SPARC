@@ -1284,15 +1284,7 @@ const trackManifestImportProgress = async () => {
     "loading_pennsieve_dataset_manifest"
   );
 
-  let percentage_text = progress_container.querySelector(
-    ".pennsieve_loading_dataset_percentage"
-  );
-  let left_progress_bar = progress_container.querySelector(
-    ".pennsieve_left-side_less_than_50"
-  );
-  let right_progress_bar = progress_container.querySelector(
-    ".pennsieve_right-side_greater_than_50"
-  );
+  let { percentage_text, left_progress_bar, right_progress_bar } = getProgressContainerElements(progress_container);
 
   resetProgressContainer(progress_container, percentage_text, left_progress_bar, right_progress_bar)
 
@@ -1316,7 +1308,7 @@ const trackManifestImportProgress = async () => {
     updateProgressContainer(progress_container, percentage_text, left_progress_bar, right_progress_bar, manifestProgress)
 
     if (totalManifestFiles === totalManifestFilesCreated) {
-        clearInterval(manifestProgressInterval);
+      clearInterval(manifestProgressInterval);
     }
   };
 
