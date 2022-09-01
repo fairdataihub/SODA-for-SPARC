@@ -133,6 +133,11 @@ log.transports.file.maxSize = 1024 * 1024 * 10;
 const homeDirectory = app.getPath("home");
 const SODA_SPARC_API_KEY = "SODA-Pennsieve";
 
+// get port number from the main process
+log.info("Requesting the port")
+const port = ipcRenderer.sendSync("get-port");
+log.info("Port is: " + port);
+
 // set to true once the SODA server has been connected to
 let sodaIsConnected = false;
 // set to true once the API version has been confirmed
@@ -215,9 +220,6 @@ document.getElementById("getting_starting_tab").click();
 //////////////////////////////////
 
 let client = null;
-
-// get port number from the main process
-const port = ipcRenderer.sendSync("get-port");
 
 // TODO: change the default port so it is based off the discovered port in Main.js
 client = axios.create({
