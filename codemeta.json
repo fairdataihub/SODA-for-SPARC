@@ -1,112 +1,114 @@
 {
-  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
-  "@type": "SoftwareSourceCode",
-  "license": "https://spdx.org/licenses/MIT",
-  "codeRepository": "https://github.com/fairdataihub/SODA-for-SPARC",
-  "dateCreated": "2021-10-08",
-  "datePublished": "2022-08-08",
-  "dateModified": "2022-08-08",
-  "downloadUrl": "https://fairdataihub.org/sodaforsparc",
-  "issueTracker": "https://github.com/fairdataihub/SODA-for-SPARC/issues",
-  "name": "SODA (Software to Organize Data Automatically) for SPARC",
-  "version": "7.0.1",
-  "identifier": "https://doi.org/10.5281/zenodo.5565455",
-  "description": "Simplifying data curation for researchers funded by the NIH SPARC initiative",
-  "applicationCategory": "Scientific",
-  "releaseNotes": "## v.8.0.0 - 2022-08-08\n\n## Feature additions:\n\n- Updated Electron to version 19.0.0.\n\n### Known Issues:\n\n- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.\n- When uploading a dataset through Upload Local Dataset or Organize Dataset feature to Pennsieve the upload will sometimes freeze. When this occurs it is best to reset the upload and ensure the Pennsieve Agent has been stopped before attempting to upload again. It is also necessary to verify the integrity of uploaded files up to that point. This can be done by simply ensuring all files from folders that have been uploaded are included in the Pennsieve dataset.\n- The Organize Datasets option to upload duplicate files to Pennsieve uploads some duplicates but does not upload all.\n- When using the Create manifest.xlsx feature any custom columns added to a manifest file stored on Pennsieve will not be imported for editing.\n- The Create manifest.xlsx feature will spawn an error while generating manifest files for a local dataset if there are hidden files in the dataset directory. SODA will not tell the user the cause is the presence of the hidden files.",
-  "funding": "OT2OD030213",
-  "developmentStatus": "active",
-  "isPartOf": "https://fairdataihub.org/",
-  "referencePublication": "https://doi.org/10.1101/2021.02.10.430563",
-  "funder": {
-    "@type": "Organization",
-    "@name": "National Institutes of Health (NIH)"
-  },
-  "keywords": [
-    "SPARC",
-    "FAIR",
-    "data",
-    "curation",
-    "mac",
-    "sparc-dataset",
-    "ubuntu",
-    "windows"
-  ],
-  "programmingLanguage": [
-    "JavaScript",
-    "HTML",
-    "Python",
-    "CSS",
-    "Jupyter Notebook"
-  ],
-  "operatingSystem": [
-    "Windows 10",
-    "Big Sur (macOS 11)",
-    "Catalina (macOS 10.15)",
-    "Windows 11",
-    "Ubuntu"
-  ],
-  "relatedLink": ["https://fairdataihub.org/sodaforsparc"],
-  "author": [
-    {
-      "@type": "Person",
-      "givenName": "Bhavesh",
-      "familyName": "Patel",
-      "email": "bpatel@calmi2.org",
-      "affiliation": {
+    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+    "@type": "SoftwareSourceCode",
+    "license": "https://spdx.org/licenses/MIT",
+    "codeRepository": "https://github.com/fairdataihub/SODA-for-SPARC",
+    "dateCreated": "2021-10-08",
+    "datePublished": "2022-08-08",
+    "dateModified": "2022-08-30",
+    "downloadUrl": "https://fairdataihub.org/sodaforsparc",
+    "issueTracker": "https://github.com/fairdataihub/SODA-for-SPARC/issues",
+    "name": "SODA (Software to Organize Data Automatically) for SPARC",
+    "version": "9.0.0",
+    "identifier": "https://doi.org/10.5281/zenodo.5565455",
+    "description": "Simplifying data curation for researchers funded by the NIH SPARC initiative",
+    "applicationCategory": "Scientific",
+    "releaseNotes": "## v.9.0.0 - 2022-08-30\n\n## Feature additions:\n\n- Guided Mode, a new dataset curation mode, is now available. Guided Mode streamlines the SPARC data curation process by guiding users step-by-step through the entire process. Currently, it only supports curating new datasets from scratch.\n- The SODA server will run on a free port if the default port is not available.\n\n\n### Known Issues:\n\n- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.\n- When uploading a dataset through Upload Local Dataset or Organize Dataset feature to Pennsieve the upload will sometimes freeze. When this occurs it is best to reset the upload and ensure the Pennsieve Agent has been stopped before attempting to upload again. It is also necessary to verify the integrity of uploaded files up to that point. This can be done by simply ensuring all files from folders that have been uploaded are included in the Pennsieve dataset.\n- The Organize Datasets option to upload duplicate files to Pennsieve uploads some duplicates but does not upload all.\n- When using the Create manifest.xlsx feature any custom columns added to a manifest file stored on Pennsieve will not be imported for editing.\n- The Create manifest.xlsx feature will spawn an error while generating manifest files for a local dataset if there are hidden files in the dataset directory. SODA will not tell the user the cause is the presence of the hidden files.\n- In the Organize Dataset feature, if a dataset is large enough and being uploaded to Pennsieve it will not pass the file and folder integrity check. This is a separate issue from those that were fixed as part of the bug fixes section outlined in v.8.0.1. Users should find more large datasets are uploadable to Pennsieve than in the previous release. Note as well this does not apply to the Upload Local Dataset feature, which has a very high upper bound for the amount of files that can be uploaded to Pennsieve as of the current release.\n",
+    "funding": "OT2OD030213",
+    "developmentStatus": "active",
+    "isPartOf": "https://fairdataihub.org/",
+    "referencePublication": "https://doi.org/10.1101/2021.02.10.430563",
+    "funder": {
         "@type": "Organization",
-        "name": "FAIR Data Innovations Hub"
-      }
+        "@name": "National Institutes of Health (NIH)"
     },
-    {
-      "@type": "Person",
-      "givenName": "Tram",
-      "familyName": "Ngo",
-      "email": "tno@calmi2.org",
-      "affiliation": {
-        "@type": "Organization",
-        "name": "FAIR Data Innovations Hub"
-      }
-    },
-    {
-      "@type": "Person",
-      "givenName": "Sanjay",
-      "familyName": "Soundarajan",
-      "email": "ssoundarajan@calmi2.org",
-      "affiliation": {
-        "@type": "Organization",
-        "name": "FAIR Data Innovations Hub"
-      }
-    },
-    {
-      "@type": "Person",
-      "givenName": "Aaron",
-      "familyName": "Marroquin",
-      "email": "cmarroquin@calmi2.org",
-      "affiliation": {
-        "@type": "Organization",
-        "name": "FAIR Data Innovations Hub"
-      }
-    },
-    {
-      "@type": "Person",
-      "givenName": "Jacob",
-      "familyName": "Clark",
-      "email": "jclark@calmi2.org",
-      "affiliation": {
-        "@type": "Organization",
-        "name": "California Medical Innovations Institute"
-      }
-    },
-    {
-      "@type": "Person",
-      "givenName": "Dorian",
-      "familyName": "Portillo",
-      "email": "dportillo@calmi2.org",
-      "affiliation": {
-        "@type": "Organization",
-        "name": "FAIR Data Innovations Hub"
-      }
-    }
-  ]
+    "keywords": [
+        "SPARC",
+        "FAIR",
+        "data",
+        "curation",
+        "mac",
+        "sparc-dataset",
+        "ubuntu",
+        "windows"
+    ],
+    "programmingLanguage": [
+        "JavaScript",
+        "HTML",
+        "Python",
+        "CSS",
+        "Jupyter Notebook"
+    ],
+    "operatingSystem": [
+        "Windows 10",
+        "Big Sur (macOS 11)",
+        "Catalina (macOS 10.15)",
+        "Windows 11",
+        "Ubuntu"
+    ],
+    "relatedLink": [
+        "https://fairdataihub.org/sodaforsparc"
+    ],
+    "author": [
+        {
+            "@type": "Person",
+            "givenName": "Bhavesh",
+            "familyName": "Patel",
+            "email": "bpatel@calmi2.org",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "FAIR Data Innovations Hub"
+            }
+        },
+        {
+            "@type": "Person",
+            "givenName": "Tram",
+            "familyName": "Ngo",
+            "email": "tno@calmi2.org",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "FAIR Data Innovations Hub"
+            }
+        },
+        {
+            "@type": "Person",
+            "givenName": "Sanjay",
+            "familyName": "Soundarajan",
+            "email": "ssoundarajan@calmi2.org",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "FAIR Data Innovations Hub"
+            }
+        },
+        {
+            "@type": "Person",
+            "givenName": "Aaron",
+            "familyName": "Marroquin",
+            "email": "cmarroquin@calmi2.org",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "FAIR Data Innovations Hub"
+            }
+        },
+        {
+            "@type": "Person",
+            "givenName": "Jacob",
+            "familyName": "Clark",
+            "email": "jclark@calmi2.org",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "California Medical Innovations Institute"
+            }
+        },
+        {
+            "@type": "Person",
+            "givenName": "Dorian",
+            "familyName": "Portillo",
+            "email": "dportillo@calmi2.org",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "FAIR Data Innovations Hub"
+            }
+        }
+    ]
 }

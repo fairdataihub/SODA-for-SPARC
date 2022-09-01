@@ -34,5 +34,6 @@ from .manage_datasets import (
     update_dataset_readme,
     get_dataset_readme,
     get_dataset_tags,
-    update_dataset_tags
+    update_dataset_tags,
+    scale_image
 )

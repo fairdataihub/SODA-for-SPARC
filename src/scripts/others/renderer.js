@@ -219,7 +219,6 @@ let client = null;
 // get port number from the main process
 const port = ipcRenderer.sendSync("get-port");
 
-
 // TODO: change the default port so it is based off the discovered port in Main.js
 client = axios.create({
   baseURL: `http://127.0.0.1:${port}/`,
@@ -1297,39 +1296,6 @@ var currentTags = {};
 var currentCollectionTags = [];
 
 
-//initialize Tagify input field for guided submission milestones
-const guidedSubmissionTagsInput = document.getElementById(
-  "guided-tagify-submission-milestone-tags-import"
-);
-
-const guidedSubmissionTagsTagify = new Tagify(guidedSubmissionTagsInput, {
-  duplicates: false,
-  delimiters: null,
-  dropdown: {
-    classname: "color-blue",
-    maxItems: Infinity,
-    enabled: 0,
-    closeOnSelect: true,
-  },
-});
-
-const guidedSubmissionTagsInputManual = document.getElementById(
-  "guided-tagify-submission-milestone-tags-manual"
-);
-const guidedSubmissionTagsTagifyManual = new Tagify(
-  guidedSubmissionTagsInputManual,
-  {
-    duplicates: false,
-    delimiters: null,
-    dropdown: {
-      classname: "color-blue",
-      maxItems: Infinity,
-      enabled: 0,
-      closeOnSelect: true,
-    },
-  }
-);
-
 // initiate Tagify input fields for Dataset description file
 var keywordInput = document.getElementById("ds-keywords"),
   keywordTagify = new Tagify(keywordInput, {
@@ -1404,8 +1370,8 @@ var datasetTagsInput = document.getElementById("tagify-dataset-tags"),
   datasetTagsTagify = new Tagify(datasetTagsInput);
 
 var guidedDatasetTagsInput = document.getElementById(
-  "guided-tagify-dataset-tags"
-),
+    "guided-tagify-dataset-tags"
+  ),
   // initialize Tagify on the above input node reference
   guidedDatasetTagsTagify = new Tagify(guidedDatasetTagsInput);
 
@@ -1566,7 +1532,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => { });
+            }).then((result) => {});
             generateSubjectsFileHelper(false);
           }
         });
@@ -1582,7 +1548,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => { });
+        }).then((result) => {});
         generateSubjectsFileHelper(false);
       }
     }
@@ -1636,7 +1602,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   let bfdataset = document
     .getElementById("bf_dataset_load_subjects")
@@ -1739,7 +1705,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => { });
+            }).then((result) => {});
             generateSamplesFileHelper(uploadBFBoolean);
           }
         });
@@ -1755,7 +1721,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => { });
+        }).then((result) => {});
         generateSamplesFileHelper(uploadBFBoolean);
       }
     }
@@ -1809,7 +1775,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   try {
     let samplesFileResponse = await client.post(
@@ -2297,12 +2263,12 @@ function createStrain(id, type, curationMode) {
           info.setAttribute(
             "onclick",
             "populateRRID('" +
-            data.query +
-            "', '" +
-            type +
-            "', '" +
-            curationMode +
-            "')"
+              data.query +
+              "', '" +
+              type +
+              "', '" +
+              curationMode +
+              "')"
           );
           info.innerHTML = `Click here to check <strong>"${data.query}"</strong>`;
         }
@@ -2337,7 +2303,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   try {
     let load_taxonomy_species = await client.get(`/taxonomy/species`, {
       params: {
@@ -3055,9 +3021,9 @@ function detectEmptyRequiredFields(funding) {
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
   var emptyMessageArray = [
     "- Missing required fields under Dataset Info section: " +
-    dsEmptyField.join(", "),
+      dsEmptyField.join(", "),
     "- Missing required fields under Contributor Info section: " +
-    conEmptyField.join(", "),
+      conEmptyField.join(", "),
     "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
   ];
   var allFieldsSatisfied = true;
@@ -3188,8 +3154,8 @@ var cropOptions = {
     let image_height = Math.round(data.height);
 
     formBannerHeight.value = image_height;
-
-    if (image_height < 512 || image_height > 2048) {
+    //if image-height exceeds 2048 then prompt about scaling image down
+    if (image_height < 512) {
       $("#save-banner-image").prop("disabled", true);
       $("#form-banner-height").css("color", "red");
       $("#form-banner-height").css("border", "1px solid red");
@@ -3226,7 +3192,7 @@ const guidedCropOptions = {
 
     guidedFormBannerHeight.value = image_height;
 
-    if (image_height < 512 || image_height > 2048) {
+    if (image_height < 512) {
       $("#guided-save-banner-image").prop("disabled", true);
       $("#guided-form-banner-height").css("color", "red");
       $("#guided-form-banner-height").css("border", "1px solid red");
@@ -6585,8 +6551,9 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
           ${dragDropInstructionsText}
         </p>
         <p class="text-center">
-          You may also <b>add</b> or <b>import</b> ${folderType === undefined ? "folders or files" : folderType + " data"
-      } using the buttons in the upper right corner
+          You may also <b>add</b> or <b>import</b> ${
+            folderType === undefined ? "folders or files" : folderType + " data"
+          } using the buttons in the upper right corner
         </p>
       </div>`
     );
@@ -6914,14 +6881,16 @@ ipcRenderer.on(
 
                     numb.innerText = percentage_amount + "%";
                     if (percentage_amount <= 50) {
-                      progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
-                        }deg)`;
+                      progressBar_rightSide.style.transform = `rotate(${
+                        percentage_amount * 0.01 * 360
+                      }deg)`;
                     } else {
                       progressBar_rightSide.style.transition = "";
                       progressBar_rightSide.classList.add("notransition");
                       progressBar_rightSide.style.transform = `rotate(180deg)`;
-                      progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
-                        }deg)`;
+                      progressBar_leftSide.style.transform = `rotate(${
+                        percentage_amount * 0.01 * 180
+                      }deg)`;
                     }
 
                     if (finished === 1) {
@@ -6996,14 +6965,16 @@ ipcRenderer.on(
 
                   numb.innerText = percentage_amount + "%";
                   if (percentage_amount <= 50) {
-                    progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
-                      }deg)`;
+                    progressBar_rightSide.style.transform = `rotate(${
+                      percentage_amount * 0.01 * 360
+                    }deg)`;
                   } else {
                     progressBar_rightSide.style.transition = "";
                     progressBar_rightSide.classList.add("notransition");
                     progressBar_rightSide.style.transform = `rotate(180deg)`;
-                    progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
-                      }deg)`;
+                    progressBar_leftSide.style.transform = `rotate(${
+                      percentage_amount * 0.01 * 180
+                    }deg)`;
                   }
                   if (finished === 1) {
                     progressBar_leftSide.style.transform = `rotate(180deg)`;
@@ -7380,9 +7351,9 @@ document
     for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
       if (
         "manifest.xlsx" in
-        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
         sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-        "manifest.xlsx"
+          "manifest.xlsx"
         ]["forTreeview"]
       ) {
         delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
@@ -7977,7 +7948,7 @@ async function initiate_generate() {
           "track-event",
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE +
-          " - Step 7 - Generate - Dataset - Number of Files",
+            " - Step 7 - Generate - Dataset - Number of Files",
           `${datasetUploadSession.id}`,
           uploadedFiles
         );
@@ -7987,7 +7958,7 @@ async function initiate_generate() {
           "track-event",
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE +
-          " - Step 7 - Generate - Dataset - Size",
+            " - Step 7 - Generate - Dataset - Size",
           `${datasetUploadSession.id}`,
           increaseInFileSize
         );
@@ -8302,14 +8273,16 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
     finished = res["import_completed_items"];
     percentage_text.innerText = percentage_amount + "%";
     if (percentage_amount <= 50) {
-      left_progress_bar.style.transform = `rotate(${percentage_amount * 0.01 * 360
-        }deg)`;
+      left_progress_bar.style.transform = `rotate(${
+        percentage_amount * 0.01 * 360
+      }deg)`;
     } else {
       left_progress_bar.style.transition = "";
       left_progress_bar.classList.add("notransition");
       left_progress_bar.style.transform = `rotate(180deg)`;
-      right_progress_bar.style.transform = `rotate(${percentage_amount * 0.01 * 180
-        }deg)`;
+      right_progress_bar.style.transform = `rotate(${
+        percentage_amount * 0.01 * 180
+      }deg)`;
     }
 
     if (finished === 1) {
@@ -9456,6 +9429,29 @@ $("#validate_dataset_bttn").on("click", async () => {
   $("#dataset_validator_spinner").hide();
 });
 
+//function used to scale banner images
+const scaleBannerImage = async (imagePath) => {
+  console.log("scaling");
+  try {
+    let imageScaled = await client.post(
+      `/manage_datasets/bf_banner_image/scale_image`,
+      {
+        image_file_path: imagePath,
+      },
+      {
+        params: {
+          selected_account: defaultBfAccount,
+          selected_dataset: defaultBfDataset,
+        },
+      }
+    );
+    return imageScaled.data.scaled_image_path;
+  } catch (error) {
+    clientError(error);
+    return error.response;
+  }
+};
+
 function openFeedbackForm() {
   let feedback_btn = document.getElementById("feedback-btn");
   if (!feedback_btn.classList.contains("is-open")) {
@@ -9475,7 +9471,6 @@ function gatherLogs() {
   let clientLogsPath = "";
   let serverLogsPath = path.join(homedir, "SODA", "logs");
   let logFiles = ["main.log", "renderer.log", "out.log", "api.log"];
-
 
   if (os.platform() === "darwin") {
     clientLogsPath = path.join(homedir, "/Library/Logs/SODA for SPARC/");
@@ -9716,3 +9711,4 @@ contact_us_lottie_observer.observe(contact_section, {
   attributes: true,
   attributeFilter: ["class"],
 });
+

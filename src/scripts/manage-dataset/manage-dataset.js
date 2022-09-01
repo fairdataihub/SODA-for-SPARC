@@ -1800,7 +1800,7 @@ $("#button-import-banner-image").click(async () => {
 const uploadBannerImage = async () => {
   $("#para-dataset-banner-image-status").html("Please wait...");
   //Save cropped image locally and check size
-  let imageFolder = path.join(homeDirectory, "SODA", "banner-image");
+  let imageFolder = path.join(homeDirectory, "SODA", "banner-image"); //banner will be saved in $HOME/SODA/banner-image
   let imageType = "";
 
   if (!fs.existsSync(imageFolder)) {
@@ -1813,10 +1813,12 @@ const uploadBannerImage = async () => {
     imageType = "image/jpeg";
   }
 
+  //creating path of the image and then getting cropped image information
   let imagePath = path.join(imageFolder, "banner-image-SODA." + imageExtension);
   let croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType);
 
   imageDataURI.outputFile(croppedImageDataURI, imagePath).then(async () => {
+    //image is created here into temp folder
     let image_file_size = fs.statSync(imagePath)["size"];
 
     if (image_file_size < 5 * 1024 * 1024) {
@@ -1893,16 +1895,77 @@ const uploadBannerImage = async () => {
         );
       }
     } else {
-      $("#para-dataset-banner-image-status").html(
-        "<span style='color: red;'> " +
-        "Final image size must be less than 5 MB" +
-        "</span>"
-      );
+      //final size is greater than 5mb so compress image here (image already created and stored in temp file)
+      let scaledImagePath = await scaleBannerImage(imagePath); //scaled image will be in temp folder
+      let image_file_size = fs.statSync(scaledImagePath)["size"]; //update size for analytics
+      try {
+        let uploadBannerImage = await client.put(
+          `/manage_datasets/bf_banner_image`,
+          {
+            input_banner_image_path: scaledImagePath,
+          },
+          {
+            params: {
+              selected_account: defaultBfAccount,
+              selected_dataset: defaultBfDataset,
+            },
+          }
+        );
+        let bannerImage = uploadBannerImage.data.message;
+        $("#para-dataset-banner-image-status").html(bannerImage);
+
+        showCurrentBannerImage();
+
+        $("#edit_banner_image_modal").modal("hide");
+
+        notyf.open({
+          message: "Banner image uploaded",
+          type: "success",
+        });
+
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+          defaultBfDatasetId
+        );
+
+        // track the size for all dataset banner uploads
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
+            " - Size",
+          "Size",
+          image_file_size
+        );
+
+        // track the size for the given dataset
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
+            " - Size",
+          defaultBfDatasetId,
+          image_file_size
+        );
+      } catch (error) {
+        clientError(error);
+
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+          defaultBfDatasetId
+        );
+      }
     }
   });
 };
 
 $("#save-banner-image").click((event) => {
+  //save button for banner image (need on the size of the cropped image)
+  //bfViewImportedImage holds the entire image
   $("#para-dataset-banner-image-status").html("");
   if (bfViewImportedImage.src.length > 0) {
     if (formBannerHeight.value > 511) {
@@ -1923,6 +1986,7 @@ $("#save-banner-image").click((event) => {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
       }).then((result) => {
+        //then check if height is more than 2048 and handle accordingly
         if (formBannerHeight.value < 1024) {
           Swal.fire({
             icon: "warning",
@@ -1942,6 +2006,30 @@ $("#save-banner-image").click((event) => {
             },
           }).then((result) => {
             if (result.isConfirmed) {
+              uploadBannerImage();
+            }
+          });
+        } else if (formBannerHeight.value > 2048) {
+          Swal.fire({
+            icon: "warning",
+            text: `Your cropped image is ${formBannerHeight.value} px and is bigger than the 2048px standard. Would you like to scale this image down to fit the entire cropped image?`,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            showCancelButton: true,
+            focusCancel: true,
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
+            reverseButtons: reverseSwalButtons,
+            showClass: {
+              popup: "animate__animated animate__zoomIn animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__zoomOut animate__faster",
+            },
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // uploadBannerImage();
+              console.log("handle scaling here");
               uploadBannerImage();
             }
           });
