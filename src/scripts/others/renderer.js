@@ -1295,7 +1295,6 @@ var allCollectionTags = {};
 var currentTags = {};
 var currentCollectionTags = [];
 
-
 // initiate Tagify input fields for Dataset description file
 var keywordInput = document.getElementById("ds-keywords"),
   keywordTagify = new Tagify(keywordInput, {
@@ -1322,7 +1321,6 @@ var collectionDatasetInput = document.getElementById("tagify-collection-tags"),
       rightKey: true,
     },
   });
-
 
 var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
   studyOrganSystemsTagify = new Tagify(studyOrganSystemsInput, {
@@ -7666,7 +7664,7 @@ async function initiate_generate() {
           document.getElementById("div-vertical-progress-bar").style.display =
             "none";
           document.getElementById("div-generate-comeback").style.display =
-            "none";
+            "flex";
           document.getElementById(
             "generate-dataset-progress-tab"
           ).style.display = "flex";
@@ -9711,4 +9709,3 @@ contact_us_lottie_observer.observe(contact_section, {
   attributes: true,
   attributeFilter: ["class"],
 });
-
