@@ -80,6 +80,7 @@ async function handleSectionTrigger(event) {
   );
 
   if (sectionId === "organize-section") {
+    /************ Happens every time user clicks organize dataset ****************************/
     //reset lazyloading values
     resetLazyLoading();
     //Transition file explorer elements to freeform mode
@@ -91,8 +92,10 @@ async function handleSectionTrigger(event) {
     freeFormButtons.classList.add("freeform-file-explorer-buttons");
     organizeDSglobalPath = document.getElementById("input-global-path");
     dataset_path = document.getElementById("input-global-path");
+    /**********************************************************************************/
 
     if (Object.keys(savedOrganizeDsSate).length !== 0) {
+      /**** Happens when temp DS data is saved in the savedOrganizeDsState variable ******/
       sodaJSONObj = savedOrganizeDsSate.OdsTempSodaJSONObj;
       datasetStructureJSONObj = savedOrganizeDsSate.OdsTempDsJSONObj;
 
@@ -108,11 +111,13 @@ async function handleSectionTrigger(event) {
           savedOrganizeDsSate.OdsTempNextButtonDisabledState;
       }, 200);
     } else {
+      /******When no progress is saved, reset this stuff ********/
       sodaJSONObj = {};
       datasetStructureJSONObj = {};
       itemsContainer.innerHTML = "";
       organizeDSglobalPath.value = "My_dataset_folder/";
     }
+    /** set var as saved because we always want to save after exiting organize ds ******/
     saveOrganizeDsState = true;
   } else {
     if (saveOrganizeDsState === true) {
