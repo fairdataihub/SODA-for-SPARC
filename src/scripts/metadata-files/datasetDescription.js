@@ -715,7 +715,7 @@ async function generateDatasetDescription() {
   }
 }
 
-async function generateDDFile(uploadBFBoolean) {
+const generateDDFile = async (uploadBFBoolean) => {
   if (uploadBFBoolean) {
     var { value: continueProgress } = await Swal.fire({
       title:
@@ -881,7 +881,7 @@ async function generateDDFile(uploadBFBoolean) {
       uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
     );
   }
-}
+};
 
 ///// Functions to grab each piece of info to generate the dd file
 
