@@ -95,10 +95,13 @@ async function handleSectionTrigger(event) {
     if (Object.keys(savedOrganizeDsSate).length !== 0) {
       sodaJSONObj = savedOrganizeDsSate.OdsTempSodaJSONObj;
       datasetStructureJSONObj = savedOrganizeDsSate.OdsTempDsJSONObj;
-      itemsContainer.innerHTML = savedOrganizeDsSate.OdsTempSodaJSONObj;
+
+      organizeDSglobalPath.value =
+        savedOrganizeDsSate.OdsTempOrganizeDSglobalPathValue;
+
       var filtered = getGlobalPath(organizeDSglobalPath);
-      var myPat = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-      listItems(myPat, "#items", 500, (reset = true));
+      var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+      listItems(myPath, "#items", 500, (reset = true));
 
       setTimeout(() => {
         document.getElementById("nextBtn").disabled =
@@ -120,7 +123,6 @@ async function handleSectionTrigger(event) {
       savedOrganizeDsSate = {
         OdsTempSodaJSONObj: sodaJSONObj,
         OdsTempDsJSONObj: datasetStructureJSONObj,
-        OdsTempSodaJSONObj: itemsContainer.innerHTML,
         OdsTempNextButtonDisabledState: nextButtonDisabled,
         OdsTempOrganizeDSglobalPathValue: organizeDSglobalPath.value,
       };
