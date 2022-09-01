@@ -231,7 +231,7 @@ def rename_headers(workbook, max_len, start_index):
 
         for i, column in zip(range(2, max_len + 1), columns_list[1:]):
 
-            workbook[column + "1"] = "Value " + str(i)
+            workbook[column + "1"] = f"Value {str(i)}"
             cell = workbook[column + "1"]
 
             blueFill = PatternFill(
@@ -255,11 +255,9 @@ def grayout_subheaders(workbook, max_len, start_index):
     headers_list = ["4", "10", "18", "23", "28"]
     columns_list = excel_columns(start_index=start_index)
 
-    for i, column in zip(range(2, max_len + 1), columns_list[1:]):
-
-        for no in headers_list:
-            cell = workbook[column + no]
-            fillColor("B2B2B2", cell)
+    for (i, column), no in itertools.product(zip(range(2, max_len + 1), columns_list[1:]), headers_list):
+        cell = workbook[column + no]
+        fillColor("B2B2B2", cell)
 
 
 def grayout_single_value_rows(workbook, max_len, start_index):
@@ -269,11 +267,9 @@ def grayout_single_value_rows(workbook, max_len, start_index):
 
     columns_list = excel_columns(start_index=start_index)
     row_list = ["2", "3", "5", "6", "9", "11", "12", "13", "17", "29", "30"]
-    for i, column in zip(range(2, max_len + 1), columns_list[1:]):
-
-        for no in row_list:
-            cell = workbook[column + no]
-            fillColor("CCCCCC", cell)
+    for (i, column), no in itertools.product(zip(range(2, max_len + 1), columns_list[1:]), row_list):
+        cell = workbook[column + no]
+        fillColor("CCCCCC", cell)
 
 
 def fillColor(color, cell):
@@ -554,10 +550,7 @@ def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastruc
         for column, j in zip(excel_columns(start_index=0), range(len(item))):
             # import pdb; pdb.set_trace()
             cell = column + str(i + 1)
-            if refinedDatastructure[i][j]:
-                ws1[cell] = refinedDatastructure[i][j]
-            else:
-                ws1[cell] = ""
+            ws1[cell] = refinedDatastructure[i][j] or ""
             ws1[cell].font = Font(bold=False, size=11, name="Arial")
 
     wb.save(destination)
@@ -625,10 +618,7 @@ def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastruct
         for column, j in zip(excel_columns(start_index=0), range(len(item))):
             # import pdb; pdb.set_trace()
             cell = column + str(i + 1)
-            if refinedDatastructure[i][j]:
-                ws1[cell] = refinedDatastructure[i][j]
-            else:
-                ws1[cell] = ""
+            ws1[cell] = refinedDatastructure[i][j] or ""
             ws1[cell].font = Font(bold=False, size=11, name="Arial")
 
     wb.save(destination)
@@ -644,9 +634,7 @@ def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastruct
 
 # check for non-empty fields (cells)
 def column_check(x):
-    if "unnamed" in x.lower():
-        return False
-    return True
+    return "unnamed" not in x.lower()
 
 
 # import an existing subjects/samples files from an excel file
@@ -740,24 +728,21 @@ def checkEmptyColumn(column):
 # needed to sort subjects and samples table data to match the UI fields
 def sortedSubjectsTableData(matrix, fields):
     sortedMatrix = []
-    customHeaderMatrix = []
-
-
     for field in fields:
         for column in matrix:
             if column[0].lower() == field:
                 sortedMatrix.append(column)
                 break
 
-    for column in matrix:
-        if column[0].lower() not in fields:
-            customHeaderMatrix.append(column)
+    customHeaderMatrix = [
+        column for column in matrix if column[0].lower() not in fields
+    ]
 
-    if len(customHeaderMatrix) > 0:
-        npArray = np.concatenate((sortedMatrix, customHeaderMatrix)).tolist()
-    else:
-        npArray = sortedMatrix
-    return npArray
+    return (
+        np.concatenate((sortedMatrix, customHeaderMatrix)).tolist()
+        if customHeaderMatrix
+        else sortedMatrix
+    )
 
 
 # transpose a matrix (array of arrays)
@@ -767,12 +752,7 @@ def transposeMatrix(matrix):
 
 # helper function to process custom fields (users add and name them) for subjects and samples files
 def processMetadataCustomFields(matrix):
-    refined_matrix = []
-    for column in matrix:
-        if any(column[1:]):
-            refined_matrix.append(column)
-
-    return refined_matrix
+    return [column for column in matrix if any(column[1:])]
 
 
 ## check if any whole column from Excel sheet is empty
@@ -1110,11 +1090,12 @@ def copytree(src, dst, symlinks=False, ignore=None):
 # obtain Pennsieve S3 URL for an existing metadata file
 def returnFileURL(bf_object, item_id):
 
-    file_details = bf_object._api._get("/packages/" + str(item_id) + "/view")
+    file_details = bf_object._api._get(f"/packages/{str(item_id)}/view")
     file_id = file_details[0]["content"]["id"]
     file_url_info = bf_object._api._get(
-        "/packages/" + str(item_id) + "/files/" + str(file_id)
+        f"/packages/{str(item_id)}/files/{str(file_id)}"
     )
+
 
     return file_url_info["url"]
 
@@ -1236,9 +1217,7 @@ def load_existing_DD_file(import_type, filepath):
                     "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/dataset_description.xlsx'>template</a> of the dataset_description."
                 )
 
-    # check for at least 1 value is included
-    non_empty_1st_value = checkEmptyColumn(DD_df["Value"])
-    if non_empty_1st_value:
+    if non_empty_1st_value := checkEmptyColumn(DD_df["Value"]):
         abort(400, 
             "At least 1 value is required to import an existing dataset_description file"
         )
