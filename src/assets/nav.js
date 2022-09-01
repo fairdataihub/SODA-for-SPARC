@@ -105,6 +105,13 @@ async function handleSectionTrigger(event) {
       var filtered = getGlobalPath(organizeDSglobalPath);
       var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
       listItems(myPath, "#items", 500, (reset = true));
+      console.log(myPath);
+      getInFolder(
+        ".single-item",
+        "#items",
+        organizeDSglobalPath,
+        datasetStructureJSONObj
+      );
 
       setTimeout(() => {
         document.getElementById("nextBtn").disabled =
