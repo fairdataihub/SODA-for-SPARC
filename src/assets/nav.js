@@ -21,52 +21,6 @@ let prevSection;
 let savedOrganizeDsSate = {};
 
 async function handleSectionTrigger(event) {
-  function saveTempSodaProgress(progressFileName, sodaObject) {
-    try {
-      fs.mkdirSync(progressFilePath, { recursive: true });
-    } catch (error) {
-      log.error(error);
-      console.log(error);
-    }
-    var filePath = path.join(progressFilePath, progressFileName + ".json");
-    //update json obj progress
-
-    // delete sodaObject["dataset-structure"] value that was added only for the Preview tree view
-    if ("files" in sodaObject["dataset-structure"]) {
-      sodaObject["dataset-structure"]["files"] = {};
-    }
-    //delete manifest files added for treeview
-    // delete manifest files added for treeview
-    for (var highLevelFol in sodaObject["dataset-structure"]["folders"]) {
-      if (
-        "manifest.xlsx" in
-          sodaObject["dataset-structure"]["folders"][highLevelFol]["files"] &&
-        sodaObject["dataset-structure"]["folders"][highLevelFol]["files"][
-          "manifest.xlsx"
-        ]["forTreeview"] === true
-      ) {
-        delete sodaObject["dataset-structure"]["folders"][highLevelFol][
-          "files"
-        ]["manifest.xlsx"];
-      }
-    }
-    fs.writeFileSync(filePath, JSON.stringify(sodaObject));
-
-    Swal.fire({
-      icon: "success",
-      text: "Successfully saved progress!",
-      showConfirmButton: "OK",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showClass: {
-        popup: "animate__animated animate__fadeInDown animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__fadeOutUp animate__faster",
-      },
-    });
-  }
-
   // Display the current section
   const sectionId = `${event.target.dataset.section}-section`;
   prevSection = sectionId;
@@ -145,7 +99,46 @@ async function handleSectionTrigger(event) {
   }
 
   if (sectionId === "guided_mode-section") {
-    //Reset variables shared between guided and free form mode
+    if (document.getElementById("returnButton") !== null) {
+      alert("Not when uploading");
+    } else {
+      const confirmBeforeExitOrganizeDS = await Swal.fire({
+        icon: "warning",
+        text: 'You will lose your progress in the "Organize datasets" section',
+        showCancelButton: true,
+        focusCancel: true,
+        cancelButtonText: "Cancel",
+        confirmButtonText: "Continue",
+        reverseButtons: reverseSwalButtons,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+      if (confirmBeforeExitOrganizeDS.isConfirmed) {
+        $("#dataset-loaded-message").hide();
+        // if exit Btn is clicked after Generate
+
+        $(".vertical-progress-bar-step").removeClass("is-current");
+        $(".vertical-progress-bar-step").removeClass("done");
+        $(".getting-started").removeClass("prev");
+        $(".getting-started").removeClass("show");
+        $(".getting-started").removeClass("test2");
+        $("#Question-getting-started-1").addClass("show");
+        $("#generate-dataset-progress-tab").css("display", "none");
+
+        currentTab = 0;
+        wipeOutCurateProgress();
+        $("#main_tabs_view")[0].click();
+        globalGettingStarted1stQuestionBool = false;
+      } else {
+        console.log("cancel and return to ff");
+      }
+    }
     sodaJSONObj = {};
     datasetStructureJSONObj = {};
     subjectsTableData = [];
