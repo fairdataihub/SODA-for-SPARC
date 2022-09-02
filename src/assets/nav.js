@@ -12,20 +12,12 @@ document.body.addEventListener("click", (event) => {
 document.body.addEventListener("custom-back", (e) => {
   handleSectionTrigger(e);
 });
-let saveOrganizeDsState = false;
-
-let prevSideBarSection;
-let OdsTempDsJSONObj;
-let OdsTempSodaJSONObj;
-let prevSection;
-let savedOrganizeDsSate = {};
+// Variable used to determine the disabled status of the organize datasets next button
 let boolNextButtonDisabled = true;
 
 async function handleSectionTrigger(event) {
   // Display the current section
   const sectionId = `${event.target.dataset.section}-section`;
-  prevSection = sectionId;
-  console.log(sectionId);
   const itemsContainer = document.getElementById("items");
   const freeFormItemsContainer = document.getElementById(
     "free-form-folder-structure-container"
@@ -35,7 +27,6 @@ async function handleSectionTrigger(event) {
   );
 
   if (sectionId === "organize-section") {
-    /************ Happens every time user clicks organize dataset ****************************/
     //reset lazyloading values
     resetLazyLoading();
     //Transition file explorer elements to freeform mode
@@ -75,7 +66,7 @@ async function handleSectionTrigger(event) {
     // be warned because Guided Mode uses shared variables and FF progress
     // must be wiped out.
     if (Object.keys(sodaJSONObj).length > 0) {
-      const confirmBeforeExitOrganizeDS = await Swal.fire({
+      const warnBeforeExitCurate = await Swal.fire({
         icon: "warning",
         html: `Entering Guided Mode will wipe out the progress you have made organizing your dataset.
         <br><br>
@@ -96,7 +87,8 @@ async function handleSectionTrigger(event) {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
       });
-      if (confirmBeforeExitOrganizeDS.isConfirmed) {
+      if (warnBeforeExitCurate.isConfirmed) {
+        // Wipe out organize dataset progress before entering Guided Mode
         $("#dataset-loaded-message").hide();
         $(".vertical-progress-bar-step").removeClass("is-current");
         $(".vertical-progress-bar-step").removeClass("done");
@@ -105,7 +97,6 @@ async function handleSectionTrigger(event) {
         $(".getting-started").removeClass("test2");
         $("#Question-getting-started-1").addClass("show");
         $("#generate-dataset-progress-tab").css("display", "none");
-
         currentTab = 0;
         wipeOutCurateProgress();
         globalGettingStarted1stQuestionBool = false;
@@ -136,12 +127,6 @@ async function handleSectionTrigger(event) {
     );
 
     guidedPrepareHomeScreen();
-  }
-
-  if (sectionId === "main_tabs-section") {
-    //Reset variables shared between guided and free form mode
-    subjectsTableData = [];
-    samplesTableData = [];
   }
 
   hideAllSectionsAndDeselectButtons();

@@ -190,11 +190,6 @@ const showParentTab = (tabNow, nextOrPrev) => {
 
 // function to fill the card details in the preview tab of step 7
 const fill_info_details = () => {
-  if (Object.keys(sodaJSONObj).length === 0) {
-    sodaJSONObj = savedOrganizeDsSate.OdsTempDsJSONObj;
-    console.log(sodaJSONObj);
-  }
-
   let new_dataset_name = "My_dataset_folder";
   $(".card-container.generate-preview").remove();
   if (sodaJSONObj["starting-point"]["type"] === "bf") {
