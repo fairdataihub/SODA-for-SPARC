@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 
 
+## v.9.0.1 - 2022-09-02
+## Bug fixes:
+
+- Fixed an issue that caused the Organize Dataset feature to break when switching from Free Form Mode to Guided Mode and back.
+
+### Known Issues:
+
+- There is a bug when switching to Guided Mode before uploading Dataset Metadata in Free Form mode and then switching back to Free Form Mode. This will be addressed in the next update
+
+
 ## v.9.0.0 - 2022-08-30
 
 ## Feature additions:
