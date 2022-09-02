@@ -851,16 +851,16 @@ const apiVersionsMatch = async () => {
     );
 
     // console.log("bruh");
-    // await Swal.fire({
-    //   icon: "error",
-    //   html: `The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA or check to see if a previous version is running in the background with the instructions on our <a href='https://docs.sodaforsparc.io/docs/common-errors/pennsieve-agent-is-already-running' target='_blank'>documentation page.</a> If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
-    //   heightAuto: false,
-    //   backdrop: "rgba(0,0,0, 0.4)",
-    //   confirmButtonText: "Close now",
-    //   allowOutsideClick: false,
-    //   allowEscapeKey: false,
-    // });
-    await checkForAnnouncements("update");
+    await Swal.fire({
+      icon: "error",
+      html: `The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA or check to see if a previous version is running in the background with the instructions on our <a href='https://docs.sodaforsparc.io/docs/common-errors/pennsieve-agent-is-already-running' target='_blank'>documentation page.</a> If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Close now",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    });
+    // await checkForAnnouncements("update");
 
     throw new Error();
   }
