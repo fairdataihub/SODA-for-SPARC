@@ -3,7 +3,7 @@
     "all": {
       "show": true,
       "title": "App version outdated",
-      "message": "Please update to the latest version of the SODA by using our autoupdate feature or downloading from <a href='https://github.com/fairdataihub/SODA-for-SPARC/releases/tag/v9.0.0' target='_blank'>here</a>.",
+      "message": "Please update to the latest version of the SODA by using our autoupdate feature or download from <a href='https://github.com/fairdataihub/SODA-for-SPARC/releases/tag/v9.0.0' target='_blank'>here</a>.",
       "type": "warning"
     }
   },

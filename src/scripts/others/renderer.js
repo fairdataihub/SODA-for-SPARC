@@ -836,9 +836,9 @@ const apiVersionsMatch = async () => {
   let serverAppVersion = responseObject.data.version;
 
   log.info(`Server version is ${serverAppVersion}`);
-  console.log(serverAppVersion);
+  // console.log(serverAppVersion);
   // console.log(appVersion);
-  // appVersion = "8.0.0";
+  appVersion = "8.0.0";
   console.log(appVersion);
   if (serverAppVersion !== appVersion) {
     log.info("Server version does not match client version");
@@ -850,7 +850,16 @@ const apiVersionsMatch = async () => {
       "Server version does not match client version"
     );
 
-    console.log("bruh");
+    // console.log("bruh");
+    // await Swal.fire({
+    //   icon: "error",
+    //   html: `The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA or check to see if a previous version is running in the background with the instructions on our <a href='https://docs.sodaforsparc.io/docs/common-errors/pennsieve-agent-is-already-running' target='_blank'>documentation page.</a> If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+    //   heightAuto: false,
+    //   backdrop: "rgba(0,0,0, 0.4)",
+    //   confirmButtonText: "Close now",
+    //   allowOutsideClick: false,
+    //   allowEscapeKey: false,
+    // });
     await checkForAnnouncements("update");
 
     throw new Error();
@@ -1099,11 +1108,10 @@ ipcRenderer.on("update_available", () => {
     type: "app_update",
     message: "A new update is available. Downloading now...",
   });
-  checkForAnnouncements("update");
 });
 
 // When the update is downloaded, show the restart notification
-ipcRenderer.on("update_downloaded", () => {
+ipcRenderer.on("update_downloaded", async () => {
   ipcRenderer.removeAllListeners("update_downloaded");
   ipcRenderer.send(
     "track-event",
@@ -1125,13 +1133,14 @@ ipcRenderer.on("update_downloaded", () => {
         "Update downloaded. It will be installed on the restart of the app. Click here to restart SODA now.",
     });
   }
-  update_downloaded_notification.on("click", ({ target, event }) => {
-    restartApp();
+  update_downloaded_notification.on("click", async ({ target, event }) => {
+    await restartApp();
+    checkForAnnouncements("update");
   });
 });
 
 // Restart the app for update. Does not restart on macos
-const restartApp = () => {
+const restartApp = async () => {
   notyf.open({
     type: "app_update_warning",
     message: "Closing SODA now...",
