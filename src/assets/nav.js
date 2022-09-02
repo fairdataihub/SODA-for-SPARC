@@ -68,11 +68,11 @@ async function handleSectionTrigger(event) {
     if (Object.keys(sodaJSONObj).length > 0) {
       const warnBeforeExitCurate = await Swal.fire({
         icon: "warning",
-        html: `Entering Guided Mode will wipe out the progress you have made organizing your dataset.
+        html: `Selecting Continue will take you to Guided Mode but will wipe out the progress you have made organizing your dataset.
         <br><br>
         To save your progress, press Cancel${
           currentTab < 2 ? ", progress to the third step," : ""
-        } and press "Save Progress" in the Organize Dataset tab.`,
+        } and press "Save progress" in the Organize Dataset tab.`,
         showCancelButton: true,
         focusCancel: true,
         cancelButtonText: "Cancel",
