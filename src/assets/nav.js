@@ -100,7 +100,7 @@ async function handleSectionTrigger(event) {
         currentTab = 0;
         wipeOutCurateProgress();
         globalGettingStarted1stQuestionBool = false;
-        boolNextButtonDisabled = true;
+        document.getElementById("nextBtn").disabled = true;
       } else {
         //Stay in Organize datasets section
         document.getElementById("main_tabs_view").click();
