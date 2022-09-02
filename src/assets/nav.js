@@ -136,7 +136,10 @@ async function handleSectionTrigger(event) {
         $("#main_tabs_view")[0].click();
         globalGettingStarted1stQuestionBool = false;
       } else {
-        console.log("cancel and return to ff");
+        //Stay in Organize datasets section
+        document.getElementById("main_tabs_view").click();
+        document.getElementById("organize_dataset_btn").click();
+        return;
       }
     }
     sodaJSONObj = {};
