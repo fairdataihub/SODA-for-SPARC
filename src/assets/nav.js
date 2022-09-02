@@ -66,17 +66,29 @@ async function handleSectionTrigger(event) {
     // be warned because Guided Mode uses shared variables and FF progress
     // must be wiped out.
     if (Object.keys(sodaJSONObj).length > 0) {
+      //get the element with data-next="Question-getting-started-BF-account"
+      const buttonContinueExistingPennsieve = document.querySelector(
+        '[data-next="Question-getting-started-BF-account"]'
+      );
+      const transitionWarningMessage = `
+        Entering Guided Mode will wipe out the progress you have made organizing your dataset.
+        <br><br>
+        ${
+          buttonContinueExistingPennsieve.classList.contains("checked")
+            ? `To continue making modifications to your existing Pennsieve dataset, press Cancel.`
+            : `To save your progress, press Cancel${
+                currentTab < 2 ? ", progress to the third step," : ""
+              } and press "Save Progress" in the Organize Dataset tab.`
+        }
+      `;
+
       const warnBeforeExitCurate = await Swal.fire({
         icon: "warning",
-        html: `Selecting Continue will take you to Guided Mode but will wipe out the progress you have made organizing your dataset.
-        <br><br>
-        To save your progress, press Cancel${
-          currentTab < 2 ? ", progress to the third step," : ""
-        } and press "Save progress" in the Organize Dataset tab.`,
+        html: transitionWarningMessage,
         showCancelButton: true,
         focusCancel: true,
         cancelButtonText: "Cancel",
-        confirmButtonText: "Continue",
+        confirmButtonText: "Enter Guided Mode",
         reverseButtons: reverseSwalButtons,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",

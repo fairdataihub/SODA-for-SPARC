@@ -3485,7 +3485,6 @@ function raiseWarningExit(message) {
 }
 
 const exitCurate = async (resetProgressTabs, start_over = false) => {
-  console.log("exitCurate");
   $("#dataset-loaded-message").hide();
   // if exit Btn is clicked after Generate
   if (resetProgressTabs) {
@@ -3528,7 +3527,6 @@ const exitCurate = async (resetProgressTabs, start_over = false) => {
 };
 
 const wipeOutCurateProgress = async () => {
-  console.log("wipeOutCurateProgress");
   // set SODA json object back
   sodaJSONObj = {
     "starting-point": { type: "" },
