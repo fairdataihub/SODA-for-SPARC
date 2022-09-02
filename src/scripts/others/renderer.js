@@ -492,34 +492,34 @@ const checkForAnnouncements = async (state) => {
         console.log(appVersion);
         console.log(platform);
         if (appVersion === key) {
-          console.log("herdaflkj");
           //check for app version
           if (Object.keys(res[key]).includes(platform)) {
-            console.log("herheadf");
             //check for platform
             if (res[key][platform]["show"] === true) {
               console.log("should fire here");
               //if platform found then use that object to create announcement
-              await Swal.fire({
-                title: res[key][platform]["title"],
-                html: `<p>${res[key][platform]["message"]}</p>`,
-                icon: res[key][platform]["type"],
-                heightAuto: false,
-                backdrop: "rgba(0,0,0, 0.4)",
-                confirmButtonText: "Okay",
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                didOpen: () => {
-                  let swal_alert =
-                    document.getElementsByClassName("swal2-popup")[0];
-                  swal_alert.style.width = "40rem";
-                },
-              });
+              if (state === "announcements") {
+                await Swal.fire({
+                  title: res[key][platform]["title"],
+                  html: `<p>${res[key][platform]["message"]}</p>`,
+                  icon: res[key][platform]["type"],
+                  heightAuto: false,
+                  backdrop: "rgba(0,0,0, 0.4)",
+                  confirmButtonText: "Okay",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  didOpen: () => {
+                    let swal_alert =
+                      document.getElementsByClassName("swal2-popup")[0];
+                    swal_alert.style.width = "40rem";
+                  },
+                });
+              }
             }
           } else {
-            //check if all is in json structure
-            //announcements for all OS's
             if (Object.keys(res[key]).includes("all")) {
+              //check if all is in json structure
+              //announcements for all OS's
               Swal.fire({
                 title: res[key]["all"]["title"],
                 html: `<p>${res[key]["all"]["message"]}</p>`,
@@ -539,21 +539,23 @@ const checkForAnnouncements = async (state) => {
           }
         } else {
           //app version is not up to date
-          Swal.fire({
-            title: res["older"]["all"]["title"],
-            html: `<p>${res[key]["all"]["message"]}</p>`,
-            icon: res[key]["all"]["type"],
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            confirmButtonText: "Okay",
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            didOpen: () => {
-              let swal_alert =
-                document.getElementsByClassName("swal2-popup")[0];
-              swal_alert.style.width = "40rem";
-            },
-          });
+          if (state === "update") {
+            Swal.fire({
+              title: res["older"]["all"]["title"],
+              html: `<p>${res[key]["all"]["message"]}</p>`,
+              icon: res[key]["all"]["type"],
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              confirmButtonText: "Okay",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              didOpen: () => {
+                let swal_alert =
+                  document.getElementsByClassName("swal2-popup")[0];
+                swal_alert.style.width = "40rem";
+              },
+            });
+          }
         }
       }
     });
@@ -727,7 +729,7 @@ const run_pre_flight_checks = async (check_update = true) => {
                 //after check for announcements
                 //After everything has been checked then check for announcements
                 console.log("check here");
-                await checkForAnnouncements();
+                await checkForAnnouncements("announcements");
                 resolve(true);
               }
             });
@@ -743,7 +745,7 @@ const run_pre_flight_checks = async (check_update = true) => {
             //after check for announcements
             //After everything has been checked then check for announcements
             console.log("check here");
-            await checkForAnnouncements();
+            await checkForAnnouncements("announcements");
             resolve(true);
           }
         }
@@ -836,7 +838,7 @@ const apiVersionsMatch = async () => {
   log.info(`Server version is ${serverAppVersion}`);
   console.log(serverAppVersion);
   // console.log(appVersion);
-  appVersion = "8.0.0";
+  // appVersion = "8.0.0";
   console.log(appVersion);
   if (serverAppVersion !== appVersion) {
     log.info("Server version does not match client version");
@@ -1097,7 +1099,7 @@ ipcRenderer.on("update_available", () => {
     type: "app_update",
     message: "A new update is available. Downloading now...",
   });
-  // checkForAnnouncements("update");
+  checkForAnnouncements("update");
 });
 
 // When the update is downloaded, show the restart notification
