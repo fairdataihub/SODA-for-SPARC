@@ -46,61 +46,11 @@ async function handleSectionTrigger(event) {
     freeFormButtons.classList.add("freeform-file-explorer-buttons");
     organizeDSglobalPath = document.getElementById("input-global-path");
     dataset_path = document.getElementById("input-global-path");
-    /**********************************************************************************/
-
-    if (Object.keys(savedOrganizeDsSate).length !== 0) {
-      /**** Happens when temp DS data is saved in the savedOrganizeDsState variable ******/
-      sodaJSONObj = savedOrganizeDsSate.OdsTempSodaJSONObj;
-      datasetStructureJSONObj = savedOrganizeDsSate.OdsTempDsJSONObj;
-
-      organizeDSglobalPath.value =
-        savedOrganizeDsSate.OdsTempOrganizeDSglobalPathValue;
-
-      var filtered = getGlobalPath(organizeDSglobalPath);
-      var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-      listItems(myPath, "#items", 500, (reset = true));
-      console.log(myPath);
-      getInFolder(
-        ".single-item",
-        "#items",
-        organizeDSglobalPath,
-        datasetStructureJSONObj
-      );
-
-      setTimeout(() => {
-        document.getElementById("nextBtn").disabled =
-          savedOrganizeDsSate.OdsTempNextButtonDisabledState;
-      }, 200);
-    } else {
-      /******When no progress is saved, reset this stuff ********/
-      sodaJSONObj = {};
-      datasetStructureJSONObj = {};
-      itemsContainer.innerHTML = "";
-      organizeDSglobalPath.value = "My_dataset_folder/";
-    }
-    /** set var as saved because we always want to save after exiting organize ds ******/
-    saveOrganizeDsState = true;
-  } else {
-    if (saveOrganizeDsState === true) {
-      //Save the progress of the Organize datasets section
-      //When user clicks out of the section
-      const nextButtonDisabled = document.getElementById("nextBtn").disabled;
-
-      savedOrganizeDsSate = {
-        OdsTempSodaJSONObj: sodaJSONObj,
-        OdsTempDsJSONObj: datasetStructureJSONObj,
-        OdsTempNextButtonDisabledState: nextButtonDisabled,
-        OdsTempOrganizeDSglobalPathValue: organizeDSglobalPath.value,
-      };
-      console.log(savedOrganizeDsSate);
-      //reset the var to false so it won't save until the user goes back to organize DS
-      saveOrganizeDsState = false;
-    }
   }
 
   if (sectionId === "guided_mode-section") {
     if (document.getElementById("returnButton") !== null) {
-      alert("Not when uploading");
+      alert("can't switch to gm when ff upload is in progress");
     } else {
       const confirmBeforeExitOrganizeDS = await Swal.fire({
         icon: "warning",
@@ -199,6 +149,7 @@ async function handleSectionTrigger(event) {
 }
 
 function considerNextBtn() {
+  console.log(nextBtnDisabledVariable);
   if (nextBtnDisabledVariable !== undefined) {
     if (nextBtnDisabledVariable === true) {
       $("#nextBtn").prop("disabled", true);
