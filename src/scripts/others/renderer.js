@@ -219,7 +219,6 @@ let client = null;
 // get port number from the main process
 const port = ipcRenderer.sendSync("get-port");
 
-
 // TODO: change the default port so it is based off the discovered port in Main.js
 client = axios.create({
   baseURL: `http://127.0.0.1:${port}/`,
@@ -1296,7 +1295,6 @@ var allCollectionTags = {};
 var currentTags = {};
 var currentCollectionTags = [];
 
-
 //initialize Tagify input field for guided submission milestones
 const guidedSubmissionTagsInput = document.getElementById(
   "guided-tagify-submission-milestone-tags-import"
@@ -1357,7 +1355,6 @@ var collectionDatasetInput = document.getElementById("tagify-collection-tags"),
     },
   });
 
-
 var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
   studyOrganSystemsTagify = new Tagify(studyOrganSystemsInput, {
     whitelist: [
@@ -1404,8 +1401,8 @@ var datasetTagsInput = document.getElementById("tagify-dataset-tags"),
   datasetTagsTagify = new Tagify(datasetTagsInput);
 
 var guidedDatasetTagsInput = document.getElementById(
-  "guided-tagify-dataset-tags"
-),
+    "guided-tagify-dataset-tags"
+  ),
   // initialize Tagify on the above input node reference
   guidedDatasetTagsTagify = new Tagify(guidedDatasetTagsInput);
 
@@ -1566,7 +1563,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => { });
+            }).then((result) => {});
             generateSubjectsFileHelper(false);
           }
         });
@@ -1582,7 +1579,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => { });
+        }).then((result) => {});
         generateSubjectsFileHelper(false);
       }
     }
@@ -1636,7 +1633,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   let bfdataset = document
     .getElementById("bf_dataset_load_subjects")
@@ -1739,7 +1736,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => { });
+            }).then((result) => {});
             generateSamplesFileHelper(uploadBFBoolean);
           }
         });
@@ -1755,7 +1752,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => { });
+        }).then((result) => {});
         generateSamplesFileHelper(uploadBFBoolean);
       }
     }
@@ -1809,7 +1806,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   try {
     let samplesFileResponse = await client.post(
@@ -2297,12 +2294,12 @@ function createStrain(id, type, curationMode) {
           info.setAttribute(
             "onclick",
             "populateRRID('" +
-            data.query +
-            "', '" +
-            type +
-            "', '" +
-            curationMode +
-            "')"
+              data.query +
+              "', '" +
+              type +
+              "', '" +
+              curationMode +
+              "')"
           );
           info.innerHTML = `Click here to check <strong>"${data.query}"</strong>`;
         }
@@ -2337,7 +2334,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   try {
     let load_taxonomy_species = await client.get(`/taxonomy/species`, {
       params: {
@@ -3055,9 +3052,9 @@ function detectEmptyRequiredFields(funding) {
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
   var emptyMessageArray = [
     "- Missing required fields under Dataset Info section: " +
-    dsEmptyField.join(", "),
+      dsEmptyField.join(", "),
     "- Missing required fields under Contributor Info section: " +
-    conEmptyField.join(", "),
+      conEmptyField.join(", "),
     "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
   ];
   var allFieldsSatisfied = true;
@@ -4724,7 +4721,6 @@ ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
 
       try {
         await client.post(
-
           `/organize_datasets/datasets`,
 
           {
@@ -4739,7 +4735,6 @@ ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
           {
             timeout: 0,
           }
-
         );
 
         document.getElementById("para-organize-datasets-error").style.display =
@@ -6592,8 +6587,9 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
           ${dragDropInstructionsText}
         </p>
         <p class="text-center">
-          You may also <b>add</b> or <b>import</b> ${folderType === undefined ? "folders or files" : folderType + " data"
-      } using the buttons in the upper right corner
+          You may also <b>add</b> or <b>import</b> ${
+            folderType === undefined ? "folders or files" : folderType + " data"
+          } using the buttons in the upper right corner
         </p>
       </div>`
     );
@@ -6921,14 +6917,16 @@ ipcRenderer.on(
 
                     numb.innerText = percentage_amount + "%";
                     if (percentage_amount <= 50) {
-                      progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
-                        }deg)`;
+                      progressBar_rightSide.style.transform = `rotate(${
+                        percentage_amount * 0.01 * 360
+                      }deg)`;
                     } else {
                       progressBar_rightSide.style.transition = "";
                       progressBar_rightSide.classList.add("notransition");
                       progressBar_rightSide.style.transform = `rotate(180deg)`;
-                      progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
-                        }deg)`;
+                      progressBar_leftSide.style.transform = `rotate(${
+                        percentage_amount * 0.01 * 180
+                      }deg)`;
                     }
 
                     if (finished === 1) {
@@ -7003,14 +7001,16 @@ ipcRenderer.on(
 
                   numb.innerText = percentage_amount + "%";
                   if (percentage_amount <= 50) {
-                    progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
-                      }deg)`;
+                    progressBar_rightSide.style.transform = `rotate(${
+                      percentage_amount * 0.01 * 360
+                    }deg)`;
                   } else {
                     progressBar_rightSide.style.transition = "";
                     progressBar_rightSide.classList.add("notransition");
                     progressBar_rightSide.style.transform = `rotate(180deg)`;
-                    progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
-                      }deg)`;
+                    progressBar_leftSide.style.transform = `rotate(${
+                      percentage_amount * 0.01 * 180
+                    }deg)`;
                   }
                   if (finished === 1) {
                     progressBar_leftSide.style.transform = `rotate(180deg)`;
@@ -7387,9 +7387,9 @@ document
     for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
       if (
         "manifest.xlsx" in
-        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
         sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-        "manifest.xlsx"
+          "manifest.xlsx"
         ]["forTreeview"]
       ) {
         delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
@@ -7984,7 +7984,7 @@ async function initiate_generate() {
           "track-event",
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE +
-          " - Step 7 - Generate - Dataset - Number of Files",
+            " - Step 7 - Generate - Dataset - Number of Files",
           `${datasetUploadSession.id}`,
           uploadedFiles
         );
@@ -7994,7 +7994,7 @@ async function initiate_generate() {
           "track-event",
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE +
-          " - Step 7 - Generate - Dataset - Size",
+            " - Step 7 - Generate - Dataset - Size",
           `${datasetUploadSession.id}`,
           increaseInFileSize
         );
@@ -8266,8 +8266,6 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
   }
 });
 
-
-
 /**
  *
  * @param {object} sodaJSONObj - The SODA json object used for tracking files, folders, and basic dataset curation information such as providence (local or Pennsieve).
@@ -8278,9 +8276,12 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
  *    "manifest_error_message": ""
  * }
  */
-var bf_request_and_populate_dataset = async (sodaJSONObj, progressContainer) => {
-
-  let { percentage_text, left_progress_bar, right_progress_bar } = getProgressContainerElements(progressContainer)
+var bf_request_and_populate_dataset = async (
+  sodaJSONObj,
+  progressContainer
+) => {
+  let { percentage_text, left_progress_bar, right_progress_bar } =
+    getProgressContainerElements(progressContainer);
 
   resetProgressContainer(
     progressContainer,
@@ -8289,18 +8290,14 @@ var bf_request_and_populate_dataset = async (sodaJSONObj, progressContainer) => 
     right_progress_bar
   );
 
-
   /**
-  * Given a progress tracking container, update the progress display to show the user the progress of their dataset import.
-  * Once the import has been completed (i.e. the progress is 100%), the progress container will be hidden. The interval will be cleared.
-  * NOTE: The interval also clears on error.
-  * @param {HTMLElement} progress_container
-  * @returns
-  */
+   * Given a progress tracking container, update the progress display to show the user the progress of their dataset import.
+   * Once the import has been completed (i.e. the progress is 100%), the progress container will be hidden. The interval will be cleared.
+   * NOTE: The interval also clears on error.
+   * @param {HTMLElement} progress_container
+   * @returns
+   */
   const requestDatasetImportProgress = async (progress_container) => {
-
-
-
     let progressResponse;
     try {
       progressResponse = await client.get(
@@ -8314,17 +8311,26 @@ var bf_request_and_populate_dataset = async (sodaJSONObj, progressContainer) => 
 
     let progressReport = progressResponse.data;
 
-    updateProgressContainer(progress_container, percentage_text, left_progress_bar, right_progress_bar, progressReport, "pennsieve_import")
+    updateProgressContainer(
+      progress_container,
+      percentage_text,
+      left_progress_bar,
+      right_progress_bar,
+      progressReport,
+      "pennsieve_import"
+    );
+
+    let finished = progressReport["import_completed_items"];
 
     if (finished === 1) {
       clearInterval(interval);
     }
-  }
+  };
 
   let interval = setInterval(
     requestDatasetImportProgress,
     500,
-    progressContainer,
+    progressContainer
   );
 
   try {
@@ -8358,9 +8364,6 @@ var bf_request_and_populate_dataset = async (sodaJSONObj, progressContainer) => 
     );
     throw Error(userErrorMessage(error));
   }
-
-
-
 };
 
 // When mode = "update", the buttons won't be hidden or shown to prevent button flickering effect
@@ -9481,7 +9484,6 @@ function gatherLogs() {
   let clientLogsPath = "";
   let serverLogsPath = path.join(homedir, "SODA", "logs");
   let logFiles = ["main.log", "renderer.log", "out.log", "api.log"];
-
 
   if (os.platform() === "darwin") {
     clientLogsPath = path.join(homedir, "/Library/Logs/SODA for SPARC/");
