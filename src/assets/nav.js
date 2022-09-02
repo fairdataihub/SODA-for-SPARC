@@ -19,6 +19,7 @@ let OdsTempDsJSONObj;
 let OdsTempSodaJSONObj;
 let prevSection;
 let savedOrganizeDsSate = {};
+let boolNextButtonDisabled = true;
 
 async function handleSectionTrigger(event) {
   // Display the current section
@@ -46,15 +47,41 @@ async function handleSectionTrigger(event) {
     freeFormButtons.classList.add("freeform-file-explorer-buttons");
     organizeDSglobalPath = document.getElementById("input-global-path");
     dataset_path = document.getElementById("input-global-path");
+    document.getElementById("nextBtn").disabled = boolNextButtonDisabled;
   }
 
   if (sectionId === "guided_mode-section") {
+    // Disallow the transition if an upload is in progress
     if (document.getElementById("returnButton") !== null) {
-      alert("can't switch to gm when ff upload is in progress");
-    } else {
+      Swal.fire({
+        icon: "warning",
+        text: "You can not enter Guided Mode while an upload is in progress.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "OK",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+      document.getElementById("main_tabs_view").click();
+      document.getElementById("organize_dataset_btn").click();
+    }
+
+    // In Free Form Mode -> Organize dataset, the sodaJSONObj has
+    // keys if the user has started the first step. The user must
+    // be warned because Guided Mode uses shared variables and FF progress
+    // must be wiped out.
+    if (Object.keys(sodaJSONObj).length > 0) {
       const confirmBeforeExitOrganizeDS = await Swal.fire({
         icon: "warning",
-        text: 'You will lose your progress in the "Organize datasets" section',
+        html: `Entering Guided Mode will wipe out the progress you have made organizing your dataset.
+        <br><br>
+        To save your progress, press Cancel${
+          currentTab < 2 ? ", progress to the third step," : ""
+        } and press "Save Progress" in the Organize Dataset tab.`,
         showCancelButton: true,
         focusCancel: true,
         cancelButtonText: "Cancel",
@@ -71,8 +98,6 @@ async function handleSectionTrigger(event) {
       });
       if (confirmBeforeExitOrganizeDS.isConfirmed) {
         $("#dataset-loaded-message").hide();
-        // if exit Btn is clicked after Generate
-
         $(".vertical-progress-bar-step").removeClass("is-current");
         $(".vertical-progress-bar-step").removeClass("done");
         $(".getting-started").removeClass("prev");
@@ -83,8 +108,8 @@ async function handleSectionTrigger(event) {
 
         currentTab = 0;
         wipeOutCurateProgress();
-        $("#main_tabs_view")[0].click();
         globalGettingStarted1stQuestionBool = false;
+        boolNextButtonDisabled = true;
       } else {
         //Stay in Organize datasets section
         document.getElementById("main_tabs_view").click();
@@ -145,18 +170,7 @@ async function handleSectionTrigger(event) {
     forceActionSidebar("hide");
   }
 
-  considerNextBtn();
-}
-
-function considerNextBtn() {
-  console.log(nextBtnDisabledVariable);
-  if (nextBtnDisabledVariable !== undefined) {
-    if (nextBtnDisabledVariable === true) {
-      $("#nextBtn").prop("disabled", true);
-    } else {
-      $("#nextBtn").prop("disabled", false);
-    }
-  }
+  boolNextButtonDisabled = document.getElementById("nextBtn").disabled;
 }
 
 function showMainContent() {
