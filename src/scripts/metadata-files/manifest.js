@@ -1015,8 +1015,6 @@ async function extractBFDatasetForManifestFile(
 
     await wait(2000)
 
-    trackManifestImportProgress();
-
     // inform user the manifest files are being generated
     document.querySelector("#loading_pennsieve_dataset_manifest_span").textContent = "Generating manifest files...";
 
@@ -1138,6 +1136,8 @@ function extractBFManifestFile() {
         clientError(err);
         reject(userErrorMessage(err));
       });
+
+    trackManifestImportProgress();
   });
 }
 

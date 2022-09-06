@@ -927,10 +927,14 @@ manifest_progress = {
 
 # TODO: NOTE: ESSENTIAL: Remove the manifest_file even if the user does not generate before pulling again.
 def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
+    # reset the progress tracking information
+    global manifest_progress
+    manifest_progress["finished"] = False
+    manifest_progress["total_manifest_files"] = 0
+    manifest_progress["manifest_files_uploaded"] = 0
+
     bf = Pennsieve(bfaccount)
     myds = bf.get_dataset(bfdataset)
-
-    global manifest_progress
 
     high_level_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
 
