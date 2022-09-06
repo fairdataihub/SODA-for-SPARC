@@ -726,8 +726,7 @@ const run_pre_flight_checks = async (check_update = true) => {
                   message: "You're all set!",
                 });
                 //After preflight checks are cleared the announcements sweet alert will pop up
-                console.log("1");
-                await checkForAnnouncements("announcements");
+                // await checkForAnnouncements("announcements");
                 resolve(true);
               }
             });
@@ -741,7 +740,6 @@ const run_pre_flight_checks = async (check_update = true) => {
               message: "You're all set!",
             });
             //After preflight checks are cleared the announcements sweet alert will pop up
-            console.log("2");
             await checkForAnnouncements("announcements");
             resolve(true);
           }
