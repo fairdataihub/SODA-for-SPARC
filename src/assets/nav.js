@@ -12,54 +12,10 @@ document.body.addEventListener("click", (event) => {
 document.body.addEventListener("custom-back", (e) => {
   handleSectionTrigger(e);
 });
+// Variable used to determine the disabled status of the organize datasets next button
+let boolNextButtonDisabled = true;
 
 async function handleSectionTrigger(event) {
-  function saveTempSodaProgress(progressFileName, sodaObject) {
-    try {
-      fs.mkdirSync(progressFilePath, { recursive: true });
-    } catch (error) {
-      log.error(error);
-      console.log(error);
-    }
-    var filePath = path.join(progressFilePath, progressFileName + ".json");
-    //update json obj progress
-
-    // delete sodaObject["dataset-structure"] value that was added only for the Preview tree view
-    if ("files" in sodaObject["dataset-structure"]) {
-      sodaObject["dataset-structure"]["files"] = {};
-    }
-    //delete manifest files added for treeview
-    // delete manifest files added for treeview
-    for (var highLevelFol in sodaObject["dataset-structure"]["folders"]) {
-      if (
-        "manifest.xlsx" in
-          sodaObject["dataset-structure"]["folders"][highLevelFol]["files"] &&
-        sodaObject["dataset-structure"]["folders"][highLevelFol]["files"][
-          "manifest.xlsx"
-        ]["forTreeview"] === true
-      ) {
-        delete sodaObject["dataset-structure"]["folders"][highLevelFol][
-          "files"
-        ]["manifest.xlsx"];
-      }
-    }
-    fs.writeFileSync(filePath, JSON.stringify(sodaObject));
-
-    Swal.fire({
-      icon: "success",
-      text: "Successfully saved progress!",
-      showConfirmButton: "OK",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showClass: {
-        popup: "animate__animated animate__fadeInDown animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__fadeOutUp animate__faster",
-      },
-    });
-  }
-
   // Display the current section
   const sectionId = `${event.target.dataset.section}-section`;
   const itemsContainer = document.getElementById("items");
@@ -70,8 +26,100 @@ async function handleSectionTrigger(event) {
     "organize-path-and-back-button-div"
   );
 
+  if (sectionId === "organize-section") {
+    //reset lazyloading values
+    resetLazyLoading();
+    //Transition file explorer elements to freeform mode
+    scroll_box = document.querySelector("#organize-dataset-tab");
+    $(".shared-folder-structure-element").appendTo(
+      $("#free-form-folder-structure-container")
+    );
+    freeFormItemsContainer.classList.add("freeform-file-explorer"); //add styling for free form mode
+    freeFormButtons.classList.add("freeform-file-explorer-buttons");
+    organizeDSglobalPath = document.getElementById("input-global-path");
+    dataset_path = document.getElementById("input-global-path");
+    document.getElementById("nextBtn").disabled = boolNextButtonDisabled;
+  }
+
   if (sectionId === "guided_mode-section") {
-    //Reset variables shared between guided and free form mode
+    // Disallow the transition if an upload is in progress
+    if (document.getElementById("returnButton") !== null) {
+      Swal.fire({
+        icon: "warning",
+        text: "You can not enter Guided Mode while an upload is in progress.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "OK",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+      document.getElementById("main_tabs_view").click();
+      document.getElementById("organize_dataset_btn").click();
+    }
+
+    // In Free Form Mode -> Organize dataset, the sodaJSONObj has
+    // keys if the user has started the first step. The user must
+    // be warned because Guided Mode uses shared variables and FF progress
+    // must be wiped out.
+    if (Object.keys(sodaJSONObj).length > 0) {
+      //get the element with data-next="Question-getting-started-BF-account"
+      const buttonContinueExistingPennsieve = document.querySelector(
+        '[data-next="Question-getting-started-BF-account"]'
+      );
+      const transitionWarningMessage = `
+        Entering Guided Mode will wipe out the progress you have made organizing your dataset.
+        <br><br>
+        ${
+          buttonContinueExistingPennsieve.classList.contains("checked")
+            ? `To continue making modifications to your existing Pennsieve dataset, press Cancel.`
+            : `To save your progress, press Cancel${
+                currentTab < 2 ? ", progress to the third step," : ""
+              } and press "Save Progress" in the Organize Dataset tab.`
+        }
+      `;
+
+      const warnBeforeExitCurate = await Swal.fire({
+        icon: "warning",
+        html: transitionWarningMessage,
+        showCancelButton: true,
+        focusCancel: true,
+        cancelButtonText: "Cancel",
+        confirmButtonText: "Enter Guided Mode",
+        reverseButtons: reverseSwalButtons,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+      if (warnBeforeExitCurate.isConfirmed) {
+        // Wipe out organize dataset progress before entering Guided Mode
+        $("#dataset-loaded-message").hide();
+        $(".vertical-progress-bar-step").removeClass("is-current");
+        $(".vertical-progress-bar-step").removeClass("done");
+        $(".getting-started").removeClass("prev");
+        $(".getting-started").removeClass("show");
+        $(".getting-started").removeClass("test2");
+        $("#Question-getting-started-1").addClass("show");
+        $("#generate-dataset-progress-tab").css("display", "none");
+        currentTab = 0;
+        wipeOutCurateProgress();
+        globalGettingStarted1stQuestionBool = false;
+        document.getElementById("nextBtn").disabled = true;
+      } else {
+        //Stay in Organize datasets section
+        document.getElementById("main_tabs_view").click();
+        document.getElementById("organize_dataset_btn").click();
+        return;
+      }
+    }
     sodaJSONObj = {};
     datasetStructureJSONObj = {};
     subjectsTableData = [];
@@ -93,29 +141,6 @@ async function handleSectionTrigger(event) {
     guidedPrepareHomeScreen();
   }
 
-  if (sectionId === "main_tabs-section") {
-    //Reset variables shared between guided and free form mode
-    sodaJSONObj = {};
-    datasetStructureJSONObj = {};
-    subjectsTableData = [];
-    samplesTableData = [];
-
-    //Transition file explorer elements to freeform mode
-    organizeDSglobalPath = document.getElementById("input-global-path");
-    organizeDSglobalPath.value = "My_dataset_folder/";
-    dataset_path = document.getElementById("input-global-path");
-    scroll_box = document.querySelector("#organize-dataset-tab");
-    itemsContainer.innerHTML = "";
-    $(".shared-folder-structure-element").appendTo(
-      $("#free-form-folder-structure-container")
-    );
-    freeFormItemsContainer.classList.add("freeform-file-explorer"); //add styling for free form mode
-    freeFormButtons.classList.add("freeform-file-explorer-buttons");
-
-    //reset lazyloading values
-    resetLazyLoading();
-  }
-
   hideAllSectionsAndDeselectButtons();
 
   if (event.detail.target) {
@@ -124,9 +149,6 @@ async function handleSectionTrigger(event) {
     forceActionSidebar("show");
     return;
   }
-
-  // Render guided mode resume progress cards if guided mode section is chosen
-  // and move the folder structuring elements to guided mode
 
   document.getElementById(sectionId).classList.add("is-shown");
 
@@ -145,17 +167,7 @@ async function handleSectionTrigger(event) {
     forceActionSidebar("hide");
   }
 
-  considerNextBtn();
-}
-
-function considerNextBtn() {
-  if (nextBtnDisabledVariable !== undefined) {
-    if (nextBtnDisabledVariable === true) {
-      $("#nextBtn").prop("disabled", true);
-    } else {
-      $("#nextBtn").prop("disabled", false);
-    }
-  }
+  boolNextButtonDisabled = document.getElementById("nextBtn").disabled;
 }
 
 function showMainContent() {

@@ -43,13 +43,21 @@ const portRange = 100;
  * @returns {boolean} True if the app is packaged, false if it is running from a dev version.
  */
 const guessPackaged = () => {
+
+
+  log.info("Guessing if packaged")
+
   const windowsPath = path.join(__dirname, PY_FLASK_DIST_FOLDER);
   const unixPath = path.join(process.resourcesPath, PY_FLASK_MODULE);
 
+  log.info(unixPath)
+
   if (process.platform === "darwin" || process.platform === "linux") {
     if (require("fs").existsSync(unixPath)) {
+      log.info("Unix path exists")
       return true;
     } else {
+      log.info("Unix path does not exist")
       return false;
     }
   }
@@ -71,12 +79,15 @@ const guessPackaged = () => {
  */
 const getScriptPath = () => {
   if (!guessPackaged()) {
+    log.info("App is not packaged returning path: ")
+    log.info(path.join(__dirname, PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py"))
     return path.join(__dirname, PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py");
   }
 
   if (process.platform === "win32") {
     return path.join(__dirname, PY_FLASK_DIST_FOLDER, PY_FLASK_MODULE + ".exe");
   } else {
+    log.info("Since app is packaged returning path: ")
     return path.join(process.resourcesPath, PY_FLASK_MODULE);
   }
 };
@@ -487,5 +498,6 @@ ipcMain.on("orcid", (event, url) => {
 });
 
 ipcMain.on("get-port", (event) => {
+  log.info("Renderer requested port: " + selectedPort)
   event.returnValue = selectedPort
 })
