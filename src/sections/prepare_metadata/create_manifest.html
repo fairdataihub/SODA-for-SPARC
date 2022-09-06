@@ -409,41 +409,54 @@
               </button>
             </div>
           </div>
-
-          <div
-            id="loading_pennsieve_dataset_manifest"
-            class="circular"
-            style="align-self: center; display: none"
-          >
-            <div class="inner"></div>
-            <div class="pennsieve_loading_dataset_percentage" id="pennsieve_loading_dataset_percentage_manifest" class="number">
-              0%
-            </div>
-            <div class="circle">
-              <div class="bar left">
-                <div
-                  class="pennsieve_left-side_less_than_50 progress"
-                  id="pennsieve_left-side_less_than_50_manifest"
-                  style="transform: rotate(0deg)"
-                ></div>
-              </div>
-              <div class="bar right">
-                <div
-                  class="pennsieve_right-side_greater_than_50 progress"
-                  id="pennsieve_right-side_greater_than_50_manifest"
-                  style="transform: rotate(0deg)"
-                ></div>
-              </div>
-            </div>
-          </div>
-          <span
-            id="loading_pennsieve_dataset_manifest_span"
-            style="margin: auto"
-            >Importing your Pennsieve dataset...</span
-          >
         </div>
       </div>
     </div>
+
+
+    <div class="field" style="margin: auto; width: 550px"> 
+      <div
+        style="
+          display: flex;
+          justify-content: center;
+          flex-direction: column;
+          margin-bottom: 1.5rem;
+          margin-top: 1.5rem;
+        "
+      >
+        <div
+          id="loading_pennsieve_dataset_manifest"
+          class="circular"
+          style="align-self: center; display: none"
+        >
+          <div class="inner" style="top: 50% !important"></div>
+          <div class="pennsieve_loading_dataset_percentage" id="pennsieve_loading_dataset_percentage_manifest" class="number" style="position: absolute !important; top: 40% !important; z-index: 100 !important; left: 33% !important;">
+            0%
+          </div>
+          <div class="circle">
+            <div class="bar left">
+              <div
+                class="pennsieve_left-side_less_than_50 progress"
+                id="pennsieve_left-side_less_than_50_manifest"
+                style="transform: rotate(0deg)"
+              ></div>
+            </div>
+            <div class="bar right">
+              <div
+                class="pennsieve_right-side_greater_than_50 progress"
+                id="pennsieve_right-side_greater_than_50_manifest"
+                style="transform: rotate(0deg)"
+              ></div>
+            </div>
+          </div>
+        </div>
+        <span
+          id="loading_pennsieve_dataset_manifest_span"
+          style="margin: auto"
+          >Importing your Pennsieve dataset...</span
+        >
+    </div>
+  </div>
 
     <div
       class="individual-question prepare-manifest"
