@@ -8,7 +8,7 @@
     }
   },
 
-  "9.0.1": {
+  "9.0.0": {
     "win32": {
       "show": true,
       "title": "Welcome to version 9.0.0 for Windows!",
