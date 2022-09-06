@@ -12,6 +12,8 @@ const ProgressContainerType = {
  * @param {HTMLElement} right_progress_bar - The right progress bar element.
  * @param {} res  - The upload information used for updating the given progress container
  * @param {Enumerator} progressContainerType - Enumerator of the type of progress container to update.
+ * @param {number} timeBeforeHiding - The time in milliseconds before the progress container is hidden after completing the manifest generation.
+ * 
  */
 const updateProgressContainer = (
   progress_container,
@@ -19,7 +21,8 @@ const updateProgressContainer = (
   left_progress_bar,
   right_progress_bar,
   res,
-  progressContainerType
+  progressContainerType, 
+  timeBeforeHiding
 ) => {
   if (progressContainerType === ProgressContainerType.MANIFEST) {
     updateProgressContainerManifest(
@@ -27,7 +30,8 @@ const updateProgressContainer = (
       percentage_text,
       left_progress_bar,
       right_progress_bar,
-      res
+      res,
+      timeBeforeHiding
     );
   } else {
     updateProgressContainerPennsieveImport(
@@ -35,7 +39,8 @@ const updateProgressContainer = (
       percentage_text,
       left_progress_bar,
       right_progress_bar,
-      res
+      res, 
+      timeBeforeHiding
     );
   }
 };
@@ -48,38 +53,41 @@ const updateProgressContainer = (
  * @param {*} left_progress_bar
  * @param {*} right_progress_bar
  * @param {*} manifestProgress
+ * @param {number} timeBeforeHiding - The time in milliseconds before the progress container is hidden after completing the manifest generation.
  */
 const updateProgressContainerManifest = (
   progress_container,
   percentage_text,
   left_progress_bar,
   right_progress_bar,
-  manifestProgress
+  manifestProgress,
+  timeBeforeHiding
 ) => {
-  console.log("Manifest updating...");
-  console.log(manifestProgress);
 
   let totalManifestFiles = manifestProgress.total_manifest_files;
   let totalManifestFilesCreated = manifestProgress.manifest_files_uploaded;
+  let manifestProgressPercentage = 0.00;
 
-  let manifestProgressPercentage = Math.round(
-    (totalManifestFilesCreated / totalManifestFiles) * 100
-  );
+  if (totalManifestFilesCreated > 0) {
+    manifestProgressPercentage = Math.round(
+      (totalManifestFilesCreated / totalManifestFiles) * 100
+    );
+  }
   percentage_text.innerText = manifestProgressPercentage + "%";
   if (manifestProgressPercentage <= 50) {
-    left_progress_bar.style.transform = `rotate(${
-      manifestProgressPercentage * 0.01 * 360
-    }deg)`;
+    left_progress_bar.style.transform = `rotate(${manifestProgressPercentage * 0.01 * 360
+      }deg)`;
   } else {
     left_progress_bar.style.transition = "";
     left_progress_bar.classList.add("notransition");
     left_progress_bar.style.transform = `rotate(180deg)`;
-    right_progress_bar.style.transform = `rotate(${
-      manifestProgressPercentage * 0.01 * 180
-    }deg)`;
+    right_progress_bar.style.transform = `rotate(${manifestProgressPercentage * 0.01 * 180
+      }deg)`;
   }
 
-  if (totalManifestFiles === totalManifestFilesCreated) {
+  let finished = manifestProgress.finished;
+
+  if (finished) {
     percentage_text.innerText = "100%";
     left_progress_bar.style.transform = `rotate(180deg)`;
     right_progress_bar.style.transform = `rotate(180deg)`;
@@ -87,7 +95,7 @@ const updateProgressContainerManifest = (
 
     setTimeout(() => {
       progress_container.style.display = "none";
-    }, 2000);
+    }, timeBeforeHiding);
   }
 };
 
@@ -99,29 +107,29 @@ const updateProgressContainerManifest = (
  * @param {*} left_progress_bar
  * @param {*} right_progress_bar
  * @param {*} pennsieveImportProgress
+ * @param {number} timeBeforeHiding - The time in milliseconds before the progress container is hidden after completing the import.
  */
 const updateProgressContainerPennsieveImport = (
   progress_container,
   percentage_text,
   left_progress_bar,
   right_progress_bar,
-  pennsieveImportProgress
+  pennsieveImportProgress, 
+  timeBeforeHiding
 ) => {
   let percentage_amount =
     pennsieveImportProgress["import_progress_percentage"].toFixed(2);
   let finished = pennsieveImportProgress["import_completed_items"];
   percentage_text.innerText = percentage_amount + "%";
   if (percentage_amount <= 50) {
-    left_progress_bar.style.transform = `rotate(${
-      percentage_amount * 0.01 * 360
-    }deg)`;
+    left_progress_bar.style.transform = `rotate(${percentage_amount * 0.01 * 360
+      }deg)`;
   } else {
     left_progress_bar.style.transition = "";
     left_progress_bar.classList.add("notransition");
     left_progress_bar.style.transform = `rotate(180deg)`;
-    right_progress_bar.style.transform = `rotate(${
-      percentage_amount * 0.01 * 180
-    }deg)`;
+    right_progress_bar.style.transform = `rotate(${percentage_amount * 0.01 * 180
+      }deg)`;
   }
 
   if (finished === 1) {
@@ -131,7 +139,7 @@ const updateProgressContainerPennsieveImport = (
     right_progress_bar.classList.remove("notransition");
     setTimeout(() => {
       progress_container.style.display = "none";
-    }, 2000);
+    }, timeBeforeHiding);
   }
 };
 

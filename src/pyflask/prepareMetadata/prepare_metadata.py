@@ -922,6 +922,7 @@ manifest_folder_path = join(userpath, "SODA", "manifest_files")
 manifest_progress = {
     "total_manifest_files": 0,
     "manifest_files_uploaded": 0,
+    "finished": False
 }
 
 # TODO: NOTE: ESSENTIAL: Remove the manifest_file even if the user does not generate before pulling again.
@@ -935,7 +936,7 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
 
     dataset_structure = soda_json_structure["dataset-structure"]
 
-        # get the count of the total number of high level folders in soda_json_structure
+    # get the count of the total number of high level folders in soda_json_structure
     for folder in list(dataset_structure["folders"]):
         if folder in high_level_folders:
             manifest_progress["total_manifest_files"] += 1
@@ -950,6 +951,9 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
 
     # create manifest files from scratch for any high level folders that don't have a manifest file on Pennsieve
     create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, high_level_folders, manifest_progress)
+
+    # finished with the manifest generation process
+    manifest_progress["finished"] = True
 
     no_manifest_boolean = False
 
@@ -1081,7 +1085,8 @@ def manifest_creation_progress():
 
     return {
             "manifest_files_uploaded": manifest_progress["manifest_files_uploaded"], 
-            "total_manifest_files": manifest_progress["total_manifest_files"]
+            "total_manifest_files": manifest_progress["total_manifest_files"],
+            "finished": manifest_progress["finished"]
            }
 
 

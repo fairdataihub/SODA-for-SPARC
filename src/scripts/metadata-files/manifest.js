@@ -929,7 +929,7 @@ async function extractBFDatasetForManifestFile(
 ) {
   var result;
   try {
-    var res = await bf_request_and_populate_dataset(sodaJSONObj, document.getElementById("loading_pennsieve_dataset_manifest"));
+    var res = await bf_request_and_populate_dataset(sodaJSONObj, document.getElementById("loading_pennsieve_dataset_manifest"), 50);
     result = [true, res];
   } catch (err) {
     result = [false, err];
@@ -1013,12 +1013,18 @@ async function extractBFDatasetForManifestFile(
       return;
     }
 
+    await wait(2000)
+
     trackManifestImportProgress();
+
+    // inform user the manifest files are being generated
+    document.querySelector("#loading_pennsieve_dataset_manifest_span").textContent = "Generating manifest files...";
 
     var continueErrorManifest;
     try {
       console.log("Extracting manifest files...");
       let res = await extractBFManifestFile();
+      console.log("Finished extracting manifest files.");
       continueErrorManifest = [false, res];
     } catch (err) {
       continueErrorManifest = [true, err];
@@ -1280,13 +1286,13 @@ function resetManifest(skip_permission) {
 
 const trackManifestImportProgress = async () => {
   // show the progress container - it is hidden by default once the dataset import is complete
-  let progress_container = document.getElementById(
+  let progressContainer = document.getElementById(
     "loading_pennsieve_dataset_manifest"
   );
 
-  let { percentage_text, left_progress_bar, right_progress_bar } = getProgressContainerElements(progress_container);
+  let { percentage_text, left_progress_bar, right_progress_bar } = getProgressContainerElements(progressContainer);
 
-  resetProgressContainer(progress_container, percentage_text, left_progress_bar, right_progress_bar)
+  resetProgressContainer(progressContainer, percentage_text, left_progress_bar, right_progress_bar)
 
   const manifest_creation_progress_pennsieve = async () => {
     let progressResponse;
@@ -1300,14 +1306,14 @@ const trackManifestImportProgress = async () => {
       return;
     }
 
+    console.log(progressResponse);
+
     let manifestProgress = progressResponse.data;
+    let finished = manifestProgress.finished;
 
-    let totalManifestFiles = manifestProgress.total_manifest_files;
-    let totalManifestFilesCreated = manifestProgress.manifest_files_uploaded;
+    updateProgressContainer(progressContainer, percentage_text, left_progress_bar, right_progress_bar, manifestProgress, "manifest")
 
-    updateProgressContainer(progress_container, percentage_text, left_progress_bar, right_progress_bar, manifestProgress, "manifest")
-
-    if (totalManifestFiles === totalManifestFilesCreated) {
+    if (finished) {
       clearInterval(manifestProgressInterval);
     }
   };

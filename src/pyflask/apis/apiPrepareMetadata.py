@@ -575,6 +575,7 @@ class GenerateManifestFilesPennsieve(Resource):
 manifest_creation_progress_model = api.model('ManifestCreationProgress', {
     'total_manifest_files': fields.Integer(description='Total amount of manifest files that need to be created for the current dataset.'),
     'manifest_files_uploaded': fields.Integer(description='Total amount of manifest files that have been created for the client.'),
+    'finished': fields.Boolean(description='Whether or not the manifest creation process has finished.')
 })
 
 @api.route('/manifest_files/pennsieve/progress')
