@@ -853,6 +853,7 @@ def check_local_dataset_files_validity(soda_json_structure):
 # path to local SODA folder for saving manifest files
 manifest_sparc = ["manifest.xlsx", "manifest.csv"]
 manifest_folder_path = join(userpath, "SODA", "manifest_files")
+guided_manifest_folder_path = join(userpath, "SODA", "Guided-Manifest-Files")
 
 
 def create_high_level_manifest_files(soda_json_structure):
@@ -3235,6 +3236,121 @@ def generate_manifest_file_locally(generate_purpose, soda_json_structure):
 
     open_file(manifest_destination)
     return {"success_message_or_manifest_destination": "success"}
+
+
+def guided_generate_manifest_file_templates(soda_json_structure):
+    """
+    Function to create manifest files for each high-level SPARC folder for an existing Pennsieve dataset.
+    Args:
+        soda_json_structure: soda dict with information about the dataset to be generated/modified
+    Action:
+        manifest_files_structure: dict including the local path of the manifest files
+    """
+    guided_high_level_folders_present = []
+    guided_manifest_files_structure = {}
+    local_timezone = TZLOCAL()
+
+    double_extensions = [
+        ".ome.tiff",
+        ".ome.tif",
+        ".ome.tf2,",
+        ".ome.tf8",
+        ".ome.btf",
+        ".ome.xml",
+        ".brukertiff.gz",
+        ".mefd.gz",
+        ".moberg.gz",
+        ".nii.gz",
+        ".mgh.gz",
+        ".tar.gz",
+        ".bcl.gz",
+    ]
+
+    def get_name_extension(file_name):
+        double_ext = False
+        for ext in double_extensions:
+            if file_name.find(ext) != -1:
+                double_ext = True
+                break
+
+        ext = ""
+
+        if double_ext == False:
+            ext = os.path.splitext(file_name)[1]
+        else:
+            ext = (
+                os.path.splitext(os.path.splitext(file_name)[0])[1]
+                + os.path.splitext(file_name)[1]
+            )
+        return ext
+
+    def guided_recursive_folder_traversal(folder, dict_folder_manifest):
+        if "files" in folder.keys():
+            for item in list(folder["files"]):
+                relative_file_name = folder["files"][item]["path"]
+                relative_file_name.replace("\\", "/")
+                dict_folder_manifest["filename"].append(relative_file_name)
+
+                file_extension = get_name_extension(relative_file_name)
+                if file_extension == "":
+                    file_extension = "None"
+                dict_folder_manifest["file type"].append(file_extension)
+
+                filepath = pathlib.Path(relative_file_name)
+                mtime = filepath.stat().st_mtime
+                lastmodtime = datetime.fromtimestamp(mtime).astimezone(
+                    local_timezone
+                )
+                dict_folder_manifest["timestamp"].append(
+                    lastmodtime.isoformat()
+                    .replace(".", ",")
+                    .replace("+00:00", "Z")
+                )
+
+                dict_folder_manifest["description"].append("")
+                dict_folder_manifest["Additional Metadata"].append("")
+
+        if "folders" in folder.keys():
+            for item in list(folder["folders"]):
+                guided_recursive_folder_traversal(
+                    folder["folders"][item], dict_folder_manifest
+                )
+
+        return
+
+    dataset_structure = soda_json_structure["saved-datset-structure-json-obj"]
+    dataset_name = soda_json_structure["digital-metadata"]["name"]
+
+    # create local folder to save manifest files temporarly (delete any existing one first)
+    dataset_manifest_folder_path = join(guided_manifest_folder_path, dataset_name)
+
+    makedirs(dataset_manifest_folder_path)
+
+    for high_level_folder in list(dataset_structure["folders"]):
+        guided_high_level_folders_present.append(high_level_folder)
+
+        high_level_folder_path = join(guided_manifest_folder_path, dataset_name, high_level_folder)
+        makedirs(high_level_folder_path)
+
+        guidedmanifestfilepath = join(high_level_folder_path, "manifest.xlsx")
+
+        # Initialize dict where manifest info will be stored
+        dict_folder_manifest = {}
+        dict_folder_manifest["filename"] = []
+        dict_folder_manifest["timestamp"] = []
+        dict_folder_manifest["description"] = []
+        dict_folder_manifest["file type"] = []
+        dict_folder_manifest["Additional Metadata"] = []
+
+        guided_recursive_folder_traversal(
+            dataset_structure["folders"][high_level_folder], dict_folder_manifest
+        )
+
+        df = pd.DataFrame.from_dict(dict_folder_manifest)
+        df.to_excel(guidedmanifestfilepath, index=None, header=True)
+        guided_manifest_files_structure[high_level_folder] = guidedmanifestfilepath
+
+    return "function complete"
 
 
 def handle_duplicate_package_name_error(e, soda_json_structure):
