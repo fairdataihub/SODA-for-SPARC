@@ -929,7 +929,7 @@ async function extractBFDatasetForManifestFile(
 ) {
   var result;
   try {
-    var res = await bf_request_and_populate_dataset(sodaJSONObj, document.querySelector("#loading_pennsieve_dataset_manifest"));
+    var res = await bf_request_and_populate_dataset(sodaJSONObj, document.getElementById("loading_pennsieve_dataset_manifest"));
     result = [true, res];
   } catch (err) {
     result = [false, err];
