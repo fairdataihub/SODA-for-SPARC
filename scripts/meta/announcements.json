@@ -12,19 +12,19 @@
     "win32": {
       "show": true,
       "title": "Welcome to version 9.0.0 for Windows!",
-      "message": "New features have been added!<br> <li>Guided mode is now available! Curate datasets with more ease!</li><li>You can now import hidden files to your dataset (.DS_Store files are not accepted). </li><li>README.txt is now a mandatory metadata file for all datasets.</li><li>inputs and outputs metadata have been be replaced with code_parameters as per the SDS 2.0</li>",
+      "message": "New features have been added!<br> <div style='text-align: justify'><li>Guided mode is now available! Curate datasets with more ease!</li><li>You can now import hidden files to your dataset (.DS_Store files are not accepted). </li><li>README.txt is now a mandatory metadata file for all datasets.</li><li>inputs and outputs metadata have been be replaced with code_parameters as per the SDS 2.0</li></div>",
       "type": "info"
     },
     "linux": {
       "show": true,
       "title": "Welcome to version 9.0.0 for Linux!",
-      "message": "New features have been added!<br> <li>Guided mode is now available! Curate datasets with more ease!</li><li>You can now import hidden files to your dataset (.DS_Store files are not accepted). </li><li>README.txt is now a mandatory metadata file for all datasets.</li><li>inputs and outputs metadata have been be replaced with code_parameters as per the SDS 2.0</li>",
+      "message": "New features have been added!<br> <div style='text-align: justify'><li>Guided mode is now available! Curate datasets with more ease!</li><li>You can now import hidden files to your dataset (.DS_Store files are not accepted). </li><li>README.txt is now a mandatory metadata file for all datasets.</li><li>inputs and outputs metadata have been be replaced with code_parameters as per the SDS 2.0</li></div>",
       "type": "info"
     },
     "darwin": {
       "show": true,
       "title": "Welcome to version 9.0.0 for MacOS!",
-      "message": "New features have been added!<br> <li>Guided mode is now available! Curate datasets with more ease!</li><li>You can now import hidden files to your dataset (.DS_Store files are not accepted). </li><li>README.txt is now a mandatory metadata file for all datasets.</li><li>inputs and outputs metadata have been be replaced with code_parameters as per the SDS 2.0</li>",
+      "message": "New features have been added!<br> <div style='text-align: justify'><li>Guided mode is now available! Curate datasets with more ease!</li><li>You can now import hidden files to your dataset (.DS_Store files are not accepted). </li><li>README.txt is now a mandatory metadata file for all datasets.</li><li>inputs and outputs metadata have been be replaced with code_parameters as per the SDS 2.0</li></div>",
       "type": "info"
     }
   }
