@@ -117,7 +117,7 @@ def remove_collection_names(account, dataset, tags):
 
     except Exception as e:
         abort(400, "Error: Please select a valid Pennsieve dataset")
-    
+
     for tagid in tags:
         result = ps._api._del(f"/datasets/{str(dataset_id)}/collections/{str(tagid)}")
         statusResponses.append(result)
