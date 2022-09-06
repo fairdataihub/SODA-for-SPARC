@@ -2401,7 +2401,30 @@ const traverseToTab = async (targetPageID) => {
         const pennsieveDatasetLink = document.getElementById(
           "guided-pennsieve-dataset-link"
         );
-        pennsieveDatasetLink.href = `https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/datasets/${pennsieveDatasetID}/overview`;
+
+        const pennsieveCopy = document.getElementById(
+          "guided-pennsieve-copy-dataset-link"
+        );
+
+        const copyIcon = document.getElementById("guided-pennsieve-copy-icon");
+
+        let datasetLink = `https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/datasets/${pennsieveDatasetID}/overview`;
+        let linkIcon = `<i class="fas fa-link" style="margin-right: 0.4rem; margin-left: 0.4rem"></i>`;
+
+        pennsieveDatasetLink.innerHTML = linkIcon + datasetLink;
+        pennsieveDatasetLink.href = datasetLink;
+
+        pennsieveCopy.addEventListener("click", function () {
+          Clipboard.writeText(datasetLink);
+          copyIcon.classList.remove("fa-copy");
+          copyIcon.classList.add("fa-check");
+
+          notyf.open({
+            duration: "2000",
+            type: "success",
+            message: "Link copied!",
+          });
+        });
       }
 
       /*
@@ -5032,7 +5055,7 @@ const specifyPool = (event, poolNameInput) => {
           setActiveSubPage("guided-organize-subjects-into-pools-page");
           return;
         } else {
-          //Add left border back to subject dropdown cell to seperate pool name and subject dropdown
+          //Add left border back to subject dropdown cell to separate pool name and subject dropdown
           poolSubjectsDropdownCell.removeClass("remove-left-border");
 
           //Add the new pool to sodaJSONObj
@@ -6197,7 +6220,7 @@ const getExistingPennsieveDatasetNames = async () => {
   );
 
   if (!datasetNamesResponse.ok) {
-    const message = `An error has occured: ${response.status}`;
+    const message = `An error has occurred: ${response.status}`;
     throw new Error(message);
   }
 

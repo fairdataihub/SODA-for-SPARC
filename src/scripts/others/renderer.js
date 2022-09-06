@@ -143,7 +143,7 @@ log.info("User OS:", os.type(), os.platform(), "version:", os.release());
 console.log("User OS:", os.type(), os.platform(), "version:", os.release());
 
 // Check current app version //
-const appVersion = app.getVersion();
+let appVersion = app.getVersion();
 log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
 
@@ -426,7 +426,7 @@ const startupServerAndApiCheck = async () => {
     await apiVersionsMatch();
   } catch (e) {
     // api versions do not match
-    app.exit();
+    // app.exit();
   }
 
   apiVersionChecked = true;
@@ -440,6 +440,7 @@ startupServerAndApiCheck();
 ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
   // run pre flight checks once the server connection is confirmed
   // wait until soda is connected to the backend server
+  console.log("run pre_flight starts here");
   while (!sodaIsConnected || !apiVersionChecked) {
     await wait(1000);
   }
@@ -469,6 +470,99 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
 
   ipcRenderer.send("track-event", "Success", "Setting Templates Path");
 });
+
+//TODO: check for announcements here
+const checkForAnnouncements = async (state) => {
+  //state will be either "update" or blank
+  //when "update" is passed it will know there user needs to update
+  const url = `https://raw.githubusercontent.com/fairdataihub/SODA-for-SPARC/staging-dup/src/scripts/meta/announcements.json?timestamp=${new Date().getTime()}`;
+
+  const axiosInstance = axios.create({
+    baseURL: url,
+    timeout: 0,
+  });
+
+  try {
+    axiosInstance.get().then(async (response) => {
+      let res = response.data;
+      let platform = String(os.platform);
+      console.log(res);
+
+      for (var key of Object.keys(res)) {
+        console.log(appVersion);
+        console.log(platform);
+        if (appVersion === key) {
+          //check for app version
+          if (Object.keys(res[key]).includes(platform)) {
+            //check for platform
+            if (res[key][platform]["show"] === true) {
+              console.log("should fire here");
+              //if platform found then use that object to create announcement
+              if (state === "announcements") {
+                await Swal.fire({
+                  title: res[key][platform]["title"],
+                  html: `<p>${res[key][platform]["message"]}</p>`,
+                  icon: res[key][platform]["type"],
+                  heightAuto: false,
+                  backdrop: "rgba(0,0,0, 0.4)",
+                  confirmButtonText: "Okay",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  didOpen: () => {
+                    let swal_alert =
+                      document.getElementsByClassName("swal2-popup")[0];
+                    swal_alert.style.width = "40rem";
+                  },
+                });
+              }
+            }
+          } else {
+            if (Object.keys(res[key]).includes("all")) {
+              //check if all is in json structure
+              //announcements for all OS's
+              Swal.fire({
+                title: res[key]["all"]["title"],
+                html: `<p>${res[key]["all"]["message"]}</p>`,
+                icon: res[key]["all"]["type"],
+                heightAuto: false,
+                backdrop: "rgba(0,0,0, 0.4)",
+                confirmButtonText: "Okay",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                  let swal_alert =
+                    document.getElementsByClassName("swal2-popup")[0];
+                  swal_alert.style.width = "40rem";
+                },
+              });
+            }
+          }
+        } else {
+          //app version is not up to date
+          if (state === "update") {
+            Swal.fire({
+              title: res["older"]["all"]["title"],
+              html: `<p>${res[key]["all"]["message"]}</p>`,
+              icon: res[key]["all"]["type"],
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              confirmButtonText: "Okay",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              didOpen: () => {
+                let swal_alert =
+                  document.getElementsByClassName("swal2-popup")[0];
+                swal_alert.style.width = "40rem";
+              },
+            });
+          }
+        }
+      }
+    });
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
@@ -632,6 +726,8 @@ const run_pre_flight_checks = async (check_update = true) => {
                   type: "final",
                   message: "You're all set!",
                 });
+                //After preflight checks are cleared the announcements sweet alert will pop up
+                await checkForAnnouncements("announcements");
                 resolve(true);
               }
             });
@@ -644,6 +740,8 @@ const run_pre_flight_checks = async (check_update = true) => {
               type: "final",
               message: "You're all set!",
             });
+            //After preflight checks are cleared the announcements sweet alert will pop up
+            await checkForAnnouncements("announcements");
             resolve(true);
           }
         }
@@ -734,7 +832,10 @@ const apiVersionsMatch = async () => {
   let serverAppVersion = responseObject.data.version;
 
   log.info(`Server version is ${serverAppVersion}`);
-
+  // console.log(serverAppVersion);
+  // console.log(appVersion);
+  appVersion = "8.0.0";
+  console.log(appVersion);
   if (serverAppVersion !== appVersion) {
     log.info("Server version does not match client version");
     console.error("Server version does not match client version");
@@ -745,15 +846,17 @@ const apiVersionsMatch = async () => {
       "Server version does not match client version"
     );
 
+    // console.log("bruh");
     await Swal.fire({
       icon: "error",
-      html: `${serverAppVersion} ${appVersion} The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+      html: `${appVersion} ${serverAppVersion}The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA or check to see if a previous version is running in the background with the instructions on our <a href='https://docs.sodaforsparc.io/docs/common-errors/pennsieve-agent-is-already-running' target='_blank'>documentation page.</a> If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Close now",
       allowOutsideClick: false,
       allowEscapeKey: false,
     });
+    // await checkForAnnouncements("update");
 
     throw new Error();
   }
@@ -785,7 +888,7 @@ const check_internet_connection = async (show_notification = true) => {
   }
   await wait(800);
 
-  return require("dns").resolve("www.google.com", (err) => {
+  return require("dns").resolve("www.google.com", async (err) => {
     if (err) {
       console.error("No internet connection");
       log.error("No internet connection");
@@ -1004,7 +1107,7 @@ ipcRenderer.on("update_available", () => {
 });
 
 // When the update is downloaded, show the restart notification
-ipcRenderer.on("update_downloaded", () => {
+ipcRenderer.on("update_downloaded", async () => {
   ipcRenderer.removeAllListeners("update_downloaded");
   ipcRenderer.send(
     "track-event",
@@ -1026,13 +1129,15 @@ ipcRenderer.on("update_downloaded", () => {
         "Update downloaded. It will be installed on the restart of the app. Click here to restart SODA now.",
     });
   }
-  update_downloaded_notification.on("click", ({ target, event }) => {
-    restartApp();
+  update_downloaded_notification.on("click", async ({ target, event }) => {
+    await restartApp();
+    //a sweet alert will pop up announcing user to manually update if SODA fails to restart
+    checkForAnnouncements("update");
   });
 });
 
 // Restart the app for update. Does not restart on macos
-const restartApp = () => {
+const restartApp = async () => {
   notyf.open({
     type: "app_update_warning",
     message: "Closing SODA now...",
@@ -1322,7 +1427,6 @@ var collectionDatasetInput = document.getElementById("tagify-collection-tags"),
       rightKey: true,
     },
   });
-
 
 var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
   studyOrganSystemsTagify = new Tagify(studyOrganSystemsInput, {
@@ -7666,7 +7770,7 @@ async function initiate_generate() {
           document.getElementById("div-vertical-progress-bar").style.display =
             "none";
           document.getElementById("div-generate-comeback").style.display =
-            "none";
+            "flex";
           document.getElementById(
             "generate-dataset-progress-tab"
           ).style.display = "flex";
