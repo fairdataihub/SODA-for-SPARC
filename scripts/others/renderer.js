@@ -1304,6 +1304,8 @@ if (fs.existsSync(path.join(homeDirectory, "Soda"))) {
     path.join(homeDirectory, "Soda"),
     path.join(homeDirectory, "SODA")
   );
+  //delete the old folder
+  fs.removeSync(path.join(homeDirectory, "Soda"));
 }
 
 //initialize Tagify input field for guided submission milestones
