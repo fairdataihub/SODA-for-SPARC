@@ -159,24 +159,22 @@ const resetProgressContainer = (
  * @param {HTMLElement} progress_container
  * @returns
  */
-const getProgressContainerElements = (progress_container) => {
-  let percentage_text = progress_container.querySelector(
+const getProgressContainerElements = (progressContainer) => {
+  let percentage_text = progressContainer.querySelector(
     ".pennsieve_loading_dataset_percentage"
   );
 
   console.log(percentage_text);
 
-  let left_progress_bar = progress_container.querySelector(
+  let left_progress_bar = progressContainer.querySelector(
     ".pennsieve_left-side_less_than_50"
   );
 
   console.log(left_progress_bar);
 
-  let right_progress_bar = progress_container.querySelector(
+  let right_progress_bar = progressContainer.querySelector(
     ".pennsieve_right-side_greater_than_50"
   );
-
-  console.log(right_progress_bar);
 
   return {
     percentage_text,
