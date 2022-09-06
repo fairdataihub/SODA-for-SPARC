@@ -1297,17 +1297,18 @@ var allCollectionTags = {};
 var currentTags = {};
 var currentCollectionTags = [];
 
-//check if data exists inside of the Soda folder, and if it does, move it into the capitalized SODA folder
-if (fs.existsSync(path.join(homeDirectory, "Soda"))) {
-  //copy the folder contents of home/Soda to home/SODA
-  fs.copySync(
-    path.join(homeDirectory, "Soda"),
-    path.join(homeDirectory, "SODA")
-  );
-  //delete the old folder
-  fs.removeSync(path.join(homeDirectory, "Soda"));
+if (process.platform === "darwin" || process.platform === "linux") {
+  //check if data exists inside of the Soda folder, and if it does, move it into the capitalized SODA folder
+  if (fs.existsSync(path.join(homeDirectory, "Soda"))) {
+    //copy the folder contents of home/Soda to home/SODA
+    fs.copySync(
+      path.join(homeDirectory, "Soda"),
+      path.join(homeDirectory, "SODA")
+    );
+    //delete the old folder
+    fs.removeSync(path.join(homeDirectory, "Soda"));
+  }
 }
-
 //initialize Tagify input field for guided submission milestones
 const guidedSubmissionTagsInput = document.getElementById(
   "guided-tagify-submission-milestone-tags-import"
