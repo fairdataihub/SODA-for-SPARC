@@ -483,16 +483,15 @@ const checkForAnnouncements = async (state) => {
   });
 
   try {
+    //retrieve the announcements from the SODA repo (announcements.json)
     axiosInstance.get().then(async (response) => {
       let res = response.data;
       let platform = String(os.platform);
       console.log(res);
 
       for (var key of Object.keys(res)) {
-        console.log(appVersion);
-        console.log(platform);
+        //app version should latest version to receive announcement
         if (appVersion === key) {
-          //check for app version
           if (Object.keys(res[key]).includes(platform)) {
             //check for platform
             if (res[key][platform]["show"] === true) {
@@ -727,6 +726,7 @@ const run_pre_flight_checks = async (check_update = true) => {
                   message: "You're all set!",
                 });
                 //After preflight checks are cleared the announcements sweet alert will pop up
+                console.log("1");
                 await checkForAnnouncements("announcements");
                 resolve(true);
               }
@@ -741,6 +741,7 @@ const run_pre_flight_checks = async (check_update = true) => {
               message: "You're all set!",
             });
             //After preflight checks are cleared the announcements sweet alert will pop up
+            console.log("2");
             await checkForAnnouncements("announcements");
             resolve(true);
           }
@@ -832,9 +833,7 @@ const apiVersionsMatch = async () => {
   let serverAppVersion = responseObject.data.version;
 
   log.info(`Server version is ${serverAppVersion}`);
-  // console.log(serverAppVersion);
-  // console.log(appVersion);
-  appVersion = "8.0.0";
+  // appVersion = "8.0.0";  //used to change app version and trigger alert
   console.log(appVersion);
   if (serverAppVersion !== appVersion) {
     log.info("Server version does not match client version");
@@ -846,10 +845,9 @@ const apiVersionsMatch = async () => {
       "Server version does not match client version"
     );
 
-    // console.log("bruh");
     await Swal.fire({
       icon: "error",
-      html: `${appVersion} ${serverAppVersion}The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA or check to see if a previous version is running in the background with the instructions on our <a href='https://docs.sodaforsparc.io/docs/common-errors/pennsieve-agent-is-already-running' target='_blank'>documentation page.</a> If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+      html: `${appVersion} ${serverAppVersion}The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA or check to see if a previous version is running in the background with the instructions on our <a href='https://docs.sodaforsparc.io/docs/common-errors/pennsieve-agent-is-already-running' target='_blank'>documentation page.</a> If this issue occurs multiple times, please email <a href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Close now",
