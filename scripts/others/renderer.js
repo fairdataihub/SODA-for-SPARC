@@ -1284,18 +1284,27 @@ var airtableConfigPath = path.join(metadataPath, airtableConfigFileName);
 var progressFilePath = path.join(homeDirectory, "SODA", "Progress");
 var guidedProgressFilePath = path.join(
   homeDirectory,
-  "Soda",
+  "SODA",
   "Guided-Progress"
 );
 const guidedManifestFilePath = path.join(
   homeDirectory,
-  "Soda",
+  "SODA",
   "Guided-Manifest-Files"
 );
 var protocolConfigPath = path.join(metadataPath, protocolConfigFileName);
 var allCollectionTags = {};
 var currentTags = {};
 var currentCollectionTags = [];
+
+//check if data exists inside of the Soda folder, and if it does, move it into the
+if (fs.existsSync(path.join(homeDirectory, "Soda"))) {
+  //copy the folder contents and insert them into path.join(homeDirectory,"SODA")
+  fs.copySync(
+    path.join(homeDirectory, "Soda"),
+    path.join(homeDirectory, "SODA")
+  );
+}
 
 //initialize Tagify input field for guided submission milestones
 const guidedSubmissionTagsInput = document.getElementById(
