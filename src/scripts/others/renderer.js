@@ -426,7 +426,7 @@ const startupServerAndApiCheck = async () => {
     await apiVersionsMatch();
   } catch (e) {
     // api versions do not match
-    // app.exit();
+    app.exit();
   }
 
   apiVersionChecked = true;
