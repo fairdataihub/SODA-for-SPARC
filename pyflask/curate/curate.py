@@ -3287,15 +3287,18 @@ def guided_generate_manifest_file_templates(soda_json_structure):
     def guided_recursive_folder_traversal(folder, dict_folder_manifest):
         if "files" in folder.keys():
             for item in list(folder["files"]):
+                # Auto generate file name
                 relative_file_name = folder["files"][item]["path"]
                 relative_file_name.replace("\\", "/")
                 dict_folder_manifest["filename"].append(relative_file_name)
 
+                # Auto generate file extension
                 file_extension = get_name_extension(relative_file_name)
                 if file_extension == "":
                     file_extension = "None"
                 dict_folder_manifest["file type"].append(file_extension)
 
+                # Auto generate file timestamp
                 filepath = pathlib.Path(relative_file_name)
                 mtime = filepath.stat().st_mtime
                 lastmodtime = datetime.fromtimestamp(mtime).astimezone(
