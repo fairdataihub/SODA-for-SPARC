@@ -6247,17 +6247,23 @@ const guidedShowBannerImagePreview = (imagePath) => {
     "guided-banner-image-preview"
   );
 
-  bannerImagePreviewelement.innerHTML = '';
+  // bannerImagePreviewelement.innerHTML = '';
+  if(bannerImagePreviewelement.childElementCount > 0) {
+    console.log('removing child here');
+    console.log(bannerImagePreviewelement.firstChild);
+    bannerImagePreviewelement.removeChild(bannerImagePreviewelement.firstChild);
+  }
 
-  guidedBannerImageElement = `
-    <img
-      src="${imagePath}"
-      alt="Preview of banner image"
-      style="max-height: 300px;"
-    />
-  `;
+  let date = new Date();
+  let guidedbannerImageElem = document.createElement('img');
+  //imagePath + cachebreakeer at the end to update image every time
+  guidedbannerImageElem.src = imagePath + "?" + date.getMilliseconds();
+  guidedbannerImageElem.alt = 'Preview of banner image';
+  guidedbannerImageElem.style = 'max-height: 300px';
+  
+  bannerImagePreviewelement.appendChild(guidedbannerImageElem);
 
-  bannerImagePreviewelement.innerHTML = guidedBannerImageElement;
+  // bannerImagePreviewelement.innerHTML = guidedBannerImageElement;
   $("#guided-banner-image-preview-container").show();
   $("#guided-button-add-banner-image").html("Edit banner image");
 };
@@ -9630,6 +9636,8 @@ $(document).ready(async () => {
     }
     let datasetName = sodaJSONObj["digital-metadata"]["name"];
     let imagePath = path.join(imageFolder, `${datasetName}.` + imageExtension);
+    console.log(imagePath);
+    console.log("This is where it's first created");
     let croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType);
 
     imageDataURI.outputFile(croppedImageDataURI, imagePath).then(async() => {
@@ -9637,12 +9645,14 @@ $(document).ready(async () => {
       if (image_file_size < 5 * 1024 * 1024) {
         $("#guided-para-dataset-banner-image-status").html("");
         setGuidedBannerImage(imagePath);
+        console.log(imagePath);
         $("#guided-banner-image-modal").modal("hide");
         $("#guided-button-add-banner-image").text("Edit banner image");
       } else {
         //image needs to be scaled
         $("#guided-para-dataset-banner-image-status").html("");
         let scaledImagePath = await scaleBannerImage(imagePath);
+        console.log(imagePath);
         setGuidedBannerImage(scaledImagePath);
         $("#guided-banner-image-modal").modal("hide");
         $("#guided-button-add-banner-image").text("Edit banner image");
