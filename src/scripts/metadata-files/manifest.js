@@ -472,7 +472,6 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
           ).attr("placeholder");
         }
 
-
         create_json_object(action, sodaJSONObj, localDatasetFolderPath);
         datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
         populate_existing_folders(datasetStructureJSONObj);
@@ -700,7 +699,13 @@ async function initiate_generate_manifest_local(
     // SODA Manifest Files folder
     let dir = path.join(homeDirectory, "SODA", "manifest_files");
     // Move manifest files to the local dataset
-    let moveFinishedBool = await moveManifestFiles(dir, originalDataset);
+    let moveFinishedBool; 
+    if(finalManifestGenerationPath == originalDataset) {
+      moveFinishedBool = await moveManifestFiles(dir, originalDataset);
+    } else {
+      moveFinishedBool = await moveManifestFilesPreview(dir, finalManifestGenerationPath);
+    }
+    
     if (moveFinishedBool) {
       resetManifest(true);
       // reset sodaJSONObj
