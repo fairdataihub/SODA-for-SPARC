@@ -307,7 +307,8 @@ $(document).ready(function () {
       var localFolderPath = path.join(
         homeDirectory,
         "SODA",
-        "manifest_files",
+        "Guided-Manifest-Files",
+        sodaJSONObj["digital-metadata"]["name"],
         parentFolderName
       );
       var selectedManifestFilePath = path.join(

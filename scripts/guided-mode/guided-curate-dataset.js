@@ -1681,35 +1681,21 @@ const traverseToTab = async (targetPageID) => {
 
       function guidedCreateChildNodeManifest(
         oldFormatNode,
-        nodeName,
+        datasetName,
         type,
-        ext,
-        openedState,
-        selectedState,
-        disabledState
+        ext
       ) {
         console.log("oldFormatNode:" + oldFormatNode);
-        console.log("nodeName:" + nodeName);
+        console.log("datasetName:" + datasetName);
         console.log("type:" + type);
         console.log("ext:" + ext);
-        console.log("openedState:" + openedState);
-        console.log("selectedState:" + selectedState);
-        console.log("disabledState:" + disabledState);
-
-        /*
-          oldFormatNode: node in the format under "dataset-structure" key in SODA object
-          nodeName: text to show for each node (name)
-          type: "folder" or "file"
-          ext: track ext of files to match with the right CSS icons
-          openedState, selectedState: states of a jstree node
-          */
 
         let newFormatNode = {
-          text: nodeName,
+          text: datasetName,
           state: {
-            opened: openedState,
-            selected: selectedState,
-            disabled: disabledState,
+            opened: true,
+            selected: true,
+            disabled: false,
           },
           children: [],
           type: type + ext,
@@ -1728,9 +1714,9 @@ const traverseToTab = async (targetPageID) => {
               newFormatNode.children.push({
                 text: key,
                 state: {
-                  opened: openedState,
-                  selected: selectedState,
-                  disabled: disabledState,
+                  opened: true,
+                  selected: true,
+                  disabled: false,
                 },
                 children: [
                   {
