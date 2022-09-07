@@ -5028,12 +5028,12 @@ ipcRenderer.on(
   }
 );
 
-async function addFoldersfunction(
+const addFoldersfunction = async (
   action,
   nonallowedFolderArray,
   folderArray,
   currentLocation
-) {
+) => {
   let importToast = new Notyf({
     position: { x: "right", y: "bottom" },
     ripple: true,
