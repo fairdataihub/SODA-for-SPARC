@@ -1359,7 +1359,6 @@ function checkEmptySubFolders(datasetStructure) {
 // Parameter: dataset structure object
 // Return: manifest file folder path
 async function generateManifestFolderLocallyForEdit(ev) {
-  console.log("Starting generation woo woo")
   var type = "local";
   if (
     $('input[name="generate-manifest-1"]:checked').prop("id") ===
@@ -1367,6 +1366,17 @@ async function generateManifestFolderLocallyForEdit(ev) {
   ) {
     type = "bf";
   }
+
+
+  // setup question 5 for local or pennsieve generation
+  if (type === "local") {
+    document.querySelector("#continue_step_5-manifest").style.display = "block";
+    document.querySelector("#generate_step_5-manifest").style.display = "none";
+  } else {
+    document.querySelector("#continue_step_5-manifest").style.display = "none";
+    document.querySelector("#generate_step_5-manifest").style.display = "block";
+  }
+
   exitCurate();
   sodaJSONObj["starting-point"] = {};
   sodaJSONObj["dataset-structure"] = {};
@@ -1433,11 +1443,15 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
     homeDirectory,
     "SODA"
   );
+
+
   if (type === "local") {
     generatePath = localDatasetFolderPath;
   } else {
     generatePath = "";
   }
+
+
   try {
     let generate_local_manifest = await client.post(
       `/curate_datasets/manifest_files`,
@@ -1447,6 +1461,8 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
       },
       { timeout: 0 }
     );
+
+
     let res =
       generate_local_manifest.data.success_message_or_manifest_destination;
     if (editBoolean) {
