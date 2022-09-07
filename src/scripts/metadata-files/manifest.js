@@ -929,7 +929,7 @@ async function extractBFDatasetForManifestFile(
 ) {
   var result;
   try {
-    var res = await bf_request_and_populate_dataset(sodaJSONObj, document.getElementById("loading_pennsieve_dataset_manifest"), 50);
+    var res = await bf_request_and_populate_dataset(sodaJSONObj, document.getElementById("loading_pennsieve_dataset_manifest"), false);
     result = [true, res];
   } catch (err) {
     result = [false, err];
@@ -977,9 +977,7 @@ async function extractBFDatasetForManifestFile(
     };
     sodaJSONObj["starting-point"] = { type: "bf" };
 
-    console.log("Populating existing folders...");
     populate_existing_folders(datasetStructureJSONObj);
-    console.log("Populating existing metadata...");
     populate_existing_metadata(sodaJSONObj);
 
     let continueProgressEmptyFolder = await checkEmptySubFolders(
@@ -1013,20 +1011,19 @@ async function extractBFDatasetForManifestFile(
       return;
     }
 
-    await wait(2000)
-
     // inform user the manifest files are being generated
     document.querySelector("#loading_pennsieve_dataset_manifest_span").textContent = "Generating manifest files...";
 
+    await wait(1000)
     var continueErrorManifest;
     try {
-      console.log("Extracting manifest files...");
       let res = await extractBFManifestFile();
-      console.log("Finished extracting manifest files.");
       continueErrorManifest = [false, res];
     } catch (err) {
       continueErrorManifest = [true, err];
     }
+
+    await wait(1000)
 
     if (continueErrorManifest[0]) {
       Swal.fire({
@@ -1306,8 +1303,6 @@ const trackManifestImportProgress = async () => {
       return;
     }
 
-    console.log(progressResponse);
-
     let manifestProgress = progressResponse.data;
     let finished = manifestProgress.finished;
 
@@ -1321,7 +1316,7 @@ const trackManifestImportProgress = async () => {
   // create an interval with a .5 second timer
   let manifestProgressInterval = setInterval(
     manifest_creation_progress_pennsieve,
-    500
+    800
   );
 };
 
@@ -1421,6 +1416,7 @@ async function generateManifestFolderLocallyForEdit(ev) {
 }
 
 async function createManifestLocally(type, editBoolean, originalDataset) {
+  console.log("Generating manifest locally")
   // generateManifestHelper();
   var generatePath = "";
   sodaJSONObj["manifest-files"]["local-destination"] = path.join(
@@ -1470,6 +1466,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
         $("#preview-manifest-fake-confirm").click();
         $("#Question-prepare-manifest-4").removeClass("show");
         $("#Question-prepare-manifest-4").removeClass("prev");
+        console.log("Will generate DS Tree preview")
         loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
       } catch (error) {
         clientError(error);
@@ -1503,6 +1500,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
       }).then((result) => { });
       localDatasetFolderPath = "";
     } else {
+      console.log("Here soashohos")
       // SODA Manifest Files folder
       let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files");
       // Move manifest files to the local dataset
@@ -1564,6 +1562,8 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
     $("#Question-prepare-manifest-3").removeClass("prev");
     $("#bf_dataset_create_manifest").text("None");
   }
+
+  transitionFreeFormMode(document.querySelector("#div-confirm-manifest-local-folder-dataset .btn_animated"), 'Question-prepare-manifest-2', 'create_manifest-tab', '', 'individual-question prepare-manifest')
 }
 
 // helper function 2: Second, load dataset structure as preview tree

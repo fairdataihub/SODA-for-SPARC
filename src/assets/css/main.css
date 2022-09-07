@@ -2037,7 +2037,7 @@ details[open]>summary::before {
 
 .circle .left .progress {
   z-index: 1;
-  transition: transform 500ms ease-in-out;
+  transition: transform 600ms ease;
 }
 
 .circle .right {
@@ -2047,7 +2047,7 @@ details[open]>summary::before {
 }
 
 .circle .right .progress {
-  transition: transform 500ms ease-in-out;
+  transition: transform 600ms ease;
 }
 
 #Question-getting-started-locally-destination {
@@ -2059,8 +2059,6 @@ details[open]>summary::before {
   -moz-transition: none !important;
   -o-transition: none !important;
   transition: none !important;
-<<<<<<< HEAD
-=======
 }
 
 .freeform-file-explorer {

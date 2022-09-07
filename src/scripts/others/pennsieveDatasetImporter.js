@@ -4,9 +4,9 @@ let importError = false
 /**
  *  Tracks and displays the progress of the current Pennsieve dataset import. Progress is displayed in the provided progress container.
  *  @param {HTMLElement} progressContainer - Displays the progress of the import. Progress containers need to have class 'circular'
- *  @param {number} timeBeforeHiding - The time in milliseconds before the progress container is hidden after completing the manifest generation.
+ *  @param {boolean} hide - Determines whether or not the progress container will be hidden after the import is complete. Default = true; hides after 2 seconds. (optional)
  */
-const trackPennsieveImportProgress = async (progressContainer, timeBeforeHiding) => {
+const trackPennsieveImportProgress = async (progressContainer, hide) => {
 
   let { percentage_text, left_progress_bar, right_progress_bar } =
     getProgressContainerElements(progressContainer);
@@ -42,7 +42,7 @@ const trackPennsieveImportProgress = async (progressContainer, timeBeforeHiding)
       right_progress_bar,
       progressReport,
       "pennsieve_import",
-      timeBeforeHiding
+      hide
     );
 
     let finished = progressReport["import_completed_items"];
@@ -57,7 +57,7 @@ const trackPennsieveImportProgress = async (progressContainer, timeBeforeHiding)
   // update the import's progress every 500 ms if the import is not complete
   let interval = setInterval(
     updateProgress,
-    500
+    800
   );
 }
 
@@ -65,7 +65,7 @@ const trackPennsieveImportProgress = async (progressContainer, timeBeforeHiding)
  *
  * @param {object} sodaJSONObj - The SODA json object used for tracking files, folders, and basic dataset curation information such as providence (local or Pennsieve).
  * @param {HTMLElement} progressContainer - The progress container element that will be used to display the progress of the import. (optional)
- * @param {number} timeBeforeHiding - The time in milliseconds before the progress container is hidden after completing the manifest generation. Default = 2000 ms (optional)
+ * @param {boolean} hide - Determines whether or not the progress container will be hidden after the import is complete. Default = true; hides after 2 seconds. (optional)
  * @returns {
  *    "soda_json_structure": {}
  *    "success_message": ""
@@ -75,12 +75,12 @@ const trackPennsieveImportProgress = async (progressContainer, timeBeforeHiding)
 var bf_request_and_populate_dataset = async (
   sodaJSONObj,
   progressContainer=undefined,
-  timeBeforeHiding=2000
+  hide=true
 ) => {
 
   // track the import progress if appropriate
   if(!!progressContainer) 
-    trackPennsieveImportProgress(progressContainer, timeBeforeHiding);
+    trackPennsieveImportProgress(progressContainer, hide);
 
   try {
     let filesFoldersResponse = await client.post(
