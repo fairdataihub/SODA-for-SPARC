@@ -534,8 +534,10 @@
               style="display: flex; justify-content: center; margin-top: 25px"
             >
               <button
+                onclick="transitionFreeFormMode(this, 'Question-prepare-manifest-5', 'create_manifest-tab', '', 'individual-question prepare-manifest')"
                 class="btn_question"
                 id="continue_step_5-manifest"
+                data-next="Question-prepare-manifest-6"
                 style="
                   cursor: pointer;
                   border-radius: 8px;
@@ -557,7 +559,76 @@
         </div>
       </div>
     </div>
+
+
+    <div class="individual-question prepare-manifest"
+         id="Question-prepare-manifest-6">
+      <div class="ui form" style="width: 100%">
+        <div class="grouped fields" style="align-items: center">
+          <label
+            style="
+              font-size: 17px;
+              color: var(--color-bg-plum);
+              margin: 10px;
+              width: 550px;
+            "
+          >
+            Select a location to generate your manifest files <br />
+            <p class="about-text">
+              Generate your manifest files in the same directory as your dataset or in a separate location. 
+            </p>
+          </label>
+
+          <div
+            class="field"
+            style="margin: 0 auto; width: fit-content; margin-top: 10px"
+          >
+              <input
+              class="form-control"
+              style="width: 450px !important"
+              onclick="selectManifestGenerationLocation()"
+              id="input-manifest-local-gen-location"
+              type="text"
+              readonly
+              placeholder="Browse here"
+              />
+
+                <div
+                style="display: flex; justify-content: center; margin-top: 25px"
+                >
+                  <button
+                    onclick="generateManifestPrecheck(false, this)"
+                    class="btn_question"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin-right: 15px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      width: 160px;
+                      padding: 10px;
+                      font-size: 14px;
+                    "
+                  >
+                    Generate
+                  </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      
+    <!--END of question 6-->
+    </div>
+
+  <!--END of main tabs section-->
   </div>
+
+
+
   <div class="footer-div">
     <button type="button" class="transition-btn prev" data-section="main_tabs">
       <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return

@@ -21,7 +21,15 @@ function showLocalDatasetManifest() {
   ipcRenderer.send("open-file-dialog-local-dataset-manifest-purpose");
 }
 
+function selectManifestGenerationLocation() {
+  ipcRenderer.send("open-file-dialog-local-dataset-manifest-generate-purpose");
+}
+
+
+
+
 $(document).ready(function () {
+
   ipcRenderer.on(
     "selected-local-dataset-manifest-purpose",
     (event, folderPath) => {
@@ -60,6 +68,28 @@ $(document).ready(function () {
       }
     }
   );
+
+  ipcRenderer.on("selected-local-dataset-manifest-generate-purpose", (event, folderPath) => {
+    if (folderPath.length <= 0 || folderPath === null) {
+      document.getElementById(
+        "input-manifest-local-gen-location"
+      ).placeholder = "Browse here";
+      return
+    }
+
+
+    document.getElementById(
+      "input-manifest-local-gen-location"
+    ).placeholder = folderPath[0];
+    // localDatasetFolderPath = folderPath[0];
+    // $("#div-confirm-manifest-local-folder-dataset").css(
+    //   "display",
+    //   "flex"
+    // );
+    // $($("#div-confirm-manifest-local-folder-dataset button")[0]).show();
+
+  })
+
   $("#bf_dataset_create_manifest").on("DOMSubtreeModified", function () {
     if ($("#bf_dataset_create_manifest").text().trim() !== "None") {
       $("#div-check-bf-create-manifest").css("display", "flex");
@@ -331,6 +361,7 @@ const processManifestInfo = (headers, data) => {
 };
 
 var localDatasetFolderPath = "";
+var finalManifestGenerationPath = ""
 
 async function generateManifestPrecheck(manifestEditBoolean, ev) {
   var type = "local";
@@ -389,9 +420,12 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
   }).then((result) => { });
   // Case 1: Local dataset
   if (type === "local") {
-    sodaJSONObj["starting-point"]["local-path"] = localDatasetFolderPath;
+
+    finalManifestGenerationPath = document.querySelector("#input-manifest-local-gen-location").placeholder;
+    sodaJSONObj["starting-point"]["local-path"] = finalManifestGenerationPath
+
     //checking size of local folder path
-    checkDiskSpace(localDatasetFolderPath).then(async (diskSpace) => {
+    checkDiskSpace(finalManifestGenerationPath).then(async (diskSpace) => {
       let freeMem = diskSpace.free;
       //if free memory is less than 3MB
       if (freeMem < 3145728) {
@@ -428,6 +462,8 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
           "Generate - Check Storage Space",
           Destinations.LOCAL
         );
+
+
         sodaJSONObj["starting-point"]["type"] = "local";
         // if users would like to edit manifest files before generating them
         if (manifestEditBoolean) {
@@ -435,6 +471,8 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
             "#input-manifest-local-folder-dataset"
           ).attr("placeholder");
         }
+
+
         create_json_object(action, sodaJSONObj, localDatasetFolderPath);
         datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
         populate_existing_folders(datasetStructureJSONObj);
@@ -471,6 +509,7 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
           $("#div-confirm-manifest-local-folder-dataset").hide();
           return;
         }
+
         // check for no SPARC folders on a Pennsieve datasets (already include check for a local dataset)
         let continueProgressNoSPARCFolders = await checkNoSparcFolders(
           sodaJSONObj["dataset-structure"]
@@ -498,6 +537,8 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
           $("#div-confirm-manifest-local-folder-dataset").hide();
           return;
         }
+
+
         // check for invalid high level folders in a dataset
         let continueProgressInvalidFolders = await checkInvalidHighLevelFolders(
           sodaJSONObj["dataset-structure"]
@@ -525,6 +566,7 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
           $("#div-confirm-manifest-local-folder-dataset").hide();
           return;
         }
+
         generateManifestHelper();
         initiate_generate_manifest_local(
           manifestEditBoolean,
@@ -650,6 +692,8 @@ async function initiate_generate_manifest_local(
       Swal.showLoading();
     },
   });
+
+
   if (manifestEditBoolean === false) {
     createManifestLocally("local", false, originalDataset);
   } else {
@@ -883,6 +927,48 @@ function moveManifestFiles(sourceFolder, destinationFolder) {
             folder,
             "manifest.xlsx"
           );
+          const mv = require("mv");
+          mv(sourceManifest, destinationManifest, function (err) {
+            if (err) {
+              throw err;
+            }
+          });
+        });
+        resolve(true);
+      }
+    });
+  });
+}
+
+
+// create manifest files in a local folder for previewing before generation in the case of a Pennsieve dataset.
+// In the case of generating a manifest file for a local dataset, this is used for generating the manifest files outside of the original dataset folder.
+// Rationale: A user will want to preview their manifest files before uploading them to Pennsieve. In the case of generating for a local dataset, 
+// sometimes the location of the dataset is read only, so we need to generate the manifest files in a different location for the user. 
+function moveManifestFilesPreview(sourceFolder, destinationFolder) {
+  return new Promise((resolve) => {
+    fs.readdir(sourceFolder, (err, folders) => {
+      if (err) {
+        console.log(err);
+        resolve(false);
+      } else {
+
+        // create a directory for storing the manifest files in the destination folder
+        let manifestFolderDirectory = path.join(destinationFolder, "SODA Manifest Files");
+        fs.mkdirSync(manifestFolderDirectory);
+        
+        // traverse the high level folders in the source folder
+        folders.forEach(function (folder) {
+          let sourceManifest = path.join(sourceFolder, folder, "manifest.xlsx");
+
+          let destinationManifestHighLevelFolder = path.join(
+            manifestFolderDirectory,
+            folder,
+          );
+          fs.mkdirSync(destinationManifestHighLevelFolder); 
+          
+          let destinationManifest = path.join(destinationManifestHighLevelFolder, "manifest.xlsx");
+
           const mv = require("mv");
           mv(sourceManifest, destinationManifest, function (err) {
             if (err) {
@@ -1372,6 +1458,7 @@ async function generateManifestFolderLocallyForEdit(ev) {
   if (type === "local") {
     document.querySelector("#continue_step_5-manifest").style.display = "block";
     document.querySelector("#generate_step_5-manifest").style.display = "none";
+    document.querySelector("#input-manifest-local-gen-location").placeholder = document.querySelector("#input-manifest-local-folder-dataset").placeholder
   } else {
     document.querySelector("#continue_step_5-manifest").style.display = "none";
     document.querySelector("#generate_step_5-manifest").style.display = "block";
@@ -1444,7 +1531,6 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
     "SODA"
   );
 
-
   if (type === "local") {
     generatePath = localDatasetFolderPath;
   } else {
@@ -1452,11 +1538,12 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
   }
 
 
+  // create the manifest files based off the user's edits to the manifest files
   try {
     let generate_local_manifest = await client.post(
       `/curate_datasets/manifest_files`,
       {
-        generate_purpose: "edit-manifest",
+        generate_purpose: editBoolean ? "edit-manifest" : '',
         soda_json_object: sodaJSONObj,
       },
       { timeout: 0 }
@@ -1465,8 +1552,13 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
 
     let res =
       generate_local_manifest.data.success_message_or_manifest_destination;
+
+    
+
+    // if the user wants to edit their manifest files then move them to the dataset folder 
+    // and then show the the manifest file editor in the UI
     if (editBoolean) {
-      //// else: create locally for the purpose of generating of manifest files locally
+      // move the pre-existing manifest files to the dataset folder
       try {
         await client.post(
           `/curate_datasets/manifest_files/local`,
@@ -1492,7 +1584,6 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
         $("#preview-manifest-fake-confirm").click();
         $("#Question-prepare-manifest-4").removeClass("show");
         $("#Question-prepare-manifest-4").removeClass("prev");
-        console.log("Will generate DS Tree preview")
         loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
       } catch (error) {
         clientError(error);
@@ -1526,11 +1617,19 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
       }).then((result) => { });
       localDatasetFolderPath = "";
     } else {
-      console.log("Here soashohos")
+      console.log("In the edit boolean false block")
+      console.log("Normal Move")
       // SODA Manifest Files folder
       let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files");
-      // Move manifest files to the local dataset
-      let moveFinishedBool = await moveManifestFiles(dir, originalDataset);
+      let moveFinishedBool; 
+      if (originalDataset !== finalManifestGenerationPath) {
+        // Move manifest files to the local dataset
+        moveFinishedBool = await moveManifestFilesPreview(dir, finalManifestGenerationPath);
+      } else {
+        // Move manifest files to the local dataset
+        moveFinishedBool = await moveManifestFiles(dir, originalDataset);
+      }
+
       if (moveFinishedBool) {
         resetManifest(true);
         // reset sodaJSONObj
@@ -1557,6 +1656,10 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
           },
         });
         localDatasetFolderPath = "";
+
+        // TODO: Open the manifest files for viewing in the UI 
+
+
         //////////// Tracking analytics /////////////
         // log the manifest file creation to analytics
         logMetadataForAnalytics(
