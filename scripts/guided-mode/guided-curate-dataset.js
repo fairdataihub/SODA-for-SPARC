@@ -724,7 +724,71 @@ const generateManifestEditCard = (datasetName, highLevelFolderName) => {
     </div>
   `;
 };
-const guidedOpenManifestEditSwal = (highLevelFolderName) => {};
+const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
+  const highLevelFolderContents =
+    sodaJSONObj["saved-datset-structure-json-obj"]["folders"][
+      highLevelFolderName
+    ];
+  const res = await client.post(
+    `/curate_datasets/guided_retrieve_high_level_folder_manifest_data`,
+    {
+      high_level_folder_contents: highLevelFolderContents,
+    },
+    { timeout: 0 }
+  );
+  const jsonRes = res.data;
+
+  const manifestFileHeaders = jsonRes.shift();
+  const manifestFileJson = jsonRes;
+
+  console.log(manifestFileHeaders);
+  console.log(manifestFileJson);
+
+  const { value: saveManifestFiles } = await Swal.fire({
+    title:
+      "<span style='font-size: 18px !important;'>Edit the manifest file below: </span> <br><span style='font-size: 13px; font-weight: 500'> Tip: Double click on a cell to edit it.<span>",
+    html: "<div id='guided-div-manifest-edit'></div>",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    showConfirmButton: true,
+    confirmButtonText: "Confirm",
+    showCancelButton: true,
+    width: "90%",
+    // height: "80%",
+    customClass: "swal-large",
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    didOpen: () => {
+      Swal.hideLoading();
+      const manifestSpreadsheetContainer = document.getElementById(
+        "guided-div-manifest-edit"
+      );
+      console.log(manifestFileJson);
+      console.log(
+        manifestFileHeaders.map((header) => {
+          return {
+            type: "text",
+            title: header,
+            width: 200,
+          };
+        })
+      );
+      jspreadsheet(manifestSpreadsheetContainer, {
+        data: manifestFileJson,
+        columns: manifestFileHeaders.map((header) => {
+          return {
+            type: "text",
+            title: header,
+            width: 200,
+          };
+        }),
+      });
+    },
+  });
+
+  if (saveManifestFiles) {
+  }
+};
 
 const setActiveCapsule = (targetPageID) => {
   $(".guided--capsule").removeClass("active");

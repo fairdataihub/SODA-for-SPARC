@@ -3239,14 +3239,23 @@ def generate_manifest_file_locally(generate_purpose, soda_json_structure):
 
 
 def guided_generate_manifest_file_data(high_level_folder_contents):
-    """
-    Function to create manifest files for each high-level SPARC folder for an existing Pennsieve dataset.
-    Args:
-        soda_json_structure: soda dict with information about the dataset to be generated/modified
-    Action:
-        manifest_files_structure: dict including the local path of the manifest files
-    """
+
     local_timezone = TZLOCAL()
+
+    # Initialize the array that the manifest data will be added to.
+    dict_folder_manifest = []
+
+    manifest_file_fields = [
+        "File Name",
+        "file type",
+        "timestamp",
+        "description",
+        "Additional Metadata",
+    ]
+    
+    dict_folder_manifest.append(manifest_file_fields)
+
+
 
     double_extensions = [
         ".ome.tiff",
@@ -3282,19 +3291,20 @@ def guided_generate_manifest_file_data(high_level_folder_contents):
             )
         return ext
 
-    def guided_recursive_folder_traversal(folder, dict_folder_manifest):
+    def guided_recursive_folder_traversal(folder):
         if "files" in folder.keys():
             for item in list(folder["files"]):
+                file_manifest_template_data = []
                 # Auto generate file name
                 relative_file_name = folder["files"][item]["path"]
                 relative_file_name.replace("\\", "/")
-                dict_folder_manifest["filename"].append(relative_file_name)
+                file_manifest_template_data.append(relative_file_name)
 
                 # Auto generate file extension
                 file_extension = get_name_extension(relative_file_name)
                 if file_extension == "":
                     file_extension = "None"
-                dict_folder_manifest["file type"].append(file_extension)
+                file_manifest_template_data.append(file_extension)
 
                 # Auto generate file timestamp
                 filepath = pathlib.Path(relative_file_name)
@@ -3302,33 +3312,26 @@ def guided_generate_manifest_file_data(high_level_folder_contents):
                 lastmodtime = datetime.fromtimestamp(mtime).astimezone(
                     local_timezone
                 )
-                dict_folder_manifest["timestamp"].append(
-                    lastmodtime.isoformat()
-                    .replace(".", ",")
-                    .replace("+00:00", "Z")
-                )
+                file_manifest_template_data.append(lastmodtime.isoformat().replace(".", ",").replace("+00:00", "Z"))
+                
+                file_manifest_template_data.append("")
 
-                dict_folder_manifest["description"].append("")
-                dict_folder_manifest["Additional Metadata"].append("")
+                file_manifest_template_data.append("")
+
+                dict_folder_manifest.append(file_manifest_template_data)
+
+            
 
         if "folders" in folder.keys():
             for item in list(folder["folders"]):
                 guided_recursive_folder_traversal(
-                    folder["folders"][item], dict_folder_manifest
+                    folder["folders"][item]
                 )
 
         return
 
-    # Initialize dict where manifest info will be stored
-    dict_folder_manifest = {}
-    dict_folder_manifest["filename"] = []
-    dict_folder_manifest["timestamp"] = []
-    dict_folder_manifest["description"] = []
-    dict_folder_manifest["file type"] = []
-    dict_folder_manifest["Additional Metadata"] = []
-
     guided_recursive_folder_traversal(
-        high_level_folder_contents, dict_folder_manifest
+        high_level_folder_contents
     )
 
     return dict_folder_manifest
