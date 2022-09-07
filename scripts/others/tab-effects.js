@@ -1079,8 +1079,6 @@ async function transitionSubQuestions(
     }
   }
   if(ev.getAttribute("data-next") === "Question-generate-dataset-choose-ds-name") {
-    // $("#nextBtn").prop("disabled", true);
-    // let step6 = document.getElementById("generate-dataset-tab");
     if(step6.classList.contains("tab-active")) {
       $("#nextBtn").prop("disabled", true);
       if(document.getElementById("inputNewNameDataset").val != "") {
