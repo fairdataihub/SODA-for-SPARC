@@ -3238,7 +3238,7 @@ def generate_manifest_file_locally(generate_purpose, soda_json_structure):
     return {"success_message_or_manifest_destination": "success"}
 
 
-def guided_generate_manifest_file_templates(soda_json_structure):
+def guided_generate_manifest_file_data(soda_json_structure):
     """
     Function to create manifest files for each high-level SPARC folder for an existing Pennsieve dataset.
     Args:

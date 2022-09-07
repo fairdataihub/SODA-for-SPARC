@@ -9,7 +9,7 @@ from curate import (
     main_curate_function,
     main_curate_function_progress,
     generate_manifest_file_locally,
-    guided_generate_manifest_file_templates,
+    guided_generate_manifest_file_data,
     check_JSON_size,
     main_curate_function_upload_details,
     create_high_level_manifest_files_existing_local_starting_point,
@@ -191,10 +191,10 @@ class GenerateManifestLocally(Resource):
 model_guided_create_manifest_file_templates_resopnse = api.model( "GuidedCreateManifestfileTemplatesResopnse", {
     "response_message": fields.String(description="Success or fail message"),
 })
-@api.route('/guided_create_manifest_file_templates')
-class GenerateManifestLocally(Resource):
+@api.route('/guided_retrieve_high_level_folder_manifest_data')
+class GenerateManifestData(Resource):
     parser = reqparse.RequestParser()
-    parser.add_argument('soda_json_object', type=dict, required=True, help='SODA dataset structure', location='json')
+    parser.add_argument('high_level_folder_contents', type=dict, required=True, help='Folders and files inside of an individual high level folder', location='json')
     @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request'}, description="Generate manifest files locally. Used in the standalone manifest file generation feature. Can take edit-manifest keyword that stores the manifest file in a separate directory. Allows ease of editing manifest information for the client.")
     @api.marshal_with(model_generate_manifest_locally_response, False, 200)
     @api.expect(parser)
@@ -203,7 +203,7 @@ class GenerateManifestLocally(Resource):
         data = self.parser.parse_args()
         soda_json_object = data.get("soda_json_object")
         try:
-            return guided_generate_manifest_file_templates(soda_json_object)
+            return guided_generate_manifest_file_data(soda_json_object)
         except Exception as e:
             api.abort(500, str(e))
 

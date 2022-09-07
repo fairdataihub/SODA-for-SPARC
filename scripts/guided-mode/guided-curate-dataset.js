@@ -698,6 +698,34 @@ const renderProgressCards = (progressFileJSONdata) => {
 
   $(".progress-card-popover").popover();
 };
+const generateManifestEditCard = (datasetName, highLevelFolderName) => {
+  return `
+    <div class="guided--dataset-card">        
+      <div class="guided--dataset-card-body shrink">
+        <div class="guided--dataset-card-row">
+          <h1 class="guided--text-dataset-card">
+            ${datasetName}/${highLevelFolderName}/manifest.xlsx
+          </h1>
+        </div>
+      </div>
+      <div class="guided--container-dataset-card-center">
+        <button
+          class="ui positive button guided--button-footer"
+          style="
+            background-color: var(--color-light-green) !important;
+            width: 160px !important;
+            margin: 4px;
+          "
+          onClick="guidedOpenManifestEditSwal('${highLevelFolderName}')"
+        >
+          Edit Manifest File
+        </button>
+      </div>
+    </div>
+  `;
+};
+const guidedOpenManifestEditSwal = (highLevelFolderName) => {};
+
 const setActiveCapsule = (targetPageID) => {
   $(".guided--capsule").removeClass("active");
   let targetCapsuleID = targetPageID.replace("-tab", "-capsule");
@@ -1649,151 +1677,18 @@ const traverseToTab = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-manifest-file-generation-tab") {
-      //Create the local Guided-Manifest-Files folder if it doesn't exist
-      fs.mkdirSync(guidedManifestFilePath, { recursive: true });
-
-      //check if path.join(guidedManifestFilePath,sodaJSONObj["digital-metadata"]["name"]), "manifest.json") exists
-      const datasetManifestFilePath = path.join(
-        guidedManifestFilePath,
-        sodaJSONObj["digital-metadata"]["name"]
+      const datasetName = sodaJSONObj["digital-metadata"]["name"];
+      const currHighLevelFolders = Object.keys(
+        sodaJSONObj["saved-datset-structure-json-obj"]["folders"]
       );
-      if (!fs.existsSync(datasetManifestFilePath)) {
-        //load the manifest.json file and display it in the UI
-
-        //Create a manifest file folder for the current dataset if it doesn't exist
-
-        try {
-          let generate_local_manifest = await client.post(
-            `/curate_datasets/guided_create_manifest_file_templates`,
-            {
-              soda_json_object: sodaJSONObj,
-            },
-            { timeout: 0 }
-          );
-          console.log(generate_local_manifest);
-        } catch (error) {
-          userErrorMessage(error);
-        }
-        const guidedManifestFileTreePreview = document.getElementById(
-          "guided-manifest-file-tree-preview"
-        );
-      }
-
-      function guidedCreateChildNodeManifest(
-        oldFormatNode,
-        datasetName,
-        type,
-        ext
-      ) {
-        console.log("oldFormatNode:" + oldFormatNode);
-        console.log("datasetName:" + datasetName);
-        console.log("type:" + type);
-        console.log("ext:" + ext);
-
-        let newFormatNode = {
-          text: datasetName,
-          state: {
-            opened: true,
-            selected: true,
-            disabled: false,
-          },
-          children: [],
-          type: type + ext,
-        };
-        if (oldFormatNode) {
-          console.log(oldFormatNode);
-          for (const [key, value] of Object.entries(oldFormatNode["folders"])) {
-            let disabled = false;
-            let opened = true;
-            let selected = false;
-            if (highLevelFolders.includes(key)) {
-              newFormatNode.state.selected = selected;
-              newFormatNode.state.opened = true;
-              newFormatNode.state.disabled = disabled;
-
-              newFormatNode.children.push({
-                text: key,
-                state: {
-                  opened: true,
-                  selected: true,
-                  disabled: false,
-                },
-                children: [
-                  {
-                    text: "manifest.xlsx",
-                    state: { disabled: false },
-                    type: nodeType,
-                  },
-                ],
-                type: type + ext,
-              });
-            }
-            newFormatNode["children"].push(new_node);
-            newFormatNode["children"].sort((a, b) =>
-              a.text > b.text ? 1 : -1
-            );
-            console.log(newFormatNode["children"]);
-          }
-
-          if ("files" in oldFormatNode) {
-            if (oldFormatNode["files"] != undefined) {
-              for (var [key, value] of Object.entries(oldFormatNode["files"])) {
-                if (key !== undefined || value !== undefined) {
-                  if (key === "manifest.xlsx") {
-                    var new_node = {
-                      text: key,
-                      state: { disabled: false },
-                      type: nodeType,
-                    };
-                    newFormatNode["children"].push(new_node);
-                    newFormatNode["children"].sort((a, b) =>
-                      a.text > b.text ? 1 : -1
-                    );
-                  }
-                }
-              }
-            }
-          }
-        }
-        console.log(newFormatNode);
-        return newFormatNode;
-      }
-
-      function guidedShowTreeViewPreviewManifestEdits(
-        disabledBoolean,
-        selectedBoolean,
-        manifestFileBoolean,
-        new_dataset_name,
-        previewDiv,
-        datasetStructure
-      ) {
-        console.log(disabledBoolean);
-        console.log(selectedBoolean);
-        console.log(manifestFileBoolean);
-        console.log(new_dataset_name);
-        console.log(previewDiv);
-        console.log(datasetStructure);
-        var jsTreePreviewDataManifest = guidedCreateChildNodeManifest(
-          datasetStructure,
-          new_dataset_name,
-          "folder",
-          "",
-          true,
-          true,
-          false
-        );
-        $(previewDiv).jstree(true).settings.core.data =
-          jsTreePreviewDataManifest;
-        $(previewDiv).jstree(true).refresh();
-      }
-      guidedShowTreeViewPreviewManifestEdits(
-        false,
-        true,
-        false,
-        sodaJSONObj["digital-metadata"]["name"],
-        guidedJsTreePreviewManifest,
-        sodaJSONObj["saved-datset-structure-json-obj"]
-      );
+      const manifestCards = currHighLevelFolders
+        .map((folder) => {
+          return generateManifestEditCard(datasetName, folder);
+        })
+        .join("");
+      document.getElementById(
+        "guided-container-manifest-file-cards"
+      ).innerHTML = manifestCards;
     }
 
     if (targetPageID === "guided-airtable-award-tab") {
