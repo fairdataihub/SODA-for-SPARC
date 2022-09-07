@@ -6249,8 +6249,6 @@ const guidedShowBannerImagePreview = (imagePath) => {
 
   // bannerImagePreviewelement.innerHTML = '';
   if(bannerImagePreviewelement.childElementCount > 0) {
-    console.log('removing child here');
-    console.log(bannerImagePreviewelement.firstChild);
     bannerImagePreviewelement.removeChild(bannerImagePreviewelement.firstChild);
   }
 
@@ -9636,8 +9634,6 @@ $(document).ready(async () => {
     }
     let datasetName = sodaJSONObj["digital-metadata"]["name"];
     let imagePath = path.join(imageFolder, `${datasetName}.` + imageExtension);
-    console.log(imagePath);
-    console.log("This is where it's first created");
     let croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType);
 
     imageDataURI.outputFile(croppedImageDataURI, imagePath).then(async() => {
@@ -9645,14 +9641,12 @@ $(document).ready(async () => {
       if (image_file_size < 5 * 1024 * 1024) {
         $("#guided-para-dataset-banner-image-status").html("");
         setGuidedBannerImage(imagePath);
-        console.log(imagePath);
         $("#guided-banner-image-modal").modal("hide");
         $("#guided-button-add-banner-image").text("Edit banner image");
       } else {
         //image needs to be scaled
         $("#guided-para-dataset-banner-image-status").html("");
         let scaledImagePath = await scaleBannerImage(imagePath);
-        console.log(imagePath);
         setGuidedBannerImage(scaledImagePath);
         $("#guided-banner-image-modal").modal("hide");
         $("#guided-button-add-banner-image").text("Edit banner image");
