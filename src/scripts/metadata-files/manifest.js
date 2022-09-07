@@ -929,6 +929,8 @@ async function extractBFDatasetForManifestFile(
 ) {
   // inform user the manifest files are being generated
   document.querySelector("#loading_pennsieve_dataset_manifest_span").textContent = "Importing your Pennsieve dataset...";
+  // hide the loading bar's text 
+  document.querySelector("#loading_pennsieve_dataset_manifest_span").style.visibility = "visible";
 
   var result;
   try {
@@ -1107,6 +1109,11 @@ async function extractBFDatasetForManifestFile(
           Swal.hideLoading();
         },
       }).then((result) => { });
+
+
+      // hide the loading bar's text 
+      document.querySelector("#loading_pennsieve_dataset_manifest_span").style.visibility = "hidden";
+
       localDatasetFolderPath = "";
     }
   }
