@@ -4918,6 +4918,10 @@ const specifySubject = (event, subjectNameInput) => {
         </div>
       `;
       const subjectIdCellToAddNameTo = subjectNameInput.parent();
+      console.log(subjectIdCellToAddNameTo);
+      const trashCanElement = subjectIdCellToAddNameTo[0].parentElement.nextElementSibling.children[0];
+      console.log(trashCanElement);
+      trashCanElement.style.display = "block";
 
       if (subjectName.length > 0) {
         if (!subSamInputIsValid(subjectName)) {
@@ -4935,6 +4939,8 @@ const specifySubject = (event, subjectNameInput) => {
         } else {
           //case where subject name is valid and not being renamed:
           sodaJSONObj.addSubject(subjectName);
+          console.log("show trash here");
+          console.log(subjectNameInput);
         }
         subjectIdCellToAddNameTo.html(subjectNameElement);
         addSubjectSpecificationTableRow();
@@ -4997,6 +5003,11 @@ const specifySample = (event, sampleNameInput) => {
             subjectsPoolToAddSampleTo,
             subjectToAddSampleTo
           );
+          //then show trash can svg
+          console.log(sampleName);
+          console.log(subjectToAddSampleTo);
+          console.log(subjectsPoolToAddSampleTo);
+          console.log(sampleNameInput);
         }
         sampleIdCellToAddNameTo.html(sampleRenameElement);
       }
@@ -5226,7 +5237,7 @@ const generateSubjectSpecificationRowElement = () => {
       <td class="middle aligned collapsing text-center remove-left-border">
         <i
           class="far fa-trash-alt"
-          style="color: red; cursor: pointer"
+          style="color: red; cursor: pointer; display: none;"
           onclick="deleteSubject($(this))"
         ></i>
       </td>
@@ -5311,6 +5322,7 @@ const generateSampleSpecificationRowElement = () => {
         <i
           class="far fa-trash-alt"
           style="color: red; cursor: pointer"
+          display: none;
           onclick="deleteSample($(this))"
         ></i>
       </td>
@@ -5409,7 +5421,6 @@ const addSubjectSpecificationTableRow = () => {
     //focus on the input that already exists
     subjectSpecificationTableInput.focus();
   } else {
-    // endConfirmOnBlur("guided--subject-input");
     //create a new table row on
     subjectSpecificationTableBody.innerHTML +=
       generateSubjectSpecificationRowElement();
@@ -5424,7 +5435,7 @@ const addSubjectSpecificationTableRow = () => {
     newSubjectInput.focus();
     //scroll to bottom of guided body so back/continue buttons are visible
     scrollToBottomOfGuidedBody();
-    //CREATE EVENT LISTENER TO ON FOCUS
+    //CREATE EVENT LISTENER FOR ON FOCUS
     confirmOnBlur("guided--subject-input");
 
     document
@@ -5540,6 +5551,7 @@ const generatePoolSpecificationRowElement = () => {
     <td class="middle aligned collapsing text-center remove-left-border">
       <i
         class="far fa-trash-alt"
+        display: none;
         style="color: red; cursor: pointer"
         onclick="deletePool($(this))"
       ></i>
