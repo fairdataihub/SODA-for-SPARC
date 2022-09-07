@@ -1709,6 +1709,14 @@ function createChildNodeManifest(
   selectedState,
   disabledState
 ) {
+  console.log("oldFormatNode:" + oldFormatNode);
+  console.log("nodeName:" + nodeName);
+  console.log("type:" + type);
+  console.log("ext:" + ext);
+  console.log("openedState:" + openedState);
+  console.log("selectedState:" + selectedState);
+  console.log("disabledState:" + disabledState);
+
   /*
     oldFormatNode: node in the format under "dataset-structure" key in SODA object
     nodeName: text to show for each node (name)

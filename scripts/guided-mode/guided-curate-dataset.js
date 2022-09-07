@@ -1674,14 +1674,140 @@ const traverseToTab = async (targetPageID) => {
         } catch (error) {
           userErrorMessage(error);
         }
+        const guidedManifestFileTreePreview = document.getElementById(
+          "guided-manifest-file-tree-preview"
+        );
       }
-      /*
-      const guidedShowTreeViewPreviewManifestEdits = () => {};
+
+      function guidedCreateChildNodeManifest(
+        oldFormatNode,
+        nodeName,
+        type,
+        ext,
+        openedState,
+        selectedState,
+        disabledState
+      ) {
+        console.log("oldFormatNode:" + oldFormatNode);
+        console.log("nodeName:" + nodeName);
+        console.log("type:" + type);
+        console.log("ext:" + ext);
+        console.log("openedState:" + openedState);
+        console.log("selectedState:" + selectedState);
+        console.log("disabledState:" + disabledState);
+
+        /*
+          oldFormatNode: node in the format under "dataset-structure" key in SODA object
+          nodeName: text to show for each node (name)
+          type: "folder" or "file"
+          ext: track ext of files to match with the right CSS icons
+          openedState, selectedState: states of a jstree node
+          */
+
+        let newFormatNode = {
+          text: nodeName,
+          state: {
+            opened: openedState,
+            selected: selectedState,
+            disabled: disabledState,
+          },
+          children: [],
+          type: type + ext,
+        };
+        if (oldFormatNode) {
+          console.log(oldFormatNode);
+          for (const [key, value] of Object.entries(oldFormatNode["folders"])) {
+            let disabled = false;
+            let opened = true;
+            let selected = false;
+            if (highLevelFolders.includes(key)) {
+              newFormatNode.state.selected = selected;
+              newFormatNode.state.opened = true;
+              newFormatNode.state.disabled = disabled;
+
+              newFormatNode.children.push({
+                text: key,
+                state: {
+                  opened: openedState,
+                  selected: selectedState,
+                  disabled: disabledState,
+                },
+                children: [
+                  {
+                    text: "manifest.xlsx",
+                    state: { disabled: false },
+                    type: nodeType,
+                  },
+                ],
+                type: type + ext,
+              });
+            }
+            newFormatNode["children"].push(new_node);
+            newFormatNode["children"].sort((a, b) =>
+              a.text > b.text ? 1 : -1
+            );
+            console.log(newFormatNode["children"]);
+          }
+
+          if ("files" in oldFormatNode) {
+            if (oldFormatNode["files"] != undefined) {
+              for (var [key, value] of Object.entries(oldFormatNode["files"])) {
+                if (key !== undefined || value !== undefined) {
+                  if (key === "manifest.xlsx") {
+                    var new_node = {
+                      text: key,
+                      state: { disabled: false },
+                      type: nodeType,
+                    };
+                    newFormatNode["children"].push(new_node);
+                    newFormatNode["children"].sort((a, b) =>
+                      a.text > b.text ? 1 : -1
+                    );
+                  }
+                }
+              }
+            }
+          }
+        }
+        console.log(newFormatNode);
+        return newFormatNode;
+      }
+
+      function guidedShowTreeViewPreviewManifestEdits(
+        disabledBoolean,
+        selectedBoolean,
+        manifestFileBoolean,
+        new_dataset_name,
+        previewDiv,
+        datasetStructure
+      ) {
+        console.log(disabledBoolean);
+        console.log(selectedBoolean);
+        console.log(manifestFileBoolean);
+        console.log(new_dataset_name);
+        console.log(previewDiv);
+        console.log(datasetStructure);
+        var jsTreePreviewDataManifest = guidedCreateChildNodeManifest(
+          datasetStructure,
+          new_dataset_name,
+          "folder",
+          "",
+          true,
+          true,
+          false
+        );
+        $(previewDiv).jstree(true).settings.core.data =
+          jsTreePreviewDataManifest;
+        $(previewDiv).jstree(true).refresh();
+      }
       guidedShowTreeViewPreviewManifestEdits(
+        false,
+        true,
+        false,
         sodaJSONObj["digital-metadata"]["name"],
         guidedJsTreePreviewManifest,
-        sodaJSONObj["dataset-structure"]
-      );*/
+        sodaJSONObj["saved-datset-structure-json-obj"]
+      );
     }
 
     if (targetPageID === "guided-airtable-award-tab") {
