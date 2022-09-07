@@ -131,6 +131,10 @@ const updateProgressContainerPennsieveImport = (
 ) => {
   let percentage_amount =
     pennsieveImportProgress["import_progress_percentage"].toFixed(2);
+
+  if(percentage_amount === 0) {
+    percentage_amount = 0.00
+  }
   let finished = pennsieveImportProgress["import_completed_items"];
   percentage_text.innerText = percentage_amount + "%";
   if (percentage_amount <= 50) {

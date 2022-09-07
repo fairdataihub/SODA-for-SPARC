@@ -927,6 +927,9 @@ async function extractBFDatasetForManifestFile(
   bfdataset,
   ev
 ) {
+  // inform user the manifest files are being generated
+  document.querySelector("#loading_pennsieve_dataset_manifest_span").textContent = "Importing your Pennsieve dataset...";
+
   var result;
   try {
     var res = await bf_request_and_populate_dataset(sodaJSONObj, document.getElementById("loading_pennsieve_dataset_manifest"), false);
@@ -1010,9 +1013,6 @@ async function extractBFDatasetForManifestFile(
       );
       return;
     }
-
-    // inform user the manifest files are being generated
-    document.querySelector("#loading_pennsieve_dataset_manifest_span").textContent = "Generating manifest files...";
 
     await wait(1000)
     var continueErrorManifest;
@@ -1289,7 +1289,10 @@ const trackManifestImportProgress = async () => {
 
   let { percentage_text, left_progress_bar, right_progress_bar } = getProgressContainerElements(progressContainer);
 
-  resetProgressContainer(progressContainer, percentage_text, left_progress_bar, right_progress_bar)
+  await resetProgressContainer(progressContainer, percentage_text, left_progress_bar, right_progress_bar)
+
+  // inform user the manifest files are being generated
+  document.querySelector("#loading_pennsieve_dataset_manifest_span").textContent = "Generating manifest files...";
 
   const manifest_creation_progress_pennsieve = async () => {
     let progressResponse;
