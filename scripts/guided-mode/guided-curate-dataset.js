@@ -4971,6 +4971,9 @@ const specifySample = (event, sampleNameInput) => {
       </div>
     `;
       const sampleIdCellToAddNameTo = sampleNameInput.parent();
+      console.log(sampleIdCellToAddNameTo);
+      let sampleTrashCan = sampleIdCellToAddNameTo[0].parentElement.nextElementSibling.children[0];
+      console.log(sampleTrashCan);
 
       //get the pool of the subject that the sample is being added to
       const subjectSampleAdditionTable = sampleNameInput.closest("table");
@@ -5008,6 +5011,7 @@ const specifySample = (event, sampleNameInput) => {
           console.log(subjectToAddSampleTo);
           console.log(subjectsPoolToAddSampleTo);
           console.log(sampleNameInput);
+          sampleTrashCan.style.display = "block";
         }
         sampleIdCellToAddNameTo.html(sampleRenameElement);
       }
@@ -5045,6 +5049,7 @@ const specifyPool = (event, poolNameInput) => {
         ></select>
       `;
       const poolSubjectsDropdownCell = poolNameInput.parent().parent().next();
+      const poolTrashcan = poolSubjectsDropdownCell[0].nextElementSibling.children[0];
       const poolIdCellToAddNameTo = poolNameInput.parent();
       let poolsTable = $("#pools-table");
       if (poolName !== "pool-") {
@@ -5071,6 +5076,8 @@ const specifyPool = (event, poolNameInput) => {
 
           //Add the new pool to sodaJSONObj
           sodaJSONObj.addPool(poolName);
+          console.log(poolTrashcan);
+          poolTrashcan.style.display = "block";
 
           //Add the select2 base element
           poolSubjectsDropdownCell.html(poolSubjectSelectElement);
@@ -5321,8 +5328,7 @@ const generateSampleSpecificationRowElement = () => {
       <td class="middle aligned collapsing text-center remove-left-border">
         <i
           class="far fa-trash-alt"
-          style="color: red; cursor: pointer"
-          display: none;
+          style="color: red; cursor: pointer; display: none;"
           onclick="deleteSample($(this))"
         ></i>
       </td>
@@ -5551,8 +5557,7 @@ const generatePoolSpecificationRowElement = () => {
     <td class="middle aligned collapsing text-center remove-left-border">
       <i
         class="far fa-trash-alt"
-        display: none;
-        style="color: red; cursor: pointer"
+        style="color: red; cursor: pointer; display: none;"
         onclick="deletePool($(this))"
       ></i>
     </td>
