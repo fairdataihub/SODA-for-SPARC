@@ -1057,7 +1057,12 @@ async function transitionSubQuestions(
 
   // If Confirm dataset btn was hidden, show it again here
   // under Step 6
+  let step6 = document.getElementById("generate-dataset-tab");
   if (ev.getAttribute("data-next") === "Question-generate-dataset-BF-dataset") {
+    // $("#nextBtn").prop("disabled", true);
+    if(step6.classList.contains("tab-active")) {
+      $("#nextBtn").prop("disabled", true);
+    }
     if ($("#current-bf-dataset-generate").text() !== "None") {
       $($("#button-confirm-bf-dataset").parents()[0]).css("display", "flex");
       $("#button-confirm-bf-dataset").show();
@@ -1071,6 +1076,14 @@ async function transitionSubQuestions(
         "flex"
       );
       $("#button-confirm-bf-dataset-getting-started").show();
+    }
+  }
+  if(ev.getAttribute("data-next") === "Question-generate-dataset-choose-ds-name") {
+    if(step6.classList.contains("tab-active")) {
+      $("#nextBtn").prop("disabled", true);
+      if(document.getElementById("inputNewNameDataset").val != "") {
+        document.getElementById("btn-confirm-new-dataset-name").style.display = "inline-block";
+      }
     }
   }
 
@@ -2031,7 +2044,11 @@ async function transitionSubQuestionsButton(
     $("#nextBtn").prop("disabled", false);
   } else {
     // create moving effects when new questions appear
-    $("#nextBtn").prop("disabled", true);
+    let step6 = document.getElementById("generate-dataset-tab");
+    if(step6.classList.contains("tab-active")) {
+      $("#nextBtn").prop("disabled", true);
+    }
+    // $("#nextBtn").prop("disabled", false);
     setTimeout(() => target.classList.add("test2"), 100);
   }
 
@@ -2087,7 +2104,6 @@ async function transitionSubQuestionsButton(
 
       // this should run after a folder is selected
       reset_ui();
-
       $("#nextBtn").prop("disabled", true);
     }
   }

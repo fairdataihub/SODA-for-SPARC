@@ -6753,7 +6753,10 @@ $("#inputNewNameDataset").on("click", () => {
 });
 
 $("#inputNewNameDataset").keyup(function () {
-  $("#nextBtn").prop("disabled", true);
+  let step6 = document.getElementById("generate-dataset-tab");
+  if(step6.classList.contains("tab-active")) {
+    $("#nextBtn").prop("disabled", true);
+  }
 
   var newName = $("#inputNewNameDataset").val().trim();
 
@@ -9476,7 +9479,6 @@ $("#validate_dataset_bttn").on("click", async () => {
 
 //function used to scale banner images
 const scaleBannerImage = async (imagePath) => {
-  console.log("scaling");
   try {
     let imageScaled = await client.post(
       `/manage_datasets/bf_banner_image/scale_image`,
