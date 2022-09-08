@@ -4800,7 +4800,7 @@ ipcRenderer.on("selected-files-organize-datasets", async (event, path) => {
     });
   }
   if (path.length > 0) {
-    if (path.length < 500) {
+    if (path.length < 0) {
       await addFilesfunction(
         path,
         myPath,
@@ -4889,7 +4889,7 @@ ipcRenderer.on(
       }).then(async (result) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
-          if (pathElement.length > 500) {
+          if (pathElement.length > 0) {
             let load_spinner_promise = new Promise(async (resolved) => {
               let background = document.createElement("div");
               let spinner_container = document.createElement("div");
@@ -4936,7 +4936,7 @@ ipcRenderer.on(
             );
           }
         } else if (result.isDenied) {
-          if (pathElement.length > 500) {
+          if (pathElement.length > 0) {
             let load_spinner_promise = new Promise(async (resolved) => {
               let background = document.createElement("div");
               let spinner_container = document.createElement("div");
@@ -4985,7 +4985,8 @@ ipcRenderer.on(
         }
       });
     } else {
-      if (pathElement.length > 500) {
+      console.log(pathElement);
+      if (pathElement.length > 0) {
         let load_spinner_promise = new Promise(async (resolved) => {
           let background = document.createElement("div");
           let spinner_container = document.createElement("div");
@@ -5028,12 +5029,12 @@ ipcRenderer.on(
   }
 );
 
-async function addFoldersfunction(
+const addFoldersfunction = async (
   action,
   nonallowedFolderArray,
   folderArray,
   currentLocation
-) {
+) => {
   let importToast = new Notyf({
     position: { x: "right", y: "bottom" },
     ripple: true,
@@ -5310,10 +5311,80 @@ async function drop(ev) {
       } else {
         return;
       }
-      dropHelper(
+      let load_spinner_promise = new Promise(async (resolved) => {
+        let background = document.createElement("div");
+        let spinner_container = document.createElement("div");
+        let spinner_icon = document.createElement("div");
+        spinner_container.setAttribute("id", "items_loading_container");
+        spinner_icon.setAttribute("id", "item_load");
+        spinner_icon.setAttribute(
+          "class",
+          "ui large active inline loader icon-wrapper"
+        );
+        background.setAttribute("class", "loading-items-background");
+        background.setAttribute("id", "loading-items-background-overlay");
+
+        spinner_container.append(spinner_icon);
+        document.body.prepend(background);
+        document.body.prepend(spinner_container);
+        let loading_items_spinner = document.getElementById(
+          "items_loading_container"
+        );
+        loading_items_spinner.style.display = "block";
+        if (loading_items_spinner.style.display === "block") {
+          setTimeout(() => {
+            resolved();
+          }, 100);
+        }
+      }).then(async () => {
+        await dropHelper(
+          filesElement,
+          targetElement,
+          action,
+          myPath,
+          importedFiles,
+          importedFolders,
+          nonAllowedDuplicateFiles,
+          uiFiles,
+          uiFolders
+        );
+        // Swal.close();
+        document.getElementById("loading-items-background-overlay").remove();
+        document.getElementById("items_loading_container").remove();
+        // background.remove();
+      });
+    });
+  } else {
+    let load_spinner_promise = new Promise(async (resolved) => {
+      let background = document.createElement("div");
+      let spinner_container = document.createElement("div");
+      let spinner_icon = document.createElement("div");
+      spinner_container.setAttribute("id", "items_loading_container");
+      spinner_icon.setAttribute("id", "item_load");
+      spinner_icon.setAttribute(
+        "class",
+        "ui large active inline loader icon-wrapper"
+      );
+      background.setAttribute("class", "loading-items-background");
+      background.setAttribute("id", "loading-items-background-overlay");
+
+      spinner_container.append(spinner_icon);
+      document.body.prepend(background);
+      document.body.prepend(spinner_container);
+      let loading_items_spinner = document.getElementById(
+        "items_loading_container"
+      );
+      loading_items_spinner.style.display = "block";
+      if (loading_items_spinner.style.display === "block") {
+        setTimeout(() => {
+          resolved();
+        }, 100);
+      }
+    }).then(async () => {
+      await dropHelper(
         filesElement,
         targetElement,
-        action,
+        "",
         myPath,
         importedFiles,
         importedFolders,
@@ -5321,23 +5392,15 @@ async function drop(ev) {
         uiFiles,
         uiFolders
       );
+      // Swal.close();
+      document.getElementById("loading-items-background-overlay").remove();
+      document.getElementById("items_loading_container").remove();
+      // background.remove();
     });
-  } else {
-    dropHelper(
-      filesElement,
-      targetElement,
-      "",
-      myPath,
-      importedFiles,
-      importedFolders,
-      nonAllowedDuplicateFiles,
-      uiFiles,
-      uiFolders
-    );
   }
 }
 
-async function dropHelper(
+const dropHelper = async (
   ev1,
   ev2,
   action,
@@ -5347,7 +5410,7 @@ async function dropHelper(
   nonAllowedDuplicateFiles,
   uiFiles,
   uiFolders
-) {
+) => {
   let importToast = new Notyf({
     position: { x: "right", y: "bottom" },
     ripple: true,

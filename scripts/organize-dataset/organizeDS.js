@@ -1690,14 +1690,14 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
   }
 }
 
-async function addFilesfunction(
+const addFilesfunction = async (
   fileArray,
   currentLocation,
   organizeCurrentLocation,
   uiItem,
   singleUIItem,
   globalPathValue
-) {
+) => {
   //toast alert created with Notyf
   let importToast = new Notyf({
     position: { x: "right", y: "bottom" },
