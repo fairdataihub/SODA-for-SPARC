@@ -746,3 +746,14 @@ ipcMain.on("open-file-dialog-log-destination", async () => {
 
   mainWindow.webContents.send("selected-log-folder", result);
 });
+
+ipcMain.handle("open-manifest-preview-location", async () => {
+  let mainWindow = BrowserWindow.getFocusedWindow();
+
+  const result = await dialog.showOpenDialog(mainWindow, {
+    properties: ["openDirectory"],
+    title: "Select a directory",
+  });
+
+  return result.filePaths[0]
+})

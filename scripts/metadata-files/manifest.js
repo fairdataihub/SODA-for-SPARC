@@ -384,6 +384,9 @@ async function generateManifestPrecheck(manifestEditBoolean, ev) {
   ) {
     type = "bf";
   }
+
+
+
   exitCurate();
   sodaJSONObj["starting-point"] = {};
   sodaJSONObj["dataset-structure"] = {};
@@ -652,6 +655,20 @@ async function generateManifestHelper() {
     }
   }
 }
+
+async function generateManifestPreview() {
+  // open a file dialog so the user can select their dataset folder
+  let folderPath = await ipcRenderer.invoke("open-manifest-preview-location");
+
+  console.log("folderPath: ", folderPath);
+
+  // set final generation destination to the user's selected location
+
+  // generate manifest precheck
+
+
+}
+
 
 function updateJSONStructureManifestGenerate() {
   let starting_point = sodaJSONObj["starting-point"]["type"];
