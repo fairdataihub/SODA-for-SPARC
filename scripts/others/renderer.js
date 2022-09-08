@@ -1425,27 +1425,32 @@ var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
       closeOnSelect: true
     }
   });
+createDragSort(studyOrganSystemsTagify);
 
 var studyTechniquesInput = document.getElementById("ds-study-technique"),
   studyTechniquesTagify = new Tagify(studyTechniquesInput, {
     duplicates: false
   });
+createDragSort(studyTechniquesTagify);
 
 var studyApproachesInput = document.getElementById("ds-study-approach"),
   studyApproachesTagify = new Tagify(studyApproachesInput, {
     duplicates: false
   });
+createDragSort(studyApproachesTagify);
 
 // tagify the input inside of the "Add/edit tags" manage dataset section
 var datasetTagsInput = document.getElementById("tagify-dataset-tags"),
   // initialize Tagify on the above input node reference
   datasetTagsTagify = new Tagify(datasetTagsInput);
+createDragSort(datasetTagsTagify);
 
 var guidedDatasetTagsInput = document.getElementById(
     "guided-tagify-dataset-tags"
   ),
   // initialize Tagify on the above input node reference
   guidedDatasetTagsTagify = new Tagify(guidedDatasetTagsInput);
+createDragSort(guidedDatasetTagsTagify);
 
 ///////////////////// Airtable Authentication /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -1567,6 +1572,7 @@ var milestoneTagify1 = new Tagify(milestoneInput1, {
     closeOnSelect: true
   }
 });
+createDragSort(milestoneTagify1);
 
 // generate subjects file
 ipcRenderer.on(
@@ -2646,6 +2652,8 @@ function loadContributorInfo(lastName, firstName) {
       closeOnSelect: true
     }
   });
+  createDragSort(tagifyRole);
+
   var tagifyAffliation = new Tagify(
     document.getElementById("input-con-affiliation"),
     {
@@ -2660,6 +2668,8 @@ function loadContributorInfo(lastName, firstName) {
       duplicates: false
     }
   );
+  createDragSort(tagifyAffliation);
+
   tagifyRole.removeAllTags();
   tagifyAffliation.removeAllTags();
   var contactLabel = $("#ds-contact-person");
