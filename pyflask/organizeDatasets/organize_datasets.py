@@ -910,6 +910,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         else:
             return file_name + ("." + extension)
 
+    
+
     def createFolderStructure(subfolder_json, pennsieve_account, manifest):
         # root level folder will pass subfolders into this function and will recursively check if there are subfolders while creating the json structure
         global create_soda_json_progress
@@ -933,11 +935,14 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                     else:
                         item_name = verify_file_name(item_name, children_content["extension"])
                         
+                    ## verify timestamps
+                    timestamp = items["content"]["createdAt"]
+                    formatted_timestamp = timestamp.replace('.', ',')
                     subfolder_json["files"][item_name] = {
                         "action": ["existing"],
                         "path": item_id,
                         "bfpath": [],
-                        "timestamp": items["content"]["createdAt"],
+                        "timestamp": formatted_timestamp,
                         "type": "bf",
                     }
                     for paths in subfolder_json["bfpath"]:
