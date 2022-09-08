@@ -222,7 +222,6 @@ document.getElementById("getting_starting_tab").click();
 let client = null;
 
 // get port number from the main process
-const port = ipcRenderer.sendSync("get-port");
 
 // TODO: change the default port so it is based off the discovered port in Main.js
 client = axios.create({

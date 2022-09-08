@@ -1209,8 +1209,6 @@ async function extractBFDatasetForManifestFile(
       localDatasetFolderPath = "";
     }
   }
->>>>>>> manifests-update:src/scripts/metadata-files/manifest.js
-  }
 }
 
 function extractBFManifestFile() {
