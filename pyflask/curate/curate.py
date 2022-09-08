@@ -1322,6 +1322,10 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
     manifest_files_structure = {}
     local_timezone = TZLOCAL()
 
+    global namespace_logger
+
+    namespace_logger.info("create_high_level_manifest_files_existing_bf_starting_point step 1")
+
     def recursive_folder_traversal(folder, dict_folder_manifest):
         if "files" in folder.keys():
             for item in list(folder["files"]):
@@ -1344,17 +1348,18 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
                             folder["files"][item]["timestamp"]
                         )
                     elif folder["files"][item]["type"] == "local":
+                        namespace_logger.info("create_high_level_manifest_files_existing_bf_starting_point local files")
                         file_path = folder["files"][item]["path"]
                         filepath = pathlib.Path(file_path)
                         mtime = filepath.stat().st_mtime
                         lastmodtime = datetime.fromtimestamp(mtime).astimezone(
                             local_timezone
                         )
-                        dict_folder_manifest["timestamp"].append(
-                            lastmodtime.isoformat()
-                            .replace(".", ",")
-                            .replace("+00:00", "Z")
-                        )
+
+                        tm = lastmodtime.isoformat().replace(".", ",").replace("+00:00", "Z")
+
+                        namespace_logger.info(tm)
+                        dict_folder_manifest["timestamp"].append(tm)
                 else:
                     dict_folder_manifest["timestamp"].append("")
 
@@ -1818,7 +1823,7 @@ def create_high_level_manifest_files_existing_bf(
 
 
 def create_high_level_manifest_files_existing_local_starting_point(dataset_path):
-    soda_manifest_folder_path = join(userpath, "SODA", "manifest_files")
+    soda_manifest_folder_path = join(userpath, "SODA", "SODA Manifest Files")
 
     if dataset_path != "":
         for high_level_fol in listdir(dataset_path):
