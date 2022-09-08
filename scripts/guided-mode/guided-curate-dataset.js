@@ -698,27 +698,49 @@ const renderProgressCards = (progressFileJSONdata) => {
 
   $(".progress-card-popover").popover();
 };
-const generateManifestEditCard = (datasetName, highLevelFolderName) => {
+
+const renderManifestCards = () => {
+  const currHighLevelFolders = Object.keys(
+    sodaJSONObj["saved-datset-structure-json-obj"]["folders"]
+  );
+  const manifestCards = currHighLevelFolders
+    .map((folder) => {
+      return generateManifestEditCard(folder);
+    })
+    .join("");
+  document.getElementById("guided-container-manifest-file-cards").innerHTML =
+    manifestCards;
+};
+
+const generateManifestEditCard = (highLevelFolderName) => {
   return `
     <div class="guided--dataset-card">        
       <div class="guided--dataset-card-body shrink">
         <div class="guided--dataset-card-row">
           <h1 class="guided--text-dataset-card">
-            ${highLevelFolderName}
+            <span class="manifest-folder-name">${highLevelFolderName}</span>
           </h1>
         </div>
       </div>
       <div class="guided--container-dataset-card-center">
         <button
-          class="ui positive button guided--button-footer"
+          class="ui primary button guided--button-footer"
           style="
-            background-color: var(--color-light-green) !important;
-            width: 160px !important;
+            ${
+              sodaJSONObj["manifest-files"][highLevelFolderName]
+                ? ""
+                : "background-color: var(--color-light-green) !important;"
+            }
+            width: 280px !important;
             margin: 4px;
           "
           onClick="guidedOpenManifestEditSwal('${highLevelFolderName}')"
         >
-          Edit Manifest File
+          ${
+            sodaJSONObj["manifest-files"][highLevelFolderName]
+              ? `Edit ${highLevelFolderName} folder manifest file`
+              : `Create ${highLevelFolderName} folder manifest file`
+          }
         </button>
       </div>
     </div>
@@ -750,7 +772,7 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
     const jsonRes = res.data;
 
     manifestFileHeaders = jsonRes.shift();
-    manifestFileJson = jsonRes;
+    manifestFileData = jsonRes;
   }
 
   let guidedManifestTable;
@@ -775,7 +797,8 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
         "guided-div-manifest-edit"
       );
       guidedManifestTable = jspreadsheet(manifestSpreadsheetContainer, {
-        data: manifestFileJson,
+        tableheight: "500px",
+        data: manifestFileData,
         columns: manifestFileHeaders.map((header) => {
           return {
             type: "text",
@@ -792,6 +815,10 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
       headers: guidedManifestTable.getHeaders().split(","),
       data: guidedManifestTable.getData(),
     };
+    //Save the sodaJSONObj with the new manifest file
+    saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+    //Rerender the manifest cards
+    renderManifestCards();
   }
 };
 
@@ -1746,18 +1773,7 @@ const traverseToTab = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-manifest-file-generation-tab") {
-      const datasetName = sodaJSONObj["digital-metadata"]["name"];
-      const currHighLevelFolders = Object.keys(
-        sodaJSONObj["saved-datset-structure-json-obj"]["folders"]
-      );
-      const manifestCards = currHighLevelFolders
-        .map((folder) => {
-          return generateManifestEditCard(datasetName, folder);
-        })
-        .join("");
-      document.getElementById(
-        "guided-container-manifest-file-cards"
-      ).innerHTML = manifestCards;
+      renderManifestCards();
     }
 
     if (targetPageID === "guided-airtable-award-tab") {
@@ -10449,6 +10465,51 @@ $(document).ready(async () => {
         }
       }
       if (pageBeingLeftID === "guided-manifest-file-generation-tab") {
+        const buttonYesAutoGenerateManifestFiles = document.getElementById(
+          "guided-button-auto-generate-manifest-files"
+        );
+        const buttonNoImportManifestFiles = document.getElementById(
+          "guided-button-import-manifest-files"
+        );
+
+        if (
+          !buttonYesAutoGenerateManifestFiles.classList.contains("selected") &&
+          !buttonNoImportManifestFiles.classList.contains("selected")
+        ) {
+          errorArray.push({
+            type: "notyf",
+            message:
+              "Please indicate how you would like to prepare your manifest files",
+          });
+          throw errorArray;
+        }
+        if (buttonYesAutoGenerateManifestFiles.classList.contains("selected")) {
+          let manifestFoldersInUI = document.querySelectorAll(
+            ".manifest-folder-name"
+          );
+          manifestFoldersInUIArray = Array.from(manifestFoldersInUI);
+          manifestFoldersInUIArray = manifestFoldersInUIArray.map(
+            (folder) => folder.innerHTML
+          );
+
+          let foldersWithoutManifestFiles = [];
+
+          for (const folder of manifestFoldersInUIArray) {
+            if (!sodaJSONObj["manifest-files"][folder]) {
+              foldersWithoutManifestFiles.push(folder);
+            }
+          }
+
+          if (foldersWithoutManifestFiles.length > 0) {
+            errorArray.push({
+              type: "notyf",
+              message: `Please add manifest files for the following folders: ${foldersWithoutManifestFiles.join(
+                ", "
+              )}`,
+            });
+            throw errorArray;
+          }
+        }
       }
 
       if (pageBeingLeftID === "guided-airtable-award-tab") {

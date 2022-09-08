@@ -1788,18 +1788,14 @@
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Manifest files</h1>
             <p class="guided--help-text">
-              The SPARC guidelines require each dataset to have specific
-              metadata files including manifest files, as described by the SPARC
-              Data Standards (SDS). A manifest file is required in either each
-              of the high-level SPARC folders OR in each of the dataset folders
-              with at least one file. A manifest file must contain the two
-              fields: filename and timestamp.<br /><br />
-              SODA will automatically include the "filename", "timestamp", and
-              "file type" in your manifest files. Any "description" and
-              "Additional Metadata" from existing manifest files will be
-              imported and included as well. Double click on any manifest file
-              below to preview or add additional metadata then click on
-              "Generate now" to generate them.
+              The SPARC guidelines require datasets to contain manifest files,
+              which are files that contain metadata pertaining to other files in
+              the dataset. Manifest files must contain at least the two fields
+              filename and timestamp.<br /><br />
+              If you have already prepared manifest files, you can import them
+              below. Otherwise, select the "auto-generate manifest files" option
+              to generate manifest files with the fields "filename",
+              "timestamp", and "file type" for each of your high-level folders.
             </p>
           </div>
           <div class="guided--section">
@@ -1810,6 +1806,7 @@
             <div class="guided--radio-button-container">
               <button
                 class="guided--radio-button tile-button"
+                id="guided-button-auto-generate-manifest-files"
                 data-next-element="guided-container-manifest-file-cards"
                 data-button-config-value="manifest-files-generated-automatically"
                 data-button-config-value-state="yes"
@@ -1834,7 +1831,7 @@
               >
                 <button
                   class="guided--radio-button tile-button"
-                  id="guided-button-data-derivative-manual"
+                  id="guided-button-import-manifest-files"
                   style="
                     opacity: 0.5;
                     cursor: default !important;
