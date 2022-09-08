@@ -704,7 +704,7 @@ const generateManifestEditCard = (datasetName, highLevelFolderName) => {
       <div class="guided--dataset-card-body shrink">
         <div class="guided--dataset-card-row">
           <h1 class="guided--text-dataset-card">
-            ${datasetName}/${highLevelFolderName}/manifest.xlsx
+            ${highLevelFolderName}
           </h1>
         </div>
       </div>
@@ -741,7 +741,7 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
       ];
 
     const res = await client.post(
-      `/curate_datasets/guided_retrieve_high_level_folder_manifest_data`,
+      `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
       {
         high_level_folder_contents: highLevelFolderContents,
       },

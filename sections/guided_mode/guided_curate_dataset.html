@@ -1788,12 +1788,159 @@
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Manifest files</h1>
             <p class="guided--help-text">
-              The number of the SPARC award associated with your dataset is a
-              required metadata when submitting your SPARC dataset. SODA can
-              help you specify your SPARC award through the SPARC Airtable
-              sheet. To learn more about the SPARC Airtable sheet, please visit
-              the
+              The SPARC guidelines require each dataset to have specific
+              metadata files including manifest files, as described by the SPARC
+              Data Standards (SDS). A manifest file is required in either each
+              of the high-level SPARC folders OR in each of the dataset folders
+              with at least one file. A manifest file must contain the two
+              fields: filename and timestamp.<br /><br />
+              SODA will automatically include the "filename", "timestamp", and
+              "file type" in your manifest files. Any "description" and
+              "Additional Metadata" from existing manifest files will be
+              imported and included as well. Double click on any manifest file
+              below to preview or add additional metadata then click on
+              "Generate now" to generate them.
             </p>
+          </div>
+          <div class="guided--section">
+            <h2 class="guided--text-sub-step">
+              Would you like SODA to auto-generate your 'mandatory' manifest
+              files?
+            </h2>
+            <div class="guided--radio-button-container">
+              <button
+                class="guided--radio-button tile-button"
+                data-next-element="guided-container-manifest-file-cards"
+                data-button-config-value="manifest-files-generated-automatically"
+                data-button-config-value-state="yes"
+              >
+                <div class="guided--tile-button-icon">
+                  <img
+                    src="assets/img/logo-new-green.png"
+                    alt="SODA logo"
+                    style="height: 50px; width: 40px"
+                  />
+                </div>
+                <div class="guided--tile-body">
+                  <h2>Yes, auto-generate my manifest files</h2>
+                </div>
+              </button>
+              <div
+              class="guided-tippy-button"
+              data-tippy-content="Manifest file import coming soon"
+              rel="popover"
+              placement="bottom"
+              data-trigger="hover">
+              <button
+                class="guided--radio-button tile-button"
+                id="guided-button-data-derivative-manual"
+                style="
+                  opacity: 0.5;
+                  cursor: default !important;
+                  pointer-events: none;
+                "
+              >
+                <div class="guided--tile-button-icon">
+                  <svg
+                    height="50"
+                    width="50"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewbox="0 0 80.48 98.35"
+                  >
+                    <defs>
+                      <style>
+                        .cls-1,
+                        .cls-2 {
+                          fill: none;
+                        }
+
+                        .cls-1,
+                        .cls-2,
+                        .cls-3 {
+                          stroke-miterlimit: 10;
+                        }
+
+                        .cls-1 {
+                          stroke-width: 6px;
+                        }
+
+                        .cls-2 {
+                          stroke-width: 8px;
+                        }
+                      </style>
+                    </defs>
+                    <g id="Layer_2" data-name="Layer 2">
+                      <g id="Layer_2-2" data-name="Layer 2">
+                        <rect
+                          class="cls-1"
+                          x="65.2"
+                          y="70.64"
+                          width="0.17"
+                          height="25.22"
+                          stroke="#B80D49"
+                        ></rect>
+                        <rect
+                          class="cls-1"
+                          x="65.29"
+                          y="70.64"
+                          width="0.17"
+                          height="25.22"
+                          transform="translate(148.62 17.88) rotate(90)"
+                          stroke="#B80D49"
+                        ></rect>
+                        <path
+                          class="cls-2"
+                          d="M43.72,83.16l-32.67.09a7.83,7.83,0,0,1-8-7.58V10.58A7.82,7.82,0,0,1,11.05,3H48.81L65.54,17.54V64.8"
+                          stroke="#565E6B"
+                        ></path>
+                        <path
+                          class="cls-3"
+                          d="M65.54,17.54v3.23H52.61a7.31,7.31,0,0,1-7.52-7.09V3h3.72Z"
+                          stroke="#565E6B"
+                          fill="#565E6B"
+                        ></path>
+                        <line
+                          class="cls-1"
+                          x1="4.4"
+                          y1="46.35"
+                          x2="63.26"
+                          y2="46.35"
+                          stroke="#13716D"
+                        ></line>
+                        <line
+                          class="cls-1"
+                          x1="4.4"
+                          y1="62.64"
+                          x2="63.26"
+                          y2="62.64"
+                          stroke="#13716D"
+                        ></line>
+                        <line
+                          class="cls-1"
+                          x1="22.4"
+                          y1="46.35"
+                          x2="22.4"
+                          y2="80.5"
+                          stroke="#13716D"
+                        ></line>
+                        <line
+                          class="cls-1"
+                          x1="40.4"
+                          y1="46.35"
+                          x2="40.4"
+                          y2="80.5"
+                          stroke="#13716D"
+                        ></line>
+                      </g>
+                    </g>
+                  </svg>
+                </div>
+                <div class="guided--tile-body">
+                  <h2>No, I already have manifest files prepared</h2>
+                </div>
+              </button>
+            </div>
+            </div>
           </div>
           <div class="guided--section" id="guided-container-manifest-file-cards"></div>
         </div>

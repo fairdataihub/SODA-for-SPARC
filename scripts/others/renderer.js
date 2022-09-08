@@ -6111,18 +6111,30 @@ function fileContextMenu(event) {
 }
 
 $(document).ready(function () {
-  tippy("[data-tippy-content]:not(.tippy-content-main)", {
-    allowHTML: true,
-    interactive: true,
-    placement: "top",
-    theme: "light",
-  });
+  tippy(
+    "[data-tippy-content]:not(.tippy-content-main):not(.guided-tippy-button)",
+    {
+      allowHTML: true,
+      interactive: true,
+      placement: "top",
+      theme: "light",
+    }
+  );
 
   tippy(".tippy-content-main", {
     allowHTML: true,
     interactive: true,
     placement: "bottom",
     theme: "light",
+  });
+
+  tippy(".guided-tippy-button", {
+    allowHTML: true,
+    interactive: true,
+    placement: "bottom",
+    theme: "light",
+    /*apply -7 bottom margin to negate button bottom margin*/
+    offset: [0, -7],
   });
 });
 
