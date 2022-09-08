@@ -25,6 +25,12 @@ function selectManifestGenerationLocation() {
   ipcRenderer.send("open-file-dialog-local-dataset-manifest-generate-purpose");
 }
 
+function openDirectoryAtManifestGenerationLocation() {
+  console.log(finalManifestGenerationPath)
+  console.log("Calling the shell")
+  shell.showItemInFolder(finalManifestGenerationPath + "/")
+}
+
 
 
 
@@ -81,13 +87,6 @@ $(document).ready(function () {
     document.getElementById(
       "input-manifest-local-gen-location"
     ).placeholder = folderPath[0];
-    // localDatasetFolderPath = folderPath[0];
-    // $("#div-confirm-manifest-local-folder-dataset").css(
-    //   "display",
-    //   "flex"
-    // );
-    // $($("#div-confirm-manifest-local-folder-dataset button")[0]).show();
-
   })
 
   $("#bf_dataset_create_manifest").on("DOMSubtreeModified", function () {
@@ -705,6 +704,8 @@ async function initiate_generate_manifest_local(
     } else {
       moveFinishedBool = await moveManifestFilesPreview(dir, finalManifestGenerationPath);
     }
+
+    openDirectoryAtManifestGenerationLocation()
     
     if (moveFinishedBool) {
       resetManifest(true);
@@ -1634,6 +1635,8 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
         // Move manifest files to the local dataset
         moveFinishedBool = await moveManifestFiles(dir, originalDataset);
       }
+
+      openDirectoryAtManifestGenerationLocation()
 
       if (moveFinishedBool) {
         resetManifest(true);
