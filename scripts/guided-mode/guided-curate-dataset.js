@@ -725,24 +725,35 @@ const generateManifestEditCard = (datasetName, highLevelFolderName) => {
   `;
 };
 const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
-  const highLevelFolderContents =
-    sodaJSONObj["saved-datset-structure-json-obj"]["folders"][
-      highLevelFolderName
-    ];
-  const res = await client.post(
-    `/curate_datasets/guided_retrieve_high_level_folder_manifest_data`,
-    {
-      high_level_folder_contents: highLevelFolderContents,
-    },
-    { timeout: 0 }
-  );
-  const jsonRes = res.data;
+  const existingManifestData =
+    sodaJSONObj["manifest-files"][highLevelFolderName];
 
-  const manifestFileHeaders = jsonRes.shift();
-  const manifestFileJson = jsonRes;
+  let manifestFileHeaders;
+  let manifestFileData;
 
-  console.log(manifestFileHeaders);
-  console.log(manifestFileJson);
+  if (existingManifestData) {
+    manifestFileHeaders = existingManifestData["headers"];
+    manifestFileData = existingManifestData["data"];
+  } else {
+    const highLevelFolderContents =
+      sodaJSONObj["saved-datset-structure-json-obj"]["folders"][
+        highLevelFolderName
+      ];
+
+    const res = await client.post(
+      `/curate_datasets/guided_retrieve_high_level_folder_manifest_data`,
+      {
+        high_level_folder_contents: highLevelFolderContents,
+      },
+      { timeout: 0 }
+    );
+    const jsonRes = res.data;
+
+    manifestFileHeaders = jsonRes.shift();
+    manifestFileJson = jsonRes;
+  }
+
+  let guidedManifestTable;
 
   const { value: saveManifestFiles } = await Swal.fire({
     title:
@@ -763,17 +774,7 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
       const manifestSpreadsheetContainer = document.getElementById(
         "guided-div-manifest-edit"
       );
-      console.log(manifestFileJson);
-      console.log(
-        manifestFileHeaders.map((header) => {
-          return {
-            type: "text",
-            title: header,
-            width: 200,
-          };
-        })
-      );
-      jspreadsheet(manifestSpreadsheetContainer, {
+      guidedManifestTable = jspreadsheet(manifestSpreadsheetContainer, {
         data: manifestFileJson,
         columns: manifestFileHeaders.map((header) => {
           return {
@@ -787,6 +788,10 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
   });
 
   if (saveManifestFiles) {
+    sodaJSONObj["manifest-files"][highLevelFolderName] = {
+      headers: guidedManifestTable.getHeaders().split(","),
+      data: guidedManifestTable.getData(),
+    };
   }
 };
 
