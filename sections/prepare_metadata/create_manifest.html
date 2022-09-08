@@ -226,6 +226,7 @@
             onclick="generateManifestFolderLocallyForEdit(this)"
             class="btn_animated"
             style="margin: 0 10px; width: 100px; border: none !important"
+            data-next="Question-prepare-manifest-5"
           >
             Confirm
           </button>
@@ -409,81 +410,51 @@
               </button>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
 
-    <div
-      class="individual-question prepare-manifest"
-      id="Question-prepare-manifest-4"
-    >
-      <div class="ui form" style="width: 100%">
-        <div class="grouped fields">
-          <label style="font-size: 17px; color: var(--color-bg-plum)"
-            >Do you want to add any additional metadata to the manifest files?
-            <br />
-            <p class="sub-text">Please select one:</p>
-          </label>
-          <div class="field" style="margin: auto; width: 500px">
+
+          <div class="field" style="margin: auto; width: 550px"> 
             <div
-              style="display: flex; justify-content: center; margin-top: 25px"
+              style="
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                margin-bottom: 1.5rem;
+                margin-top: 1.5rem;
+              "
             >
-              <button
-                onclick="generateManifestPrecheck(false, this)"
-                class="btn_question"
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin-right: 15px;
-                  background: var(--color-light-green);
-                  color: #fff;
-                  font-weight: 600;
-                  border: none;
-                  width: 160px;
-                  padding: 10px;
-                  font-size: 14px;
-                "
+              <div
+                id="loading_pennsieve_dataset_manifest"
+                class="circular"
+                style="align-self: center; display: none"
               >
-                No, generate now
-              </button>
-              <button
-                class="btn_question"
-                onclick="generateManifestFolderLocallyForEdit()"
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  background: #fff;
-                  color: var(--color-light-green);
-                  font-weight: 600;
-                  border: 1px solid var(--color-light-green);
-                  width: 160px;
-                  padding: 10px;
-                  font-size: 14px;
-                "
+                <div class="inner" style="top: 50% !important"></div>
+                <div class="pennsieve_loading_dataset_percentage" id="pennsieve_loading_dataset_percentage_manifest" class="number" style="position: absolute !important; top: 40% !important; z-index: 100 !important; left: 33% !important;">
+                  0.00%
+                </div>
+                <div class="circle">
+                  <div class="bar left">
+                    <div
+                      class="pennsieve_left-side_less_than_50 progress"
+                      style="transform: rotate(0deg)"
+                    ></div>
+                  </div>
+                  <div class="bar right">
+                    <div
+                      class="pennsieve_right-side_greater_than_50 progress"
+                      style="transform: rotate(0deg)"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+              <span
+                id="loading_pennsieve_dataset_manifest_span"
+                style="margin: auto"
+                >Importing your Pennsieve dataset...</span
               >
-                Yes, let's edit the manifest files
-              </button>
-              <button
-                class="btn_question"
-                data-next="Question-prepare-manifest-5"
-                id="preview-manifest-fake-confirm"
-                onclick="transitionFreeFormMode(this, 'Question-prepare-manifest-4', 'create_manifest-tab', '', 'individual-question prepare-manifest')"
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  background: #fff;
-                  color: var(--color-light-green);
-                  font-weight: 600;
-                  border: 1px solid var(--color-light-green);
-                  width: 160px;
-                  padding: 10px;
-                  display: none;
-                "
-              >
-                Fake confirm
-              </button>
-            </div>
           </div>
+        </div>
+
+
         </div>
       </div>
     </div>
@@ -531,12 +502,15 @@
             >
               <div id="div-dataset-tree-preview-manifest"></div>
             </div>
+
+
             <div
               style="display: flex; justify-content: center; margin-top: 25px"
             >
               <button
                 onclick="generateManifestPrecheck(true, this)"
                 class="btn_question"
+                id="generate_step_5-manifest"
                 style="
                   cursor: pointer;
                   border-radius: 8px;
@@ -553,11 +527,108 @@
                 Generate now
               </button>
             </div>
+
+
+            <!-- A continue button for step; appears during Local manifest file generation only-->
+            <div
+              style="display: flex; justify-content: center; margin-top: 25px"
+            >
+              <button
+                onclick="transitionFreeFormMode(this, 'Question-prepare-manifest-5', 'create_manifest-tab', '', 'individual-question prepare-manifest')"
+                class="btn_question"
+                id="continue_step_5-manifest"
+                data-next="Question-prepare-manifest-6"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin-right: 15px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  width: 160px;
+                  padding: 10px;
+                  font-size: 14px;
+                "
+              >
+                Continue
+              </button>
+            </div>
+
           </div>
         </div>
       </div>
     </div>
+
+
+    <div class="individual-question prepare-manifest"
+         id="Question-prepare-manifest-6">
+      <div class="ui form" style="width: 100%">
+        <div class="grouped fields" style="align-items: center">
+          <label
+            style="
+              font-size: 17px;
+              color: var(--color-bg-plum);
+              margin: 10px;
+              width: 550px;
+            "
+          >
+            Select a location to generate your manifest files <br />
+            <p class="about-text">
+              Generate your manifest files in the same directory as your dataset or in a separate location. 
+            </p>
+          </label>
+
+          <div
+            class="field"
+            style="margin: 0 auto; width: fit-content; margin-top: 10px"
+          >
+              <input
+              class="form-control"
+              style="width: 450px !important"
+              onclick="selectManifestGenerationLocation()"
+              id="input-manifest-local-gen-location"
+              type="text"
+              readonly
+              placeholder="Browse here"
+              />
+
+                <div
+                style="display: flex; justify-content: center; margin-top: 25px"
+                >
+                  <button
+                    onclick="generateManifestPrecheck(true, this)"
+                    class="btn_question"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin-right: 15px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      width: 160px;
+                      padding: 10px;
+                      font-size: 14px;
+                    "
+                  >
+                    Generate
+                  </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      
+    <!--END of question 6-->
+    </div>
+
+  <!--END of main tabs section-->
   </div>
+
+
+
   <div class="footer-div">
     <button type="button" class="transition-btn prev" data-section="main_tabs">
       <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return

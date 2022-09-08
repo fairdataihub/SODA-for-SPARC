@@ -1270,54 +1270,57 @@ def bf_create_new_dataset(datasetname, bf):
         raise e
 
 
-def create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure):
+double_extensions = [
+    ".ome.tiff",
+    ".ome.tif",
+    ".ome.tf2,",
+    ".ome.tf8",
+    ".ome.btf",
+    ".ome.xml",
+    ".brukertiff.gz",
+    ".mefd.gz",
+    ".moberg.gz",
+    ".nii.gz",
+    ".mgh.gz",
+    ".tar.gz",
+    ".bcl.gz",
+]
+
+def get_name_extension(file_name):
+    double_ext = False
+    for ext in double_extensions:
+        if file_name.find(ext) != -1:
+            double_ext = True
+            break
+
+    ext = ""
+    name = ""
+
+    if double_ext == False:
+        name = os.path.splitext(file_name)[0]
+        ext = os.path.splitext(file_name)[1]
+    else:
+        ext = (
+            os.path.splitext(os.path.splitext(file_name)[0])[1]
+            + os.path.splitext(file_name)[1]
+        )
+        name = os.path.splitext(os.path.splitext(file_name)[0])[0]
+    return name, ext
+
+
+def create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, high_level_folders=["code", "derivative", "docs", "primary", "protocol", "source" ], manifest_progress={}):
     """
     Function to create manifest files for each high-level SPARC folder for an existing Pennsieve dataset.
     Args:
         soda_json_structure: soda dict with information about the dataset to be generated/modified
+        high_level_folders: (optional) list of high-level folders to generate manifests for. Defaults to all primary folders.
+        manifest_progress: (optional) dictionary with information about the progress of the manifest generation. Defaults to empty dictionary.
     Action:
         manifest_files_structure: dict including the local path of the manifest files
     """
     high_level_folders_present = []
     manifest_files_structure = {}
     local_timezone = TZLOCAL()
-
-    double_extensions = [
-        ".ome.tiff",
-        ".ome.tif",
-        ".ome.tf2,",
-        ".ome.tf8",
-        ".ome.btf",
-        ".ome.xml",
-        ".brukertiff.gz",
-        ".mefd.gz",
-        ".moberg.gz",
-        ".nii.gz",
-        ".mgh.gz",
-        ".tar.gz",
-        ".bcl.gz",
-    ]
-
-    def get_name_extension(file_name):
-        double_ext = False
-        for ext in double_extensions:
-            if file_name.find(ext) != -1:
-                double_ext = True
-                break
-
-        ext = ""
-        name = ""
-
-        if double_ext == False:
-            name = os.path.splitext(file_name)[0]
-            ext = os.path.splitext(file_name)[1]
-        else:
-            ext = (
-                os.path.splitext(os.path.splitext(file_name)[0])[1]
-                + os.path.splitext(file_name)[1]
-            )
-            name = os.path.splitext(os.path.splitext(file_name)[0])[0]
-        return name, ext
 
     def recursive_folder_traversal(folder, dict_folder_manifest):
         if "files" in folder.keys():
@@ -1379,11 +1382,17 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
 
     dataset_structure = soda_json_structure["dataset-structure"]
 
-    # create local folder to save manifest files temporarly (delete any existing one first)
-    shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
-    makedirs(manifest_folder_path)
+    # create local folder to save manifest files temporarily if the existing files are stale (i.e. not from updating existing manfiest files)
+    if len(high_level_folders) == 6:
+        shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
+        makedirs(manifest_folder_path)
 
     for high_level_folder in list(dataset_structure["folders"]):
+
+        # do not overwrite an existing manifest file 
+        if high_level_folder not in high_level_folders:
+            continue
+
         high_level_folders_present.append(high_level_folder)
 
         folderpath = join(manifest_folder_path, high_level_folder)
@@ -1404,6 +1413,12 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
 
         df = pd.DataFrame.from_dict(dict_folder_manifest)
         df.to_excel(manifestfilepath, index=None, header=True)
+
+        # update the progress of manifest file generation 
+        if manifest_progress != {}:
+            manifest_progress["manifest_files_uploaded"] += 1
+        
+        # add the path to the manifest into the structure
         manifest_files_structure[high_level_folder] = manifestfilepath
 
     return manifest_files_structure
@@ -1985,11 +2000,15 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
 
         return
 
-    # Add a new key containing the path to all the files and folders on the
-    # local data structure.
-    # Allows us to see if the folder path of a specfic file already
-    # exists on Pennsieve.
+
     def recursive_item_path_create(folder, path):
+        """
+        Recursively create the path for the item    # Add a new key containing the path to all the files and folders on the
+        local data structure.
+        Allows us to see if the folder path of a specfic file already
+        exists on Pennsieve.
+        """
+        
         if "files" in folder.keys():
             for item in list(folder["files"]):
                 if "folderpath" not in folder["files"][item]:

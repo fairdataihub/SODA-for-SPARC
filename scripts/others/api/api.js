@@ -219,7 +219,6 @@ const getCurrentCollectionTags = async (account, dataset) => {
         currentTags[name] = { id: id };
       }
     }
-
     return currentTags;
   } catch (error) {
     clientError(error);

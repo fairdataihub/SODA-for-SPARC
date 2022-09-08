@@ -66,6 +66,8 @@ document.addEventListener("DOMContentLoaded", async function () {
   await includeJavaScriptFile("./assets/demo-btns.js");
   await includeJavaScriptFile("./preload.js");
   await includeJavaScriptFile("./scripts/others/renderer.js");
+  await includeJavaScriptFile("./scripts/others/progressContainer.js");
+  await includeJavaScriptFile("./scripts/others/pennsieveDatasetImporter.js");
   await includeJavaScriptFile("./scripts/others/tab-effects.js");
   await includeJavaScriptFile("./scripts/disseminate/disseminate.js");
   await includeJavaScriptFile("./scripts/disseminate/prePublishingReview.js");
