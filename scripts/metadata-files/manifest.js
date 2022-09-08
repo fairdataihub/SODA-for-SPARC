@@ -28,7 +28,21 @@ function selectManifestGenerationLocation() {
 function openDirectoryAtManifestGenerationLocation() {
   console.log(finalManifestGenerationPath)
   console.log("Calling the shell")
-  shell.showItemInFolder(finalManifestGenerationPath + "/")
+  // find a high level folder in the generation location
+  fs.readdir(finalManifestGenerationPath, (err, files) => {
+    if (err) {
+      console.log(err)
+      return
+    }
+
+    for (const file of files) {
+      if (file === "primary" || file === "derivative" || file === "code" || file === "docs" || file === "protocol" || file === "source") {
+        // open the dataset folder
+        shell.showItemInFolder(finalManifestGenerationPath + "/" + file)
+        return
+      }
+    }
+  })
 }
 
 
