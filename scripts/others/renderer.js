@@ -6112,7 +6112,7 @@ function fileContextMenu(event) {
 
 $(document).ready(function () {
   tippy(
-    "[data-tippy-content]:not(.tippy-content-main):not(.guided-tippy-button)",
+    "[data-tippy-content]:not(.tippy-content-main):not(.guided-tippy-wrapper)",
     {
       allowHTML: true,
       interactive: true,
@@ -6128,13 +6128,13 @@ $(document).ready(function () {
     theme: "light",
   });
 
-  tippy(".guided-tippy-button", {
+  tippy(".guided-tippy-wrapper", {
     allowHTML: true,
     interactive: true,
     placement: "bottom",
     theme: "light",
-    /*apply -7 bottom margin to negate button bottom margin*/
-    offset: [0, -7],
+    /*apply -5 bottom margin to negate button bottom margin*/
+    offset: [0, -3],
   });
 });
 
