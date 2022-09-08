@@ -5311,7 +5311,6 @@ async function drop(ev) {
       } else {
         return;
       }
-      console.log("drop it")
       let load_spinner_promise = new Promise(async (resolved) => {
         let background = document.createElement("div");
         let spinner_container = document.createElement("div");
@@ -5356,8 +5355,6 @@ async function drop(ev) {
       });
     });
   } else {
-    console.log("drop it")
-
     let load_spinner_promise = new Promise(async (resolved) => {
       let background = document.createElement("div");
       let spinner_container = document.createElement("div");
