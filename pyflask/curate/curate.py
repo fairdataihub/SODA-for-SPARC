@@ -3238,12 +3238,9 @@ def generate_manifest_file_locally(generate_purpose, soda_json_structure):
     return {"success_message_or_manifest_destination": "success"}
 
 
-def guided_generate_manifest_file_data(high_level_folder_contents):
+def guided_generate_manifest_file_data(dataset_structure_obj):
 
     local_timezone = TZLOCAL()
-
-    # Initialize the array that the manifest data will be added to.
-    dict_folder_manifest = []
 
     manifest_file_fields = [
         "File Name",
@@ -3252,10 +3249,6 @@ def guided_generate_manifest_file_data(high_level_folder_contents):
         "description",
         "Additional Metadata",
     ]
-    
-    dict_folder_manifest.append(manifest_file_fields)
-
-
 
     double_extensions = [
         ".ome.tiff",
@@ -3330,11 +3323,17 @@ def guided_generate_manifest_file_data(high_level_folder_contents):
 
         return
 
-    guided_recursive_folder_traversal(
-        high_level_folder_contents
-    )
+    # Initialize the array that the manifest data will be added to.
+    hlf_manifest_data = {}
 
-    return dict_folder_manifest
+    # Loop through each high level folder and create a manifest data array for each.
+    for folder in dataset_structure_obj["folders"]:
+        dict_folder_manifest = []
+        dict_folder_manifest.append(manifest_file_fields)
+        guided_recursive_folder_traversal(dataset_structure_obj["folders"][folder])
+        hlf_manifest_data[folder] = dict_folder_manifest
+
+    return hlf_manifest_data
 
 
 def handle_duplicate_package_name_error(e, soda_json_structure):

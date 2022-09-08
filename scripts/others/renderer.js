@@ -1297,7 +1297,7 @@ var allCollectionTags = {};
 var currentTags = {};
 var currentCollectionTags = [];
 
-if (process.platform === "darwin" || process.platform === "linux") {
+if (process.platform === "darwin") {
   //check if data exists inside of the Soda folder, and if it does, move it into the capitalized SODA folder
   if (fs.existsSync(path.join(homeDirectory, "Soda"))) {
     //copy the folder contents of home/Soda to home/SODA

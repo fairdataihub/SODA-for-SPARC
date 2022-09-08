@@ -746,6 +746,17 @@ const generateManifestEditCard = (highLevelFolderName) => {
     </div>
   `;
 };
+
+const guidedGenerateManifestFileData = async (datasetStructureObj) => {
+  const res = await client.post(
+    `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
+    {
+      dataset_structure_obj: highLevelFolderContents,
+    },
+    { timeout: 0 }
+  );
+  console.log(res);
+};
 const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
   const existingManifestData =
     sodaJSONObj["manifest-files"][highLevelFolderName];
@@ -765,7 +776,7 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
     const res = await client.post(
       `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
       {
-        high_level_folder_contents: highLevelFolderContents,
+        dataset_structure_obj: highLevelFolderContents,
       },
       { timeout: 0 }
     );
@@ -797,7 +808,7 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
         "guided-div-manifest-edit"
       );
       guidedManifestTable = jspreadsheet(manifestSpreadsheetContainer, {
-        tableheight: "500px",
+        tableOverflow: true,
         data: manifestFileData,
         columns: manifestFileHeaders.map((header) => {
           return {

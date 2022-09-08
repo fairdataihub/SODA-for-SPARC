@@ -192,15 +192,15 @@ class GenerateManifestLocally(Resource):
 @api.route('/guided_generate_high_level_folder_manifest_data')
 class GenerateManifestData(Resource):
     parser = reqparse.RequestParser()
-    parser.add_argument('high_level_folder_contents', type=dict, required=True, help='Folders and files inside of an individual high level folder', location='json')
+    parser.add_argument('dataset_structure_obj', type=dict, required=True, help='Folders and files inside of an individual high level folder', location='json')
     @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request'}, description="Generate manifest files locally. Used in the standalone manifest file generation feature. Can take edit-manifest keyword that stores the manifest file in a separate directory. Allows ease of editing manifest information for the client.")
     @api.expect(parser)
     def post(self):
 
         data = self.parser.parse_args()
-        high_level_folder_contents = data.get("high_level_folder_contents")
+        dataset_structure_obj = data.get("dataset_structure_obj")
         try:
-            return guided_generate_manifest_file_data(high_level_folder_contents)
+            return guided_generate_manifest_file_data(dataset_structure_obj)
         except Exception as e:
             api.abort(500, str(e))
 
