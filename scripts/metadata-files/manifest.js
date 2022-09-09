@@ -2079,3 +2079,12 @@ function generateAfterEdits() {
   // generate on Pennsieve: call the function
   initiate_generate_manifest_bf();
 }
+
+document
+  .querySelector("#btn-pull-ds-manifest")
+  .addEventListener("click", (e) => {
+    console.log(e);
+
+    document.querySelector("#div-check-bf-create-manifest").style.visibility =
+      "hidden";
+  });

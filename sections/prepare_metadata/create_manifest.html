@@ -384,6 +384,7 @@
             >
               <button
                 onclick="generateManifestFolderLocallyForEdit(this)"
+                id="btn-pull-ds-manifest"
                 class="btn_animated"
                 style="margin: 0 30px; width: 100px; border: none !important"
               >
@@ -418,14 +419,12 @@
                 display: flex;
                 justify-content: center;
                 flex-direction: column;
-                margin-bottom: 1.5rem;
-                margin-top: 1.5rem;
               "
             >
               <div
                 id="loading_pennsieve_dataset_manifest"
                 class="circular"
-                style="align-self: center; visibility: hidden; margin-top: 25px; margin-bottom: 10px;"
+                style="align-self: center; visibility: hidden; margin-top: 10px; margin-bottom: 10px;"
               >
                 <div class="inner" style="top: 50% !important"></div>
                 <div class="pennsieve_loading_dataset_percentage" id="pennsieve_loading_dataset_percentage_manifest" class="number" style="position: absolute !important; top: 40% !important; z-index: 100 !important; left: 33% !important;">
