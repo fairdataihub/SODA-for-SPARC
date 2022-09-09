@@ -853,7 +853,6 @@ def check_local_dataset_files_validity(soda_json_structure):
 # path to local SODA folder for saving manifest files
 manifest_sparc = ["manifest.xlsx", "manifest.csv"]
 manifest_folder_path = join(userpath, "SODA", "manifest_files")
-guided_manifest_folder_path = join(userpath, "SODA", "Guided-Manifest-Files")
 
 
 def create_high_level_manifest_files(soda_json_structure):
@@ -3238,17 +3237,13 @@ def generate_manifest_file_locally(generate_purpose, soda_json_structure):
     return {"success_message_or_manifest_destination": "success"}
 
 
+
+
+guided_manifest_folder_path = join(userpath, "SODA", "Guided-Manifest-Files")
+
 def guided_generate_manifest_file_data(dataset_structure_obj):
 
     local_timezone = TZLOCAL()
-
-    manifest_file_fields = [
-        "File Name",
-        "file type",
-        "timestamp",
-        "description",
-        "Additional Metadata",
-    ]
 
     double_extensions = [
         ".ome.tiff",
@@ -3284,7 +3279,7 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
             )
         return ext
 
-    def guided_recursive_folder_traversal(folder):
+    def guided_recursive_folder_traversal(folder, hlf_data_array):
         if "files" in folder.keys():
             for item in list(folder["files"]):
                 file_manifest_template_data = []
@@ -3311,14 +3306,12 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
 
                 file_manifest_template_data.append("")
 
-                dict_folder_manifest.append(file_manifest_template_data)
-
-            
+                hlf_data_array.append(file_manifest_template_data)
 
         if "folders" in folder.keys():
             for item in list(folder["folders"]):
                 guided_recursive_folder_traversal(
-                    folder["folders"][item]
+                    folder["folders"][item], hlf_data_array
                 )
 
         return
@@ -3326,12 +3319,19 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
     # Initialize the array that the manifest data will be added to.
     hlf_manifest_data = {}
 
+
     # Loop through each high level folder and create a manifest data array for each.
-    for folder in dataset_structure_obj["folders"]:
-        dict_folder_manifest = []
-        dict_folder_manifest.append(manifest_file_fields)
-        guided_recursive_folder_traversal(dataset_structure_obj["folders"][folder])
-        hlf_manifest_data[folder] = dict_folder_manifest
+    for high_level_folder in list(dataset_structure_obj["folders"]):
+        hlf_data_array = []
+        hlf_data_array.append([
+        "File Name",
+        "file type",
+        "timestamp",
+        "description",
+        "Additional Metadata",
+        ])
+        guided_recursive_folder_traversal(dataset_structure_obj["folders"][high_level_folder], hlf_data_array)
+        hlf_manifest_data[high_level_folder] = hlf_data_array
 
     return hlf_manifest_data
 

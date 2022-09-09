@@ -726,21 +726,13 @@ const generateManifestEditCard = (highLevelFolderName) => {
         <button
           class="ui primary button guided--button-footer"
           style="
-            ${
-              sodaJSONObj["manifest-files"][highLevelFolderName]
-                ? ""
-                : "background-color: var(--color-light-green) !important;"
-            }
+            background-color: var(--color-light-green) !important;
             width: 280px !important;
             margin: 4px;
           "
           onClick="guidedOpenManifestEditSwal('${highLevelFolderName}')"
         >
-          ${
-            sodaJSONObj["manifest-files"][highLevelFolderName]
-              ? `Edit ${highLevelFolderName} folder manifest file`
-              : `Create ${highLevelFolderName} folder manifest file`
-          }
+          View/Edit ${highLevelFolderName} manifest file
         </button>
       </div>
     </div>
@@ -814,22 +806,39 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
 document
   .getElementById("guided-button-auto-generate-manifest-files")
   .addEventListener("click", async () => {
-    const manifestFilesCardsContainer = document.getElementById(
-      "guided-container-manifest-file-cards"
-    );
-    manifestFilesCardsContainer.innerHTML = `loading`;
+    const manifestData = sodaJSONObj["manifest-files"];
 
-    const res = await client.post(
-      `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
-      {
-        dataset_structure_obj: sodaJSONObj["saved-datset-structure-json-obj"],
-      },
-      { timeout: 0 }
-    );
-    const jsonRes = res.data;
-    sodaJSONObj["manifest-files"] = jsonRes;
-    //Save the sodaJSONObj with the new manifest files
-    saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+    //If no manifest file exists, generate the manifest file data
+    if (Object.keys(manifestData).length === 0) {
+      const manifestFilesCardsContainer = document.getElementById(
+        "guided-container-manifest-file-cards"
+      );
+      manifestFilesCardsContainer.innerHTML = `loading`;
+
+      const res = await client.post(
+        `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
+        {
+          dataset_structure_obj: sodaJSONObj["saved-datset-structure-json-obj"],
+        },
+        { timeout: 0 }
+      );
+      const jsonRes = res.data;
+      console.log(jsonRes);
+      //loop through jsonRes
+      for (const [highLevelFolderName, manifestFileData] of Object.entries(
+        jsonRes
+      )) {
+        const manifestHeader = manifestFileData.shift();
+        const manifestData = manifestFileData;
+        sodaJSONObj["manifest-files"][highLevelFolderName] = {
+          headers: manifestHeader,
+          data: manifestData,
+        };
+      }
+
+      //Save the sodaJSONObj with the new manifest files
+      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+    }
 
     //Rerender the manifest cards
     renderManifestCards();
@@ -1786,7 +1795,6 @@ const traverseToTab = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-manifest-file-generation-tab") {
-      renderManifestCards();
     }
 
     if (targetPageID === "guided-airtable-award-tab") {
