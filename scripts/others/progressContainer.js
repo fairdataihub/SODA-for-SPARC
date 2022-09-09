@@ -180,7 +180,7 @@ const resetProgressContainer = async (
   left_progress_bar,
   right_progress_bar
 ) => {
-  percentage_text.innerText = "0.00%";
+  percentage_text.innerText = "0%";
   right_progress_bar.style.transform = `rotate(0deg)`;
   progress_container.style.display = "block";
   progress_container.style.visibility = "visible";
