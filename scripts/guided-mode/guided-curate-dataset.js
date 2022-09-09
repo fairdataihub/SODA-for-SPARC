@@ -751,7 +751,7 @@ const guidedGenerateManifestFileData = async (datasetStructureObj) => {
   const res = await client.post(
     `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
     {
-      dataset_structure_obj: highLevelFolderContents,
+      dataset_structure_obj: sodaJSONObj["saved-datset-structure-json-obj"],
     },
     { timeout: 0 }
   );
@@ -761,30 +761,8 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
   const existingManifestData =
     sodaJSONObj["manifest-files"][highLevelFolderName];
 
-  let manifestFileHeaders;
-  let manifestFileData;
-
-  if (existingManifestData) {
-    manifestFileHeaders = existingManifestData["headers"];
-    manifestFileData = existingManifestData["data"];
-  } else {
-    const highLevelFolderContents =
-      sodaJSONObj["saved-datset-structure-json-obj"]["folders"][
-        highLevelFolderName
-      ];
-
-    const res = await client.post(
-      `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
-      {
-        dataset_structure_obj: highLevelFolderContents,
-      },
-      { timeout: 0 }
-    );
-    const jsonRes = res.data;
-
-    manifestFileHeaders = jsonRes.shift();
-    manifestFileData = jsonRes;
-  }
+  let manifestFileHeaders = existingManifestData["headers"];
+  let manifestFileData = existingManifestData["data"];
 
   let guidedManifestTable;
 
@@ -832,6 +810,30 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
     renderManifestCards();
   }
 };
+
+document
+  .getElementById("guided-button-auto-generate-manifest-files")
+  .addEventListener("click", async () => {
+    const manifestFilesCardsContainer = document.getElementById(
+      "guided-container-manifest-file-cards"
+    );
+    manifestFilesCardsContainer.innerHTML = `loading`;
+
+    const res = await client.post(
+      `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
+      {
+        dataset_structure_obj: sodaJSONObj["saved-datset-structure-json-obj"],
+      },
+      { timeout: 0 }
+    );
+    const jsonRes = res.data;
+    sodaJSONObj["manifest-files"] = jsonRes;
+    //Save the sodaJSONObj with the new manifest files
+    saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+
+    //Rerender the manifest cards
+    renderManifestCards();
+  });
 
 const setActiveCapsule = (targetPageID) => {
   $(".guided--capsule").removeClass("active");
