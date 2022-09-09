@@ -1902,7 +1902,6 @@ function createChildNodeManifest(
     ext: track ext of files to match with the right CSS icons
     openedState, selectedState: states of a jstree node
     */
-
   var newFormatNode = {
     text: nodeName,
     state: {
@@ -1945,9 +1944,14 @@ function createChildNodeManifest(
           selected,
           disabled
         );
+
+        firstNode = false;
       }
       newFormatNode["children"].push(new_node);
       newFormatNode["children"].sort((a, b) => (a.text > b.text ? 1 : -1));
+      // newFormatNode["children"].forEach((child, idx) => {
+      //   if (idx != 0) child.state.opened = false;
+      // });
     }
     if ("files" in oldFormatNode) {
       if (oldFormatNode["files"] != undefined) {
@@ -2087,4 +2091,25 @@ document
 
     document.querySelector("#div-check-bf-create-manifest").style.visibility =
       "hidden";
+  });
+
+document
+  .querySelector("#div-confirm-manifest-local-folder-dataset")
+  .addEventListener("click", (evt) => {
+    // hide the Preview Manifest Locally button
+    document.querySelector(
+      "#generate-local-preview-manifest"
+    ).parentNode.style.display = "none";
+
+    // show the confinue button for moving on to step 6
+    document.querySelector(
+      "#continue_step_5-manifest"
+    ).parentNode.style.visibility = "visible";
+  });
+
+document
+  .querySelector("#continue_step_5-manifest")
+  .addEventListener("click", (e) => {
+    console.log(e.target);
+    e.target.parentNode.style.visibility = "hidden";
   });
