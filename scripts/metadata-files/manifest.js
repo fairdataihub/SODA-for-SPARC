@@ -1121,6 +1121,15 @@ async function extractBFDatasetForManifestFile(
     "#loading_pennsieve_dataset_manifest_span"
   ).style.visibility = "visible";
 
+  // scroll to the loaders
+  document
+    .querySelector("#loading_pennsieve_dataset_manifest_span")
+    .scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+      inline: "nearest",
+    });
+
   var result;
   try {
     var res = await bf_request_and_populate_dataset(
@@ -1506,6 +1515,10 @@ const trackManifestImportProgress = async () => {
   document.querySelector(
     "#loading_pennsieve_dataset_manifest_span"
   ).textContent = "Generating manifest files...";
+
+  document.querySelector(
+    "#loading_pennsieve_dataset_manifest_span"
+  ).style.display = "block";
 
   const manifest_creation_progress_pennsieve = async () => {
     let progressResponse;

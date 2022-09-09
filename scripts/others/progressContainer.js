@@ -13,7 +13,7 @@ const ProgressContainerType = {
  * @param {} res  - The upload information used for updating the given progress container
  * @param {Enumerator} progressContainerType - Enumerator of the type of progress container to update.
  * @param {boolean} hide - Determines whether or not the progress container will be hidden after the import is complete. Default = true; hides after 2 seconds. (optional)
- * 
+ *
  */
 const updateProgressContainer = (
   progress_container,
@@ -21,7 +21,7 @@ const updateProgressContainer = (
   left_progress_bar,
   right_progress_bar,
   res,
-  progressContainerType, 
+  progressContainerType,
   hide
 ) => {
   if (progressContainerType === ProgressContainerType.MANIFEST) {
@@ -39,7 +39,7 @@ const updateProgressContainer = (
       percentage_text,
       left_progress_bar,
       right_progress_bar,
-      res, 
+      res,
       hide
     );
   }
@@ -61,12 +61,11 @@ const updateProgressContainerManifest = (
   left_progress_bar,
   right_progress_bar,
   manifestProgress,
-  hide=true
+  hide = true
 ) => {
-
   let totalManifestFiles = manifestProgress.total_manifest_files;
   let totalManifestFilesCreated = manifestProgress.manifest_files_uploaded;
-  let manifestProgressPercentage = 0.00;
+  let manifestProgressPercentage = 0.0;
 
   if (totalManifestFilesCreated > 0) {
     manifestProgressPercentage = Math.round(
@@ -75,21 +74,23 @@ const updateProgressContainerManifest = (
   }
   percentage_text.innerText = manifestProgressPercentage + "%";
   if (manifestProgressPercentage <= 50) {
-    left_progress_bar.style.transform = `rotate(${manifestProgressPercentage * 0.01 * 360
-      }deg)`;
+    left_progress_bar.style.transform = `rotate(${
+      manifestProgressPercentage * 0.01 * 360
+    }deg)`;
   } else {
     left_progress_bar.style.transition = "";
     left_progress_bar.classList.add("notransition");
     left_progress_bar.style.transform = `rotate(180deg)`;
-    right_progress_bar.style.transform = `rotate(${manifestProgressPercentage * 0.01 * 180
-      }deg)`;
+    right_progress_bar.style.transform = `rotate(${
+      manifestProgressPercentage * 0.01 * 180
+    }deg)`;
   }
 
-  console.log(manifestProgress)
+  console.log(manifestProgress);
 
   let finished = manifestProgress.finished;
 
-  console.log("Manifest gen finished state: ", finished)
+  console.log("Manifest gen finished state: ", finished);
 
   if (finished) {
     percentage_text.innerText = "100%";
@@ -97,17 +98,16 @@ const updateProgressContainerManifest = (
     right_progress_bar.style.transform = `rotate(180deg)`;
     right_progress_bar.classList.remove("notransition");
 
-    console.log("Hide state is: ", hide)
+    console.log("Hide state is: ", hide);
 
-    if (!hide) return 
+    if (!hide) return;
 
-    console.log("Hiding in 2 seconds")
-    
+    console.log("Hiding in 2 seconds");
+
     setTimeout(() => {
       progress_container.style.display = "none";
-      console.log("Hidden")
+      console.log("Hidden");
     }, 2000);
-    
   }
 };
 
@@ -126,26 +126,28 @@ const updateProgressContainerPennsieveImport = (
   percentage_text,
   left_progress_bar,
   right_progress_bar,
-  pennsieveImportProgress, 
+  pennsieveImportProgress,
   hide
 ) => {
   let percentage_amount =
     pennsieveImportProgress["import_progress_percentage"].toFixed(2);
 
-  if(percentage_amount === 0) {
-    percentage_amount = 0.00
+  if (percentage_amount === 0) {
+    percentage_amount = 0.0;
   }
   let finished = pennsieveImportProgress["import_completed_items"];
   percentage_text.innerText = percentage_amount + "%";
   if (percentage_amount <= 50) {
-    left_progress_bar.style.transform = `rotate(${percentage_amount * 0.01 * 360
-      }deg)`;
+    left_progress_bar.style.transform = `rotate(${
+      percentage_amount * 0.01 * 360
+    }deg)`;
   } else {
     //left_progress_bar.style.transition = "";
     left_progress_bar.classList.add("notransition");
     left_progress_bar.style.transform = `rotate(180deg)`;
-    right_progress_bar.style.transform = `rotate(${percentage_amount * 0.01 * 180
-      }deg)`;
+    right_progress_bar.style.transform = `rotate(${
+      percentage_amount * 0.01 * 180
+    }deg)`;
   }
 
   if (finished) {
@@ -154,14 +156,13 @@ const updateProgressContainerPennsieveImport = (
     right_progress_bar.style.transform = `rotate(180deg)`;
     right_progress_bar.classList.remove("notransition");
 
-    if (!hide) return
+    if (!hide) return;
 
-    console.log("Hiding in 2 seconds")
-
+    console.log("Hiding in 2 seconds");
 
     setTimeout(() => {
       progress_container.style.display = "none";
-      console.log("Hidden after 2 seconds")
+      console.log("Hidden after 2 seconds");
     }, 2000);
   }
 };
@@ -182,11 +183,12 @@ const resetProgressContainer = async (
   percentage_text.innerText = "0.00%";
   right_progress_bar.style.transform = `rotate(0deg)`;
   progress_container.style.display = "block";
-  await wait(480)
+  progress_container.style.visibility = "visible";
+  await wait(480);
   left_progress_bar.style.transition = "transform 600ms ease;";
   left_progress_bar.classList.remove("notransition");
   left_progress_bar.style.transform = `rotate(0deg)`;
-  await wait(700)
+  await wait(700);
   left_progress_bar.classList.add("notransition");
 };
 
