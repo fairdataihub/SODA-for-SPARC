@@ -1849,6 +1849,7 @@ def bf_get_existing_folders_details(bf_folder):
 
 def bf_get_existing_files_details(bf_folder):
 
+
     double_extensions = [
         ".ome.tiff",
         ".ome.tif",
@@ -1894,32 +1895,40 @@ def bf_get_existing_files_details(bf_folder):
 
     bf_existing_files = [x for x in bf_folder.items if x.type != "Collection"]
     bf_existing_collections = [x for x in bf_folder.items if x.type == "Collection"]
+    bf_existing_collection_names = [splitext(x.name)[0] for x in bf_existing_collections]
     bf_existing_files_name = [splitext(x.name)[0] for x in bf_existing_files]
     bf_existing_files_name_with_extension = []
     #instead of calling package ids for every file
     #call the collection id and then iterate through response to get the file_details
     # subfolder_content = bf._api._get("/packages/" + str())
 
-    for collection in bf_existing_collections:
+    namespace_logger.info("BELOW ARE THE VALUES YOU WANT TO SEE")
+    namespace_logger.info(bf_folder)
+    namespace_logger.info(bf_existing_files)
+    namespace_logger.info(bf_existing_collection_names)
+    namespace_logger.info(bf_existing_collections)
+    namespace_logger.info(bf_existing_files_name)
+    for collection in bf_existing_collection_names:
         file_name = ""
+        file_name_with_extension = ""
         collection_id = collection.id
         collection_details = bf._api._get("/packages/" + str(collection_id))
         children_content = collection_details["children"]
         for items in children_content:
             file_name = items["content"]["name"]
-            item_id = items["content"]["id"]
-            if file_name[2:9] == "package":
+            file_id = items["content"]["id"]
+            if file_id[2:9] == "package":
                 #is a file name get extension
                 if("extension" not in children_content):
                     file_name_with_extension = verify_file_name(file_name,"")
                 else:
                     file_name_with_extension = verify_file_name(file_name, children_content["extension"])
 
-            file_name_with_extension = file_name
             bf_existing_files_name_with_extension.append(file_name_with_extension)
 
 
-
+    namespace_logger.info(bf_existing_files_name_with_extension)
+    namespace_logger.info("ENDS HERE")
     # for file in bf_existing_files:
     #     file_name_with_extension = ""
     #     file_id = file.id
