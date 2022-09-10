@@ -1908,27 +1908,23 @@ def bf_get_existing_files_details(bf_folder):
     namespace_logger.info(bf_existing_collection_names)
     namespace_logger.info(bf_existing_collections)
     namespace_logger.info(bf_existing_files_name)
-    for collection in bf_existing_collection_names:
-        file_name = ""
-        file_name_with_extension = ""
-        collection_id = collection.id
-        collection_details = bf._api._get("/packages/" + str(collection_id))
-        children_content = collection_details["children"]
-        for items in children_content:
-            file_name = items["content"]["name"]
-            file_id = items["content"]["id"]
-            if file_id[2:9] == "package":
-                #is a file name get extension
-                if("extension" not in children_content):
-                    file_name_with_extension = verify_file_name(file_name,"")
-                else:
-                    file_name_with_extension = verify_file_name(file_name, children_content["extension"])
 
-            bf_existing_files_name_with_extension.append(file_name_with_extension)
-
-
-    namespace_logger.info(bf_existing_files_name_with_extension)
-    namespace_logger.info("ENDS HERE")
+    file_name = ""
+    file_name_with_extension = ""
+    # collection_id = bf_folder.id
+    collection_details = bf._api._get("/packages/" + str(bf_folder.id))
+    children_content = collection_details["children"]
+    for items in children_content:
+        file_name = items["content"]["name"]
+        file_id = items["content"]["id"]
+        if file_id[2:9] == "package":
+            #is a file name get extension
+            if("extension" not in children_content):
+                file_name_with_extension = verify_file_name(file_name,"")
+            else:
+                file_name_with_extension = verify_file_name(file_name, children_content["extension"])
+        bf_existing_files_name_with_extension.append(file_name_with_extension)
+    
     # for file in bf_existing_files:
     #     file_name_with_extension = ""
     #     file_id = file.id
@@ -1950,6 +1946,8 @@ def bf_get_existing_files_details(bf_folder):
         bf_existing_files_name,
         bf_existing_files_name_with_extension,
     )
+    namespace_logger.info(bf_existing_files_name_with_extension)
+    namespace_logger.info("ENDS HERE")
 
 
 def check_if_int(s):
