@@ -14,5 +14,6 @@ from .prepare_metadata import (
     delete_manifest_dummy_folders,
     set_template_path, 
     import_bf_manifest_file,
-    manifest_creation_progress
+    manifest_creation_progress,
+    edit_bf_manifest_file
 )

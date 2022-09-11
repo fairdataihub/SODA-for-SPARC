@@ -14,7 +14,8 @@ from prepareMetadata import (
     delete_manifest_dummy_folders,
     set_template_path, 
     import_bf_manifest_file,
-    manifest_creation_progress
+    manifest_creation_progress,
+    edit_bf_manifest_file
 )
 from flask import request
 import json
@@ -570,6 +571,22 @@ class GenerateManifestFilesPennsieve(Resource):
         except Exception as e:
             api.abort(500, str(e))
 
+
+    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request'},
+             description="Edit manifest files that are stored locally. Used in the standalone manifest generator to edit manifest files before uploading to Pennsieve.")
+    def put(self):
+        data = request.get_json()
+
+        edit_action = data.get("action")
+        manifest_type = data.get("type")
+
+        if not edit_action or not manifest_type:
+            api.abort(400, "Cannot edit manifest files without the action and type provided.")
+
+        try:
+            return edit_bf_manifest_file(edit_action, manifest_type)
+        except Exception as e:
+            api.abort(500, str(e))
 
 
 manifest_creation_progress_model = api.model('ManifestCreationProgress', {

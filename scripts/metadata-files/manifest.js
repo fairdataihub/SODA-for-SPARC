@@ -446,6 +446,9 @@ async function generateManifestPrecheck(manifestEditBoolean, ev) {
     return;
   }
 
+  // clean the manifest files by dropping empty columns ( keep the required columns even if empty )
+  await dropEmptyManifestColumns();
+
   console.log("Moving to generate manifest function");
   await generateManifest("", type, manifestEditBoolean, ev);
 
@@ -721,6 +724,21 @@ async function generateManifestPreview(e) {
 
   Swal.close();
 }
+
+/**
+ *  Before a user uploads their manifest files to Pennsieve or generates them locally remove empty custom  columns.
+ *  It is important that the SPARC SDS 2.0 mandated columns remain even if they are empty.
+ */
+const dropEmptyManifestColumns = async () => {
+  try {
+    await client.put("/prepare_metadata/manifest_files/pennsieve", {
+      action: "drop_empty_manifest_columns",
+      type: "bf",
+    });
+  } catch (error) {
+    clientError(error);
+  }
+};
 
 function updateJSONStructureManifestGenerate() {
   let starting_point = sodaJSONObj["starting-point"]["type"];
@@ -2073,6 +2091,8 @@ function generateAfterEdits() {
     "generate-option": "new",
   };
 
+  console.log(sodaJSONObj);
+
   // move the generated manifest files to the user selected location for preview
   if (pennsievePreview) {
     moveManifestFilesPreview(dir, finalManifestGenerationPath);
@@ -2112,4 +2132,12 @@ document
   .addEventListener("click", (e) => {
     console.log(e.target);
     e.target.parentNode.style.visibility = "hidden";
+  });
+
+document
+  .querySelector(".manifest-change-current-ds")
+  .addEventListener("click", (e) => {
+    document.querySelector(
+      "#div-confirm-manifest-local-folder-dataset"
+    ).style.visibility = "visible";
   });

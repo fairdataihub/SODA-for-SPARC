@@ -40,6 +40,9 @@ from curate import create_high_level_manifest_files_existing_bf_starting_point, 
 
 from pysodaUtils import agent_running
 
+from namespaces import NamespaceEnum, get_namespace_logger
+namespace_logger = get_namespace_logger(NamespaceEnum.CURATE_DATASETS)
+
 userpath = expanduser("~")
 METADATA_UPLOAD_BF_PATH = join(userpath, "SODA", "METADATA")
 TEMPLATE_PATH = ""
@@ -1273,3 +1276,55 @@ def load_existing_DD_file(import_type, filepath):
 def delete_manifest_dummy_folders(userpath_list):
     for userpath in userpath_list:
         shutil.rmtree(userpath) if isdir(userpath) else 0
+
+
+def edit_bf_manifest_file(edit_action, manifest_type):
+    if manifest_type == "bf":
+        manifest_file_location = os.path.join(userpath, "SODA", "manifest_files")
+    else:
+        manifest_file_location = os.path.join(userpath, "SODA", "Manifest Files")
+
+    if edit_action == "drop_empty_manifest_columns":
+        drop_manifest_empty_columns(manifest_file_location)
+
+    return 
+
+
+    
+
+
+def drop_manifest_empty_columns(manifest_file_location):
+    global namespace_logger
+    # read the manifest files in the manifest files folder
+    high_level_folders = os.listdir(manifest_file_location)
+
+    # go through each high level folder
+    for high_level_folder in high_level_folders:
+        # read the folder's excel file 
+        manifest_df = pd.read_excel(
+                        os.path.join(manifest_file_location, high_level_folder, "manifest.xlsx"), engine="openpyxl", usecols=column_check, header=0
+                    )
+        custom_columns = []
+
+        # get the custom columns from the data frame
+        SET_COLUMNS = ['filename', 'timestamp', 'description', 'file type', 'Additional Metadata']
+        for column in manifest_df.columns: 
+            if column not in SET_COLUMNS:
+                custom_columns.append(column)
+
+
+        # for each custom column delete the column if all values are null/empty
+        manifest_dict = {x:manifest_df[x].values.tolist() for x in manifest_df}
+        namespace_logger.info(manifest_dict)
+
+        for column in custom_columns:
+            if all([pd.isna(x) for x in manifest_dict[column]]):
+                # remove the column from dict
+                del manifest_dict[column]
+
+        # convert the dict to a data frame
+        edited_manifest_df = pd.DataFrame.from_dict(manifest_dict)
+
+        # save the data frame to the manifest folder as an excel file
+        edited_manifest_df.to_excel(os.path.join(manifest_file_location, high_level_folder, "manifest.xlsx"), index=False)
+
