@@ -1,3 +1,5 @@
+const { copyFile, readdir } = require('fs').promises;
+
 // opendropdown event listeners
 document
   .querySelectorAll(".manifest-change-current-account")
@@ -467,7 +469,7 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   // Case 1: Local dataset
   if (type === "local") {
     if (finalManifestGenerationPath === "") {
@@ -552,7 +554,7 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
 
           // log the error to analytics
           logMetadataForAnalytics(
@@ -581,7 +583,7 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
           // log the error to analytics
           logMetadataForAnalytics(
             "Error",
@@ -609,7 +611,7 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
           // log the error to analytics
           logMetadataForAnalytics(
             "Error",
@@ -1057,46 +1059,65 @@ function moveManifestFiles(sourceFolder, destinationFolder) {
 // In the case of generating a manifest file for a local dataset, this is used for generating the manifest files outside of the original dataset folder.
 // Rationale: A user will want to preview their manifest files before uploading them to Pennsieve. In the case of generating for a local dataset,
 // sometimes the location of the dataset is read only, so we need to generate the manifest files in a different location for the user.
-function moveManifestFilesPreview(sourceFolder, destinationFolder) {
-  return new Promise((resolve) => {
-    fs.readdir(sourceFolder, (err, folders) => {
-      if (err) {
-        console.log(err);
-        resolve(false);
-      } else {
-        // create a directory for storing the manifest files in the destination folder
-        let manifestFolderDirectory = path.join(
-          destinationFolder,
-          "SODA Manifest Files"
-        );
-        fs.mkdirSync(manifestFolderDirectory);
+const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
 
-        // traverse the high level folders in the source folder
-        folders.forEach(function (folder) {
-          let sourceManifest = path.join(sourceFolder, folder, "manifest.xlsx");
+  // get the files/folders in the source folder
+  let sourceDir;
+  try {
+    sourceDir = await readdir(sourceFolder)
+  } catch (error) {
+    clientError(error)
+    Swal.fire({
+      title: "Failed to generate manifest files for preview",
+      text: userErrorMessage(error),
+      icon: "error",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    })
+    return
+  }
 
-          let destinationManifestHighLevelFolder = path.join(
-            manifestFolderDirectory,
-            folder
-          );
-          fs.mkdirSync(destinationManifestHighLevelFolder);
+  console.log(sourceDir)
 
-          let destinationManifest = path.join(
-            destinationManifestHighLevelFolder,
-            "manifest.xlsx"
-          );
+  // create a directory for storing the manifest files in the destination folder
+  let manifestFolderDirectory = path.join(
+    destinationFolder,
+    "SODA Manifest Files"
+  );
+  fs.mkdirSync(manifestFolderDirectory);
 
-          const mv = require("mv");
-          mv(sourceManifest, destinationManifest, function (err) {
-            if (err) {
-              throw err;
-            }
-          });
-        });
-        resolve(true);
-      }
-    });
-  });
+  // traverse the high level folders in the source folder and copy the source manifest files to the destination folder for user previewing
+  for (const folderIdx in sourceDir) {
+    let folder = sourceDir[folderIdx];
+    
+    let sourceManifest = path.join(sourceFolder, folder, "manifest.xlsx");
+
+    let destinationManifestHighLevelFolder = path.join(
+      manifestFolderDirectory,
+      folder
+    );
+    fs.mkdirSync(destinationManifestHighLevelFolder);
+
+    let destinationManifest = path.join(
+      destinationManifestHighLevelFolder,
+      "manifest.xlsx"
+    );
+
+    try {
+      await copyFile(sourceManifest, destinationManifest)
+    } catch (error) {
+      clientError(error)
+      Swal.fire({
+        title: "Failed to generate manifest files for preview",
+        text: userErrorMessage(error),
+        icon: "error",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      })
+    }
+  }
 }
 
 const removeDir = function (pathdir) {
@@ -1220,7 +1241,7 @@ async function extractBFDatasetForManifestFile(
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       $("#Question-prepare-manifest-4").removeClass("show");
       $("#Question-prepare-manifest-4").removeClass("prev");
       $("#Question-prepare-manifest-3").removeClass("prev");
@@ -1258,7 +1279,7 @@ async function extractBFDatasetForManifestFile(
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       $("#Question-prepare-manifest-4").removeClass("show");
       $("#Question-prepare-manifest-4").removeClass("prev");
       $("#Question-prepare-manifest-3").removeClass("prev");
@@ -1289,7 +1310,7 @@ async function extractBFDatasetForManifestFile(
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       $("#Question-prepare-manifest-4").removeClass("show");
       $("#Question-prepare-manifest-4").removeClass("prev");
       $("#Question-prepare-manifest-3").removeClass("prev");
@@ -1328,7 +1349,7 @@ async function extractBFDatasetForManifestFile(
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
 
       // hide the loading bar's text
       document.querySelector(
@@ -1403,7 +1424,7 @@ function validateSPARCdataset() {
           $(".swal-popover").popover();
         },
         footer: footer,
-      }).then((result) => {});
+      }).then((result) => { });
       return false;
     } else {
       return true;
@@ -1663,7 +1684,7 @@ async function generateManifestFolderLocallyForEdit(ev) {
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       return;
     } else {
       createManifestLocally("local", true, "");
@@ -1736,7 +1757,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
           didOpen: () => {
             Swal.hideLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         $("#preview-manifest-fake-confirm").click();
         $("#Question-prepare-manifest-4").removeClass("show");
         $("#Question-prepare-manifest-4").removeClass("prev");
@@ -1770,7 +1791,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       localDatasetFolderPath = "";
     } else {
       console.log("In the edit boolean false block");
@@ -1845,7 +1866,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
       didOpen: () => {
         Swal.hideLoading();
       },
-    }).then((result) => {});
+    }).then((result) => { });
     $("#Question-prepare-manifest-4").removeClass("show");
     $("#Question-prepare-manifest-4").removeClass("prev");
     $("#Question-prepare-manifest-3").removeClass("prev");
