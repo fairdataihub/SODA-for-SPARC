@@ -475,12 +475,10 @@
           >
             Review/Edit manifest files. <br />
             <p class="about-text" style="text-align: justify">
+              Click on any manifest file below to preview it or add additional metadata.
               SODA will automatically include the "filename", "timestamp", and
-              "file type" in your manifest files. Any additional columns 
-              from existing manifest files will be imported and included as well. 
-              Double click on any manifest file below to preview or add additional metadata. 
-              Then click on "Generate now" to generate them on Pennsieve or click "Preview Manifest Files Locally" to view your finalized work 
-              locally before you upload to Pennsieve.
+              "file type" in your manifest files. Any additional data 
+              from existing manifest files in the dataset will be imported and editable as well.
             </p>
           </label>
           <div
@@ -502,51 +500,72 @@
             >
               <div id="div-dataset-tree-preview-manifest"></div>
             </div>
+          </div>
 
 
-            <div
-              style="display: flex; justify-content: center; margin-top: 25px"
+          <div
+            style="margin-top:30px; width: fit-content; display: flex; flex-direction: column; align-items: center;"
+            class="field"
+          >
+              
+              <label
+              style="
+                font-size: 17px;
+                color: var(--color-bg-plum);
+                margin: 10px;
+                width: 550px;
+                text-align: center;
+              "
             >
-                <button 
-                style="
-                  background: rgb(255, 255, 255); 
-                  color: var(--color-light-green); 
-                  border: 1px solid var(--color-light-green); 
-                  padding: 8px 10px; width: 135px; 
-                  height: 38px; 
-                  font-size: 14px; 
-                  font-weight: 600; 
-                  margin-right: 15px; 
-                  border-radius: 5px;
-                  width: 220px; 
-                "
-                class="transition-btn"
-                onclick="generateManifestPreview(this)"
-                id="generate-local-preview-manifest"
-              >
-                Preview Manifest Files Locally
-              </button>
+            Generate manifest files <br />
+              <p class="about-text" style="text-align: justify">
+                Click "Generate now" to generate your manifest files directly on Pennsieve. Click "Preview Manifest Files Locally" to view your finalized work 
+                locally before you upload to Pennsieve.
+              </p>
+              </label>
 
-              <button
-                onclick="generateManifestPrecheck(true, this)"
-                class="btn_question"
-                id="generate_step_5-manifest"
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin-right: 15px;
-                  background: var(--color-light-green);
-                  color: #fff;
-                  font-weight: 600;
-                  border: none;
-                  width: 160px;
-                  padding: 10px;
-                  font-size: 14px;
-                "
-              >
-                Generate now
-              </button>
-            </div>
+              <div style="display: flex; flex-direction: row; margin-top: 5px;"> 
+                <button 
+                  style="
+                    background: rgb(255, 255, 255); 
+                    color: var(--color-light-green); 
+                    border: 1px solid var(--color-light-green); 
+                    padding: 8px 10px; width: 135px; 
+                    height: 38px; 
+                    font-size: 14px; 
+                    font-weight: 600; 
+                    margin-right: 15px; 
+                    border-radius: 5px;
+                    width: 220px; 
+                  "
+                  class="transition-btn"
+                  onclick="generateManifestPreview(this)"
+                  id="generate-local-preview-manifest"
+                >
+                  Preview Manifest Files Locally
+                </button>
+
+                <button
+                  onclick="generateManifestPrecheck(true, this)"
+                  class="btn_question"
+                  id="generate_step_5-manifest"
+                  style="
+                    cursor: pointer;
+                    border-radius: 8px;
+                    margin-right: 15px;
+                    background: var(--color-light-green);
+                    color: #fff;
+                    font-weight: 600;
+                    border: none;
+                    width: 160px;
+                    padding: 10px;
+                    font-size: 14px;
+                  "
+                >
+                  Generate now
+                </button>
+              </div>
+          </div>
 
             
 
