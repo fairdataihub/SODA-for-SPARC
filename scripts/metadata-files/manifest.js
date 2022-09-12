@@ -2192,10 +2192,12 @@ document
 document
   .querySelector("#div-confirm-manifest-local-folder-dataset")
   .addEventListener("click", (evt) => {
-    // hide the Preview Manifest Locally button
+    // hide the Generate manifest on pennsieve section 
     document.querySelector(
       "#generate-local-preview-manifest"
     ).parentNode.style.display = "none";
+
+    document.querySelector("#manifest-gen-on-pennsieve-section").style.display = "none"
 
     // show the confinue button for moving on to step 6
     document.querySelector(
