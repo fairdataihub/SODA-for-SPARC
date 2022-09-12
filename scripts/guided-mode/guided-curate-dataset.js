@@ -805,33 +805,49 @@ document
       const manifestFilesCardsContainer = document.getElementById(
         "guided-container-manifest-file-cards"
       );
+      console.log(sodaJSONObj["saved-datset-structure-json-obj"]["folders"]);
       manifestFilesCardsContainer.innerHTML = `loading`;
-      // Generate the manifest file data for each high level folder
-      // Data will be returned as an object with a key for each high level folder
-      // and the value for each key will be an array of arrays with the first array
-      // being the headers, and the rest of the arrays being the manifest data.
-      const res = await client.post(
-        `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
-        {
-          dataset_structure_obj: sodaJSONObj["saved-datset-structure-json-obj"],
-        },
-        { timeout: 0 }
-      );
-      const manifestRes = res.data;
-      //loop through each of the high level folders and store their manifest headers and data
-      //into the sodaJSONObj
-      for (const [highLevelFolderName, manifestFileData] of Object.entries(
-        manifestRes
-      )) {
-        const manifestHeader = manifestFileData.shift();
-        const manifestData = manifestFileData;
-        sodaJSONObj["guided-manifest-files"][highLevelFolderName] = {
-          headers: manifestHeader,
-          data: manifestData,
-        };
+      try {
+        //Delete any manifest files that already exist in the sodaJSONObj
+        //because new manifest files will be generated after the user leaves this page
+        for (const [highLevelFolder, folderData] of Object.entries(
+          sodaJSONObj["saved-datset-structure-json-obj"]["folders"]
+        )) {
+          delete sodaJSONObj["saved-datset-structure-json-obj"]["folders"][
+            highLevelFolder
+          ]["files"]["manifest.xlsx"];
+        }
+        // Generate the manifest file data for each high level folder
+        // Data will be returned as an object with a key for each high level folder
+        // and the value for each key will be an array of arrays with the first array
+        // being the headers, and the rest of the arrays being the manifest data.
+        const res = await client.post(
+          `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
+          {
+            dataset_structure_obj:
+              sodaJSONObj["saved-datset-structure-json-obj"],
+          },
+          { timeout: 0 }
+        );
+        const manifestRes = res.data;
+        //loop through each of the high level folders and store their manifest headers and data
+        //into the sodaJSONObj
+        for (const [highLevelFolderName, manifestFileData] of Object.entries(
+          manifestRes
+        )) {
+          //Remove the first element from the array and set it as the headers
+          const manifestHeader = manifestFileData.shift();
+          const manifestData = manifestFileData;
+          sodaJSONObj["guided-manifest-files"][highLevelFolderName] = {
+            headers: manifestHeader,
+            data: manifestData,
+          };
+        }
+        //Save the sodaJSONObj with the new manifest files
+        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      } catch (err) {
+        userError(err);
       }
-      //Save the sodaJSONObj with the new manifest files
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     }
 
     //Rerender the manifest cards
@@ -10502,6 +10518,7 @@ $(document).ready(async () => {
            * using the manifest data, and add the excel file to the datasetStructureJSONObj
            */
           const guidedManifestData = sodaJSONObj["guided-manifest-files"];
+          console.log(guidedManifestData);
 
           for (const [highLevelFolder, manifestData] of Object.entries(
             guidedManifestData
@@ -10511,6 +10528,7 @@ $(document).ready(async () => {
               guidedManifestData[highLevelFolder]["data"]
             );
             jsonManifest = JSON.stringify(manifestJSON);
+            console.log(jsonManifest);
 
             const manifestPath = path.join(
               guidedManifestFilePath,
