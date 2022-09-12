@@ -2274,8 +2274,15 @@ async function transitionFreeFormMode(
   if (!$(target).hasClass("show")) {
     setTimeout(function () {
       $(target).addClass("show");
-      // auto-scroll to bottom of div
-      if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
+
+      // scroll to the 'Review/Edit manifest files' About section rather than the 
+      // bottom of the div so all instructional text is viewable to the user. 
+      if(ev.getAttribute("data-next") === "Question-prepare-manifest-5") {
+        console.log("Scrolling into view")
+        let label = document.querySelector("#Question-prepare-manifest-5 label:first-of-type")
+        label.scrollIntoView({ behavior: "smooth" })
+      } // auto-scroll to bottom of div
+      else if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
         document.getElementById(parentDiv).scrollTop =
           document.getElementById(parentDiv).scrollHeight;
       }

@@ -1159,6 +1159,10 @@ async function extractBFDatasetForManifestFile(
   bfdataset,
   ev
 ) {
+
+  // hide the entire progress container div 
+  document.querySelector("#manifest-progress-container").style.display = "block";
+
   // inform user the manifest files are being generated
   document.querySelector(
     "#loading_pennsieve_dataset_manifest_span"
@@ -1347,17 +1351,7 @@ async function extractBFDatasetForManifestFile(
       $(ev).hide();
       console.log("Loading manifest preview into tree....");
       loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
-      // Swal.fire({
-      //   title: "Successfully generated!",
-      //   heightAuto: false,
-      //   showConfirmButton: false,
-      //   timer: 800,
-      //   icon: "success",
-      //   backdrop: "rgba(0,0,0, 0.4)",
-      //   didOpen: () => {
-      //     Swal.hideLoading();
-      //   },
-      // }).then((result) => { });
+
 
       // hide the loading bar's text
       document.querySelector(
@@ -1365,6 +1359,9 @@ async function extractBFDatasetForManifestFile(
       ).style.visibility = "hidden";
 
       localDatasetFolderPath = "";
+
+      // hide the entire progress container div 
+      document.querySelector("#manifest-progress-container").style.display = "none";
     }
   }
 }
@@ -2215,7 +2212,7 @@ document
   .querySelector("#continue_step_5-manifest")
   .addEventListener("click", (e) => {
     console.log(e.target);
-    e.target.parentNode.style.visibility = "hidden";
+    e.target.parentNode.style.display = "hidden";
   });
 
 document
