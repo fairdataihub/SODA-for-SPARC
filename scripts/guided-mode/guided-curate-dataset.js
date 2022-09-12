@@ -6261,17 +6261,21 @@ const guidedShowBannerImagePreview = (imagePath) => {
     "guided-banner-image-preview"
   );
 
-  bannerImagePreviewelement.innerHTML = "";
+  // bannerImagePreviewelement.innerHTML = '';
+  if(bannerImagePreviewelement.childElementCount > 0) {
+    bannerImagePreviewelement.removeChild(bannerImagePreviewelement.firstChild);
+  }
 
-  guidedBannerImageElement = `
-    <img
-      src="${imagePath}"
-      alt="Preview of banner image"
-      style="max-height: 300px;"
-    />
-  `;
+  let date = new Date();
+  let guidedbannerImageElem = document.createElement('img');
+  //imagePath + cachebreakeer at the end to update image every time
+  guidedbannerImageElem.src = imagePath + "?" + date.getMilliseconds();
+  guidedbannerImageElem.alt = 'Preview of banner image';
+  guidedbannerImageElem.style = 'max-height: 300px';
+  
+  bannerImagePreviewelement.appendChild(guidedbannerImageElem);
 
-  bannerImagePreviewelement.innerHTML = guidedBannerImageElement;
+  // bannerImagePreviewelement.innerHTML = guidedBannerImageElement;
   $("#guided-banner-image-preview-container").show();
   $("#guided-button-add-banner-image").html("Edit banner image");
 };
