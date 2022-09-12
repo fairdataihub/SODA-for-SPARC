@@ -522,7 +522,7 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
         );
 
         sodaJSONObj["starting-point"]["type"] = "local";
-        // if users would like to edit manifest files before generating them
+        // if the manifest is going to be recreated post edits
         if (manifestEditBoolean) {
           localDatasetFolderPath = $(
             "#input-manifest-local-folder-dataset"
