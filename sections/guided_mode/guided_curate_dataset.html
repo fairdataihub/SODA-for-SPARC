@@ -1807,7 +1807,7 @@
               <button
                 class="guided--radio-button tile-button"
                 id="guided-button-auto-generate-manifest-files"
-                data-next-element="guided-container-manifest-file-cards"
+                data-next-element="guided-section-auto-generate-manifest-files"
                 data-button-config-value="manifest-files-generated-automatically"
                 data-button-config-value-state="yes"
               >
@@ -1941,9 +1941,29 @@
             </div>
           </div>
           <div
-            class="guided--section"
-            id="guided-container-manifest-file-cards"
-          ></div>
+            class="guided--panel"
+            id="guided-section-auto-generate-manifest-files"
+          >
+            <div class="guided--section">
+              <h1 class="guided--text-sub-step">SPARC Award number</h1>
+              <p class="guided--help-text">
+                The number of the SPARC award associated with your dataset is a
+                required metadata when submitting your SPARC dataset. SODA can
+                help you specify your SPARC award through the SPARC Airtable
+                sheet. To learn more about the SPARC Airtable sheet, please
+                visit the
+                <a
+                  href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-access-to-sparc-airtable"
+                  target="_blank"
+                  >SODA documentation</a
+                >.
+              </p>
+            </div>
+            <div
+              class="guided--section"
+              id="guided-container-manifest-file-cards"
+            ></div>
+          </div>
         </div>
         <div class="guided--panel hidden" id="guided-airtable-award-tab">
           <div class="guided--section">

@@ -8677,6 +8677,8 @@ $(document).ready(async () => {
     const guidedReadMeMetadata = sodaJSONObj["dataset-metadata"]["README"];
     const guidedChangesMetadata = sodaJSONObj["dataset-metadata"]["CHANGES"];
 
+    const guidedManifestData = sodaJSONObj["manifest-files"];
+
     try {
       // get apps base path
       const basepath = app.getAppPath();
@@ -8764,6 +8766,12 @@ $(document).ready(async () => {
         guidedBfAccount,
         guidedDatasetName,
         guidedTeams
+      );
+
+      let manifestDataUploadResponse = await guidedUploadManifestData(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedManifestData
       );
 
       //Display the Dataset metadata upload table
