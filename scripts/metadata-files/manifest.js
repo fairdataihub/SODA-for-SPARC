@@ -209,6 +209,12 @@ $(document).ready(function () {
         didOpen: () => {
           Swal.showLoading();
         },
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
       });
       var parentFolderName = $("#" + data.node.parent + "_anchor").text();
       var localFolderPath = path.join(
@@ -1341,17 +1347,17 @@ async function extractBFDatasetForManifestFile(
       $(ev).hide();
       console.log("Loading manifest preview into tree....");
       loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
-      Swal.fire({
-        title: "Successfully generated!",
-        heightAuto: false,
-        showConfirmButton: false,
-        timer: 800,
-        icon: "success",
-        backdrop: "rgba(0,0,0, 0.4)",
-        didOpen: () => {
-          Swal.hideLoading();
-        },
-      }).then((result) => { });
+      // Swal.fire({
+      //   title: "Successfully generated!",
+      //   heightAuto: false,
+      //   showConfirmButton: false,
+      //   timer: 800,
+      //   icon: "success",
+      //   backdrop: "rgba(0,0,0, 0.4)",
+      //   didOpen: () => {
+      //     Swal.hideLoading();
+      //   },
+      // }).then((result) => { });
 
       // hide the loading bar's text
       document.querySelector(
@@ -1558,7 +1564,7 @@ const trackManifestImportProgress = async () => {
   // inform user the manifest files are being generated
   document.querySelector(
     "#loading_pennsieve_dataset_manifest_span"
-  ).textContent = "Generating manifest files...";
+  ).textContent = "Preparing manifest files...";
 
   document.querySelector(
     "#loading_pennsieve_dataset_manifest_span"
@@ -1659,12 +1665,35 @@ async function generateManifestFolderLocallyForEdit(ev) {
   sodaJSONObj["generate-dataset"] = {};
   var titleTerm = "folder";
   if (type === "local") {
+    Swal.fire({
+      title: "Preparing manifest files",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      allowEnterKey: false,
+      heightAuto: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+      backdrop: "rgba(0,0,0, 0.4)",
+    })
+
+    // give the swal a chace to load in
+    await wait(500)
+
     let continueProgressValidateDataset = true;
     let continueProgressEmptyFolder = true;
     continueProgressValidateDataset = await validateSPARCdataset();
     if (!continueProgressValidateDataset) {
       return;
     }
+
+
     sodaJSONObj["starting-point"]["local-path"] = localDatasetFolderPath;
     sodaJSONObj["starting-point"]["type"] = "local";
     create_json_object("", sodaJSONObj, localDatasetFolderPath);
@@ -1678,6 +1707,8 @@ async function generateManifestFolderLocallyForEdit(ev) {
     continueProgressEmptyFolder = await checkEmptySubFolders(
       sodaJSONObj["dataset-structure"]
     );
+
+
     if (continueProgressEmptyFolder === false) {
       Swal.fire({
         title: "Failed to generate the manifest files.",
@@ -1689,11 +1720,18 @@ async function generateManifestFolderLocallyForEdit(ev) {
         didOpen: () => {
           Swal.hideLoading();
         },
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        }
       }).then((result) => { });
       return;
-    } else {
-      createManifestLocally("local", true, "");
     }
+
+    createManifestLocally("local", true, "");
+
   } else {
     console.log("Going to extract from Pennsieve");
     // Case 2: bf dataset
@@ -1709,8 +1747,6 @@ async function generateManifestFolderLocallyForEdit(ev) {
 }
 
 async function createManifestLocally(type, editBoolean, originalDataset) {
-  console.log("Generating manifest locally");
-  // generateManifestHelper();
   var generatePath = "";
   sodaJSONObj["manifest-files"]["local-destination"] = path.join(
     homeDirectory,
@@ -1753,7 +1789,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
         );
 
         Swal.fire({
-          title: "Successfully generated!",
+          title: "Manifests ready!",
           heightAuto: false,
           showConfirmButton: false,
           timer: 800,
@@ -1761,6 +1797,12 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
           backdrop: "rgba(0,0,0, 0.4)",
           didOpen: () => {
             Swal.hideLoading();
+          },
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
           },
         }).then((result) => { });
         $("#preview-manifest-fake-confirm").click();
@@ -1786,17 +1828,25 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
         return;
       }
 
-      Swal.fire({
-        title: "Successfully generated!",
-        heightAuto: false,
-        showConfirmButton: false,
-        timer: 800,
-        icon: "success",
-        backdrop: "rgba(0,0,0, 0.4)",
-        didOpen: () => {
-          Swal.hideLoading();
-        },
-      }).then((result) => { });
+      // Swal.fire({
+      //   title: "Manifests prepared",
+      //   heightAuto: false,
+      //   showConfirmButton: false,
+      //   timer: 800,
+      //   icon: "success",
+      //   backdrop: "rgba(0,0,0, 0.4)",
+      //   didOpen: () => {
+      //     Swal.hideLoading();
+      //   },
+      //   showClass: {
+      //     popup: "animate__animated animate__zoomIn animate__faster",
+      //   },
+      //   hideClass: {
+      //     popup: "animate__animated animate__zoomOut animate__faster",
+      //   },
+      // }).then((result) => { });
+
+      Swal.close();
       localDatasetFolderPath = "";
     } else {
       console.log("In the edit boolean false block");
