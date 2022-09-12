@@ -209,7 +209,6 @@ const getCurrentCollectionTags = async (account, dataset) => {
       },
     });
     let res = result.data;
-    console.log(res);
     for (let i = 0; i < res.length; i++) {
       let name = res[i]["name"];
       let id = res[i]["id"];
@@ -220,7 +219,7 @@ const getCurrentCollectionTags = async (account, dataset) => {
         currentTags[name] = { id: id };
       }
     }
-    console.log(currentTags);
+
     return currentTags;
   } catch (error) {
     clientError(error);
@@ -235,7 +234,6 @@ const getAllCollectionTags = async (account) => {
       params: { selected_account: account },
     });
     let res = result.data;
-    console.log(res);
     for (let i = 0; i < res.length; i++) {
       let name = res[i]["name"];
       let id = res[i]["id"];
@@ -249,7 +247,6 @@ const getAllCollectionTags = async (account) => {
         allCollectionTags[name] = { id: id };
       }
     }
-    console.log(allCollectionTags);
     return allCollectionTags;
   } catch (error) {
     clientError(error);
