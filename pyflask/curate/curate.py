@@ -1848,6 +1848,7 @@ def bf_get_existing_folders_details(bf_folder):
 
 
 def bf_get_existing_files_details(bf_folder):
+    start = time.time()
 
     double_extensions = [
         ".ome.tiff",
@@ -1909,9 +1910,9 @@ def bf_get_existing_files_details(bf_folder):
             item_id = item["content"]["id"]
             item_name = item["content"]["name"]
             if item_id[2:9] == "package":
-                namespace_logger.info("DATSERT")
-                namespace_logger.info(item_id)
-                namespace_logger.info(item_name)
+                # namespace_logger.info("DATSERT")
+                # namespace_logger.info(item_id)
+                # namespace_logger.info(item_name)
                 if("extension" not in root_children):
                     file_name_with_extension = verify_file_name(item_name,"")
                 else:
@@ -1931,24 +1932,39 @@ def bf_get_existing_files_details(bf_folder):
             item_name = item["content"]["name"]
             item_id = item["content"]["id"]
             if item_id[2:9] == "package":
-                namespace_logger.info("COLLECTION")
-                namespace_logger.info(item_name)
-                namespace_logger.info(item_id)
+                # namespace_logger.info("COLLECTION")
+                # namespace_logger.info(item_name)
+                # namespace_logger.info(item_id)
                 if "extension" not in folder_content:
                     file_name_with_extension = verify_file_name(item_name,"")
                 else:
                     file_name_with_extension = verify_file_name(item_name, folder_content["extension"])
             if file_name_with_extension == "":
                 continue
-            namespace_logger.info("file_name_with_extension")
-            namespace_logger.info(file_name_with_extension)
+            # namespace_logger.info("file_name_with_extension")
+            # namespace_logger.info(file_name_with_extension)
             bf_existing_files_name_with_extension.append(file_name_with_extension)
 
+    # for file in bf_existing_files:
+    #     file_name_with_extension = ""
+    #     file_id = file.id
+    #     file_details = bf._api._get("/packages/" + str(file_id))
+    #     # file_name_with_extension = verify_file_name(file_details["content"]["name"], file_details["extension"])
+    #     if "extension" not in file_details:
+    #         file_name_with_extension = verify_file_name(
+    #             file_details["content"]["name"], ""
+    #         )
+    #     else:
+    #         file_name_with_extension = verify_file_name(
+    #             file_details["content"]["name"], file_details["extension"]
+    #         )
+    #     bf_existing_files_name_with_extension.append(file_name_with_extension)
 
 
     
     namespace_logger.info("ENDS HERE BELOW")
     namespace_logger.info(bf_existing_files_name_with_extension)
+    namespace_logger.info("PROCESS TIME: " + str((time.time() - start)))
     return (
         bf_existing_files,
         bf_existing_files_name,
@@ -2266,10 +2282,18 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             ) = bf_get_existing_folders_details(my_bf_folder)
 
             # create/replace/skip folder
+            namespace_logger.info("HERE IS RECURSIVE CREATE FOLDER CHECK BELOW")
+            namespace_logger.info(my_folder)
+            # namespace_logger.info(my_tracking_folder)
+            # namespace_logger.info(existing_folder_option)
+            namespace_logger.info("BEFORE THE LOOP")
             if "folders" in my_folder.keys():
                 my_tracking_folder["folders"] = {}
                 for folder_key, folder in my_folder["folders"].items():
-
+                    namespace_logger.info("FOR LOOP ENTERED")
+                    # namespace_logger.info(my_folder["folders"].items())
+                    namespace_logger.info(folder_key)
+                    # namespace_logger.info(folder)
                     if existing_folder_option == "skip":
                         if folder_key in my_bf_existing_folders_name:
                             continue
@@ -2293,9 +2317,12 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                             bf_folder = my_bf_existing_folders[index_folder]
                         else:
                             bf_folder = my_bf_folder.create_collection(folder_key)
+                    namespace_logger.info("BEFORE UPDATE")
                     bf_folder.update()
                     my_tracking_folder["folders"][folder_key] = {"value": bf_folder}
                     tracking_folder = my_tracking_folder["folders"][folder_key]
+                    # namespace_logger.info(my_tracking_folder["folders"][folder_key])
+                    namespace_logger.info("AFTER UPDATING MY TRACKING FOLDER")
                     recursive_create_folder_for_bf(
                         folder, tracking_folder, existing_folder_option
                     )
@@ -2311,12 +2338,12 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             global main_total_generate_dataset_size
 
             my_bf_folder = my_tracking_folder["value"] #ds (dataset)
-            namespace_logger.info("my_bf_folder EHRERERE")
-            namespace_logger.info(my_bf_folder)
-            namespace_logger.info(my_bf_folder.id)
+            # namespace_logger.info("my_bf_folder EHRERERE")
+            # namespace_logger.info(my_bf_folder)
+            # namespace_logger.info(my_bf_folder.id)
             
-            namespace_logger.info("HERERERER")
-            namespace_logger.info(my_folder)
+            # namespace_logger.info("HERERERER")
+            # namespace_logger.info(my_folder)
             # namespace_logger.info(my_folder.id)
 
 
@@ -2521,8 +2548,6 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
         ]
         list_upload_files = []
         relative_path = ds.name
-        namespace_logger.info("HEREBRUH")
-        namespace_logger.info(relative_path)
         list_upload_files = recursive_dataset_scan_for_bf(
             dataset_structure,
             tracking_json_structure,
@@ -2530,15 +2555,12 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             list_upload_files,
             relative_path,
         )
-        namespace_logger.info("TESTING")
-        namespace_logger.info(list_upload_files)
 
         
         # main_curate_progress_message = "About to update after doing recursive dataset scan"
         # 3. Add high-level metadata files to a list
         ds.update()
         namespace_logger.info("UHFLKAJSL:KJERT")
-        namespace_logger.info(ds)
         list_upload_metadata_files = []
         if "metadata-files" in soda_json_structure.keys():
             namespace_logger.info("bf_generate_new_dataset (optional) step 3 create high level metadata list")
