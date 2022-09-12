@@ -1290,7 +1290,7 @@ var guidedProgressFilePath = path.join(
 const guidedManifestFilePath = path.join(
   homeDirectory,
   "SODA",
-  "Guided-Manifest-Files"
+  "guided_manifest_files"
 );
 var protocolConfigPath = path.join(metadataPath, protocolConfigFileName);
 var allCollectionTags = {};

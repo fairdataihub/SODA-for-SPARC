@@ -428,24 +428,12 @@ const saveGuidedProgress = (guidedProgressFileName) => {
     guidedProgressFilePath,
     guidedProgressFileName + ".json"
   );
+
   // delete sodaJSONObj["dataset-structure"] value that was added only for the Preview tree view
   if ("files" in sodaJSONObj["dataset-structure"]) {
     sodaJSONObj["dataset-structure"]["files"] = {};
   }
-  // delete manifest files added for treeview
-  for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
-    if (
-      "manifest.xlsx" in
-        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
-      sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-        "manifest.xlsx"
-      ]["forTreeview"] === true
-    ) {
-      delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-        "manifest.xlsx"
-      ];
-    }
-  }
+
   //Add datasetStructureJSONObj to the sodaJSONObj and use to load the
   //datasetStructureJsonObj when progress resumed
   sodaJSONObj["saved-datset-structure-json-obj"] = datasetStructureJSONObj;
@@ -751,7 +739,7 @@ const guidedGenerateManifestFileData = async (datasetStructureObj) => {
 };
 const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
   const existingManifestData =
-    sodaJSONObj["manifest-files"][highLevelFolderName];
+    sodaJSONObj["guided-manifest-files"][highLevelFolderName];
 
   let manifestFileHeaders = existingManifestData["headers"];
   let manifestFileData = existingManifestData["data"];
@@ -792,10 +780,14 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
   });
 
   if (saveManifestFiles) {
-    sodaJSONObj["manifest-files"][highLevelFolderName] = {
-      headers: guidedManifestTable.getHeaders().split(","),
-      data: guidedManifestTable.getData(),
+    const savedHeaders = guidedManifestTable.getHeaders().split(",");
+    const savedData = guidedManifestTable.getData();
+
+    sodaJSONObj["guided-manifest-files"][highLevelFolderName] = {
+      headers: savedHeaders,
+      data: savedData,
     };
+
     //Save the sodaJSONObj with the new manifest file
     saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     //Rerender the manifest cards
@@ -806,7 +798,7 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
 document
   .getElementById("guided-button-auto-generate-manifest-files")
   .addEventListener("click", async () => {
-    const manifestData = sodaJSONObj["manifest-files"];
+    const manifestData = sodaJSONObj["guided-manifest-files"];
 
     //If no manifest file exists, generate the manifest file data
     if (Object.keys(manifestData).length === 0) {
@@ -830,7 +822,7 @@ document
       )) {
         const manifestHeader = manifestFileData.shift();
         const manifestData = manifestFileData;
-        sodaJSONObj["manifest-files"][highLevelFolderName] = {
+        sodaJSONObj["guided-manifest-files"][highLevelFolderName] = {
           headers: manifestHeader,
           data: manifestData,
         };
@@ -3392,7 +3384,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["bf-account-selected"] = {};
   sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
   sodaJSONObj["generate-dataset"] = {};
-  sodaJSONObj["manifest-files"] = {};
+  sodaJSONObj["guided-manifest-files"] = {};
   sodaJSONObj["metadata-files"] = {};
   sodaJSONObj["starting-point"] = {};
   sodaJSONObj["dataset-metadata"] = {};
@@ -8677,7 +8669,7 @@ $(document).ready(async () => {
     const guidedReadMeMetadata = sodaJSONObj["dataset-metadata"]["README"];
     const guidedChangesMetadata = sodaJSONObj["dataset-metadata"]["CHANGES"];
 
-    const guidedManifestData = sodaJSONObj["manifest-files"];
+    const guidedManifestData = sodaJSONObj["guided-manifest-files"];
 
     try {
       // get apps base path
@@ -8768,12 +8760,6 @@ $(document).ready(async () => {
         guidedTeams
       );
 
-      let manifestDataUploadResponse = await guidedUploadManifestData(
-        guidedBfAccount,
-        guidedDatasetName,
-        guidedManifestData
-      );
-
       //Display the Dataset metadata upload table
       unHideAndSmoothScrollToElement(
         "guided-div-dataset-metadata-upload-status-table"
@@ -8828,8 +8814,43 @@ $(document).ready(async () => {
       //Display the main dataset upload progress bar
       unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
 
-      //Upload the dataset files
+      //Create the manifest file excel sheets and add the paths to the dataset structure
 
+      //loop through the manifestData obj and get keys and values
+      for (const [highLevelFolder, manifestData] of Object.entries(
+        guidedManifestData
+      )) {
+        let manifestJSON = processManifestInfo(
+          guidedManifestData[highLevelFolder]["headers"],
+          guidedManifestData[highLevelFolder]["data"]
+        );
+        jsonManifest = JSON.stringify(manifestJSON);
+
+        const manifestPath = path.join(
+          guidedManifestFilePath,
+          highLevelFolder,
+          "manifest.xlsx"
+        );
+        console.log(manifestPath);
+
+        if (!fs.existsSync(manifestPath)) {
+          fs.mkdirSync(path.join(guidedManifestFilePath, highLevelFolder), {
+            recursive: true,
+          });
+        }
+
+        convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
+
+        datasetStructureJSONObj["folders"][highLevelFolder]["files"][
+          "manifest.xlsx"
+        ] = {
+          action: ["new"],
+          path: manifestPath,
+          type: "local",
+        };
+      }
+
+      //Upload the dataset files
       const mainCurationResponse = await guided_main_curate();
     } catch (e) {
       console.log(e);
@@ -8892,17 +8913,6 @@ $(document).ready(async () => {
     let previousUploadedFileSize = 0;
     let increaseInFileSize = 0;
     let generated_dataset_id = undefined;
-
-    if ("manifest-files" in sodaJSONObj) {
-      if ("destination" in sodaJSONObj["manifest-files"]) {
-        if (
-          sodaJSONObj["manifest-files"]["destination"] === "generate-dataset"
-        ) {
-          manifest_files_requested = true;
-          delete_imported_manifest();
-        }
-      }
-    }
 
     let dataset_name;
     let dataset_destination;
