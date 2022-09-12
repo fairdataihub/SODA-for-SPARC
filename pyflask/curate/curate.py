@@ -1893,23 +1893,61 @@ def bf_get_existing_files_details(bf_folder):
             return file_name + ("." + extension)
 
     bf_existing_files = [x for x in bf_folder.items if x.type != "Collection"]
+
     bf_existing_files_name = [splitext(x.name)[0] for x in bf_existing_files]
     bf_existing_files_name_with_extension = []
-    for file in bf_existing_files:
-        file_name_with_extension = ""
-        file_id = file.id
-        file_details = bf._api._get("/packages/" + str(file_id))
-        # file_name_with_extension = verify_file_name(file_details["content"]["name"], file_details["extension"])
-        if "extension" not in file_details:
-            file_name_with_extension = verify_file_name(
-                file_details["content"]["name"], ""
-            )
-        else:
-            file_name_with_extension = verify_file_name(
-                file_details["content"]["name"], file_details["extension"]
-            )
 
-        bf_existing_files_name_with_extension.append(file_name_with_extension)
+    if (str(bf_folder.id)[2:9]) == "dataset":
+        root_folder = bf._api._get("/datasets/" + str(bf_folder.id))
+        root_children = root_folder["children"]
+        for item in root_children:
+            file_name_with_extension = ""
+            item_id = item["content"]["id"]
+            item_name = item["content"]["name"]
+            if item_id[2:9] == "package":
+                if("extension" not in root_children):
+                    file_name_with_extension = verify_file_name(item_name,"")
+                else:
+                    file_name_with_extension = verify_file_name(item_name, root_children["extension"])
+
+            if file_name_with_extension == "":
+                continue
+            namespace_logger.info("file_name_with_extension")
+            namespace_logger.info(file_name_with_extension)
+            bf_existing_files_name_with_extension.append(file_name_with_extension)
+    else:
+        #is collection
+        folder_details = bf._api._get("/packages/" + str(bf_folder.id))
+        folder_content = folder_details["children"]
+        for item in folder_content:
+            file_name_with_extension = ""
+            item_name = item["content"]["name"]
+            item_id = item["content"]["id"]
+            if item_id[2:9] == "package":
+                if "extension" not in folder_content:
+                    file_name_with_extension = verify_file_name(item_name,"")
+                else:
+                    file_name_with_extension = verify_file_name(item_name, folder_content["extension"])
+            if file_name_with_extension == "":
+                continue
+            bf_existing_files_name_with_extension.append(file_name_with_extension)
+
+
+    #OLD FUNCTION
+    # for file in bf_existing_files:
+    #     file_name_with_extension = ""
+    #     file_id = file.id
+    #     file_details = bf._api._get("/packages/" + str(file_id))
+    #     # file_name_with_extension = verify_file_name(file_details["content"]["name"], file_details["extension"])
+    #     if "extension" not in file_details:
+    #         file_name_with_extension = verify_file_name(
+    #             file_details["content"]["name"], ""
+    #         )
+    #     else:
+    #         file_name_with_extension = verify_file_name(
+    #             file_details["content"]["name"], file_details["extension"]
+    #         )
+    #     bf_existing_files_name_with_extension.append(file_name_with_extension)
 
     return (
         bf_existing_files,
@@ -2231,7 +2269,6 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             if "folders" in my_folder.keys():
                 my_tracking_folder["folders"] = {}
                 for folder_key, folder in my_folder["folders"].items():
-
                     if existing_folder_option == "skip":
                         if folder_key in my_bf_existing_folders_name:
                             continue
@@ -2272,7 +2309,16 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
 
             global main_total_generate_dataset_size
 
-            my_bf_folder = my_tracking_folder["value"]
+            my_bf_folder = my_tracking_folder["value"] #ds (dataset)
+            # namespace_logger.info("my_bf_folder EHRERERE")
+            # namespace_logger.info(my_bf_folder)
+            # namespace_logger.info(my_bf_folder.id)
+            
+            # namespace_logger.info("HERERERER")
+            # namespace_logger.info(my_folder)
+            # namespace_logger.info(my_folder.id)
+
+
 
             if "folders" in my_folder.keys():
                 (
@@ -2459,6 +2505,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
         main_curate_progress_message = "Creating folder structure"
         dataset_structure = soda_json_structure["dataset-structure"]
         tracking_json_structure = {"value": ds}
+
         existing_folder_option = soda_json_structure["generate-dataset"]["if-existing"]
         recursive_create_folder_for_bf(
             dataset_structure, tracking_json_structure, existing_folder_option
@@ -2485,6 +2532,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
         # main_curate_progress_message = "About to update after doing recursive dataset scan"
         # 3. Add high-level metadata files to a list
         ds.update()
+        namespace_logger.info("UHFLKAJSL:KJERT")
         list_upload_metadata_files = []
         if "metadata-files" in soda_json_structure.keys():
             namespace_logger.info("bf_generate_new_dataset (optional) step 3 create high level metadata list")
@@ -3235,6 +3283,105 @@ def generate_manifest_file_locally(generate_purpose, soda_json_structure):
 
     open_file(manifest_destination)
     return {"success_message_or_manifest_destination": "success"}
+
+
+
+
+guided_manifest_folder_path = join(userpath, "SODA", "Guided-Manifest-Files")
+
+def guided_generate_manifest_file_data(dataset_structure_obj):
+
+    local_timezone = TZLOCAL()
+
+    double_extensions = [
+        ".ome.tiff",
+        ".ome.tif",
+        ".ome.tf2,",
+        ".ome.tf8",
+        ".ome.btf",
+        ".ome.xml",
+        ".brukertiff.gz",
+        ".mefd.gz",
+        ".moberg.gz",
+        ".nii.gz",
+        ".mgh.gz",
+        ".tar.gz",
+        ".bcl.gz",
+    ]
+
+    def get_name_extension(file_name):
+        double_ext = False
+        for ext in double_extensions:
+            if file_name.find(ext) != -1:
+                double_ext = True
+                break
+
+        ext = ""
+
+        if double_ext == False:
+            ext = os.path.splitext(file_name)[1]
+        else:
+            ext = (
+                os.path.splitext(os.path.splitext(file_name)[0])[1]
+                + os.path.splitext(file_name)[1]
+            )
+        return ext
+
+    def guided_recursive_folder_traversal(folder, hlf_data_array):
+        if "files" in folder.keys():
+            for item in list(folder["files"]):
+                file_manifest_template_data = []
+                # Auto generate file name
+                relative_file_name = folder["files"][item]["path"]
+                relative_file_name.replace("\\", "/")
+                file_manifest_template_data.append(relative_file_name)
+
+                # Auto generate file extension
+                file_extension = get_name_extension(relative_file_name)
+                if file_extension == "":
+                    file_extension = "None"
+                file_manifest_template_data.append(file_extension)
+
+                # Auto generate file timestamp
+                filepath = pathlib.Path(relative_file_name)
+                mtime = filepath.stat().st_mtime
+                lastmodtime = datetime.fromtimestamp(mtime).astimezone(
+                    local_timezone
+                )
+                file_manifest_template_data.append(lastmodtime.isoformat().replace(".", ",").replace("+00:00", "Z"))
+                
+                file_manifest_template_data.append("")
+
+                file_manifest_template_data.append("")
+
+                hlf_data_array.append(file_manifest_template_data)
+
+        if "folders" in folder.keys():
+            for item in list(folder["folders"]):
+                guided_recursive_folder_traversal(
+                    folder["folders"][item], hlf_data_array
+                )
+
+        return
+
+    # Initialize the array that the manifest data will be added to.
+    hlf_manifest_data = {}
+
+
+    # Loop through each high level folder and create a manifest data array for each.
+    for high_level_folder in list(dataset_structure_obj["folders"]):
+        hlf_data_array = []
+        hlf_data_array.append([
+        "File Name",
+        "file type",
+        "timestamp",
+        "description",
+        "Additional Metadata",
+        ])
+        guided_recursive_folder_traversal(dataset_structure_obj["folders"][high_level_folder], hlf_data_array)
+        hlf_manifest_data[high_level_folder] = hlf_data_array
+
+    return hlf_manifest_data
 
 
 def handle_duplicate_package_name_error(e, soda_json_structure):
