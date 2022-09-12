@@ -2212,7 +2212,7 @@ document
   .querySelector("#continue_step_5-manifest")
   .addEventListener("click", (e) => {
     console.log(e.target);
-    e.target.parentNode.style.display = "hidden";
+    e.target.parentNode.style.visibility = "hidden";
   });
 
 document
