@@ -27,11 +27,10 @@ function selectManifestGenerationLocation() {
   ipcRenderer.send("open-file-dialog-local-dataset-manifest-generate-purpose");
 }
 
-function openDirectoryAtManifestGenerationLocation() {
-  console.log(finalManifestGenerationPath);
-  console.log("Calling the shell");
+const openDirectoryAtManifestGenerationLocation = (generationLocation) => {
+  console.log(generationLocation);
   // find a high level folder in the generation location
-  fs.readdir(finalManifestGenerationPath, (err, files) => {
+  fs.readdir(generationLocation, (err, files) => {
     if (err) {
       console.log(err);
       return;
@@ -47,7 +46,7 @@ function openDirectoryAtManifestGenerationLocation() {
         file === "source"
       ) {
         // open the dataset folder
-        shell.showItemInFolder(finalManifestGenerationPath + "/" + file);
+        shell.showItemInFolder(generationLocation + "/" + file);
         return;
       }
     }
@@ -814,7 +813,7 @@ async function initiate_generate_manifest_local(
       );
     }
 
-    openDirectoryAtManifestGenerationLocation();
+    openDirectoryAtManifestGenerationLocation(finalManifestGenerationPath);
 
     if (moveFinishedBool) {
       resetManifest(true);
@@ -1075,7 +1074,7 @@ const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
     })
-    return
+    return false
   }
 
   console.log(sourceDir)
@@ -1090,7 +1089,7 @@ const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
   // traverse the high level folders in the source folder and copy the source manifest files to the destination folder for user previewing
   for (const folderIdx in sourceDir) {
     let folder = sourceDir[folderIdx];
-    
+
     let sourceManifest = path.join(sourceFolder, folder, "manifest.xlsx");
 
     let destinationManifestHighLevelFolder = path.join(
@@ -1116,8 +1115,11 @@ const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
       })
+      return false
     }
   }
+
+  return true
 }
 
 const removeDir = function (pathdir) {
@@ -1531,6 +1533,9 @@ function resetManifest(skip_permission) {
     let dir2 = path.join(homeDirectory, "SODA", "SODA Manifest Files");
     removeDir(dir1);
     removeDir(dir2);
+
+    // reset the global variables for detecting the manifest path 
+    finalManifestGenerationPath = ""
   }
 }
 
@@ -1810,7 +1815,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
         moveFinishedBool = await moveManifestFiles(dir, originalDataset);
       }
 
-      openDirectoryAtManifestGenerationLocation();
+      openDirectoryAtManifestGenerationLocation(originalDataset !== finalManifestGenerationPath ? finalManifestGenerationPath : originalDataset);
 
       if (moveFinishedBool) {
         resetManifest(true);
@@ -2117,7 +2122,7 @@ function generateAfterEdits() {
   // move the generated manifest files to the user selected location for preview
   if (pennsievePreview) {
     moveManifestFilesPreview(dir, finalManifestGenerationPath);
-    openDirectoryAtManifestGenerationLocation();
+    openDirectoryAtManifestGenerationLocation(finalManifestGenerationPath);
     return;
   }
 
