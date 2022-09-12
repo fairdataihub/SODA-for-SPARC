@@ -806,7 +806,10 @@ document
         "guided-container-manifest-file-cards"
       );
       manifestFilesCardsContainer.innerHTML = `loading`;
-
+      // Generate the manifest file data for each high level folder
+      // Data will be returned as an object with a key for each high level folder
+      // and the value for each key will be an array of arrays with the first array
+      // being the headers, and the rest of the arrays being the manifest data.
       const res = await client.post(
         `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
         {
@@ -814,11 +817,11 @@ document
         },
         { timeout: 0 }
       );
-      const jsonRes = res.data;
-      console.log(jsonRes);
-      //loop through jsonRes
+      const manifestRes = res.data;
+      //loop through each of the high level folders and store their manifest headers and data
+      //into the sodaJSONObj
       for (const [highLevelFolderName, manifestFileData] of Object.entries(
-        jsonRes
+        manifestRes
       )) {
         const manifestHeader = manifestFileData.shift();
         const manifestData = manifestFileData;
@@ -827,7 +830,6 @@ document
           data: manifestData,
         };
       }
-
       //Save the sodaJSONObj with the new manifest files
       saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     }
@@ -3296,6 +3298,12 @@ const patchPreviousGuidedModeVersions = () => {
         subjectsTableData[i].splice(6, 0, "");
       }
     }
+  }
+
+  //Update manifest files key from old key ("manifest-files") to new key ("guided-manifest-files")
+  if (sodaJSONObj["manifest-files"]) {
+    sodaJSONObj["guided-manifest-files"] = {};
+    delete sodaJSONObj["manifest-files"];
   }
 };
 
@@ -8669,8 +8677,6 @@ $(document).ready(async () => {
     const guidedReadMeMetadata = sodaJSONObj["dataset-metadata"]["README"];
     const guidedChangesMetadata = sodaJSONObj["dataset-metadata"]["CHANGES"];
 
-    const guidedManifestData = sodaJSONObj["guided-manifest-files"];
-
     try {
       // get apps base path
       const basepath = app.getAppPath();
@@ -8813,42 +8819,6 @@ $(document).ready(async () => {
 
       //Display the main dataset upload progress bar
       unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
-
-      //Create the manifest file excel sheets and add the paths to the dataset structure
-
-      //loop through the manifestData obj and get keys and values
-      for (const [highLevelFolder, manifestData] of Object.entries(
-        guidedManifestData
-      )) {
-        let manifestJSON = processManifestInfo(
-          guidedManifestData[highLevelFolder]["headers"],
-          guidedManifestData[highLevelFolder]["data"]
-        );
-        jsonManifest = JSON.stringify(manifestJSON);
-
-        const manifestPath = path.join(
-          guidedManifestFilePath,
-          highLevelFolder,
-          "manifest.xlsx"
-        );
-        console.log(manifestPath);
-
-        if (!fs.existsSync(manifestPath)) {
-          fs.mkdirSync(path.join(guidedManifestFilePath, highLevelFolder), {
-            recursive: true,
-          });
-        }
-
-        convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
-
-        datasetStructureJSONObj["folders"][highLevelFolder]["files"][
-          "manifest.xlsx"
-        ] = {
-          action: ["new"],
-          path: manifestPath,
-          type: "local",
-        };
-      }
 
       //Upload the dataset files
       const mainCurationResponse = await guided_main_curate();
@@ -10523,30 +10493,44 @@ $(document).ready(async () => {
           throw errorArray;
         }
         if (buttonYesAutoGenerateManifestFiles.classList.contains("selected")) {
-          let manifestFoldersInUI = document.querySelectorAll(
-            ".manifest-folder-name"
-          );
-          manifestFoldersInUIArray = Array.from(manifestFoldersInUI);
-          manifestFoldersInUIArray = manifestFoldersInUIArray.map(
-            (folder) => folder.innerHTML
-          );
+          // First, empty the guided_manifest_files so we can add the new manifest files
+          fs.emptyDirSync(guidedManifestFilePath);
 
-          let foldersWithoutManifestFiles = [];
+          /**
+           * If the user has selected to auto-generate manifest files,
+           * grab the manifest data for each high level folder, create an excel file
+           * using the manifest data, and add the excel file to the datasetStructureJSONObj
+           */
+          const guidedManifestData = sodaJSONObj["guided-manifest-files"];
 
-          for (const folder of manifestFoldersInUIArray) {
-            if (!sodaJSONObj["manifest-files"][folder]) {
-              foldersWithoutManifestFiles.push(folder);
-            }
-          }
+          for (const [highLevelFolder, manifestData] of Object.entries(
+            guidedManifestData
+          )) {
+            let manifestJSON = processManifestInfo(
+              guidedManifestData[highLevelFolder]["headers"],
+              guidedManifestData[highLevelFolder]["data"]
+            );
+            jsonManifest = JSON.stringify(manifestJSON);
 
-          if (foldersWithoutManifestFiles.length > 0) {
-            errorArray.push({
-              type: "notyf",
-              message: `Please add manifest files for the following folders: ${foldersWithoutManifestFiles.join(
-                ", "
-              )}`,
+            const manifestPath = path.join(
+              guidedManifestFilePath,
+              highLevelFolder,
+              "manifest.xlsx"
+            );
+
+            fs.mkdirSync(path.join(guidedManifestFilePath, highLevelFolder), {
+              recursive: true,
             });
-            throw errorArray;
+
+            convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
+
+            datasetStructureJSONObj["folders"][highLevelFolder]["files"][
+              "manifest.xlsx"
+            ] = {
+              action: ["new"],
+              path: manifestPath,
+              type: "local",
+            };
           }
         }
       }
