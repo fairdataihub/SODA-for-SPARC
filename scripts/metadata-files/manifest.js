@@ -2187,6 +2187,12 @@ document
 
     document.querySelector("#div-check-bf-create-manifest").style.visibility =
       "hidden";
+
+    console.log("Showing the gen button section")
+    let section = document.querySelector("#manifest-gen-on-pennsieve-section")
+    section.style.display = "flex"
+    section.querySelector("div").style.display = "flex"
+
   });
 
 document
