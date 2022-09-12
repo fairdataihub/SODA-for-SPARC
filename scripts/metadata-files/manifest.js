@@ -2180,8 +2180,6 @@ function generateAfterEdits() {
 document
   .querySelector("#btn-pull-ds-manifest")
   .addEventListener("click", (e) => {
-    console.log(e);
-
     document.querySelector("#div-check-bf-create-manifest").style.visibility =
       "hidden";
 
@@ -2190,7 +2188,19 @@ document
     section.style.display = "flex"
     section.querySelector("div").style.display = "flex"
 
+
+
   });
+
+document.querySelector("#div-check-bf-create-manifest").addEventListener("click", () => {
+    // show the continue button
+    document.querySelector("#btn-continue-pennsieve-question-6").style.display = "flex";
+
+
+    // hide the manifest generation section
+    let section = document.querySelector("#manifest-gen-on-pennsieve-section")
+    section.style.display = "none"
+})
 
 document
   .querySelector("#div-confirm-manifest-local-folder-dataset")
@@ -2224,3 +2234,18 @@ document
       "#div-confirm-manifest-local-folder-dataset"
     ).style.visibility = "visible";
   });
+
+
+// show the manifest generation on Pennsieve section so the user can choose to generate on Pennsieve or create a local preview
+document.querySelector("#show-manifest-gen-on-pennsieve-section-btn").addEventListener("click", function () {
+  // show the section 
+  let section = document.querySelector("#manifest-gen-on-pennsieve-section")
+  section.style.display = "flex"
+
+  // transition to the header
+  section.scrollIntoView({behavior: "smooth"})
+
+  // hide the continue button
+  this.parentNode.parentNode.style.display = "none"
+
+})
