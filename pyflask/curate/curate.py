@@ -1849,7 +1849,6 @@ def bf_get_existing_folders_details(bf_folder):
 
 def bf_get_existing_files_details(bf_folder):
 
-
     double_extensions = [
         ".ome.tiff",
         ".ome.tif",
@@ -1894,60 +1893,67 @@ def bf_get_existing_files_details(bf_folder):
             return file_name + ("." + extension)
 
     bf_existing_files = [x for x in bf_folder.items if x.type != "Collection"]
-    bf_existing_collections = [x for x in bf_folder.items if x.type == "Collection"]
-    bf_existing_collection_names = [splitext(x.name)[0] for x in bf_existing_collections]
+    # bf_existing_collections = [x for x in bf_folder.items if x.type == "Collection"]
+    # bf_existing_collection_names = [splitext(x.name)[0] for x in bf_existing_collections]
     bf_existing_files_name = [splitext(x.name)[0] for x in bf_existing_files]
     bf_existing_files_name_with_extension = []
     #instead of calling package ids for every file
     #call the collection id and then iterate through response to get the file_details
     # subfolder_content = bf._api._get("/packages/" + str())
+    namespace_logger.info("ID CHECK HERE")
+    if (str(bf_folder.id)[2:9]) == "dataset":
+        root_folder = bf._api._get("/datasets/" + str(bf_folder.id))
+        root_children = root_folder["children"]
+        for item in root_children:
+            file_name_with_extension = ""
+            item_id = item["content"]["id"]
+            item_name = item["content"]["name"]
+            if item_id[2:9] == "package":
+                namespace_logger.info("DATSERT")
+                namespace_logger.info(item_id)
+                namespace_logger.info(item_name)
+                if("extension" not in root_children):
+                    file_name_with_extension = verify_file_name(item_name,"")
+                else:
+                    file_name_with_extension = verify_file_name(item_name, root_children["extension"])
 
-    namespace_logger.info("BELOW ARE THE VALUES YOU WANT TO SEE")
-    namespace_logger.info(bf_folder)
-    namespace_logger.info(bf_existing_files)
-    namespace_logger.info(bf_existing_collection_names)
-    namespace_logger.info(bf_existing_collections)
-    namespace_logger.info(bf_existing_files_name)
+            if file_name_with_extension == "":
+                continue
+            namespace_logger.info("file_name_with_extension")
+            namespace_logger.info(file_name_with_extension)
+            bf_existing_files_name_with_extension.append(file_name_with_extension)
+    else:
+        #is collection
+        folder_details = bf._api._get("/packages/" + str(bf_folder.id))
+        folder_content = folder_details["children"]
+        for item in folder_content:
+            file_name_with_extension = ""
+            item_name = item["content"]["name"]
+            item_id = item["content"]["id"]
+            if item_id[2:9] == "package":
+                namespace_logger.info("COLLECTION")
+                namespace_logger.info(item_name)
+                namespace_logger.info(item_id)
+                if "extension" not in folder_content:
+                    file_name_with_extension = verify_file_name(item_name,"")
+                else:
+                    file_name_with_extension = verify_file_name(item_name, folder_content["extension"])
+            if file_name_with_extension == "":
+                continue
+            namespace_logger.info("file_name_with_extension")
+            namespace_logger.info(file_name_with_extension)
+            bf_existing_files_name_with_extension.append(file_name_with_extension)
 
-    file_name = ""
-    file_name_with_extension = ""
-    # collection_id = bf_folder.id
-    collection_details = bf._api._get("/packages/" + str(bf_folder.id))
-    children_content = collection_details["children"]
-    for items in children_content:
-        file_name = items["content"]["name"]
-        file_id = items["content"]["id"]
-        if file_id[2:9] == "package":
-            #is a file name get extension
-            if("extension" not in children_content):
-                file_name_with_extension = verify_file_name(file_name,"")
-            else:
-                file_name_with_extension = verify_file_name(file_name, children_content["extension"])
-        bf_existing_files_name_with_extension.append(file_name_with_extension)
+
+
     
-    # for file in bf_existing_files:
-    #     file_name_with_extension = ""
-    #     file_id = file.id
-    #     file_details = bf._api._get("/packages/" + str(file_id))
-    #     # file_name_with_extension = verify_file_name(file_details["content"]["name"], file_details["extension"])
-    #     if "extension" not in file_details:
-    #         file_name_with_extension = verify_file_name(
-    #             file_details["content"]["name"], ""
-    #         )
-    #     else:
-    #         file_name_with_extension = verify_file_name(
-    #             file_details["content"]["name"], file_details["extension"]
-    #         )
-
-    #     bf_existing_files_name_with_extension.append(file_name_with_extension)
-
+    namespace_logger.info("ENDS HERE BELOW")
+    namespace_logger.info(bf_existing_files_name_with_extension)
     return (
         bf_existing_files,
         bf_existing_files_name,
         bf_existing_files_name_with_extension,
     )
-    namespace_logger.info(bf_existing_files_name_with_extension)
-    namespace_logger.info("ENDS HERE")
 
 
 def check_if_int(s):
@@ -2305,6 +2311,15 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             global main_total_generate_dataset_size
 
             my_bf_folder = my_tracking_folder["value"] #ds (dataset)
+            namespace_logger.info("my_bf_folder EHRERERE")
+            namespace_logger.info(my_bf_folder)
+            namespace_logger.info(my_bf_folder.id)
+            
+            namespace_logger.info("HERERERER")
+            namespace_logger.info(my_folder)
+            # namespace_logger.info(my_folder.id)
+
+
 
             if "folders" in my_folder.keys():
                 (
@@ -2506,6 +2521,8 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
         ]
         list_upload_files = []
         relative_path = ds.name
+        namespace_logger.info("HEREBRUH")
+        namespace_logger.info(relative_path)
         list_upload_files = recursive_dataset_scan_for_bf(
             dataset_structure,
             tracking_json_structure,
@@ -2513,11 +2530,15 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             list_upload_files,
             relative_path,
         )
+        namespace_logger.info("TESTING")
+        namespace_logger.info(list_upload_files)
 
         
         # main_curate_progress_message = "About to update after doing recursive dataset scan"
         # 3. Add high-level metadata files to a list
         ds.update()
+        namespace_logger.info("UHFLKAJSL:KJERT")
+        namespace_logger.info(ds)
         list_upload_metadata_files = []
         if "metadata-files" in soda_json_structure.keys():
             namespace_logger.info("bf_generate_new_dataset (optional) step 3 create high level metadata list")
