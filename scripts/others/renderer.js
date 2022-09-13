@@ -7875,7 +7875,6 @@ async function initiate_generate() {
 
   async function main_progressfunction() {
     let mainCurationProgressResponse;
-    // start_time = performance.now();
     try {
       mainCurationProgressResponse = await client.get(
         `/curate_datasets/curation/progress`
@@ -8039,7 +8038,6 @@ async function initiate_generate() {
             type: "success",
             message: "Dataset created successfully",
           });
-          // end_time = performance.now();
         } else {
           //enable buttons anyways
           organizeDataset_option_buttons.style.display = "flex";
