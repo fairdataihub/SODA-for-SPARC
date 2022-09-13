@@ -5,7 +5,18 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.9.1.0 - 2022-09-13
 
+## Feature additions:
+- An announcements system has been added to give the user updates on recents changes/additions to SODA.
+- Tags throughout SODA are now sortable. (Ex: Dataset tags, milestone tags, etc.)
+## Bug fixes:
+
+- In Organize datasets, when importing files/folders the loading screen's z-index was higher than the duplicate alert popup. The issue has been resolved by lowering the loading screen's z-index.
+- When uploading a dataset "Preparing list of files to upload" would verify files from Pennsieve individually. For datasets with large files this would cause a long wait time during this step. Another method of verifying files was created to verify files by retrieving the information folder by folder, reducing wait time significantly.
+
+### Known Issues:
+- When a user has a large amount of files the step "Creating folder structure" can take a good amount of time.
 
 ## v.9.0.1 - 2022-09-02
 ## Bug fixes:
