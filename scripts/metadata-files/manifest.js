@@ -1145,6 +1145,15 @@ const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
   return true
 }
 
+
+// TODO: Generalize then add to utilities
+/**
+ * Given a path to a destination, generate a SODA Manifest Files directory in that location.
+ * If there are other SODA Manifest Files directories, then append a number to the end of the directory name and create it.
+ * E.g., SODA Manifest Files (1), SODA Manifest Files (2), etc.
+ * @param {URL} destination 
+ * @returns 
+ */
 const createDuplicateManifestDirectory = async (destination) => {
   // get the files/folders in the destination folder
   let destinationDir;
