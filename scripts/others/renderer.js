@@ -32,6 +32,8 @@ const validator = require("validator");
 const doiRegex = require("doi-regex");
 const lottie = require("lottie-web");
 const select2 = require("select2")();
+const DragSort = require("@yaireo/dragsort");
+
 // TODO: Test with a build
 const {
   datasetUploadSession,
@@ -636,6 +638,8 @@ const run_pre_flight_checks = async (check_update = true) => {
                   type: "final",
                   message: "You're all set!",
                 });
+                console.log("1");
+                await checkForAnnouncements("announcements");
                 resolve(true);
               }
             });
@@ -648,6 +652,8 @@ const run_pre_flight_checks = async (check_update = true) => {
               type: "final",
               message: "You're all set!",
             });
+            console.log("2");
+            await checkForAnnouncements("announcements");
             resolve(true);
           }
         }
@@ -751,13 +757,15 @@ const apiVersionsMatch = async () => {
 
     await Swal.fire({
       icon: "error",
-      html: `${serverAppVersion} ${appVersion} The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+      html: `${appVersion} ${serverAppVersion}The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA or check to see if a previous version is running in the background with the instructions on our <a href='https://docs.sodaforsparc.io/docs/common-errors/pennsieve-agent-is-already-running' target='_blank'>documentation page.</a> If this issue occurs multiple times, please email <a href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Close now",
       allowOutsideClick: false,
       allowEscapeKey: false,
     });
+
+    //await checkForAnnouncements("update")
 
     throw new Error();
   }
@@ -789,7 +797,7 @@ const check_internet_connection = async (show_notification = true) => {
   }
   await wait(800);
 
-  return require("dns").resolve("www.google.com", (err) => {
+  return require("dns").resolve("www.google.com", async (err) => {
     if (err) {
       console.error("No internet connection");
       log.error("No internet connection");
@@ -1008,7 +1016,7 @@ ipcRenderer.on("update_available", () => {
 });
 
 // When the update is downloaded, show the restart notification
-ipcRenderer.on("update_downloaded", () => {
+ipcRenderer.on("update_downloaded", async () => {
   ipcRenderer.removeAllListeners("update_downloaded");
   ipcRenderer.send(
     "track-event",
@@ -1030,13 +1038,15 @@ ipcRenderer.on("update_downloaded", () => {
         "Update downloaded. It will be installed on the restart of the app. Click here to restart SODA now.",
     });
   }
-  update_downloaded_notification.on("click", ({ target, event }) => {
+  update_downloaded_notification.on("click", async ({ target, event }) => {
     restartApp();
+    //a sweet alert will pop up announcing user to manually update if SODA fails to restart
+    checkForAnnouncements("update");
   });
 });
 
 // Restart the app for update. Does not restart on macos
-const restartApp = () => {
+const restartApp = async () => {
   notyf.open({
     type: "app_update_warning",
     message: "Closing SODA now...",
@@ -1299,6 +1309,34 @@ var allCollectionTags = {};
 var currentTags = {};
 var currentCollectionTags = [];
 
+
+if (process.platform === "darwin" || process.platform === "linux") {
+  //check if data exists inside of the Soda folder, and if it does, move it into the capitalized SODA folder
+  if (fs.existsSync(path.join(homeDirectory, "Soda"))) {
+    //copy the folder contents of home/Soda to home/SODA
+    console.log("Soda dir exists");
+    // fs.copySync(
+    //   path.join(homeDirectory, "Soda"),
+    //   path.join(homeDirectory, "SODA")
+    // );
+    // //delete the old folder
+    // fs.removeSync(path.join(homeDirectory, "Soda"));
+  }
+}
+
+const createDragSort = (tagify) => {
+  // console.log(element);
+  const onDragEnd = () => {
+    tagify.updateValueByDOMTags();
+  };
+  new DragSort(tagify.DOM.scope, {
+    selector: "." + tagify.settings.classNames.tag,
+    callbacks: {
+      dragEnd: onDragEnd,
+    },
+  });
+};
+
 //initialize Tagify input field for guided submission milestones
 const guidedSubmissionTagsInput = document.getElementById(
   "guided-tagify-submission-milestone-tags-import"
@@ -1314,6 +1352,7 @@ const guidedSubmissionTagsTagify = new Tagify(guidedSubmissionTagsInput, {
     closeOnSelect: true,
   },
 });
+createDragSort(guidedSubmissionTagsTagify);
 
 const guidedSubmissionTagsInputManual = document.getElementById(
   "guided-tagify-submission-milestone-tags-manual"
@@ -1331,6 +1370,12 @@ const guidedSubmissionTagsTagifyManual = new Tagify(
     },
   }
 );
+createDragSort(guidedSubmissionTagsTagifyManual);
+
+// listen to tagify "change" event and print updated value
+guidedSubmissionTagsTagifyManual.on("change", (e) =>
+  console.log(e.detail.value)
+);
 
 // initiate Tagify input fields for Dataset description file
 var keywordInput = document.getElementById("ds-keywords"),
@@ -1338,10 +1383,13 @@ var keywordInput = document.getElementById("ds-keywords"),
     duplicates: false,
   });
 
+createDragSort(keywordTagify);
+
 var otherFundingInput = document.getElementById("ds-other-funding"),
   otherFundingTagify = new Tagify(otherFundingInput, {
     duplicates: false,
   });
+createDragSort(otherFundingTagify);
 
 var collectionDatasetInput = document.getElementById("tagify-collection-tags"),
   collectionDatasetTags = new Tagify(collectionDatasetInput, {
@@ -1358,6 +1406,7 @@ var collectionDatasetInput = document.getElementById("tagify-collection-tags"),
       rightKey: true,
     },
   });
+createDragSort(collectionDatasetTags);
 
 var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
   studyOrganSystemsTagify = new Tagify(studyOrganSystemsInput, {
@@ -1388,27 +1437,32 @@ var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
       closeOnSelect: true,
     },
   });
+createDragSort(studyOrganSystemsTagify);
 
 var studyTechniquesInput = document.getElementById("ds-study-technique"),
   studyTechniquesTagify = new Tagify(studyTechniquesInput, {
     duplicates: false,
   });
+createDragSort(studyTechniquesTagify);
 
 var studyApproachesInput = document.getElementById("ds-study-approach"),
   studyApproachesTagify = new Tagify(studyApproachesInput, {
     duplicates: false,
   });
+createDragSort(studyApproachesTagify);
 
 // tagify the input inside of the "Add/edit tags" manage dataset section
 var datasetTagsInput = document.getElementById("tagify-dataset-tags"),
   // initialize Tagify on the above input node reference
   datasetTagsTagify = new Tagify(datasetTagsInput);
+createDragSort(datasetTagsTagify);
 
 var guidedDatasetTagsInput = document.getElementById(
     "guided-tagify-dataset-tags"
   ),
   // initialize Tagify on the above input node reference
   guidedDatasetTagsTagify = new Tagify(guidedDatasetTagsInput);
+createDragSort(guidedDatasetTagsTagify);
 
 ///////////////////// Airtable Authentication /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -1530,6 +1584,7 @@ var milestoneTagify1 = new Tagify(milestoneInput1, {
     closeOnSelect: true,
   },
 });
+createDragSort(milestoneTagify1);
 
 // generate subjects file
 ipcRenderer.on(
@@ -2609,6 +2664,8 @@ function loadContributorInfo(lastName, firstName) {
       closeOnSelect: true,
     },
   });
+  createDragSort(tagifyRole);
+
   var tagifyAffliation = new Tagify(
     document.getElementById("input-con-affiliation"),
     {
@@ -2623,6 +2680,8 @@ function loadContributorInfo(lastName, firstName) {
       duplicates: false,
     }
   );
+  createDragSort(tagifyAffliation);
+
   tagifyRole.removeAllTags();
   tagifyAffliation.removeAllTags();
   var contactLabel = $("#ds-contact-person");
@@ -5214,7 +5273,7 @@ const addFoldersfunction = async (
       );
     }
   }
-}
+};
 
 //// Step 3. Organize dataset: Add files or folders with drag&drop
 function allowDrop(ev) {
@@ -5878,7 +5937,7 @@ const dropHelper = async (
   }
   beginScrollListen();
   $("body").removeClass("waiting");
-}
+};
 
 var irregularFolderArray = [];
 function detectIrregularFolders(folderName, pathEle) {
@@ -6812,7 +6871,7 @@ $("#inputNewNameDataset").on("click", () => {
 
 $("#inputNewNameDataset").keyup(function () {
   let step6 = document.getElementById("generate-dataset-tab");
-  if(step6.classList.contains("tab-active")) {
+  if (step6.classList.contains("tab-active")) {
     $("#nextBtn").prop("disabled", true);
   }
 
@@ -7588,6 +7647,9 @@ var uploadComplete = new Notyf({
 
 // Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
 async function initiate_generate() {
+  // Disable the Guided Mode sidebar button to prevent the sodaJSONObj from being modified
+  document.getElementById("guided_mode_view").style.pointerEvents = "none";
+
   // Initiate curation by calling Python function
   let manifest_files_requested = false;
   var main_curate_status = "Solving";
@@ -7718,6 +7780,8 @@ async function initiate_generate() {
         uploadedFiles,
         false
       );
+      //Allow guided_mode_view to be clicked again
+      document.getElementById("guided_mode_view").style.pointerEvents = "";
 
       try {
         let responseObject = await client.get(
@@ -7735,6 +7799,9 @@ async function initiate_generate() {
       }
     })
     .catch(async (error) => {
+      //Allow guided_mode_view to be clicked again
+      document.getElementById("guided_mode_view").style.pointerEvents = "";
+
       clientError(error);
       let emessage = userErrorMessage(error);
       organizeDataset_option_buttons.style.display = "flex";
