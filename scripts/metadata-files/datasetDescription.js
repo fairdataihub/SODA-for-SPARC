@@ -161,12 +161,12 @@ function checkAirtableStatus(keyword) {
     if (airKeyInput !== "" && airKeyName !== "") {
       Airtable.configure({
         endpointUrl: "https://" + airtableHostname,
-        apiKey: airKeyInput,
+        apiKey: airKeyInput
       });
       var base = Airtable.base("appiYd1Tz9Sv857GZ");
       base("sparc_members")
         .select({
-          view: "All members (ungrouped)",
+          view: "All members (ungrouped)"
         })
         .eachPage(
           function page(records, fetchNextPage) {
@@ -254,10 +254,10 @@ function populateProtocolLink(ev) {
       for (var key of Object.keys(protocolResearcherList)) {
         $("#select-misc-links").append(
           '<option value="' +
-          protocolResearcherList[key] +
-          '">' +
-          key +
-          "</option>"
+            protocolResearcherList[key] +
+            '">' +
+            key +
+            "</option>"
         );
       }
     }
@@ -326,14 +326,15 @@ function createConsRoleTagify(inputField) {
       "Sponsor",
       "Supervisor",
       "WorkPackageLeader",
-      "Other",
+      "Other"
     ],
     enforceWhitelist: true,
     dropdown: {
       enabled: 1,
-      closeOnSelect: true,
-    },
+      closeOnSelect: true
+    }
   });
+  createDragSort(tagify);
 }
 
 function createConsAffliationTagify(inputField) {
@@ -343,10 +344,11 @@ function createConsAffliationTagify(inputField) {
       classname: "color-blue",
       enabled: 0, // show the dropdown immediately on focus
       maxItems: 25,
-      closeOnSelect: true, // keep the dropdown open after selecting a suggestion
+      closeOnSelect: true // keep the dropdown open after selecting a suggestion
     },
-    duplicates: false,
+    duplicates: false
   });
+  createDragSort(tagify);
 }
 
 /*
@@ -359,7 +361,7 @@ function cancelOtherContributors(table) {
   var rowIndex = rowcount - 1;
   var currentRow =
     document.getElementById(table).rows[
-    document.getElementById(table).rows.length - 1
+      document.getElementById(table).rows.length - 1
     ];
   currentRow.cells[0].outerHTML =
     "<td class='grab'><select id='ds-description-contributor-list-last-" +
@@ -383,7 +385,7 @@ function addOtherContributors(table) {
   var rowIndex = rowcount;
   var currentRow =
     document.getElementById(table).rows[
-    document.getElementById(table).rows.length - 1
+      document.getElementById(table).rows.length - 1
     ];
   currentRow.cells[0].outerHTML =
     "<td><input type='text' placeholder='Type here' contenteditable='true' id='other-contributors-last-" +
@@ -460,7 +462,7 @@ function resetDDUI(table) {
   var rowIndex = rowcount - 1;
   var currentRow =
     document.getElementById(table).rows[
-    document.getElementById(table).rows.length - 1
+      document.getElementById(table).rows.length - 1
     ];
 
   $("#SPARC-Award-raw-input-div-dd").css("display", "none");
@@ -556,7 +558,7 @@ function showExistingDDFile() {
       confirmButtonColor: "#3085d6",
       confirmButtonText: "Yes",
       icon: "warning",
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: reverseSwalButtons
     }).then((boolean) => {
       if (boolean.isConfirmed) {
         ipcRenderer.send("open-file-dialog-existing-DD");
@@ -583,11 +585,11 @@ function resetDD() {
     showCancelButton: true,
     text: "Are you sure you want to start over and reset your progress?",
     showClass: {
-      popup: "animate__animated animate__zoomIn animate__faster",
+      popup: "animate__animated animate__zoomIn animate__faster"
     },
     hideClass: {
-      popup: "animate__animated animate__zoomOut animate__faster",
-    },
+      popup: "animate__animated animate__zoomOut animate__faster"
+    }
   }).then((result) => {
     if (result.isConfirmed) {
       // 1. remove Prev and Show from all individual-question except for the first one
@@ -693,11 +695,11 @@ async function generateDatasetDescription() {
       cancelButtonText: "No",
       reverseButtons: reverseSwalButtons,
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
+        popup: "animate__animated animate__zoomIn animate__faster"
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
+        popup: "animate__animated animate__zoomOut animate__faster"
+      }
     });
     if (continueProgressGenerateDD) {
       $("#dd-accordion").removeClass("active");
@@ -728,7 +730,7 @@ const generateDDFile = async (uploadBFBoolean) => {
       showConfirmButton: true,
       showCancelButton: true,
       cancelButtonText: "Cancel",
-      confirmButtonText: "Yes",
+      confirmButtonText: "Yes"
     });
     if (!continueProgress) {
       return;
@@ -745,7 +747,7 @@ const generateDDFile = async (uploadBFBoolean) => {
       showConfirmButton: true,
       showCancelButton: true,
       cancelButtonText: "Cancel",
-      confirmButtonText: "Yes",
+      confirmButtonText: "Yes"
     });
     if (!continueProgress) {
       return;
@@ -761,8 +763,8 @@ const generateDDFile = async (uploadBFBoolean) => {
     timerProgressBar: false,
     didOpen: () => {
       Swal.showLoading();
-    },
-  }).then((result) => { });
+    }
+  }).then((result) => {});
   var datasetInfoValueObj = grabDSInfoEntries();
   var studyInfoValueObject = grabStudyInfoEntries();
   //// grab entries from contributor info section and pass values to conSectionArray
@@ -818,12 +820,12 @@ const generateDDFile = async (uploadBFBoolean) => {
         dataset_str: datasetInfoValueObj,
         study_str: studyInfoValueObject,
         contributor_str: contributorObj,
-        related_info_str: relatedInfoArr,
+        related_info_str: relatedInfoArr
       },
       {
         params: {
-          upload_boolean: uploadBFBoolean,
-        },
+          upload_boolean: uploadBFBoolean
+        }
       }
     );
 
@@ -841,7 +843,7 @@ const generateDDFile = async (uploadBFBoolean) => {
       title: successMessage,
       icon: "success",
       heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
+      backdrop: "rgba(0,0,0, 0.4)"
     });
 
     // log the successful attempt to generate the description file in analytics at this step in the Generation process
@@ -869,7 +871,7 @@ const generateDDFile = async (uploadBFBoolean) => {
       html: emessage,
       icon: "warning",
       heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
+      backdrop: "rgba(0,0,0, 0.4)"
     });
 
     // log the failure to generate the description file to analytics at this step in the Generation process
@@ -919,7 +921,7 @@ function grabAdditionalLinkSection() {
       link: table.rows[i].cells[1].innerText,
       type: table.rows[i].cells[2].innerText,
       relation: table.rows[i].cells[3].innerText,
-      description: table.rows[i].cells[4].innerText,
+      description: table.rows[i].cells[4].innerText
     };
     additionalLinkInfo.push(additionalLink);
   }
@@ -935,7 +937,7 @@ function grabProtocolSection() {
       link: table.rows[i].cells[1].innerText,
       type: table.rows[i].cells[2].innerText,
       relation: table.rows[i].cells[3].innerText,
-      description: table.rows[i].cells[4].innerText,
+      description: table.rows[i].cells[4].innerText
     };
     protocolLinkInfo.push(protocol);
   }
@@ -1006,9 +1008,9 @@ async function addProtocol() {
         $("#DD-protocol-link").val(),
         protocolLink,
         "IsProtocolFor",
-        $("#DD-protocol-description").val(),
+        $("#DD-protocol-description").val()
       ];
-    },
+    }
   });
   if (values) {
     addProtocolLinktoTableDD(values[0], values[1], values[2], values[3]);
@@ -1138,7 +1140,7 @@ async function helpSPARCAward(filetype, curationMode) {
             award = $("#select-SPARC-award").val();
             globalSPARCAward = $("#select-SPARC-award").val();
           }
-        },
+        }
       });
       if (awardVal) {
         if (curationMode === "free-form") {
@@ -1153,7 +1155,7 @@ async function helpSPARCAward(filetype, curationMode) {
               cancelButtonText: `No!`,
               cancelButtonColor: "#f44336",
               confirmButtonColor: "#3085d6",
-              confirmButtonText: "Yes",
+              confirmButtonText: "Yes"
             }).then((boolean) => {
               if (boolean.isConfirmed) {
                 changeAward(award, "free-form");
@@ -1179,7 +1181,7 @@ async function helpSPARCAward(filetype, curationMode) {
         cancelButtonText: `No!`,
         cancelButtonColor: "#f44336",
         confirmButtonColor: "#3085d6",
-        confirmButtonText: "Yes",
+        confirmButtonText: "Yes"
       }).then((boolean) => {
         if (boolean.isConfirmed) {
           showAddAirtableAccountSweetalert("dd", curationMode);
@@ -1220,7 +1222,7 @@ async function helpSPARCAward(filetype, curationMode) {
           } else {
             award = $("#select-SPARC-award-submission").val();
           }
-        },
+        }
       });
       if (awardVal) {
         if (currentMilestonesInTextArea.val() !== "") {
@@ -1233,7 +1235,7 @@ async function helpSPARCAward(filetype, curationMode) {
             cancelButtonText: `No!`,
             cancelButtonColor: "#f44336",
             confirmButtonColor: "#3085d6",
-            confirmButtonText: "Yes",
+            confirmButtonText: "Yes"
           }).then((boolean) => {
             if (boolean.isConfirmed) {
               if (curationMode === "free-form") {
@@ -1276,7 +1278,7 @@ async function helpSPARCAward(filetype, curationMode) {
         cancelButtonText: `No!`,
         cancelButtonColor: "#f44336",
         confirmButtonColor: "#3085d6",
-        confirmButtonText: "Yes",
+        confirmButtonText: "Yes"
       }).then((boolean) => {
         if (boolean.isConfirmed) {
           showAddAirtableAccountSweetalert("submission", curationMode);
@@ -1312,8 +1314,8 @@ function changeAward(award, curationMode) {
     timerProgressBar: false,
     didOpen: () => {
       Swal.showLoading();
-    },
-  }).then((result) => { });
+    }
+  }).then((result) => {});
   $("#ds-description-award-input").val(award);
   $("#submission-sparc-award").val(award);
   loadContributorInfofromAirtable(award, curationMode);
@@ -1384,12 +1386,12 @@ const loadContributorInfofromAirtable = async (award, curationMode) => {
     var airKeyInput = airKeyContent["api-key"];
     Airtable.configure({
       endpointUrl: "https://" + airtableHostname,
-      apiKey: airKeyInput,
+      apiKey: airKeyInput
     });
     var base = Airtable.base("appiYd1Tz9Sv857GZ");
     await base("sparc_members")
       .select({
-        filterByFormula: `({SPARC_Award_#} = "${award}")`,
+        filterByFormula: `({SPARC_Award_#} = "${award}")`
       })
       .eachPage(function page(records, fetchNextPage) {
         records.forEach(function (record) {
@@ -1519,7 +1521,7 @@ function showContributorSweetalert(key) {
         interactive: true,
         placement: "right",
         theme: "light",
-        interactiveBorder: 30,
+        interactiveBorder: 30
       });
       // first destroy old tagify
       $($("#input-con-affiliation").siblings()[0]).remove();
@@ -1547,18 +1549,20 @@ function showContributorSweetalert(key) {
             "Sponsor",
             "Supervisor",
             "WorkPackageLeader",
-            "Other",
+            "Other"
           ],
           dropdown: {
             classname: "color-blue",
             enabled: 0, // show the dropdown immediately on focus
             maxItems: 25,
-            closeOnSelect: true, // keep the dropdown open after selecting a suggestion
+            closeOnSelect: true // keep the dropdown open after selecting a suggestion
           },
           enforceWhitelist: true,
-          duplicates: false,
+          duplicates: false
         }
       );
+      createDragSort(currentContributortagify);
+
       currentAffliationtagify = new Tagify(
         document.getElementById("input-con-affiliation"),
         {
@@ -1566,13 +1570,15 @@ function showContributorSweetalert(key) {
             classname: "color-blue",
             enabled: 0, // show the dropdown immediately on focus
             maxItems: 25,
-            closeOnSelect: true, // keep the dropdown open after selecting a suggestion
+            closeOnSelect: true // keep the dropdown open after selecting a suggestion
           },
           whitelist: affiliationSuggestions,
           delimiters: null,
-          duplicates: false,
+          duplicates: false
         }
       );
+      createDragSort(currentAffliationtagify);
+
       // load contributor names onto Select
       if (Object.keys(globalContributorNameObject).length !== 0) {
         if (key === false) {
@@ -1581,10 +1587,10 @@ function showContributorSweetalert(key) {
       }
     },
     showClass: {
-      popup: "animate__animated animate__fadeInDown animate__faster",
+      popup: "animate__animated animate__fadeInDown animate__faster"
     },
     hideClass: {
-      popup: "animate__animated animate__fadeOutUp animate__faster",
+      popup: "animate__animated animate__fadeOutUp animate__faster"
     },
     preConfirm: () => {
       var affValues = grabCurrentTagifyContributor(currentAffliationtagify);
@@ -1627,7 +1633,7 @@ function showContributorSweetalert(key) {
                 conName: lastName + ", " + firstName,
                 conID: $("#input-con-ID").val().trim(),
                 conAffliation: affiliationVals,
-                conRole: roleVals + ", CorrespondingAuthor",
+                conRole: roleVals + ", CorrespondingAuthor"
               };
               contributorArray.push(myCurrentCon);
               return [myCurrentCon.conName, "Yes"];
@@ -1637,7 +1643,7 @@ function showContributorSweetalert(key) {
               conName: lastName + ", " + firstName,
               conID: $("#input-con-ID").val().trim(),
               conAffliation: affiliationVals,
-              conRole: roleVals,
+              conRole: roleVals
             };
             contributorArray.push(myCurrentCon);
             return [myCurrentCon.conName, "No"];
@@ -1648,7 +1654,7 @@ function showContributorSweetalert(key) {
           );
         }
       }
-    },
+    }
   }).then((result) => {
     if (result.isConfirmed) {
       addContributortoTableDD(result.value[0], result.value[1]);
@@ -1704,7 +1710,7 @@ function showContributorSweetalert(key) {
         interactive: true,
         placement: "right",
         theme: "light",
-        interactiveBorder: 30,
+        interactiveBorder: 30
       });
       // first destroy old tagify
       $($("#input-con-affiliation").siblings()[0]).remove();
@@ -1732,18 +1738,20 @@ function showContributorSweetalert(key) {
             "Sponsor",
             "Supervisor",
             "WorkPackageLeader",
-            "Other",
+            "Other"
           ],
           dropdown: {
             classname: "color-blue",
             enabled: 0, // show the dropdown immediately on focus
             maxItems: 25,
-            closeOnSelect: true, // keep the dropdown open after selecting a suggestion
+            closeOnSelect: true // keep the dropdown open after selecting a suggestion
           },
           enforceWhitelist: true,
-          duplicates: false,
+          duplicates: false
         }
       );
+      createDragSort(currentContributortagify);
+
       currentAffliationtagify = new Tagify(
         document.getElementById("input-con-affiliation"),
         {
@@ -1751,13 +1759,15 @@ function showContributorSweetalert(key) {
             classname: "color-blue",
             enabled: 0, // show the dropdown immediately on focus
             maxItems: 25,
-            closeOnSelect: true, // keep the dropdown open after selecting a suggestion
+            closeOnSelect: true // keep the dropdown open after selecting a suggestion
           },
           whitelist: affiliationSuggestions,
           delimiters: null,
-          duplicates: false,
+          duplicates: false
         }
       );
+      createDragSort(currentAffliationtagify);
+
       // load contributor names onto Select
       if (Object.keys(globalContributorNameObject).length !== 0) {
         if (key === false) {
@@ -1766,10 +1776,10 @@ function showContributorSweetalert(key) {
       }
     },
     showClass: {
-      popup: "animate__animated animate__fadeInDown animate__faster",
+      popup: "animate__animated animate__fadeInDown animate__faster"
     },
     hideClass: {
-      popup: "animate__animated animate__fadeOutUp animate__faster",
+      popup: "animate__animated animate__fadeOutUp animate__faster"
     },
     preConfirm: () => {
       var affValues = grabCurrentTagifyContributor(currentAffliationtagify);
@@ -1814,7 +1824,7 @@ function showContributorSweetalert(key) {
                 conName: lastName + ", " + firstName,
                 conID: $("#input-con-ID").val().trim(),
                 conAffliation: affiliationVals,
-                conRole: roleVals + ", CorrespondingAuthor",
+                conRole: roleVals + ", CorrespondingAuthor"
               };
               contributorArray.push(myCurrentCon);
               return [myCurrentCon.conName, "Yes"];
@@ -1824,7 +1834,7 @@ function showContributorSweetalert(key) {
               conName: lastName + ", " + firstName,
               conID: $("#input-con-ID").val().trim(),
               conAffliation: affiliationVals,
-              conRole: roleVals,
+              conRole: roleVals
             };
             contributorArray.push(myCurrentCon);
             return [myCurrentCon.conName, "No"];
@@ -1835,7 +1845,7 @@ function showContributorSweetalert(key) {
           );
         }
       }
-    },
+    }
   }).then((result) => {
     if (result.isConfirmed) {
       addContributortoTableDD(result.value[0], result.value[1], "free-form");
@@ -1855,7 +1865,7 @@ function delete_current_con_id(ev) {
     cancelButtonColor: "#f44336",
     confirmButtonColor: "#3085d6",
     confirmButtonText: "Yes",
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: reverseSwalButtons
   }).then((boolean) => {
     if (boolean.isConfirmed) {
       // 1. Delete from table
@@ -1901,7 +1911,7 @@ function edit_current_con_id(ev) {
         interactive: true,
         placement: "right",
         theme: "light",
-        interactiveBorder: 30,
+        interactiveBorder: 30
       });
       // disable first and last names (cannot edit these fields)
       // first destroy old tagify
@@ -1930,18 +1940,20 @@ function edit_current_con_id(ev) {
             "Sponsor",
             "Supervisor",
             "WorkPackageLeader",
-            "Other",
+            "Other"
           ],
           dropdown: {
             classname: "color-blue",
             enabled: 0, // show the dropdown immediately on focus
             maxItems: 25,
-            closeOnSelect: true, // keep the dropdown open after selecting a suggestion
+            closeOnSelect: true // keep the dropdown open after selecting a suggestion
           },
           enforceWhitelist: true,
-          duplicates: false,
+          duplicates: false
         }
       );
+      createDragSort(currentContributortagify);
+
       currentAffliationtagify = new Tagify(
         document.getElementById("input-con-affiliation"),
         {
@@ -1949,13 +1961,15 @@ function edit_current_con_id(ev) {
             classname: "color-blue",
             enabled: 0, // show the dropdown immediately on focus
             maxItems: 25,
-            closeOnSelect: true, // keep the dropdown open after selecting a suggestion
+            closeOnSelect: true // keep the dropdown open after selecting a suggestion
           },
           // delimiters: ",",
           whitelist: affiliationSuggestions,
-          duplicates: false,
+          duplicates: false
         }
       );
+      createDragSort(currentAffliationtagify);
+
       for (var contributor of contributorArray) {
         if (contributor.conName === name) {
           // add existing tags to tagifies
@@ -1981,10 +1995,10 @@ function edit_current_con_id(ev) {
       }
     },
     showClass: {
-      popup: "animate__animated animate__fadeInDown animate__faster",
+      popup: "animate__animated animate__fadeInDown animate__faster"
     },
     hideClass: {
-      popup: "animate__animated animate__fadeOutUp animate__faster",
+      popup: "animate__animated animate__fadeOutUp animate__faster"
     },
     preConfirm: () => {
       if (
@@ -2021,7 +2035,7 @@ function edit_current_con_id(ev) {
                 $("#dd-contributor-first-name").val().trim(),
               conID: $("#input-con-ID").val().trim(),
               conAffliation: affiliationVals,
-              conRole: roleVals + ", CorrespondingAuthor",
+              conRole: roleVals + ", CorrespondingAuthor"
               // conContact: "Yes",
             };
             for (var contributor of contributorArray) {
@@ -2042,7 +2056,7 @@ function edit_current_con_id(ev) {
               $("#dd-contributor-first-name").val().trim(),
             conID: $("#input-con-ID").val().trim(),
             conAffliation: affiliationVals,
-            conRole: roleVals,
+            conRole: roleVals
             // conContact: "No",
           };
           for (var contributor of contributorArray) {
@@ -2055,7 +2069,7 @@ function edit_current_con_id(ev) {
           return [myCurrentCon.conName, "No"];
         }
       }
-    },
+    }
   }).then((result) => {
     if (result.isConfirmed) {
       $(currentRow)[0].cells[2].innerText = result.value[1];
@@ -2180,7 +2194,7 @@ function grabDSInfoEntries() {
     type: type,
     keywords: keywordArray,
     "number of samples": samplesNo,
-    "number of subjects": subjectsNo,
+    "number of subjects": subjectsNo
   };
 }
 
@@ -2207,7 +2221,7 @@ function grabStudyInfoEntries() {
     "study purpose": studyPurpose,
     "study data collection": studyDataCollection,
     "study primary conclusion": studyPrimaryConclusion,
-    "study collection title": studyCollectionTitle,
+    "study collection title": studyCollectionTitle
   };
 }
 
@@ -2228,10 +2242,10 @@ function showAddAirtableAccountSweetalert(keyword, curationMode) {
     footer:
       "<a href='https://docs.sodaforsparc.io/docs/prepare-metadata/connect-your-airtable-account-with-soda'  target='_blank' style='text-decoration:none'> Where do I find my Airtable API key?</a>",
     showClass: {
-      popup: "animate__animated animate__fadeInDown animate__faster",
+      popup: "animate__animated animate__fadeInDown animate__faster"
     },
     hideClass: {
-      popup: "animate__animated animate__fadeOutUp animate__faster",
+      popup: "animate__animated animate__fadeOutUp animate__faster"
     },
     didOpen: () => {
       // $(".swal-popover").popover();
@@ -2241,9 +2255,9 @@ function showAddAirtableAccountSweetalert(keyword, curationMode) {
         placement: "right",
         theme: "light",
         content:
-          "Note that the key will be stored locally on your computer and the SODA Team will not have access to it.",
+          "Note that the key will be stored locally on your computer and the SODA Team will not have access to it."
       });
-    },
+    }
   }).then((result) => {
     if (result.isConfirmed) {
       addAirtableAccountInsideSweetalert(keyword, curationMode);
@@ -2260,7 +2274,7 @@ function addNewRow(table) {
   var rowIndex = rowcount;
   var currentRow =
     document.getElementById(table).rows[
-    document.getElementById(table).rows.length - 1
+      document.getElementById(table).rows.length - 1
     ];
   if (table === "doi-table") {
     if (
@@ -2427,7 +2441,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
       icon: "error",
       html: errorMessage,
       heightAuto: false,
-      backdrop: "rgba(0,0,0,0.4)",
+      backdrop: "rgba(0,0,0,0.4)"
     }).then((result) => {
       if (result.isConfirmed) {
         showAddAirtableAccountSweetalert(keyword, curationMode);
@@ -2447,18 +2461,18 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
         reverseButtons: reverseSwalButtons,
         backdrop: "rgba(0,0,0,0.4)",
         showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
+          popup: "animate__animated animate__zoomIn animate__faster"
         },
         hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
+          popup: "animate__animated animate__zoomOut animate__faster"
+        }
       }).then((result) => {
         if (result.isConfirmed) {
           const optionsSparcTable = {
             hostname: airtableHostname,
             port: 443,
             path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
-            headers: { Authorization: `Bearer ${key}` },
+            headers: { Authorization: `Bearer ${key}` }
           };
           var sparcTableSuccess;
           https.get(optionsSparcTable, (res) => {
@@ -2491,7 +2505,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
                 showConfirmButton: false,
                 didOpen: () => {
                   Swal.showLoading();
-                },
+                }
               }).then((result) => {
                 helpSPARCAward("submission", curationMode);
               });
@@ -2508,7 +2522,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
                 icon: "error",
                 text: "Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!",
                 heightAuto: false,
-                backdrop: "rgba(0,0,0,0.4)",
+                backdrop: "rgba(0,0,0,0.4)"
               }).then((result) => {
                 if (result.isConfirmed) {
                   showAddAirtableAccountSweetalert(keyword, curationMode);
@@ -2528,7 +2542,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
                 icon: "error",
                 text: "Failed to connect to Airtable. Please check your API Key and try again!",
                 heightAuto: false,
-                backdrop: "rgba(0,0,0,0.4)",
+                backdrop: "rgba(0,0,0,0.4)"
               }).then((result) => {
                 if (result.isConfirmed) {
                   showAddAirtableAccountSweetalert(keyword, curationMode);
@@ -2549,7 +2563,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
                 icon: "error",
                 text: "Failed to connect to Airtable. Please check your API Key and try again!",
                 heightAuto: false,
-                backdrop: "rgba(0,0,0,0.4)",
+                backdrop: "rgba(0,0,0,0.4)"
               }).then((result) => {
                 if (result.isConfirmed) {
                   showAddAirtableAccountSweetalert(keyword, curationMode);
@@ -2566,7 +2580,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
         hostname: airtableHostname,
         port: 443,
         path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
-        headers: { Authorization: `Bearer ${key}` },
+        headers: { Authorization: `Bearer ${key}` }
       };
       let sparcTableSuccess;
       https.get(optionsSparcTable, (res) => {
@@ -2593,7 +2607,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
             showConfirmButton: false,
             didOpen: () => {
               Swal.showLoading();
-            },
+            }
           }).then((result) => {
             helpSPARCAward("submission", curationMode);
           });
@@ -2610,7 +2624,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
             icon: "error",
             text: "Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!",
             heightAuto: false,
-            backdrop: "rgba(0,0,0,0.4)",
+            backdrop: "rgba(0,0,0,0.4)"
           }).then((result) => {
             if (result.isConfirmed) {
               showAddAirtableAccountSweetalert(keyword, curationMode);
@@ -2630,7 +2644,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
             icon: "error",
             text: "Failed to connect to Airtable. Please check your API Key and try again!",
             heightAuto: false,
-            backdrop: "rgba(0,0,0,0.4)",
+            backdrop: "rgba(0,0,0,0.4)"
           }).then((result) => {
             if (result.isConfirmed) {
               showAddAirtableAccountSweetalert(keyword, curationMode);
@@ -2651,7 +2665,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
             icon: "error",
             text: "Failed to connect to Airtable. Please check your API Key and try again!",
             heightAuto: false,
-            backdrop: "rgba(0,0,0,0.4)",
+            backdrop: "rgba(0,0,0,0.4)"
           }).then((result) => {
             if (result.isConfirmed) {
               showAddAirtableAccountSweetalert(keyword, curationMode);
@@ -2678,7 +2692,7 @@ function importExistingDDFile() {
         text: "Your file must be named 'dataset_description.xlsx' to be imported to SODA.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
-        icon: "error",
+        icon: "error"
       });
     } else {
       Swal.fire({
@@ -2692,8 +2706,8 @@ function importExistingDDFile() {
         timerProgressBar: false,
         didOpen: () => {
           Swal.showLoading();
-        },
-      }).then((result) => { });
+        }
+      }).then((result) => {});
       setTimeout(loadDDfileDataframe(filePath), 1000);
     }
   }
@@ -2712,7 +2726,7 @@ async function checkBFImportDD() {
     timerProgressBar: false,
     didOpen: () => {
       Swal.showLoading();
-    },
+    }
   });
 
   let bf_dataset = document.getElementById("bf_dataset_load_dd").innerText;
@@ -2726,8 +2740,8 @@ async function checkBFImportDD() {
         params: {
           selected_account: defaultBfAccount,
           selected_dataset: bf_dataset,
-          file_type: "dataset_description.xlsx",
-        },
+          file_type: "dataset_description.xlsx"
+        }
       }
     );
     let res = metadata_import.data;
@@ -2747,7 +2761,7 @@ async function checkBFImportDD() {
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       icon: "error",
-      text: error.response.data.message,
+      text: error.response.data.message
     });
 
     logMetadataForAnalytics(
@@ -2767,8 +2781,8 @@ async function loadDDfileDataframe(filePath) {
       {
         params: {
           filepath: filePath,
-          import_type: "local",
-        },
+          import_type: "local"
+        }
       }
     );
 
@@ -2791,7 +2805,7 @@ async function loadDDfileDataframe(filePath) {
       html: emessage,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-      icon: "error",
+      icon: "error"
     });
 
     // log the import action failure to analytics
@@ -2878,7 +2892,7 @@ function loadDDFileToUI(object, file_type) {
     backdrop: "rgba(0,0,0, 0.4)",
     didOpen: () => {
       Swal.hideLoading();
-    },
+    }
   });
   $("#button-generate-dd").show();
   if (file_type === "local") {
@@ -2912,7 +2926,7 @@ function loadContributorsToTable(array) {
         conName: arr[0].trim(),
         conID: arr[1].trim(),
         conAffliation: arr[2].trim(),
-        conRole: arr[3].trim(),
+        conRole: arr[3].trim()
       };
       contributorArray.push(myCurrentCon);
       var contact = "";
