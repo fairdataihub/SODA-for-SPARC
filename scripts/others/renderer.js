@@ -7998,8 +7998,9 @@ async function initiate_generate() {
         var progressMessage = "";
         var statusProgressMessage = "";
         progressMessage += main_curate_progress_message + "<br>";
-        statusProgressMessage += main_curate_progress_message + "<br>";
         statusProgressMessage += "Progress: " + value.toFixed(2) + "%" + "<br>";
+        statusProgressMessage +=
+          "Elapsed time: " + elapsed_time_formatted + "<br>";
         progressMessage +=
           "Progress: " +
           value.toFixed(2) +
