@@ -257,7 +257,7 @@ def open_file(file_path):
     """
     try:
         if platform.system() == "Windows":
-            subprocess.Popen(r"explorer /select," + str(file_path))
+            subprocess.Popen(f"explorer /select,{str(file_path)}")
         elif platform.system() == "Darwin":
             subprocess.Popen(["open", file_path])
         else:
@@ -292,10 +292,7 @@ def path_size(path):
     Returns:
         total_size: total size of the file/folder in bytes (integer)
     """
-    if isdir(path):
-        return folder_size(path)
-    else:
-        return getsize(path)
+    return folder_size(path) if isdir(path) else getsize(path)
 
 
 def create_folder_level_manifest(jsonpath, jsondescription):
@@ -343,10 +340,7 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                 countpath = -1
                 for pathname in allfiles:
                     countpath += 1
-                    if (
-                        basename(pathname) == "manifest.csv"
-                        or basename(pathname) == "manifest.xlsx"
-                    ):
+                    if basename(pathname) in ["manifest.csv", "manifest.xlsx"]:
                         allfiles.pop(countpath)
                         alldescription.pop(countpath)
 
@@ -450,14 +444,15 @@ def return_new_path(topath):
     Returns:
         topath: new folder name based on the availability in destination folder (string)
     """
-    if exists(topath):
-        i = 1
-        while True:
-            if not exists(topath + " (" + str(i) + ")"):
-                return topath + " (" + str(i) + ")"
-            i += 1
-    else:
+
+    if not exists(topath):
         return topath
+
+    i = 1
+    while True:
+        if not exists(topath + " (" + str(i) + ")"):
+            return topath + " (" + str(i) + ")"
+        i += 1
 
 
 def return_new_path_replace(topath):
@@ -558,10 +553,7 @@ def create_dataset(jsonpath, pathdataset):
         # create all subfolders and generate a list of all files to copy
         listallfiles = []
         for i in folderrequired:
-            if i == "main":
-                outputpath = pathdataset
-            else:
-                outputpath = join(pathdataset, i)
+            outputpath = pathdataset if i == "main" else join(pathdataset, i)
             for tablepath in mydict[i]:
                 if isdir(tablepath):
                     foldername = basename(tablepath)
@@ -637,7 +629,7 @@ def bf_dataset_size():
 
     try:
         selected_dataset_id = myds.id
-        bf_response = bf._api._get("/datasets/" + str(selected_dataset_id))
+        bf_response = bf._api._get(f"/datasets/{str(selected_dataset_id)}")
         return bf_response["storage"] if "storage" in bf_response.keys() else 0
     except Exception as e:
         raise e
