@@ -1885,7 +1885,8 @@ async function transitionSubQuestionsButton(
     let sodaObject = {};
     let manifestErrorMessage = [];
     try {
-      let data = await bf_request_and_populate_dataset(sodaJSONObj);
+      console.log("here")
+      let data = await bf_request_and_populate_dataset(sodaJSONObj, document.querySelector("#loading_pennsieve_dataset-organize"), true);
       sodaObject = data.soda_object;
       manifestErrorMessage = data.manifest_error_message;
     } catch (err) {
