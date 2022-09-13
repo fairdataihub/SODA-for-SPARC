@@ -1083,14 +1083,22 @@ const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
     return false
   }
 
-  console.log(sourceDir)
-
   // create a directory for storing the manifest files in the destination folder
-  let manifestFolderDirectory = path.join(
-    destinationFolder,
-    "SODA Manifest Files"
-  );
-  fs.mkdirSync(manifestFolderDirectory);
+  let manifestFolderDirectory = "";
+  try {
+    manifestFolderDirectory = await createDuplicateManifestDirectory(destinationFolder)
+  } catch(error) {
+    clientError(error)
+    Swal.fire({
+      title: "Failed to generate manifest files for preview",
+      text: userErrorMessage(error),
+      icon: "error",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    })
+    return false
+  }
 
   // traverse the high level folders in the source folder and copy the source manifest files to the destination folder for user previewing
   for (const folderIdx in sourceDir) {
@@ -1126,6 +1134,63 @@ const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
   }
 
   return true
+}
+
+const createDuplicateManifestDirectory = async (destination) => {
+   // get the files/folders in the destination folder
+   let destinationDir;
+   try {
+     destinationDir = await readdir(destination)
+   } catch (error) {
+     clientError(error)
+     Swal.fire({
+       title: "Failed to generate manifest files for preview",
+       text: userErrorMessage(error),
+       icon: "error",
+       showConfirmButton: true,
+       heightAuto: false,
+       backdrop: "rgba(0,0,0, 0.4)",
+     })
+     return false
+   }
+
+   // get the folders in the destination folder that include SODA Manfiest Files
+   let manifestFolderCopies = destinationDir.filter((folder) => {
+      return folder.includes("SODA Manifest Files")
+    })
+
+   // if there is only one SODA Manifest Files directory create the first copy 
+   if(manifestFolderCopies.length === 0) {
+      let manifestFolderDirectory = path.join(
+        destination,
+        "SODA Manifest Files"
+      );
+      fs.mkdirSync(manifestFolderDirectory);
+      return manifestFolderDirectory
+   }
+
+  if(manifestFolderCopies.length === 1) {
+    let manifestFolderDirectory = path.join(
+      destination,
+      "SODA Manifest Files (1)"
+    );
+    fs.mkdirSync(manifestFolderDirectory);
+    return manifestFolderDirectory
+  }
+
+    // if there are multiple SODA Manifest Files directories, get the number of the last copy
+    let lastCopyNumber = manifestFolderCopies[manifestFolderCopies.length - 1].split(" ")[3].replace("(", "").replace(")", "")
+
+    // create a new SODA Manifest Files directory ending with ' (n)' where n is the number of times the directory has been created
+    let manifestFolderDirectory = path.join(
+      destination,
+      `SODA Manifest Files (${parseInt(lastCopyNumber) + 1})`
+    );
+    fs.mkdirSync(manifestFolderDirectory);
+
+    // return the path to the new SODA Manifest Files directory
+    return manifestFolderDirectory
+
 }
 
 const removeDir = function (pathdir) {
