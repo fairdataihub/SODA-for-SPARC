@@ -1815,7 +1815,7 @@ def create_high_level_manifest_files_existing_bf(
 
 
 def create_high_level_manifest_files_existing_local_starting_point(dataset_path):
-    soda_manifest_folder_path = join(userpath, "SODA", "SODA Manifest Files")
+    soda_manifest_folder_path = join(userpath, "SODA", "manifest_files")
 
     if dataset_path != "":
         for high_level_fol in listdir(dataset_path):
