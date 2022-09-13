@@ -752,7 +752,7 @@ function populateMetadataProgress(
 //////////////////////// Main Import progress function
 let missing_dataset_files = [];
 let missing_metadata_files = [];
-function loadProgressFile(ev) {
+const loadProgressFile = (ev) => {
   let return_option = "";
   missing_dataset_files = [];
   missing_metadata_files = [];
@@ -764,7 +764,7 @@ function loadProgressFile(ev) {
   var jsonContent = progressFileParse(ev);
 
   $("#para-progress-file-status").html("");
-  $("#nextBtn").prop("disabled", true);
+  // $("#nextBtn").prop("disabled", true);
 
   // create loading effect
   $("#div-progress-file-loader").css("display", "block");
@@ -784,7 +784,10 @@ function loadProgressFile(ev) {
         document.getElementById("div-progress-file-loader").style.display =
           "none";
         $("body").removeClass("waiting");
-        document.getElementById("nextBtn").disabled = false;
+        let nextBtn = document.getElementById("nextBtn");
+        if(nextBtn.disabled) {
+          nextBtn.removeAttribute('disabled');
+        } 
         document.getElementById("para-progress-file-status").innerHTML =
           "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
 
@@ -797,7 +800,7 @@ function loadProgressFile(ev) {
           Destinations.SAVED
         );
       }
-    }, 1300);
+    }, 1000);
   } else {
     sodaJSONObj =
       '{"starting-point":"new","dataset-structure":{},"metadata-files":{}}';

@@ -2029,7 +2029,6 @@ $("#save-banner-image").click((event) => {
           }).then((result) => {
             if (result.isConfirmed) {
               // uploadBannerImage();
-              console.log("handle scaling here");
               uploadBannerImage();
             }
           });

@@ -32,6 +32,8 @@ const validator = require("validator");
 const doiRegex = require("doi-regex");
 const lottie = require("lottie-web");
 const select2 = require("select2")();
+const DragSort = require("@yaireo/dragsort");
+
 // TODO: Test with a build
 const {
   datasetUploadSession,
@@ -1309,14 +1311,29 @@ if (process.platform === "darwin" || process.platform === "linux") {
   //check if data exists inside of the Soda folder, and if it does, move it into the capitalized SODA folder
   if (fs.existsSync(path.join(homeDirectory, "Soda"))) {
     //copy the folder contents of home/Soda to home/SODA
-    fs.copySync(
-      path.join(homeDirectory, "Soda"),
-      path.join(homeDirectory, "SODA")
-    );
-    //delete the old folder
-    fs.removeSync(path.join(homeDirectory, "Soda"));
+    console.log("Soda dir exists");
+    // fs.copySync(
+    //   path.join(homeDirectory, "Soda"),
+    //   path.join(homeDirectory, "SODA")
+    // );
+    // //delete the old folder
+    // fs.removeSync(path.join(homeDirectory, "Soda"));
   }
 }
+
+const createDragSort = (tagify) => {
+  // console.log(element);
+  const onDragEnd = () => {
+    tagify.updateValueByDOMTags();
+  };
+  new DragSort(tagify.DOM.scope, {
+    selector: "." + tagify.settings.classNames.tag,
+    callbacks: {
+      dragEnd: onDragEnd,
+    },
+  });
+};
+
 //initialize Tagify input field for guided submission milestones
 const guidedSubmissionTagsInput = document.getElementById(
   "guided-tagify-submission-milestone-tags-import"
@@ -1332,6 +1349,7 @@ const guidedSubmissionTagsTagify = new Tagify(guidedSubmissionTagsInput, {
     closeOnSelect: true,
   },
 });
+createDragSort(guidedSubmissionTagsTagify);
 
 const guidedSubmissionTagsInputManual = document.getElementById(
   "guided-tagify-submission-milestone-tags-manual"
@@ -1349,6 +1367,12 @@ const guidedSubmissionTagsTagifyManual = new Tagify(
     },
   }
 );
+createDragSort(guidedSubmissionTagsTagifyManual);
+
+// listen to tagify "change" event and print updated value
+guidedSubmissionTagsTagifyManual.on("change", (e) =>
+  console.log(e.detail.value)
+);
 
 // initiate Tagify input fields for Dataset description file
 var keywordInput = document.getElementById("ds-keywords"),
@@ -1356,10 +1380,13 @@ var keywordInput = document.getElementById("ds-keywords"),
     duplicates: false,
   });
 
+createDragSort(keywordTagify);
+
 var otherFundingInput = document.getElementById("ds-other-funding"),
   otherFundingTagify = new Tagify(otherFundingInput, {
     duplicates: false,
   });
+createDragSort(otherFundingTagify);
 
 var collectionDatasetInput = document.getElementById("tagify-collection-tags"),
   collectionDatasetTags = new Tagify(collectionDatasetInput, {
@@ -1376,6 +1403,7 @@ var collectionDatasetInput = document.getElementById("tagify-collection-tags"),
       rightKey: true,
     },
   });
+createDragSort(collectionDatasetTags);
 
 var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
   studyOrganSystemsTagify = new Tagify(studyOrganSystemsInput, {
@@ -1406,27 +1434,32 @@ var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
       closeOnSelect: true,
     },
   });
+createDragSort(studyOrganSystemsTagify);
 
 var studyTechniquesInput = document.getElementById("ds-study-technique"),
   studyTechniquesTagify = new Tagify(studyTechniquesInput, {
     duplicates: false,
   });
+createDragSort(studyTechniquesTagify);
 
 var studyApproachesInput = document.getElementById("ds-study-approach"),
   studyApproachesTagify = new Tagify(studyApproachesInput, {
     duplicates: false,
   });
+createDragSort(studyApproachesTagify);
 
 // tagify the input inside of the "Add/edit tags" manage dataset section
 var datasetTagsInput = document.getElementById("tagify-dataset-tags"),
   // initialize Tagify on the above input node reference
   datasetTagsTagify = new Tagify(datasetTagsInput);
+createDragSort(datasetTagsTagify);
 
 var guidedDatasetTagsInput = document.getElementById(
     "guided-tagify-dataset-tags"
   ),
   // initialize Tagify on the above input node reference
   guidedDatasetTagsTagify = new Tagify(guidedDatasetTagsInput);
+createDragSort(guidedDatasetTagsTagify);
 
 ///////////////////// Airtable Authentication /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -1548,6 +1581,7 @@ var milestoneTagify1 = new Tagify(milestoneInput1, {
     closeOnSelect: true,
   },
 });
+createDragSort(milestoneTagify1);
 
 // generate subjects file
 ipcRenderer.on(
@@ -2627,6 +2661,8 @@ function loadContributorInfo(lastName, firstName) {
       closeOnSelect: true,
     },
   });
+  createDragSort(tagifyRole);
+
   var tagifyAffliation = new Tagify(
     document.getElementById("input-con-affiliation"),
     {
@@ -2641,6 +2677,8 @@ function loadContributorInfo(lastName, firstName) {
       duplicates: false,
     }
   );
+  createDragSort(tagifyAffliation);
+
   tagifyRole.removeAllTags();
   tagifyAffliation.removeAllTags();
   var contactLabel = $("#ds-contact-person");
@@ -4808,7 +4846,7 @@ ipcRenderer.on("selected-files-organize-datasets", async (event, path) => {
     });
   }
   if (path.length > 0) {
-    if (path.length < 500) {
+    if (path.length < 0) {
       await addFilesfunction(
         path,
         myPath,
@@ -4897,7 +4935,7 @@ ipcRenderer.on(
       }).then(async (result) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
-          if (pathElement.length > 500) {
+          if (pathElement.length > 0) {
             let load_spinner_promise = new Promise(async (resolved) => {
               let background = document.createElement("div");
               let spinner_container = document.createElement("div");
@@ -4944,7 +4982,7 @@ ipcRenderer.on(
             );
           }
         } else if (result.isDenied) {
-          if (pathElement.length > 500) {
+          if (pathElement.length > 0) {
             let load_spinner_promise = new Promise(async (resolved) => {
               let background = document.createElement("div");
               let spinner_container = document.createElement("div");
@@ -4993,7 +5031,8 @@ ipcRenderer.on(
         }
       });
     } else {
-      if (pathElement.length > 500) {
+      console.log(pathElement);
+      if (pathElement.length > 0) {
         let load_spinner_promise = new Promise(async (resolved) => {
           let background = document.createElement("div");
           let spinner_container = document.createElement("div");
@@ -5036,12 +5075,12 @@ ipcRenderer.on(
   }
 );
 
-async function addFoldersfunction(
+const addFoldersfunction = async (
   action,
   nonallowedFolderArray,
   folderArray,
   currentLocation
-) {
+) => {
   let importToast = new Notyf({
     position: { x: "right", y: "bottom" },
     ripple: true,
@@ -5226,7 +5265,7 @@ async function addFoldersfunction(
       );
     }
   }
-}
+};
 
 //// Step 3. Organize dataset: Add files or folders with drag&drop
 function allowDrop(ev) {
@@ -5318,10 +5357,80 @@ async function drop(ev) {
       } else {
         return;
       }
-      dropHelper(
+      let load_spinner_promise = new Promise(async (resolved) => {
+        let background = document.createElement("div");
+        let spinner_container = document.createElement("div");
+        let spinner_icon = document.createElement("div");
+        spinner_container.setAttribute("id", "items_loading_container");
+        spinner_icon.setAttribute("id", "item_load");
+        spinner_icon.setAttribute(
+          "class",
+          "ui large active inline loader icon-wrapper"
+        );
+        background.setAttribute("class", "loading-items-background");
+        background.setAttribute("id", "loading-items-background-overlay");
+
+        spinner_container.append(spinner_icon);
+        document.body.prepend(background);
+        document.body.prepend(spinner_container);
+        let loading_items_spinner = document.getElementById(
+          "items_loading_container"
+        );
+        loading_items_spinner.style.display = "block";
+        if (loading_items_spinner.style.display === "block") {
+          setTimeout(() => {
+            resolved();
+          }, 100);
+        }
+      }).then(async () => {
+        await dropHelper(
+          filesElement,
+          targetElement,
+          action,
+          myPath,
+          importedFiles,
+          importedFolders,
+          nonAllowedDuplicateFiles,
+          uiFiles,
+          uiFolders
+        );
+        // Swal.close();
+        document.getElementById("loading-items-background-overlay").remove();
+        document.getElementById("items_loading_container").remove();
+        // background.remove();
+      });
+    });
+  } else {
+    let load_spinner_promise = new Promise(async (resolved) => {
+      let background = document.createElement("div");
+      let spinner_container = document.createElement("div");
+      let spinner_icon = document.createElement("div");
+      spinner_container.setAttribute("id", "items_loading_container");
+      spinner_icon.setAttribute("id", "item_load");
+      spinner_icon.setAttribute(
+        "class",
+        "ui large active inline loader icon-wrapper"
+      );
+      background.setAttribute("class", "loading-items-background");
+      background.setAttribute("id", "loading-items-background-overlay");
+
+      spinner_container.append(spinner_icon);
+      document.body.prepend(background);
+      document.body.prepend(spinner_container);
+      let loading_items_spinner = document.getElementById(
+        "items_loading_container"
+      );
+      loading_items_spinner.style.display = "block";
+      if (loading_items_spinner.style.display === "block") {
+        setTimeout(() => {
+          resolved();
+        }, 100);
+      }
+    }).then(async () => {
+      await dropHelper(
         filesElement,
         targetElement,
-        action,
+        "",
         myPath,
         importedFiles,
         importedFolders,
@@ -5329,23 +5438,15 @@ async function drop(ev) {
         uiFiles,
         uiFolders
       );
+      // Swal.close();
+      document.getElementById("loading-items-background-overlay").remove();
+      document.getElementById("items_loading_container").remove();
+      // background.remove();
     });
-  } else {
-    dropHelper(
-      filesElement,
-      targetElement,
-      "",
-      myPath,
-      importedFiles,
-      importedFolders,
-      nonAllowedDuplicateFiles,
-      uiFiles,
-      uiFolders
-    );
   }
 }
 
-async function dropHelper(
+const dropHelper = async (
   ev1,
   ev2,
   action,
@@ -5355,7 +5456,7 @@ async function dropHelper(
   nonAllowedDuplicateFiles,
   uiFiles,
   uiFolders
-) {
+) => {
   let importToast = new Notyf({
     position: { x: "right", y: "bottom" },
     ripple: true,
@@ -5828,7 +5929,7 @@ async function dropHelper(
   }
   beginScrollListen();
   $("body").removeClass("waiting");
-}
+};
 
 var irregularFolderArray = [];
 function detectIrregularFolders(folderName, pathEle) {
@@ -6761,7 +6862,10 @@ $("#inputNewNameDataset").on("click", () => {
 });
 
 $("#inputNewNameDataset").keyup(function () {
-  $("#nextBtn").prop("disabled", true);
+  let step6 = document.getElementById("generate-dataset-tab");
+  if (step6.classList.contains("tab-active")) {
+    $("#nextBtn").prop("disabled", true);
+  }
 
   var newName = $("#inputNewNameDataset").val().trim();
 
@@ -7535,6 +7639,9 @@ var uploadComplete = new Notyf({
 
 // Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
 async function initiate_generate() {
+  // Disable the Guided Mode sidebar button to prevent the sodaJSONObj from being modified
+  document.getElementById("guided_mode_view").style.pointerEvents = "none";
+
   // Initiate curation by calling Python function
   let manifest_files_requested = false;
   var main_curate_status = "Solving";
@@ -7665,6 +7772,8 @@ async function initiate_generate() {
         uploadedFiles,
         false
       );
+      //Allow guided_mode_view to be clicked again
+      document.getElementById("guided_mode_view").style.pointerEvents = "";
 
       try {
         let responseObject = await client.get(
@@ -7682,6 +7791,9 @@ async function initiate_generate() {
       }
     })
     .catch(async (error) => {
+      //Allow guided_mode_view to be clicked again
+      document.getElementById("guided_mode_view").style.pointerEvents = "";
+
       clientError(error);
       let emessage = userErrorMessage(error);
       organizeDataset_option_buttons.style.display = "flex";
@@ -9484,7 +9596,6 @@ $("#validate_dataset_bttn").on("click", async () => {
 
 //function used to scale banner images
 const scaleBannerImage = async (imagePath) => {
-  console.log("scaling");
   try {
     let imageScaled = await client.post(
       `/manage_datasets/bf_banner_image/scale_image`,
