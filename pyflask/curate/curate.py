@@ -3303,7 +3303,6 @@ def generate_manifest_file_locally(generate_purpose, soda_json_structure):
 
 
 
-guided_manifest_folder_path = join(userpath, "SODA", "Guided-Manifest-Files")
 
 def guided_generate_manifest_file_data(dataset_structure_obj):
 

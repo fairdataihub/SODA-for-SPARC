@@ -9,6 +9,7 @@ from curate import (
     main_curate_function,
     main_curate_function_progress,
     generate_manifest_file_locally,
+    guided_generate_manifest_file_data,
     check_JSON_size,
     main_curate_function_upload_details,
     create_high_level_manifest_files_existing_local_starting_point,
@@ -157,7 +158,7 @@ class GenerateManifestFiles(Resource):
 
 
 model_generate_manifest_locally_response = api.model( "GenerateManifestLocallyResponse", {
-    "success_message_or_manifest_destination": fields.String(description="Success message or path to the manifest file"),
+    "success_message_or_manifest_destinationa": fields.String(description="Success message or path to the manifest file"),
 })
 
 @api.route('/manifest_files')
@@ -184,6 +185,27 @@ class GenerateManifestLocally(Resource):
 
 
 
+
+
+
+
+@api.route('/guided_generate_high_level_folder_manifest_data')
+class GenerateManifestData(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('dataset_structure_obj', type=dict, required=True, help='dataset structure used to generate manifest files for each high level folder', location='json')
+    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request'}, description="Generate Manifest Data for each of the high level folders. Returns an array of arrays to be inserted into jspreadsheet.")
+    @api.expect(parser)
+    def post(self):
+
+        data = self.parser.parse_args()
+        dataset_structure_obj = data.get("dataset_structure_obj")
+        try:
+            return guided_generate_manifest_file_data(dataset_structure_obj)
+        except Exception as e:
+            api.abort(500, str(e))
+
+
+            
 model_dataset_size_response = api.model( "DatasetSizeResponse", {
     "dataset_size": fields.Integer(description="Size of the dataset"),
 })

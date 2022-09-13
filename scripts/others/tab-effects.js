@@ -166,9 +166,6 @@ const showParentTab = (tabNow, nextOrPrev) => {
   if (tabNow == x.length - 1) {
     // If in step 6, show the generate button and the preview tab
     $("#nextBtn").css("display", "none");
-    console.log(sodaJSONObj);
-    console.log(datasetStructureJSONObj);
-    console.log("fill info details function called");
 
     let dataset_name = fill_info_details();
     datasetStructureJSONObj["files"] = sodaJSONObj["metadata-files"];
@@ -1063,7 +1060,7 @@ async function transitionSubQuestions(
   let step6 = document.getElementById("generate-dataset-tab");
   if (ev.getAttribute("data-next") === "Question-generate-dataset-BF-dataset") {
     // $("#nextBtn").prop("disabled", true);
-    if(step6.classList.contains("tab-active")) {
+    if (step6.classList.contains("tab-active")) {
       $("#nextBtn").prop("disabled", true);
     }
     if ($("#current-bf-dataset-generate").text() !== "None") {
@@ -1081,11 +1078,14 @@ async function transitionSubQuestions(
       $("#button-confirm-bf-dataset-getting-started").show();
     }
   }
-  if(ev.getAttribute("data-next") === "Question-generate-dataset-choose-ds-name") {
-    if(step6.classList.contains("tab-active")) {
+  if (
+    ev.getAttribute("data-next") === "Question-generate-dataset-choose-ds-name"
+  ) {
+    if (step6.classList.contains("tab-active")) {
       $("#nextBtn").prop("disabled", true);
-      if(document.getElementById("inputNewNameDataset").val != "") {
-        document.getElementById("btn-confirm-new-dataset-name").style.display = "inline-block";
+      if (document.getElementById("inputNewNameDataset").val != "") {
+        document.getElementById("btn-confirm-new-dataset-name").style.display =
+          "inline-block";
       }
     }
   }
@@ -2049,7 +2049,7 @@ async function transitionSubQuestionsButton(
   } else {
     // create moving effects when new questions appear
     let step6 = document.getElementById("generate-dataset-tab");
-    if(step6.classList.contains("tab-active")) {
+    if (step6.classList.contains("tab-active")) {
       $("#nextBtn").prop("disabled", true);
     }
     // $("#nextBtn").prop("disabled", false);

@@ -638,7 +638,6 @@ const run_pre_flight_checks = async (check_update = true) => {
                   type: "final",
                   message: "You're all set!",
                 });
-                console.log("1");
                 await checkForAnnouncements("announcements");
                 resolve(true);
               }
@@ -652,7 +651,6 @@ const run_pre_flight_checks = async (check_update = true) => {
               type: "final",
               message: "You're all set!",
             });
-            console.log("2");
             await checkForAnnouncements("announcements");
             resolve(true);
           }
@@ -1302,15 +1300,14 @@ var guidedProgressFilePath = path.join(
 const guidedManifestFilePath = path.join(
   homeDirectory,
   "SODA",
-  "Guided-Manifest-Files"
+  "guided_manifest_files"
 );
 var protocolConfigPath = path.join(metadataPath, protocolConfigFileName);
 var allCollectionTags = {};
 var currentTags = {};
 var currentCollectionTags = [];
 
-
-if (process.platform === "darwin" || process.platform === "linux") {
+if (process.platform === "linux") {
   //check if data exists inside of the Soda folder, and if it does, move it into the capitalized SODA folder
   if (fs.existsSync(path.join(homeDirectory, "Soda"))) {
     //copy the folder contents of home/Soda to home/SODA
@@ -1325,7 +1322,6 @@ if (process.platform === "darwin" || process.platform === "linux") {
 }
 
 const createDragSort = (tagify) => {
-  // console.log(element);
   const onDragEnd = () => {
     tagify.updateValueByDOMTags();
   };
@@ -1373,9 +1369,9 @@ const guidedSubmissionTagsTagifyManual = new Tagify(
 createDragSort(guidedSubmissionTagsTagifyManual);
 
 // listen to tagify "change" event and print updated value
-guidedSubmissionTagsTagifyManual.on("change", (e) =>
-  console.log(e.detail.value)
-);
+// guidedSubmissionTagsTagifyManual.on("change", (e) =>
+//   console.log(e.detail.value)
+// );
 
 // initiate Tagify input fields for Dataset description file
 var keywordInput = document.getElementById("ds-keywords"),
@@ -5039,7 +5035,6 @@ ipcRenderer.on(
         }
       });
     } else {
-      console.log(pathElement);
       if (pathElement.length > 0) {
         let load_spinner_promise = new Promise(async (resolved) => {
           let background = document.createElement("div");
@@ -6228,18 +6223,30 @@ function fileContextMenu(event) {
 }
 
 $(document).ready(function () {
-  tippy("[data-tippy-content]:not(.tippy-content-main)", {
-    allowHTML: true,
-    interactive: true,
-    placement: "top",
-    theme: "light",
-  });
+  tippy(
+    "[data-tippy-content]:not(.tippy-content-main):not(.guided-tippy-wrapper)",
+    {
+      allowHTML: true,
+      interactive: true,
+      placement: "top",
+      theme: "light",
+    }
+  );
 
   tippy(".tippy-content-main", {
     allowHTML: true,
     interactive: true,
     placement: "bottom",
     theme: "light",
+  });
+
+  tippy(".guided-tippy-wrapper", {
+    allowHTML: true,
+    interactive: true,
+    placement: "bottom",
+    theme: "light",
+    /*apply -5 bottom margin to negate button bottom margin*/
+    offset: [0, -3],
   });
 });
 
@@ -8006,8 +8013,9 @@ async function initiate_generate() {
         var progressMessage = "";
         var statusProgressMessage = "";
         progressMessage += main_curate_progress_message + "<br>";
-        statusProgressMessage += main_curate_progress_message + "<br>";
         statusProgressMessage += "Progress: " + value.toFixed(2) + "%" + "<br>";
+        statusProgressMessage +=
+          "Elapsed time: " + elapsed_time_formatted + "<br>";
         progressMessage +=
           "Progress: " +
           value.toFixed(2) +
