@@ -81,22 +81,22 @@ const guidedModifyCurationTeamAccess = async (action) => {
       icon: "warning",
       reverseButtons: reverseSwalButtons,
       showCancelButton: true,
-      text: "This will inform the Curation Team that your dataset is ready to be reviewed. It is then advised not to make changes to the dataset until the Curation Team contacts you. Would you like to continue?"
+      text: "This will inform the Curation Team that your dataset is ready to be reviewed. It is then advised not to make changes to the dataset until the Curation Team contacts you. Would you like to continue?",
     });
     if (confirmShareWithCurationTeam) {
       try {
         await client.patch(
           `/manage_datasets/bf_dataset_permissions`,
           {
-            input_role: "manager"
+            input_role: "manager",
           },
           {
             params: {
               selected_account: defaultBfAccount,
               selected_dataset: sodaJSONObj["digital-metadata"]["name"],
               scope: "team",
-              name: "SPARC Data Curation Team"
-            }
+              name: "SPARC Data Curation Team",
+            },
           }
         );
         guidedSetCurationTeamUI(true);
@@ -109,13 +109,13 @@ const guidedModifyCurationTeamAccess = async (action) => {
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
           confirmButtonText: "OK",
-          focusConfirm: true
+          focusConfirm: true,
         });
       } catch (error) {
         notyf.open({
           duration: "5000",
           type: "error",
-          message: "Error sharing dataset with the Curation Team"
+          message: "Error sharing dataset with the Curation Team",
         });
       }
     }
@@ -138,22 +138,22 @@ const guidedModifyCurationTeamAccess = async (action) => {
       icon: "warning",
       reverseButtons: reverseSwalButtons,
       showCancelButton: true,
-      text: "Are you sure you would like to remove the SPARC Data Curation Team as a manager of this dataset?"
+      text: "Are you sure you would like to remove the SPARC Data Curation Team as a manager of this dataset?",
     });
     if (confirmUnshareWithCurationTeam) {
       try {
         await client.patch(
           `/manage_datasets/bf_dataset_permissions`,
           {
-            input_role: "remove current permissions"
+            input_role: "remove current permissions",
           },
           {
             params: {
               selected_account: defaultBfAccount,
               selected_dataset: sodaJSONObj["digital-metadata"]["name"],
               scope: "team",
-              name: "SPARC Data Curation Team"
-            }
+              name: "SPARC Data Curation Team",
+            },
           }
         );
         guidedSetCurationTeamUI(false);
@@ -166,13 +166,13 @@ const guidedModifyCurationTeamAccess = async (action) => {
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
           confirmButtonText: "OK",
-          focusConfirm: true
+          focusConfirm: true,
         });
       } catch (error) {
         notyf.open({
           duration: "5000",
           type: "error",
-          message: "Error removing Curation Team access"
+          message: "Error removing Curation Team access",
         });
       }
     }
@@ -195,7 +195,7 @@ const guidedSaveAndExit = async (exitPoint) => {
       cancelButtonColor: "#d33",
       confirmButtonText: "Exit guided mode",
       heightAuto: false,
-      backdrop: "rgba(0,0,0,0.4)"
+      backdrop: "rgba(0,0,0,0.4)",
     });
     if (returnToGuidedHomeScreen) {
       guidedUnLockSideBar();
@@ -217,7 +217,7 @@ const guidedSaveAndExit = async (exitPoint) => {
       cancelButtonColor: "#d33",
       confirmButtonText: "Exit guided mode",
       heightAuto: false,
-      backdrop: "rgba(0,0,0,0.4)"
+      backdrop: "rgba(0,0,0,0.4)",
     });
     if (returnToGuidedHomeScreen) {
       guidedUnLockSideBar();
@@ -507,7 +507,7 @@ const deleteProgressCard = async (progressCardDeleteButton) => {
     cancelButtonColor: "#d33",
     confirmButtonText: "Delete progress file",
     cancelButtonText: "Cancel",
-    focusCancel: true
+    focusCancel: true,
   });
   if (result.isConfirmed) {
     //Get the path of the progress file to delete
@@ -558,7 +558,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
   ).toLocaleString([], {
     year: "numeric",
     month: "numeric",
-    day: "numeric"
+    day: "numeric",
   });
 
   return `
@@ -751,7 +751,7 @@ const handlePageBranching = (selectedCardElement) => {
     tabPanel.siblings().hide();
     tabPanel.css("display", "flex");
     tabPanel[0].scrollIntoView({
-      behavior: "smooth"
+      behavior: "smooth",
     });
   }
 };
@@ -804,7 +804,7 @@ const guidedPrepareHomeScreen = async () => {
     animationData: newDataset,
     renderer: "svg",
     loop: true,
-    autoplay: true
+    autoplay: true,
   });
 
   guidedUnLockSideBar();
@@ -839,7 +839,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
       folders: {},
       files: {},
       type: "",
-      action: []
+      action: [],
     };
   }
   //Add pools to the datsetStructuresJSONObj if they don't exist
@@ -850,7 +850,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
         folders: {},
         files: {},
         type: "",
-        action: []
+        action: [],
       };
     }
   }
@@ -870,7 +870,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
           folders: {},
           files: {},
           type: "",
-          action: []
+          action: [],
         };
       }
     }
@@ -886,7 +886,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
           folders: {},
           files: {},
           type: "",
-          action: []
+          action: [],
         };
       }
     }
@@ -912,7 +912,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
           folders: {},
           files: {},
           type: "",
-          action: []
+          action: [],
         };
       }
       /**
@@ -930,7 +930,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
           folders: {},
           files: {},
           type: "",
-          action: []
+          action: [],
         };
       }
       /**
@@ -948,7 +948,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
           folders: {},
           files: {},
           type: "",
-          action: []
+          action: [],
         };
       }
     }
@@ -968,7 +968,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
           folders: {},
           files: {},
           type: "",
-          action: []
+          action: [],
         };
       }
       /**
@@ -986,7 +986,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
           folders: {},
           files: {},
           type: "",
-          action: []
+          action: [],
         };
       }
     }
@@ -1112,7 +1112,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
           showCancelButton: true,
           cancelButtonColor: "#6e7881",
           cancelButtonText: `Finish adding ${highLevelFolder} data to subjects`,
-          confirmButtonText: `Continue without adding ${highLevelFolder} data to all subjects`
+          confirmButtonText: `Continue without adding ${highLevelFolder} data to all subjects`,
         });
         if (result.isConfirmed) {
           for (subject of subjectsWithEmptyFolders) {
@@ -1221,10 +1221,10 @@ const cleanUpEmptyGuidedStructureFolders = async (
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
           showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster"
+            popup: "animate__animated animate__zoomIn animate__faster",
           },
           hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster"
+            popup: "animate__animated animate__zoomOut animate__faster",
           },
           title: "Missing data",
           html: `${highLevelFolder} data was not added to the following samples:<br /><br />
@@ -1241,7 +1241,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
           showCancelButton: true,
           cancelButtonColor: "#6e7881",
           cancelButtonText: `Finish adding ${highLevelFolder} data to samples`,
-          confirmButtonText: `Continue without adding ${highLevelFolder} data to all samples`
+          confirmButtonText: `Continue without adding ${highLevelFolder} data to all samples`,
         });
         //If the user indicates they do not have any subjects, skip to source folder
         if (result.isConfirmed) {
@@ -1504,7 +1504,7 @@ const traverseToTab = async (targetPageID) => {
           folders: {},
           files: {},
           type: "",
-          action: []
+          action: [],
         };
       }
       //Append the guided-file-explorer element to the docs folder organization container
@@ -1529,7 +1529,7 @@ const traverseToTab = async (targetPageID) => {
           folders: {},
           files: {},
           type: "",
-          action: []
+          action: [],
         };
       }
       //Append the guided-file-explorer element to the docs folder organization container
@@ -1554,7 +1554,7 @@ const traverseToTab = async (targetPageID) => {
           folders: {},
           files: {},
           type: "",
-          action: []
+          action: [],
         };
       }
       //Append the guided-file-explorer element to the docs folder organization container
@@ -1576,65 +1576,65 @@ const traverseToTab = async (targetPageID) => {
       $(folderStructurePreview).jstree({
         core: {
           check_callback: true,
-          data: {}
+          data: {},
         },
         plugins: ["types"],
         types: {
           folder: {
-            icon: "fas fa-folder fa-fw"
+            icon: "fas fa-folder fa-fw",
           },
           "folder open": {
-            icon: "fas fa-folder-open fa-fw"
+            icon: "fas fa-folder-open fa-fw",
           },
           "folder closed": {
-            icon: "fas fa-folder fa-fw"
+            icon: "fas fa-folder fa-fw",
           },
           "file xlsx": {
-            icon: "./assets/img/excel-file.png"
+            icon: "./assets/img/excel-file.png",
           },
           "file xls": {
-            icon: "./assets/img/excel-file.png"
+            icon: "./assets/img/excel-file.png",
           },
           "file png": {
-            icon: "./assets/img/png-file.png"
+            icon: "./assets/img/png-file.png",
           },
           "file PNG": {
-            icon: "./assets/img/png-file.png"
+            icon: "./assets/img/png-file.png",
           },
           "file pdf": {
-            icon: "./assets/img/pdf-file.png"
+            icon: "./assets/img/pdf-file.png",
           },
           "file txt": {
-            icon: "./assets/img/txt-file.png"
+            icon: "./assets/img/txt-file.png",
           },
           "file csv": {
-            icon: "./assets/img/csv-file.png"
+            icon: "./assets/img/csv-file.png",
           },
           "file CSV": {
-            icon: "./assets/img/csv-file.png"
+            icon: "./assets/img/csv-file.png",
           },
           "file DOC": {
-            icon: "./assets/img/doc-file.png"
+            icon: "./assets/img/doc-file.png",
           },
           "file DOCX": {
-            icon: "./assets/img/doc-file.png"
+            icon: "./assets/img/doc-file.png",
           },
           "file docx": {
-            icon: "./assets/img/doc-file.png"
+            icon: "./assets/img/doc-file.png",
           },
           "file doc": {
-            icon: "./assets/img/doc-file.png"
+            icon: "./assets/img/doc-file.png",
           },
           "file jpeg": {
-            icon: "./assets/img/jpeg-file.png"
+            icon: "./assets/img/jpeg-file.png",
           },
           "file JPEG": {
-            icon: "./assets/img/jpeg-file.png"
+            icon: "./assets/img/jpeg-file.png",
           },
           "file other": {
-            icon: "./assets/img/other-file.png"
-          }
-        }
+            icon: "./assets/img/other-file.png",
+          },
+        },
       });
       $(folderStructurePreview).on("open_node.jstree", function (event, data) {
         data.instance.set_type(data.node, "folder open");
@@ -1726,7 +1726,7 @@ const traverseToTab = async (targetPageID) => {
             animationData: successCheck,
             renderer: "svg",
             loop: false,
-            autoplay: true
+            autoplay: true,
           });
           dataDeliverableParaText.innerHTML = submission_metadata["filepath"];
         } else {
@@ -1737,7 +1737,7 @@ const traverseToTab = async (targetPageID) => {
             animationData: dragDrop,
             renderer: "svg",
             loop: true,
-            autoplay: true
+            autoplay: true,
           });
           dataDeliverableParaText.innerHTML = "";
         }
@@ -1749,7 +1749,7 @@ const traverseToTab = async (targetPageID) => {
           animationData: dragDrop,
           renderer: "svg",
           loop: true,
-          autoplay: true
+          autoplay: true,
         });
         dataDeliverableParaText.innerHTML = "";
       }
@@ -1936,8 +1936,8 @@ const traverseToTab = async (targetPageID) => {
               `/manage_datasets/bf_account_details`,
               {
                 params: {
-                  selected_account: defaultBfAccount
-                }
+                  selected_account: defaultBfAccount,
+                },
               }
             );
             let accountDetailsRes = bf_account_details_req.data.account_details;
@@ -2046,8 +2046,8 @@ const traverseToTab = async (targetPageID) => {
               `/manage_datasets/bf_account_details`,
               {
                 params: {
-                  selected_account: defaultBfAccount
-                }
+                  selected_account: defaultBfAccount,
+                },
               }
             );
             let accountDetailsRes = bf_account_details_req.data.account_details;
@@ -2112,7 +2112,7 @@ const traverseToTab = async (targetPageID) => {
       //reset the progress bar to 0
       setGuidedProgressBarValue(0);
       updateDatasetUploadProgressTable({
-        "Upload status": `Preparing dataset for upload`
+        "Upload status": `Preparing dataset for upload`,
       });
 
       const datsetName = sodaJSONObj["digital-metadata"]["name"];
@@ -2184,65 +2184,65 @@ const traverseToTab = async (targetPageID) => {
       $(folderStructurePreview).jstree({
         core: {
           check_callback: true,
-          data: {}
+          data: {},
         },
         plugins: ["types"],
         types: {
           folder: {
-            icon: "fas fa-folder fa-fw"
+            icon: "fas fa-folder fa-fw",
           },
           "folder open": {
-            icon: "fas fa-folder-open fa-fw"
+            icon: "fas fa-folder-open fa-fw",
           },
           "folder closed": {
-            icon: "fas fa-folder fa-fw"
+            icon: "fas fa-folder fa-fw",
           },
           "file xlsx": {
-            icon: "./assets/img/excel-file.png"
+            icon: "./assets/img/excel-file.png",
           },
           "file xls": {
-            icon: "./assets/img/excel-file.png"
+            icon: "./assets/img/excel-file.png",
           },
           "file png": {
-            icon: "./assets/img/png-file.png"
+            icon: "./assets/img/png-file.png",
           },
           "file PNG": {
-            icon: "./assets/img/png-file.png"
+            icon: "./assets/img/png-file.png",
           },
           "file pdf": {
-            icon: "./assets/img/pdf-file.png"
+            icon: "./assets/img/pdf-file.png",
           },
           "file txt": {
-            icon: "./assets/img/txt-file.png"
+            icon: "./assets/img/txt-file.png",
           },
           "file csv": {
-            icon: "./assets/img/csv-file.png"
+            icon: "./assets/img/csv-file.png",
           },
           "file CSV": {
-            icon: "./assets/img/csv-file.png"
+            icon: "./assets/img/csv-file.png",
           },
           "file DOC": {
-            icon: "./assets/img/doc-file.png"
+            icon: "./assets/img/doc-file.png",
           },
           "file DOCX": {
-            icon: "./assets/img/doc-file.png"
+            icon: "./assets/img/doc-file.png",
           },
           "file docx": {
-            icon: "./assets/img/doc-file.png"
+            icon: "./assets/img/doc-file.png",
           },
           "file doc": {
-            icon: "./assets/img/doc-file.png"
+            icon: "./assets/img/doc-file.png",
           },
           "file jpeg": {
-            icon: "./assets/img/jpeg-file.png"
+            icon: "./assets/img/jpeg-file.png",
           },
           "file JPEG": {
-            icon: "./assets/img/jpeg-file.png"
+            icon: "./assets/img/jpeg-file.png",
           },
           "file other": {
-            icon: "./assets/img/other-file.png"
-          }
-        }
+            icon: "./assets/img/other-file.png",
+          },
+        },
       });
       $(folderStructurePreview).on("open_node.jstree", function (event, data) {
         data.instance.set_type(data.node, "folder open");
@@ -2310,7 +2310,7 @@ const traverseToTab = async (targetPageID) => {
         animationData: blackArrow,
         renderer: "svg",
         loop: true,
-        autoplay: true
+        autoplay: true,
       });
       switchElementVisibility(
         "guided-form-add-a-subject",
@@ -2335,7 +2335,7 @@ const traverseToTab = async (targetPageID) => {
         animationData: blackArrow,
         renderer: "svg",
         loop: true,
-        autoplay: true
+        autoplay: true,
       });
       switchElementVisibility(
         "guided-form-add-a-sample",
@@ -2359,7 +2359,7 @@ const traverseToTab = async (targetPageID) => {
           animationData: successCheck,
           renderer: "svg",
           loop: false,
-          autoplay: true
+          autoplay: true,
         });
         codeDescriptionParaText.innerHTML = codeMetadata["code_description"];
       } else {
@@ -2370,7 +2370,7 @@ const traverseToTab = async (targetPageID) => {
           animationData: dragDrop,
           renderer: "svg",
           loop: true,
-          autoplay: true
+          autoplay: true,
         });
         codeDescriptionParaText.innerHTML = "";
       }
@@ -2424,7 +2424,7 @@ const traverseToTab = async (targetPageID) => {
           notyf.open({
             duration: "2000",
             type: "success",
-            message: "Link copied!"
+            message: "Link copied!",
           });
         });
       }
@@ -2446,8 +2446,8 @@ const traverseToTab = async (targetPageID) => {
         {
           params: {
             selected_account: defaultBfAccount,
-            selected_dataset: sodaJSONObj["digital-metadata"]["name"]
-          }
+            selected_dataset: sodaJSONObj["digital-metadata"]["name"],
+          },
         }
       );
       let datasetPermissions = bf_get_permissions.data.permissions;
@@ -2481,7 +2481,7 @@ const traverseToTab = async (targetPageID) => {
       //smooth scroll to top of guidedBody
       guidedBody.scrollTo({
         top: 0,
-        behavior: "smooth"
+        behavior: "smooth",
       });
     } else {
       CURRENT_PAGE.hide();
@@ -2491,7 +2491,7 @@ const traverseToTab = async (targetPageID) => {
       CURRENT_PAGE.css("display", "flex");
       //smooth scroll to top of guidedBody
       guidedBody.scrollTo({
-        top: 0
+        top: 0,
       });
     }
   } catch (error) {
@@ -2548,7 +2548,7 @@ const setActiveSubPage = (pageIdToActivate) => {
           createTag: function () {
             // Disable tagging
             return null;
-          }
+          },
         });
         //update the newPoolSubjectsElement with the subjects in the pool
         updatePoolDropdown($(newPoolSubjectsSelectElement), poolName);
@@ -2627,7 +2627,7 @@ const setActiveSubPage = (pageIdToActivate) => {
         animationData: blackArrow,
         renderer: "svg",
         loop: true,
-        autoplay: true
+        autoplay: true,
       });
       break;
     }
@@ -2657,7 +2657,7 @@ const setActiveSubPage = (pageIdToActivate) => {
         animationData: blackArrow,
         renderer: "svg",
         loop: true,
-        autoplay: true
+        autoplay: true,
       });
       break;
     }
@@ -2698,7 +2698,7 @@ const setActiveSubPage = (pageIdToActivate) => {
         animationData: blackArrow,
         renderer: "svg",
         loop: true,
-        autoplay: true
+        autoplay: true,
       });
       break;
     }
@@ -2728,7 +2728,7 @@ const setActiveSubPage = (pageIdToActivate) => {
         animationData: blackArrow,
         renderer: "svg",
         loop: true,
-        autoplay: true
+        autoplay: true,
       });
       break;
     }
@@ -2769,7 +2769,7 @@ const setActiveSubPage = (pageIdToActivate) => {
         animationData: blackArrow,
         renderer: "svg",
         loop: true,
-        autoplay: true
+        autoplay: true,
       });
       break;
     }
@@ -2799,7 +2799,7 @@ const setActiveSubPage = (pageIdToActivate) => {
         animationData: blackArrow,
         renderer: "svg",
         loop: true,
-        autoplay: true
+        autoplay: true,
       });
       break;
     }
@@ -3149,7 +3149,7 @@ const openEditGuidedDatasetSwal = async (datasetName) => {
       "Editing a dataset curated via guided mode is handled via Free-Form mode.",
     html: `\nTo edit <b>${datasetName}</b>, go to Free-Form mode, select the dataset component that you would like
     to modify, select ${datasetName} from the dataset selection drop-down, and edit the data in Free-Form mode.`,
-    confirmButtonText: "OK"
+    confirmButtonText: "OK",
   });
 };
 
@@ -3246,7 +3246,7 @@ const guidedUploadStatusIcon = (elementID, status) => {
       animationData: successCheck,
       renderer: "svg",
       loop: false,
-      autoplay: true
+      autoplay: true,
     });
   }
   if (status === "error") {
@@ -3255,7 +3255,7 @@ const guidedUploadStatusIcon = (elementID, status) => {
       animationData: errorMark,
       renderer: "svg",
       loop: false,
-      autoplay: true
+      autoplay: true,
     });
   }
 };
@@ -3313,7 +3313,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
         subjectsInPools.push({
           subjectName: subjectName,
           poolName: poolName,
-          samples: Object.keys(subjectData)
+          samples: Object.keys(subjectData),
         });
       }
     }
@@ -3323,7 +3323,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     )) {
       subjectsOutsidePools.push({
         subjectName: subjectName,
-        samples: Object.keys(subjectData)
+        samples: Object.keys(subjectData),
       });
     }
     return [subjectsInPools, subjectsOutsidePools];
@@ -3528,7 +3528,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
           samplesInPools.push({
             sampleName: sampleName,
             subjectName: subjectName,
-            poolName: poolName
+            poolName: poolName,
           });
         }
       }
@@ -3541,7 +3541,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       for (sampleName of Object.keys(subjectData)) {
         samplesOutsidePools.push({
           sampleName: sampleName,
-          subjectName: subjectName
+          subjectName: subjectName,
         });
       }
     }
@@ -3654,7 +3654,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
         subjectsInPools.push({
           subjectName: subjectName,
           poolName: poolName,
-          samples: Object.keys(subjectData)
+          samples: Object.keys(subjectData),
         });
       }
     }
@@ -3664,7 +3664,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     )) {
       subjectsOutsidePools.push({
         subjectName: subjectName,
-        samples: Object.keys(subjectData)
+        samples: Object.keys(subjectData),
       });
     }
     return [subjectsInPools, subjectsOutsidePools];
@@ -3680,7 +3680,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
           folders: {},
           files: {},
           type: "",
-          action: []
+          action: [],
         };
       }
     }
@@ -3693,7 +3693,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
           folders: {},
           files: {},
           type: "",
-          action: []
+          action: [],
         };
       }
     }
@@ -3708,7 +3708,7 @@ const highLevelFolderPageData = {
     contentsText:
       "Your primary should contain lorem ipsum foo bar random instructional text will go here",
     pathSuffix: "primary/",
-    backPageId: "guided-primary-folder-tab"
+    backPageId: "guided-primary-folder-tab",
   },
   source: {
     headerText:
@@ -3716,7 +3716,7 @@ const highLevelFolderPageData = {
     contentsText:
       "Your source folder should contain lorem ipsum foo bar random instructional text will go here",
     pathSuffix: "source/",
-    backPageId: "guided-source-folder-tab"
+    backPageId: "guided-source-folder-tab",
   },
   derivative: {
     headerText:
@@ -3724,7 +3724,7 @@ const highLevelFolderPageData = {
     contentsText:
       "Your derivative folder should contain lorem ipsum foo bar random instructional text will go here",
     pathSuffix: "derivative/",
-    backPageId: "guided-derivative-folder-tab"
+    backPageId: "guided-derivative-folder-tab",
   },
   code: {
     headerText:
@@ -3733,7 +3733,7 @@ const highLevelFolderPageData = {
     as you would like to have them in your dataset when it is generated (note that none of
     your original data will be modified).<br />`,
     pathSuffix: "code/",
-    backPageId: "guided-code-folder-tab"
+    backPageId: "guided-code-folder-tab",
   },
   protocol: {
     headerText:
@@ -3742,7 +3742,7 @@ const highLevelFolderPageData = {
     as you would like to have them in your dataset when it is generated (note that none of
     your original data will be modified).`,
     pathSuffix: "protocol/",
-    backPageId: "guided-protocol-folder-tab"
+    backPageId: "guided-protocol-folder-tab",
   },
   docs: {
     headerText:
@@ -3751,8 +3751,8 @@ const highLevelFolderPageData = {
     as you would like to have them in your dataset when it is generated (note that none of
     your original data will be modified).`,
     pathSuffix: "docs/",
-    backPageId: "guided-docs-folder-tab"
-  }
+    backPageId: "guided-docs-folder-tab",
+  },
 };
 const generateHighLevelFolderSubFolderPageData = (
   sampleOrSubject,
@@ -3761,7 +3761,7 @@ const generateHighLevelFolderSubFolderPageData = (
 ) => {
   const customPageData = {
     pathSuffix: `${highLevelFolderName}/${pathSuffix}`,
-    backPageId: `guided-${sampleOrSubject}-folder-tab`
+    backPageId: `guided-${sampleOrSubject}-folder-tab`,
   };
   return customPageData;
 };
@@ -4072,7 +4072,7 @@ const addContributorField = () => {
     ".guided-contributor-affiliation-input"
   );
   const affiliationTagify = new Tagify(contributorAffiliationInput, {
-    duplicate: false
+    duplicate: false,
   });
 
   createDragSort(affiliationTagify);
@@ -4101,14 +4101,14 @@ const addContributorField = () => {
       "Sponsor",
       "Supervisor",
       "WorkPackageLeader",
-      "Other"
+      "Other",
     ],
     enforceWhitelist: true,
     dropdown: {
       enabled: 0,
       closeOnSelect: true,
-      position: "auto"
-    }
+      position: "auto",
+    },
   });
   //scroll to the new element
 
@@ -4233,7 +4233,7 @@ const renderContributorFields = (contributionMembersArray) => {
   );
   contributorAffiliationInputs.forEach((contributorAffiliationInput) => {
     const tagify = new Tagify(contributorAffiliationInput, {
-      duplicate: false
+      duplicate: false,
     });
     createDragSort(tagify);
     if (contributorAffiliationInput.dataset.initialContributorAffiliation) {
@@ -4271,14 +4271,14 @@ const renderContributorFields = (contributionMembersArray) => {
         "Sponsor",
         "Supervisor",
         "WorkPackageLeader",
-        "Other"
+        "Other",
       ],
       enforceWhitelist: true,
       dropdown: {
         enabled: 0,
         closeOnSelect: true,
-        position: "auto"
-      }
+        position: "auto",
+      },
     });
     createDragSort(tagify);
     //if contributorRoleElement has data-initial-contributors, the create a tagify for each comma split contributor role
@@ -4416,9 +4416,9 @@ const openAddAdditionLinkSwal = async () => {
       return [
         $("#guided-other-link").val(),
         $("#guided-other-link-relation").val(),
-        $("#guided-other-description").val()
+        $("#guided-other-description").val(),
       ];
-    }
+    },
   });
   if (values) {
     const link = values[0];
@@ -4438,7 +4438,7 @@ const openAddAdditionLinkSwal = async () => {
       link: link,
       relation: relation,
       description: description,
-      type: linkType
+      type: linkType,
     });
     renderAdditionalLinksTable();
   }
@@ -4757,7 +4757,7 @@ const openCopySubjectMetadataPopup = async () => {
       showCancelButton: true,
       reverseButtons: reverseSwalButtons,
       confirmButtonColor: "Copy",
-      focusCancel: true
+      focusCancel: true,
     })
     .then((result) => {
       if (result.isConfirmed) {
@@ -4784,7 +4784,7 @@ const openCopySubjectMetadataPopup = async () => {
               subjectsTableData[i] = [
                 subjectsTableData[i][0],
                 subjectsTableData[i][1],
-                ...copyFromSubjectData
+                ...copyFromSubjectData,
               ];
             }
           }
@@ -4853,7 +4853,7 @@ const openCopySampleMetadataPopup = async () => {
       showCancelButton: true,
       reverseButtons: reverseSwalButtons,
       confirmButtonText: "Copy",
-      focusCancel: true
+      focusCancel: true,
     })
     .then((result) => {
       if (result.isConfirmed) {
@@ -4886,7 +4886,7 @@ const openCopySampleMetadataPopup = async () => {
                 sampleData[0],
                 sampleData[1],
                 wasDerivedFrom,
-                sampleData[3]
+                sampleData[3],
               ];
               sampleData = sampleData.concat(copyFromSampleData);
               samplesTableData[index] = sampleData;
@@ -4957,7 +4957,7 @@ const specifySubject = (event, subjectNameInput) => {
       notyf.open({
         duration: "3000",
         type: "error",
-        message: error
+        message: error,
       });
     }
   }
@@ -5018,7 +5018,7 @@ const specifySample = (event, sampleNameInput) => {
       notyf.open({
         duration: "3000",
         type: "error",
-        message: error
+        message: error,
       });
     }
   }
@@ -5055,7 +5055,7 @@ const specifyPool = (event, poolNameInput) => {
           notyf.open({
             duration: "3000",
             type: "error",
-            message: "Pool IDs may not contain spaces or special characters"
+            message: "Pool IDs may not contain spaces or special characters",
           });
           return;
         }
@@ -5088,7 +5088,7 @@ const specifyPool = (event, poolNameInput) => {
             placeholder: "Select subjects",
             tags: true,
             width: "100%",
-            closeOnSelect: false
+            closeOnSelect: false,
           });
           $(newPoolSubjectsSelectElement).on("select2:open", (e) => {
             updatePoolDropdown($(e.currentTarget), poolName);
@@ -5108,7 +5108,7 @@ const specifyPool = (event, poolNameInput) => {
       notyf.open({
         duration: "3000",
         type: "error",
-        message: error
+        message: error,
       });
     }
   }
@@ -5351,7 +5351,7 @@ const confirmEnter = (button) => {
   const ke = new KeyboardEvent("keyup", {
     bubbles: true,
     cancelable: true,
-    keyCode: 13
+    keyCode: 13,
   });
 
   let input_field = button.previousElementSibling;
@@ -5754,7 +5754,7 @@ const createSampleFolder = (event, sampleNameInput) => {
               folders: {},
               files: {},
               type: "",
-              action: []
+              action: [],
             };
           }
         } else {
@@ -5765,7 +5765,7 @@ const createSampleFolder = (event, sampleNameInput) => {
       notyf.open({
         duration: "3000",
         type: "error",
-        message: error
+        message: error,
       });
     }
   }
@@ -5876,7 +5876,7 @@ const removePermission = (clickedPermissionRemoveButton) => {
       duration: "6000",
       type: "error",
       message:
-        "You can not modify the owner on this step. To do so, please return to the owner selection page"
+        "You can not modify the owner on this step. To do so, please return to the owner selection page",
     });
     return;
   }
@@ -5885,7 +5885,7 @@ const removePermission = (clickedPermissionRemoveButton) => {
       duration: "6000",
       type: "error",
       message:
-        "You can not deselect yourself as a manager, as you need manager permissions to upload a dataset"
+        "You can not deselect yourself as a manager, as you need manager permissions to upload a dataset",
     });
     return;
   }
@@ -5981,11 +5981,11 @@ $("#guided-button-no-source-data").on("click", () => {
       customClass: "swal-wide",
       backdrop: "rgba(0,0,0, 0.4)",
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster"
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster"
-      }
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         //User agrees to delete source folder
@@ -6006,7 +6006,7 @@ $("#guided-button-has-derivative-data").on("click", () => {
       folders: {},
       files: {},
       type: "",
-      action: []
+      action: [],
     };
   $("#guided-file-explorer-elements").appendTo(
     $("#guided-user-has-derivative-data")
@@ -6033,11 +6033,11 @@ $("#guided-button-no-derivative-data").on("click", () => {
       customClass: "swal-wide",
       backdrop: "rgba(0,0,0, 0.4)",
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster"
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster"
-      }
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         //User agrees to delete derivative folder
@@ -6073,10 +6073,10 @@ $("#guided-submission-completion-date").change(function () {
       title: `<span style="text-align:center"> Enter your Milestone completion date </span>`,
       html: `<input type="date" id="milestone_date_picker" >`,
       showClass: {
-        popup: "animate__animated animate__fadeInDown animate__faster"
+        popup: "animate__animated animate__fadeInDown animate__faster",
       },
       hideClass: {
-        popup: "animate__animated animate__fadeOutUp animate__faster"
+        popup: "animate__animated animate__fadeOutUp animate__faster",
       },
       didOpen: () => {
         document.getElementById("milestone_date_picker").valueAsDate =
@@ -6087,9 +6087,9 @@ $("#guided-submission-completion-date").change(function () {
           "milestone_date_picker"
         ).value;
         return {
-          date: input_date
+          date: input_date,
         };
-      }
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         const input_date = result.value.date;
@@ -6125,10 +6125,10 @@ $("#guided-submission-completion-date-manual").change(function () {
       title: `<span style="text-align:center"> Enter your Milestone completion date </span>`,
       html: `<input type="date" id="milestone_date_picker" >`,
       showClass: {
-        popup: "animate__animated animate__fadeInDown animate__faster"
+        popup: "animate__animated animate__fadeInDown animate__faster",
       },
       hideClass: {
-        popup: "animate__animated animate__fadeOutUp animate__faster"
+        popup: "animate__animated animate__fadeOutUp animate__faster",
       },
       didOpen: () => {
         document.getElementById("milestone_date_picker").valueAsDate =
@@ -6139,9 +6139,9 @@ $("#guided-submission-completion-date-manual").change(function () {
           "milestone_date_picker"
         ).value;
         return {
-          date: input_date
+          date: input_date,
         };
-      }
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         const input_date = result.value.date;
@@ -6225,8 +6225,8 @@ const getExistingPennsieveDatasetNames = async () => {
     headers: {
       Accept: "*/*",
       "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`
-    }
+      Authorization: `Bearer ${jwt}`,
+    },
   };
   const datasetNamesResponse = await fetch(
     "https://api.pennsieve.io/datasets/",
@@ -6262,17 +6262,17 @@ const guidedShowBannerImagePreview = (imagePath) => {
   );
 
   // bannerImagePreviewelement.innerHTML = '';
-  if(bannerImagePreviewelement.childElementCount > 0) {
+  if (bannerImagePreviewelement.childElementCount > 0) {
     bannerImagePreviewelement.removeChild(bannerImagePreviewelement.firstChild);
   }
 
   let date = new Date();
-  let guidedbannerImageElem = document.createElement('img');
+  let guidedbannerImageElem = document.createElement("img");
   //imagePath + cachebreakeer at the end to update image every time
   guidedbannerImageElem.src = imagePath + "?" + date.getMilliseconds();
-  guidedbannerImageElem.alt = 'Preview of banner image';
-  guidedbannerImageElem.style = 'max-height: 300px';
-  
+  guidedbannerImageElem.alt = "Preview of banner image";
+  guidedbannerImageElem.style = "max-height: 300px";
+
   bannerImagePreviewelement.appendChild(guidedbannerImageElem);
 
   // bannerImagePreviewelement.innerHTML = guidedBannerImageElement;
@@ -6506,43 +6506,43 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
                   ".primary-selection-aside-item"
                 ),
                 intro:
-                  "Select the different samples here to specify data files for each of them."
+                  "Select the different samples here to specify data files for each of them.",
               },
               {
                 element: document.querySelector("#guided-button-back"),
                 intro:
-                  "To view the folders above the folder you are currently in, click the up button."
+                  "To view the folders above the folder you are currently in, click the up button.",
               },
               {
                 element: document.querySelector("#guided-new-folder"),
                 intro:
-                  "To include a new empty folder, click the 'New folder' button. You can then specify data to be included into it."
+                  "To include a new empty folder, click the 'New folder' button. You can then specify data to be included into it.",
               },
               {
                 element: document.querySelector("#guided-import-folder"),
                 intro:
-                  "To import a folder from your computer, click the 'Import folder' button."
+                  "To import a folder from your computer, click the 'Import folder' button.",
               },
               {
                 element: document.querySelector("#guided-imoprt-file"),
                 intro:
-                  "To import a data file from your computer, click the 'Import file' button."
+                  "To import a data file from your computer, click the 'Import file' button.",
               },
               {
                 element: document.getElementById("items"),
                 intro: `Folders inside your dataset are represented by the folder icon.<br /><br />
                   To view the contents of a folder, double click the folder.<br /><br />
-                  Right clicking a folder will bring up a context menu which allows you to rename, move, or delete the folder.`
+                  Right clicking a folder will bring up a context menu which allows you to rename, move, or delete the folder.`,
               },
               {
                 element: document.getElementById("items"),
                 intro: `Files inside your dataset are represented with an icon relative to the file type.<br /><br />
-                  Right clicking a file will bring up a context menu which allows you to rename, move, or delete the file.`
-              }
+                  Right clicking a file will bring up a context menu which allows you to rename, move, or delete the file.`,
+              },
             ],
             exitOnEsc: false,
             exitOnOverlayClick: false,
-            disableInteraction: false
+            disableInteraction: false,
           })
           .onbeforeexit(function () {
             sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = true;
@@ -6991,13 +6991,13 @@ $(document).ready(async () => {
         if (!datasetNameInput) {
           errorArray.push({
             type: "notyf",
-            message: "Please enter a dataset name."
+            message: "Please enter a dataset name.",
           });
         }
         if (!datasetSubtitleInput) {
           errorArray.push({
             type: "notyf",
-            message: "Please enter a dataset subtitle."
+            message: "Please enter a dataset subtitle.",
           });
         }
         if (errorArray.length > 0) {
@@ -7016,7 +7016,7 @@ $(document).ready(async () => {
             errorArray.push({
               type: "notyf",
               message:
-                "An existing progress file already exists with that name. Please choose a different name."
+                "An existing progress file already exists with that name. Please choose a different name.",
             });
             throw errorArray;
           }
@@ -7034,7 +7034,7 @@ $(document).ready(async () => {
           } catch (error) {
             errorArray.push({
               type: "notyf",
-              message: error
+              message: error,
             });
             throw errorArray;
           }
@@ -7051,7 +7051,7 @@ $(document).ready(async () => {
             notyf.open({
               duration: "4000",
               type: "error",
-              message: error.message
+              message: error.message,
             });
           }
         });
@@ -7095,7 +7095,7 @@ $(document).ready(async () => {
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
             confirmButtonText: "Yes, overwrite existing file",
-            cancelButtonText: "No, cancel"
+            cancelButtonText: "No, cancel",
           });
           if (result.isConfirmed) {
             setOrUpdateGuidedDatasetName(datasetNameInputValue);
@@ -7120,7 +7120,7 @@ $(document).ready(async () => {
           notyf.open({
             duration: "4000",
             type: "error",
-            message: error.message
+            message: error.message,
           });
         }
         errorArray = [];
@@ -7203,7 +7203,7 @@ $(document).ready(async () => {
           userString: userString,
           userName: userName,
           UUID: UUID,
-          permission: userPermission
+          permission: userPermission,
         };
         guidedAddUserPermission(newUserPermissionObj);
       }
@@ -7212,19 +7212,19 @@ $(document).ready(async () => {
         const newTeamPermissionObj = {
           teamString: newPermissionElement.text().trim(),
           UUID: newPermissionElement.val().trim(),
-          permission: newPermissionRoleElement.val().trim()
+          permission: newPermissionRoleElement.val().trim(),
         };
         guidedAddTeamPermission(newTeamPermissionObj);
       }
       $(this)[0].scrollIntoView({
-        behavior: "smooth"
+        behavior: "smooth",
       });
       guidedResetUserTeamPermissionsDropdowns();
     } catch (error) {
       notyf.open({
         duration: "4000",
         type: "error",
-        message: error
+        message: error,
       });
     }
   });
@@ -7232,7 +7232,7 @@ $(document).ready(async () => {
     const newUserPermission = {
       userString: $("#guided_bf_list_users option:selected").text().trim(),
       UUID: $("#guided_bf_list_users").val().trim(),
-      permission: $("#select-permission-list-users-and-teams").val()
+      permission: $("#select-permission-list-users-and-teams").val(),
     };
     removeAlertMessageIfExists($("#guided-designated-user-permissions-info"));
     guidedAddUserPermission(newUserPermission);
@@ -7241,7 +7241,7 @@ $(document).ready(async () => {
   $("#guided-button-add-permission-team").on("click", function () {
     const newTeamPermissionObj = {
       teamString: $("#guided_bf_list_teams").val().trim(),
-      permission: $("#select-permission-list-4").val()
+      permission: $("#select-permission-list-4").val(),
     };
     removeAlertMessageIfExists($("#guided-designated-team-permissions-info"));
     guidedAddTeamPermission(newTeamPermissionObj);
@@ -7283,11 +7283,11 @@ $(document).ready(async () => {
         "guided-add-pools-table",
         "guided-div-add-subjects-table",
         "guided-div-resume-progress-cards",
-        "guided-div-update-uploaded-cards"
+        "guided-div-update-uploaded-cards",
       ];
       if (!elementsToNotScrollTo.includes(nextQuestionID)) {
         nextQuestionElement[0].scrollIntoView({
-          behavior: "smooth"
+          behavior: "smooth",
         });
       }
     }
@@ -7317,65 +7317,65 @@ $(document).ready(async () => {
   $(guidedJstreePreview).jstree({
     core: {
       check_callback: true,
-      data: {}
+      data: {},
     },
     plugins: ["types"],
     types: {
       folder: {
-        icon: "fas fa-folder fa-fw"
+        icon: "fas fa-folder fa-fw",
       },
       "folder open": {
-        icon: "fas fa-folder-open fa-fw"
+        icon: "fas fa-folder-open fa-fw",
       },
       "folder closed": {
-        icon: "fas fa-folder fa-fw"
+        icon: "fas fa-folder fa-fw",
       },
       "file xlsx": {
-        icon: "./assets/img/excel-file.png"
+        icon: "./assets/img/excel-file.png",
       },
       "file xls": {
-        icon: "./assets/img/excel-file.png"
+        icon: "./assets/img/excel-file.png",
       },
       "file png": {
-        icon: "./assets/img/png-file.png"
+        icon: "./assets/img/png-file.png",
       },
       "file PNG": {
-        icon: "./assets/img/png-file.png"
+        icon: "./assets/img/png-file.png",
       },
       "file pdf": {
-        icon: "./assets/img/pdf-file.png"
+        icon: "./assets/img/pdf-file.png",
       },
       "file txt": {
-        icon: "./assets/img/txt-file.png"
+        icon: "./assets/img/txt-file.png",
       },
       "file csv": {
-        icon: "./assets/img/csv-file.png"
+        icon: "./assets/img/csv-file.png",
       },
       "file CSV": {
-        icon: "./assets/img/csv-file.png"
+        icon: "./assets/img/csv-file.png",
       },
       "file DOC": {
-        icon: "./assets/img/doc-file.png"
+        icon: "./assets/img/doc-file.png",
       },
       "file DOCX": {
-        icon: "./assets/img/doc-file.png"
+        icon: "./assets/img/doc-file.png",
       },
       "file docx": {
-        icon: "./assets/img/doc-file.png"
+        icon: "./assets/img/doc-file.png",
       },
       "file doc": {
-        icon: "./assets/img/doc-file.png"
+        icon: "./assets/img/doc-file.png",
       },
       "file jpeg": {
-        icon: "./assets/img/jpeg-file.png"
+        icon: "./assets/img/jpeg-file.png",
       },
       "file JPEG": {
-        icon: "./assets/img/jpeg-file.png"
+        icon: "./assets/img/jpeg-file.png",
       },
       "file other": {
-        icon: "./assets/img/other-file.png"
-      }
-    }
+        icon: "./assets/img/other-file.png",
+      },
+    },
   });
 
   $(guidedJstreePreview).on("open_node.jstree", function (event, data) {
@@ -7490,14 +7490,14 @@ $(document).ready(async () => {
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           showClass: {
-            popup: "animate__animated animate__fadeInDown animate__faster"
+            popup: "animate__animated animate__fadeInDown animate__faster",
           },
           hideClass: {
-            popup: "animate__animated animate__fadeOutUp animate__faster"
+            popup: "animate__animated animate__fadeOutUp animate__faster",
           },
           didOpen: () => {
             Swal.showLoading();
-          }
+          },
         });
 
         await Jimp.read(original_image_path)
@@ -7583,7 +7583,7 @@ $(document).ready(async () => {
               text: "Something went wrong",
               confirmButtonText: "OK",
               heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)"
+              backdrop: "rgba(0,0,0, 0.4)",
             });
           });
         if (conversion_success == false) {
@@ -7646,12 +7646,12 @@ $(document).ready(async () => {
       let bf_new_dataset = await client.post(
         `/manage_datasets/datasets`,
         {
-          input_dataset_name: datasetName
+          input_dataset_name: datasetName,
         },
         {
           params: {
-            selected_account: bfAccount
-          }
+            selected_account: bfAccount,
+          },
         }
       );
       let res = bf_new_dataset.data.id;
@@ -7700,7 +7700,7 @@ $(document).ready(async () => {
         showCancelButton: false,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
-        icon: "error"
+        icon: "error",
       });
 
       throw emessage;
@@ -7725,13 +7725,13 @@ $(document).ready(async () => {
       await client.put(
         `/manage_datasets/bf_dataset_subtitle`,
         {
-          input_subtitle: datasetSubtitle
+          input_subtitle: datasetSubtitle,
         },
         {
           params: {
             selected_account: bfAccount,
-            selected_dataset: datasetName
-          }
+            selected_dataset: datasetName,
+          },
         }
       );
       datasetSubtitleUploadText.innerHTML = `Successfully added dataset subtitle: ${datasetSubtitle}`;
@@ -7819,13 +7819,13 @@ $(document).ready(async () => {
       await client.put(
         `/manage_datasets/bf_banner_image`,
         {
-          input_banner_image_path: bannerImagePath
+          input_banner_image_path: bannerImagePath,
         },
         {
           params: {
             selected_account: bfAccount,
-            selected_dataset: datasetName
-          }
+            selected_dataset: datasetName,
+          },
         }
       );
       datasetBannerImageUploadText.innerHTML = `Successfully added dataset banner image!`;
@@ -7863,13 +7863,13 @@ $(document).ready(async () => {
       await client.put(
         `/manage_datasets/bf_license`,
         {
-          input_license: datasetLicense
+          input_license: datasetLicense,
         },
         {
           params: {
             selected_account: bfAccount,
-            selected_dataset: datasetName
-          }
+            selected_dataset: datasetName,
+          },
         }
       );
       datasetLicenseUploadText.innerHTML = `Successfully added dataset license: ${datasetLicense}`;
@@ -7905,15 +7905,15 @@ $(document).ready(async () => {
         await client.patch(
           `/manage_datasets/bf_dataset_permissions`,
           {
-            input_role: "owner"
+            input_role: "owner",
           },
           {
             params: {
               selected_account: bfAccount,
               selected_dataset: datasetName,
               scope: "user",
-              name: piOwnerObj["UUID"]
-            }
+              name: piOwnerObj["UUID"],
+            },
           }
         );
         datasetPiOwnerUploadText.innerHTML = `Successfully added PI: ${piOwnerObj["name"]}`;
@@ -7955,8 +7955,8 @@ $(document).ready(async () => {
         { tags },
         {
           params: {
-            selected_account: bfAccount
-          }
+            selected_account: bfAccount,
+          },
         }
       );
 
@@ -8012,15 +8012,15 @@ $(document).ready(async () => {
       let bf_add_permission = await client.patch(
         `/manage_datasets/bf_dataset_permissions`,
         {
-          input_role: selectedRole
+          input_role: selectedRole,
         },
         {
           params: {
             selected_account: bfAccount,
             selected_dataset: datasetName,
             scope: "user",
-            name: userUUID
-          }
+            name: userUUID,
+          },
         }
       );
       guidedUploadStatusIcon(
@@ -8098,15 +8098,15 @@ $(document).ready(async () => {
       let bf_add_permission = await client.patch(
         `/manage_datasets/bf_dataset_permissions`,
         {
-          input_role: selectedRole
+          input_role: selectedRole,
         },
         {
           params: {
             selected_account: bfAccount,
             selected_dataset: datasetName,
             scope: "team",
-            name: teamUUID
-          }
+            name: teamUUID,
+          },
         }
       );
       guidedUploadStatusIcon(
@@ -8149,7 +8149,7 @@ $(document).ready(async () => {
     Swal.fire({
       title: "Dataset folder structure preview",
       width: 800,
-      html: `<div id="guided-folder-structure-preview" style="display: block; width: 100%;"></div>`
+      html: `<div id="guided-folder-structure-preview" style="display: block; width: 100%;"></div>`,
     });
     var folderStructurePreview = document.getElementById(
       "guided-folder-structure-preview"
@@ -8158,65 +8158,65 @@ $(document).ready(async () => {
     $(folderStructurePreview).jstree({
       core: {
         check_callback: true,
-        data: {}
+        data: {},
       },
       plugins: ["types"],
       types: {
         folder: {
-          icon: "fas fa-folder fa-fw"
+          icon: "fas fa-folder fa-fw",
         },
         "folder open": {
-          icon: "fas fa-folder-open fa-fw"
+          icon: "fas fa-folder-open fa-fw",
         },
         "folder closed": {
-          icon: "fas fa-folder fa-fw"
+          icon: "fas fa-folder fa-fw",
         },
         "file xlsx": {
-          icon: "./assets/img/excel-file.png"
+          icon: "./assets/img/excel-file.png",
         },
         "file xls": {
-          icon: "./assets/img/excel-file.png"
+          icon: "./assets/img/excel-file.png",
         },
         "file png": {
-          icon: "./assets/img/png-file.png"
+          icon: "./assets/img/png-file.png",
         },
         "file PNG": {
-          icon: "./assets/img/png-file.png"
+          icon: "./assets/img/png-file.png",
         },
         "file pdf": {
-          icon: "./assets/img/pdf-file.png"
+          icon: "./assets/img/pdf-file.png",
         },
         "file txt": {
-          icon: "./assets/img/txt-file.png"
+          icon: "./assets/img/txt-file.png",
         },
         "file csv": {
-          icon: "./assets/img/csv-file.png"
+          icon: "./assets/img/csv-file.png",
         },
         "file CSV": {
-          icon: "./assets/img/csv-file.png"
+          icon: "./assets/img/csv-file.png",
         },
         "file DOC": {
-          icon: "./assets/img/doc-file.png"
+          icon: "./assets/img/doc-file.png",
         },
         "file DOCX": {
-          icon: "./assets/img/doc-file.png"
+          icon: "./assets/img/doc-file.png",
         },
         "file docx": {
-          icon: "./assets/img/doc-file.png"
+          icon: "./assets/img/doc-file.png",
         },
         "file doc": {
-          icon: "./assets/img/doc-file.png"
+          icon: "./assets/img/doc-file.png",
         },
         "file jpeg": {
-          icon: "./assets/img/jpeg-file.png"
+          icon: "./assets/img/jpeg-file.png",
         },
         "file JPEG": {
-          icon: "./assets/img/jpeg-file.png"
+          icon: "./assets/img/jpeg-file.png",
         },
         "file other": {
-          icon: "./assets/img/other-file.png"
-        }
-      }
+          icon: "./assets/img/other-file.png",
+        },
+      },
     });
     $(folderStructurePreview).on("open_node.jstree", function (event, data) {
       data.instance.set_type(data.node, "folder open");
@@ -8263,12 +8263,12 @@ $(document).ready(async () => {
           filepath: "",
           selected_account: bfAccount,
           selected_dataset: datasetName,
-          subjects_header_row: subjectsTableData
+          subjects_header_row: subjectsTableData,
         },
         {
           params: {
-            upload_boolean: true
-          }
+            upload_boolean: true,
+          },
         }
       );
       guidedUploadStatusIcon(
@@ -8302,12 +8302,12 @@ $(document).ready(async () => {
           filepath: "",
           selected_account: bfAccount,
           selected_dataset: datasetName,
-          samples_str: samplesTableData
+          samples_str: samplesTableData,
         },
         {
           params: {
-            upload_boolean: true
-          }
+            upload_boolean: true,
+          },
         }
       );
       guidedUploadStatusIcon(
@@ -8344,13 +8344,13 @@ $(document).ready(async () => {
         {
           submission_file_rows: submissionMetadataJSON,
           filepath: "",
-          upload_boolean: true
+          upload_boolean: true,
         },
         {
           params: {
             selected_account: bfAccount,
-            selected_dataset: datasetName
-          }
+            selected_dataset: datasetName,
+          },
         }
       );
       guidedUploadStatusIcon(
@@ -8399,12 +8399,12 @@ $(document).ready(async () => {
           dataset_str: datasetInformation,
           study_str: studyInformation,
           contributor_str: contributorInformation,
-          related_info_str: additionalLinks
+          related_info_str: additionalLinks,
         },
         {
           params: {
-            upload_boolean: true
-          }
+            upload_boolean: true,
+          },
         }
       );
       guidedUploadStatusIcon(
@@ -8444,14 +8444,14 @@ $(document).ready(async () => {
       await client.post(
         "/prepare_metadata/readme_changes_file",
         {
-          text: readmeOrChangesMetadata
+          text: readmeOrChangesMetadata,
         },
         {
           params: {
             file_type: `${readmeORchanges.toUpperCase()}.txt`,
             selected_account: bfAccount,
-            selected_dataset: datasetName
-          }
+            selected_dataset: datasetName,
+          },
         }
       );
       guidedUploadStatusIcon(
@@ -8505,13 +8505,13 @@ $(document).ready(async () => {
     guidedSubmissionMetadataJSON.push({
       award: guidedSparcAward,
       date: guidedCompletionDate,
-      milestone: guidedMilestones[0]
+      milestone: guidedMilestones[0],
     });
     for (let i = 1; i < guidedMilestones.length; i++) {
       guidedSubmissionMetadataJSON.push({
         award: "",
         date: "",
-        milestone: guidedMilestones[i]
+        milestone: guidedMilestones[i],
       });
     }
 
@@ -8529,7 +8529,7 @@ $(document).ready(async () => {
     let guidedContributorInformation = {
       ...sodaJSONObj["dataset-metadata"]["description-metadata"][
         "contributor-information"
-      ]
+      ],
     };
 
     //add the SPARC award as the first element in the funding source array if it's not already in the funding array
@@ -8549,7 +8549,7 @@ $(document).ready(async () => {
           conName: contributor["conName"],
           conRole: contributor["conRole"].join(", "),
           contributorFirstName: contributor["contributorFirstName"],
-          contributorLastName: contributor["contributorLastName"]
+          contributorLastName: contributor["contributorLastName"],
         };
       }
     );
@@ -8572,7 +8572,7 @@ $(document).ready(async () => {
       try {
         await client.put("prepare_metadata/template_paths", {
           basepath: basepath,
-          resourcesPath: resourcesPath
+          resourcesPath: resourcesPath,
         });
       } catch (error) {
         clientError(error);
@@ -8726,17 +8726,17 @@ $(document).ready(async () => {
       input: "text",
       inputPlaceholder: "Enter a new name for your dataset",
       inputAttributes: {
-        autocapitalize: "off"
+        autocapitalize: "off",
       },
       inputValue: currentDatasetUploadName,
       showCancelButton: true,
       confirmButtonText: "Rename",
       confirmButtonColor: "#3085d6 !important",
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster"
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster"
+        popup: "animate__animated animate__zoomOut animate__faster",
       },
       preConfirm: (inputValue) => {
         if (inputValue === "") {
@@ -8749,7 +8749,7 @@ $(document).ready(async () => {
           );
           return false;
         }
-      }
+      },
     });
     if (newDatasetName) {
       sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
@@ -8810,7 +8810,7 @@ $(document).ready(async () => {
       .post(
         `/curate_datasets/curation`,
         {
-          soda_json_structure: sodaJSONObj
+          soda_json_structure: sodaJSONObj,
         },
         { timeout: 0 }
       )
@@ -8836,8 +8836,8 @@ $(document).ready(async () => {
             `manage_datasets/bf_dataset_account`,
             {
               params: {
-                selected_account: defaultBfAccount
-              }
+                selected_account: defaultBfAccount,
+              },
             }
           );
           datasetList = [];
@@ -8854,8 +8854,8 @@ $(document).ready(async () => {
             `manage_datasets/bf_dataset_account`,
             {
               params: {
-                selected_account: defaultBfAccount
-              }
+                selected_account: defaultBfAccount,
+              },
             }
           );
           datasetList = [];
@@ -8950,13 +8950,13 @@ $(document).ready(async () => {
           updateDatasetUploadProgressTable({
             "Upload status": `${main_curate_progress_message}`,
             "Percent uploaded": `${percentOfDatasetUploaded.toFixed(2)}%`,
-            "Elapsed time": `${elapsed_time_formatted}`
+            "Elapsed time": `${elapsed_time_formatted}`,
           });
         }
       } else {
         updateDatasetUploadProgressTable({
           "Upload status": `${main_curate_progress_message}`,
-          "Elapsed time": `${elapsed_time_formatted}`
+          "Elapsed time": `${elapsed_time_formatted}`,
         });
       }
       //If the curate function is complete, clear the interval
@@ -8968,15 +8968,15 @@ $(document).ready(async () => {
         clearInterval(timerProgress);
         // electron.powerSaveBlocker.stop(prevent_sleep_id)
         updateDatasetUploadProgressTable({
-          "Upload status": "Dataset successfully uploaded to Pennsieve!"
+          "Upload status": "Dataset successfully uploaded to Pennsieve!",
         });
 
         let allDatasets = await client.get(
           `manage_datasets/bf_dataset_account`,
           {
             params: {
-              selected_account: defaultBfAccount
-            }
+              selected_account: defaultBfAccount,
+            },
           }
         );
         const uploadedDataset = allDatasets.data.datasets.find(
@@ -9111,7 +9111,7 @@ $(document).ready(async () => {
       emptyFilesFoldersResponse = await client.post(
         `/curate_datasets/empty_files_and_folders`,
         {
-          soda_json_structure: sodaJSONObj
+          soda_json_structure: sodaJSONObj,
         },
         { timeout: 0 }
       );
@@ -9120,7 +9120,7 @@ $(document).ready(async () => {
       let emessage = userErrorMessage(error);
 
       updateDatasetUploadProgressTable({
-        "Error preparing dataset for upload": `${emessage}`
+        "Error preparing dataset for upload": `${emessage}`,
       });
 
       $("#sidebarCollapse").prop("disabled", false);
@@ -9161,19 +9161,19 @@ $(document).ready(async () => {
         reverseButtons: reverseSwalButtons,
         heightAuto: false,
         showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster"
+          popup: "animate__animated animate__zoomIn animate__faster",
         },
         hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster"
+          popup: "animate__animated animate__zoomOut animate__faster",
         },
-        allowOutsideClick: false
+        allowOutsideClick: false,
       }).then((result) => {
         if (result.isConfirmed) {
           guided_initiate_generate();
         } else {
           $("#sidebarCollapse").prop("disabled", false);
           updateDatasetUploadProgressTable({
-            "Upload status": `Error uploading dataset to Pennsieve`
+            "Upload status": `Error uploading dataset to Pennsieve`,
           });
         }
       });
@@ -9200,7 +9200,7 @@ $(document).ready(async () => {
         const contributorFirstName = tableRow.children[2].innerHTML.trim();
         return {
           contributorFirstName: contributorFirstName,
-          contributorLastName: contributorLastName
+          contributorLastName: contributorLastName,
         };
       }
     );
@@ -9275,7 +9275,7 @@ $(document).ready(async () => {
       const contributorInputObj = {
         linkUrl: linkUrl.value,
         linkDescription: linkDescription.value,
-        linkRelation: linkRelation.value
+        linkRelation: linkRelation.value,
       };
     });
     ///////////////////////////////////////////////////////////////////////////////
@@ -9324,11 +9324,11 @@ $(document).ready(async () => {
         icon: "error",
         showCancelButton: false,
         showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster"
+          popup: "animate__animated animate__zoomIn animate__faster",
         },
         hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster"
-        }
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
       });
       return "empty";
     }
@@ -9348,7 +9348,7 @@ $(document).ready(async () => {
       showConfirmButton: true,
       showCancelButton: true,
       cancelButtonText: "Cancel",
-      confirmButtonText: "Yes"
+      confirmButtonText: "Yes",
     });
     if (!continueProgress) {
       return;
@@ -9379,7 +9379,7 @@ $(document).ready(async () => {
           icon: "error",
           didOpen: () => {
             Swal.hideLoading();
-          }
+          },
         });
       } else {
         if (type === "changes") {
@@ -9399,7 +9399,7 @@ $(document).ready(async () => {
               icon: "error",
               didOpen: () => {
                 Swal.hideLoading();
-              }
+              },
             });
           } else {
             Swal.fire({
@@ -9410,7 +9410,7 @@ $(document).ready(async () => {
               backdrop: "rgba(0,0,0, 0.4)",
               didOpen: () => {
                 Swal.hideLoading();
-              }
+              },
             });
           }
         });
@@ -9473,7 +9473,7 @@ $(document).ready(async () => {
       type: studyType,
       keywords: keywordArray,
       "number of samples": numSamples,
-      "number of subjects": numSubjects
+      "number of subjects": numSubjects,
     };
   };
 
@@ -9534,7 +9534,7 @@ $(document).ready(async () => {
       "study purpose": studyPurpose,
       "study data collection": studyDataCollection,
       "study primary conclusion": studyPrimaryConclusion,
-      "study collection title": studyCollectionTitle
+      "study collection title": studyCollectionTitle,
     };
   };
   const guidedSaveDescriptionContributorInformation = () => {
@@ -9552,7 +9552,7 @@ $(document).ready(async () => {
       "contributor-information"
     ] = {
       funding: otherFunding,
-      acknowledgment: acknowledgements
+      acknowledgment: acknowledgements,
     };
   };
 
@@ -9593,7 +9593,7 @@ $(document).ready(async () => {
         html: agent_version_response,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "Download now"
+        confirmButtonText: "Download now",
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
@@ -9612,11 +9612,11 @@ $(document).ready(async () => {
               showCancelButton: true,
               confirmButtonText: "Ok",
               showClass: {
-                popup: "animate__animated animate__zoomIn animate__faster"
+                popup: "animate__animated animate__zoomIn animate__faster",
               },
               hideClass: {
-                popup: "animate__animated animate__zoomOut animate__faster"
-              }
+                popup: "animate__animated animate__zoomOut animate__faster",
+              },
             });
           }
         }
@@ -9679,11 +9679,11 @@ $(document).ready(async () => {
           cancelButtonText: "No",
           reverseButtons: reverseSwalButtons,
           showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster"
+            popup: "animate__animated animate__zoomIn animate__faster",
           },
           hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster"
-          }
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
         }).then(async (result) => {
           if (guidedFormBannerHeight.value < 1024) {
             Swal.fire({
@@ -9697,11 +9697,11 @@ $(document).ready(async () => {
               cancelButtonText: "No",
               reverseButtons: reverseSwalButtons,
               showClass: {
-                popup: "animate__animated animate__zoomIn animate__faster"
+                popup: "animate__animated animate__zoomIn animate__faster",
               },
               hideClass: {
-                popup: "animate__animated animate__zoomOut animate__faster"
-              }
+                popup: "animate__animated animate__zoomOut animate__faster",
+              },
             }).then(async (result) => {
               if (result.isConfirmed) {
                 guidedSaveBannerImage();
@@ -9719,11 +9719,11 @@ $(document).ready(async () => {
               cancelButtonText: "No",
               reverseButtons: reverseSwalButtons,
               showClass: {
-                popup: "animate__animated animate__zoomIn animate__faster"
+                popup: "animate__animated animate__zoomIn animate__faster",
               },
               hideClass: {
-                popup: "animate__animated animate__zoomOut animate__faster"
-              }
+                popup: "animate__animated animate__zoomOut animate__faster",
+              },
             }).then(async (result) => {
               if (result.isConfirmed) {
                 guidedSaveBannerImage();
@@ -9771,7 +9771,7 @@ $(document).ready(async () => {
         if (!buttonNoGuidedCurateSelected && !buttonYesImportExistingSelected) {
           errorArray.push({
             type: "notyf",
-            message: "Please select a dataset start location"
+            message: "Please select a dataset start location",
           });
           throw errorArray;
         }
@@ -9796,7 +9796,7 @@ $(document).ready(async () => {
         ) {
           errorArray.push({
             type: "notyf",
-            message: "Please indicate if your dataset contains source data"
+            message: "Please indicate if your dataset contains source data",
           });
           throw errorArray;
         }
@@ -9813,7 +9813,7 @@ $(document).ready(async () => {
         ) {
           errorArray.push({
             type: "notyf",
-            message: "Please indicate if your dataset contains derivative data"
+            message: "Please indicate if your dataset contains derivative data",
           });
           throw errorArray;
         }
@@ -9835,7 +9835,7 @@ $(document).ready(async () => {
         ) {
           errorArray.push({
             type: "notyf",
-            message: "Please indicate if your dataset contains code data"
+            message: "Please indicate if your dataset contains code data",
           });
           throw errorArray;
         }
@@ -9847,7 +9847,7 @@ $(document).ready(async () => {
             errorArray.push({
               type: "notyf",
               message:
-                "Please add code data or indicate that you do not have code data"
+                "Please add code data or indicate that you do not have code data",
             });
             throw errorArray;
           }
@@ -9869,7 +9869,7 @@ $(document).ready(async () => {
               confirmButtonText: "Yes, delete it!",
               cancelButtonText: "No, keep it!",
               heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)"
+              backdrop: "rgba(0,0,0, 0.4)",
             });
             if (deleteCodeFolderWithData) {
               delete datasetStructureJSONObj["folders"]["code"];
@@ -9896,7 +9896,7 @@ $(document).ready(async () => {
         ) {
           errorArray.push({
             type: "notyf",
-            message: "Please indicate if your dataset contains protocol data"
+            message: "Please indicate if your dataset contains protocol data",
           });
           throw errorArray;
         }
@@ -9908,7 +9908,7 @@ $(document).ready(async () => {
             errorArray.push({
               type: "notyf",
               message:
-                "Please add docs protocol or indicate that you do not have protocol data"
+                "Please add docs protocol or indicate that you do not have protocol data",
             });
             throw errorArray;
           }
@@ -9930,7 +9930,7 @@ $(document).ready(async () => {
               confirmButtonText: "Yes, delete it!",
               cancelButtonText: "No, keep it!",
               heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)"
+              backdrop: "rgba(0,0,0, 0.4)",
             });
             if (deleteCodeFolderWithData) {
               delete datasetStructureJSONObj["folders"]["protocol"];
@@ -9957,7 +9957,7 @@ $(document).ready(async () => {
         ) {
           errorArray.push({
             type: "notyf",
-            message: "Please indicate if your dataset contains docs data"
+            message: "Please indicate if your dataset contains docs data",
           });
           throw errorArray;
         }
@@ -9969,7 +9969,7 @@ $(document).ready(async () => {
             errorArray.push({
               type: "notyf",
               message:
-                "Please add docs data or indicate that you do not have docs data"
+                "Please add docs data or indicate that you do not have docs data",
             });
             throw errorArray;
           }
@@ -9991,7 +9991,7 @@ $(document).ready(async () => {
               confirmButtonText: "Yes, delete it!",
               cancelButtonText: "No, keep it!",
               heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)"
+              backdrop: "rgba(0,0,0, 0.4)",
             });
             if (deleteDocsFolderWithData) {
               delete datasetStructureJSONObj["folders"]["docs"];
@@ -10009,7 +10009,7 @@ $(document).ready(async () => {
         ) {
           errorArray.push({
             type: "notyf",
-            message: "Please select the location of your local datset"
+            message: "Please select the location of your local datset",
           });
           throw errorArray;
         }
@@ -10033,7 +10033,8 @@ $(document).ready(async () => {
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
             confirmButtonText: "Finish adding metadata to all subjects",
-            cancelButtonText: "Continue without adding metadata to all subjects"
+            cancelButtonText:
+              "Continue without adding metadata to all subjects",
           });
           if (result.isConfirmed) {
             throw new Error(
@@ -10061,7 +10062,7 @@ $(document).ready(async () => {
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
             confirmButtonText: "Finish adding metadata to all samples",
-            cancelButtonText: "Continue without adding metadata to all samples"
+            cancelButtonText: "Continue without adding metadata to all samples",
           });
           if (result.isConfirmed) {
             throw new Error(
@@ -10089,13 +10090,13 @@ $(document).ready(async () => {
           if (!defaultBfAccount) {
             errorArray.push({
               type: "notyf",
-              message: "Please sign in to Pennsieve before continuing"
+              message: "Please sign in to Pennsieve before continuing",
             });
             throw errorArray;
           } else {
             errorArray.push({
               type: "notyf",
-              message: "Please confirm your account before continuing"
+              message: "Please confirm your account before continuing",
             });
             throw errorArray;
           }
@@ -10105,7 +10106,7 @@ $(document).ready(async () => {
         if (sodaJSONObj["digital-metadata"]["banner-image-path"] == undefined) {
           errorArray.push({
             type: "notyf",
-            message: "Please add a banner image"
+            message: "Please add a banner image",
           });
           throw errorArray;
         }
@@ -10123,7 +10124,7 @@ $(document).ready(async () => {
         ) {
           errorArray.push({
             type: "notyf",
-            message: "Please designate a PI"
+            message: "Please designate a PI",
           });
           throw errorArray;
         }
@@ -10141,7 +10142,7 @@ $(document).ready(async () => {
           const loggedInUserPiObj = {
             userString: loggedInUserString,
             UUID: loggedInUserUUID,
-            name: loggedInUserName
+            name: loggedInUserName,
           };
           setGuidedDatasetPiOwner(loggedInUserPiObj);
         }
@@ -10157,7 +10158,7 @@ $(document).ready(async () => {
           ) {
             errorArray.push({
               type: "notyf",
-              message: "Please select a PI from the dropdown"
+              message: "Please select a PI from the dropdown",
             });
             throw errorArray;
           }
@@ -10172,7 +10173,7 @@ $(document).ready(async () => {
           const newPiOwner = {
             userString: PiOwnerString,
             UUID: PiUUID,
-            name: PiName
+            name: PiName,
           };
 
           if (PiUUID === loggedInUserUUID) {
@@ -10186,7 +10187,7 @@ $(document).ready(async () => {
               userName: loggedInUserName,
               UUID: loggedInUserUUID,
               permission: "manager",
-              loggedInUser: true
+              loggedInUser: true,
             };
 
             guidedAddUserPermission(loggedInUserManagerObj);
@@ -10208,21 +10209,21 @@ $(document).ready(async () => {
         if (studyPurposeInput.value.trim() === "") {
           errorArray.push({
             type: "notyf",
-            message: "Please enter your study's purpose"
+            message: "Please enter your study's purpose",
           });
         }
 
         if (studyDataCollectionInput.value.trim() === "") {
           errorArray.push({
             type: "notyf",
-            message: "Please your study's data collection method"
+            message: "Please your study's data collection method",
           });
         }
 
         if (studyPrimaryConclusionInput.value.trim() === "") {
           errorArray.push({
             type: "notyf",
-            message: "Please enter your study's primary conclusion"
+            message: "Please enter your study's primary conclusion",
           });
         }
         if (errorArray.length > 0) {
@@ -10231,7 +10232,7 @@ $(document).ready(async () => {
           sodaJSONObj["digital-metadata"]["description"] = {
             "study-purpose": studyPurposeInput.value.trim(),
             "data-collection": studyDataCollectionInput.value.trim(),
-            "primary-conclusion": studyPrimaryConclusionInput.value.trim()
+            "primary-conclusion": studyPrimaryConclusionInput.value.trim(),
           };
         }
       }
@@ -10249,7 +10250,7 @@ $(document).ready(async () => {
           errorArray.push({
             type: "notyf",
             message:
-              "Please accept the application of the CC-BY license to your dataset."
+              "Please accept the application of the CC-BY license to your dataset.",
           });
           throw errorArray;
         }
@@ -10271,7 +10272,7 @@ $(document).ready(async () => {
           errorArray.push({
             type: "notyf",
             message:
-              "Please indicate where you would like to genrate your dataset"
+              "Please indicate where you would like to genrate your dataset",
           });
           throw errorArray;
         }
@@ -10285,7 +10286,7 @@ $(document).ready(async () => {
             errorArray.push({
               type: "notyf",
               message:
-                "Please select a Pennsieve account to generate your dataset on"
+                "Please select a Pennsieve account to generate your dataset on",
             });
             throw errorArray;
           }
@@ -10310,7 +10311,7 @@ $(document).ready(async () => {
           errorArray.push({
             type: "notyf",
             message:
-              "Please indicate if you would like to generate on a new or existing Pennsieve dataset"
+              "Please indicate if you would like to generate on a new or existing Pennsieve dataset",
           });
           throw errorArray;
         }
@@ -10332,7 +10333,7 @@ $(document).ready(async () => {
           if (confirmDatasetGenerationNameinput.value.trim() === "") {
             errorArray.push({
               type: "notyf",
-              message: "Please enter a name for your new Pennsieve dataset"
+              message: "Please enter a name for your new Pennsieve dataset",
             });
             throw errorArray;
           }
@@ -10362,7 +10363,7 @@ $(document).ready(async () => {
             cancelButtonText: "Go back to add folders and files",
             cancelButtonWidth: "200px",
             confirmButtonText: "Continue without adding folders and files",
-            reverseSwalButtons: true
+            reverseSwalButtons: true,
           });
           if (!continueProgress) {
             $(this).removeClass("loading");
@@ -10389,7 +10390,8 @@ $(document).ready(async () => {
         ) {
           errorArray.push({
             type: "notyf",
-            message: "Please indicate if you would like to import a SPARC award"
+            message:
+              "Please indicate if you would like to import a SPARC award",
           });
           throw errorArray;
         }
@@ -10403,7 +10405,7 @@ $(document).ready(async () => {
             errorArray.push({
               type: "notyf",
               message:
-                "Please import a SPARC award of select no to enter a SPARC award manually"
+                "Please import a SPARC award of select no to enter a SPARC award manually",
             });
             throw errorArray;
           }
@@ -10419,7 +10421,7 @@ $(document).ready(async () => {
           if (sparcAwardInput.value.trim() === "") {
             errorArray.push({
               type: "notyf",
-              message: "Please enter a SPARC award"
+              message: "Please enter a SPARC award",
             });
             throw errorArray;
           }
@@ -10452,7 +10454,7 @@ $(document).ready(async () => {
           if (contributorFields.length === 0) {
             errorArray.push({
               type: "notyf",
-              message: "Please add at least one contributor"
+              message: "Please add at least one contributor",
             });
             throw errorArray;
           }
@@ -10506,7 +10508,7 @@ $(document).ready(async () => {
             const textInputs = [
               contributorLastNameInput,
               contributorFirstNameInput,
-              contributorORCIDInput
+              contributorORCIDInput,
             ];
             //check if all text inputs are valid
             textInputs.forEach((textInput) => {
@@ -10562,7 +10564,7 @@ $(document).ready(async () => {
               conName: `${contributorLastNameInput.value}, ${contributorFirstNameInput.value}`,
               conID: contributorORCIDInput.value,
               conAffliation: contributorAffiliations,
-              conRole: contributorRoles
+              conRole: contributorRoles,
             };
             contributors.push(contributorInputObj);
           });
@@ -10570,7 +10572,7 @@ $(document).ready(async () => {
           if (!allInputsValid) {
             errorArray.push({
               type: "notyf",
-              message: "Please fill out all contributor information fields"
+              message: "Please fill out all contributor information fields",
             });
             throw errorArray;
           }
@@ -10585,7 +10587,7 @@ $(document).ready(async () => {
             if (checkedContributors.length === 0) {
               errorArray.push({
                 type: "notyf",
-                message: "Please select at least one contributor"
+                message: "Please select at least one contributor",
               });
               throw errorArray;
             }
@@ -10606,7 +10608,7 @@ $(document).ready(async () => {
             try {
               const contributorInfoResult = await base("sparc_members")
                 .select({
-                  filterByFormula: contributorInfoFilterString
+                  filterByFormula: contributorInfoFilterString,
                 })
                 .all();
 
@@ -10618,7 +10620,7 @@ $(document).ready(async () => {
                     conName: `${contributor.fields["Last_name"]}, ${contributor.fields["First_name"]}`,
                     conID: contributor.fields["ORCID"],
                     conAffliation: [contributor.fields["Institution"]],
-                    conRole: contributor.fields["NIH_Project_Role"]
+                    conRole: contributor.fields["NIH_Project_Role"],
                   };
                 }
               );
@@ -10662,7 +10664,7 @@ $(document).ready(async () => {
         ) {
           errorArray.push({
             type: "notyf",
-            message: "Please indicate if you would like to import protocols"
+            message: "Please indicate if you would like to import protocols",
           });
           throw errorArray;
         }
@@ -10709,21 +10711,21 @@ $(document).ready(async () => {
               ? "DOI"
               : "URL",
             relation: "isProtocolFor",
-            description: protocolDescriptionInput.value
+            description: protocolDescriptionInput.value,
           };
           protocols.push(protocolObj);
         });
         if (!allProtocolFieldsValid) {
           errorArray.push({
             type: "notyf",
-            message: "Please fill out all protocol information fields"
+            message: "Please fill out all protocol information fields",
           });
           throw errorArray;
         }
         if (protocols.length === 0) {
           errorArray.push({
             type: "notyf",
-            message: "Please add at least one protocol"
+            message: "Please add at least one protocol",
           });
           throw errorArray;
         }
@@ -10740,7 +10742,7 @@ $(document).ready(async () => {
           console.log(error);
           errorArray.push({
             type: "notyf",
-            message: error
+            message: error,
           });
           throw errorArray;
         }
@@ -10753,7 +10755,7 @@ $(document).ready(async () => {
         if (readMeTextArea.value.trim() === "") {
           errorArray.push({
             type: "notyf",
-            message: "Please enter a README for your dataset"
+            message: "Please enter a README for your dataset",
           });
           throw errorArray;
         } else {
@@ -10821,7 +10823,7 @@ $(document).ready(async () => {
           notyf.open({
             duration: "4000",
             type: "error",
-            message: error.message
+            message: error.message,
           });
         }
       });
@@ -10940,7 +10942,7 @@ $(document).ready(async () => {
               notyf.open({
                 duration: "5000",
                 type: "error",
-                message: "Please indicate if your dataset contains subjects."
+                message: "Please indicate if your dataset contains subjects.",
               });
               return;
             }
@@ -10950,7 +10952,7 @@ $(document).ready(async () => {
                 sodaJSONObj.getAllSubjects();
               const subjectsCount = [
                 ...subjectsInPools,
-                ...subjectsOutsidePools
+                ...subjectsOutsidePools,
               ].length;
 
               //Check to see if any subjects were added, and if not, disallow the user
@@ -10960,7 +10962,7 @@ $(document).ready(async () => {
                   duration: "5000",
                   type: "error",
                   message:
-                    "Please add at least one subject or indicate that your dataset does not contain subjects."
+                    "Please add at least one subject or indicate that your dataset does not contain subjects.",
                 });
                 return;
               }
@@ -10997,7 +10999,7 @@ $(document).ready(async () => {
                 duration: "5000",
                 type: "error",
                 message:
-                  "Please indicate if you would like to organize your subjects into pools."
+                  "Please indicate if you would like to organize your subjects into pools.",
               });
               return;
             }
@@ -11016,7 +11018,7 @@ $(document).ready(async () => {
                   duration: "5000",
                   type: "error",
                   message:
-                    "Please add at least one pool or indicate that your dataset does not contain pools."
+                    "Please add at least one pool or indicate that your dataset does not contain pools.",
                 });
                 return;
               }
@@ -11055,7 +11057,7 @@ $(document).ready(async () => {
                 duration: "5000",
                 type: "error",
                 message:
-                  "Please indicate if your dataset's subjects have samples."
+                  "Please indicate if your dataset's subjects have samples.",
               });
               return;
             }
@@ -11073,7 +11075,7 @@ $(document).ready(async () => {
                   duration: "5000",
                   type: "error",
                   message:
-                    "Please add at least one sample or indicate that your dataset does not contain samples."
+                    "Please add at least one sample or indicate that your dataset does not contain samples.",
                 });
                 return;
               }
@@ -11128,7 +11130,7 @@ $(document).ready(async () => {
                 duration: "5000",
                 type: "error",
                 message:
-                  "Please indicate if you have primary data to add to your samples."
+                  "Please indicate if you have primary data to add to your samples.",
               });
               return;
             }
@@ -11172,7 +11174,7 @@ $(document).ready(async () => {
                 duration: "5000",
                 type: "error",
                 message:
-                  "Please indicate if you have primary data to add to your subjects."
+                  "Please indicate if you have primary data to add to your subjects.",
               });
               return;
             }
@@ -11222,7 +11224,7 @@ $(document).ready(async () => {
                 duration: "5000",
                 type: "error",
                 message:
-                  "Please indicate if you have source data to add to your samples."
+                  "Please indicate if you have source data to add to your samples.",
               });
               return;
             }
@@ -11266,7 +11268,7 @@ $(document).ready(async () => {
                 duration: "5000",
                 type: "error",
                 message:
-                  "Please indicate if you have source data to add to your subjects."
+                  "Please indicate if you have source data to add to your subjects.",
               });
               return;
             }
@@ -11315,7 +11317,7 @@ $(document).ready(async () => {
                 duration: "5000",
                 type: "error",
                 message:
-                  "Please indicate if you have derivative data to add to your samples."
+                  "Please indicate if you have derivative data to add to your samples.",
               });
               return;
             }
@@ -11363,7 +11365,7 @@ $(document).ready(async () => {
                 duration: "5000",
                 type: "error",
                 message:
-                  "Please indicate if you have derivative data to add to your subjects."
+                  "Please indicate if you have derivative data to add to your subjects.",
               });
               return;
             }
@@ -11410,7 +11412,7 @@ $(document).ready(async () => {
             duration: "5000",
             type: "error",
             message:
-              "Please indicate if you would like to import milestone data."
+              "Please indicate if you would like to import milestone data.",
           });
           break;
         }
@@ -11690,7 +11692,7 @@ $(document).ready(async () => {
     "guided-ds-other-funding"
   );
   guidedOtherFundingsourcesTagify = new Tagify(guidedOtherFundingSourcesInput, {
-    duplicates: false
+    duplicates: false,
   });
   createDragSort(guidedOtherFundingsourcesTagify);
   const guidedStudyOrganSystemsInput = document.getElementById(
@@ -11716,13 +11718,13 @@ $(document).ready(async () => {
       "spleen",
       "stomach",
       "sympathetic nervous system",
-      "urinary bladder"
+      "urinary bladder",
     ],
     duplicates: false,
     dropdown: {
       enabled: 0,
-      closeOnSelect: true
-    }
+      closeOnSelect: true,
+    },
   });
   createDragSort(guidedStudyOrganSystemsTagify);
 
@@ -11730,7 +11732,7 @@ $(document).ready(async () => {
     "guided-ds-dataset-keywords"
   );
   guidedDatasetKeywordsTagify = new Tagify(guidedDatasetKeyWordsInput, {
-    duplicates: false
+    duplicates: false,
   });
   createDragSort(guidedDatasetKeywordsTagify);
 
@@ -11738,7 +11740,7 @@ $(document).ready(async () => {
     "guided-ds-study-approach"
   );
   guidedStudyApproachTagify = new Tagify(guidedStudyApproachInput, {
-    duplicates: false
+    duplicates: false,
   });
   createDragSort(guidedStudyApproachTagify);
 
@@ -11746,7 +11748,7 @@ $(document).ready(async () => {
     "guided-ds-study-technique"
   );
   guidedStudyTechniquesTagify = new Tagify(guidedStudyTechniquesInput, {
-    duplicates: false
+    duplicates: false,
   });
   createDragSort(guidedStudyTechniquesTagify);
 
@@ -11797,10 +11799,10 @@ $(document).ready(async () => {
         confirmButtonText: "Add folder",
         reverseButtons: reverseSwalButtons,
         showClass: {
-          popup: "animate__animated animate__fadeInDown animate__faster"
+          popup: "animate__animated animate__fadeInDown animate__faster",
         },
         hideClass: {
-          popup: "animate__animated animate__fadeOutUp animate__faster"
+          popup: "animate__animated animate__fadeOutUp animate__faster",
         },
         didOpen: () => {
           $(".swal2-input").attr("id", "add-new-folder-input");
@@ -11822,7 +11824,7 @@ $(document).ready(async () => {
         didDestroy: () => {
           $(".swal2-confirm").attr("id", "");
           $(".swal2-input").attr("id", "");
-        }
+        },
       }).then((result) => {
         if (result.value) {
           if (result.value !== null && result.value !== "") {
@@ -11842,7 +11844,7 @@ $(document).ready(async () => {
                 text: "Duplicate folder name: " + newFolderName,
                 confirmButtonText: "OK",
                 heightAuto: false,
-                backdrop: "rgba(0,0,0, 0.4)"
+                backdrop: "rgba(0,0,0, 0.4)",
               });
 
               logCurationForAnalytics(
@@ -11875,7 +11877,7 @@ $(document).ready(async () => {
                 folders: {},
                 files: {},
                 type: "virtual",
-                action: ["new"]
+                action: ["new"],
               };
 
               listItems(myPath, "#items", 500, (reset = true));
@@ -11914,11 +11916,11 @@ $(document).ready(async () => {
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
         showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster"
+          popup: "animate__animated animate__zoomIn animate__faster",
         },
         hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster"
-        }
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
       });
     }
   });
