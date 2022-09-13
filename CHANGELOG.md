@@ -8,12 +8,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## v.9.1.0 - 2022-09-13
 
 ## Feature additions:
+
 - An announcements system has been added to give the user updates on recents changes/additions to SODA.
 - Tags throughout SODA are now sortable. (Ex: Dataset tags, milestone tags, etc.)
 - Prepare Metadata - Create manifest.xlsx: Automated synchronization between manifest files and their Pennsieve dataset. E.g., if a file is removed from a dataset, the file's corresponding manifest file entry will be removed.
 - Prepare Metadata - Create manifest.xlsx: Empty columns are dropped from manifest files once the user generates their files locally or on Pennsieve.
 - Prepare Metadata - Create manifest.xlsx: Preview manifest files locally before they are uploaded to Pennsieve. 
 - Prepare Metadata - Create manifest.xlsx: Generate manfiest files locally in your directory of choice.
+- Guided Mode - added the ability to edit auto-generated manifest files in a spreadsheet like UI.
 ## Bug fixes:
 
 - In Organize datasets, when importing files/folders the loading screen's z-index was higher than the duplicate alert popup. The issue has been resolved by lowering the loading screen's z-index.
@@ -22,9 +24,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Prepare Metadata - Create manifest.xlsx: The manifest editor's 'Save' and 'Cancel' buttons now are always viewable without having to scroll to the bottom of the manifest file. 
 
 ### Known Issues:
+
 - When a user has a large amount of files the step "Creating folder structure" can take a good amount of time.
 
 ## v.9.0.1 - 2022-09-02
+
 ## Bug fixes:
 
 - Fixed an issue that caused the Organize Dataset feature to break when switching from Free Form Mode to Guided Mode and back.
@@ -46,7 +50,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Guided Mode, a new dataset curation mode, is now available. Guided Mode streamlines the SPARC data curation process by guiding users step-by-step through the entire process. Currently, it only supports curating new datasets from scratch.
 - The SODA server will run on a free port if the default port is not available.
 
-
 ### Known Issues:
 
 - There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.
@@ -55,8 +58,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - When using the Create manifest.xlsx feature any custom columns added to a manifest file stored on Pennsieve will not be imported for editing.
 - The Create manifest.xlsx feature will spawn an error while generating manifest files for a local dataset if there are hidden files in the dataset directory. SODA will not tell the user the cause is the presence of the hidden files.
 - In the Organize Dataset feature, if a dataset is large enough and being uploaded to Pennsieve it will not pass the file and folder integrity check. This is a separate issue from those that were fixed as part of the bug fixes section outlined in v.8.0.1. Users should find more large datasets are uploadable to Pennsieve than in the previous release. Note as well this does not apply to the Upload Local Dataset feature, which has a very high upper bound for the amount of files that can be uploaded to Pennsieve as of the current release.
-
-
 
 ## v.8.0.1 - 2022-08-26
 
