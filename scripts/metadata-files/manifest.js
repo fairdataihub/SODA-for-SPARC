@@ -2218,6 +2218,9 @@ document
 
     // hide the 'this' value ( aka, the #div-confirm-manifest-local-folder-dataset div)
     this.style.display = "none"
+
+    // hide the Pennsieve continue button in question 5
+    document.querySelector("#btn-continue-pennsieve-question-6").style.display = "none"
   });
 
 document
