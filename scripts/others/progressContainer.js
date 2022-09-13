@@ -24,7 +24,7 @@ const updateProgressContainer = (
   progressContainerType,
   hide
 ) => {
-  if (progressContainerType === ProgressContainerType.MANIFEST) {
+  if (progressContainerType == ProgressContainerType.MANIFEST) {
     updateProgressContainerManifest(
       progress_container,
       percentage_text,
