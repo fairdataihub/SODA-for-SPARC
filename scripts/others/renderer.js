@@ -636,7 +636,6 @@ const run_pre_flight_checks = async (check_update = true) => {
                   type: "final",
                   message: "You're all set!",
                 });
-                console.log("1");
                 await checkForAnnouncements("announcements");
                 resolve(true);
               }
@@ -650,7 +649,6 @@ const run_pre_flight_checks = async (check_update = true) => {
               type: "final",
               message: "You're all set!",
             });
-            console.log("2");
             await checkForAnnouncements("announcements");
             resolve(true);
           }
@@ -1322,7 +1320,6 @@ if (process.platform === "darwin") {
 }
 
 const createDragSort = (tagify) => {
-  // console.log(element);
   const onDragEnd = () => {
     tagify.updateValueByDOMTags();
   };
@@ -1370,9 +1367,9 @@ const guidedSubmissionTagsTagifyManual = new Tagify(
 createDragSort(guidedSubmissionTagsTagifyManual);
 
 // listen to tagify "change" event and print updated value
-guidedSubmissionTagsTagifyManual.on("change", (e) =>
-  console.log(e.detail.value)
-);
+// guidedSubmissionTagsTagifyManual.on("change", (e) =>
+//   console.log(e.detail.value)
+// );
 
 // initiate Tagify input fields for Dataset description file
 var keywordInput = document.getElementById("ds-keywords"),
@@ -5031,7 +5028,6 @@ ipcRenderer.on(
         }
       });
     } else {
-      console.log(pathElement);
       if (pathElement.length > 0) {
         let load_spinner_promise = new Promise(async (resolved) => {
           let background = document.createElement("div");

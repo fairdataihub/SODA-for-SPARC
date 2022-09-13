@@ -18,15 +18,12 @@ const checkForAnnouncements = async (state) => {
     console.log(appVersion);
 
     for (var key of Object.keys(res)) {
-      console.log("SOMETHING");
       //app version should latest version to receive announcement
       console.log(appVersion);
       if (appVersion === key) {
         if (Object.keys(res[key]).includes(platform)) {
-          console.log("????");
           //check for platform
           if (res[key][platform]["show"] === true) {
-            console.log("should fire here");
             //if platform found then use that object to create announcement
             if (state === "announcements") {
               await Swal.fire({
@@ -48,7 +45,6 @@ const checkForAnnouncements = async (state) => {
           }
         } else {
           if (Object.keys(res[key]).includes("all")) {
-            console.log("HUH");
             //check if all is in json structure
             //announcements for all OS's
             Swal.fire({
