@@ -1908,24 +1908,6 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
         return;
       }
 
-      // Swal.fire({
-      //   title: "Manifests prepared",
-      //   heightAuto: false,
-      //   showConfirmButton: false,
-      //   timer: 800,
-      //   icon: "success",
-      //   backdrop: "rgba(0,0,0, 0.4)",
-      //   didOpen: () => {
-      //     Swal.hideLoading();
-      //   },
-      //   showClass: {
-      //     popup: "animate__animated animate__zoomIn animate__faster",
-      //   },
-      //   hideClass: {
-      //     popup: "animate__animated animate__zoomOut animate__faster",
-      //   },
-      // }).then((result) => { });
-
       Swal.close();
       localDatasetFolderPath = "";
     } else {
