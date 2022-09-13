@@ -1300,14 +1300,14 @@ var guidedProgressFilePath = path.join(
 const guidedManifestFilePath = path.join(
   homeDirectory,
   "SODA",
-  "Guided-Manifest-Files"
+  "guided_manifest_files"
 );
 var protocolConfigPath = path.join(metadataPath, protocolConfigFileName);
 var allCollectionTags = {};
 var currentTags = {};
 var currentCollectionTags = [];
 
-if (process.platform === "darwin" || process.platform === "linux") {
+if (process.platform === "darwin") {
   //check if data exists inside of the Soda folder, and if it does, move it into the capitalized SODA folder
   if (fs.existsSync(path.join(homeDirectory, "Soda"))) {
     //copy the folder contents of home/Soda to home/SODA
@@ -6220,18 +6220,30 @@ function fileContextMenu(event) {
 }
 
 $(document).ready(function () {
-  tippy("[data-tippy-content]:not(.tippy-content-main)", {
-    allowHTML: true,
-    interactive: true,
-    placement: "top",
-    theme: "light",
-  });
+  tippy(
+    "[data-tippy-content]:not(.tippy-content-main):not(.guided-tippy-wrapper)",
+    {
+      allowHTML: true,
+      interactive: true,
+      placement: "top",
+      theme: "light",
+    }
+  );
 
   tippy(".tippy-content-main", {
     allowHTML: true,
     interactive: true,
     placement: "bottom",
     theme: "light",
+  });
+
+  tippy(".guided-tippy-wrapper", {
+    allowHTML: true,
+    interactive: true,
+    placement: "bottom",
+    theme: "light",
+    /*apply -5 bottom margin to negate button bottom margin*/
+    offset: [0, -3],
   });
 });
 
