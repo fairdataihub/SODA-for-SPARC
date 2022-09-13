@@ -1888,7 +1888,8 @@ async function transitionSubQuestionsButton(
     let sodaObject = {};
     let manifestErrorMessage = [];
     try {
-      let data = await bf_request_and_populate_dataset(sodaJSONObj);
+      console.log("here")
+      let data = await bf_request_and_populate_dataset(sodaJSONObj, document.querySelector("#loading_pennsieve_dataset-organize"), true);
       sodaObject = data.soda_object;
       manifestErrorMessage = data.manifest_error_message;
     } catch (err) {
@@ -2277,8 +2278,15 @@ async function transitionFreeFormMode(
   if (!$(target).hasClass("show")) {
     setTimeout(function () {
       $(target).addClass("show");
-      // auto-scroll to bottom of div
-      if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
+
+      // scroll to the 'Review/Edit manifest files' About section rather than the 
+      // bottom of the div so all instructional text is viewable to the user. 
+      if(ev.getAttribute("data-next") === "Question-prepare-manifest-5") {
+        console.log("Scrolling into view")
+        let label = document.querySelector("#Question-prepare-manifest-5 label:first-of-type")
+        label.scrollIntoView({ behavior: "smooth" })
+      } // auto-scroll to bottom of div
+      else if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
         document.getElementById(parentDiv).scrollTop =
           document.getElementById(parentDiv).scrollHeight;
       }
@@ -2561,6 +2569,7 @@ async function switchMetadataManifestQuestion() {
           data: {
             paths: [userpath1, userpath2],
           },
+          timeout: 0,
         });
 
         sodaJSONObj = {

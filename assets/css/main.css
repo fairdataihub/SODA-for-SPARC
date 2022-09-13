@@ -1998,9 +1998,9 @@ details[open] > summary::before {
 }
 
 .circular .inner {
-  position: absolute;
+  position: relative;
   z-index: 6;
-  top: 50%;
+  top: 110%;
   left: 50%;
   height: 80px;
   width: 80px;
@@ -2018,6 +2018,13 @@ details[open] > summary::before {
   font-size: 18px;
   font-weight: 500;
   color: black;
+}
+
+.circular .fix {
+  position: relative !important;
+  top: 60% !important;
+  z-index: 100 !important; /* left: 40% !important; */
+  text-align: center;
 }
 
 .circular .bar {
@@ -2040,7 +2047,7 @@ details[open] > summary::before {
 
 .circle .left .progress {
   z-index: 1;
-  transition: transform 500ms ease-in-out;
+  transition: transform 600ms ease;
 }
 
 .circle .right {
@@ -2050,7 +2057,7 @@ details[open] > summary::before {
 }
 
 .circle .right .progress {
-  transition: transform 500ms ease-in-out;
+  transition: transform 600ms ease;
 }
 
 #Question-getting-started-locally-destination {

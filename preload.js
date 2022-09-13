@@ -765,6 +765,14 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             document.getElementById(
               "div-rename-bf-dataset"
             ).children[0].style.display = "flex";
+
+            // show the confirm button underneath the dataset select dropdown if one exists
+            console.log("SKJSLJJLSAJKAS");
+            console.log(document.querySelector(".btn-confirm-ds-selection"));
+            let btn = document.querySelector(".btn-confirm-ds-selection");
+            btn.style.visibility = "visible";
+            btn.style.display = "flex";
+
             // checkPrevDivForConfirmButton("dataset");
           } else if (result.isDismissed) {
             currentDatasetLicense.innerText = currentDatasetLicense.innerText;

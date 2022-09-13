@@ -223,6 +223,8 @@ document.getElementById("getting_starting_tab").click();
 
 let client = null;
 
+// get port number from the main process
+
 // TODO: change the default port so it is based off the discovered port in Main.js
 client = axios.create({
   baseURL: `http://127.0.0.1:${port}/`,
@@ -1305,7 +1307,7 @@ var allCollectionTags = {};
 var currentTags = {};
 var currentCollectionTags = [];
 
-if (process.platform === "darwin") {
+if (process.platform === "linux") {
   //check if data exists inside of the Soda folder, and if it does, move it into the capitalized SODA folder
   if (fs.existsSync(path.join(homeDirectory, "Soda"))) {
     //copy the folder contents of home/Soda to home/SODA
@@ -3221,6 +3223,7 @@ const { resolve } = require("path");
 const { background } = require("jimp");
 const { rename } = require("fs");
 const { resolveSoa } = require("dns");
+const internal = require("stream");
 var cropOptions = {
   aspectRatio: 1,
   movable: false,
@@ -4778,11 +4781,15 @@ ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
       try {
         await client.post(
           `/organize_datasets/datasets`,
+
           {
             generation_type: "create-new",
             generation_destination_path: filepath[0],
             dataset_name: newDSName,
             soda_json_directory_structure: datasetStructureJSONObj,
+          },
+          {
+            timeout: 0,
           },
           {
             timeout: 0,
@@ -8404,105 +8411,7 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
   }
 });
 
-/**
- *
- * @param {object} sodaJSONObj - The SODA json object used for tracking files, folders, and basic dataset curation information such as providence (local or Pennsieve).
- * @returns {
- *    "soda_json_structure": {}
- *    "success_message": ""
- *    "manifest_error_message": ""
- * }
- */
-var bf_request_and_populate_dataset = async (sodaJSONObj) => {
-  let progress_container = document.getElementById("loading_pennsieve_dataset");
-  let percentage_text = document.getElementById(
-    "pennsieve_loading_dataset_percentage"
-  );
-  let left_progress_bar = document.getElementById(
-    "pennsieve_left-side_less_than_50"
-  );
-  let right_progress_bar = document.getElementById(
-    "pennsieve_right-side_greater_than_50"
-  );
-  percentage_text.innerText = "0%";
-  progress_container.style.display = "block";
-  left_progress_bar.style.transform = `rotate(0deg)`;
-  right_progress_bar.style.transform = `rotate(0deg)`;
-  let pennsieve_progress = setInterval(progressReport, 500);
-  async function progressReport() {
-    let progressResponse;
-    try {
-      progressResponse = await client.get(
-        "/organize_datasets/dataset_files_and_folders/progress"
-      );
-    } catch (error) {
-      clientError(error);
-      clearInterval(pennsieve_progress);
-      return;
-    }
 
-    let res = progressResponse.data;
-
-    let percentage_amount = res["import_progress_percentage"].toFixed(2);
-    finished = res["import_completed_items"];
-    percentage_text.innerText = percentage_amount + "%";
-    if (percentage_amount <= 50) {
-      left_progress_bar.style.transform = `rotate(${
-        percentage_amount * 0.01 * 360
-      }deg)`;
-    } else {
-      left_progress_bar.style.transition = "";
-      left_progress_bar.classList.add("notransition");
-      left_progress_bar.style.transform = `rotate(180deg)`;
-      right_progress_bar.style.transform = `rotate(${
-        percentage_amount * 0.01 * 180
-      }deg)`;
-    }
-
-    if (finished === 1) {
-      percentage_text.innerText = "100%";
-      left_progress_bar.style.transform = `rotate(180deg)`;
-      right_progress_bar.style.transform = `rotate(180deg)`;
-      right_progress_bar.classList.remove("notransition");
-      clearInterval(pennsieve_progress);
-      setTimeout(() => {
-        progress_container.style.display = "none";
-      }, 2000);
-    }
-  }
-
-  try {
-    let filesFoldersResponse = await client.post(
-      `/organize_datasets/dataset_files_and_folders`,
-      {
-        sodajsonobject: sodaJSONObj,
-      },
-      { timeout: 0 }
-    );
-
-    let data = filesFoldersResponse.data;
-
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      "Retrieve Dataset - Pennsieve",
-      defaultBfDatasetId
-    );
-
-    return data;
-  } catch (error) {
-    clearInterval(pennsieve_progress);
-    progress_container.style.display = "none";
-    clientError(error);
-    ipcRenderer.send(
-      "track-event",
-      "Error",
-      "Retrieve Dataset - Pennsieve",
-      defaultBfDatasetId
-    );
-    throw Error(userErrorMessage(error));
-  }
-};
 
 // When mode = "update", the buttons won't be hidden or shown to prevent button flickering effect
 const curation_consortium_check = async (mode = "") => {
