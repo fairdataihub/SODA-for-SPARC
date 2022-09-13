@@ -1788,21 +1788,19 @@
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Manifest files</h1>
             <p class="guided--help-text">
-              The SPARC guidelines require datasets to contain manifest files
-              for each high level folder in a dataset. Manifest files should be
-              placed directly in the high level folder, and contain information
-              about all of the data files in the high level folder. The fields
-              "filename", "timestamp", and "filetype" are mandatory fields
-              required by the SPARC standards.<br /><br />
-              If you do not have manifest files, SODA can generate them for you,
-              and they will be included in your dataset when it is generated in
-              the last step of the guided workflow.
+              The SPARC guidelines require all datasets to include metadata
+              files called manifest files. One manifest file must be included in
+              each high level folder. Manifest files are intended to contain
+              information about all of the data files in its high level folder.
+              <br /><br />
+              You can request SODA to generate manifest files for you and they
+              will be included in your dataset when it is generated in the last
+              step of the guided workflow.
             </p>
           </div>
           <div class="guided--section">
             <h2 class="guided--text-sub-step">
-              Would you like SODA to auto-generate your 'mandatory' manifest
-              files?
+              Would you like SODA to auto-generate your manifest files?
             </h2>
             <div class="guided--radio-button-container">
               <button
@@ -1946,14 +1944,13 @@
             id="guided-section-auto-generate-manifest-files"
           >
             <div class="guided--section">
-              <h2 class="guided--text-sub-step">
-                Preview your auto-generated manifest files before continuing
-              </h2>
+              <h2 class="guided--text-sub-step">Preview/Edit manifest files</h2>
               <p class="guided--help-text">
-                Manifest files adhering to the minimum SPARC manifest file
-                standards were auto-generated for you based on the files in your
-                dataset. You may also add non-standard manifest file data by
-                editing the manifest files below.
+                Click on any manifest file below if you would like to preview it
+                or add additional metadata. Note that SODA will automatically
+                include the "filename", "timestamp", and "file type" in your
+                manifest files. Click 'Save and Continue' to move on to the next
+                step.
               </p>
             </div>
             <div
