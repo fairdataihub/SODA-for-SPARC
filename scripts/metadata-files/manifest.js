@@ -1388,12 +1388,16 @@ async function extractBFDatasetForManifestFile(
 ) {
 
   // hide the entire progress container div 
-  document.querySelector("#manifest-progress-container").style.display = "block";
+  let progressContainer = document.querySelector("#manifest-progress-container") 
+  progressContainer.style.display = "block";
 
   // inform user the manifest files are being generated
-  document.querySelector(
+  let spanManifest = document.querySelector(
     "#loading_pennsieve_dataset_manifest_span"
-  ).textContent = "Importing your Pennsieve dataset...";
+  )
+  spanManifest.textContent = "Importing your Pennsieve dataset...";
+  spanManifest.style.display = "block";
+
   // hide the loading bar's text
   document.querySelector(
     "#loading_pennsieve_dataset_manifest_span"
@@ -1417,7 +1421,7 @@ async function extractBFDatasetForManifestFile(
     );
     result = [true, res];
   } catch (err) {
-    result = [false, err];
+    result = [false, userErrorMessage(err)];
   }
 
   if (!result[0]) {
@@ -1425,7 +1429,7 @@ async function extractBFDatasetForManifestFile(
       icon: "error",
       html:
         "<p style='color:red'>" +
-        result[1] +
+        "Could not import this dataset." +
         ".<br>Please choose another dataset!</p>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
@@ -1470,6 +1474,12 @@ async function extractBFDatasetForManifestFile(
     );
 
     if (!continueProgressEmptyFolder) {
+
+      
+      hideProgressContainer(progressContainer)
+      spanManifest.style.display = "none";
+
+
       Swal.fire({
         title: "Failed to generate the manifest files.",
         text: "The dataset contains one or more empty folder(s). Per SPARC guidelines, a dataset must not contain any empty folders. Please remove them before generating the manifest files.",
@@ -1481,6 +1491,9 @@ async function extractBFDatasetForManifestFile(
           Swal.hideLoading();
         },
       }).then((result) => { });
+
+
+
       $("#Question-prepare-manifest-4").removeClass("show");
       $("#Question-prepare-manifest-4").removeClass("prev");
       $("#Question-prepare-manifest-3").removeClass("prev");
@@ -1519,6 +1532,11 @@ async function extractBFDatasetForManifestFile(
           Swal.hideLoading();
         },
       }).then((result) => { });
+  
+
+      hideProgressContainer(progressContainer)
+      spanManifest.style.display = "none";
+
       $("#Question-prepare-manifest-4").removeClass("show");
       $("#Question-prepare-manifest-4").removeClass("prev");
       $("#Question-prepare-manifest-3").removeClass("prev");
@@ -1554,6 +1572,11 @@ async function extractBFDatasetForManifestFile(
       $("#Question-prepare-manifest-4").removeClass("prev");
       $("#Question-prepare-manifest-3").removeClass("prev");
       $("#bf_dataset_create_manifest").text("None");
+
+
+      hideProgressContainer(progressContainer)
+      spanManifest.style.display = "none";
+
       defaultBfDataset = "Select dataset";
       // log the error to analytics
       logMetadataForAnalytics(

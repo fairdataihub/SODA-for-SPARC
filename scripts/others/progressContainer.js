@@ -216,3 +216,8 @@ const getProgressContainerElements = (progressContainer) => {
     right_progress_bar,
   };
 };
+
+
+const hideProgressContainer = (progressContainer) => {
+  progressContainer.style.display = "none";
+}
