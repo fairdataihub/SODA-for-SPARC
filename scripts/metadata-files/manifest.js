@@ -32,7 +32,6 @@ function selectManifestGenerationLocation() {
 }
 
 const openDirectoryAtManifestGenerationLocation = (generationLocation) => {
-  console.log(generationLocation);
   // find a high level folder in the generation location
   fs.readdir(generationLocation, (err, files) => {
     if (err) {
@@ -311,7 +310,6 @@ $(document).ready(function () {
           "*": "{{columnHeader}}",
         },
       })["Sheet1"];
-      console.log(jsonManifest);
       Swal.fire({
         title:
           "<span style='font-size: 18px !important;'>Edit the manifest file below: </span> <br><span style='font-size: 13px; font-weight: 500'> Tip: Double click on a cell to edit it.<span>",
@@ -376,7 +374,6 @@ $(document).ready(function () {
           "*": "{{columnHeader}}",
         },
       })["Sheet1"];
-      console.log(jsonManifest);
       Swal.fire({
         title:
           "<span style='font-size: 18px !important;'>Edit the manifest file below: </span> <br><span style='font-size: 13px; font-weight: 500'> Tip: Double click on a cell to edit it.<span>",
@@ -533,7 +530,6 @@ var finalManifestGenerationPath = "";
 let pennsievePreview = false;
 
 async function generateManifestPrecheck(manifestEditBoolean, ev) {
-  console.log("Generate manifest precheck");
   var type = "local";
   pennsievePreview = false;
   if (
@@ -565,19 +561,15 @@ async function generateManifestPrecheck(manifestEditBoolean, ev) {
   if (type === "bf") {
     titleTerm = "on Pennsieve";
   } else {
-    console.log("Oye");
     if (!pennsievePreview) {
-      console.log("uh oye");
       continueProgressValidateDataset = validateSPARCdataset();
     }
   }
 
   if (!continueProgressValidateDataset) {
-    console.log("Uh oye oye");
     return;
   }
 
-  console.log("Yes here");
 
   let localGenerationDifferentDestination = false;
   if (document.querySelector(
@@ -609,7 +601,6 @@ async function generateManifestPrecheck(manifestEditBoolean, ev) {
   // clean the manifest files by dropping empty columns ( keep the required columns even if empty )
   await dropEmptyManifestColumns();
 
-  console.log("Moving to generate manifest function");
   await generateManifest("", type, manifestEditBoolean, ev);
 
   return;
@@ -860,7 +851,6 @@ async function generateManifestPreview(e) {
   // open a file dialog so the user can select their dataset folder
   let folderPath = await ipcRenderer.invoke("open-manifest-preview-location");
 
-  console.log("folderPath: ", folderPath);
 
   // set final generation destination to the user's selected location
   Swal.fire({
@@ -955,7 +945,6 @@ async function initiate_generate_manifest_local(
   if (manifestEditBoolean === false) {
     createManifestLocally("local", false, originalDataset);
   } else {
-    console.log("here");
     // SODA Manifest Files folder
     let dir = path.join(homeDirectory, "SODA", "manifest_files");
     // Move manifest files to the local dataset
@@ -963,9 +952,6 @@ async function initiate_generate_manifest_local(
     if (finalManifestGenerationPath == originalDataset) {
       moveFinishedBool = await moveManifestFiles(dir, originalDataset);
     } else {
-      console.log("Moving manifes preview files");
-      console.log(dir);
-      console.log(finalManifestGenerationPath);
       moveFinishedBool = await moveManifestFilesPreview(
         dir,
         finalManifestGenerationPath
@@ -1590,16 +1576,12 @@ async function extractBFDatasetForManifestFile(
     }
 
     if (!editBoolean) {
-      console.log(
-        "Generating a manifest file for the dataset directly on Pennsieve..."
-      );
       generateManifestOnPennsieve();
     } else {
       $("#preview-manifest-fake-confirm-pennsieve").click();
       $("#Question-prepare-manifest-4").removeClass("show");
       $("#Question-prepare-manifest-4").removeClass("prev");
       $(ev).hide();
-      console.log("Loading manifest preview into tree....");
       loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
 
 
@@ -1980,7 +1962,6 @@ async function generateManifestFolderLocallyForEdit(ev) {
     createManifestLocally("local", true, "");
 
   } else {
-    console.log("Going to extract from Pennsieve");
     // Case 2: bf dataset
     sodaJSONObj["bf-account-selected"] = { "account-name": defaultBfAccount };
     sodaJSONObj["bf-dataset-selected"] = { "dataset-name": defaultBfDataset };
@@ -2078,8 +2059,6 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
       Swal.close();
       localDatasetFolderPath = "";
     } else {
-      console.log("In the edit boolean false block");
-      console.log("Normal Move");
       // SODA Manifest Files folder
       let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files");
       let moveFinishedBool;
@@ -2196,12 +2175,6 @@ function showTreeViewPreviewManifestEdits(
   previewDiv,
   datasetStructure
 ) {
-  console.log(disabledBoolean);
-  console.log(selectedBoolean);
-  console.log(manifestFileBoolean);
-  console.log(new_dataset_name);
-  console.log(previewDiv);
-  console.log(datasetStructure);
   var jsTreePreviewDataManifest = createChildNodeManifest(
     datasetStructure,
     new_dataset_name,
@@ -2224,13 +2197,6 @@ function createChildNodeManifest(
   selectedState,
   disabledState
 ) {
-  console.log("oldFormatNode:" + oldFormatNode);
-  console.log("nodeName:" + nodeName);
-  console.log("type:" + type);
-  console.log("ext:" + ext);
-  console.log("openedState:" + openedState);
-  console.log("selectedState:" + selectedState);
-  console.log("disabledState:" + disabledState);
 
   /*
     oldFormatNode: node in the format under "dataset-structure" key in SODA object
@@ -2410,8 +2376,6 @@ function generateAfterEdits() {
     "generate-option": "new",
   };
 
-  console.log(sodaJSONObj);
-
   // move the generated manifest files to the user selected location for preview
   if (pennsievePreview) {
     moveManifestFilesPreview(dir, finalManifestGenerationPath);
@@ -2429,7 +2393,6 @@ document
     document.querySelector("#div-check-bf-create-manifest").style.visibility =
       "hidden";
 
-    console.log("Showing the gen button section")
     let section = document.querySelector("#manifest-gen-on-pennsieve-section")
     section.style.display = "flex"
     section.querySelector("div").style.display = "flex"
@@ -2472,7 +2435,6 @@ document
 document
   .querySelector("#continue_step_5-manifest")
   .addEventListener("click", (e) => {
-    console.log(e.target);
     e.target.parentNode.style.visibility = "hidden";
   });
 

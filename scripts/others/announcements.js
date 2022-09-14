@@ -14,12 +14,9 @@ const checkForAnnouncements = async (state) => {
     let res = result.data;
 
     let platform = String(os.platform);
-    console.log(res);
-    console.log(appVersion);
 
     for (var key of Object.keys(res)) {
       //app version should latest version to receive announcement
-      console.log(appVersion);
       if (appVersion === key) {
         if (Object.keys(res[key]).includes(platform)) {
           //check for platform

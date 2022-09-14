@@ -86,11 +86,8 @@ const updateProgressContainerManifest = (
     }deg)`;
   }
 
-  console.log(manifestProgress);
 
   let finished = manifestProgress.finished;
-
-  console.log("Manifest gen finished state: ", finished);
 
   if (finished) {
     percentage_text.innerText = "100%";
@@ -98,15 +95,10 @@ const updateProgressContainerManifest = (
     right_progress_bar.style.transform = `rotate(180deg)`;
     right_progress_bar.classList.remove("notransition");
 
-    console.log("Hide state is: ", hide);
-
     if (!hide) return;
-
-    console.log("Hiding in 2 seconds");
 
     setTimeout(() => {
       progress_container.style.display = "none";
-      console.log("Hidden");
     }, 2000);
   }
 };
@@ -158,11 +150,8 @@ const updateProgressContainerPennsieveImport = (
 
     if (!hide) return;
 
-    console.log("Hiding in 2 seconds");
-
     setTimeout(() => {
       progress_container.style.display = "none";
-      console.log("Hidden after 2 seconds");
     }, 2000);
   }
 };
