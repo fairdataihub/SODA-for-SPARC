@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Prepare Metadata - Create manifest.xlsx: Preview manifest files locally before they are uploaded to Pennsieve. 
 - Prepare Metadata - Create manifest.xlsx: Generate manfiest files locally in your directory of choice.
 - Guided Mode - added the ability to edit auto-generated manifest files in a spreadsheet like UI.
+- Freeform Mode - Ability to add your dataset to a collection has been added. Intended to better group datasets.
+- Image optimzation for banner images. Image sizes that exceed over 2048 x 2048 will be prompted to scale the image accordingly for upload.
 ## Bug fixes:
 
 - In Organize datasets, when importing files/folders the loading screen's z-index was higher than the duplicate alert popup. The issue has been resolved by lowering the loading screen's z-index.
