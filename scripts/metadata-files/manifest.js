@@ -435,22 +435,31 @@ async function generateManifestPrecheck(manifestEditBoolean, ev) {
 
   console.log("Yes here");
 
-  await wait(500);
-  var { value: continueProgress } = await Swal.fire({
-    title: `Any existing manifest.xlsx file(s) in the specified dataset ${titleTerm} will be replaced.`,
-    text: "Are you sure you want to continue?",
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    showConfirmButton: true,
-    showCancelButton: true,
-    cancelButtonText: "Cancel",
-    confirmButtonText: "Yes",
-  });
+  let localGenerationDifferentDestination = false;
+  if (document.querySelector(
+    "#input-manifest-local-gen-location"
+  ).placeholder !== document.querySelector("#input-manifest-local-folder-dataset").placeholder) {
+    localGenerationDifferentDestination = true;
+  }
 
-  if (!continueProgress) {
-    return;
+  await wait(500);
+  if (!pennsievePreview && !localGenerationDifferentDestination) {
+    var { value: continueProgress } = await Swal.fire({
+      title: `Any existing manifest.xlsx file(s) in the specified dataset ${titleTerm} will be replaced.`,
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    });
+
+    if (!continueProgress) {
+      return;
+    }
   }
 
   // clean the manifest files by dropping empty columns ( keep the required columns even if empty )
@@ -1087,7 +1096,7 @@ const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
   let manifestFolderDirectory = "";
   try {
     manifestFolderDirectory = await createDuplicateManifestDirectory(destinationFolder)
-  } catch(error) {
+  } catch (error) {
     clientError(error)
     Swal.fire({
       title: "Failed to generate manifest files for preview",
@@ -1137,39 +1146,39 @@ const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
 }
 
 const createDuplicateManifestDirectory = async (destination) => {
-   // get the files/folders in the destination folder
-   let destinationDir;
-   try {
-     destinationDir = await readdir(destination)
-   } catch (error) {
-     clientError(error)
-     Swal.fire({
-       title: "Failed to generate manifest files for preview",
-       text: userErrorMessage(error),
-       icon: "error",
-       showConfirmButton: true,
-       heightAuto: false,
-       backdrop: "rgba(0,0,0, 0.4)",
-     })
-     return false
-   }
-
-   // get the folders in the destination folder that include SODA Manfiest Files
-   let manifestFolderCopies = destinationDir.filter((folder) => {
-      return folder.includes("SODA Manifest Files")
+  // get the files/folders in the destination folder
+  let destinationDir;
+  try {
+    destinationDir = await readdir(destination)
+  } catch (error) {
+    clientError(error)
+    Swal.fire({
+      title: "Failed to generate manifest files for preview",
+      text: userErrorMessage(error),
+      icon: "error",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
     })
+    return false
+  }
 
-   // if there is only one SODA Manifest Files directory create the first copy 
-   if(manifestFolderCopies.length === 0) {
-      let manifestFolderDirectory = path.join(
-        destination,
-        "SODA Manifest Files"
-      );
-      fs.mkdirSync(manifestFolderDirectory);
-      return manifestFolderDirectory
-   }
+  // get the folders in the destination folder that include SODA Manfiest Files
+  let manifestFolderCopies = destinationDir.filter((folder) => {
+    return folder.includes("SODA Manifest Files")
+  })
 
-  if(manifestFolderCopies.length === 1) {
+  // if there is only one SODA Manifest Files directory create the first copy 
+  if (manifestFolderCopies.length === 0) {
+    let manifestFolderDirectory = path.join(
+      destination,
+      "SODA Manifest Files"
+    );
+    fs.mkdirSync(manifestFolderDirectory);
+    return manifestFolderDirectory
+  }
+
+  if (manifestFolderCopies.length === 1) {
     let manifestFolderDirectory = path.join(
       destination,
       "SODA Manifest Files (1)"
@@ -1178,18 +1187,18 @@ const createDuplicateManifestDirectory = async (destination) => {
     return manifestFolderDirectory
   }
 
-    // if there are multiple SODA Manifest Files directories, get the number of the last copy
-    let lastCopyNumber = manifestFolderCopies[manifestFolderCopies.length - 1].split(" ")[3].replace("(", "").replace(")", "")
+  // if there are multiple SODA Manifest Files directories, get the number of the last copy
+  let lastCopyNumber = manifestFolderCopies[manifestFolderCopies.length - 1].split(" ")[3].replace("(", "").replace(")", "")
 
-    // create a new SODA Manifest Files directory ending with ' (n)' where n is the number of times the directory has been created
-    let manifestFolderDirectory = path.join(
-      destination,
-      `SODA Manifest Files (${parseInt(lastCopyNumber) + 1})`
-    );
-    fs.mkdirSync(manifestFolderDirectory);
+  // create a new SODA Manifest Files directory ending with ' (n)' where n is the number of times the directory has been created
+  let manifestFolderDirectory = path.join(
+    destination,
+    `SODA Manifest Files (${parseInt(lastCopyNumber) + 1})`
+  );
+  fs.mkdirSync(manifestFolderDirectory);
 
-    // return the path to the new SODA Manifest Files directory
-    return manifestFolderDirectory
+  // return the path to the new SODA Manifest Files directory
+  return manifestFolderDirectory
 
 }
 
@@ -2258,18 +2267,18 @@ document
   });
 
 document.querySelector("#div-check-bf-create-manifest").addEventListener("click", () => {
-    // show the continue button
-    document.querySelector("#btn-continue-pennsieve-question-6").style.display = "flex";
+  // show the continue button
+  document.querySelector("#btn-continue-pennsieve-question-6").style.display = "flex";
 
 
-    // hide the manifest generation section
-    let section = document.querySelector("#manifest-gen-on-pennsieve-section")
-    section.style.display = "none"
+  // hide the manifest generation section
+  let section = document.querySelector("#manifest-gen-on-pennsieve-section")
+  section.style.display = "none"
 })
 
 document
   .querySelector("#div-confirm-manifest-local-folder-dataset")
-  .addEventListener("click", function() {
+  .addEventListener("click", function () {
     // hide the Generate manifest on pennsieve section 
     document.querySelector(
       "#generate-local-preview-manifest"
@@ -2311,7 +2320,7 @@ document.querySelector("#show-manifest-gen-on-pennsieve-section-btn").addEventLi
   section.style.display = "flex"
 
   // transition to the header
-  section.scrollIntoView({behavior: "smooth"})
+  section.scrollIntoView({ behavior: "smooth" })
 
   // hide the continue button
   this.parentNode.parentNode.style.display = "none"
