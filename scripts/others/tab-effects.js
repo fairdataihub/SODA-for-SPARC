@@ -502,9 +502,9 @@ const add_card_detail = (
   let parent_element = $("#div-preview-dataset-details");
 
   let new_card_element =
-    "<div class='card-container generate-preview'><h5 class='card-left'>" +
+    "<div class='card-container generate-preview' style='margin-left: 2rem;'><h5 class='card-left' style='text-align: right;'>" +
     card_left +
-    ":</h5><p class='card-right'>" +
+    ":</h5><p class='card-right' style='margin-left: 2rem;'>" +
     card_right;
 
   if (parent_tab === -1) {
