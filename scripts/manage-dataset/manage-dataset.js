@@ -2837,7 +2837,6 @@ $("#button-submit-dataset").click(async () => {
 
             $("#para-please-wait-manage-dataset").html("");
             // cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%";
-            console.log(statusMessage);
             if(statusMessage.indexOf("<br")) {
               let timeIndex = statusMessage.indexOf("<br");
               let timePhrase = statusMessage.substring(timeIndex);
