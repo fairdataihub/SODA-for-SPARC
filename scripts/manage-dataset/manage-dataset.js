@@ -2836,7 +2836,12 @@ $("#button-submit-dataset").click(async () => {
             }
 
             $("#para-please-wait-manage-dataset").html("");
-            cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%";
+            // cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%";
+            if(statusMessage.indexOf("<br")) {
+              let timeIndex = statusMessage.indexOf("<br");
+              let timePhrase = statusMessage.substring(timeIndex);
+              cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%" + timePhrase;
+            }
             $("#para-progress-bar-status").html(
               statusMessage +
               "Progress: " +

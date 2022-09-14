@@ -225,12 +225,12 @@ async function helpMilestoneSubmission(curationMode) {
         guidedMilestoneData[
           "Not included in the Dataset Deliverables document"
         ] = [
-            {
-              "Description of data":
-                "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
-              "Expected date of completion": "N/A",
-            },
-          ];
+          {
+            "Description of data":
+              "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
+            "Expected date of completion": "N/A",
+          },
+        ];
 
         //save the unselected milestones into sodaJSONObj
         sodaJSONObj["dataset-metadata"]["submission-metadata"][
@@ -923,7 +923,7 @@ function changeAirtableDiv(divHide, divShow, buttonHide, buttonShow) {
 function showExistingSubmissionFile(type) {
   if (
     $(`#existing-submission-file-destination`).prop("placeholder") !==
-    "Browse here" &&
+      "Browse here" &&
     $(`#Question-prepare-submission-2`).hasClass("show")
   ) {
     Swal.fire({
@@ -1003,7 +1003,7 @@ function importExistingSubmissionFile(type) {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       setTimeout(loadExistingSubmissionFile(filePath), 1000);
     }
   }
@@ -1118,7 +1118,7 @@ async function checkBFImportSubmission() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   let bfDataset = $("#bf_dataset_load_submission").text().trim();
   log.info(`Loading submission file from Pennsieve dataset: ${bfDataset}`);
   try {
@@ -1142,7 +1142,7 @@ async function checkBFImportSubmission() {
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       icon: "error",
-      text: error.response.data.message,
+      html: error.response.data.message,
     });
     logMetadataForAnalytics(
       "Error",

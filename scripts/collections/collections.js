@@ -124,7 +124,7 @@ $("#button-bf-collection").on("click", async () => {
         success.push(false);
       }
     }
-    console.log(success);
+
 
     await updateCollectionWhiteList();
     Swal.close();

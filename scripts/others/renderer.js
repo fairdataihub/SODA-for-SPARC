@@ -1311,13 +1311,12 @@ if (process.platform === "linux") {
   //check if data exists inside of the Soda folder, and if it does, move it into the capitalized SODA folder
   if (fs.existsSync(path.join(homeDirectory, "Soda"))) {
     //copy the folder contents of home/Soda to home/SODA
-    console.log("Soda dir exists");
-    // fs.copySync(
-    //   path.join(homeDirectory, "Soda"),
-    //   path.join(homeDirectory, "SODA")
-    // );
-    // //delete the old folder
-    // fs.removeSync(path.join(homeDirectory, "Soda"));
+    fs.copySync(
+      path.join(homeDirectory, "Soda"),
+      path.join(homeDirectory, "SODA")
+    );
+    //delete the old folder
+    fs.removeSync(path.join(homeDirectory, "Soda"));
   }
 }
 
@@ -1368,10 +1367,6 @@ const guidedSubmissionTagsTagifyManual = new Tagify(
 );
 createDragSort(guidedSubmissionTagsTagifyManual);
 
-// listen to tagify "change" event and print updated value
-// guidedSubmissionTagsTagifyManual.on("change", (e) =>
-//   console.log(e.detail.value)
-// );
 
 // initiate Tagify input fields for Dataset description file
 var keywordInput = document.getElementById("ds-keywords"),
