@@ -18,13 +18,13 @@
     "linux": {
       "show": true,
       "title": "Welcome to version 9.1.0 for Linux!",
-      "message": "New features have been added!<br> <div style='text-align: justify'><li>Guided mode is now available! Curate datasets with more ease!</li><li>You can now import hidden files to your dataset (.DS_Store files are not accepted). </li><li>README.txt is now a mandatory metadata file for all datasets.</li><li>inputs and outputs metadata have been replaced with code_parameters as per the SDS 2.0</li></div>",
+      "message": "New features have been added!<br> <div style='text-align: justify'><li>Guided mode now has the ability to edit auto-generated manifest files in a spreadsheet like UI</li><li>In Freeform mode, Create manifest.xlsx you can preview manifests locally before uploading.</li><li>You can now add datasets to collections in Freeform Mode to organize datasets. </li><li>Banner images that exceed a dimension of 2048 x 2048 will be scaled down for upload.</li><li>inputs and outputs metadata have been replaced with code_parameters as per the SDS 2.0</li></div>",
       "type": "info"
     },
     "darwin": {
       "show": true,
       "title": "Welcome to version 9.1.0 for MacOS!",
-      "message": "New features have been added!<br> <div style='text-align: justify'><li>Guided mode is now available! Curate datasets with more ease!</li><li>You can now import hidden files to your dataset (.DS_Store files are not accepted). </li><li>README.txt is now a mandatory metadata file for all datasets.</li><li>inputs and outputs metadata have been replaced with code_parameters as per the SDS 2.0</li></div>",
+      "message": "New features have been added!<br> <div style='text-align: justify'><li>Guided mode now has the ability to edit auto-generated manifest files in a spreadsheet like UI</li><li>In Freeform mode, Create manifest.xlsx you can preview manifests locally before uploading.</li><li>You can now add datasets to collections in Freeform Mode to organize datasets. </li><li>Banner images that exceed a dimension of 2048 x 2048 will be scaled down for upload.</li><li>inputs and outputs metadata have been replaced with code_parameters as per the SDS 2.0</li></div>",
       "type": "info"
     }
   }
