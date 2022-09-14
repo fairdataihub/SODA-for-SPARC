@@ -721,7 +721,7 @@ const generateManifestEditCard = (highLevelFolderName) => {
           "
           onClick="guidedOpenManifestEditSwal('${highLevelFolderName}')"
         >
-          View/Edit ${highLevelFolderName} manifest file
+          Preview/Edit ${highLevelFolderName} manifest file
         </button>
       </div>
     </div>
@@ -2171,6 +2171,7 @@ const traverseToTab = async (targetPageID) => {
         licenseCheckbox.checked = false;
       }
     }
+
     if (targetPageID === "guided-dataset-generate-location-tab") {
       const currentAccountText = document.getElementById("guided-bf-account");
       const currentAccountDetailsText = document.getElementById(
@@ -2213,6 +2214,15 @@ const traverseToTab = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-dataset-generation-confirmation-tab") {
+      //Set the inner text of the generate/retry pennsieve dataset button depending on
+      //whether a dataset has bee uploaded from this progress file
+      const generateOrRetryDatasetUploadButton = document.getElementById(
+        "guided-generate-dataset-button"
+      );
+      sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
+        ? (generateOrRetryDatasetUploadButton.innerHTML =
+            "Retry dataset upload")
+        : (generateOrRetryDatasetUploadButton.innerHTML = "Generate dataset");
       //Reset the dataset upload UI
       const pennsieveMetadataUploadTable = document.getElementById(
         "guided-tbody-pennsieve-metadata-upload"
@@ -7798,17 +7808,18 @@ $(document).ready(async () => {
           },
         }
       );
-      let res = bf_new_dataset.data.id;
+      let createdDatasetsID = bf_new_dataset.data.id;
       datasetNameUploadText.innerHTML = `Successfully created dataset with name: ${datasetName}`;
       ipcRenderer.send(
         "track-event",
         "Dataset ID to Dataset Name Map",
-        res,
+        createdDatasetsID,
         datasetName
       );
       guidedUploadStatusIcon("guided-dataset-name-upload-status", "success");
       refreshDatasetList();
       addNewDatasetToList(datasetName);
+      return createdDatasetsID;
     } catch (error) {
       console.error(error);
       let emessage = userErrorMessage(error);
@@ -8613,9 +8624,12 @@ $(document).ready(async () => {
     }
   };
 
-  const guidedPennsieveDatasetUpload = async () => {
+  const guidedPennsieveDatasetUpload = async (uploadConfig) => {
     const guidedBfAccount = defaultBfAccount;
     const guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
+    let guidedPennsieveDatasetID =
+      sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] ?? null;
+    console.log(guidedPennsieveDatasetID);
     const guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
     const guidedUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
     const guidedPIOwner = sodaJSONObj["digital-metadata"]["pi-owner"];
@@ -8737,10 +8751,13 @@ $(document).ready(async () => {
         "guided-div-pennsieve-metadata-upload-status-table"
       );
 
-      let datasetUploadResponse = await guidedCreateDataset(
-        guidedBfAccount,
-        guidedDatasetName
-      );
+      if (!guidedPennsieveDatasetID) {
+        let datasetUploadResponse = await guidedCreateDataset(
+          guidedBfAccount,
+          guidedDatasetName
+        );
+        console.log(datasetUploadResponse);
+      }
 
       try {
         //upload dataset subtitle
@@ -8896,6 +8913,7 @@ $(document).ready(async () => {
     });
     if (newDatasetName) {
       sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
+
       guidedPennsieveDatasetUpload();
     }
   };
@@ -11071,10 +11089,6 @@ $(document).ready(async () => {
       CURRENT_PAGE = null;
 
       return;
-    }
-
-    if (pageBeingLeftID === "guided-dataset-generation-confirmation-tab") {
-      $("#guided-next-button").show();
     }
 
     const getPrevPageNotSkipped = (startingPage) => {
