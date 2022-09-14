@@ -34,12 +34,7 @@
     "win": {
       "asar": false,
       "target": "nsis",
-      "icon": "assets/app-icon/win/icon.ico",
-      "extraResources": [
-        {
-          "from": "./pyflaskdist/api"
-        }
-      ]
+      "icon": "assets/app-icon/win/icon.ico"
     },
     "mac": {
       "asar": true,
