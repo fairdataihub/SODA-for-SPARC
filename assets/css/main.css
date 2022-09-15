@@ -1504,7 +1504,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   position: absolute;
   top: 50%;
   left: 50%;
-  z-index: 100;
+  z-index: 9999;
   margin: 10px;
   display: none;
 }
@@ -1519,7 +1519,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 100;
+  z-index: 9999;
   background-color: darkgray;
   opacity: 0.5;
   display: flex;

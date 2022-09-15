@@ -1367,7 +1367,6 @@ const guidedSubmissionTagsTagifyManual = new Tagify(
 );
 createDragSort(guidedSubmissionTagsTagifyManual);
 
-
 // initiate Tagify input fields for Dataset description file
 var keywordInput = document.getElementById("ds-keywords"),
   keywordTagify = new Tagify(keywordInput, {
@@ -8405,8 +8404,6 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
     }
   }
 });
-
-
 
 // When mode = "update", the buttons won't be hidden or shown to prevent button flickering effect
 const curation_consortium_check = async (mode = "") => {
