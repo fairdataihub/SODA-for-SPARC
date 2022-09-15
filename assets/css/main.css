@@ -2119,3 +2119,9 @@ details[open] > summary::before {
 #guided-pennsieve-dataset-link:hover {
   border-bottom: 1px solid !important;
 }
+
+#other-dataset-information-container {
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+}
