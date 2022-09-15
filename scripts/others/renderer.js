@@ -638,7 +638,10 @@ const run_pre_flight_checks = async (check_update = true) => {
                   type: "final",
                   message: "You're all set!",
                 });
-                await checkForAnnouncements("announcements");
+                // ipcRenderer.send("announcement-check")
+                if (launchAnnouncements == true) {
+                  await checkForAnnouncements("announcements");
+                }
                 resolve(true);
               }
             });
@@ -651,7 +654,9 @@ const run_pre_flight_checks = async (check_update = true) => {
               type: "final",
               message: "You're all set!",
             });
-            await checkForAnnouncements("announcements");
+            if (launchAnnouncements == true) {
+              await checkForAnnouncements("announcements");
+            }
             resolve(true);
           }
         }
@@ -1011,6 +1016,12 @@ ipcRenderer.on("update_available", () => {
     type: "app_update",
     message: "A new update is available. Downloading now...",
   });
+});
+
+var launchAnnouncements = false;
+ipcRenderer.on("checkForAnnouncements", async () => {
+  console.log("announcemnts ehre");
+  launchAnnouncements = true;
 });
 
 // When the update is downloaded, show the restart notification
