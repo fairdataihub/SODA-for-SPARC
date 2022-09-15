@@ -23,7 +23,7 @@ autoUpdater.logger = log;
 global.trackEvent = trackEvent;
 
 const nodeStorage = new JSONStorage(app.getPath("userData"));
-console.log(nodeStorage);
+// console.log(nodeStorage);
 /*************************************************************
  * Python Process
  *************************************************************/
@@ -35,7 +35,7 @@ const PY_FLASK_MODULE = "app";
 let pyflaskProcess = null;
 
 let PORT = 4242;
-let selectedPort = null; 
+let selectedPort = null;
 const portRange = 100;
 
 /**
@@ -44,21 +44,19 @@ const portRange = 100;
  * @returns {boolean} True if the app is packaged, false if it is running from a dev version.
  */
 const guessPackaged = () => {
-
-
-  log.info("Guessing if packaged")
+  log.info("Guessing if packaged");
 
   const windowsPath = path.join(__dirname, PY_FLASK_DIST_FOLDER);
   const unixPath = path.join(process.resourcesPath, PY_FLASK_MODULE);
 
-  log.info(unixPath)
+  log.info(unixPath);
 
   if (process.platform === "darwin" || process.platform === "linux") {
     if (require("fs").existsSync(unixPath)) {
-      log.info("Unix path exists")
+      log.info("Unix path exists");
       return true;
     } else {
-      log.info("Unix path does not exist")
+      log.info("Unix path does not exist");
       return false;
     }
   }
@@ -80,15 +78,15 @@ const guessPackaged = () => {
  */
 const getScriptPath = () => {
   if (!guessPackaged()) {
-    log.info("App is not packaged returning path: ")
-    log.info(path.join(__dirname, PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py"))
+    log.info("App is not packaged returning path: ");
+    log.info(path.join(__dirname, PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py"));
     return path.join(__dirname, PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py");
   }
 
   if (process.platform === "win32") {
     return path.join(__dirname, PY_FLASK_DIST_FOLDER, PY_FLASK_MODULE + ".exe");
   } else {
-    log.info("Since app is packaged returning path: ")
+    log.info("Since app is packaged returning path: ");
     return path.join(process.resourcesPath, PY_FLASK_MODULE);
   }
 };
@@ -138,7 +136,7 @@ const createPyProc = async () => {
         console.error("child process failed to start on port" + port);
       }
 
-      selectedPort = port 
+      selectedPort = port;
     })
     .catch((err) => {
       console.log(err);
@@ -189,7 +187,10 @@ const killAllPreviousProcesses = async () => {
   // create a loop of 100
   for (let currentPort = PORT; currentPort <= endRange; currentPort++) {
     promisesArray.push(
-      axios.get(`http://127.0.0.1:${currentPort}/sodaforsparc_server_shutdown`, {})
+      axios.get(
+        `http://127.0.0.1:${currentPort}/sodaforsparc_server_shutdown`,
+        {}
+      )
     );
   }
 
@@ -250,6 +251,8 @@ function initialize() {
         }
       } else {
         var first_launch = nodeStorage.getItem("firstlaunch");
+        var announcementsLaunch = nodeStorage.getItem("announcements");
+        nodeStorage.setItem("announcements", false);
         nodeStorage.setItem("firstlaunch", true);
         await exitPyProc();
         app.exit();
@@ -310,13 +313,18 @@ function initialize() {
         mainWindow.show();
         createWindow();
         var first_launch = nodeStorage.getItem("firstlaunch");
+        var announcementsLaunch = nodeStorage.getItem("announcements");
+        if (announcementsLaunch === true || announcementsLaunch === undefined) {
+          checkForAnnouncements("announcements");
+          console.log("announcements should launch");
+        }
         if (first_launch == true || first_launch == undefined) {
           mainWindow.reload();
           mainWindow.focus();
           nodeStorage.setItem("firstlaunch", false);
           run_pre_flight_checks();
-          console.log("HMMM");
-          checkForAnnouncements("announcements");
+          // console.log("HMMM");
+          // checkForAnnouncements("announcements");
         }
         // console.log("HHERE");
         run_pre_flight_checks();
@@ -502,6 +510,6 @@ ipcMain.on("orcid", (event, url) => {
 });
 
 ipcMain.on("get-port", (event) => {
-  log.info("Renderer requested port: " + selectedPort)
-  event.returnValue = selectedPort
-})
+  log.info("Renderer requested port: " + selectedPort);
+  event.returnValue = selectedPort;
+});
