@@ -8918,7 +8918,7 @@ $(document).ready(async () => {
       unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
 
       //Upload the dataset files
-      const mainCurationResponse = await guided_main_curate();
+      const mainCurationResponse = await guidedUploadDatasetToPennsieve();
     } catch (e) {
       console.log(e);
     }
@@ -9006,7 +9006,7 @@ $(document).ready(async () => {
 
     // clear the Pennsieve Queue (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
     clearQueue();
-
+    console.log("queue cleared");
     client
       .post(
         `/curate_datasets/curation`,
@@ -9016,6 +9016,9 @@ $(document).ready(async () => {
         { timeout: 0 }
       )
       .then(async (curationRes) => {
+        //Handle successfull dataset upload here
+        console.log(curationRes);
+
         main_total_generate_dataset_size =
           curationRes["main_total_generate_dataset_size"];
         uploadedFiles = curationRes["main_curation_uploaded_files"];
@@ -9031,6 +9034,20 @@ $(document).ready(async () => {
           uploadedFiles,
           true
         );
+
+        updateDatasetUploadProgressTable({
+          "Upload status": "Dataset successfully uploaded to Pennsieve!",
+        });
+
+        //Display the click next text
+        document
+          .getElementById("guided-dataset-upload-complete-message")
+          .classList.remove("hidden");
+
+        scrollToBottomOfGuidedBody();
+
+        //Show the next button
+        $("#guided-next-button").css("visibility", "visible");
 
         try {
           let responseObject = await client.get(
@@ -9048,6 +9065,8 @@ $(document).ready(async () => {
         }
       })
       .catch(async (error) => {
+        //Handle dataset upload errors here
+        console.log(error);
         clientError(error);
 
         try {
@@ -9082,7 +9101,6 @@ $(document).ready(async () => {
           true
         );
       });
-
     const guidedUpdateUploadStatus = async () => {
       let mainCurationProgressResponse;
       try {
@@ -9168,19 +9186,6 @@ $(document).ready(async () => {
         // forceActionSidebar("show");
         clearInterval(timerProgress);
         // electron.powerSaveBlocker.stop(prevent_sleep_id)
-        updateDatasetUploadProgressTable({
-          "Upload status": "Dataset successfully uploaded to Pennsieve!",
-        });
-
-        //Display the click next text
-        document
-          .getElementById("guided-dataset-upload-complete-message")
-          .classList.remove("hidden");
-
-        scrollToBottomOfGuidedBody();
-
-        //Show the next button
-        $("#guided-next-button").css("visibility", "visible");
       }
     };
     // Progress tracking function for main curate
@@ -9262,7 +9267,7 @@ $(document).ready(async () => {
     let timerCheckForBucketUpload = setInterval(checkForBucketUpload, 1000);
   };
 
-  const guided_main_curate = async () => {
+  const guidedUploadDatasetToPennsieve = async () => {
     // if the user chose to auto-generate manifest files, create the excel files in local storage
     // and add the paths to the manifest files in the datasetStructure object
     if (
