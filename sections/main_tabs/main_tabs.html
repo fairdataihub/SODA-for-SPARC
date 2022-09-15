@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<section
+  id="main_tabs-section"
+  class="section js-section u-category-windows"
+  style="padding-left: 5px; margin-left: -25px"
+>
+  <header>
+    <form action="#">
+      <div class="top-menu" style="display: flex; flex-direction: row">
+        <input
+          class="tab-input"
+          id="manage_dataset_tab"
+          type="radio"
+          name="main_tabs"
+          value="manage_dataset_section"
+          checked
+        />
+        <label
+          class="tab-label"
+          for="manage_dataset_tab"
+          style="border-left: transparent"
+          >Manage Datasets</label
+        >
+
+        <input
+          class="tab-input"
+          id="prepare_metadata_tab"
+          type="radio"
+          name="main_tabs"
+          value="prepare_metadata_section"
+        />
+        <label class="tab-label" for="prepare_metadata_tab"
+          >Prepare Metadata</label
+        >
+
+        <input
+          class="tab-input"
+          id="prepare_dataset_tab"
+          type="radio"
+          name="main_tabs"
+          value="prepare_dataset_section"
+        />
+        <label class="tab-label" for="prepare_dataset_tab"
+          >Prepare Datasets</label
+        >
+
+        <input
+          class="tab-input"
+          id="disseminate_dataset_tab"
+          type="radio"
+          name="main_tabs"
+          value="disseminate_dataset_section"
+        />
+        <label class="tab-label" for="disseminate_dataset_tab"
+          >Disseminate Datasets
+        </label>
+      </div>
+    </form>
+    <div class="tab-info">
+      <p id="tab_info_text">
+        This interface provides a convenient window to accomplish all required
+        curation steps on Pennsieve datasets
+      </p>
+    </div>
+  </header>
+
+  <div id="main_tabs">
+    <section class="main-tabs-section" id="manage_dataset_section">
+      <div class="flex-main-container">
+        <div class="flex-row-container">
+          <div class="flex-content-container">
+            <div class="header-container">
+              <p class="content-header">Datasets</p>
+            </div>
+            <div class="button-container">
+              <button
+                class="content-button tippy-content-main"
+                id="create_new_bf_dataset_btn"
+                data-section="create_new_bf_dataset"
+                data-tippy-content="Create a new empty dataset on Pennsieve"
+                rel="popover"
+                placement="bottom"
+                data-trigger="hover"
+              >
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 46 52"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M17.8065 28.7678H2.54378C1.86913 28.7678 1.22211 29.0624 0.745056 29.5868C0.268004 30.1112 0 30.8224 0 31.564V48.3413C0 49.0829 0.268004 49.7941 0.745056 50.3185C1.22211 50.8429 1.86913 51.1375 2.54378 51.1375H17.8065C18.4811 51.1375 19.1281 50.8429 19.6052 50.3185C20.0822 49.7941 20.3502 49.0829 20.3502 48.3413V31.564C20.3502 30.8224 20.0822 30.1112 19.6052 29.5868C19.1281 29.0624 18.4811 28.7678 17.8065 28.7678ZM15.2627 45.5451H5.08756V34.3602H15.2627V45.5451Z"
+                    fill="#565E6B"
+                    stroke-width="10"
+                  />
+                  <path
+                    d=" M43.2442 0.805664H27.9816C27.3069 0.805664 26.6599 1.10026 26.1828 1.62466C25.7058 2.14905 25.4378 2.86027 25.4378 3.60188V20.3792C25.4378 21.1208 25.7058 21.832 26.1828 22.3564C26.6599 22.8808 27.3069 23.1754 27.9816 23.1754H43.2442C43.9189 23.1754 44.5659 22.8808 45.043 22.3564C45.52 21.832 45.788 21.1208 45.788 20.3792V3.60188C45.788 2.86027 45.52 2.14905 45.043 1.62466C44.5659 1.10026 43.9189 0.805664 43.2442 0.805664ZM40.7005 17.5829H30.5253V6.39809H40.7005V17.5829Z"
+                    fill="#565E6B"
+                    stroke-width="10"
+                  />
+                  <path
+                    d=" M43.2442 37.1564H38.1567V31.564C38.1567 30.8224 37.8887 30.1112 37.4116 29.5868C36.9346 29.0624 36.2876 28.7678 35.6129 28.7678C34.9383 28.7678 34.2912 29.0624 33.8142 29.5868C33.3371 30.1112 33.0691 30.8224 33.0691 31.564V37.1564H27.9816C27.3069 37.1564 26.6599 37.451 26.1828 37.9754C25.7058 38.4998 25.4378 39.211 25.4378 39.9526C25.4378 40.6942 25.7058 41.4055 26.1828 41.9299C26.6599 42.4543 27.3069 42.7489 27.9816 42.7489H33.0691V48.3413C33.0691 49.0829 33.3371 49.7941 33.8142 50.3185C34.2912 50.8429 34.9383 51.1375 35.6129 51.1375C36.2876 51.1375 36.9346 50.8429 37.4116 50.3185C37.8887 49.7941 38.1567 49.0829 38.1567 48.3413V42.7489H43.2442C43.9189 42.7489 44.5659 42.4543 45.043 41.9299C45.52 41.4055 45.788 40.6942 45.788 39.9526C45.788 39.211 45.52 38.4998 45.043 37.9754C44.5659 37.451 43.9189 37.1564 43.2442 37.1564Z "
+                    fill="#13716D"
+                    stroke-width="10"
+                  />
+                  <path
+                    d="M17.8065 0.805664H2.54378C1.86913 0.805664 1.22211 1.10026 0.745056 1.62466C0.268004 2.14905 0 2.86027 0 3.60188V20.3792C0 21.1208 0.268004 21.832 0.745056 22.3564C1.22211 22.8808 1.86913 23.1754 2.54378 23.1754H17.8065C18.4811 23.1754 19.1281 22.8808 19.6052 22.3564C20.0822 21.832 20.3502 21.1208 20.3502 20.3792V3.60188C20.3502 2.86027 20.0822 2.14905 19.6052 1.62466C19.1281 1.10026 18.4811 0.805664 17.8065 0.805664ZM15.2627 17.5829H5.08756V6.39809H15.2627V17.5829Z"
+                    fill="#565E6B"
+                  />
+                </svg>
+                <h2>Create a new dataset</h2>
+              </button>
+              <button
+                class="content-button tippy-content-main"
+                id="rename_existing_bf_dataset_btn"
+                data-section="rename_existing_bf_dataset"
+                data-tippy-content="Rename an existing dataset on Pennsieve"
+                rel="popover"
+                data-placement="bottom"
+                data-trigger="hover"
+              >
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 52 59"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M46.7819 11.6562H44.1829V17.4916H46.7819V40.8332H44.1829V46.6686H46.7819C49.6486 46.6686 51.9799 44.0514 51.9799 40.8332V17.4916C51.9799 14.2763 49.646 11.6562 46.7819 11.6562Z"
+                    fill="#565E6B"
+                  />
+                  <path
+                    d="M10.396 23.327H33.774V34.9978H10.396V23.327Z"
+                    fill="#b80d49"
+                  />
+                  <path
+                    d="M38.9849 46.6685V5.83539H46.7689V0H25.977V5.83539H33.7869V11.6562H5.19799C2.3313 11.6562 0 14.2734 0 17.4916V40.8331C0 44.0513 2.3313 46.6685 5.19799 46.6685H33.7869V52.5185H25.977V58.3539H46.7689V52.5185H38.9849V46.6685ZM5.19799 40.8331V17.4916H33.7869V40.8331H5.19799Z"
+                    fill="#565E6B"
+                  />
+                </svg>
+                <h2>Rename an existing dataset</h2>
+              </button>
+            </div>
+          </div>
+          <div class="flex-content-container">
+            <div class="header-container">
+              <p class="content-header">Dataset permissions</p>
+            </div>
+            <div class="button-container">
+              <button
+                class="content-button tippy-content-main"
+                id="pi_dataset_owner_btn"
+                data-section="pi_dataset_owner"
+                data-tippy-content="Give owner privilieges to the PI of your SPARC award as required by the SPARC curation rules"
+                rel="popover"
+                data-placement="bottom"
+                data-trigger="hover"
+              >
+                <svg
+                  width="48"
+                  height="40"
+                  viewBox="0 0 59 47"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M53.1 41.125H5.9V11.75H53.1V41.125ZM53.1 5.875H29.5L23.6 0H5.9C2.6255 0 0 2.61437 0 5.875V41.125C0 44.3563 2.655 47 5.9 47H53.1C56.345 47 59 44.3563 59 41.125V11.75C59 10.1919 58.3784 8.69752 57.2719 7.59575C56.1655 6.49397 54.6648 5.875 53.1 5.875V5.875Z"
+                    fill="#565E6B"
+                  />
+                  <path
+                    d="M34.8985 23.5C33.689 20.0925 30.4145 17.625 26.55 17.625C21.653 17.625 17.7 21.5613 17.7 26.4375C17.7 31.3137 21.653 35.25 26.55 35.25C30.4145 35.25 33.689 32.8119 34.8985 29.375H41.3V35.25H47.2V29.375H50.15V23.5H34.8985ZM26.55 29.375C24.9275 29.375 23.6 28.0825 23.6 26.4375C23.6 24.8219 24.9275 23.5 26.55 23.5C28.1725 23.5 29.5 24.8219 29.5 26.4375C29.5 28.0531 28.1725 29.375 26.55 29.375Z"
+                    fill="#13716D"
+                  />
+                </svg>
+                <h2>Make PI owner of dataset</h2>
+              </button>
+              <button
+                class="content-button tippy-content-main"
+                id="add_edit_permissions_btn"
+                data-section="add_edit_permissions"
+                data-tippy-content="Give permissions to other members and/or team if you need them to contribute to the dataset"
+                rel="popover"
+                data-placement="bottom"
+                data-trigger="hover"
+              >
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 53 48"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M18.5507 23.9994C24.4058 23.9994 29.1511 18.6277 29.1511 11.9997C29.1511 5.37175 24.4058 0 18.5507 0C12.6957 0 7.95031 5.37175 7.95031 11.9997C7.95031 18.6277 12.6957 23.9994 18.5507 23.9994ZM25.971 26.9994H24.588C22.7495 27.9556 20.7039 28.4993 18.5507 28.4993C16.3975 28.4993 14.3602 27.9556 12.5135 26.9994H11.1304C4.98551 26.9994 0 32.643 0 39.5991V43.499C0 45.9833 1.78054 47.9989 3.97516 47.9989H26.7412C26.5424 47.3614 26.4596 46.6864 26.5259 46.002L27.089 40.2928L27.1884 39.2522L27.8427 38.5116L34.2443 31.2649C32.2153 28.6681 29.2754 26.9994 25.971 26.9994Z"
+                    fill="#565E6B"
+                  />
+                  <path
+                    d="M29.7226 40.6209L29.1594 46.3395C29.0683 47.2958 29.7805 48.102 30.617 47.9895L35.6605 47.352L47.0807 34.4242L41.1429 27.7025L29.7226 40.6209ZM52.4224 25.2088L49.2836 21.6557C48.5135 20.7839 47.2547 20.7839 46.4845 21.6557L43.354 25.1994L43.0145 25.5838L48.9607 32.3055L52.4224 28.3868C53.1925 27.5056 53.1925 26.09 52.4224 25.2088Z"
+                    fill="#13716D"
+                  />
+                </svg>
+                <h2>Add/edit permissions</h2>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex-row-container">
+          <div class="flex-content-container">
+            <div class="header-container">
+              <p class="content-header">Digital metadata</p>
+            </div>
+            <div class="button-container">
+              <button
+                class="content-button tippy-content-main"
+                id="add_edit_subtitle_btn"
+                data-section="add_edit_subtitle"
+                data-tippy-content="Add few sentences that describe your dataset"
+                rel="popover"
+                data-placement="bottom"
+                data-trigger="hover"
+              >
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 48 39"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M43.2 0H4.8C2.16 0 0 2.19375 0 4.875V34.125C0 36.8063 2.16 39 4.8 39H43.2C45.84 39 48 36.8063 48 34.125V4.875C48 2.19375 45.84 0 43.2 0ZM4.8 19.5H14.4V24.375H4.8V19.5ZM28.8 34.125H4.8V29.25H28.8V34.125ZM43.2 34.125H33.6V29.25H43.2V34.125ZM43.2 24.375H19.2V19.5H43.2V24.375Z"
+                    fill="#565E6B"
+                  />
+                </svg>
+                <h2>Add/edit subtitle</h2>
+              </button>
+              <button
+                class="content-button tippy-content-main"
+                id="add_edit_description_btn"
+                data-section="add_edit_description"
+                data-tippy-content="Provide a detailed description of your dataset"
+                rel="popover"
+                data-placement="bottom"
+                data-trigger="hover"
+              >
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 48 35"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M2.22693 0C1.63631 0 1.06988 0.263393 0.652252 0.732235C0.234622 1.20108 0 1.83696 0 2.50001C0 3.16305 0.234622 3.79894 0.652252 4.26778C1.06988 4.73662 1.63631 5.00002 2.22693 5.00002H45.2809C45.8715 5.00002 46.4379 4.73662 46.8555 4.26778C47.2732 3.79894 47.5078 3.16305 47.5078 2.50001C47.5078 1.83696 47.2732 1.20108 46.8555 0.732235C46.4379 0.263393 45.8715 0 45.2809 0H2.22693Z"
+                    fill="#565E6B"
+                  />
+                  <path
+                    d="M2.22693 10C1.63631 10 1.06988 10.2634 0.652252 10.7322C0.234622 11.2011 0 11.837 0 12.5C0 13.163 0.234622 13.7989 0.652252 14.2678C1.06988 14.7366 1.63631 15 2.22693 15H45.2809C45.8715 15 46.4379 14.7366 46.8555 14.2678C47.2732 13.7989 47.5078 13.163 47.5078 12.5C47.5078 11.837 47.2732 11.2011 46.8555 10.7322C46.4379 10.2634 45.8715 10 45.2809 10H2.22693Z"
+                    fill="#13716D"
+                  />
+                  <path
+                    d="M0 22.5C0 21.837 0.234622 21.2011 0.652252 20.7322C1.06988 20.2634 1.63631 20 2.22693 20H45.2809C45.8715 20 46.4379 20.2634 46.8555 20.7322C47.2732 21.2011 47.5078 21.837 47.5078 22.5C47.5078 23.1631 47.2732 23.7989 46.8555 24.2678C46.4379 24.7366 45.8715 25 45.2809 25H2.22693C1.63631 25 1.06988 24.7366 0.652252 24.2678C0.234622 23.7989 0 23.1631 0 22.5Z"
+                    fill="#B80D49"
+                  />
+                  <path
+                    d="M2.22693 30C1.63631 30 1.06988 30.2634 0.652252 30.7322C0.234622 31.2011 0 31.8369 0 32.5C0 33.163 0.234622 33.7989 0.652252 34.2677C1.06988 34.7366 1.63631 35 2.22693 35H30.4347C31.0253 35 31.5917 34.7366 32.0093 34.2677C32.427 33.7989 32.6616 33.163 32.6616 32.5C32.6616 31.8369 32.427 31.2011 32.0093 30.7322C31.5917 30.2634 31.0253 30 30.4347 30H2.22693Z"
+                    fill="#565E6B"
+                  />
+                </svg>
+                <h2>Add/edit description</h2>
+              </button>
+              <button
+                class="content-button tippy-content-main"
+                id="upload_banner_image_btn"
+                data-section="add_edit_banner"
+                data-tippy-content="Provide an image that will be used as thumbnail for your dataset"
+                rel="popover"
+                data-placement="bottom"
+                data-trigger="hover"
+              >
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 43 42"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M4.3 4.42105H32.25V19.8947H36.55V4.42105C36.55 1.98284 34.6214 0 32.25 0H4.3C1.92855 0 0 1.98284 0 4.42105V30.9474C0 33.3856 1.92855 35.3684 4.3 35.3684H21.5V30.9474H4.3V4.42105Z"
+                    fill="#565E6B"
+                  />
+                  <path
+                    d="M12.9002 17.6838L6.4502 26.5259H30.1002L21.5002 13.2627L15.0502 22.1048L12.9002 17.6838Z"
+                    fill="#13716D"
+                  />
+                  <path
+                    d="M36.5498 24.3154H32.2498V30.947H25.7998V35.3681H32.2498V41.9996H36.5498V35.3681H42.9998V30.947H36.5498V24.3154Z"
+                    fill="#13716D"
+                  />
+                </svg>
+                <h2>Upload a banner image</h2>
+              </button>
+              <button
+                class="content-button tippy-content-main"
+                id="assign_license_btn"
+                data-section="add_license"
+                data-tippy-content="Assign the Creative Commons Attribution (CC-BY) license that is mandatory for all SPARC datasets"
+                rel="popover"
+                data-placement="bottom"
+                data-trigger="hover"
+              >
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 43 45"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M30.7144 19.2861C28.2846 19.2861 25.9092 20.0402 23.8889 21.453C21.8685 22.8657 20.2938 24.8737 19.3639 27.2231C18.434 29.5724 18.1907 32.1575 18.6648 34.6516C19.1388 37.1456 20.3089 39.4365 22.0271 41.2346C23.7453 43.0327 25.9344 44.2573 28.3176 44.7534C30.7008 45.2495 33.1711 44.9948 35.416 44.0217C37.6609 43.0486 39.5797 41.4007 40.9296 39.2863C42.2796 37.172 43.0002 34.6862 43.0002 32.1433C42.9961 28.7346 41.7004 25.4669 39.3973 23.0566C37.0941 20.6463 33.9716 19.2904 30.7144 19.2861ZM39.7905 30.5361H36.7897C36.5902 28.1129 35.9556 25.7509 34.9192 23.574C36.1914 24.2598 37.2937 25.2458 38.1391 26.4541C38.9845 27.6624 39.5499 29.0599 39.7905 30.5361ZM27.729 30.5361C28.0114 27.6316 29.0434 24.8622 30.7144 22.5245C32.3862 24.862 33.4187 27.6314 33.7014 30.5361H27.729ZM33.7029 33.7504C33.42 36.6553 32.3869 39.4248 30.7144 41.762C29.0427 39.4245 28.0101 36.6551 27.7275 33.7504H33.7029ZM26.5096 23.574C25.4731 25.7509 24.8385 28.1129 24.6392 30.5361H21.6384C21.879 29.0599 22.4444 27.6624 23.2898 26.4541C24.1352 25.2458 25.2375 24.2598 26.5096 23.574ZM21.6384 33.7504H24.6376C24.837 36.1736 25.4716 38.5357 26.5081 40.7125C25.2363 40.0265 24.1343 39.0404 23.2891 37.8321C22.444 36.6239 21.8788 35.2265 21.6384 33.7504ZM34.9192 40.7125C35.9558 38.5357 36.5904 36.1736 36.7897 33.7504H39.7905C39.55 35.2267 38.9847 36.6242 38.1392 37.8325C37.2938 39.0408 36.1914 40.0268 34.9192 40.7125Z"
+                    fill="#13716D"
+                  />
+                  <path
+                    d="M6.14258 19.2861H15.357V22.5004H6.14258V19.2861Z"
+                    fill="#565E6B"
+                  />
+                  <path
+                    d="M6.14258 6.42871H24.5712V9.64297H6.14258V6.42871Z"
+                    fill="#565E6B"
+                  />
+                  <path
+                    d="M6.14258 12.8574H24.5712V16.0717H6.14258V12.8574Z"
+                    fill="#B80D49"
+                  />
+                  <path
+                    d="M6.14258 35.3574H15.357V38.5717H6.14258V35.3574Z"
+                    fill="#565E6B"
+                  />
+                  <path
+                    d="M15.3571 44.9999H3.07142C2.25708 44.999 1.47632 44.6601 0.900497 44.0575C0.32467 43.4549 0.000813124 42.6378 0 41.7856V3.21428C0.000813124 2.36206 0.32467 1.54499 0.900497 0.94238C1.47632 0.33977 2.25708 0.000850943 3.07142 0H27.6428C28.4572 0.000850943 29.2379 0.33977 29.8137 0.94238C30.3896 1.54499 30.7134 2.36206 30.7142 3.21428V16.0714H27.6428V3.21428H3.07142V41.7856H15.3571V44.9999Z"
+                    fill="#565E6B"
+                  />
+                </svg>
+                <h2>Assign a license</h2>
+              </button>
+
+              <button
+                class="content-button tippy-content-main"
+                id="add_tags_btn"
+                data-section="add_tags"
+                data-tippy-content="Add descriptive metadata tags to your dataset to make it more easily searchable once published"
+                rel="popover"
+                data-placement="bottom"
+                data-trigger="hover"
+              >
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 177 158"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M80.1413 0.75L78.0579 2.4825L4.83916 70.545L0.279633 75L4.85248 79.455L64.7587 135.142L69.5512 139.387L74.3437 135.136L147.562 67.0738L149.426 65.1248V0.75H80.1413ZM85.7592 13.125H136.094V59.9211L69.5313 121.796L19.19 75L85.7525 13.125H85.7592ZM156.063 19.3125V31.6875H162.719V82.1528L99.4844 140.55L91.1641 132.816L81.8054 141.516L94.6985 153.705L99.491 157.95L104.084 153.699L174.167 89.2931L176.031 87.375V19.3125H156.063ZM116.125 25.5C114.36 25.5 112.667 26.1519 111.418 27.3123C110.17 28.4727 109.469 30.0465 109.469 31.6875C109.469 33.3285 110.17 34.9023 111.418 36.0627C112.667 37.2231 114.36 37.875 116.125 37.875C117.89 37.875 119.583 37.2231 120.832 36.0627C122.08 34.9023 122.781 33.3285 122.781 31.6875C122.781 30.0465 122.08 28.4727 120.832 27.3123C119.583 26.1519 117.89 25.5 116.125 25.5Z"
+                    fill="#666666"
+                  />
+                </svg>
+
+                <h2>Add/edit tags</h2>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex-row-container">
+          <div class="flex-content-container">
+            <div class="header-container">
+              <p class="content-header">Local dataset</p>
+            </div>
+            <div class="button-container">
+              <button
+                class="content-button tippy-content-main"
+                id="upload_local_dataset_btn"
+                data-section="upload_local_dataset"
+                data-tippy-content="Upload a dataset from your computer to Pennsieve"
+                rel="popover"
+                data-placement="bottom"
+                data-trigger="hover"
+              >
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 58 52"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M29.4074 21.7284C29.359 21.6589 29.2971 21.6027 29.2264 21.5641C29.1558 21.5255 29.0782 21.5054 28.9996 21.5054C28.921 21.5054 28.8435 21.5255 28.7728 21.5641C28.7021 21.6027 28.6402 21.6589 28.5918 21.7284L21.3418 32.0257C21.282 32.1114 21.2449 32.2143 21.2348 32.3225C21.2246 32.4307 21.2418 32.54 21.2843 32.6378C21.3269 32.7356 21.3931 32.8179 21.4753 32.8755C21.5576 32.933 21.6527 32.9634 21.7496 32.9632H26.5333V50.5784C26.5333 50.8981 26.7664 51.1597 27.0512 51.1597H30.9351C31.2199 51.1597 31.453 50.8981 31.453 50.5784V32.9705H36.2496C36.6833 32.9705 36.9228 32.4109 36.6574 32.033L29.4074 21.7284Z"
+                    fill="#b80d49"
+                  />
+                  <path
+                    d="M48.3808 15.0209C45.4161 6.24234 37.8618 0 29.0129 0C20.1641 0 12.6098 6.23507 9.64509 15.0136C4.09754 16.6487 0 22.3242 0 29.0679C0 37.0979 5.79353 43.6019 12.94 43.6019H15.5357C15.8205 43.6019 16.0536 43.3403 16.0536 43.0205V38.6603C16.0536 38.3406 15.8205 38.079 15.5357 38.079H12.94C10.7585 38.079 8.70647 37.1052 7.17879 35.3393C5.65759 33.5807 4.84844 31.2117 4.91964 28.7554C4.9779 26.837 5.56049 25.0347 6.61562 23.516C7.69665 21.9681 9.21138 20.8417 10.8944 20.3403L13.3478 19.6208L14.2475 16.9611C14.8042 15.3043 15.581 13.7564 16.5585 12.3539C17.5235 10.9638 18.6665 9.74175 19.9504 8.72764C22.6109 6.62749 25.744 5.51564 29.0129 5.51564C32.2819 5.51564 35.415 6.62749 38.0754 8.72764C39.3636 9.74502 40.5029 10.9659 41.4674 12.3539C42.4449 13.7564 43.2216 15.3115 43.7783 16.9611L44.6716 19.6136L47.1185 20.3403C50.627 21.4013 53.0804 24.9839 53.0804 29.0679C53.0804 31.4733 52.2453 33.7406 50.7306 35.4411C49.9877 36.2799 49.1041 36.9449 48.1307 37.3977C47.1573 37.8505 46.1137 38.0821 45.06 38.079H42.4643C42.1795 38.079 41.9464 38.3406 41.9464 38.6603V43.0205C41.9464 43.3403 42.1795 43.6019 42.4643 43.6019H45.06C52.2065 43.6019 58 37.0979 58 29.0679C58 22.3314 53.9154 16.6632 48.3808 15.0209Z"
+                    fill="#565E6B"
+                  />
+                </svg>
+                <h2>Upload a local dataset to Pennsieve</h2>
+              </button>
+            </div>
+          </div>
+          <div class="flex-content-container">
+            <div class="header-container">
+              <p class="content-header">Dataset status</p>
+            </div>
+            <div class="button-container">
+              <button
+                class="content-button tippy-content-main"
+                id="view_change_dataset_status_btn"
+                data-section="view_change_dataset_status"
+                data-tippy-content="Modify and track the status of your dataset as it moves through the curation process"
+                rel="popover"
+                data-placement="top"
+                data-trigger="hover"
+              >
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 47 53"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M23.371 10.4946C25.9525 10.4946 28.0452 8.14533 28.0452 5.24731C28.0452 2.3493 25.9525 0 23.371 0C20.7895 0 18.6968 2.3493 18.6968 5.24731C18.6968 8.14533 20.7895 10.4946 23.371 10.4946Z"
+                    fill="#13716D"
+                  />
+                  <path
+                    d="M23.3709 41.9786H28.045V28.8602H32.7192V18.3655C32.7192 15.4716 30.6229 13.1182 28.045 13.1182H18.6967C16.1188 13.1182 14.0225 15.4716 14.0225 18.3655V28.8602H18.6967V41.9786H23.3709Z"
+                    fill="#13716D"
+                  />
+                  <path
+                    d="M38.4359 24.626L36.3489 29.3197C39.9831 31.3531 42.0678 34.0555 42.0678 36.7316C42.0678 41.6956 34.3904 47.2263 23.371 47.2263C12.3516 47.2263 4.6742 41.6956 4.6742 36.7316C4.6742 34.0555 6.75889 31.3531 10.3907 29.3197L8.30371 24.626C3.02654 27.5802 0 31.9906 0 36.7316C0 45.5576 10.2669 52.4736 23.371 52.4736C36.4751 52.4736 46.742 45.5576 46.742 36.7316C46.742 31.9906 43.7154 27.5802 38.4359 24.626Z"
+                    fill="#565E6B"
+                  />
+                </svg>
+                <h2>View and change status</h2>
+              </button>
+            </div>
+          </div>
+          <div class="flex-content-container">
+            <div class="header-container">
+              <p class="content-header">Dataset collections</p>
+            </div>
+            <div class="button-container">
+              <button
+                class="content-button"
+                id="rename_existing_bf_dataset_btn"
+                data-section="add_edit_bf_dataset_collection"
+                data-content="Add/edit a dataset to a collection"
+                rel="popover"
+                data-placement="bottom"
+                data-trigger="hover"
+                data-original-title=""
+                title=""
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  style="width: 39px; fill: #565e6b"
+                >
+                  <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+                  <path
+                    d="M32 432C32 458.5 53.49 480 80 480h352c26.51 0 48-21.49 48-48V160H32V432zM160 236C160 229.4 165.4 224 172 224h168C346.6 224 352 229.4 352 236v8C352 250.6 346.6 256 340 256h-168C165.4 256 160 250.6 160 244V236zM480 32H32C14.31 32 0 46.31 0 64v48C0 120.8 7.188 128 16 128h480C504.8 128 512 120.8 512 112V64C512 46.31 497.7 32 480 32z"
+                  ></path>
+                </svg>
+                <h2>Add dataset to a collection</h2>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="main-tabs-section show" id="prepare_metadata_section">
+      <div class="flex-main-container">
+        <div class="flex-row-container">
+          <div class="flex-content-container">
+            <div class="header-container">
+              <p class="content-header">Mandatory high-level metadata files</p>
+            </div>
+            <div class="button-container">
+              <button
+                class="content-button tippy-content-main"
+                id="create_submission_btn"
+                data-section="create_submission"
+                data-tippy-content="Prepare the submission file, which is mandatory for all datasets."
+                rel="popover"
+                data-placement="bottom"
+                data-trigger="hover"
+                data-original-title=""
+                title=""
+              >
+                <svg
+                  height="48"
+                  width="48"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 80.48 98.35"
+                >
+                  <defs>
+                    <style>
+                      .cls-1,
+                      .cls-2 {
+                        fill: none;
+                      }
+
+                      .cls-1,
+                      .cls-2,
+                      .cls-3 {
+                        stroke-miterlimit: 10;
+                      }
+
+                      .cls-1 {
+                        stroke-width: 6px;
+                      }
+
+                      .cls-2 {
+                        stroke-width: 8px;
+                      }
+                    </style>
+                  </defs>
+                  <g id="Layer_2" data-name="Layer 2">
+                    <g id="Layer_2-2" data-name="Layer 2">
+                      <rect
+                        class="cls-1"
+                        x="65.2"
+                        y="70.64"
+                        width="0.17"
+                        height="25.22"
+                        stroke="#B80D49"
+                      ></rect>
+                      <rect
+                        class="cls-1"
+                        x="65.29"
+                        y="70.64"
+                        width="0.17"
+                        height="25.22"
+                        transform="translate(148.62 17.88) rotate(90)"
+                        stroke="#B80D49"
+                      ></rect>
+                      <path
+                        class="cls-2"
+                        d="M43.72,83.16l-32.67.09a7.83,7.83,0,0,1-8-7.58V10.58A7.82,7.82,0,0,1,11.05,3H48.81L65.54,17.54V64.8"
+                        stroke="#565E6B"
+                      ></path>
+                      <path
+                        class="cls-3"
+                        d="M65.54,17.54v3.23H52.61a7.31,7.31,0,0,1-7.52-7.09V3h3.72Z"
+                        stroke="#565E6B"
+                        fill="#565E6B"
+                      ></path>
+                      <line
+                        class="cls-1"
+                        x1="4.4"
+                        y1="46.35"
+                        x2="63.26"
+                        y2="46.35"
+                        stroke="#13716D"
+                      ></line>
+                      <line
+                        class="cls-1"
+                        x1="4.4"
+                        y1="62.64"
+                        x2="63.26"
+                        y2="62.64"
+                        stroke="#13716D"
+                      ></line>
+                      <line
+                        class="cls-1"
+                        x1="22.4"
+                        y1="46.35"
+                        x2="22.4"
+                        y2="80.5"
+                        stroke="#13716D"
+                      ></line>
+                      <line
+                        class="cls-1"
+                        x1="40.4"
+                        y1="46.35"
+                        x2="40.4"
+                        y2="80.5"
+                        stroke="#13716D"
+                      ></line>
+                    </g>
+                  </g>
+                </svg>
+                <h2>Create submission.xlsx</h2>
+              </button>
+              <button
+                class="content-button tippy-content-main"
+                id="create_dataset_description_btn"
+                data-section="create_dataset_description"
+                data-tippy-content="Prepare the dataset description file, which is mandatory for all datasets."
+                rel="popover"
+                data-placement="bottom"
+                data-trigger="hover"
+                data-original-title=""
+                title=""
+              >
+                <svg
+                  height="48"
+                  width="48"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 80.48 98.35"
+                >
+                  <defs>
+                    <style>
+                      .cls-1,
+                      .cls-2 {
+                        fill: none;
+                      }
+
+                      .cls-1,
+                      .cls-2,
+                      .cls-3 {
+                        stroke-miterlimit: 10;
+                      }
+
+                      .cls-1 {
+                        stroke-width: 6px;
+                      }
+
+                      .cls-2 {
+                        stroke-width: 8px;
+                      }
+                    </style>
+                  </defs>
+                  <g id="Layer_2" data-name="Layer 2">
+                    <g id="Layer_2-2" data-name="Layer 2">
+                      <rect
+                        class="cls-1"
+                        x="65.2"
+                        y="70.64"
+                        width="0.17"
+                        height="25.22"
+                        stroke="#B80D49"
+                      ></rect>
+                      <rect
+                        class="cls-1"
+                        x="65.29"
+                        y="70.64"
+                        width="0.17"
+                        height="25.22"
+                        transform="translate(148.62 17.88) rotate(90)"
+                        stroke="#B80D49"
+                      ></rect>
+                      <path
+                        class="cls-2"
+                        d="M43.72,83.16l-32.67.09a7.83,7.83,0,0,1-8-7.58V10.58A7.82,7.82,0,0,1,11.05,3H48.81L65.54,17.54V64.8"
+                        stroke="#565E6B"
+                      ></path>
+                      <path
+                        class="cls-3"
+                        d="M65.54,17.54v3.23H52.61a7.31,7.31,0,0,1-7.52-7.09V3h3.72Z"
+                        stroke="#565E6B"
+                        fill="#565E6B"
+                      ></path>
+                      <line
+                        class="cls-1"
+                        x1="4.4"
+                        y1="46.35"
+                        x2="63.26"
+                        y2="46.35"
+                        stroke="#13716D"
+                      ></line>
+                      <line
+                        class="cls-1"
+                        x1="4.4"
+                        y1="62.64"
+                        x2="63.26"
+                        y2="62.64"
+                        stroke="#13716D"
+                      ></line>
+                      <line
+                        class="cls-1"
+                        x1="22.4"
+                        y1="46.35"
+                        x2="22.4"
+                        y2="80.5"
+                        stroke="#13716D"
+                      ></line>
+                      <line
+                        class="cls-1"
+                        x1="40.4"
+                        y1="46.35"
+                        x2="40.4"
+                        y2="80.5"
+                        stroke="#13716D"
+                      ></line>
+                    </g>
+                  </g>
+                </svg>
+                <h2>Create dataset_<br />description.xlsx</h2></button
+              ><button
+                class="content-button tippy-content-main"
+                id="create_README_btn"
+                data-section="create_README"
+                data-tippy-content="Prepare the README file."
+                rel="popover"
+                data-placement="bottom"
+                data-trigger="hover"
+                data-original-title=""
+                title=""
+              >
+                <svg
+                  height="48"
+                  width="48"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 80.65 98.35"
+                >
+                  <defs>
+                    <style>
+                      .cls-1,
+                      .cls-2 {
+                        fill: none;
+                      }
+
+                      .cls-1,
+                      .cls-2,
+                      .cls-3 {
+                        stroke-miterlimit: 10;
+                      }
+
+                      .cls-1 {
+                        stroke-width: 6px;
+                      }
+
+                      .cls-2 {
+                        stroke-width: 8px;
+                      }
+                    </style>
+                  </defs>
+                  <g id="Layer_2" data-name="Layer 2">
+                    <g id="Layer_2-2" data-name="Layer 2">
+                      <rect
+                        class="cls-1"
+                        x="65.37"
+                        y="70.64"
+                        width="0.17"
+                        height="25.22"
+                        stroke="#B80D49"
+                      ></rect>
+                      <rect
+                        class="cls-1"
+                        x="65.46"
+                        y="70.64"
+                        width="0.17"
+                        height="25.22"
+                        transform="translate(148.79 17.71) rotate(90)"
+                        stroke="#B80D49"
+                      ></rect>
+                      <path
+                        class="cls-2"
+                        d="M43.91,83.17l-32.86.08a7.83,7.83,0,0,1-8-7.58V10.58A7.82,7.82,0,0,1,11.05,3H48.81L65.54,17.54V60.78"
+                        stroke="#565E6B"
+                      ></path>
+                      <path
+                        class="cls-3"
+                        d="M65.54,17.54v3.23H52.61a7.31,7.31,0,0,1-7.52-7.09V3h3.72Z"
+                        stroke="#565E6B"
+                        fill="#565E6B"
+                      ></path>
+                      <line
+                        class="cls-1"
+                        x1="11.79"
+                        y1="48.64"
+                        x2="45.67"
+                        y2="48.64"
+                        stroke="#13716D"
+                      ></line>
+                      <line
+                        class="cls-1"
+                        x1="11.79"
+                        y1="58.24"
+                        x2="37.27"
+                        y2="58.24"
+                        stroke="#13716D"
+                      ></line>
+                      <line
+                        class="cls-1"
+                        x1="11.79"
+                        y1="68.05"
+                        x2="52.25"
+                        y2="68.05"
+                        stroke="#565E6B"
+                      ></line>
+                      <line
+                        class="cls-1"
+                        x1="11.79"
+                        y1="39.05"
+                        x2="29.88"
+                        y2="39.05"
+                        stroke="#565E6B"
+                      ></line>
+                    </g>
+                  </g>
+                </svg>
+                <h2>Create README.txt</h2>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex-row-container">
+          <div class="flex-content-container">
+            <div class="header-container">
+              <p class="content-header">
+                Dataset-specific high-level metadata files
+              </p>
+            </div>
+            <div class="button-container">
+              <button
+                class="content-button tippy-content-main"
+                id="create_subjects_btn"
+                data-section="create_subjects"
+                data-tippy-content="Prepare the subjects file, which is mandatory for all datasets."
+                rel="popover"
+                data-placement="bottom"
+                data-trigger="hover"
+                data-original-title=""
+                title=""
+              >
+                <svg
+                  height="48"
+                  width="48"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 80.48 98.35"
+                >
+                  <defs>
+                    <style>
+                      .cls-1,
+                      .cls-2 {
+                        fill: none;
+                      }
+
+                      .cls-1,
+                      .cls-2,
+                      .cls-3 {
+                        stroke-miterlimit: 10;
+                      }
+
+                      .cls-1 {
+                        stroke-width: 6px;
+                      }
+
+                      .cls-2 {
+                        stroke-width: 8px;
+                      }
+                    </style>
+                  </defs>
+                  <g id="Layer_2" data-name="Layer 2">
+                    <g id="Layer_2-2" data-name="Layer 2">
+                      <rect
+                        class="cls-1"
+                        x="65.2"
+                        y="70.64"
+                        width="0.17"
+                        height="25.22"
+                        stroke="#B80D49"
+                      ></rect>
+                      <rect
+                        class="cls-1"
+                        x="65.29"
+                        y="70.64"
+                        width="0.17"
+                        height="25.22"
+                        transform="translate(148.62 17.88) rotate(90)"
+                        stroke="#B80D49"
+                      ></rect>
+                      <path
+                        class="cls-2"
+                        d="M43.72,83.16l-32.67.09a7.83,7.83,0,0,1-8-7.58V10.58A7.82,7.82,0,0,1,11.05,3H48.81L65.54,17.54V64.8"
+                        stroke="#565E6B"
+                      ></path>
+                      <path
+                        class="cls-3"
+                        d="M65.54,17.54v3.23H52.61a7.31,7.31,0,0,1-7.52-7.09V3h3.72Z"
+                        stroke="#565E6B"
+                        fill="#565E6B"
+                      ></path>
+                      <line
+                        class="cls-1"
+                        x1="4.4"
+                        y1="46.35"
+                        x2="63.26"
+                        y2="46.35"
+                        stroke="#13716D"
+                      ></line>
+                      <line
+                        class="cls-1"
+                        x1="4.4"
+                        y1="62.64"
+                        x2="63.26"
+                        y2="62.64"
+                        stroke="#13716D"
+                      ></line>
+                      <line
+                        class="cls-1"
+                        x1="22.4"
+                        y1="46.35"
+                        x2="22.4"
+                        y2="80.5"
+                        stroke="#13716D"
+                      ></line>
+                      <line
+                        class="cls-1"
+                        x1="40.4"
+                        y1="46.35"
+                        x2="40.4"
+                        y2="80.5"
+                        stroke="#13716D"
+                      ></line>
+                    </g>
+                  </g>
+                </svg>
+                <h2>Create subjects.xlsx</h2>
+              </button>
+
+              <button
+                class="content-button  tippy-content-main"
+                id="create_samples_btn"
+                data-section="create_samples"
+                data-tippy-content="Prepare the samples file."
+                rel="popover"
+                data-placement="bottom"
+                data-trigger="hover"
+                data-original-title=""
+                title=""
+              >
+                <svg
+                  height="48"
+                  width="48"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 80.48 98.35"
+                >
+                  <defs>
+                    <style>
+                      .cls-1,
+                      .cls-2 {
+                        fill: none;
+                      }
+
+                      .cls-1,
+                      .cls-2,
+                      .cls-3 {
+                        stroke-miterlimit: 10;
+                      }
+
+                      .cls-1 {
+                        stroke-width: 6px;
+                      }
+
+                      .cls-2 {
+                        stroke-width: 8px;
+                      }
+                    </style>
+                  </defs>
+                  <g id="Layer_2" data-name="Layer 2">
+                    <g id="Layer_2-2" data-name="Layer 2">
+                      <rect
+                        class="cls-1"
+                        x="65.2"
+                        y="70.64"
+                        width="0.17"
+                        height="25.22"
+                        stroke="#B80D49"
+                      ></rect>
+                      <rect
+                        class="cls-1"
+                        x="65.29"
+                        y="70.64"
+                        width="0.17"
+                        height="25.22"
+                        transform="translate(148.62 17.88) rotate(90)"
+                        stroke="#B80D49"
+                      ></rect>
+                      <path
+                        class="cls-2"
+                        d="M43.72,83.16l-32.67.09a7.83,7.83,0,0,1-8-7.58V10.58A7.82,7.82,0,0,1,11.05,3H48.81L65.54,17.54V64.8"
+                        stroke="#565E6B"
+                      ></path>
+                      <path
+                        class="cls-3"
+                        d="M65.54,17.54v3.23H52.61a7.31,7.31,0,0,1-7.52-7.09V3h3.72Z"
+                        stroke="#565E6B"
+                        fill="#565E6B"
+                      ></path>
+                      <line
+                        class="cls-1"
+                        x1="4.4"
+                        y1="46.35"
+                        x2="63.26"
+                        y2="46.35"
+                        stroke="#13716D"
+                      ></line>
+                      <line
+                        class="cls-1"
+                        x1="4.4"
+                        y1="62.64"
+                        x2="63.26"
+                        y2="62.64"
+                        stroke="#13716D"
+                      ></line>
+                      <line
+                        class="cls-1"
+                        x1="22.4"
+                        y1="46.35"
+                        x2="22.4"
+                        y2="80.5"
+                        stroke="#13716D"
+                      ></line>
+                      <line
+                        class="cls-1"
+                        x1="40.4"
+                        y1="46.35"
+                        x2="40.4"
+                        y2="80.5"
+                        stroke="#13716D"
+                      ></line>
+                    </g>
+                  </g>
+                </svg>
+                <h2>Create samples.xlsx</h2>
+              </button>
+
+              <button
+                class="content-button tippy-content-main"
+                id="create_CHANGES_btn"
+                data-section="create_CHANGES"
+                data-tippy-content="Prepare the CHANGES file."
+                rel="popover"
+                data-placement="bottom"
+                data-trigger="hover"
+                data-original-title=""
+                title=""
+              >
+                <svg
+                  height="48"
+                  width="48"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 80.65 98.35"
+                >
+                  <defs>
+                    <style>
+                      .cls-1,
+                      .cls-2 {
+                        fill: none;
+                      }
+
+                      .cls-1,
+                      .cls-2,
+                      .cls-3 {
+                        stroke-miterlimit: 10;
+                      }
+
+                      .cls-1 {
+                        stroke-width: 6px;
+                      }
+
+                      .cls-2 {
+                        stroke-width: 8px;
+                      }
+                    </style>
+                  </defs>
+                  <g id="Layer_2" data-name="Layer 2">
+                    <g id="Layer_2-2" data-name="Layer 2">
+                      <rect
+                        class="cls-1"
+                        x="65.37"
+                        y="70.64"
+                        width="0.17"
+                        height="25.22"
+                        stroke="#B80D49"
+                      ></rect>
+                      <rect
+                        class="cls-1"
+                        x="65.46"
+                        y="70.64"
+                        width="0.17"
+                        height="25.22"
+                        transform="translate(148.79 17.71) rotate(90)"
+                        stroke="#B80D49"
+                      ></rect>
+                      <path
+                        class="cls-2"
+                        d="M43.91,83.17l-32.86.08a7.83,7.83,0,0,1-8-7.58V10.58A7.82,7.82,0,0,1,11.05,3H48.81L65.54,17.54V60.78"
+                        stroke="#565E6B"
+                      ></path>
+                      <path
+                        class="cls-3"
+                        d="M65.54,17.54v3.23H52.61a7.31,7.31,0,0,1-7.52-7.09V3h3.72Z"
+                        stroke="#565E6B"
+                        fill="#565E6B"
+                      ></path>
+                      <line
+                        class="cls-1"
+                        x1="11.79"
+                        y1="48.64"
+                        x2="45.67"
+                        y2="48.64"
+                        stroke="#13716D"
+                      ></line>
+                      <line
+                        class="cls-1"
+                        x1="11.79"
+                        y1="58.24"
+                        x2="37.27"
+                        y2="58.24"
+                        stroke="#13716D"
+                      ></line>
+                      <line
+                        class="cls-1"
+                        x1="11.79"
+                        y1="68.05"
+                        x2="52.25"
+                        y2="68.05"
+                        stroke="#565E6B"
+                      ></line>
+                      <line
+                        class="cls-1"
+                        x1="11.79"
+                        y1="39.05"
+                        x2="29.88"
+                        y2="39.05"
+                        stroke="#565E6B"
+                      ></line>
+                    </g>
+                  </g>
+                </svg>
+                <h2>Create CHANGES.txt</h2>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex-row-container">
+          <div class="flex-content-container">
+            <div class="header-container">
+              <p class="content-header">Manifest files</p>
+            </div>
+            <div>
+              <button
+                class="content-button"
+                id="create_manifest_btn"
+                data-section="create_manifest"
+                data-original-title=""
+                title=""
+              >
+                <svg
+                  height="48"
+                  width="48"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 80.48 98.35"
+                >
+                  <defs>
+                    <style>
+                      .cls-1,
+                      .cls-2 {
+                        fill: none;
+                      }
+
+                      .cls-1,
+                      .cls-2,
+                      .cls-3 {
+                        stroke-miterlimit: 10;
+                      }
+
+                      .cls-1 {
+                        stroke-width: 6px;
+                      }
+
+                      .cls-2 {
+                        stroke-width: 8px;
+                      }
+                    </style>
+                  </defs>
+                  <g id="Layer_2" data-name="Layer 2">
+                    <g id="Layer_2-2" data-name="Layer 2">
+                      <rect
+                        class="cls-1"
+                        x="65.2"
+                        y="70.64"
+                        width="0.17"
+                        height="25.22"
+                        stroke="#B80D49"
+                      ></rect>
+                      <rect
+                        class="cls-1"
+                        x="65.29"
+                        y="70.64"
+                        width="0.17"
+                        height="25.22"
+                        transform="translate(148.62 17.88) rotate(90)"
+                        stroke="#B80D49"
+                      ></rect>
+                      <path
+                        class="cls-2"
+                        d="M43.72,83.16l-32.67.09a7.83,7.83,0,0,1-8-7.58V10.58A7.82,7.82,0,0,1,11.05,3H48.81L65.54,17.54V64.8"
+                        stroke="#565E6B"
+                      ></path>
+                      <path
+                        class="cls-3"
+                        d="M65.54,17.54v3.23H52.61a7.31,7.31,0,0,1-7.52-7.09V3h3.72Z"
+                        stroke="#565E6B"
+                        fill="#565E6B"
+                      ></path>
+                      <line
+                        class="cls-1"
+                        x1="4.4"
+                        y1="46.35"
+                        x2="63.26"
+                        y2="46.35"
+                        stroke="#13716D"
+                      ></line>
+                      <line
+                        class="cls-1"
+                        x1="4.4"
+                        y1="62.64"
+                        x2="63.26"
+                        y2="62.64"
+                        stroke="#13716D"
+                      ></line>
+                      <line
+                        class="cls-1"
+                        x1="22.4"
+                        y1="46.35"
+                        x2="22.4"
+                        y2="80.5"
+                        stroke="#13716D"
+                      ></line>
+                      <line
+                        class="cls-1"
+                        x1="40.4"
+                        y1="46.35"
+                        x2="40.4"
+                        y2="80.5"
+                        stroke="#13716D"
+                      ></line>
+                    </g>
+                  </g>
+                </svg>
+                <h2>Create manifest.xlsx</h2>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex-content-container">
+            <div class="header-container">
+              <p class="content-header">Metadata file templates</p>
+            </div>
+            <div class="button-container">
+              <button
+                class="content-button tippy-content-main"
+                id="download_metadata_templates_btn"
+                data-section="download_metadata_templates"
+                data-tippy-content="Get the metadata file templates provided by the SPARC Curation Team if you wish to prepare them manually"
+                rel="popover"
+                data-placement="bottom"
+                data-trigger="hover"
+                data-original-title=""
+                title=""
+              >
+                <svg
+                  width="48"
+                  height="46"
+                  viewBox="0 0 48 46"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M23.5957 32.473C23.6437 32.5343 23.7051 32.584 23.7751 32.6181C23.8452 32.6522 23.9221 32.6699 24 32.6699C24.0779 32.6699 24.1548 32.6522 24.2249 32.6181C24.2949 32.584 24.3563 32.5343 24.4043 32.473L31.5914 23.3799C31.8545 23.0462 31.6171 22.5521 31.1872 22.5521H26.4321V0.836611C26.4321 0.554258 26.2011 0.323242 25.9187 0.323242H22.0684C21.7861 0.323242 21.5551 0.554258 21.5551 0.836611V22.5457H16.8128C16.3829 22.5457 16.1455 23.0398 16.4086 23.3735L23.5957 32.473Z"
+                    fill="#B80D49"
+                  ></path>
+                  <path
+                    d="M47.4866 30.227H43.6364C43.354 30.227 43.123 30.458 43.123 30.7404V40.6227H4.87701V30.7404C4.87701 30.458 4.64599 30.227 4.36364 30.227H0.513369C0.231016 30.227 0 30.458 0 30.7404V43.4462C0 44.5821 0.917647 45.4997 2.05348 45.4997H45.9465C47.0824 45.4997 48 44.5821 48 43.4462V30.7404C48 30.458 47.769 30.227 47.4866 30.227Z"
+                    fill="#565E6B"
+                  ></path>
+                </svg>
+
+                <h2>Download templates</h2>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="main-tabs-section" id="prepare_dataset_section">
+      <div class="flex-main-container" id="prepare_dataset_main_container">
+        <div class="flex-row-container">
+          <div class="flex-content-container">
+            <div
+              class="button-container"
+              style="margin-top: -8px; padding: 50px 50px"
+            >
+              <button
+                class="content-button tippy-content-main"
+                id="organize_dataset_btn"
+                data-section="organize"
+                data-tippy-content="Generate your SPARC format dataset."
+                rel="popover"
+                data-placement="bottom"
+                data-trigger="hover"
+                style="width: 150px; height: 150px"
+              >
+                <svg
+                  version="1.1"
+                  id="Layer_1"
+                  focusable="false"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlns:xlink="http://www.w3.org/1999/xlink"
+                  width="50"
+                  height="50"
+                  viewBox="0 0 640 512"
+                  style="enable-background: new 0 0 640 512"
+                  xml:space="preserve"
+                >
+                  <path
+                    d="M128,352H32c-17.7,0-32,14.3-32,32v96c0,17.7,14.3,32,32,32h96c17.7,0,32-14.3,32-32v-96C160,366.3,145.7,352,128,352z"
+                    fill="#B80D49"
+                  />
+                  <path
+                    d="M104,272h192v48h48v-48h192v48h48v-57.6c0-21.2-17.2-38.4-38.4-38.4H344v-64h40c17.7,0,32-14.3,32-32V32
+                      c0-17.7-14.3-32-32-32H256c-17.7,0-32,14.3-32,32v96c0,17.7,14.3,32,32,32h40v64H94.4C73.2,224,56,241.2,56,262.4V320h48V272z"
+                    fill="#565E6B"
+                  />
+                  <path
+                    d="M368,352h-96c-17.7,0-32,14.3-32,32v96c0,17.7,14.3,32,32,32h96c17.7,0,32-14.3,32-32v-96C400,366.3,385.7,352,368,352z"
+                    fill="#13716D"
+                  />
+                  <path
+                    d="M608,352h-96c-17.7,0-32,14.3-32,32v96c0,17.7,14.3,32,32,32h96c17.7,0,32-14.3,32-32v-96C640,366.3,625.7,352,608,352z"
+                    fill="#B80D49"
+                  />
+                </svg>
+                <h2>Organize dataset</h2>
+              </button>
+              <button
+                class="content-button tippy-content-main"
+                id="validate_dataset_btn"
+                style="
+                  background: #f6f6f6;
+                  width: 150px;
+                  height: 150px;
+                  pointer-events: none;
+                "
+                data-section="validate_dataset"
+                data-tippy-content="Validate your SPARC dataset on Pennsieve."
+                rel="popover"
+                data-placement="bottom"
+                data-trigger="hover"
+              >
+                <svg
+                  style="pointer-events: none"
+                  width="48px"
+                  height="48px"
+                  viewBox="0 0 16 16"
+                  class="bi bi-clipboard-check"
+                  fill="#585858"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    fill="#13716D"
+                    d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"
+                  />
+                  <path
+                    fill-rule="evenodd"
+                    fill="#B80D49"
+                    d="M9.5 1h-3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3zm4.354 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"
+                  />
+                </svg>
+                <h2>Validate dataset</h2>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="main-tabs-section" id="disseminate_dataset_section">
+      <div class="flex-main-container">
+        <div class="flex-row-container">
+          <div class="flex-content-container">
+            <div
+              class="button-container"
+              style="margin-top: -8px; padding: 50px 50px"
+            >
+              <button
+                class="content-button tippy-content-main"
+                id="share_curation_team_btn"
+                data-section="share_curation_team"
+                data-tippy-content="Share your dataset with the Curation team for review."
+                rel="popover"
+                data-placement="bottom"
+                data-trigger="hover"
+                data-html="true"
+                style="width: 150px; height: 150px"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="40px"
+                  height="40px"
+                  class="bi bi-people"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"
+                    fill="#13716D"
+                  />
+                  <path
+                    d="M6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816zM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275zM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"
+                    fill="#B80D49"
+                  />
+                </svg>
+                <h2>Share with Curation Team</h2>
+              </button>
+              <button
+                class="content-button tippy-content-main"
+                id="share_sparc_consortium_btn"
+                data-section="share_sparc_consortium"
+                data-tippy-content="Share your dataset as embargoed dataset with the SPARC consortium."
+                rel="popover"
+                data-placement="bottom"
+                data-html="true"
+                data-trigger="hover"
+                style="width: 150px; height: 150px"
+              >
+                <svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fab"
+                  data-icon="connectdevelop"
+                  class="svg-inline--fa fa-connectdevelop fa-w-18"
+                  width="40px"
+                  height="40px"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 576 512"
+                >
+                  <path
+                    fill="#B80D49"
+                    d="M550.5 241l-50.089-86.786c1.071-2.142 1.875-4.553 1.875-7.232 0-8.036-6.696-14.733-14.732-15.001l-55.447-95.893c.536-1.607 1.071-3.214 1.071-4.821 0-8.571-6.964-15.268-15.268-15.268-4.821 0-8.839 2.143-11.786 5.625H299.518C296.839 18.143 292.821 16 288 16s-8.839 2.143-11.518 5.625H170.411C167.464 18.143 163.447 16 158.625 16c-8.303 0-15.268 6.696-15.268 15.268 0 1.607.536 3.482 1.072 4.821l-55.983 97.233c-5.356 2.41-9.107 7.5-9.107 13.661 0 .535.268 1.071.268 1.607l-53.304 92.143c-7.232 1.339-12.59 7.5-12.59 15 0 7.232 5.089 13.393 12.054 15l55.179 95.358c-.536 1.607-.804 2.946-.804 4.821 0 7.232 5.089 13.393 12.054 14.732l51.697 89.732c-.536 1.607-1.071 3.482-1.071 5.357 0 8.571 6.964 15.268 15.268 15.268 4.821 0 8.839-2.143 11.518-5.357h106.875C279.161 493.857 283.447 496 288 496s8.839-2.143 11.518-5.357h107.143c2.678 2.946 6.696 4.821 10.982 4.821 8.571 0 15.268-6.964 15.268-15.268 0-1.607-.267-2.946-.803-4.285l51.697-90.268c6.964-1.339 12.054-7.5 12.054-14.732 0-1.607-.268-3.214-.804-4.821l54.911-95.358c6.964-1.339 12.322-7.5 12.322-15-.002-7.232-5.092-13.393-11.788-14.732zM153.535 450.732l-43.66-75.803h43.66v75.803zm0-83.839h-43.66c-.268-1.071-.804-2.142-1.339-3.214l44.999-47.41v50.624zm0-62.411l-50.357 53.304c-1.339-.536-2.679-1.34-4.018-1.607L43.447 259.75c.535-1.339.535-2.679.535-4.018s0-2.41-.268-3.482l51.965-90c2.679-.268 5.357-1.072 7.768-2.679l50.089 51.965v92.946zm0-102.322l-45.803-47.41c1.339-2.143 2.143-4.821 2.143-7.767 0-.268-.268-.804-.268-1.072l43.928-15.804v72.053zm0-80.625l-43.66 15.804 43.66-75.536v59.732zm326.519 39.108l.804 1.339L445.5 329.125l-63.75-67.232 98.036-101.518.268.268zM291.75 355.107l11.518 11.786H280.5l11.25-11.786zm-.268-11.25l-83.303-85.446 79.553-84.375 83.036 87.589-79.286 82.232zm5.357 5.893l79.286-82.232 67.5 71.25-5.892 28.125H313.714l-16.875-17.143zM410.411 44.393c1.071.536 2.142 1.072 3.482 1.34l57.857 100.714v.536c0 2.946.803 5.624 2.143 7.767L376.393 256l-83.035-87.589L410.411 44.393zm-9.107-2.143L287.732 162.518l-57.054-60.268 166.339-60h4.287zm-123.483 0c2.678 2.678 6.16 4.285 10.179 4.285s7.5-1.607 10.179-4.285h75L224.786 95.821 173.893 42.25h103.928zm-116.249 5.625l1.071-2.142a33.834 33.834 0 0 0 2.679-.804l51.161 53.84-54.911 19.821V47.875zm0 79.286l60.803-21.964 59.732 63.214-79.553 84.107-40.982-42.053v-83.304zm0 92.678L198 257.607l-36.428 38.304v-76.072zm0 87.858l42.053-44.464 82.768 85.982-17.143 17.678H161.572v-59.196zm6.964 162.053c-1.607-1.607-3.482-2.678-5.893-3.482l-1.071-1.607v-89.732h99.91l-91.607 94.821h-1.339zm129.911 0c-2.679-2.41-6.428-4.285-10.447-4.285s-7.767 1.875-10.447 4.285h-96.429l91.607-94.821h38.304l91.607 94.821H298.447zm120-11.786l-4.286 7.5c-1.339.268-2.41.803-3.482 1.339l-89.196-91.875h114.376l-17.412 83.036zm12.856-22.232l12.858-60.803h21.964l-34.822 60.803zm34.822-68.839h-20.357l4.553-21.16 17.143 18.214c-.535.803-1.071 1.874-1.339 2.946zm66.161-107.411l-55.447 96.697c-1.339.535-2.679 1.071-4.018 1.874l-20.625-21.964 34.554-163.928 45.803 79.286c-.267 1.339-.803 2.678-.803 4.285 0 1.339.268 2.411.536 3.75z"
+                  ></path>
+                </svg>
+                <h2>Share with SPARC Consortium</h2>
+              </button>
+              <button
+                class="content-button"
+                id="submit_prepublishing_review_btn"
+                style="width: 150px; height: 150px"
+                data-section="submit_prepublishing_review"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="40px"
+                  height="40px"
+                  fill="#585858"
+                  class="bi bi-book"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"
+                  />
+                </svg>
+                <h2>Submit for pre-publishing review</h2>
+              </button>
+
+              <!-- <button
+                  class="content-button"
+                  id="submit_prepublishing_review_btn"
+                  data-section="submit_prepublishing_review"
+                  data-content="Submit your dataset to the Curation team for a final review before it is made public."
+                  rel="popover"
+                  data-placement="bottom"
+                  data-html="true"
+                  data-trigger="hover"
+                  style="width: 150px; height: 150px"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="40px"
+                    height="40px"
+                    fill="#13716D"
+                    class="bi bi-book"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"
+                    />
+                  </svg>
+                  <h2>Submit for pre-publishing review</h2>
+                </button> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>
+<!-- The End of Main tabs -->
