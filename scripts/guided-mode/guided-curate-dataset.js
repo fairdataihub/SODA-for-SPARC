@@ -8662,7 +8662,7 @@ $(document).ready(async () => {
     }
   };
 
-  const guidedPennsieveDatasetUpload = async (uploadConfig) => {
+  const guidedPennsieveDatasetUpload = async () => {
     const guidedBfAccount = defaultBfAccount;
     const guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
     let pennsieveIdFromPrevSession =
@@ -8794,16 +8794,12 @@ $(document).ready(async () => {
       );
       console.log(datasetUploadResponse);
 
-      try {
-        //upload dataset subtitle
-        let datasetSubtitleUploadResponse = await guidedAddDatasetSubtitle(
-          guidedBfAccount,
-          guidedDatasetName,
-          guidedDatasetSubtitle
-        );
-      } catch (error) {
-        clientError(error);
-      }
+      //upload dataset subtitle
+      let datasetSubtitleUploadResponse = await guidedAddDatasetSubtitle(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedDatasetSubtitle
+      );
 
       let datasetDescriptionResponse = await guidedAddDatasetDescription(
         guidedBfAccount,
@@ -8917,10 +8913,14 @@ $(document).ready(async () => {
       //Display the main dataset upload progress bar
       unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
 
+      await guidedCreateManifestFilesAndAddToDatasetStructure();
+
       //Upload the dataset files
       const mainCurationResponse = await guidedUploadDatasetToPennsieve();
+      console.log(mainCurationResponse);
     } catch (e) {
       console.log(e);
+      clientError(e);
     }
   };
   const openGuidedDatasetRenameSwal = async () => {
@@ -8968,7 +8968,59 @@ $(document).ready(async () => {
     }
   };
 
-  const guided_initiate_generate = async () => {
+  const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
+    // if the user chose to auto-generate manifest files, create the excel files in local storage
+    // and add the paths to the manifest files in the datasetStructure object
+    if (
+      sodaJSONObj["button-config"]["manifest-files-generated-automatically"] ===
+      "yes"
+    ) {
+      /**
+       * If the user has selected to auto-generate manifest files,
+       * grab the manifest data for each high level folder, create an excel file
+       * using the manifest data, and add the excel file to the datasetStructureJSONObj
+       */
+
+      // First, empty the guided_manifest_files so we can add the new manifest files
+      fs.emptyDirSync(guidedManifestFilePath);
+
+      const guidedManifestData = sodaJSONObj["guided-manifest-files"];
+
+      for (const [highLevelFolder, manifestData] of Object.entries(
+        guidedManifestData
+      )) {
+        let manifestJSON = processManifestInfo(
+          guidedManifestData[highLevelFolder]["headers"],
+          guidedManifestData[highLevelFolder]["data"]
+        );
+        jsonManifest = JSON.stringify(manifestJSON);
+
+        const manifestPath = path.join(
+          guidedManifestFilePath,
+          highLevelFolder,
+          "manifest.xlsx"
+        );
+
+        fs.mkdirSync(path.join(guidedManifestFilePath, highLevelFolder), {
+          recursive: true,
+        });
+
+        convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
+
+        datasetStructureJSONObj["folders"][highLevelFolder]["files"][
+          "manifest.xlsx"
+        ] = {
+          action: ["new"],
+          path: manifestPath,
+          type: "local",
+        };
+      }
+    }
+  };
+
+  const guidedUploadDatasetToPennsieve = async () => {
+    updateJSONStructureDSstructure();
+
     // Initiate curation by calling Python function
     let manifest_files_requested = false;
     let main_curate_status = "Solving";
@@ -9265,132 +9317,6 @@ $(document).ready(async () => {
     };
 
     let timerCheckForBucketUpload = setInterval(checkForBucketUpload, 1000);
-  };
-
-  const guidedUploadDatasetToPennsieve = async () => {
-    // if the user chose to auto-generate manifest files, create the excel files in local storage
-    // and add the paths to the manifest files in the datasetStructure object
-    if (
-      sodaJSONObj["button-config"]["manifest-files-generated-automatically"] ===
-      "yes"
-    ) {
-      /**
-       * If the user has selected to auto-generate manifest files,
-       * grab the manifest data for each high level folder, create an excel file
-       * using the manifest data, and add the excel file to the datasetStructureJSONObj
-       */
-
-      // First, empty the guided_manifest_files so we can add the new manifest files
-      fs.emptyDirSync(guidedManifestFilePath);
-
-      const guidedManifestData = sodaJSONObj["guided-manifest-files"];
-
-      for (const [highLevelFolder, manifestData] of Object.entries(
-        guidedManifestData
-      )) {
-        let manifestJSON = processManifestInfo(
-          guidedManifestData[highLevelFolder]["headers"],
-          guidedManifestData[highLevelFolder]["data"]
-        );
-        jsonManifest = JSON.stringify(manifestJSON);
-
-        const manifestPath = path.join(
-          guidedManifestFilePath,
-          highLevelFolder,
-          "manifest.xlsx"
-        );
-
-        fs.mkdirSync(path.join(guidedManifestFilePath, highLevelFolder), {
-          recursive: true,
-        });
-
-        convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
-
-        datasetStructureJSONObj["folders"][highLevelFolder]["files"][
-          "manifest.xlsx"
-        ] = {
-          action: ["new"],
-          path: manifestPath,
-          type: "local",
-        };
-      }
-    }
-    updateJSONStructureDSstructure();
-
-    let emptyFilesFoldersResponse;
-    try {
-      emptyFilesFoldersResponse = await client.post(
-        `/curate_datasets/empty_files_and_folders`,
-        {
-          soda_json_structure: sodaJSONObj,
-        },
-        { timeout: 0 }
-      );
-    } catch (error) {
-      clientError(error);
-      let emessage = userErrorMessage(error);
-
-      updateDatasetUploadProgressTable({
-        "Error preparing dataset for upload": `${emessage}`,
-      });
-
-      $("#sidebarCollapse").prop("disabled", false);
-      return;
-    }
-
-    let { data } = emptyFilesFoldersResponse;
-
-    //bring duplicate outside
-    error_files = data["empty_files"];
-    error_folders = data["empty_folders"];
-
-    let errorMessage = "";
-
-    if (error_files.length > 0) {
-      const error_message_files =
-        backend_to_frontend_warning_message(error_files);
-      errorMessage += error_message_files;
-    }
-
-    if (error_folders.length > 0) {
-      const error_message_folders =
-        backend_to_frontend_warning_message(error_folders);
-      errorMessage += error_message_folders;
-    }
-
-    if (errorMessage) {
-      errorMessage += "Would you like to continue?";
-      errorMessage = "<div style='text-align: left'>" + errorMessage + "</div>";
-      Swal.fire({
-        icon: "warning",
-        html: errorMessage,
-        showCancelButton: true,
-        cancelButtonText: "No, I want to review my files",
-        focusCancel: true,
-        confirmButtonText: "Yes, Continue",
-        backdrop: "rgba(0,0,0, 0.4)",
-        reverseButtons: reverseSwalButtons,
-        heightAuto: false,
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-        allowOutsideClick: false,
-      }).then((result) => {
-        if (result.isConfirmed) {
-          guided_initiate_generate();
-        } else {
-          $("#sidebarCollapse").prop("disabled", false);
-          updateDatasetUploadProgressTable({
-            "Upload status": `Error uploading dataset to Pennsieve`,
-          });
-        }
-      });
-    } else {
-      guided_initiate_generate();
-    }
   };
 
   $("#guided-add-subject-button").on("click", () => {
@@ -10209,6 +10135,63 @@ $(document).ready(async () => {
             } else {
               guidedButtonUserHasDocsData.click();
             }
+          }
+        }
+
+        // Notify the user of empty pages since this is the last page they can structure their dataset
+        const emptyFilesFoldersResponse = await client.post(
+          `/curate_datasets/empty_files_and_folders`,
+          {
+            soda_json_structure: sodaJSONObj,
+          },
+          { timeout: 0 }
+        );
+
+        let { data } = emptyFilesFoldersResponse;
+
+        //bring duplicate outside
+        empty_files = data["empty_files"];
+        empty_folders = data["empty_folders"];
+
+        let errorMessage = "";
+
+        if (empty_files.length > 0) {
+          const error_message_files =
+            backend_to_frontend_warning_message(empty_files);
+          errorMessage += error_message_files;
+        }
+
+        if (empty_folders.length > 0) {
+          const error_message_folders =
+            backend_to_frontend_warning_message(empty_folders);
+          errorMessage += error_message_folders;
+        }
+
+        if (errorMessage) {
+          errorMessage += "Would you like to continue?";
+          errorMessage =
+            "<div style='text-align: left'>" + errorMessage + "</div>";
+          const { value: continueWithEmptyFolders } = await Swal.fire({
+            icon: "warning",
+            html: errorMessage,
+            showCancelButton: true,
+            cancelButtonText: "No, I want to review my files",
+            focusCancel: true,
+            confirmButtonText: "Yes, Continue",
+            backdrop: "rgba(0,0,0, 0.4)",
+            reverseButtons: reverseSwalButtons,
+            heightAuto: false,
+            showClass: {
+              popup: "animate__animated animate__zoomIn animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__zoomOut animate__faster",
+            },
+            allowOutsideClick: false,
+          });
+          if (!continueWithEmptyFolders) {
+            $(this).removeClass("loading");
+            return;
           }
         }
       }
