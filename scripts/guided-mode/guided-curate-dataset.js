@@ -181,6 +181,18 @@ const guidedModifyCurationTeamAccess = async (action) => {
   }
 };
 
+const checkIfDatasetExistsOnPennsieve = async (datasetNameOrID) => {
+  let datasetExists = false;
+  const datasetList = await api.getDatasetsForAccount(defaultBfAccount);
+  for (const dataset of datasetList) {
+    if (dataset.name === datasetNameOrID || dataset.id === datasetNameOrID) {
+      datasetExists = true;
+      break;
+    }
+  }
+  return datasetExists;
+};
+
 const guidedSaveAndExit = async (exitPoint) => {
   if (exitPoint === "main-nav" || exitPoint === "sub-nav") {
     const { value: returnToGuidedHomeScreen } = await Swal.fire({
@@ -3334,6 +3346,12 @@ const patchPreviousGuidedModeVersions = () => {
   if (sodaJSONObj["manifest-files"]) {
     sodaJSONObj["guided-manifest-files"] = {};
     delete sodaJSONObj["manifest-files"];
+  }
+
+  if (!sodaJSONObj["pennsieve-upload-status"]) {
+    sodaJSONObj["pennsieve-upload-status"] = {
+      "dataset-metadata-upload-status": "not-started",
+    };
   }
 };
 
@@ -7796,10 +7814,17 @@ $(document).ready(async () => {
     datasetNameUploadText.innerHTML = "Creating dataset...";
     guidedUploadStatusIcon("guided-dataset-name-upload-status", "loading");
 
+    //If the dataset has already been created in Guided Mode, we should have an ID for the
+    //dataset. If a dataset with the ID still exists on Pennsieve, we will upload to that dataset.
     if (sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]) {
-      datasetNameUploadText.innerHTML = "Dataset already exists on Pennsieve";
-      guidedUploadStatusIcon("guided-dataset-name-upload-status", "success");
-      return sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+      let datasetExistsOnPennsieve = await checkIfDatasetExistsOnPennsieve(
+        sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
+      );
+      if (datasetExistsOnPennsieve) {
+        datasetNameUploadText.innerHTML = "Dataset already exists on Pennsieve";
+        guidedUploadStatusIcon("guided-dataset-name-upload-status", "success");
+        return sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+      }
     }
 
     try {
@@ -8823,60 +8848,70 @@ $(document).ready(async () => {
         guidedTeams
       );
 
-      //Display the Dataset metadata upload table
-      unHideAndSmoothScrollToElement(
-        "guided-div-dataset-metadata-upload-status-table"
-      );
+      if (
+        sodaJSONObj["pennsieve-upload-status"][
+          "dataset-metadata-upload-status"
+        ] === "not-started"
+      ) {
+        //Display the Dataset metadata upload table
+        unHideAndSmoothScrollToElement(
+          "guided-div-dataset-metadata-upload-status-table"
+        );
 
-      // clear the Pennsieve Queue for dataset metadata generation (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
-      clearQueue();
-      //set timeout for 2 seconds
-      await new Promise((r) => setTimeout(r, 2000));
+        // clear the Pennsieve Queue for dataset metadata generation (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
+        clearQueue();
+        //set timeout for 2 seconds
+        await new Promise((r) => setTimeout(r, 2000));
 
-      if (guidedSubjectsMetadata.length > 0) {
-        await guidedUploadSubjectsMetadata(
+        if (guidedSubjectsMetadata.length > 0) {
+          await guidedUploadSubjectsMetadata(
+            guidedBfAccount,
+            guidedDatasetName,
+            guidedSubjectsMetadata
+          );
+        }
+        if (guidedSamplesMetadata.length > 0) {
+          await guidedUploadSamplesMetadata(
+            guidedBfAccount,
+            guidedDatasetName,
+            guidedSamplesMetadata
+          );
+        }
+
+        let submissionMetadataRes = await guidedUploadSubmissionMetadata(
           guidedBfAccount,
           guidedDatasetName,
-          guidedSubjectsMetadata
+          guidedSubmissionMetadataJSON
         );
-      }
-      if (guidedSamplesMetadata.length > 0) {
-        await guidedUploadSamplesMetadata(
+
+        let descriptionMetadataRes =
+          await guidedUploadDatasetDescriptionMetadata(
+            guidedBfAccount,
+            guidedDatasetName,
+            guidedDatasetInformation,
+            guidedStudyInformation,
+            guidedContributorInformation,
+            guidedAdditionalLinks
+          );
+
+        let readMeMetadataRes = await guidedUploadREADMEorCHANGESMetadata(
           guidedBfAccount,
           guidedDatasetName,
-          guidedSamplesMetadata
+          "readme",
+          guidedReadMeMetadata
         );
-      }
 
-      let submissionMetadataRes = await guidedUploadSubmissionMetadata(
-        guidedBfAccount,
-        guidedDatasetName,
-        guidedSubmissionMetadataJSON
-      );
-
-      let descriptionMetadataRes = await guidedUploadDatasetDescriptionMetadata(
-        guidedBfAccount,
-        guidedDatasetName,
-        guidedDatasetInformation,
-        guidedStudyInformation,
-        guidedContributorInformation,
-        guidedAdditionalLinks
-      );
-
-      let readMeMetadataRes = await guidedUploadREADMEorCHANGESMetadata(
-        guidedBfAccount,
-        guidedDatasetName,
-        "readme",
-        guidedReadMeMetadata
-      );
-
-      if (guidedChangesMetadata.length > 0) {
-        let changesMetadataRes = await guidedUploadREADMEorCHANGESMetadata(
-          guidedBfAccount,
-          guidedDatasetName,
-          "changes",
-          guidedChangesMetadata
-        );
+        if (guidedChangesMetadata.length > 0) {
+          let changesMetadataRes = await guidedUploadREADMEorCHANGESMetadata(
+            guidedBfAccount,
+            guidedDatasetName,
+            "changes",
+            guidedChangesMetadata
+          );
+        }
+        sodaJSONObj["pennsieve-upload-status"][
+          "dataset-metadata-upload-status"
+        ] = "completed";
       }
 
       //Display the main dataset upload progress bar
@@ -9136,12 +9171,6 @@ $(document).ready(async () => {
         updateDatasetUploadProgressTable({
           "Upload status": "Dataset successfully uploaded to Pennsieve!",
         });
-
-        //Save a copy of the sodaJSONObj on this upload to compare it while prepping other uploads
-        sodaJSONObj["previous-guided-upload-dataset-name"] =
-          sodaJSONObj["digital-metadata"]["name"];
-
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
         //Display the click next text
         document
