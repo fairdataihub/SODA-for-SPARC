@@ -23,6 +23,7 @@ autoUpdater.logger = log;
 global.trackEvent = trackEvent;
 
 const nodeStorage = new JSONStorage(app.getPath("userData"));
+console.log(nodeStorage);
 /*************************************************************
  * Python Process
  *************************************************************/
@@ -314,7 +315,10 @@ function initialize() {
           mainWindow.focus();
           nodeStorage.setItem("firstlaunch", false);
           run_pre_flight_checks();
+          console.log("HMMM");
+          checkForAnnouncements("announcements");
         }
+        // console.log("HHERE");
         run_pre_flight_checks();
         autoUpdater.checkForUpdatesAndNotify();
         updatechecked = true;
