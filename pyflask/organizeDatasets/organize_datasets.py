@@ -1,6 +1,8 @@
 ### Import required python modules
 from gevent import monkey
 from flask import abort
+
+from pyflask.namespaces import namespaceLogger
 monkey.patch_all()
 import platform
 import os
@@ -23,6 +25,8 @@ import gevent
 from pennsieve import Pennsieve
 import pathlib
 from datetime import datetime, timezone
+from namespaces import NamespaceEnum, get_namespace_logger
+namespace_logger = get_namespace_logger(NamespaceEnum.ORGANIZE_DATASETS)
 
 from manageDatasets import bf_get_current_user_permission
 
@@ -833,6 +837,9 @@ def monitor_local_json_progress():
 
 
 def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
+    global namespace_logger
+
+    namespace_logger.info("IMPORT HERE")
     high_level_sparc_folders = [
         "code",
         "derivative",
@@ -919,6 +926,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         bf = pennsieve_account
         subfolder = bf._api._get("/packages/" + str(collection_id))
         children_content = subfolder["children"]
+        namespace_logger.info(collection_id)
         for items in children_content:
             item_name = items["content"]["name"]
             create_soda_json_progress += 1
@@ -962,6 +970,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                     else:
                         temp_name = item_name
                     if len(manifest.keys()) > 0:
+                        namespace_logger.info("MANIFEST KEYS")
+                        namespace_logger.info(manifest.keys())
                         if temp_name in manifest["filename"].values():
                             location_index = list(manifest["filename"].values()).index(
                                 temp_name
@@ -1113,6 +1123,9 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             subfolder_section = soda_json_structure["dataset-structure"]["folders"][
                 folder
             ]
+            namespace_logger.info("BEFORE CREATE FOLDER STRUCT")
+            namespace_logger.info(subfolder)
+            namespace_logger.info(manifest_dict[folder])
             createFolderStructure(
                 subfolder_section, bf, manifest_dict[folder]
             )  # passing item's json and the collection ID
