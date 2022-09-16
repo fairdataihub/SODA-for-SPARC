@@ -641,6 +641,7 @@ const run_pre_flight_checks = async (check_update = true) => {
                 // ipcRenderer.send("announcement-check")
                 if (launchAnnouncements == true) {
                   await checkForAnnouncements("announcements");
+                  launchAnnouncements = false;
                 }
                 resolve(true);
               }
@@ -656,6 +657,7 @@ const run_pre_flight_checks = async (check_update = true) => {
             });
             if (launchAnnouncements == true) {
               await checkForAnnouncements("announcements");
+              launchAnnouncements = false;
             }
             resolve(true);
           }
