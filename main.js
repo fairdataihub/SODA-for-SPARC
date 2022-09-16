@@ -16,6 +16,7 @@ const { fstat } = require("fs");
 const { resolve } = require("path");
 const axios = require("axios");
 const { info } = require("console");
+const { node } = require("prop-types");
 
 log.transports.console.level = false;
 log.transports.file.level = "debug";
@@ -255,7 +256,7 @@ function initialize() {
       } else {
         var first_launch = nodeStorage.getItem("firstlaunch");
         nodeStorage.setItem("firstlaunch", true);
-        nodeStorage.setItem("announcements", false);
+        // nodeStorage.setItem("announcements", true);
         // var announcementsLaunch = nodeStorage.getItem("announcements");
         // nodeStorage.setItem("announcements", true);
         await exitPyProc();
@@ -342,7 +343,7 @@ function initialize() {
 
     mainWindow.on("show", () => {
       var first_launch = nodeStorage.getItem("firstlaunch");
-      nodeStorage.setItem("announcements", true);
+      // nodeStorage.setItem("announcements", true);
       if (
         (first_launch == true || first_launch == undefined) &&
         window_reloaded == false
@@ -461,6 +462,7 @@ autoUpdater.on("update-downloaded", () => {
 
 ipcMain.on("restart_app", async () => {
   user_restart_confirmed = true;
+  nodeStorage.getItem("announcements", true); //set to true for when they install and update
   log.info("quitAndInstall");
   autoUpdater.quitAndInstall();
 });
