@@ -9100,8 +9100,34 @@ $(document).ready(async () => {
       const mainCurationResponse = await guidedUploadDatasetToPennsieve();
       console.log(mainCurationResponse);
     } catch (error) {
-      let emessage = userErrorMessage(error);
-      console.log(emessage);
+      const userErrorMessage = userError(error);
+      //make an unclosable sweet alert that forces the user to close out of the app
+      await Swal.fire({
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        icon: "error",
+        title: "An error occurred during your upload",
+        html: `
+          <p>Error message: ${userErrorMessage}</p>
+          <p>
+            You must exit the app, however, you will be able to resume
+            your upload in progress by returning to Guided Mode and selecting 
+            ${sodaJSONObj["digital-metadata"]["name"]}'s progress card.
+          </p>
+        `,
+        showCancelButton: false,
+        confirmButtonText: "Close SODA Application",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+      app.showExitPrompt = false;
+      app.quit();
     }
   };
   const openGuidedDatasetRenameSwal = async () => {
@@ -9298,10 +9324,6 @@ $(document).ready(async () => {
         }
       })
       .catch(async (error) => {
-        //Handle dataset upload errors here
-        console.log(error);
-        clientError(error);
-
         try {
           let responseObject = await client.get(
             `manage_datasets/bf_dataset_account`,
@@ -9333,6 +9355,9 @@ $(document).ready(async () => {
           datasetUploadSession,
           true
         );
+
+        let emessage = userErrorMessage(error);
+        throw emessage;
       });
     const guidedUpdateUploadStatus = async () => {
       let mainCurationProgressResponse;
@@ -9347,7 +9372,7 @@ $(document).ready(async () => {
         console.error(error);
         //Clear the interval to stop the generation of new sweet alerts after intitial error
         clearInterval(timerProgress);
-        return;
+        throw emessage;
       }
 
       let { data } = mainCurationProgressResponse;
