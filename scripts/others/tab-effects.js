@@ -1888,7 +1888,11 @@ async function transitionSubQuestionsButton(
     let sodaObject = {};
     let manifestErrorMessage = [];
     try {
-      let data = await bf_request_and_populate_dataset(sodaJSONObj, document.querySelector("#loading_pennsieve_dataset-organize"), true);
+      let data = await bf_request_and_populate_dataset(
+        sodaJSONObj,
+        document.querySelector("#loading_pennsieve_dataset-organize"),
+        true
+      );
       sodaObject = data.soda_object;
       manifestErrorMessage = data.manifest_error_message;
     } catch (err) {
@@ -2278,13 +2282,17 @@ async function transitionFreeFormMode(
     setTimeout(function () {
       $(target).addClass("show");
 
-      // scroll to the 'Review/Edit manifest files' About section rather than the 
-      // bottom of the div so all instructional text is viewable to the user. 
-      if(ev.getAttribute("data-next") === "Question-prepare-manifest-5") {
-        let label = document.querySelector("#Question-prepare-manifest-5 label:first-of-type")
-        label.scrollIntoView({ behavior: "smooth" })
+      // scroll to the 'Review/Edit manifest files' About section rather than the
+      // bottom of the div so all instructional text is viewable to the user.
+      if (ev.getAttribute("data-next") === "Question-prepare-manifest-5") {
+        let label = document.querySelector(
+          "#Question-prepare-manifest-5 label:first-of-type"
+        );
+        label.scrollIntoView({ behavior: "smooth" });
       } // auto-scroll to bottom of div
-      else if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
+      else if (
+        ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections"
+      ) {
         document.getElementById(parentDiv).scrollTop =
           document.getElementById(parentDiv).scrollHeight;
       }
