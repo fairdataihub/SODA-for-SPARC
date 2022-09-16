@@ -9228,315 +9228,307 @@ $(document).ready(async () => {
   };
 
   const guidedUploadDatasetToPennsieve = async () => {
-    try {
-      updateJSONStructureDSstructure();
+    updateJSONStructureDSstructure();
 
-      // Initiate curation by calling Python function
-      let manifest_files_requested = false;
-      let main_curate_status = "Solving";
-      let main_total_generate_dataset_size;
+    // Initiate curation by calling Python function
+    let manifest_files_requested = false;
+    let main_curate_status = "Solving";
+    let main_total_generate_dataset_size;
 
-      // track the amount of files that have been uploaded/generated
-      let uploadedFiles = 0;
-      let uploadedFilesSize = 0;
-      let foldersUploaded = 0;
-      let previousUploadedFileSize = 0;
-      let increaseInFileSize = 0;
-      let generated_dataset_id = undefined;
+    // track the amount of files that have been uploaded/generated
+    let uploadedFiles = 0;
+    let uploadedFilesSize = 0;
+    let foldersUploaded = 0;
+    let previousUploadedFileSize = 0;
+    let increaseInFileSize = 0;
+    let generated_dataset_id = undefined;
 
-      let dataset_name;
-      let dataset_destination;
+    let dataset_name;
+    let dataset_destination;
 
-      if (sodaJSONObj["generate-dataset"]["destination"] == "bf") {
-        console.log("merge skipping");
-        sodaJSONObj["generate-dataset"]["generate-option"] = "new";
-        //Replace files and folders since guided mode always uploads to an existing Pennsieve dataset
-        sodaJSONObj["generate-dataset"]["if-existing"] = "merge";
-        sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
-        dataset_name = sodaJSONObj["digital-metadata"]["name"];
-        sodaJSONObj["bf-dataset-selected"] = {};
-        sodaJSONObj["bf-dataset-selected"]["dataset-name"] = dataset_name;
-        sodaJSONObj["bf-account-selected"]["account-name"] = defaultBfAccount;
-        dataset_destination = "Pennsieve";
-      }
+    if (sodaJSONObj["generate-dataset"]["destination"] == "bf") {
+      console.log("merge skipping");
+      sodaJSONObj["generate-dataset"]["generate-option"] = "new";
+      //Replace files and folders since guided mode always uploads to an existing Pennsieve dataset
+      sodaJSONObj["generate-dataset"]["if-existing"] = "merge";
+      sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
+      dataset_name = sodaJSONObj["digital-metadata"]["name"];
+      sodaJSONObj["bf-dataset-selected"] = {};
+      sodaJSONObj["bf-dataset-selected"]["dataset-name"] = dataset_name;
+      sodaJSONObj["bf-account-selected"]["account-name"] = defaultBfAccount;
+      dataset_destination = "Pennsieve";
+    }
 
-      // if uploading to Pennsieve start a tracking session for the dataset upload
-      if (dataset_destination == "Pennsieve") {
-        // create a dataset upload session
-        datasetUploadSession.startSession();
-      }
+    // if uploading to Pennsieve start a tracking session for the dataset upload
+    if (dataset_destination == "Pennsieve") {
+      // create a dataset upload session
+      datasetUploadSession.startSession();
+    }
 
-      // clear the Pennsieve Queue (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
-      clearQueue();
-      console.log("queue cleared");
-      client
-        .post(
-          `/curate_datasets/curation`,
-          {
-            soda_json_structure: sodaJSONObj,
-          },
-          { timeout: 0 }
-        )
-        .then(async (curationRes) => {
-          console.log(curationRes);
-          //Handle successfull dataset upload here
-          console.log(curationRes);
+    // clear the Pennsieve Queue (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
+    clearQueue();
+    console.log("queue cleared");
+    client
+      .post(
+        `/curate_datasets/curation`,
+        {
+          soda_json_structure: sodaJSONObj,
+        },
+        { timeout: 0 }
+      )
+      .then(async (curationRes) => {
+        console.log(curationRes);
+        //Handle successfull dataset upload here
+        console.log(curationRes);
 
-          main_total_generate_dataset_size =
-            curationRes["main_total_generate_dataset_size"];
-          uploadedFiles = curationRes["main_curation_uploaded_files"];
-          $("#sidebarCollapse").prop("disabled", false);
-          log.info("Completed curate function");
+        main_total_generate_dataset_size =
+          curationRes["main_total_generate_dataset_size"];
+        uploadedFiles = curationRes["main_curation_uploaded_files"];
+        $("#sidebarCollapse").prop("disabled", false);
+        log.info("Completed curate function");
 
-          // log relevant curation details about the dataset generation/Upload to Google Analytics
-          logCurationSuccessToAnalytics(
-            manifest_files_requested,
-            main_total_generate_dataset_size,
-            dataset_name,
-            dataset_destination,
-            uploadedFiles,
-            true
-          );
+        // log relevant curation details about the dataset generation/Upload to Google Analytics
+        logCurationSuccessToAnalytics(
+          manifest_files_requested,
+          main_total_generate_dataset_size,
+          dataset_name,
+          dataset_destination,
+          uploadedFiles,
+          true
+        );
 
-          updateDatasetUploadProgressTable({
-            "Upload status": "Dataset successfully uploaded to Pennsieve!",
-          });
-
-          //Display the click next text
-          document
-            .getElementById("guided-dataset-upload-complete-message")
-            .classList.remove("hidden");
-
-          scrollToBottomOfGuidedBody();
-
-          //Show the next button
-          $("#guided-next-button").css("visibility", "visible");
-
-          try {
-            let responseObject = await client.get(
-              `manage_datasets/bf_dataset_account`,
-              {
-                params: {
-                  selected_account: defaultBfAccount,
-                },
-              }
-            );
-            datasetList = [];
-            datasetList = responseObject.data.datasets;
-          } catch (error) {
-            clientError(error);
-          }
-        })
-        .catch(async (error) => {
-          console.log(error);
-          try {
-            let responseObject = await client.get(
-              `manage_datasets/bf_dataset_account`,
-              {
-                params: {
-                  selected_account: defaultBfAccount,
-                },
-              }
-            );
-            datasetList = [];
-            datasetList = responseObject.data.datasets;
-          } catch (error) {
-            clientError(error);
-          }
-
-          // wait to see if the uploaded files or size will grow once the client has time to ask for the updated information
-          // if they stay zero that means nothing was uploaded
-          if (uploadedFiles === 0 || uploadedFilesSize === 0) {
-            await wait(2000);
-          }
-
-          // log the curation errors to Google Analytics
-          logCurationErrorsToAnalytics(
-            uploadedFiles,
-            uploadedFilesSize,
-            dataset_destination,
-            main_total_generate_dataset_size,
-            increaseInFileSize,
-            datasetUploadSession,
-            true
-          );
-          //Throw the error back to the main curation function
-          let emessage = userErrorMessage(error);
-          throw emessage;
+        updateDatasetUploadProgressTable({
+          "Upload status": "Dataset successfully uploaded to Pennsieve!",
         });
-      const guidedUpdateUploadStatus = async () => {
-        let mainCurationProgressResponse;
+
+        //Display the click next text
+        document
+          .getElementById("guided-dataset-upload-complete-message")
+          .classList.remove("hidden");
+
+        scrollToBottomOfGuidedBody();
+
+        //Show the next button
+        $("#guided-next-button").css("visibility", "visible");
+
         try {
-          mainCurationProgressResponse = await client.get(
-            `/curate_datasets/curation/progress`
+          let responseObject = await client.get(
+            `manage_datasets/bf_dataset_account`,
+            {
+              params: {
+                selected_account: defaultBfAccount,
+              },
+            }
           );
+          datasetList = [];
+          datasetList = responseObject.data.datasets;
         } catch (error) {
           clientError(error);
-          let emessage = userErrorMessage(error);
-          console.error(emessage);
-          console.error(error);
-          //Clear the interval to stop the generation of new sweet alerts after intitial error
-          clearInterval(timerProgress);
-          console.log("error getting upload progress");
-          throw emessage;
+        }
+      })
+      .catch(async (error) => {
+        console.log(error);
+        try {
+          let responseObject = await client.get(
+            `manage_datasets/bf_dataset_account`,
+            {
+              params: {
+                selected_account: defaultBfAccount,
+              },
+            }
+          );
+          datasetList = [];
+          datasetList = responseObject.data.datasets;
+        } catch (error) {
+          clientError(error);
         }
 
-        let { data } = mainCurationProgressResponse;
+        // wait to see if the uploaded files or size will grow once the client has time to ask for the updated information
+        // if they stay zero that means nothing was uploaded
+        if (uploadedFiles === 0 || uploadedFilesSize === 0) {
+          await wait(2000);
+        }
 
-        main_curate_status = data["main_curate_status"];
-        const start_generate = data["start_generate"];
-        const main_curate_progress_message =
-          data["main_curate_progress_message"];
-        main_total_generate_dataset_size =
-          data["main_total_generate_dataset_size"];
-        const main_generated_dataset_size = data["main_generated_dataset_size"];
-        const elapsed_time_formatted = data["elapsed_time_formatted"];
+        // log the curation errors to Google Analytics
+        logCurationErrorsToAnalytics(
+          uploadedFiles,
+          uploadedFilesSize,
+          dataset_destination,
+          main_total_generate_dataset_size,
+          increaseInFileSize,
+          datasetUploadSession,
+          true
+        );
+        //Throw the error back to the main curation function
+        let emessage = userErrorMessage(error);
+        throw emessage;
+      });
+    const guidedUpdateUploadStatus = async () => {
+      let mainCurationProgressResponse;
+      try {
+        mainCurationProgressResponse = await client.get(
+          `/curate_datasets/curation/progress`
+        );
+      } catch (error) {
+        clientError(error);
+        let emessage = userErrorMessage(error);
+        console.error(emessage);
+        console.error(error);
+        //Clear the interval to stop the generation of new sweet alerts after intitial error
+        clearInterval(timerProgress);
+        console.log("error getting upload progress");
+        throw emessage;
+      }
 
-        if (start_generate === 1) {
-          $("#guided-progress-bar-new-curate").css("display", "block");
-          //Case when the dataset upload is complete
-          if (main_curate_progress_message.includes("Success: COMPLETED!")) {
-            setGuidedProgressBarValue(100);
-          } else {
-            const percentOfDatasetUploaded =
-              (main_generated_dataset_size / main_total_generate_dataset_size) *
-              100;
-            setGuidedProgressBarValue(percentOfDatasetUploaded);
+      let { data } = mainCurationProgressResponse;
 
-            let totalSizePrint;
-            if (main_total_generate_dataset_size < displaySize) {
-              totalSizePrint =
-                main_total_generate_dataset_size.toFixed(2) + " B";
-            } else if (
-              main_total_generate_dataset_size <
-              displaySize * displaySize
-            ) {
-              totalSizePrint =
-                (main_total_generate_dataset_size / displaySize).toFixed(2) +
-                " KB";
-            } else if (
-              main_total_generate_dataset_size <
-              displaySize * displaySize * displaySize
-            ) {
-              totalSizePrint =
-                (
-                  main_total_generate_dataset_size /
-                  displaySize /
-                  displaySize
-                ).toFixed(2) + " MB";
-            } else {
-              totalSizePrint =
-                (
-                  main_total_generate_dataset_size /
-                  displaySize /
-                  displaySize /
-                  displaySize
-                ).toFixed(2) + " GB";
-            }
-            updateDatasetUploadProgressTable({
-              "Upload status": `${main_curate_progress_message}`,
-              "Percent uploaded": `${percentOfDatasetUploaded.toFixed(2)}%`,
-              "Elapsed time": `${elapsed_time_formatted}`,
-            });
-          }
+      main_curate_status = data["main_curate_status"];
+      const start_generate = data["start_generate"];
+      const main_curate_progress_message = data["main_curate_progress_message"];
+      main_total_generate_dataset_size =
+        data["main_total_generate_dataset_size"];
+      const main_generated_dataset_size = data["main_generated_dataset_size"];
+      const elapsed_time_formatted = data["elapsed_time_formatted"];
+
+      if (start_generate === 1) {
+        $("#guided-progress-bar-new-curate").css("display", "block");
+        //Case when the dataset upload is complete
+        if (main_curate_progress_message.includes("Success: COMPLETED!")) {
+          setGuidedProgressBarValue(100);
         } else {
+          const percentOfDatasetUploaded =
+            (main_generated_dataset_size / main_total_generate_dataset_size) *
+            100;
+          setGuidedProgressBarValue(percentOfDatasetUploaded);
+
+          let totalSizePrint;
+          if (main_total_generate_dataset_size < displaySize) {
+            totalSizePrint = main_total_generate_dataset_size.toFixed(2) + " B";
+          } else if (
+            main_total_generate_dataset_size <
+            displaySize * displaySize
+          ) {
+            totalSizePrint =
+              (main_total_generate_dataset_size / displaySize).toFixed(2) +
+              " KB";
+          } else if (
+            main_total_generate_dataset_size <
+            displaySize * displaySize * displaySize
+          ) {
+            totalSizePrint =
+              (
+                main_total_generate_dataset_size /
+                displaySize /
+                displaySize
+              ).toFixed(2) + " MB";
+          } else {
+            totalSizePrint =
+              (
+                main_total_generate_dataset_size /
+                displaySize /
+                displaySize /
+                displaySize
+              ).toFixed(2) + " GB";
+          }
           updateDatasetUploadProgressTable({
             "Upload status": `${main_curate_progress_message}`,
+            "Percent uploaded": `${percentOfDatasetUploaded.toFixed(2)}%`,
             "Elapsed time": `${elapsed_time_formatted}`,
           });
         }
-        //If the curate function is complete, clear the interval
-        if (main_curate_status === "Done") {
-          $("#sidebarCollapse").prop("disabled", false);
-          log.info("Done curate track");
-          // then show the sidebar again
-          // forceActionSidebar("show");
-          clearInterval(timerProgress);
-          // electron.powerSaveBlocker.stop(prevent_sleep_id)
-        }
-      };
-      // Progress tracking function for main curate
-      var timerProgress = setInterval(guidedUpdateUploadStatus, 1000);
+      } else {
+        updateDatasetUploadProgressTable({
+          "Upload status": `${main_curate_progress_message}`,
+          "Elapsed time": `${elapsed_time_formatted}`,
+        });
+      }
+      //If the curate function is complete, clear the interval
+      if (main_curate_status === "Done") {
+        $("#sidebarCollapse").prop("disabled", false);
+        log.info("Done curate track");
+        // then show the sidebar again
+        // forceActionSidebar("show");
+        clearInterval(timerProgress);
+        // electron.powerSaveBlocker.stop(prevent_sleep_id)
+      }
+    };
+    // Progress tracking function for main curate
+    var timerProgress = setInterval(guidedUpdateUploadStatus, 1000);
 
-      // when generating a new dataset we need to add its ID to the ID -> Name mapping
-      // we need to do this only once
-      let loggedDatasetNameToIdMapping = false;
+    // when generating a new dataset we need to add its ID to the ID -> Name mapping
+    // we need to do this only once
+    let loggedDatasetNameToIdMapping = false;
 
-      // if uploading to Pennsieve set an interval that gets the amount of files that have been uploaded
-      // and their aggregate size; starts for local dataset generation as well. Provides easy way to track amount of
-      // files copied and their aggregate size.
-      // IMP: This handles tracking a session that tracking a session that had a successful Pennsieve upload.
-      //      therefore it is unnecessary to have logs for Session ID tracking in the "api_main_curate" success block
-      // IMP: Two reasons this exists:
-      //    1. Pennsieve Agent can freeze. This prevents us from logging. So we log a Pennsieve dataset upload session as it happens.
-      //    2. Local dataset generation and Pennsieve dataset generation can fail. Having access to how many files and their aggregate size for logging at error time is valuable data.
-      const checkForBucketUpload = async () => {
-        // ask the server for the amount of files uploaded in the current session
-        // nothing to log for uploads where a user is solely deleting files in this section
+    // if uploading to Pennsieve set an interval that gets the amount of files that have been uploaded
+    // and their aggregate size; starts for local dataset generation as well. Provides easy way to track amount of
+    // files copied and their aggregate size.
+    // IMP: This handles tracking a session that tracking a session that had a successful Pennsieve upload.
+    //      therefore it is unnecessary to have logs for Session ID tracking in the "api_main_curate" success block
+    // IMP: Two reasons this exists:
+    //    1. Pennsieve Agent can freeze. This prevents us from logging. So we log a Pennsieve dataset upload session as it happens.
+    //    2. Local dataset generation and Pennsieve dataset generation can fail. Having access to how many files and their aggregate size for logging at error time is valuable data.
+    const checkForBucketUpload = async () => {
+      // ask the server for the amount of files uploaded in the current session
+      // nothing to log for uploads where a user is solely deleting files in this section
 
-        let mainCurationDetailsResponse;
-        try {
-          mainCurationDetailsResponse = await client.get(
-            `/curate_datasets/curation/upload_details`
-          );
-        } catch (error) {
-          clientError(error);
-          clearInterval(timerCheckForBucketUpload);
-          return;
-        }
+      let mainCurationDetailsResponse;
+      try {
+        mainCurationDetailsResponse = await client.get(
+          `/curate_datasets/curation/upload_details`
+        );
+      } catch (error) {
+        clientError(error);
+        clearInterval(timerCheckForBucketUpload);
+        return;
+      }
 
-        let { data } = mainCurationDetailsResponse;
+      let { data } = mainCurationDetailsResponse;
 
-        // check if the amount of successfully uploaded files has increased
+      // check if the amount of successfully uploaded files has increased
+      if (
+        data["main_curation_uploaded_files"] > 0 &&
+        data["uploaded_folder_counter"] > foldersUploaded
+      ) {
+        previousUploadedFileSize = uploadedFilesSize;
+        uploadedFiles = data["main_curation_uploaded_files"];
+        uploadedFilesSize = data["current_size_of_uploaded_files"];
+        foldersUploaded = data["uploaded_folder_counter"];
+
+        // log the increase in the file size
+        increaseInFileSize = uploadedFilesSize - previousUploadedFileSize;
+
+        // log the aggregate file count and size values when uploading to Pennsieve
         if (
-          data["main_curation_uploaded_files"] > 0 &&
-          data["uploaded_folder_counter"] > foldersUploaded
+          dataset_destination === "bf" ||
+          dataset_destination === "Pennsieve"
         ) {
-          previousUploadedFileSize = uploadedFilesSize;
-          uploadedFiles = data["main_curation_uploaded_files"];
-          uploadedFilesSize = data["current_size_of_uploaded_files"];
-          foldersUploaded = data["uploaded_folder_counter"];
+          // use the session id as the label -- this will help with aggregating the number of files uploaded per session
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Guided Mode - Generate - Dataset - Number of Files",
+            `${datasetUploadSession.id}`,
+            uploadedFiles
+          );
 
-          // log the increase in the file size
-          increaseInFileSize = uploadedFilesSize - previousUploadedFileSize;
-
-          // log the aggregate file count and size values when uploading to Pennsieve
-          if (
-            dataset_destination === "bf" ||
-            dataset_destination === "Pennsieve"
-          ) {
-            // use the session id as the label -- this will help with aggregating the number of files uploaded per session
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              "Guided Mode - Generate - Dataset - Number of Files",
-              `${datasetUploadSession.id}`,
-              uploadedFiles
-            );
-
-            // use the session id as the label -- this will help with aggregating the size of the given upload session
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              "Guided Mode - Generate - Dataset - Size",
-              `${datasetUploadSession.id}`,
-              increaseInFileSize
-            );
-          }
+          // use the session id as the label -- this will help with aggregating the size of the given upload session
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Guided Mode - Generate - Dataset - Size",
+            `${datasetUploadSession.id}`,
+            increaseInFileSize
+          );
         }
+      }
 
-        //stop the inteval when the upload is complete
-        if (main_curate_status === "Done") {
-          clearInterval(timerCheckForBucketUpload);
-        }
-      };
+      //stop the inteval when the upload is complete
+      if (main_curate_status === "Done") {
+        clearInterval(timerCheckForBucketUpload);
+      }
+    };
 
-      let timerCheckForBucketUpload = setInterval(checkForBucketUpload, 1000);
-    } catch (error) {
-      console.log("error during main curation", error);
-      clientError(error);
-      throw error;
-    }
+    let timerCheckForBucketUpload = setInterval(checkForBucketUpload, 1000);
   };
 
   $("#guided-add-subject-button").on("click", () => {
