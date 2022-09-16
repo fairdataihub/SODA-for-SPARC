@@ -9278,6 +9278,7 @@ $(document).ready(async () => {
           { timeout: 0 }
         )
         .then(async (curationRes) => {
+          console.log(curationRes);
           //Handle successfull dataset upload here
           console.log(curationRes);
 
@@ -9327,6 +9328,7 @@ $(document).ready(async () => {
           }
         })
         .catch(async (error) => {
+          console.log(error);
           try {
             let responseObject = await client.get(
               `manage_datasets/bf_dataset_account`,
