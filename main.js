@@ -256,9 +256,6 @@ function initialize() {
       } else {
         var first_launch = nodeStorage.getItem("firstlaunch");
         nodeStorage.setItem("firstlaunch", true);
-        // nodeStorage.setItem("announcements", true);
-        // var announcementsLaunch = nodeStorage.getItem("announcements");
-        // nodeStorage.setItem("announcements", true);
         await exitPyProc();
         app.exit();
       }
@@ -325,17 +322,12 @@ function initialize() {
           mainWindow.focus();
           nodeStorage.setItem("firstlaunch", false);
           run_pre_flight_checks();
-          console.log("HMMM");
-          // checkForAnnouncements("announcements");
         }
-        // console.log("HHERE");
         run_pre_flight_checks();
         autoUpdater.checkForUpdatesAndNotify();
         if (announcementsLaunch == true || announcementsLaunch == undefined) {
           checkForAnnouncements();
           nodeStorage.setItem("announcements", false);
-          // var announcementsLaunch = nodeStorage.getItem("announcements");
-          // console.log("announcements should launch");
         }
         updatechecked = true;
       }, 6000);
@@ -343,7 +335,6 @@ function initialize() {
 
     mainWindow.on("show", () => {
       var first_launch = nodeStorage.getItem("firstlaunch");
-      // nodeStorage.setItem("announcements", true);
       if (
         (first_launch == true || first_launch == undefined) &&
         window_reloaded == false
