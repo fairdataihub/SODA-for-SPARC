@@ -10876,6 +10876,8 @@ $(document).ready(async () => {
         //If any protocol fields are found invalid, allProtocolFieldsValid will be set to valid
         //and an error will be thrown when next button is clicked.
         let allProtocolFieldsValid = true;
+        let validURL = false;
+        let singleInstance = false;
         let protocols = [];
 
         //loop through protocol fields and get protocol values
@@ -10887,11 +10889,31 @@ $(document).ready(async () => {
           const protocolDescriptionInput = protocolField.querySelector(
             ".guided-protocol-description-input"
           );
-
           //Validate all of the protocol fields
+          let protocolLink = "";
           const textInputs = [protocolUrlInput, protocolDescriptionInput];
           //check if all text inputs are valid
           textInputs.forEach((textInput) => {
+            if (
+              doiRegex.declared({ exact: true }).test(textInputs[0].value) ===
+              true
+            ) {
+              protocolLink = "DOI";
+              validURL = true;
+            } else {
+              //check if Url
+              if (validator.isURL(textInputs[0].value) == true) {
+                protocolLink = "URL";
+                validURL = true;
+              } else {
+                textInputs[0].style.setProperty(
+                  "border-color",
+                  "red",
+                  "important"
+                );
+                validURL = false;
+              }
+            }
             if (textInput.value === "") {
               textInput.style.setProperty("border-color", "red", "important");
               allProtocolFieldsValid = false;
@@ -10903,17 +10925,27 @@ $(document).ready(async () => {
               );
             }
           });
-
+          if (!validURL) {
+            singleInstance = true;
+            textInputs[0].style.setProperty("border-color", "red", "important");
+          }
           const protocolObj = {
             link: protocolUrlInput.value,
-            type: protocolUrlInput.value.startsWith("https://doi.org/")
-              ? "DOI"
-              : "URL",
+            type: protocolLink,
             relation: "isProtocolFor",
             description: protocolDescriptionInput.value,
           };
           protocols.push(protocolObj);
         });
+
+        if (singleInstance) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please enter a valid URL or DOI",
+          });
+          throw errorArray;
+        }
+
         if (!allProtocolFieldsValid) {
           errorArray.push({
             type: "notyf",
