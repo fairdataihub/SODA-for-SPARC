@@ -9327,7 +9327,6 @@ $(document).ready(async () => {
         }
       })
       .catch(async (error) => {
-        console.log(error);
         try {
           let responseObject = await client.get(
             `manage_datasets/bf_dataset_account`,
@@ -9359,9 +9358,34 @@ $(document).ready(async () => {
           datasetUploadSession,
           true
         );
-        //Throw the error back to the main curation function
-        let emessage = userErrorMessage(error);
-        throw emessage;
+        const userErrorMessage = userError(error);
+        //make an unclosable sweet alert that forces the user to close out of the app
+        await Swal.fire({
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          icon: "error",
+          title: "An error occurred during your upload",
+          html: `
+          <p>Error message: ${userErrorMessage}</p>
+          <p>
+            You must exit the app, however, you will be able to resume
+            your upload in progress by returning to Guided Mode and selecting 
+            ${sodaJSONObj["digital-metadata"]["name"]}'s progress card.
+          </p>
+        `,
+          showCancelButton: false,
+          confirmButtonText: "Close SODA Application",
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        });
+        app.showExitPrompt = false;
+        app.quit();
       });
     const guidedUpdateUploadStatus = async () => {
       let mainCurationProgressResponse;
