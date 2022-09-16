@@ -9095,6 +9095,8 @@ $(document).ready(async () => {
       unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
 
       await guidedCreateManifestFilesAndAddToDatasetStructure();
+      console.log("manifest files created");
+      console.log("starting dataset file and folders upload");
 
       //Upload the dataset files
       const mainCurationResponse = await guidedUploadDatasetToPennsieve();
@@ -9355,7 +9357,7 @@ $(document).ready(async () => {
           datasetUploadSession,
           true
         );
-
+        //Throw the error back to the main curation function
         let emessage = userErrorMessage(error);
         throw emessage;
       });
@@ -9372,6 +9374,7 @@ $(document).ready(async () => {
         console.error(error);
         //Clear the interval to stop the generation of new sweet alerts after intitial error
         clearInterval(timerProgress);
+        console.log("error getting upload progress");
         throw emessage;
       }
 
