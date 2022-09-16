@@ -2233,8 +2233,9 @@ const traverseToTab = async (targetPageID) => {
       );
       sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
         ? (generateOrRetryDatasetUploadButton.innerHTML =
-            "Retry dataset upload")
-        : (generateOrRetryDatasetUploadButton.innerHTML = "Generate dataset");
+            "Resume Pennsieve upload in progress")
+        : (generateOrRetryDatasetUploadButton.innerHTML =
+            "Upload dataset to Pennsieve");
       //Reset the dataset upload UI
       const pennsieveMetadataUploadTable = document.getElementById(
         "guided-tbody-pennsieve-metadata-upload"
@@ -3353,6 +3354,10 @@ const patchPreviousGuidedModeVersions = () => {
     sodaJSONObj["pennsieve-upload-status"] = {
       "dataset-metadata-upload-status": "not-started",
     };
+  }
+
+  if (!sodaJSONObj["previously-uploaded-data"]) {
+    sodaJSONObj["previously-uploaded-data"] = {};
   }
 };
 
@@ -7915,6 +7920,19 @@ $(document).ready(async () => {
     datasetSubtitleUploadText.innerHTML = "Adding dataset subtitle...";
     guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "loading");
 
+    const previousUploadSubtitle =
+      sodaJSONObj["previously-uploaded-data"]["subtitle"];
+
+    if (previousUploadSubtitle === datasetSubtitle) {
+      datasetSubtitleUploadText.innerHTML =
+        "Dataset subtitle already added on Pennsieve";
+      guidedUploadStatusIcon(
+        "guided-dataset-subtitle-upload-status",
+        "success"
+      );
+      return;
+    }
+
     try {
       await client.put(
         `/manage_datasets/bf_dataset_subtitle`,
@@ -7933,6 +7951,8 @@ $(document).ready(async () => {
         "guided-dataset-subtitle-upload-status",
         "success"
       );
+      sodaJSONObj["previously-uploaded-data"]["subtitle"] = datasetSubtitle;
+      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       console.error(error);
       let emessage = userErrorMessage(error);
@@ -7968,6 +7988,19 @@ $(document).ready(async () => {
 
     const description = descriptionArray.join("");
 
+    const previouslyUploadedDescription =
+      sodaJSONObj["previously-uploaded-data"]["description"];
+
+    if (previouslyUploadedDescription === description) {
+      datasetDescriptionUploadText.innerHTML =
+        "Dataset description already added on Pennsieve";
+      guidedUploadStatusIcon(
+        "guided-dataset-description-upload-status",
+        "success"
+      );
+      return;
+    }
+
     try {
       let res = await client.put(
         `/manage_datasets/datasets/${datasetName}/readme`,
@@ -7980,9 +8013,9 @@ $(document).ready(async () => {
         "guided-dataset-description-upload-status",
         "success"
       );
+      sodaJSONObj["previously-uploaded-data"]["description"] = description;
+      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
-      console.error(error);
-      let emessage = userErrorMessage(error);
       datasetDescriptionUploadText.innerHTML =
         "Failed to add a dataset description.";
       guidedUploadStatusIcon(
@@ -7997,7 +8030,6 @@ $(document).ready(async () => {
     bannerImagePath
   ) => {
     document
-
       .getElementById("guided-dataset-banner-image-upload-tr")
       .classList.remove("hidden");
     const datasetBannerImageUploadText = document.getElementById(
@@ -8008,6 +8040,19 @@ $(document).ready(async () => {
       "guided-dataset-banner-image-upload-status",
       "loading"
     );
+
+    const previouslyUploadedBannerImagePath =
+      sodaJSONObj["previously-uploaded-data"]["banner-image-path"];
+
+    if (previouslyUploadedBannerImagePath === bannerImagePath) {
+      datasetBannerImageUploadText.innerHTML =
+        "Dataset banner image already added on Pennsieve";
+      guidedUploadStatusIcon(
+        "guided-dataset-banner-image-upload-status",
+        "success"
+      );
+      return;
+    }
 
     try {
       await client.put(
@@ -8027,6 +8072,9 @@ $(document).ready(async () => {
         "guided-dataset-banner-image-upload-status",
         "success"
       );
+      sodaJSONObj["previously-uploaded-data"]["banner-image-path"] =
+        bannerImagePath;
+      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       console.error(error);
       let emessage = userErrorMessage(error);
@@ -8053,6 +8101,16 @@ $(document).ready(async () => {
     datasetLicenseUploadText.innerHTML = "Adding dataset license...";
     guidedUploadStatusIcon("guided-dataset-license-upload-status", "loading");
 
+    const previouslyUploadedLicense =
+      sodaJSONObj["previously-uploaded-data"]["license"];
+
+    if (previouslyUploadedLicense === datasetLicense) {
+      datasetLicenseUploadText.innerHTML =
+        "Dataset license already added on Pennsieve";
+      guidedUploadStatusIcon("guided-dataset-license-upload-status", "success");
+      return;
+    }
+
     try {
       await client.put(
         `/manage_datasets/bf_license`,
@@ -8068,6 +8126,8 @@ $(document).ready(async () => {
       );
       datasetLicenseUploadText.innerHTML = `Successfully added dataset license: ${datasetLicense}`;
       guidedUploadStatusIcon("guided-dataset-license-upload-status", "success");
+      sodaJSONObj["previously-uploaded-data"]["license"] = datasetLicense;
+      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       console.error(error);
       let emessage = userErrorMessage(error);
@@ -8095,6 +8155,19 @@ $(document).ready(async () => {
     guidedUploadStatusIcon("guided-dataset-pi-owner-upload-status", "loading");
 
     if (loggedInUserIsNotPiOwner) {
+      const previouslyUploadedPiOwnerObj =
+        sodaJSONObj["previously-uploaded-data"]["pi-owner"];
+
+      if (previouslyUploadedPiOwnerObj === piOwnerObj) {
+        datasetPiOwnerUploadText.innerHTML =
+          "PI owner already added on Pennsieve";
+        guidedUploadStatusIcon(
+          "guided-dataset-pi-owner-upload-status",
+          "success"
+        );
+        return;
+      }
+
       try {
         await client.patch(
           `/manage_datasets/bf_dataset_permissions`,
@@ -8115,6 +8188,8 @@ $(document).ready(async () => {
           "guided-dataset-pi-owner-upload-status",
           "success"
         );
+        sodaJSONObj["previously-uploaded-data"]["pi-owner"] = piOwnerObj;
+        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       } catch (error) {
         console.error(error);
         let emessage = userErrorMessage(error);
@@ -8143,6 +8218,16 @@ $(document).ready(async () => {
     datasetTagsUploadText.innerHTML = "Adding dataset tags...";
     guidedUploadStatusIcon("guided-dataset-tags-upload-status", "loading");
 
+    const previouslyUploadedTags =
+      sodaJSONObj["previously-uploaded-data"]["tags"];
+
+    if (JSON.stringify(previouslyUploadedTags) === JSON.stringify(tags)) {
+      datasetTagsUploadText.innerHTML =
+        "Dataset tags already added on Pennsieve";
+      guidedUploadStatusIcon("guided-dataset-tags-upload-status", "success");
+      return;
+    }
+
     try {
       await client.put(
         `/manage_datasets/datasets/${datasetName}/tags`,
@@ -8158,9 +8243,9 @@ $(document).ready(async () => {
         ", "
       )}`;
       guidedUploadStatusIcon("guided-dataset-tags-upload-status", "success");
+      sodaJSONObj["previously-uploaded-data"]["tags"] = tags;
+      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
-      console.error(error);
-      let emessage = userErrorMessage(error);
       datasetTagsUploadText.innerHTML = "Failed to add dataset tags.";
       guidedUploadStatusIcon("guided-dataset-tags-upload-status", "error");
     }
@@ -8450,6 +8535,22 @@ $(document).ready(async () => {
     subjectsMetadataUploadText.innerHTML = "Uploading subjects metadata...";
     guidedUploadStatusIcon("guided-subjects-metadata-upload-status", "loading");
 
+    const previouslyUpdatedSubjectsMetadata =
+      sodaJSONObj["previously-uploaded-data"]["subjects-metadata"];
+
+    if (
+      JSON.stringify(previouslyUpdatedSubjectsMetadata) ===
+      JSON.stringify(subjectsTableData)
+    ) {
+      guidedUploadStatusIcon(
+        "guided-subjects-metadata-upload-status",
+        "success"
+      );
+      subjectsMetadataUploadText.innerHTML =
+        "Subjects metadata added to Pennsieve";
+      return;
+    }
+
     try {
       await client.post(
         `/prepare_metadata/subjects_file`,
@@ -8470,6 +8571,9 @@ $(document).ready(async () => {
         "success"
       );
       subjectsMetadataUploadText.innerHTML = `Subjects metadata successfully uploaded`;
+      sodaJSONObj["previously-uploaded-data"]["subjects-metadata"] =
+        subjectsTableData;
+      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       guidedUploadStatusIcon("guided-subjects-metadata-upload-status", "error");
       subjectsMetadataUploadText.innerHTML = `Failed to upload subjects metadata`;
@@ -8489,6 +8593,23 @@ $(document).ready(async () => {
     );
     samplesMetadataUploadText.innerHTML = "Uploading samples metadata...";
     guidedUploadStatusIcon("guided-samples-metadata-upload-status", "loading");
+
+    const previouslyUpdatedSamplesMetadata =
+      sodaJSONObj["previously-uploaded-data"]["samples-metadata"];
+
+    if (
+      JSON.stringify(previouslyUpdatedSamplesMetadata) ===
+      JSON.stringify(samplesTableData)
+    ) {
+      guidedUploadStatusIcon(
+        "guided-samples-metadata-upload-status",
+        "success"
+      );
+      samplesMetadataUploadText.innerHTML =
+        "Samples metadata added to Pennsieve";
+      return;
+    }
+
     try {
       await client.post(
         `/prepare_metadata/samples_file`,
@@ -8509,6 +8630,9 @@ $(document).ready(async () => {
         "success"
       );
       samplesMetadataUploadText.innerHTML = `Samples metadata successfully uploaded`;
+      sodaJSONObj["previously-uploaded-data"]["samples-metadata"] =
+        samplesTableData;
+      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       guidedUploadStatusIcon("guided-samples-metadata-upload-status", "error");
       samplesMetadataUploadText.innerHTML = `Failed to upload samples metadata`;
@@ -8532,6 +8656,22 @@ $(document).ready(async () => {
       "loading"
     );
 
+    const previouslyUpdatedSubmissionMetadata =
+      sodaJSONObj["previously-uploaded-data"]["submission-metadata"];
+
+    if (
+      JSON.stringify(previouslyUpdatedSubmissionMetadata) ===
+      JSON.stringify(submissionMetadataJSON)
+    ) {
+      guidedUploadStatusIcon(
+        "guided-submission-metadata-upload-status",
+        "success"
+      );
+      submissionMetadataUploadText.innerHTML =
+        "Submission metadata added to Pennsieve";
+      return;
+    }
+
     try {
       await client.post(
         `/prepare_metadata/submission_file`,
@@ -8552,6 +8692,9 @@ $(document).ready(async () => {
         "success"
       );
       submissionMetadataUploadText.innerHTML = `Submission metadata successfully uploaded`;
+      sodaJSONObj["previously-uploaded-data"]["submission-metadata"] =
+        submissionMetadataJSON;
+      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       guidedUploadStatusIcon(
         "guided-submission-metadata-upload-status",
@@ -8583,6 +8726,27 @@ $(document).ready(async () => {
       "loading"
     );
 
+    const previouslyUpdatedDatasetDescriptionMetadata =
+      sodaJSONObj["previously-uploaded-data"]["dataset-description-metadata"];
+
+    if (
+      JSON.stringify(previouslyUpdatedDatasetDescriptionMetadata) ===
+      JSON.stringify({
+        datasetInformation,
+        studyInformation,
+        contributorInformation,
+        additionalLinks,
+      })
+    ) {
+      guidedUploadStatusIcon(
+        "guided-dataset-description-metadata-upload-status",
+        "success"
+      );
+      datasetDescriptionMetadataUploadText.innerHTML =
+        "Dataset description metadata added to Pennsieve";
+      return;
+    }
+
     try {
       await client.post(
         `/prepare_metadata/dataset_description_file`,
@@ -8607,6 +8771,14 @@ $(document).ready(async () => {
       );
       datasetDescriptionMetadataUploadText.innerHTML =
         "Dataset description metadata successfully uploaded";
+      sodaJSONObj["previously-uploaded-data"]["dataset-description-metadata"] =
+        {
+          datasetInformation,
+          studyInformation,
+          contributorInformation,
+          additionalLinks,
+        };
+      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       guidedUploadStatusIcon(
         "guided-dataset-description-metadata-upload-status",
@@ -8634,6 +8806,22 @@ $(document).ready(async () => {
       `guided-${readmeORchanges}-metadata-upload-status`,
       "loading"
     );
+
+    const previouslyUpdatedREADMEorCHANGESMetadata =
+      sodaJSONObj["previously-uploaded-data"][`${readmeORchanges}-metadata`];
+
+    if (
+      JSON.stringify(previouslyUpdatedREADMEorCHANGESMetadata) ===
+      JSON.stringify(readmeOrChangesMetadata)
+    ) {
+      guidedUploadStatusIcon(
+        `guided-${readmeORchanges}-metadata-upload-status`,
+        "success"
+      );
+      datasetDescriptionMetadataUploadText.innerHTML = `${readmeORchanges.toUpperCase()} metadata added to Pennsieve`;
+      return;
+    }
+
     try {
       await client.post(
         "/prepare_metadata/readme_changes_file",
@@ -8653,6 +8841,9 @@ $(document).ready(async () => {
         "success"
       );
       datasetDescriptionMetadataUploadText.innerHTML = `${readmeORchanges.toUpperCase()} metadata successfully uploaded`;
+      sodaJSONObj["previously-uploaded-data"][`${readmeORchanges}-metadata`] =
+        readmeOrChangesMetadata;
+      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       guidedUploadStatusIcon(
         `guided-${readmeORchanges}-metadata-upload-status`,
@@ -8671,13 +8862,14 @@ $(document).ready(async () => {
       const guidedUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
       const guidedPIOwner = sodaJSONObj["digital-metadata"]["pi-owner"];
       const guidedTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
+
       let guidedPennsieveStudyPurpose =
         sodaJSONObj["digital-metadata"]["description"]["study-purpose"];
       let guidedPennsieveDataCollection =
         sodaJSONObj["digital-metadata"]["description"]["data-collection"];
       let guidedPennsievePrimaryConclusion =
         sodaJSONObj["digital-metadata"]["description"]["primary-conclusion"];
-      const guidedReadMe = sodaJSONObj["dataset-metadata"]["README"];
+
       const guidedTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
       const guidedLicense = sodaJSONObj["digital-metadata"]["license"];
       const guidedBannerImagePath =
@@ -9151,6 +9343,7 @@ $(document).ready(async () => {
       } catch (error) {
         clientError(error);
         let emessage = userErrorMessage(error);
+        console.error(emessage);
         console.error(error);
         //Clear the interval to stop the generation of new sweet alerts after intitial error
         clearInterval(timerProgress);
