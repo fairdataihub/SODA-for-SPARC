@@ -3348,6 +3348,7 @@ const patchPreviousGuidedModeVersions = () => {
     delete sodaJSONObj["manifest-files"];
   }
 
+  //Add key to track status of Pennsieve uploads
   if (!sodaJSONObj["pennsieve-upload-status"]) {
     sodaJSONObj["pennsieve-upload-status"] = {
       "dataset-metadata-upload-status": "not-started",
@@ -8663,102 +8664,102 @@ $(document).ready(async () => {
   };
 
   const guidedPennsieveDatasetUpload = async () => {
-    const guidedBfAccount = defaultBfAccount;
-    const guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
-    let pennsieveIdFromPrevSession =
-      sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] ?? null;
-    const guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
-    const guidedUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
-    const guidedPIOwner = sodaJSONObj["digital-metadata"]["pi-owner"];
-    const guidedTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
-    let guidedPennsieveStudyPurpose =
-      sodaJSONObj["digital-metadata"]["description"]["study-purpose"];
-    let guidedPennsieveDataCollection =
-      sodaJSONObj["digital-metadata"]["description"]["data-collection"];
-    let guidedPennsievePrimaryConclusion =
-      sodaJSONObj["digital-metadata"]["description"]["primary-conclusion"];
-    const guidedReadMe = sodaJSONObj["dataset-metadata"]["README"];
-    const guidedTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
-    const guidedLicense = sodaJSONObj["digital-metadata"]["license"];
-    const guidedBannerImagePath =
-      sodaJSONObj["digital-metadata"]["banner-image-path"];
-
-    //Subjects Metadata Variables
-    const guidedSubjectsMetadata = sodaJSONObj["subjects-table-data"];
-
-    //Samples Metadata variables
-    const guidedSamplesMetadata = sodaJSONObj["samples-table-data"];
-
-    //Submission Metadata variables
-    const guidedSparcAward =
-      sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-    const guidedMilestones =
-      sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
-    const guidedCompletionDate =
-      sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
-    let guidedSubmissionMetadataJSON = [];
-    guidedSubmissionMetadataJSON.push({
-      award: guidedSparcAward,
-      date: guidedCompletionDate,
-      milestone: guidedMilestones[0],
-    });
-    for (let i = 1; i < guidedMilestones.length; i++) {
-      guidedSubmissionMetadataJSON.push({
-        award: "",
-        date: "",
-        milestone: guidedMilestones[i],
-      });
-    }
-
-    //Dataset Description Metadata variables
-    const guidedDatasetInformation =
-      sodaJSONObj["dataset-metadata"]["description-metadata"][
-        "dataset-information"
-      ];
-
-    const guidedStudyInformation =
-      sodaJSONObj["dataset-metadata"]["description-metadata"][
-        "study-information"
-      ];
-
-    let guidedContributorInformation = {
-      ...sodaJSONObj["dataset-metadata"]["description-metadata"][
-        "contributor-information"
-      ],
-    };
-
-    //add the SPARC award as the first element in the funding source array if it's not already in the funding array
-    if (!guidedContributorInformation["funding"].includes(guidedSparcAward)) {
-      guidedContributorInformation["funding"].unshift(guidedSparcAward);
-    }
-
-    //Add contributors from sodaJSONObj to guidedContributorInformation in the "contributors" key
-    let contributors =
-      sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
-
-    guidedContributorInformation["contributors"] = contributors.map(
-      (contributor) => {
-        return {
-          conAffliation: contributor["conAffliation"].join(", "),
-          conID: contributor["conID"],
-          conName: contributor["conName"],
-          conRole: contributor["conRole"].join(", "),
-          contributorFirstName: contributor["contributorFirstName"],
-          contributorLastName: contributor["contributorLastName"],
-        };
-      }
-    );
-
-    const guidedAdditionalLinks =
-      sodaJSONObj["dataset-metadata"]["description-metadata"][
-        "additional-links"
-      ];
-
-    //README and CHANGES Metadata variables
-    const guidedReadMeMetadata = sodaJSONObj["dataset-metadata"]["README"];
-    const guidedChangesMetadata = sodaJSONObj["dataset-metadata"]["CHANGES"];
-
     try {
+      const guidedBfAccount = defaultBfAccount;
+      const guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
+      const guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
+      const guidedUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
+      const guidedPIOwner = sodaJSONObj["digital-metadata"]["pi-owner"];
+      const guidedTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
+      let guidedPennsieveStudyPurpose =
+        sodaJSONObj["digital-metadata"]["description"]["study-purpose"];
+      let guidedPennsieveDataCollection =
+        sodaJSONObj["digital-metadata"]["description"]["data-collection"];
+      let guidedPennsievePrimaryConclusion =
+        sodaJSONObj["digital-metadata"]["description"]["primary-conclusion"];
+      const guidedReadMe = sodaJSONObj["dataset-metadata"]["README"];
+      const guidedTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
+      const guidedLicense = sodaJSONObj["digital-metadata"]["license"];
+      const guidedBannerImagePath =
+        sodaJSONObj["digital-metadata"]["banner-image-path"];
+
+      //Subjects Metadata Variables
+      const guidedSubjectsMetadata = sodaJSONObj["subjects-table-data"];
+
+      //Samples Metadata variables
+      const guidedSamplesMetadata = sodaJSONObj["samples-table-data"];
+
+      //Submission Metadata variables
+      const guidedSparcAward =
+        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+      const guidedMilestones =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
+      const guidedCompletionDate =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"][
+          "completion-date"
+        ];
+      let guidedSubmissionMetadataJSON = [];
+      guidedSubmissionMetadataJSON.push({
+        award: guidedSparcAward,
+        date: guidedCompletionDate,
+        milestone: guidedMilestones[0],
+      });
+      for (let i = 1; i < guidedMilestones.length; i++) {
+        guidedSubmissionMetadataJSON.push({
+          award: "",
+          date: "",
+          milestone: guidedMilestones[i],
+        });
+      }
+
+      //Dataset Description Metadata variables
+      const guidedDatasetInformation =
+        sodaJSONObj["dataset-metadata"]["description-metadata"][
+          "dataset-information"
+        ];
+
+      const guidedStudyInformation =
+        sodaJSONObj["dataset-metadata"]["description-metadata"][
+          "study-information"
+        ];
+
+      let guidedContributorInformation = {
+        ...sodaJSONObj["dataset-metadata"]["description-metadata"][
+          "contributor-information"
+        ],
+      };
+
+      //add the SPARC award as the first element in the funding source array if it's not already in the funding array
+      if (!guidedContributorInformation["funding"].includes(guidedSparcAward)) {
+        guidedContributorInformation["funding"].unshift(guidedSparcAward);
+      }
+
+      //Add contributors from sodaJSONObj to guidedContributorInformation in the "contributors" key
+      let contributors =
+        sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+
+      guidedContributorInformation["contributors"] = contributors.map(
+        (contributor) => {
+          return {
+            conAffliation: contributor["conAffliation"].join(", "),
+            conID: contributor["conID"],
+            conName: contributor["conName"],
+            conRole: contributor["conRole"].join(", "),
+            contributorFirstName: contributor["contributorFirstName"],
+            contributorLastName: contributor["contributorLastName"],
+          };
+        }
+      );
+
+      const guidedAdditionalLinks =
+        sodaJSONObj["dataset-metadata"]["description-metadata"][
+          "additional-links"
+        ];
+
+      //README and CHANGES Metadata variables
+      const guidedReadMeMetadata = sodaJSONObj["dataset-metadata"]["README"];
+      const guidedChangesMetadata = sodaJSONObj["dataset-metadata"]["CHANGES"];
+
       // get apps base path
       const basepath = app.getAppPath();
       const resourcesPath = process.resourcesPath;
@@ -8772,7 +8773,7 @@ $(document).ready(async () => {
       } catch (error) {
         clientError(error);
         ipcRenderer.send("track-event", "Error", "Setting Templates Path");
-        return;
+        throw "Error setting templates path";
       }
       //Run ple flight checks to ensure SODA is prepared to upload to Pennsieve
       let supplementary_checks = await run_pre_flight_checks(false);
@@ -8792,53 +8793,40 @@ $(document).ready(async () => {
         guidedBfAccount,
         guidedDatasetName
       );
-      console.log(datasetUploadResponse);
-
-      //upload dataset subtitle
-      let datasetSubtitleUploadResponse = await guidedAddDatasetSubtitle(
+      await guidedAddDatasetSubtitle(
         guidedBfAccount,
         guidedDatasetName,
         guidedDatasetSubtitle
       );
-
-      let datasetDescriptionResponse = await guidedAddDatasetDescription(
+      await guidedAddDatasetDescription(
         guidedBfAccount,
         guidedDatasetName,
         guidedPennsieveStudyPurpose,
         guidedPennsieveDataCollection,
         guidedPennsievePrimaryConclusion
       );
-
-      let datasetBannerImageResponse = await guidedAddDatasetBannerImage(
+      await guidedAddDatasetBannerImage(
         guidedBfAccount,
         guidedDatasetName,
         guidedBannerImagePath
       );
-
-      let datasetLicenseResponse = await guidedAddDatasetLicense(
+      await guidedAddDatasetLicense(
         guidedBfAccount,
         guidedDatasetName,
         guidedLicense
       );
-
-      let datasetTagsResponse = await guidedAddDatasetTags(
+      await guidedAddDatasetTags(
         guidedBfAccount,
         guidedDatasetName,
         guidedTags
       );
-
-      let datasetPIOwnwerResponse = await guidedAddPiOwner(
-        guidedBfAccount,
-        guidedDatasetName,
-        guidedPIOwner
-      );
-
-      let datasetUsersResponse = await guidedAddUserPermissions(
+      await guidedAddPiOwner(guidedBfAccount, guidedDatasetName, guidedPIOwner);
+      await guidedAddUserPermissions(
         guidedBfAccount,
         guidedDatasetName,
         guidedUsers
       );
-      let datasetTeamsResponse = await guidedAddTeamPermissions(
+      await guidedAddTeamPermissions(
         guidedBfAccount,
         guidedDatasetName,
         guidedTeams
@@ -8905,6 +8893,7 @@ $(document).ready(async () => {
             guidedChangesMetadata
           );
         }
+
         sodaJSONObj["pennsieve-upload-status"][
           "dataset-metadata-upload-status"
         ] = "completed";
@@ -8918,9 +8907,9 @@ $(document).ready(async () => {
       //Upload the dataset files
       const mainCurationResponse = await guidedUploadDatasetToPennsieve();
       console.log(mainCurationResponse);
-    } catch (e) {
-      console.log(e);
-      clientError(e);
+    } catch (error) {
+      let emessage = userErrorMessage(error);
+      console.log(emessage);
     }
   };
   const openGuidedDatasetRenameSwal = async () => {
