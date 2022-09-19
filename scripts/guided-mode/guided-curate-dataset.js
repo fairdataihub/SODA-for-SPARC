@@ -560,6 +560,9 @@ const generateProgressCardElement = (progressFileJSONObj) => {
     month: "numeric",
     day: "numeric",
   });
+  const savedUploadDataProgress =
+    progressFileJSONObj["previously-uploaded-data"] &&
+    Object.keys(progressFileJSONObj["previously-uploaded-data"]).length > 0;
 
   return `
     <div class="guided--dataset-card">
@@ -602,6 +605,13 @@ const generateProgressCardElement = (progressFileJSONObj) => {
             ></i>
           </h2>
           <h1 class="guided--text-dataset-card ml-sm-1">${progressFileLastModified}</h1>
+          ${
+            savedUploadDataProgress
+              ? `
+                <span class="badge badge-warning mx-2">Upload in progress</span>
+              `
+              : ``
+          }
         </div>
       </div>
       <div class="guided--container-dataset-card-center">
@@ -632,7 +642,11 @@ const generateProgressCardElement = (progressFileJSONObj) => {
                   "
                   onClick="guidedResumeProgress($(this))"
                 >
-                  Continue curating
+                  ${
+                    savedUploadDataProgress
+                      ? "Resume upload"
+                      : "Continue curating"
+                  }
                 </button>
               `
         }
@@ -3315,6 +3329,8 @@ const openEditGuidedDatasetSwal = async (datasetName) => {
 };
 
 const patchPreviousGuidedModeVersions = () => {
+  let forceUserToRestartFromFirstPage = false;
+
   //temp patch contributor affiliations if they are still a string (they were added in the previous version)
   const contributors =
     sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
@@ -3358,7 +3374,10 @@ const patchPreviousGuidedModeVersions = () => {
 
   if (!sodaJSONObj["previously-uploaded-data"]) {
     sodaJSONObj["previously-uploaded-data"] = {};
+    forceUserToRestartFromFirstPage = true;
   }
+
+  return forceUserToRestartFromFirstPage;
 };
 
 //Loads UI when continue curation button is pressed
@@ -3377,7 +3396,9 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   subjectsTableData = sodaJSONObj["subjects-table-data"];
   samplesTableData = sodaJSONObj["samples-table-data"];
 
-  patchPreviousGuidedModeVersions();
+  //patches the sodajsonobj if it was created in a previous version of guided mode
+  //and returns a boolean to indicate if the user should be forced to restart from the first page
+  const forceStartFromFirstPage = patchPreviousGuidedModeVersions();
 
   guidedTransitionFromHome();
   //Set the dataset name and subtitle input values using the
@@ -3390,7 +3411,14 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   guidedTransitionFromDatasetNameSubtitlePage();
 
   //Return the user to the last page they exited on
-  const pageBeforeExit = datasetResumeJsonObj["page-before-exit"];
+  let pageBeforeExit = datasetResumeJsonObj["page-before-exit"];
+
+  //If a patch was applied that requires the user to restart from the first page,
+  //then force the user to restart from the first page
+  if (forceStartFromFirstPage) {
+    pageBeforeExit = "guided-dataset-starting-point-tab";
+  }
+
   if (pageBeforeExit) {
     //Hide the sub-page navigation and show the main page navigation footer
     //If the user traverses to a page that requires the sub-page navigation,
@@ -9024,83 +9052,69 @@ $(document).ready(async () => {
         guidedTeams
       );
 
-      if (
-        sodaJSONObj["pennsieve-upload-status"][
-          "dataset-metadata-upload-status"
-        ] === "not-started"
-      ) {
-        //Display the Dataset metadata upload table
-        unHideAndSmoothScrollToElement(
-          "guided-div-dataset-metadata-upload-status-table"
-        );
+      //Display the Dataset metadata upload table
+      unHideAndSmoothScrollToElement(
+        "guided-div-dataset-metadata-upload-status-table"
+      );
 
-        // clear the Pennsieve Queue for dataset metadata generation (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
-        clearQueue();
-        //set timeout for 2 seconds
-        await new Promise((r) => setTimeout(r, 2000));
+      // clear the Pennsieve Queue for dataset metadata generation (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
+      clearQueue();
+      //set timeout for 2 seconds
+      await new Promise((r) => setTimeout(r, 2000));
 
-        if (guidedSubjectsMetadata.length > 0) {
-          await guidedUploadSubjectsMetadata(
-            guidedBfAccount,
-            guidedDatasetName,
-            guidedSubjectsMetadata
-          );
-        }
-        if (guidedSamplesMetadata.length > 0) {
-          await guidedUploadSamplesMetadata(
-            guidedBfAccount,
-            guidedDatasetName,
-            guidedSamplesMetadata
-          );
-        }
-
-        let submissionMetadataRes = await guidedUploadSubmissionMetadata(
+      if (guidedSubjectsMetadata.length > 0) {
+        await guidedUploadSubjectsMetadata(
           guidedBfAccount,
           guidedDatasetName,
-          guidedSubmissionMetadataJSON
+          guidedSubjectsMetadata
         );
-
-        let descriptionMetadataRes =
-          await guidedUploadDatasetDescriptionMetadata(
-            guidedBfAccount,
-            guidedDatasetName,
-            guidedDatasetInformation,
-            guidedStudyInformation,
-            guidedContributorInformation,
-            guidedAdditionalLinks
-          );
-
-        let readMeMetadataRes = await guidedUploadREADMEorCHANGESMetadata(
+      }
+      if (guidedSamplesMetadata.length > 0) {
+        await guidedUploadSamplesMetadata(
           guidedBfAccount,
           guidedDatasetName,
-          "readme",
-          guidedReadMeMetadata
+          guidedSamplesMetadata
         );
+      }
 
-        if (guidedChangesMetadata.length > 0) {
-          let changesMetadataRes = await guidedUploadREADMEorCHANGESMetadata(
-            guidedBfAccount,
-            guidedDatasetName,
-            "changes",
-            guidedChangesMetadata
-          );
-        }
+      let submissionMetadataRes = await guidedUploadSubmissionMetadata(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedSubmissionMetadataJSON
+      );
 
-        sodaJSONObj["pennsieve-upload-status"][
-          "dataset-metadata-upload-status"
-        ] = "completed";
+      let descriptionMetadataRes = await guidedUploadDatasetDescriptionMetadata(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedDatasetInformation,
+        guidedStudyInformation,
+        guidedContributorInformation,
+        guidedAdditionalLinks
+      );
+
+      let readMeMetadataRes = await guidedUploadREADMEorCHANGESMetadata(
+        guidedBfAccount,
+        guidedDatasetName,
+        "readme",
+        guidedReadMeMetadata
+      );
+
+      if (guidedChangesMetadata.length > 0) {
+        let changesMetadataRes = await guidedUploadREADMEorCHANGESMetadata(
+          guidedBfAccount,
+          guidedDatasetName,
+          "changes",
+          guidedChangesMetadata
+        );
       }
 
       //Display the main dataset upload progress bar
       unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
 
       await guidedCreateManifestFilesAndAddToDatasetStructure();
-      console.log("manifest files created");
-      console.log("starting dataset file and folders upload");
 
       //Upload the dataset files
       const mainCurationResponse = await guidedUploadDatasetToPennsieve();
-      console.log(mainCurationResponse);
     } catch (error) {
       const userErrorMessage = userError(error);
       //make an unclosable sweet alert that forces the user to close out of the app
@@ -9114,9 +9128,9 @@ $(document).ready(async () => {
         html: `
           <p>Error message: ${userErrorMessage}</p>
           <p>
-            You must exit the app, however, you will be able to resume
-            your upload in progress by returning to Guided Mode and selecting 
-            ${sodaJSONObj["digital-metadata"]["name"]}'s progress card.
+            You must exit the app, however, you will be able to resume your upload
+            in progress by returning to Guided Mode and clicking the "Resume Upload" 
+            button on ${sodaJSONObj["digital-metadata"]["name"]}'s progress card. 
           </p>
         `,
         showCancelButton: false,
@@ -9247,7 +9261,6 @@ $(document).ready(async () => {
     let dataset_destination;
 
     if (sodaJSONObj["generate-dataset"]["destination"] == "bf") {
-      console.log("merge skipping");
       sodaJSONObj["generate-dataset"]["generate-option"] = "new";
       //Replace files and folders since guided mode always uploads to an existing Pennsieve dataset
       sodaJSONObj["generate-dataset"]["if-existing"] = "merge";
@@ -9267,7 +9280,7 @@ $(document).ready(async () => {
 
     // clear the Pennsieve Queue (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
     clearQueue();
-    console.log("queue cleared");
+
     client
       .post(
         `/curate_datasets/curation`,
@@ -9277,10 +9290,6 @@ $(document).ready(async () => {
         { timeout: 0 }
       )
       .then(async (curationRes) => {
-        console.log(curationRes);
-        //Handle successfull dataset upload here
-        console.log(curationRes);
-
         main_total_generate_dataset_size =
           curationRes["main_total_generate_dataset_size"];
         uploadedFiles = curationRes["main_curation_uploaded_files"];
@@ -9300,6 +9309,13 @@ $(document).ready(async () => {
         updateDatasetUploadProgressTable({
           "Upload status": "Dataset successfully uploaded to Pennsieve!",
         });
+
+        // Clear the saved upload progress data because the dataset has been successfully
+        // uploaded to Pennsieve, and any future uploads will upload using new data
+        sodaJSONObj["previously-uploaded-data"] = {};
+
+        sodaJSONObj["previous-guided-upload-dataset-name"] =
+          sodaJSONObj["digital-metadata"]["name"];
 
         //Display the click next text
         document
@@ -9370,9 +9386,9 @@ $(document).ready(async () => {
           html: `
           <p>Error message: ${userErrorMessage}</p>
           <p>
-            You must exit the app, however, you will be able to resume
-            your upload in progress by returning to Guided Mode and selecting 
-            ${sodaJSONObj["digital-metadata"]["name"]}'s progress card.
+            You must exit the app, however, you will be able to resume your upload
+            in progress by returning to Guided Mode and clicking the "Resume Upload" 
+            button on ${sodaJSONObj["digital-metadata"]["name"]}'s progress card. 
           </p>
         `,
           showCancelButton: false,
