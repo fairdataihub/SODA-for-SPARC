@@ -388,19 +388,21 @@ const startupServerAndApiCheck = async () => {
   console.log("entering");
   let status = false;
   let time_start = new Date();
+  let error_message = "";
   while (status != true) {
     try {
       status = await serverIsLiveStartup();
       console.log(status);
     } catch (e) {
-      log.error(e);
+      // log.error(e);
       console.error(e);
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        "Establishing Python Connection",
-        e
-      );
+      error_message = e;
+      // ipcRenderer.send(
+      //   "track-event",
+      //   "Error",
+      //   "Establishing Python Connection",
+      //   e
+      // );
       status = false;
     }
     console.log(status);
@@ -412,6 +414,14 @@ const startupServerAndApiCheck = async () => {
   if (status != true) {
     //two minutes pass then handle connection error
     // SWAL that the server needs to be restarted for the app to work
+    log.error(error_message);
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Establishing Python Connection",
+      error_message
+    );
+
     await Swal.fire({
       icon: "error",
       html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
