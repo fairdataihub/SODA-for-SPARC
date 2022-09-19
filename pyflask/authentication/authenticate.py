@@ -28,6 +28,8 @@ def get_access_token():
     ClientId=cognito_app_client_id,
     )
 
+    print(login_response["AuthenticationResult"]["AccessToken"])
+
     return login_response["AuthenticationResult"]["AccessToken"]
 
 
@@ -44,3 +46,6 @@ def read_from_config(key):
     if keyname in config and key in config[keyname]:
         return config[keyname][key]
     return None
+
+
+get_access_token()
