@@ -107,7 +107,7 @@ const clearQueue = () => {
   const child = require("child_process").spawnSync(
     pennsievePath,
     ["upload-status", "--cancel-all"],
-    { timeout: 40000 }
+    { timeout: 4000 }
   );
 
   //* check if there was an error in the subprocess that prevented it from launching
@@ -638,11 +638,7 @@ const run_pre_flight_checks = async (check_update = true) => {
                   type: "final",
                   message: "You're all set!",
                 });
-                // ipcRenderer.send("announcement-check")
-                if (launchAnnouncements == true) {
-                  await checkForAnnouncements("announcements");
-                  launchAnnouncements = false;
-                }
+                await checkForAnnouncements("announcements");
                 resolve(true);
               }
             });
@@ -655,10 +651,7 @@ const run_pre_flight_checks = async (check_update = true) => {
               type: "final",
               message: "You're all set!",
             });
-            if (launchAnnouncements == true) {
-              await checkForAnnouncements("announcements");
-              launchAnnouncements = false;
-            }
+            await checkForAnnouncements("announcements");
             resolve(true);
           }
         }
@@ -1018,12 +1011,6 @@ ipcRenderer.on("update_available", () => {
     type: "app_update",
     message: "A new update is available. Downloading now...",
   });
-});
-
-var launchAnnouncements = false;
-ipcRenderer.on("checkForAnnouncements", async () => {
-  console.log("announcemnts ehre");
-  launchAnnouncements = true;
 });
 
 // When the update is downloaded, show the restart notification
