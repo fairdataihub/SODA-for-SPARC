@@ -107,7 +107,7 @@ const clearQueue = () => {
   const child = require("child_process").spawnSync(
     pennsievePath,
     ["upload-status", "--cancel-all"],
-    { timeout: 4000 }
+    { timeout: 40000 }
   );
 
   //* check if there was an error in the subprocess that prevented it from launching
