@@ -923,6 +923,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         # root level folder will pass subfolders into this function and will recursively check if there are subfolders while creating the json structure
         global namespace_logger
         global create_soda_json_progress
+        namespace_logger.info("begin")
+        namespace_logger.info(manifest)
         
         collection_id = subfolder_json["path"]
         bf = pennsieve_account
@@ -973,14 +975,18 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                     else:
                         temp_name = item_name
                     if len(manifest.keys()) > 0:
+                        # namespace_logger.info(manifest)
                         if "filename" in manifest:
+                            namespace_logger.info("filename")
                             for file_name in manifest["filename"].values():
                                 if "/" in file_name:
-                                    file_title = file_name.rsplit('/', 1)[1]
+                                    file_title = os.path.basename(file_name)
+                                    # file_title = file_name.rsplit('/', 1)[-1]
                                     namespace_logger.info(file_title)
                                 else:
                                     file_title = file_name
                                 namespace_logger.info(file_title)
+                                temp_name = os.path.basename(temp_name)
 
                                 
                                 if(temp_name == file_title):
@@ -996,11 +1002,18 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                             "additional-metadata"
                                         ] = manifest["Additional Metadata"][location_index]
                         elif "File Name" in manifest:
+                            namespace_logger.info("file Name")
                             for file_name in manifest["File Name"].values():
-                                file_title = file_name.rsplit('/', 1)[1]
+                                file_title = os.path.basename(file_name)
+                                temp_name = os.path.basename(temp_name)
+                                # file_title = file_name.rsplit('/', 1)[-1]
                                 namespace_logger.info(file_title)
-                                namespace_logger.info(file_name)
+                                # namespace_logger.info(file_name)
+                                namespace_logger.info(temp_name)
                                 if temp_name == file_title:
+                                    # namespace_logger.info(file_title)
+                                    # namespace_logger.info(file_name)
+                                    # namespace_logger.info(temp_name)
                                     location_index = list(manifest["File Name"].values()).index(
                                         file_name
                                     )
@@ -1122,12 +1135,13 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             ]
             subfolder = bf._api._get("/packages/" + str(collection_id))
             children_content = subfolder["children"]
+            manifest_dict[folder] = {}
             for items in children_content:
                 # check subfolders surface to see if manifest files exist to then use within recursive_subfolder_check
-                manifest_dict[folder] = {}
                 package_name = items["content"]["name"]
                 package_id = items["content"]["id"]
                 if package_name in manifest_sparc:
+                    namespace_logger.info(package_name);
                     # item is manifest
                     file_details = bf._api._get(
                         "/packages/" + str(package_id) + "/view"
@@ -1144,7 +1158,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         else:
                             df = pd.read_csv(manifest_url["url"])
                             df = df.fillna("")
-                        manifest_dict[folder] = df.to_dict()
+                        manifest_dict[folder].update(df.to_dict())
+                        # namespace_logger.info(manifest_dict)
                     except Exception as e:
                         manifest_error_message.append(
                             items["parent"]["content"]["name"]
@@ -1152,6 +1167,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             subfolder_section = soda_json_structure["dataset-structure"]["folders"][
                 folder
             ]
+            namespace_logger.info("before createFolder")
+            # namespace_logger.info(manifest_dict)
 
             if folder in manifest_dict:
                 createFolderStructure(
