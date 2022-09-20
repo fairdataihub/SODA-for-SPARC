@@ -6,7 +6,14 @@ import os
 from posixpath import expanduser
 import shutil
 import subprocess
+from pennsieve import Pennsieve
+from prepareMetadata import *
+import pandas as pd
 
+
+
+# TODO: Add the rest of the metadata files
+METADATA_FILES = ["submission.xlsx", "README.txt", "CHANGES.txt", "dataset_description.xlsx", "subjects.xlsx", "samples.xlsx"]
 
 dataset_structure = {
     "files": {},
@@ -202,7 +209,67 @@ metadata_files =  {
     }
 }
 
+# import existing metadata files except Readme and Changes from Pennsieve
+def import_bf_metadata_files_skeleton(bfaccount, bfdataset):
+    try: 
+        bf = Pennsieve(bfaccount)
+    except Exception:
+        raise Exception("Please select a valid Pennsieve account.")
+
+    try: 
+        myds = bf.get_dataset(bfdataset)
+    except Exception:
+        raise Exception("Please select a valid Pennsieve dataset.")
+    
+
+    for i in range(len(myds.items)):
+        if myds.items[i].name in METADATA_FILES:
+
+            item_id = myds.items[i].id
+            url = returnFileURL(bf, item_id)
+
+            import_metadata(url)
 
 
-# use the shell to open the skeleton directory
-subprocess.call(["open", path])
+
+import_bf_metadata_file("dataset_description.xlsx", [], "SODA-Pennsieve", "974-filess")
+
+
+
+
+# things we need that don't import 
+
+
+# obtain Pennsieve S3 URL for an existing metadata file
+def returnFileURL(bf_object, item_id):
+
+    file_details = bf_object._api._get(f"/packages/{str(item_id)}/view")
+    file_id = file_details[0]["content"]["id"]
+    file_url_info = bf_object._api._get(
+        f"/packages/{str(item_id)}/files/{str(file_id)}"
+    )
+
+
+    return file_url_info["url"]
+
+
+
+def column_check(x):
+    return "unnamed" not in x.lower()
+
+
+def import_metadata(filepath):
+    try:
+
+        df = pd.read_excel(
+            filepath, engine="openpyxl", usecols=column_check, header=0
+        )
+
+
+       # write the metadata file to the skeleton directory's root folder
+        df.to_excel(path, index=None, header=True)
+
+    except:
+        raise Exception(
+            "SODA cannot read this file. If you are trying to retrieve a submission.xlsx file from Pennsieve, please make sure you are signed in with your Pennsieve account on SODA."
+        )
