@@ -1002,6 +1002,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                     subfolder_json["files"][item_name][
                                         "additional-metadata"
                                     ] = manifest["Additional Metadata"][location_index]
+                                if manifest["file type"][location_index] != "":
+                                        subfolder_json["files"][item_name]["file type"] = manifest["file type"][location_index]
                         elif "File Name" in manifest:
                             namespace_logger.info("file Name")
                             namespace_logger.info(temp_name)
@@ -1023,6 +1025,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                     subfolder_json["files"][item_name][
                                         "additional-metadata"
                                     ] = manifest["Additional Metadata"][location_index]
+                                if manifest["file type"][location_index] != "":
+                                        subfolder_json["files"][item_name]["file type"] = manifest["file type"][location_index]
             else:  # another subfolder found
                 subfolder_json["folders"][item_name] = {
                     "action": ["existing"],
