@@ -3711,6 +3711,32 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     delete this["dataset-metadata"]["pool-subject-sample-structure"][
       "subjects"
     ][subjectName];
+
+    //Move the subjects folders in the datasetStructeJSONObj
+    for (const highLevelFolder of guidedHighLevelFolders) {
+      if (
+        datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+          subjectName
+        ]
+      ) {
+        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+          poolName
+        ]["folders"][subjectName] =
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+            subjectName
+          ];
+        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+          subjectName
+        ];
+      }
+    }
+
+    //Add the pool name to the subjectsTableData if if an entry exists
+    for (const subjectDataArray of subjectsTableData.slice(1)) {
+      if (subjectDataArray[0] === subjectName) {
+        subjectDataArray[1] = poolName;
+      }
+    }
   };
   sodaJSONObj.moveSubjectOutOfPool = function (subjectName, poolName) {
     this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
@@ -3788,6 +3814,25 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
         prevPoolName
       ];
+
+      //Rename the pool folder in the datasetStructureJSONObj
+      for (const highLevelFolder of guidedHighLevelFolders) {
+        if (
+          datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.[
+            "folders"
+          ]?.[prevPoolName]
+        ) {
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+            newPoolName
+          ] =
+            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+              prevPoolName
+            ];
+          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+            prevPoolName
+          ];
+        }
+      }
     }
   };
   sodaJSONObj.deletePool = function (poolName) {
@@ -3797,15 +3842,25 @@ const attachGuidedMethodsToSodaJSONObj = () => {
         poolName
       ];
     for (let subject in pool) {
-      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
-        subject
-      ] = pool[subject];
+      sodaJSONObj.moveSubjectOutOfPool(subject, poolName);
     }
+
+    for (const highLevelFolder of guidedHighLevelFolders) {
+      if (
+        datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+          poolName
+        ]
+      ) {
+        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+          poolName
+        ];
+      }
+    }
+
     //delete the pool after copying the subjects back into subjects
     delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
       poolName
     ];
-    //renderPoolTable();
   };
   sodaJSONObj.getPools = function () {
     return this["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
