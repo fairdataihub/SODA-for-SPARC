@@ -29,7 +29,8 @@
       "!build/",
       "!api.spec",
       "!Users/",
-      "!pyflask/"
+      "!pyflask/",
+      "!docs/"
     ],
     "win": {
       "asar": false,

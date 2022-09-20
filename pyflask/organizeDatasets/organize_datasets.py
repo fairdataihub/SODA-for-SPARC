@@ -958,7 +958,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                     for paths in subfolder_json["bfpath"]:
                         subfolder_json["files"][item_name]["bfpath"].append(paths)
 
-
+                    
+                    # creates path for item_name (stored in temp_name)
                     if len(subfolder_json["files"][item_name]["bfpath"]) > 1:
                         temp_name = ""
                         for i in range(
@@ -974,44 +975,41 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         temp_name = item_name
                     if len(manifest.keys()) > 0:
                         if "filename" in manifest:
-                            for file_name in manifest["filename"].values():
-                                if "/" in file_name:
-                                    file_title = file_name.rsplit('/', 1)[1]
-                                    namespace_logger.info(file_title)
-                                else:
-                                    file_title = file_name
-                                namespace_logger.info(file_title)
-
-                                
-                                if(temp_name == file_title):
-                                    location_index = list(manifest["filename"].values()).index(
-                                        file_name
-                                    )
-                                    if manifest["description"][location_index] != "":
-                                        subfolder_json["files"][item_name][
-                                            "description"
-                                        ] = manifest["description"][location_index]
-                                    if manifest["Additional Metadata"] != "":
-                                        subfolder_json["files"][item_name][
-                                            "additional-metadata"
-                                        ] = manifest["Additional Metadata"][location_index]
+                            namespace_logger.info("filename")
+                            namespace_logger.info(temp_name)
+                            namespace_logger.info(manifest["filename"].values())
+                            if temp_name in manifest["filename"].values():
+                                location_index = list(manifest["filename"].values()).index(
+                                    temp_name
+                                )
+                                if manifest["description"][location_index] != "":
+                                    subfolder_json["files"][item_name][
+                                        "description"
+                                    ] = manifest["description"][location_index]
+                                if manifest["Additional Metadata"] != "":
+                                    subfolder_json["files"][item_name][
+                                        "additional-metadata"
+                                    ] = manifest["Additional Metadata"][location_index]
+                                if manifest["file type"][location_index] != "":
+                                        subfolder_json["files"][item_name]["file type"] = manifest["file type"][location_index]
                         elif "File Name" in manifest:
-                            for file_name in manifest["File Name"].values():
-                                file_title = file_name.rsplit('/', 1)[1]
-                                namespace_logger.info(file_title)
-                                namespace_logger.info(file_name)
-                                if temp_name == file_title:
-                                    location_index = list(manifest["File Name"].values()).index(
-                                        file_name
-                                    )
-                                    if manifest["description"][location_index] != "":
-                                        subfolder_json["files"][item_name][
-                                            "description"
-                                        ] = manifest["description"][location_index]
-                                    if manifest["Additional Metadata"] != "":
-                                        subfolder_json["files"][item_name][
-                                            "additional-metadata"
-                                        ] = manifest["Additional Metadata"][location_index]
+                            namespace_logger.info("file Name")
+                            namespace_logger.info(temp_name)
+                            namespace_logger.info(manifest["File Name"].values())
+                            if temp_name in manifest["File Name"].values():
+                                location_index = list(manifest["File Name"].values()).index(
+                                    temp_name
+                                )
+                                if manifest["description"][location_index] != "":
+                                    subfolder_json["files"][item_name][
+                                        "description"
+                                    ] = manifest["description"][location_index]
+                                if manifest["Additional Metadata"] != "":
+                                    subfolder_json["files"][item_name][
+                                        "additional-metadata"
+                                    ] = manifest["Additional Metadata"][location_index]
+                                if manifest["file type"][location_index] != "":
+                                        subfolder_json["files"][item_name]["file type"] = manifest["file type"][location_index]
             else:  # another subfolder found
                 subfolder_json["folders"][item_name] = {
                     "action": ["existing"],
@@ -1122,12 +1120,13 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             ]
             subfolder = bf._api._get("/packages/" + str(collection_id))
             children_content = subfolder["children"]
+            manifest_dict[folder] = {}
             for items in children_content:
                 # check subfolders surface to see if manifest files exist to then use within recursive_subfolder_check
-                manifest_dict[folder] = {}
                 package_name = items["content"]["name"]
                 package_id = items["content"]["id"]
                 if package_name in manifest_sparc:
+                    namespace_logger.info(package_name);
                     # item is manifest
                     file_details = bf._api._get(
                         "/packages/" + str(package_id) + "/view"
@@ -1144,7 +1143,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         else:
                             df = pd.read_csv(manifest_url["url"])
                             df = df.fillna("")
-                        manifest_dict[folder] = df.to_dict()
+                        manifest_dict[folder].update(df.to_dict())
                     except Exception as e:
                         manifest_error_message.append(
                             items["parent"]["content"]["name"]
