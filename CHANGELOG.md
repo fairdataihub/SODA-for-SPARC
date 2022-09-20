@@ -5,11 +5,21 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.9.2.0 - 2022-09-20
+
+## Feature additions:
+- An announcements system has been added to give the user updates on recents changes/additions to SODA.
+## Bug fixes:
+ - In organize dataset: When moving files/folders to another location there will be a check if any duplicates are there already.
+ - On startup the server will try to connect continuosly. (backOff was replaced)
+ - Organize dataset: import dataset will correctly check manifest details.
+### Known issues:
+
 ## v.9.1.0 - 2022-09-13
 
 ## Feature additions:
 
-- An announcements system has been added to give the user updates on recents changes/additions to SODA.
+
 - Tags throughout SODA are now sortable. (Ex: Dataset tags, milestone tags, etc.)
 - Prepare Metadata - Create manifest.xlsx: Automated synchronization between manifest files and their Pennsieve dataset. E.g., if a file is removed from a dataset, the file's corresponding manifest file entry will be removed.
 - Prepare Metadata - Create manifest.xlsx: Empty columns are dropped from manifest files once the user generates their files locally or on Pennsieve.
