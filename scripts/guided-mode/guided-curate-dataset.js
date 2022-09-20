@@ -3777,6 +3777,13 @@ const attachGuidedMethodsToSodaJSONObj = () => {
         subjectDataArray[1] = "";
       }
     }
+
+    //Remove the sample from the samplesTableData
+    for (const sampleDataArray of samplesTableData) {
+      if (sampleDataArray[0] === subjectName) {
+        sampleDataArray[3] = "";
+      }
+    }
   };
   sodaJSONObj.addPool = function (poolName) {
     if (
@@ -3800,6 +3807,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     ) {
       throw new Error("Pool names must be unique.");
     }
+
     if (
       this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
         prevPoolName
@@ -3833,6 +3841,20 @@ const attachGuidedMethodsToSodaJSONObj = () => {
           ];
         }
       }
+
+      //Rename the pool in the subjectsTableData
+      for (const subjectDataArray of subjectsTableData.slice(1)) {
+        if (subjectDataArray[1] === prevPoolName) {
+          subjectDataArray[1] = newPoolName;
+        }
+      }
+
+      //Rename the pool in the samplesTableData
+      for (const sampleDataArray of samplesTableData.slice(1)) {
+        if (sampleDataArray[3] === prevPoolName) {
+          sampleDataArray[3] = newPoolName;
+        }
+      }
     }
   };
   sodaJSONObj.deletePool = function (poolName) {
@@ -3841,6 +3863,10 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
         poolName
       ];
+
+    //Loop through the subjects and remove their folders from the pool in the dataset structure
+    //this handles moving the subject folders back to the root of the high level folder
+    //and removes the pool from the subject/sample metadata arrays
     for (let subject in pool) {
       sodaJSONObj.moveSubjectOutOfPool(subject, poolName);
     }
