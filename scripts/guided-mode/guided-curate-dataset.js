@@ -3508,6 +3508,8 @@ guidedCreateSodaJSONObj = () => {
   datasetStructureJSONObj = { folders: {}, files: {} };
 };
 const attachGuidedMethodsToSodaJSONObj = () => {
+  const guidedHighLevelFolders = ["primary", "source", "derivative"];
+
   sodaJSONObj.getAllSubjects = function () {
     let subjectsInPools = [];
     let subjectsOutsidePools = [];
@@ -3551,71 +3553,137 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     ] = {};
   };
   sodaJSONObj.renameSubject = function (prevSubjectName, newSubjectName) {
-    //check if subject with the same name already exists
+    const [subjectsInPools, subjectsOutsidePools] = this.getAllSubjects();
+    const subjects = [...subjectsInPools, ...subjectsOutsidePools];
+
+    if (prevSubjectName === newSubjectName) {
+      return;
+    }
+
+    //Throw an error if the subject name that the user is changing the old subject name
+    //to already exists
     if (
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-        newSubjectName
-      ] ||
-      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
-        newSubjectName
-      ]
+      subjects.filter((subject) => subject.subjectName === newSubjectName)
+        .length > 0
     ) {
       throw new Error("Subject names must be unique.");
     }
-    const [subjectsInPools, subjectsOutsidePools] = this.getAllSubjects();
-    //Check subjectsInPools for a subject matching previousSubjectName
-    //if found, rename the subject
-    for (const subjectData of subjectsInPools) {
-      if (subjectData.subjectName === prevSubjectName) {
-        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-          subjectData.poolName
-        ][newSubjectName] =
+
+    for (const subject of subjects) {
+      if (subject.subjectName === prevSubjectName) {
+        //if the subject is in a pool
+        if (subject.poolName) {
           this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-            subjectData.poolName
+            subject.poolName
+          ][newSubjectName] =
+            this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+              subject.poolName
+            ][prevSubjectName];
+          delete this["dataset-metadata"]["pool-subject-sample-structure"][
+            "pools"
+          ][subject.poolName][prevSubjectName];
+
+          //Rename the subjects folders in the datasetStructeJSONObj
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            if (
+              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.[
+                "folders"
+              ]?.[subject.poolName]?.["folders"]?.[prevSubjectName]
+            ) {
+              datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                subject.poolName
+              ]["folders"][newSubjectName] =
+                datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  subject.poolName
+                ]["folders"][prevSubjectName];
+              delete datasetStructureJSONObj["folders"][highLevelFolder][
+                "folders"
+              ][subject.poolName]["folders"][prevSubjectName];
+            }
+          }
+        } else {
+          //if the subject is not in a pool
+          this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+            newSubjectName
+          ] =
+            this["dataset-metadata"]["pool-subject-sample-structure"][
+              "subjects"
+            ][prevSubjectName];
+          delete this["dataset-metadata"]["pool-subject-sample-structure"][
+            "subjects"
           ][prevSubjectName];
 
-        delete this["dataset-metadata"]["pool-subject-sample-structure"][
-          "pools"
-        ][subjectData.poolName][prevSubjectName];
-        return;
+          //Rename the subjects folders in the datasetStructeJSONObj
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            if (
+              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.[
+                "folders"
+              ]?.[prevSubjectName]
+            ) {
+              datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                newSubjectName
+              ] =
+                datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  prevSubjectName
+                ];
+              delete datasetStructureJSONObj["folders"][highLevelFolder][
+                "folders"
+              ][prevSubjectName];
+            }
+          }
+        }
       }
     }
 
-    //Check subjectsOutsidePools for a subject matching previousSubjectName
-    //if found, rename the subject
-    for (const subjectData of subjectsOutsidePools) {
-      if (subjectData.subjectName === prevSubjectName) {
-        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
-          newSubjectName
-        ] =
-          this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
-            prevSubjectName
-          ];
-        delete this["dataset-metadata"]["pool-subject-sample-structure"][
-          "subjects"
-        ][prevSubjectName];
-        return;
+    //Rename the subject's entry in the subjectsTableData
+    for (const subjectDataArray of subjectsTableData.slice(1)) {
+      if (subjectDataArray[0] === prevSubjectName) {
+        subjectDataArray[0] = newSubjectName;
       }
     }
   };
   sodaJSONObj.deleteSubject = function (subjectName) {
     const [subjectsInPools, subjectsOutsidePools] = this.getAllSubjects();
-    //Check subjectsInPools for a subject matching subjectName
-    //if found, delete from pool
-    for (const subjectData of subjectsInPools) {
-      if (subjectData.subjectName === subjectName) {
-        delete this["dataset-metadata"]["pool-subject-sample-structure"][
-          "pools"
-        ][subjectData.poolName][subjectName];
-      }
-    }
-    //Check subjectsOutsidePools for a subject matching subjectName
-    //if found, delete subject
-    for (const subjectData of subjectsOutsidePools) {
-      if (subjectData.subjectName === subjectName) {
-        delete this["dataset-metadata"]["pool-subject-sample-structure"][
-          "subjects"
-        ][subjectName];
+    const subjects = [...subjectsInPools, ...subjectsOutsidePools];
+    for (const subject of subjects) {
+      if (subject.subjectName === subjectName) {
+        //if the subject is in a pool
+        if (subject.poolName) {
+          delete this["dataset-metadata"]["pool-subject-sample-structure"][
+            "pools"
+          ][subject.poolName][subjectName];
+
+          //Delete the subjects folders in the datasetStructeJSONObj
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            if (
+              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.[
+                "folders"
+              ]?.[subject.poolName]?.["folders"]?.[subjectName]
+            ) {
+              delete datasetStructureJSONObj["folders"][highLevelFolder][
+                "folders"
+              ][subject.poolName]["folders"][subjectName];
+            }
+          }
+        } else {
+          //if the subject is not in a pool
+          delete this["dataset-metadata"]["pool-subject-sample-structure"][
+            "subjects"
+          ][subjectName];
+
+          //Delete the subjects folders in the datasetStructeJSONObj
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            if (
+              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.[
+                "folders"
+              ]?.[subjectName]
+            ) {
+              delete datasetStructureJSONObj["folders"][highLevelFolder][
+                "folders"
+              ][subjectName];
+            }
+          }
+        }
       }
     }
 
@@ -3643,6 +3711,32 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     delete this["dataset-metadata"]["pool-subject-sample-structure"][
       "subjects"
     ][subjectName];
+
+    //Move the subjects folders in the datasetStructeJSONObj
+    for (const highLevelFolder of guidedHighLevelFolders) {
+      if (
+        datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+          subjectName
+        ]
+      ) {
+        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+          poolName
+        ]["folders"][subjectName] =
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+            subjectName
+          ];
+        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+          subjectName
+        ];
+      }
+    }
+
+    //Add the pool name to the subjectsTableData if if an entry exists
+    for (const subjectDataArray of subjectsTableData.slice(1)) {
+      if (subjectDataArray[0] === subjectName) {
+        subjectDataArray[1] = poolName;
+      }
+    }
   };
   sodaJSONObj.moveSubjectOutOfPool = function (subjectName, poolName) {
     this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
@@ -3654,6 +3748,42 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
       poolName
     ][subjectName];
+
+    //Copy the subject folders from the pool into the root of the high level folder
+    for (const highLevelFolder of guidedHighLevelFolders) {
+      if (
+        datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+          poolName
+        ]?.["folders"]?.[subjectName]
+      ) {
+        console.log(
+          `Copying ${subjectName} from ${poolName} to ${highLevelFolder}`
+        );
+        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+          subjectName
+        ] =
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+            poolName
+          ]["folders"][subjectName];
+        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+          poolName
+        ]["folders"][subjectName];
+      }
+    }
+
+    //Remove the pool from the subject's entry in the subjectsTableData
+    for (const subjectDataArray of subjectsTableData) {
+      if (subjectDataArray[0] === subjectName) {
+        subjectDataArray[1] = "";
+      }
+    }
+
+    //Remove the sample from the samplesTableData
+    for (const sampleDataArray of samplesTableData) {
+      if (sampleDataArray[0] === subjectName) {
+        sampleDataArray[3] = "";
+      }
+    }
   };
   sodaJSONObj.addPool = function (poolName) {
     if (
@@ -3677,6 +3807,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     ) {
       throw new Error("Pool names must be unique.");
     }
+
     if (
       this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
         prevPoolName
@@ -3691,6 +3822,39 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
         prevPoolName
       ];
+
+      //Rename the pool folder in the datasetStructureJSONObj
+      for (const highLevelFolder of guidedHighLevelFolders) {
+        if (
+          datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.[
+            "folders"
+          ]?.[prevPoolName]
+        ) {
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+            newPoolName
+          ] =
+            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+              prevPoolName
+            ];
+          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+            prevPoolName
+          ];
+        }
+      }
+
+      //Rename the pool in the subjectsTableData
+      for (const subjectDataArray of subjectsTableData.slice(1)) {
+        if (subjectDataArray[1] === prevPoolName) {
+          subjectDataArray[1] = newPoolName;
+        }
+      }
+
+      //Rename the pool in the samplesTableData
+      for (const sampleDataArray of samplesTableData.slice(1)) {
+        if (sampleDataArray[3] === prevPoolName) {
+          sampleDataArray[3] = newPoolName;
+        }
+      }
     }
   };
   sodaJSONObj.deletePool = function (poolName) {
@@ -3699,16 +3863,30 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
         poolName
       ];
+
+    //Loop through the subjects and remove their folders from the pool in the dataset structure
+    //this handles moving the subject folders back to the root of the high level folder
+    //and removes the pool from the subject/sample metadata arrays
     for (let subject in pool) {
-      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
-        subject
-      ] = pool[subject];
+      sodaJSONObj.moveSubjectOutOfPool(subject, poolName);
     }
+
+    for (const highLevelFolder of guidedHighLevelFolders) {
+      if (
+        datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+          poolName
+        ]
+      ) {
+        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+          poolName
+        ];
+      }
+    }
+
     //delete the pool after copying the subjects back into subjects
     delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
       poolName
     ];
-    //renderPoolTable();
   };
   sodaJSONObj.getPools = function () {
     return this["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
@@ -3783,71 +3961,151 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       ][sampleName] = {};
     }
   };
-  sodaJSONObj.renameSample = function (
-    sampleToRename,
-    newSampleName,
-    subjectPoolName,
-    subjectName
-  ) {
-    if (subjectPoolName) {
-      const sampleDataToRename =
-        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-          subjectPoolName
-        ][subjectName][sampleToRename];
+  sodaJSONObj.renameSample = function (prevSampleName, newSampleName) {
+    const [samplesInPools, samplesOutsidePools] =
+      sodaJSONObj.getAllSamplesFromSubjects();
+    //Combine sample data from samples in and out of pools
+    let samples = [...samplesInPools, ...samplesOutsidePools];
 
-      //try to add the sample to the subject
-      //this will throw if the sample name is already taken
-      this.addSampleToSubject(newSampleName, subjectPoolName, subjectName);
+    //Check samples already added and throw an error if a sample with the sample name already exists.
+    for (const sample of samples) {
+      if (sample.sampleName === newSampleName) {
+        throw new Error(
+          `Sample names must be unique. \n${newSampleName} already exists in ${sample.subjectName}`
+        );
+      }
+    }
 
-      //Add previous sample data to the new sample
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-        subjectPoolName
-      ][subjectName][newSampleName] = sampleDataToRename;
+    //find the sample and rename it
+    for (const sample of samples) {
+      if (sample.sampleName === prevSampleName) {
+        //Rename the sample's sample metadata
+        for (const sampleMetadataRow of samplesTableData.slice(1)) {
+          if (sampleMetadataRow[1] === prevSampleName) {
+            sampleMetadataRow[1] = newSampleName;
+          }
+        }
 
-      //remove the old sample
-      delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-        subjectPoolName
-      ][subjectName][sampleToRename];
-    } else {
-      const sampleDataToRename =
-        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
-          subjectName
-        ][sampleToRename];
+        if (sample.poolName) {
+          this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+            sample.poolName
+          ][sample.subjectName][newSampleName] =
+            this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+              sample.poolName
+            ][sample.subjectName][prevSampleName];
+          delete this["dataset-metadata"]["pool-subject-sample-structure"][
+            "pools"
+          ][sample.poolName][sample.subjectName][prevSampleName];
 
-      //try to add the sample to the subject
-      //this will throw if the sample name is already taken
-      this.addSampleToSubject(newSampleName, subjectPoolName, subjectName);
-
-      //Add previous sample data to the new sample
-      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
-        subjectName
-      ][newSampleName] = sampleDataToRename;
-
-      //remove the old sample
-      delete this["dataset-metadata"]["pool-subject-sample-structure"][
-        "subjects"
-      ][subjectName][sampleToRename];
+          //Rename the samples folders in the datasetStructeJSONObj
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            if (
+              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.[
+                "folders"
+              ]?.[sample.poolName]?.["folders"]?.[sample.subjectName]?.[
+                "folders"
+              ]?.[prevSampleName]
+            ) {
+              datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                sample.poolName
+              ]["folders"][sample.subjectName]["folders"][newSampleName] =
+                datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  sample.poolName
+                ]["folders"][sample.subjectName]["folders"][prevSampleName];
+              delete datasetStructureJSONObj["folders"][highLevelFolder][
+                "folders"
+              ][sample.poolName]["folders"][sample.subjectName]["folders"][
+                prevSampleName
+              ];
+            }
+          }
+        } else {
+          this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+            sample.subjectName
+          ][newSampleName] =
+            this["dataset-metadata"]["pool-subject-sample-structure"][
+              "subjects"
+            ][sample.subjectName][prevSampleName];
+          delete this["dataset-metadata"]["pool-subject-sample-structure"][
+            "subjects"
+          ][sample.subjectName][prevSampleName];
+          //Rename the samples folders in the datasetStructeJSONObj
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            if (
+              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.[
+                "folders"
+              ]?.[sample.subjectName]?.["folders"]?.[prevSampleName]
+            ) {
+              datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                sample.subjectName
+              ]["folders"][newSampleName] =
+                datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  sample.subjectName
+                ]["folders"][prevSampleName];
+              delete datasetStructureJSONObj["folders"][highLevelFolder][
+                "folders"
+              ][sample.subjectName]["folders"][prevSampleName];
+            }
+          }
+        }
+      }
     }
   };
-  sodaJSONObj.deleteSample = function (
-    sampleName,
-    subjectPoolName,
-    subjectName
-  ) {
-    if (subjectPoolName) {
-      delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-        subjectPoolName
-      ][subjectName][sampleName];
-    } else {
-      delete this["dataset-metadata"]["pool-subject-sample-structure"][
-        "subjects"
-      ][subjectName][sampleName];
-    }
 
-    //remove the sample's sample metadata
-    samplesTableData = samplesTableData.filter((sample) => {
-      return sample[0] !== subjectName || sample[1] !== sampleName;
-    });
+  sodaJSONObj.deleteSample = function (sampleName) {
+    const [samplesInPools, samplesOutsidePools] =
+      sodaJSONObj.getAllSamplesFromSubjects();
+    //Combine sample data from samples in and out of pools
+    let samples = [...samplesInPools, ...samplesOutsidePools];
+
+    for (const sample of samples) {
+      if (sample.sampleName === sampleName) {
+        //remove the sample's sample metadata
+        samplesTableData = samplesTableData.filter((sampleDataArray) => {
+          return sampleDataArray[1] !== sample.sampleName;
+        });
+
+        if (sample.poolName) {
+          delete this["dataset-metadata"]["pool-subject-sample-structure"][
+            "pools"
+          ][sample.poolName][sample.subjectName][sampleName];
+
+          //Delete the samples folder in the datasetStructureJSONObj
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            if (
+              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.[
+                "folders"
+              ]?.[sample.poolName]?.["folders"]?.[sample.subjectName]?.[
+                "folders"
+              ]?.[sampleName]
+            ) {
+              delete datasetStructureJSONObj["folders"][highLevelFolder][
+                "folders"
+              ][sample.poolName]["folders"][sample.subjectName]["folders"][
+                sampleName
+              ];
+            }
+          }
+        } else {
+          delete this["dataset-metadata"]["pool-subject-sample-structure"][
+            "subjects"
+          ][sample.subjectName][sampleName];
+
+          //Delete the samples folder in the datasetStructureJSONObj
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            if (
+              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.[
+                "folders"
+              ]?.[sample.subjectName]?.["folders"]?.[sampleName]
+            ) {
+              delete datasetStructureJSONObj["folders"][highLevelFolder][
+                "folders"
+              ][sample.subjectName]["folders"][sampleName];
+            }
+          }
+        }
+      }
+    }
   };
   sodaJSONObj.getAllSubjects = function () {
     let subjectsInPools = [];
@@ -5846,19 +6104,7 @@ const deleteSample = (sampleDeleteButton) => {
   //Check to see if a sample has been added to the element
   //if it has, delete the sample from the pool-sub-sam structure
   if (sampleIdToDelete) {
-    const subjectSampleAdditionTable = sampleDeleteButton.closest("table");
-    const samplesSubject = subjectSampleAdditionTable
-      .find(".samples-subject-name")
-      .text();
-    const samplesSubjectsPool = subjectSampleAdditionTable
-      .find(".samples-subjects-pool")
-      .text();
-
-    sodaJSONObj.deleteSample(
-      sampleIdToDelete,
-      samplesSubjectsPool,
-      samplesSubject
-    );
+    sodaJSONObj.deleteSample(sampleIdToDelete);
   }
 
   //delete the table row element in the UI
@@ -6030,41 +6276,6 @@ const generateSampleMetadataRowElement = (tableIndex, sampleName) => {
       </td>
     </tr>
   `;
-};
-
-const addSampleFolder = (sampleAddButton) => {
-  sampleAddButton
-    .closest("thead")
-    .siblings("tbody")
-    .append(generateSampleRowElement("x"));
-  updateGuidedTableIndices("sample-table-index");
-};
-const deleteSampleFolder = (sampleDeleteButton) => {
-  const sampleIdCellToDelete = sampleDeleteButton.closest("tr");
-  let samplesParentSubject = sampleDeleteButton
-    .closest("tbody")
-    .siblings()
-    .find(".sample-table-name")
-    .text()
-    .trim();
-  const sampleIdToDelete = sampleIdCellToDelete.find(".sample-id").text();
-  //delte the sample from sodaJSONobj
-  sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
-    samplesParentSubject
-  ] = sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
-    samplesParentSubject
-  ].filter((sample) => {
-    return sample !== sampleIdToDelete;
-  });
-  //delete the table row element in the UI
-  sampleIdCellToDelete.remove();
-  //Update sample table row indices
-  updateGuidedTableIndices("sample-table-index");
-  //delete the sample folder from the dataset structure obj
-
-  delete datasetStructureJSONObj["folders"]["primary"]["folders"][
-    samplesParentSubject
-  ]["folders"][sampleIdToDelete];
 };
 
 const removePermission = (clickedPermissionRemoveButton) => {
