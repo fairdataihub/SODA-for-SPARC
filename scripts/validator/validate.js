@@ -1,5 +1,4 @@
 // Purpose: The front end logic for the Validate Dataset section
-
 const {
   handleAxiosValidationErrors,
 } = require("./scripts/validator/axios-validator-utility.js");
@@ -7,28 +6,6 @@ const {
 const {
   translatePipelineError,
 } = require("./scripts/validator/parse-pipeline-errors.js");
-
-/*
-*******************************************************************************************************************
-// Setup for Axios client that talks to the validator
-*******************************************************************************************************************
-*/
-
-// const waitForAxios = (client) => {
-//   if (typeof axios !== "undefined") {
-//     //variable exists, do what you want
-//     client = axios.create({
-//       baseURL: "http://127.0.0.1:4242/",
-//       timeout: 0,
-//     });
-//   } else {
-//     setTimeout(waitForAxios, 1000);
-//   }
-// };
-
-// let axiosValidatorClient;
-
-// waitForAxios(axiosValidatorClient);
 
 /*
 *******************************************************************************************************************
@@ -58,11 +35,14 @@ const validateLocalDataset = async () => {
   let validationResponse;
   try {
     // send the dataset path to the validator endpoint
-    validationResponse = await client.get(`validate_dataset/local_dataset`, {
-      params: {
-        path: datasetPath,
-      },
-    });
+    validationResponse = await client.get(
+      `validator/local_dataset_validation_result`,
+      {
+        params: {
+          path: datasetPath,
+        },
+      }
+    );
 
     // track that a local validation succeeded
     ipcRenderer.send(
@@ -86,8 +66,26 @@ const validateLocalDataset = async () => {
     document.querySelector("#validation-errors-container").style.visiility =
       "hidden";
 
-    // display message to user
-    handleAxiosValidationErrors(err);
+    // log the error
+    clientError(err);
+
+    // display the error message to the user
+    let errorMessage = userErrorMessage(err);
+
+    await Swal.fire({
+      title: "Validation Failed",
+      text: `${errorMessage}`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      icon: "error",
+      showCancelButton: false,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
 
     // reset the input field to 'Browse Here'
     let datasetLocationInput = document.querySelector(
@@ -123,12 +121,10 @@ const validateLocalDataset = async () => {
   let hasValidationErrors = Object.getOwnPropertyNames(errors).length >= 1;
 
   Swal.fire({
-    title: hasValidationErrors
-      ? "Your dataset has validation errors"
-      : `Your dataset has been successfully validated`,
+    title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
     text: hasValidationErrors
-      ? `Your dataset has been found to violate SPARC Guidelines. Please view the Validation Errors table to see what is non-conforming so that you may fix it.`
-      : ``,
+      ? `Please fix the errors listed in the table below to pass validation.`
+      : `Your dataset conforms to the SPARC Dataset Structure.`,
     allowEscapeKey: true,
     allowOutsideClick: false,
     heightAuto: false,
@@ -151,6 +147,9 @@ const validateLocalDataset = async () => {
 };
 
 const validatePennsieveDataset = async () => {
+  // kicks off pipeline update listener
+  await setCurationTeamAsManagers();
+
   // get the dataset name from the dataset selection card
   let datasetName = document.querySelector(
     "#bf_dataset_load_validator"
@@ -173,8 +172,14 @@ const validatePennsieveDataset = async () => {
 
   try {
     // request validation for the current pennsieve dataset
-    validationResponse = await axiosValidatorClient(
-      `/api_validate_pennsieve_dataset?dataset-name=${datasetName}`
+    validationResponse = await client.get(
+      `validator/pennsieve_dataset_validation_result`,
+      {
+        params: {
+          selected_account: defaultBfAccount,
+          selected_dataset: defaultBfDatasetId,
+        },
+      }
     );
 
     // track that a local validation succeeded
@@ -217,24 +222,52 @@ const validatePennsieveDataset = async () => {
       1
     );
 
-    // display error message to user
-    return handleAxiosValidationErrors(err);
+    // end pipeline update listener
+    removeCurationTeamAsManagers();
+
+    // log the error
+    clientError(err);
+
+    // display the error message to the user
+    let errorMessage = userErrorMessage(err);
+
+    await Swal.fire({
+      title: "Validation Failed",
+      text: `${errorMessage}`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      icon: "error",
+      showCancelButton: false,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    return;
   }
+
+  removeCurationTeamAsManagers();
 
   let errors = validationResponse.data;
 
+  // this works because the returned validation results are in an Object Literal. If the returned object is changed this will break (e.g., an array will have a length property as well)
+  let hasValidationErrors = Object.getOwnPropertyNames(errors).length >= 1;
+
   Swal.fire({
-    title: `Your dataset has been successfully validated`,
-    text:
-      Object.getOwnPropertyNames(errors).length > 1
-        ? `Your dataset has been found to violate SPARC Guidelines. Please view the table below to see what is non-conforming so that you may fix it.`
-        : `Your dataset is valid according to SPARC guidelines.`,
+    title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
+    text: hasValidationErrors
+      ? `Please fix the errors listed in the table below to pass validation.`
+      : `Your dataset conforms to the SPARC Dataset Structure.`,
     allowEscapeKey: true,
     allowOutsideClick: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     timerProgressBar: false,
     showConfirmButton: true,
+    icon: hasValidationErrors ? "error" : "success",
   });
 
   // check if there are validation errors
@@ -578,6 +611,38 @@ document
     );
   });
 
+document
+  .querySelector("#scicrunch button")
+  .addEventListener("click", async function () {
+    // get the api key from the first of two inputs field nested in the scicrunch div
+    let apiKey = document.querySelector("#scicrunch input").value;
+
+    // get the api key name from the last input element  nested in the scicrunch div
+    let apiKeyName = document.querySelector(
+      "#scicrunch input:last-of-type"
+    ).value;
+
+    // send the api key and api key name as params to the server using the endpoint /validator/scicrunch [ use the axios client stored in variable 'client']
+    let response;
+    try {
+      response = await client.post("/validator/scicrunch_config", {
+        api_key: apiKey,
+        api_key_name: apiKeyName,
+        selected_account: defaultBfAccount,
+      });
+    } catch (error) {
+      clientError(error);
+      await Swal.fire({
+        title: "Error",
+        text: "There was an error adding your scicrunch api key. Pleas try again.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+
+    console.log("Congrats that worked!");
+  });
+
 // observer for the selected dataset label in the dataset selection card in question 2
 const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
   if ($("#bf_dataset_load_validator").text().trim() !== "None") {
@@ -727,3 +792,65 @@ const hideQuestionThreeLocal = () => {
   // set question 3's visibility to none
   document.querySelector("#validate_dataset-question-3").style.display = "none";
 };
+
+const setCurationTeamAsManagers = async () => {
+  var selectedTeam = "SPARC Data Curation Team";
+  var selectedRole = "manager";
+
+  try {
+    await client.patch(
+      `/manage_datasets/bf_dataset_permissions`,
+      {
+        input_role: selectedRole,
+      },
+      {
+        params: {
+          selected_account: defaultBfAccount,
+          selected_dataset: defaultBfDataset,
+          scope: "team",
+          name: selectedTeam,
+        },
+      }
+    );
+  } catch (error) {
+    clientError(error);
+  }
+
+  console.log("Curation team has management permissions");
+  console.log("The dataset ID to look for is: ", defaultBfDatasetId);
+};
+
+const removeCurationTeamAsManagers = async () => {
+  var selectedTeam = "SPARC Data Curation Team";
+  var selectedRole = "viewer";
+
+  try {
+    await client.patch(
+      `/manage_datasets/bf_dataset_permissions`,
+      {
+        input_role: selectedRole,
+      },
+      {
+        params: {
+          selected_account: defaultBfAccount,
+          selected_dataset: defaultBfDataset,
+          scope: "team",
+          name: selectedTeam,
+        },
+      }
+    );
+  } catch (error) {
+    clientError(error);
+  }
+
+  console.log("Curation team does not have management permissions");
+  console.log("The dataset ID to look for is: ", defaultBfDatasetId);
+};
+
+document.querySelector("#click-me").addEventListener("click", async () => {
+  setCurationTeamAsManagers();
+});
+
+document.querySelector("#remove-me").addEventListener("click", async () => {
+  removeCurationTeamAsManagers();
+});

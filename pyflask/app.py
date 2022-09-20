@@ -17,6 +17,8 @@ app = Flask(__name__)
 
 configureLogger(app)
 
+app.logger.info("Starting app.py")
+
 api = configureAPI()
 
 configureRouteHandlers(api)
