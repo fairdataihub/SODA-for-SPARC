@@ -486,6 +486,12 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
   ipcRenderer.send("track-event", "Success", "Setting Templates Path");
 });
 
+let launchAnnouncement = false;
+ipcRenderer.on("checkForAnnouncements", (event, index) => {
+  console.log("WEHRERSDKJFL:KJRETOISHDFL:KJS:LKJ");
+  launchAnnouncement = true;
+});
+
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
   log.info("Running pre flight checks");
@@ -648,7 +654,10 @@ const run_pre_flight_checks = async (check_update = true) => {
                   type: "final",
                   message: "You're all set!",
                 });
-                await checkForAnnouncements("announcements");
+                console.log(launchAnnouncement);
+                if (launchAnnouncement) {
+                  await checkForAnnouncements("announcements");
+                }
                 resolve(true);
               }
             });
@@ -661,7 +670,10 @@ const run_pre_flight_checks = async (check_update = true) => {
               type: "final",
               message: "You're all set!",
             });
-            await checkForAnnouncements("announcements");
+            console.log(launchAnnouncement);
+            if (launchAnnouncement) {
+              await checkForAnnouncements("announcements");
+            }
             resolve(true);
           }
         }
