@@ -8,32 +8,40 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## v.9.2.0 - 2022-09-20
 
 ## Feature additions:
+
 - An announcements system has been added to give the user updates on recents changes/additions to SODA.
+- Guided Mode: Added the ability to retry uploading a dataset if an upload in progress fails.
+
 ## Bug fixes:
- - In organize dataset: When moving files/folders to another location there will be a check if any duplicates are there already.
- - On startup the server will try to connect continuosly. (backOff was replaced)
- - Organize dataset: import dataset will correctly check manifest details.
+
+- In organize dataset: When moving files/folders to another location there will be a check if any duplicates are there already.
+- On startup the server will try to connect continuosly. (backOff was replaced)
+- Organize dataset: import dataset will correctly check manifest details.
+- Guided Mode: Fixed the automatically generated headers for manifest files
+- Guided Mode: Changed the generated filepath from the filepath on the user's local machine to the path relative to the
+  SPARC dataset structure
+
 ### Known issues:
 
 ## v.9.1.0 - 2022-09-13
 
 ## Feature additions:
 
-
 - Tags throughout SODA are now sortable. (Ex: Dataset tags, milestone tags, etc.)
 - Prepare Metadata - Create manifest.xlsx: Automated synchronization between manifest files and their Pennsieve dataset. E.g., if a file is removed from a dataset, the file's corresponding manifest file entry will be removed.
 - Prepare Metadata - Create manifest.xlsx: Empty columns are dropped from manifest files once the user generates their files locally or on Pennsieve.
-- Prepare Metadata - Create manifest.xlsx: Preview manifest files locally before they are uploaded to Pennsieve. 
+- Prepare Metadata - Create manifest.xlsx: Preview manifest files locally before they are uploaded to Pennsieve.
 - Prepare Metadata - Create manifest.xlsx: Generate manfiest files locally in your directory of choice.
 - Guided Mode - added the ability to edit auto-generated manifest files in a spreadsheet like UI.
 - Freeform Mode - Ability to add your dataset to a collection has been added. Intended to better group datasets.
 - Image optimzation for banner images. Image sizes that exceed over 2048 x 2048 will be prompted to scale the image accordingly for upload.
+
 ## Bug fixes:
 
 - In Organize datasets, when importing files/folders the loading screen's z-index was higher than the duplicate alert popup. The issue has been resolved by lowering the loading screen's z-index.
 - When uploading a dataset "Preparing list of files to upload" would verify files from Pennsieve individually. For datasets with large files this would cause a long wait time during this step. Another method of verifying files was created to verify files by retrieving the information folder by folder, reducing wait time significantly.
 - Manifest files generated in SODA include timestamps following the designated SPARC format.
-- Prepare Metadata - Create manifest.xlsx: The manifest editor's 'Save' and 'Cancel' buttons now are always viewable without having to scroll to the bottom of the manifest file. 
+- Prepare Metadata - Create manifest.xlsx: The manifest editor's 'Save' and 'Cancel' buttons now are always viewable without having to scroll to the bottom of the manifest file.
 
 ### Known Issues:
 
