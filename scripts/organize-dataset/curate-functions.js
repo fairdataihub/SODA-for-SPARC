@@ -1368,7 +1368,7 @@ $(document).ready(function () {
   });
 });
 
-async function moveItems(ev, category) {
+const moveItems = async (ev, category) => {
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   var selectedOriginalLocation = filtered[filtered.length - 1];
@@ -1468,7 +1468,6 @@ async function moveItems(ev, category) {
   });
   console.log(selectedPath);
   console.log(folderDestination);
-  let duplicateItems = [];
   if (folderDestination) {
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
@@ -1486,6 +1485,9 @@ async function moveItems(ev, category) {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     }).then((result) => {
+      let duplicateItems = [`<ul style="text-align: center;">`];
+      // let duplicateBool = false;
+      // duplicateItems[0] = `<ul style="text-align: start;">`;
       let numberItems = $("div.single-item.selected-item").toArray().length;
       let timer = 2000;
       if (numberItems > 10) {
@@ -1517,7 +1519,7 @@ async function moveItems(ev, category) {
               .toArray()
               .forEach((element) => {
                 datasetCopy = datasetStructureJSONObj;
-                console.log(element);
+                // console.log(element);
                 let itemToMove = element.textContent;
                 var itemType;
                 if ($(element.firstElementChild).hasClass("myFile")) {
@@ -1525,31 +1527,58 @@ async function moveItems(ev, category) {
                 } else if ($(element.firstElementChild).hasClass("myFol")) {
                   itemType = "folder";
                 }
-                console.log(itemToMove);
+                // console.log(itemToMove);
                 //do a check here
                 //store duplicates into array and then skip
                 //let user know which ones were duplicates
 
                 for (let i = 1; i < split.length; i++) {
-                  console.log(split[i]);
-                  if (split[i] in datasetCopy["folders"]) {
+                  // console.log(split[i]);
+                  if (datasetCopy["folders"].hasOwnProperty(split[i])) {
                     datasetCopy = datasetCopy["folders"][split[i]];
                   }
                 }
                 if (itemType == "file") {
+                  console.log(itemType);
                   datasetCopy = datasetCopy["files"];
                 } else {
+                  console.log(itemType);
                   datasetCopy = datasetCopy["folders"];
                 }
-                if (item_name in datasetCopy) {
+                console.log(datasetCopy);
+
+                if (datasetCopy.hasOwnProperty(itemToMove)) {
                   console.log("duplicate");
-                  duplicateItems.push(itemToMove);
+                  console.log(itemToMove);
+                  if (itemType == "folder") {
+                    itemToMove = itemToMove + "/";
+                  }
+                  duplicateItems.push(
+                    `<li style="font-size: large;">${itemToMove}</li>`
+                  );
                 } else {
                   console.log("moving");
+                  console.log(itemToMove);
                   moveItemsHelper(itemToMove, selectedPath, itemType);
                   ev.parentElement.remove();
                 }
               });
+            duplicateItems.push(`</ul>`);
+
+            console.log(duplicateItems);
+            if (duplicateItems.length > 2) {
+              console.log("cant move over");
+              Swal.fire({
+                backdrop: "rgba(0,0,0, 0.4)",
+                heightAuto: false,
+                icon: "error",
+                title: "The following are already in the folder destination!",
+                html: `${duplicateItems.join("")}`,
+                didOpen: () => {
+                  Swal.hideLoading();
+                },
+              });
+            }
             // only 1 file/folder
           } else {
             let itemToMove = ev.parentElement.textContent;
@@ -1573,7 +1602,7 @@ async function moveItems(ev, category) {
             } else {
               datasetCopy = datasetCopy["folders"];
             }
-            if (itemToMove in datasetCopy) {
+            if (datasetCopy.hasOwnProperty(itemToMove)) {
               Swal.fire({
                 backdrop: "rgba(0,0,0, 0.4)",
                 heightAuto: false,
@@ -1596,28 +1625,35 @@ async function moveItems(ev, category) {
                   Swal.hideLoading();
                 },
               });
-              document.getElementById("input-global-path").value =
-                "My_dataset_folder/";
-              listItems(datasetStructureJSONObj, "#items", 500, (reset = true));
-              organizeLandingUIEffect();
-              // reconstruct div with new elements
-              getInFolder(
-                ".single-item",
-                "#items",
-                organizeDSglobalPath,
-                datasetStructureJSONObj
-              );
+              // document.getElementById("input-global-path").value =
+              //   "My_dataset_folder/";
+              // listItems(datasetStructureJSONObj, "#items", 500, (reset = true));
+              // organizeLandingUIEffect();
+              // // reconstruct div with new elements
+              // getInFolder(
+              //   ".single-item",
+              //   "#items",
+              //   organizeDSglobalPath,
+              //   datasetStructureJSONObj
+              // );
             }
           }
+          document.getElementById("input-global-path").value =
+            "My_dataset_folder/";
+          listItems(datasetStructureJSONObj, "#items", 500, (reset = true));
+          organizeLandingUIEffect();
+          // reconstruct div with new elements
+          getInFolder(
+            ".single-item",
+            "#items",
+            organizeDSglobalPath,
+            datasetStructureJSONObj
+          );
         });
-        if (duplicateItems.length > 0) {
-          console.log(duplicateItems);
-          console.log("cant move over");
-        }
       }
     });
   }
-}
+};
 
 function moveItemsHelper(item, destination, category) {
   var filtered = getGlobalPath(organizeDSglobalPath);
