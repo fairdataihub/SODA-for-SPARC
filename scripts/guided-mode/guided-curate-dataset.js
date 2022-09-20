@@ -1835,6 +1835,8 @@ const traverseToTab = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-manifest-file-generation-tab") {
+      // Note: manifest file auto-generation is handled by an event listener on the button
+      // with the ID: guided-button-auto-generate-manifest-files
     }
 
     if (targetPageID === "guided-airtable-award-tab") {
