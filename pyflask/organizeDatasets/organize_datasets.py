@@ -25,6 +25,7 @@ from pennsieve import Pennsieve
 import pathlib
 from datetime import datetime, timezone
 from namespaces import NamespaceEnum, get_namespace_logger
+import json
 namespace_logger = get_namespace_logger(NamespaceEnum.ORGANIZE_DATASETS)
 
 from manageDatasets import bf_get_current_user_permission
@@ -1161,6 +1162,12 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         "Data files under a valid high-level SPARC folders have been imported"
     )
     create_soda_json_completed = 1
+
+    # write the soda_json_structure to a file as json
+    with open("soda_json_file.json", "w") as f:
+        json.dump(soda_json_structure, f, indent=4)
+
+    
     return {
         "soda_object": soda_json_structure,
         "success_message": success_message,
