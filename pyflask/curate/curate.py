@@ -3351,10 +3351,11 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
 
                 # The name of the file eg "file.txt"
                 file_name = os.path.basename(local_path_to_file)
-                file_name_with_path = "/".join(ds_struct_path.append(file_name))
+                filename_entry = "/".join(ds_struct_path) + "/" + file_name
+                
 
                 # The extension of the file eg ".txt"
-                file_type = get_name_extension(file_name)
+                file_type_entry = get_name_extension(file_name)
 
                 # The timestamp of the file on the user's local machine
                 file_path = pathlib.Path(local_path_to_file)
@@ -3362,10 +3363,11 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
                 last_mod_time = datetime.fromtimestamp(mtime, tz=local_timezone).fromtimestamp(mtime).astimezone(
                     local_timezone
                 )
+                timestamp_entry = last_mod_time.isoformat().replace(".", ",").replace("+00:00", "Z")
 
-                file_manifest_template_data.append(file_name_with_path)
-                file_manifest_template_data.append(file_type)
-                file_manifest_template_data.append(last_mod_time.isoformat().replace(".", ",").replace("+00:00", "Z"))
+                file_manifest_template_data.append(filename_entry)
+                file_manifest_template_data.append(file_type_entry)
+                file_manifest_template_data.append(timestamp_entry)
                 file_manifest_template_data.append("")
                 file_manifest_template_data.append("")
 
@@ -3377,7 +3379,7 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
                 guided_recursive_folder_traversal(
                     folder["folders"][item], hlf_data_array, relative_structure_path
                 )
-
+                relative_structure_path.pop()
         return
 
     # Initialize the array that the manifest data will be added to.
