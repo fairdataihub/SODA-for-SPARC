@@ -1373,8 +1373,8 @@ const moveItems = async (ev, category) => {
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   var selectedOriginalLocation = filtered[filtered.length - 1];
   var selectedItem = ev.parentElement.innerText;
-  console.log(ev);
-  console.log(category);
+  // console.log(ev);
+  // console.log(category);
   let item_name = ev.nextSibling.innerText;
 
   /*
@@ -1466,8 +1466,8 @@ const moveItems = async (ev, category) => {
       }
     },
   });
-  console.log(selectedPath);
-  console.log(folderDestination);
+  // console.log(selectedPath);
+  // console.log(folderDestination);
   if (folderDestination) {
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
@@ -1539,17 +1539,17 @@ const moveItems = async (ev, category) => {
                   }
                 }
                 if (itemType == "file") {
-                  console.log(itemType);
+                  // console.log(itemType);
                   datasetCopy = datasetCopy["files"];
                 } else {
-                  console.log(itemType);
+                  // console.log(itemType);
                   datasetCopy = datasetCopy["folders"];
                 }
-                console.log(datasetCopy);
+                // console.log(datasetCopy);
 
                 if (datasetCopy.hasOwnProperty(itemToMove)) {
-                  console.log("duplicate");
-                  console.log(itemToMove);
+                  // console.log("duplicate");
+                  // console.log(itemToMove);
                   if (itemType == "folder") {
                     itemToMove = itemToMove + "/";
                   }
@@ -1557,17 +1557,13 @@ const moveItems = async (ev, category) => {
                     `<li style="font-size: large;">${itemToMove}</li>`
                   );
                 } else {
-                  console.log("moving");
-                  console.log(itemToMove);
                   moveItemsHelper(itemToMove, selectedPath, itemType);
                   ev.parentElement.remove();
                 }
               });
             duplicateItems.push(`</ul>`);
 
-            console.log(duplicateItems);
             if (duplicateItems.length > 2) {
-              console.log("cant move over");
               Swal.fire({
                 backdrop: "rgba(0,0,0, 0.4)",
                 heightAuto: false,
@@ -1607,7 +1603,8 @@ const moveItems = async (ev, category) => {
                 backdrop: "rgba(0,0,0, 0.4)",
                 heightAuto: false,
                 icon: "error",
-                text: `This ${itemType} is already in the target destination`,
+                title: `The ${itemType} is already in the folder destination!`,
+                html: `<ul style="text-align: center;"><li>${itemToMove}</li></ul>`,
                 didOpen: () => {
                   Swal.hideLoading();
                 },
@@ -1625,17 +1622,6 @@ const moveItems = async (ev, category) => {
                   Swal.hideLoading();
                 },
               });
-              // document.getElementById("input-global-path").value =
-              //   "My_dataset_folder/";
-              // listItems(datasetStructureJSONObj, "#items", 500, (reset = true));
-              // organizeLandingUIEffect();
-              // // reconstruct div with new elements
-              // getInFolder(
-              //   ".single-item",
-              //   "#items",
-              //   organizeDSglobalPath,
-              //   datasetStructureJSONObj
-              // );
             }
           }
           document.getElementById("input-global-path").value =
