@@ -385,41 +385,31 @@ const startupServerAndApiCheck = async () => {
   // Bonus:  doesn't stop Windows and Linux users from starting right away
   // NOTE: backOff is bad at surfacing errors to the console
   //while variable is false keep requesting, if time exceeds two minutes break
-  console.log("entering");
   let status = false;
   let time_start = new Date();
-  let error_message = "";
-  while (status != true) {
+  let error = "";
+  while (true) {
     try {
       status = await serverIsLiveStartup();
-      console.log(status);
     } catch (e) {
-      // log.error(e);
-      console.error(e);
-      error_message = e;
-      // ipcRenderer.send(
-      //   "track-event",
-      //   "Error",
-      //   "Establishing Python Connection",
-      //   e
-      // );
+      error = e;
       status = false;
     }
-    console.log(status);
     time_pass = new Date() - time_start;
-    console.log(time_pass);
+    if (status) break;
     if (time_pass > 120000) break; //break after two minutes
+    await wait(2000);
   }
 
-  if (status != true) {
+  if (!status) {
     //two minutes pass then handle connection error
     // SWAL that the server needs to be restarted for the app to work
-    log.error(error_message);
+    clientError(error);
     ipcRenderer.send(
       "track-event",
       "Error",
       "Establishing Python Connection",
-      error_message
+      error
     );
 
     await Swal.fire({
@@ -436,39 +426,6 @@ const startupServerAndApiCheck = async () => {
     app.relaunch();
     app.exit();
   }
-
-  // try {
-  //   await backOff(serverIsLiveStartup, {
-  //     delayFirstAttempt: true,
-  //     startingDelay: 1000, // 1 second + 2 second + 4 second + 8 second + 16 seconds + 32 seconds
-  //     timeMultiple: 2,
-  //     numOfAttempts: 6,
-  //     maxDelay: 32000, // 16 seconds max wait time
-  //   });
-  // } catch (e) {
-  //   log.error(e);
-  //   console.error(e);
-  //   ipcRenderer.send(
-  //     "track-event",
-  //     "Error",
-  //     "Establishing Python Connection",
-  //     e
-  //   );
-  //   // SWAL that the server needs to be restarted for the app to work
-  //   await Swal.fire({
-  //     icon: "error",
-  //     html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
-  //     heightAuto: false,
-  //     backdrop: "rgba(0,0,0, 0.4)",
-  //     confirmButtonText: "Restart now",
-  //     allowOutsideClick: false,
-  //     allowEscapeKey: false,
-  //   });
-
-  //   // Restart the app
-  //   app.relaunch();
-  //   app.exit();
-  // }
 
   console.log("Connected to Python back-end successfully");
   log.info("Connected to Python back-end successfully");
@@ -756,7 +713,6 @@ const serverIsLiveStartup = async () => {
   try {
     echoResponseObject = await client.get("/startup/echo?arg=server ready");
   } catch (error) {
-    clientError(error);
     throw error;
   }
 
