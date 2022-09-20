@@ -961,6 +961,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         subfolder_json["files"][item_name]["bfpath"].append(paths)
 
                     
+                    # creates path for item_name (stored in temp_name)
                     if len(subfolder_json["files"][item_name]["bfpath"]) > 1:
                         temp_name = ""
                         for i in range(
@@ -978,53 +979,47 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         # namespace_logger.info(manifest)
                         if "filename" in manifest:
                             namespace_logger.info("filename")
-                            for file_name in manifest["filename"].values():
-                                if "/" in file_name:
-                                    file_title = os.path.basename(file_name)
-                                    # file_title = file_name.rsplit('/', 1)[-1]
-                                    namespace_logger.info(file_title)
-                                else:
-                                    file_title = file_name
-                                namespace_logger.info(file_title)
+                            if temp_name in manifest["filename"].values():
+                                # if "/" in file_name:
+                                #     # file_title = os.path.basename(file_name)
+                                #     # file_title = file_name.rsplit('/', 1)[-1]
+                                #     namespace_logger.info(file_title)
+                                # else:
+                                #     file_title = file_name
+                                # namespace_logger.info(file_title)
                                 # temp_name = os.path.basename(temp_name)
 
-                                
-                                if(temp_name == file_title):
-                                    location_index = list(manifest["filename"].values()).index(
-                                        file_name
-                                    )
-                                    if manifest["description"][location_index] != "":
-                                        subfolder_json["files"][item_name][
-                                            "description"
-                                        ] = manifest["description"][location_index]
-                                    if manifest["Additional Metadata"] != "":
-                                        subfolder_json["files"][item_name][
-                                            "additional-metadata"
-                                        ] = manifest["Additional Metadata"][location_index]
+
+                                location_index = list(manifest["filename"].values()).index(
+                                    temp_name
+                                )
+                                if manifest["description"][location_index] != "":
+                                    subfolder_json["files"][item_name][
+                                        "description"
+                                    ] = manifest["description"][location_index]
+                                if manifest["Additional Metadata"] != "":
+                                    subfolder_json["files"][item_name][
+                                        "additional-metadata"
+                                    ] = manifest["Additional Metadata"][location_index]
                         elif "File Name" in manifest:
                             namespace_logger.info("file Name")
-                            for file_name in manifest["File Name"].values():
-                                file_title = os.path.basename(file_name)
+                            if temp_name in manifest["File Name"].values():
+                                # file_title = os.path.basename(file_name)
                                 # item_name = os.path.basename(item_name)
                                 # file_title = file_name.rsplit('/', 1)[-1]
-                                namespace_logger.info(file_title)
-                                # namespace_logger.info(file_name)
+                                # namespace_logger.info(file_title)
                                 namespace_logger.info(item_name)
-                                if temp_name == file_title:
-                                    # namespace_logger.info(file_title)
-                                    # namespace_logger.info(file_name)
-                                    # namespace_logger.info(temp_name)
-                                    location_index = list(manifest["File Name"].values()).index(
-                                        file_name
-                                    )
-                                    if manifest["description"][location_index] != "":
-                                        subfolder_json["files"][item_name][
-                                            "description"
-                                        ] = manifest["description"][location_index]
-                                    if manifest["Additional Metadata"] != "":
-                                        subfolder_json["files"][item_name][
-                                            "additional-metadata"
-                                        ] = manifest["Additional Metadata"][location_index]
+                                location_index = list(manifest["File Name"].values()).index(
+                                    temp_name
+                                )
+                                if manifest["description"][location_index] != "":
+                                    subfolder_json["files"][item_name][
+                                        "description"
+                                    ] = manifest["description"][location_index]
+                                if manifest["Additional Metadata"] != "":
+                                    subfolder_json["files"][item_name][
+                                        "additional-metadata"
+                                    ] = manifest["Additional Metadata"][location_index]
             else:  # another subfolder found
                 subfolder_json["folders"][item_name] = {
                     "action": ["existing"],
