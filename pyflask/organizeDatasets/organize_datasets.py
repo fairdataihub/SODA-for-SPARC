@@ -979,7 +979,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         if "filename" in manifest:
                             namespace_logger.info("filename")
                             namespace_logger.info(temp_name)
-                            namespace_logger.info(manifest["File Name"].values())
+                            # namespace_logger.info(manifest["File Name"].values())
                             if temp_name in manifest["filename"].values():
                                 # if "/" in file_name:
                                 #     # file_title = os.path.basename(file_name)
