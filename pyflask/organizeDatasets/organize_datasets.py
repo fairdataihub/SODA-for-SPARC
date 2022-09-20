@@ -976,9 +976,10 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                     else:
                         temp_name = item_name
                     if len(manifest.keys()) > 0:
-                        # namespace_logger.info(manifest)
                         if "filename" in manifest:
                             namespace_logger.info("filename")
+                            namespace_logger.info(temp_name)
+                            namespace_logger.info(manifest["File Name"].values())
                             if temp_name in manifest["filename"].values():
                                 # if "/" in file_name:
                                 #     # file_title = os.path.basename(file_name)
@@ -1003,12 +1004,14 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                     ] = manifest["Additional Metadata"][location_index]
                         elif "File Name" in manifest:
                             namespace_logger.info("file Name")
+                            namespace_logger.info(temp_name)
+                            namespace_logger.info(manifest["File Name"].values())
                             if temp_name in manifest["File Name"].values():
                                 # file_title = os.path.basename(file_name)
                                 # item_name = os.path.basename(item_name)
                                 # file_title = file_name.rsplit('/', 1)[-1]
                                 # namespace_logger.info(file_title)
-                                namespace_logger.info(item_name)
+                                # namespace_logger.info(item_name)
                                 location_index = list(manifest["File Name"].values()).index(
                                     temp_name
                                 )
