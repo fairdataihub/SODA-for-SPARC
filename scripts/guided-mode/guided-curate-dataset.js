@@ -608,7 +608,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
           ${
             savedUploadDataProgress
               ? `
-                <span class="badge badge-warning mx-2">Upload in progress</span>
+                <span class="badge badge-warning mx-2">Incomplete upload</span>
               `
               : ``
           }
@@ -3361,10 +3361,30 @@ const patchPreviousGuidedModeVersions = () => {
     }
   }
 
+  const resetGuidedManifestFiles = () => {
+    sodaJSONObj["guided-manifest-files"] = {};
+  };
+
   //Update manifest files key from old key ("manifest-files") to new key ("guided-manifest-files")
   if (sodaJSONObj["manifest-files"]) {
-    sodaJSONObj["guided-manifest-files"] = {};
+    resetGuidedManifestFiles();
     delete sodaJSONObj["manifest-files"];
+    forceUserToRestartFromFirstPage = true;
+  }
+
+  let oldManifestFileHeaders = false;
+  for (highLevelFolderManifestData in sodaJSONObj["guided-manifest-files"]) {
+    if (
+      sodaJSONObj["guided-manifest-files"][highLevelFolderManifestData][
+        "headers"
+      ][0] === "File Name"
+    ) {
+      oldManifestFileHeaders = true;
+    }
+  }
+  if (oldManifestFileHeaders) {
+    resetGuidedManifestFiles();
+    forceUserToRestartFromFirstPage = true;
   }
 
   //Add key to track status of Pennsieve uploads
@@ -9341,9 +9361,9 @@ $(document).ready(async () => {
         html: `
           <p>Error message: ${userErrorMessage}</p>
           <p>
-            You must exit the app, however, you will be able to resume your upload
+            Please close the SODA app and restart it again. You will be able to resume your upload
             in progress by returning to Guided Mode and clicking the "Resume Upload" 
-            button on ${sodaJSONObj["digital-metadata"]["name"]}'s progress card. 
+            button on your dataset's progress card. 
           </p>
         `,
         showCancelButton: false,
@@ -9599,9 +9619,9 @@ $(document).ready(async () => {
           html: `
           <p>Error message: ${userErrorMessage}</p>
           <p>
-            You must exit the app, however, you will be able to resume your upload
+            Please close the SODA app and restart it again. You will be able to resume your upload
             in progress by returning to Guided Mode and clicking the "Resume Upload" 
-            button on ${sodaJSONObj["digital-metadata"]["name"]}'s progress card. 
+            button on your dataset's progress card. 
           </p>
         `,
           showCancelButton: false,
