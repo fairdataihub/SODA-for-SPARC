@@ -961,19 +961,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         subfolder_json["files"][item_name]["bfpath"].append(paths)
 
 
-                    if len(subfolder_json["files"][item_name]["bfpath"]) > 1:
-                        temp_name = ""
-                        for i in range(
-                            len(subfolder_json["files"][item_name]["bfpath"])
-                        ):
-                            if i == 0:
-                                continue
-                            temp_name += (
-                                subfolder_json["files"][item_name]["bfpath"][i] + "/"
-                            )
-                        temp_name += item_name
-                    else:
-                        temp_name = item_name
                     if len(manifest.keys()) > 0:
                         # namespace_logger.info(manifest)
                         if "filename" in manifest:
@@ -986,10 +973,10 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                 else:
                                     file_title = file_name
                                 namespace_logger.info(file_title)
-                                temp_name = os.path.basename(temp_name)
+                                item_name = os.path.basename(item_name)
 
                                 
-                                if(temp_name == file_title):
+                                if(item_name == file_title):
                                     location_index = list(manifest["filename"].values()).index(
                                         file_name
                                     )
@@ -1005,12 +992,12 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                             namespace_logger.info("file Name")
                             for file_name in manifest["File Name"].values():
                                 file_title = os.path.basename(file_name)
-                                temp_name = os.path.basename(temp_name)
+                                item_name = os.path.basename(item_name)
                                 # file_title = file_name.rsplit('/', 1)[-1]
                                 namespace_logger.info(file_title)
                                 # namespace_logger.info(file_name)
-                                namespace_logger.info(temp_name)
-                                if temp_name == file_title:
+                                namespace_logger.info(item_name)
+                                if item_name == file_title:
                                     # namespace_logger.info(file_title)
                                     # namespace_logger.info(file_name)
                                     # namespace_logger.info(temp_name)
