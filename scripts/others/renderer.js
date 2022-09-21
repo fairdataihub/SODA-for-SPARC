@@ -488,7 +488,6 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
 
 let launchAnnouncement = false;
 ipcRenderer.on("checkForAnnouncements", (event, index) => {
-  console.log("WEHRERSDKJFL:KJRETOISHDFL:KJS:LKJ");
   launchAnnouncement = true;
 });
 

@@ -3342,41 +3342,44 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
             )
         return ext
 
-    def guided_recursive_folder_traversal(folder, hlf_data_array):
+    def guided_recursive_folder_traversal(folder, hlf_data_array, ds_struct_path):
         if "files" in folder.keys():
             for item in list(folder["files"]):
                 file_manifest_template_data = []
-                # Auto generate file name
-                relative_file_name = folder["files"][item]["path"]
-                relative_file_name.replace("\\", "/")
-                file_manifest_template_data.append(relative_file_name)
 
-                # Auto generate file extension
-                file_extension = get_name_extension(relative_file_name)
-                if file_extension == "":
-                    file_extension = "None"
-                file_manifest_template_data.append(file_extension)
+                local_path_to_file = folder["files"][item]["path"].replace("\\", "/")
 
-                # Auto generate file timestamp
-                filepath = pathlib.Path(relative_file_name)
-                mtime = filepath.stat().st_mtime
-                lastmodtime = datetime.fromtimestamp(mtime).astimezone(
+                # The name of the file eg "file.txt"
+                file_name = os.path.basename(local_path_to_file)
+                filename_entry = "/".join(ds_struct_path) + "/" + file_name
+                
+
+                # The extension of the file eg ".txt"
+                file_type_entry = get_name_extension(file_name)
+
+                # The timestamp of the file on the user's local machine
+                file_path = pathlib.Path(local_path_to_file)
+                mtime = file_path.stat().st_mtime
+                last_mod_time = datetime.fromtimestamp(mtime, tz=local_timezone).fromtimestamp(mtime).astimezone(
                     local_timezone
                 )
-                file_manifest_template_data.append(lastmodtime.isoformat().replace(".", ",").replace("+00:00", "Z"))
-                
-                file_manifest_template_data.append("")
+                timestamp_entry = last_mod_time.isoformat().replace(".", ",").replace("+00:00", "Z")
 
+                file_manifest_template_data.append(filename_entry)
+                file_manifest_template_data.append(file_type_entry)
+                file_manifest_template_data.append(timestamp_entry)
+                file_manifest_template_data.append("")
                 file_manifest_template_data.append("")
 
                 hlf_data_array.append(file_manifest_template_data)
 
         if "folders" in folder.keys():
             for item in list(folder["folders"]):
+                relative_structure_path.append(item)
                 guided_recursive_folder_traversal(
-                    folder["folders"][item], hlf_data_array
+                    folder["folders"][item], hlf_data_array, relative_structure_path
                 )
-
+                relative_structure_path.pop()
         return
 
     # Initialize the array that the manifest data will be added to.
@@ -3386,14 +3389,18 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
     # Loop through each high level folder and create a manifest data array for each.
     for high_level_folder in list(dataset_structure_obj["folders"]):
         hlf_data_array = []
+
+        # create an array to keep track of the path to the obj being recursed over
+        relative_structure_path = [high_level_folder]
+
         hlf_data_array.append([
-        "File Name",
+        "filename",
         "file type",
         "timestamp",
         "description",
         "Additional Metadata",
         ])
-        guided_recursive_folder_traversal(dataset_structure_obj["folders"][high_level_folder], hlf_data_array)
+        guided_recursive_folder_traversal(dataset_structure_obj["folders"][high_level_folder], hlf_data_array, relative_structure_path)
         hlf_manifest_data[high_level_folder] = hlf_data_array
 
     return hlf_manifest_data
