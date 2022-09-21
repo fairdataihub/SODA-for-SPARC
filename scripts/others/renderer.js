@@ -653,7 +653,6 @@ const run_pre_flight_checks = async (check_update = true) => {
                   type: "final",
                   message: "You're all set!",
                 });
-                console.log(launchAnnouncement);
                 if (launchAnnouncement) {
                   await checkForAnnouncements("announcements");
                 }
@@ -669,7 +668,6 @@ const run_pre_flight_checks = async (check_update = true) => {
               type: "final",
               message: "You're all set!",
             });
-            console.log(launchAnnouncement);
             if (launchAnnouncement) {
               await checkForAnnouncements("announcements");
             }
