@@ -1373,8 +1373,6 @@ const moveItems = async (ev, category) => {
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   var selectedOriginalLocation = filtered[filtered.length - 1];
   var selectedItem = ev.parentElement.innerText;
-  // console.log(ev);
-  // console.log(category);
   let item_name = ev.nextSibling.innerText;
 
   /*
@@ -1461,13 +1459,10 @@ const moveItems = async (ev, category) => {
           return undefined;
         } else {
           return selectedPath;
-          // console.log(datasetCopy);
         }
       }
     },
   });
-  // console.log(selectedPath);
-  // console.log(folderDestination);
   if (folderDestination) {
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
@@ -1514,12 +1509,10 @@ const moveItems = async (ev, category) => {
           let split = selectedPath.split("/");
           let datasetCopy = datasetStructureJSONObj;
           if ($("div.single-item.selected-item").toArray().length > 1) {
-            console.log("multiplessss");
             $("div.single-item.selected-item")
               .toArray()
               .forEach((element) => {
                 datasetCopy = datasetStructureJSONObj;
-                // console.log(element);
                 let itemToMove = element.textContent;
                 var itemType;
                 if ($(element.firstElementChild).hasClass("myFile")) {
@@ -1527,29 +1520,22 @@ const moveItems = async (ev, category) => {
                 } else if ($(element.firstElementChild).hasClass("myFol")) {
                   itemType = "folder";
                 }
-                // console.log(itemToMove);
                 //do a check here
                 //store duplicates into array and then skip
                 //let user know which ones were duplicates
 
                 for (let i = 1; i < split.length; i++) {
-                  // console.log(split[i]);
                   if (datasetCopy["folders"].hasOwnProperty(split[i])) {
                     datasetCopy = datasetCopy["folders"][split[i]];
                   }
                 }
                 if (itemType == "file") {
-                  // console.log(itemType);
                   datasetCopy = datasetCopy["files"];
                 } else {
-                  // console.log(itemType);
                   datasetCopy = datasetCopy["folders"];
                 }
-                // console.log(datasetCopy);
 
                 if (datasetCopy.hasOwnProperty(itemToMove)) {
-                  // console.log("duplicate");
-                  // console.log(itemToMove);
                   if (itemType == "folder") {
                     itemToMove = itemToMove + "/";
                   }
@@ -1587,7 +1573,6 @@ const moveItems = async (ev, category) => {
             }
 
             for (let i = 1; i < split.length; i++) {
-              console.log(split[i]);
               if (split[i] in datasetCopy["folders"]) {
                 datasetCopy = datasetCopy["folders"][split[i]];
               }
