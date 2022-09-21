@@ -19,173 +19,15 @@ import copy
 METADATA_FILES = ["submission.xlsx", "README.txt", "CHANGES.txt", "dataset_description.xlsx", "subjects.xlsx", "samples.xlsx"]
 HIGH_LEVEL_FOLDERS = ["primary", "code", "derivative", "docs", "source", "protocols"]
 
-dataset_structure = {
-    "files": {},
-    "folders": {
-        "code": {
-            "type": "bf",
-            "path": "N:collection:47f91fe1-4525-4842-a13f-c72c91dfd8db",
-            "action": [
-                "existing"
-            ],
-            "files": {
-                "renderer.log": {
-                    "action": [
-                        "existing"
-                    ],
-                    "path": "N:package:22d6044d-adf5-4e7e-bd7c-a74602a25b3d",
-                    "bfpath": [
-                        "code"
-                    ],
-                    "timestamp": "2022-09-15T21:12:28,638373Z",
-                    "type": "bf",
-                    "description": "celery",
-                    "additional-metadata": "",
-                    "file type": ".log"
-                },
-                ".DS_Store": {
-                    "action": [
-                        "existing"
-                    ],
-                    "path": "N:package:fd28f906-0811-4950-abd2-6a3aabb1241a",
-                    "bfpath": [
-                        "code"
-                    ],
-                    "timestamp": "2022-09-15T21:12:28,638373Z",
-                    "type": "bf",
-                    "additional-metadata": "",
-                    "file type": "None"
-                },
-                "main.log": {
-                    "action": [
-                        "existing"
-                    ],
-                    "path": "N:package:336456fc-23c3-465d-971c-12ef3d49f1fe",
-                    "bfpath": [
-                        "code"
-                    ],
-                    "timestamp": "2022-09-15T21:12:41,933137Z",
-                    "type": "bf",
-                    "description": "salary",
-                    "additional-metadata": "",
-                    "file type": ".log"
-                },
-                "main (2).log": {
-                    "action": [
-                        "existing"
-                    ],
-                    "path": "N:package:d69166e9-0c3d-4419-b07a-64a34d0b39bf",
-                    "bfpath": [
-                        "code"
-                    ],
-                    "timestamp": "2022-09-20T12:47:32,868236Z",
-                    "type": "bf",
-                    "additional-metadata": "",
-                    "file type": ".log"
-                },
-                " (2).DS_Store": {
-                    "action": [
-                        "existing"
-                    ],
-                    "path": "N:package:9e6376e9-7317-42c0-a112-27c7b361deb4",
-                    "bfpath": [
-                        "code"
-                    ],
-                    "timestamp": "2022-09-20T12:47:32,868236Z",
-                    "type": "bf",
-                    "additional-metadata": "",
-                    "file type": ".DS_Store"
-                },
-                "renderer (2).log": {
-                    "action": [
-                        "existing"
-                    ],
-                    "path": "N:package:ff85bbd3-0bea-495d-b1ee-168609ab0829",
-                    "bfpath": [
-                        "code"
-                    ],
-                    "timestamp": "2022-09-20T12:47:32,868236Z",
-                    "type": "bf",
-                    "additional-metadata": "",
-                    "file type": ".log"
-                }
-            },
-            "folders": {
-                "homeilk": {
-                    "action": [
-                        "existing"
-                    ],
-                    "path": "N:collection:99b90041-cf38-4909-ad61-ac75b29a16d7",
-                    "bfpath": [
-                        "code",
-                        "homeilk"
-                    ],
-                    "files": {
-                        "samples.xlsx": {
-                            "action": [
-                                "existing"
-                            ],
-                            "path": "N:package:47f931ce-f4dc-4b72-8a5b-a064db414b47",
-                            "bfpath": [
-                                "code",
-                                "homeilk"
-                            ],
-                            "timestamp": "2022-09-15T21:12:28,638373Z",
-                            "type": "bf",
-                            "description": "marshmallow",
-                            "additional-metadata": "",
-                            "file type": ".xlsx"
-                        },
-                        "samples (2).xlsx": {
-                            "action": [
-                                "existing"
-                            ],
-                            "path": "N:package:b01cacaf-8100-4e82-bef7-81bdd8ac4351",
-                            "bfpath": [
-                                "code",
-                                "homeilk"
-                            ],
-                            "timestamp": "2022-09-20T12:47:32,868236Z",
-                            "type": "bf",
-                            "additional-metadata": "",
-                            "file type": ".xlsx"
-                        }
-                    },
-                    "folders": {},
-                    "type": "bf"
-                }
-            },
-            "bfpath": [
-                "code"
-            ]
-        }
-    }
-}
-
-# place the high level metadata files at the root of the skeleton
-metadata_files =  { 
+soda_json_structure = {
+    "bf-account-selected": {
+        "account-name": "SODA-Pennsieve"
+    },
+    "bf-dataset-selected": { 
+        "dataset-name": "carloss"
+    },
     "metadata-files": {
-        "dataset_description.xlsx": {
-            "type": "bf",
-            "action": [
-                "existing"
-            ],
-            "path": "N:package:de839459-9847-4b51-bdba-ea89e892c4c0"
-        },
-        "subjects.xlsx": {
-            "type": "bf",
-            "action": [
-                "existing"
-            ],
-            "path": "N:package:cd0b4ea1-3a9f-4921-becf-30f116156dab"
-        },
-        "submission.xlsx": {
-            "type": "bf",
-            "action": [
-                "existing"
-            ],
-            "path": "N:package:21e76aef-7f98-454b-9964-a8eb5879d99b"
-        }
+
     }
 }
 
@@ -329,6 +171,319 @@ def validate_validation_result(export):
         InvalidStateErr("Please add metadata files to your dataset to receive a validation report.")
 
 
+
+def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
+    high_level_sparc_folders = [
+        "code",
+        "derivative",
+        "docs",
+        "primary",
+        "protocol",
+        "source",
+    ]
+    manifest_sparc = ["manifest.xlsx", "manifest.csv"]
+    high_level_metadata_sparc = [
+        "submission.xlsx",
+        "submission.csv",
+        "submission.json",
+        "dataset_description.xlsx",
+        "dataset_description.csv",
+        "dataset_description.json",
+        "subjects.xlsx",
+        "subjects.csv",
+        "subjects.json",
+        "samples.xlsx",
+        "samples.csv",
+        "samples.json",
+        "README.txt",
+        "CHANGES.txt",
+        "code_description.xlsx",
+        "inputs_metadata.xlsx",
+        "outputs_metadata.xlsx",
+    ]
+
+    double_extensions = [
+        ".ome.tiff",
+        ".ome.tif",
+        ".ome.tf2,",
+        ".ome.tf8",
+        ".ome.btf",
+        ".ome.xml",
+        ".brukertiff.gz",
+        ".mefd.gz",
+        ".moberg.gz",
+        ".nii.gz",
+        ".mgh.gz",
+        ".tar.gz",
+        ".bcl.gz",
+    ]
+
+    global create_soda_json_completed
+    global create_soda_json_total_items
+    global create_soda_json_progress
+    create_soda_json_progress = 0
+    create_soda_json_total_items = 0
+    create_soda_json_completed = 0
+
+    def verify_file_name(file_name, extension):
+        if extension == "":
+            return file_name
+
+        double_ext = False
+        for ext in double_extensions:
+            if file_name.find(ext) != -1:
+                double_ext = True
+                break
+                
+        extension_from_name = ""
+
+        if double_ext == False:
+            extension_from_name = os.path.splitext(file_name)[1]
+        else:
+            extension_from_name = (
+                os.path.splitext(os.path.splitext(file_name)[0])[1]
+                + os.path.splitext(file_name)[1]
+            )
+
+        if extension_from_name == ("." + extension):
+            return file_name
+        else:
+            return file_name + ("." + extension)
+
+    
+
+    def createFolderStructure(subfolder_json, pennsieve_account, manifest):
+        # root level folder will pass subfolders into this function and will recursively check if there are subfolders while creating the json structure
+        global create_soda_json_progress
+        
+        collection_id = subfolder_json["path"]
+        bf = pennsieve_account
+        subfolder = bf._api._get("/packages/" + str(collection_id))
+        children_content = subfolder["children"]
+        for items in children_content:
+            item_name = items["content"]["name"]
+            create_soda_json_progress += 1
+            item_id = items["content"]["id"]
+            if item_id[2:9] == "package":
+                # if it is a file name check if there are additional manifest information to attach to files
+                if (
+                    item_name[0:8] != "manifest"
+                ):  # manifest files are not being included json structure
+
+                    #verify file name first
+                    if("extension" not in children_content):
+                        item_name = verify_file_name(item_name, "")
+                    else:
+                        item_name = verify_file_name(item_name, children_content["extension"])
+                        
+                    ## verify timestamps
+                    timestamp = items["content"]["createdAt"]
+                    formatted_timestamp = timestamp.replace('.', ',')
+                    subfolder_json["files"][item_name] = {
+                        "action": ["existing"],
+                        "path": item_id,
+                        "bfpath": [],
+                        "timestamp": formatted_timestamp,
+                        "type": "bf",
+                    }
+                    for paths in subfolder_json["bfpath"]:
+                        subfolder_json["files"][item_name]["bfpath"].append(paths)
+
+                    
+                    # creates path for item_name (stored in temp_name)
+                    if len(subfolder_json["files"][item_name]["bfpath"]) > 1:
+                        temp_name = ""
+                        for i in range(
+                            len(subfolder_json["files"][item_name]["bfpath"])
+                        ):
+                            if i == 0:
+                                continue
+                            temp_name += (
+                                subfolder_json["files"][item_name]["bfpath"][i] + "/"
+                            )
+                        temp_name += item_name
+                    else:
+                        temp_name = item_name
+                    if len(manifest.keys()) > 0:
+                        if "filename" in manifest:
+                            if temp_name in manifest["filename"].values():
+                                location_index = list(manifest["filename"].values()).index(
+                                    temp_name
+                                )
+                                if manifest["description"][location_index] != "":
+                                    subfolder_json["files"][item_name][
+                                        "description"
+                                    ] = manifest["description"][location_index]
+                                if manifest["Additional Metadata"] != "":
+                                    subfolder_json["files"][item_name][
+                                        "additional-metadata"
+                                    ] = manifest["Additional Metadata"][location_index]
+                                if manifest["file type"][location_index] != "":
+                                        subfolder_json["files"][item_name]["file type"] = manifest["file type"][location_index]
+                        elif "File Name" in manifest:
+                            if temp_name in manifest["File Name"].values():
+                                location_index = list(manifest["File Name"].values()).index(
+                                    temp_name
+                                )
+                                if manifest["description"][location_index] != "":
+                                    subfolder_json["files"][item_name][
+                                        "description"
+                                    ] = manifest["description"][location_index]
+                                if manifest["Additional Metadata"] != "":
+                                    subfolder_json["files"][item_name][
+                                        "additional-metadata"
+                                    ] = manifest["Additional Metadata"][location_index]
+                                if manifest["file type"][location_index] != "":
+                                        subfolder_json["files"][item_name]["file type"] = manifest["file type"][location_index]
+            else:  # another subfolder found
+                subfolder_json["folders"][item_name] = {
+                    "action": ["existing"],
+                    "path": item_id,
+                    "bfpath": [],
+                    "files": {},
+                    "folders": {},
+                    "type": "bf",
+                }
+                for paths in subfolder_json["bfpath"]:
+                    subfolder_json["folders"][item_name]["bfpath"].append(paths)
+                subfolder_json["folders"][item_name]["bfpath"].append(item_name)
+
+                # go through recursive again through subfolder
+
+        if len(subfolder_json["folders"].keys()) != 0:  # there are subfolders
+            for folder in subfolder_json["folders"].keys():
+                subfolder = subfolder_json["folders"][folder]
+                createFolderStructure(subfolder, bf, manifest)
+
+    # START
+
+    error = []
+
+    # check that the Pennsieve account is valid
+    try:
+        bf_account_name = soda_json_structure["bf-account-selected"]["account-name"]
+    except Exception as e:
+        raise e
+
+    try:
+        bf = Pennsieve(bf_account_name)
+    except Exception as e:
+        error.append("Please select a valid Pennsieve account")
+        raise Exception(error)
+
+    # check that the Pennsieve dataset is valid
+    try:
+        bf_dataset_name = soda_json_structure["bf-dataset-selected"]["dataset-name"]
+    except Exception as e:
+        raise e
+    try:
+        myds = bf.get_dataset(bf_dataset_name)
+        dataset_id = myds.id
+    except Exception as e:
+        error.append("Please select a valid Pennsieve dataset")
+        raise Exception(error)
+
+
+    # surface layer of dataset is pulled. then go through through the children to get information on subfolders
+    manifest_dict = {}
+    manifest_error_message = []
+    soda_json_structure["dataset-structure"] = {
+        "files": {},
+        "folders": {},
+    }
+
+    # root of dataset is pulled here
+    # root_children is the files and folders within root
+    root_folder = bf._api._get("/datasets/" + str(dataset_id))
+    packages_list = bf._api._get("/datasets/" + str(dataset_id) + "/packageTypeCounts")
+    for count in packages_list.values():
+        create_soda_json_total_items += int(count)
+    root_children = root_folder["children"]
+
+    for items in root_children:
+        item_id = items["content"]["id"]
+        item_name = items["content"]["name"]
+        if (item_id[2:9]) == "package":
+            if item_name in high_level_metadata_sparc:
+                create_soda_json_progress += 1
+                # is a metadata file
+                soda_json_structure["metadata-files"][item_name] = {
+                    "type": "bf",
+                    "action": ["existing"],
+                    "path": item_id,
+                }
+        else:
+            if item_name in high_level_sparc_folders:
+                create_soda_json_progress += 1
+                # is a SPARC folder and will be checked recursively
+                soda_json_structure["dataset-structure"]["folders"][item_name] = {
+                    "type": "bf",
+                    "path": item_id,
+                    "action": ["existing"],
+                    "files": {},
+                    "folders": {},
+                    "bfpath": [item_name],
+                }
+
+
+    # manifest information is needed so it is looked for before the recursive calls are made
+    if len(soda_json_structure["dataset-structure"]["folders"].keys()) != 0:
+        for folder in soda_json_structure["dataset-structure"]["folders"].keys():
+            collection_id = soda_json_structure["dataset-structure"]["folders"][folder][
+                "path"
+            ]
+            subfolder = bf._api._get("/packages/" + str(collection_id))
+            children_content = subfolder["children"]
+            manifest_dict[folder] = {}
+            for items in children_content:
+                # check subfolders surface to see if manifest files exist to then use within recursive_subfolder_check
+                package_name = items["content"]["name"]
+                package_id = items["content"]["id"]
+                if package_name in manifest_sparc:
+                    # item is manifest
+                    file_details = bf._api._get(
+                        "/packages/" + str(package_id) + "/view"
+                    )
+                    file_id = file_details[0]["content"]["id"]
+                    manifest_url = bf._api._get(
+                        "/packages/" + str(package_id) + "/files/" + str(file_id)
+                    )
+                    df = ""
+                    try:
+                        if package_name.lower() == "manifest.xlsx":
+                            df = pd.read_excel(manifest_url["url"], engine="openpyxl")
+                            df = df.fillna("")
+                        else:
+                            df = pd.read_csv(manifest_url["url"])
+                            df = df.fillna("")
+                        manifest_dict[folder].update(df.to_dict())
+                    except Exception as e:
+                        manifest_error_message.append(
+                            items["parent"]["content"]["name"]
+                        )
+            subfolder_section = soda_json_structure["dataset-structure"]["folders"][
+                folder
+            ]
+
+            if folder in manifest_dict:
+                createFolderStructure(
+                    subfolder_section, bf, manifest_dict[folder]
+                )  # passing item's json and the collection ID
+
+    success_message = (
+        "Data files under a valid high-level SPARC folders have been imported"
+    )
+    create_soda_json_completed = 1
+
+    
+    return {
+        "soda_object": soda_json_structure,
+        "success_message": success_message,
+        "manifest_error_message": manifest_error_message,
+        "import_progress": create_soda_json_progress,
+        "import_total_items": create_soda_json_total_items,
+    }
+
 # # return the errors from the error_path_report that should be shown to the user.
 # # as per Tom (developer of the Validator) for any paths (the keys in the Path_Error_Report object)
 # # return the ones that do not have any errors in their subpaths. 
@@ -386,11 +541,16 @@ if os.path.exists(path):
 # create a folder to hold the skeleton
 os.mkdir(path)
 
-create_skeleton(dataset_structure, path)
+# get the dataset from Pennsieve
+res = import_pennsieve_dataset(soda_json_structure, True)
 
-import_bf_metadata_files_skeleton("SODA-Pennsieve", "974-filesss")
+soda_json_structure = res["soda_object"]
 
-import_manifest_files_skeleton("SODA-Pennsieve", "974-filesss")
+create_skeleton(soda_json_structure["dataset-structure"], path)
+
+import_bf_metadata_files_skeleton("SODA-Pennsieve", "carloss")
+
+import_manifest_files_skeleton("SODA-Pennsieve", "carloss")
 
 # run the validator on the skeleton
 norm_ds_path = Path(path)
@@ -408,9 +568,6 @@ path_error_report = status.get('path_error_report')
 
 # get the errors out of the report that do not have errors in their subpaths (see function comments for the explanation)
 print(parse(path_error_report))
-
-
-
 
 
 
