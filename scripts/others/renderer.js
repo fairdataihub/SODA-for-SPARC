@@ -367,7 +367,7 @@ const startupServerAndApiCheck = async () => {
   // notify the user that the application is starting connecting to the server
   Swal.fire({
     icon: "info",
-    title: `Connecting to the SODA server`,
+    title: `Initializing SODA's background services...`,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: "Restart now",
@@ -414,7 +414,7 @@ const startupServerAndApiCheck = async () => {
 
     await Swal.fire({
       icon: "error",
-      html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+      html: `Something went wrong while initializing SODA's background services.. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Restart now",
@@ -748,7 +748,7 @@ const apiVersionsMatch = async () => {
 
     await Swal.fire({
       icon: "error",
-      html: `The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+      html: `Something went wrong while initializing SODA's background services. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Close now",
