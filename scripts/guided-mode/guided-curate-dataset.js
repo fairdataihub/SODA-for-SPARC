@@ -3778,9 +3778,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
           poolName
         ]?.["folders"]?.[subjectName]
       ) {
-        // console.log(
-        //   `Copying ${subjectName} from ${poolName} to ${highLevelFolder}`
-        // );
         datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
           subjectName
         ] =
