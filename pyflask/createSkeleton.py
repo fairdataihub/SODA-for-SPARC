@@ -7,8 +7,48 @@ from posixpath import expanduser
 import shutil
 import subprocess
 from pennsieve import Pennsieve
-from prepareMetadata import *
+# from prepareMetadata import *
 import pandas as pd
+
+
+# obtain Pennsieve S3 URL for an existing metadata file
+def returnFileURL(bf_object, item_id):
+
+    file_details = bf_object._api._get(f"/packages/{str(item_id)}/view")
+    file_id = file_details[0]["content"]["id"]
+    file_url_info = bf_object._api._get(
+        f"/packages/{str(item_id)}/files/{str(file_id)}"
+    )
+
+
+    return file_url_info["url"]
+
+
+def column_check(x):
+    return "unnamed" not in x.lower()
+
+
+def import_metadata(url, filename):
+    try:
+
+        df = pd.read_excel(
+            url, engine="openpyxl", usecols=column_check, header=0
+        )
+    except Exception as e:
+        raise Exception(
+            "SODA cannot read this file. If you are trying to retrieve a submission.xlsx file from Pennsieve, please make sure you are signed in with your Pennsieve account on SODA."
+        ) from e
+
+        
+    final_path = os.path.join(path, filename)
+    print(final_path)
+
+    try:
+        # write the metadata file to the skeleton directory's root folder
+        df.to_excel(final_path, index=False, header=True)
+    except Exception as e:
+        print(e)
+       
 
 
 
@@ -211,16 +251,17 @@ metadata_files =  {
 
 # import existing metadata files except Readme and Changes from Pennsieve
 def import_bf_metadata_files_skeleton(bfaccount, bfdataset):
+    # sourcery skip: raise-specific-error
     try: 
         bf = Pennsieve(bfaccount)
-    except Exception:
-        raise Exception("Please select a valid Pennsieve account.")
+    except Exception as e:
+        raise Exception("Please select a valid Pennsieve account.") from e
 
     try: 
         myds = bf.get_dataset(bfdataset)
-    except Exception:
-        raise Exception("Please select a valid Pennsieve dataset.")
-    
+    except Exception as e:
+        raise Exception("Please select a valid Pennsieve dataset.") from e
+
 
     for i in range(len(myds.items)):
         if myds.items[i].name in METADATA_FILES:
@@ -228,48 +269,16 @@ def import_bf_metadata_files_skeleton(bfaccount, bfdataset):
             item_id = myds.items[i].id
             url = returnFileURL(bf, item_id)
 
-            import_metadata(url)
+            import_metadata(url, myds.items[i].name)
 
 
 
-import_bf_metadata_file("dataset_description.xlsx", [], "SODA-Pennsieve", "974-filess")
+import_bf_metadata_files_skeleton("SODA-Pennsieve", "974-filesss")
 
 
 
 
-# things we need that don't import 
-
-
-# obtain Pennsieve S3 URL for an existing metadata file
-def returnFileURL(bf_object, item_id):
-
-    file_details = bf_object._api._get(f"/packages/{str(item_id)}/view")
-    file_id = file_details[0]["content"]["id"]
-    file_url_info = bf_object._api._get(
-        f"/packages/{str(item_id)}/files/{str(file_id)}"
-    )
-
-
-    return file_url_info["url"]
 
 
 
-def column_check(x):
-    return "unnamed" not in x.lower()
-
-
-def import_metadata(filepath):
-    try:
-
-        df = pd.read_excel(
-            filepath, engine="openpyxl", usecols=column_check, header=0
-        )
-
-
-       # write the metadata file to the skeleton directory's root folder
-        df.to_excel(path, index=None, header=True)
-
-    except:
-        raise Exception(
-            "SODA cannot read this file. If you are trying to retrieve a submission.xlsx file from Pennsieve, please make sure you are signed in with your Pennsieve account on SODA."
-        )
+    
