@@ -166,9 +166,6 @@ const showParentTab = (tabNow, nextOrPrev) => {
   if (tabNow == x.length - 1) {
     // If in step 6, show the generate button and the preview tab
     $("#nextBtn").css("display", "none");
-    console.log(sodaJSONObj);
-    console.log(datasetStructureJSONObj);
-    console.log("fill info details function called");
 
     let dataset_name = fill_info_details();
     datasetStructureJSONObj["files"] = sodaJSONObj["metadata-files"];
@@ -502,12 +499,12 @@ const add_card_detail = (
   link_item += temp;
   link_item += "'></i>";
 
-  let parent_element = $("#div-preview-dataset-details");
+  let parent_element = $("#other-dataset-information-container");
 
   let new_card_element =
-    "<div class='card-container generate-preview'><h5 class='card-left'>" +
+    "<div class='card-container generate-preview'><h5 class='card-left' style='text-align: right;'>" +
     card_left +
-    ":</h5><p class='card-right'>" +
+    ":</h5><p class='card-right' style='margin-left: 2rem;'>" +
     card_right;
 
   if (parent_tab === -1) {
@@ -515,6 +512,7 @@ const add_card_detail = (
   } else {
     new_card_element += link_item + "</p></div>";
   }
+  // let cardContainer = document.createElement("div");
 
   $(parent_element).append(new_card_element);
 };
@@ -1891,7 +1889,11 @@ async function transitionSubQuestionsButton(
     let sodaObject = {};
     let manifestErrorMessage = [];
     try {
-      let data = await bf_request_and_populate_dataset(sodaJSONObj, document.querySelector("#loading_pennsieve_dataset-organize"), true);
+      let data = await bf_request_and_populate_dataset(
+        sodaJSONObj,
+        document.querySelector("#loading_pennsieve_dataset-organize"),
+        true
+      );
       sodaObject = data.soda_object;
       manifestErrorMessage = data.manifest_error_message;
     } catch (err) {
@@ -2281,13 +2283,17 @@ async function transitionFreeFormMode(
     setTimeout(function () {
       $(target).addClass("show");
 
-      // scroll to the 'Review/Edit manifest files' About section rather than the 
-      // bottom of the div so all instructional text is viewable to the user. 
-      if(ev.getAttribute("data-next") === "Question-prepare-manifest-5") {
-        let label = document.querySelector("#Question-prepare-manifest-5 label:first-of-type")
-        label.scrollIntoView({ behavior: "smooth" })
+      // scroll to the 'Review/Edit manifest files' About section rather than the
+      // bottom of the div so all instructional text is viewable to the user.
+      if (ev.getAttribute("data-next") === "Question-prepare-manifest-5") {
+        let label = document.querySelector(
+          "#Question-prepare-manifest-5 label:first-of-type"
+        );
+        label.scrollIntoView({ behavior: "smooth" });
       } // auto-scroll to bottom of div
-      else if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
+      else if (
+        ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections"
+      ) {
         document.getElementById(parentDiv).scrollTop =
           document.getElementById(parentDiv).scrollHeight;
       }

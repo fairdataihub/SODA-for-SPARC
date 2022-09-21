@@ -384,24 +384,34 @@ const startupServerAndApiCheck = async () => {
   // ( during the wait period the server should start )
   // Bonus:  doesn't stop Windows and Linux users from starting right away
   // NOTE: backOff is bad at surfacing errors to the console
-  try {
-    await backOff(serverIsLiveStartup, {
-      delayFirstAttempt: true,
-      startingDelay: 1000, // 1 second + 2 second + 4 second + 8 second + 16 seconds + 32 seconds
-      timeMultiple: 2,
-      numOfAttempts: 6,
-      maxDelay: 32000, // 16 seconds max wait time
-    });
-  } catch (e) {
-    log.error(e);
-    console.error(e);
+  //while variable is false keep requesting, if time exceeds two minutes break
+  let status = false;
+  let time_start = new Date();
+  let error = "";
+  while (true) {
+    try {
+      status = await serverIsLiveStartup();
+    } catch (e) {
+      error = e;
+      status = false;
+    }
+    time_pass = new Date() - time_start;
+    if (status) break;
+    if (time_pass > 120000) break; //break after two minutes
+    await wait(2000);
+  }
+
+  if (!status) {
+    //two minutes pass then handle connection error
+    // SWAL that the server needs to be restarted for the app to work
+    clientError(error);
     ipcRenderer.send(
       "track-event",
       "Error",
       "Establishing Python Connection",
-      e
+      error
     );
-    // SWAL that the server needs to be restarted for the app to work
+
     await Swal.fire({
       icon: "error",
       html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
@@ -474,6 +484,11 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
   }
 
   ipcRenderer.send("track-event", "Success", "Setting Templates Path");
+});
+
+let launchAnnouncement = false;
+ipcRenderer.on("checkForAnnouncements", (event, index) => {
+  launchAnnouncement = true;
 });
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
@@ -638,7 +653,10 @@ const run_pre_flight_checks = async (check_update = true) => {
                   type: "final",
                   message: "You're all set!",
                 });
-                await checkForAnnouncements("announcements");
+                if (launchAnnouncement) {
+                  await checkForAnnouncements("announcements");
+                  launchAnnouncement = false;
+                }
                 resolve(true);
               }
             });
@@ -651,7 +669,10 @@ const run_pre_flight_checks = async (check_update = true) => {
               type: "final",
               message: "You're all set!",
             });
-            await checkForAnnouncements("announcements");
+            if (launchAnnouncement) {
+              await checkForAnnouncements("announcements");
+              launchAnnouncement = false;
+            }
             resolve(true);
           }
         }
@@ -696,7 +717,6 @@ const serverIsLiveStartup = async () => {
   try {
     echoResponseObject = await client.get("/startup/echo?arg=server ready");
   } catch (error) {
-    clientError(error);
     throw error;
   }
 
@@ -1366,7 +1386,6 @@ const guidedSubmissionTagsTagifyManual = new Tagify(
   }
 );
 createDragSort(guidedSubmissionTagsTagifyManual);
-
 
 // initiate Tagify input fields for Dataset description file
 var keywordInput = document.getElementById("ds-keywords"),
@@ -8400,8 +8419,6 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
     }
   }
 });
-
-
 
 // When mode = "update", the buttons won't be hidden or shown to prevent button flickering effect
 const curation_consortium_check = async (mode = "") => {

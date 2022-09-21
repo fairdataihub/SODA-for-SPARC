@@ -497,10 +497,16 @@
                 <div
                   id="loading_local_dataset"
                   class="circular"
-                  style="display: none; top: -25%;"
+                  style="display: none; top: -25%"
                 >
-                  <div class="inner" style="top: 90%; left: 20%;"></div>
-                  <div id="local_dataset_number" class="number" style="top:129%; left: 50%;">0%</div>
+                  <div class="inner" style="top: 90%; left: 20%"></div>
+                  <div
+                    id="local_dataset_number"
+                    class="number"
+                    style="top: 129%; left: 50%"
+                  >
+                    0%
+                  </div>
                   <div class="circle">
                     <div class="bar left">
                       <div id="left-side_less_than_50" class="progress"></div>
@@ -584,7 +590,7 @@
                     "
                     >What is your Pennsieve account?</label
                   >
-                  <div class="field" style="margin: 5px auto; width: 450px">
+                  <div class="field" style="margin: 5px auto; width: 550px">
                     <div
                       style="
                         display: flex;
@@ -619,7 +625,7 @@
                                 color: #000;
                                 font-weight: 600;
                                 font-size: 15px;
-                                margin-left: -15px;
+                                margin-left: 1px;
                               "
                               id="current-bf-account"
                               >None</span
@@ -816,12 +822,15 @@
                       <div
                         id="loading_pennsieve_dataset-organize"
                         class="circular"
-                        style="align-self: center; visibility: hidden; margin-top: -50px; margin-bottom: 20px;"
+                        style="
+                          align-self: center;
+                          visibility: hidden;
+                          margin-top: -50px;
+                          margin-bottom: 20px;
+                        "
                       >
                         <div class="inner"></div>
-                        <div
-                          class="pennsieve_loading_dataset_percentage fix"
-                        >
+                        <div class="pennsieve_loading_dataset_percentage fix">
                           0%
                         </div>
                         <div class="circle">
@@ -846,7 +855,7 @@
                         text-align: center;
                         font-weight: 600;
                         color: var(--color-light-green);
-                        position: relative; 
+                        position: relative;
                         top: 30px;
                       "
                     ></p>
@@ -1312,8 +1321,9 @@
                       <input
                         id="input-add-file-description"
                         type="checkbox"
-                        style="color: #000; float: left; margin-top:4px"
-                      /><label style="color: #000; float: left; margin-left: 5px;"
+                        style="color: #000; float: left; margin-top: 4px"
+                      /><label
+                        style="color: #000; float: left; margin-left: 5px"
                         >Apply to all files in this folder</label
                       >
                     </div>
@@ -1333,8 +1343,9 @@
                       <input
                         id="input-add-file-metadata"
                         type="checkbox"
-                        style="color: #000; float: left; margin-top:4px"
-                      /><label style="color: #000; float: left; margin-left: 5px;"
+                        style="color: #000; float: left; margin-top: 4px"
+                      /><label
+                        style="color: #000; float: left; margin-left: 5px"
                         >Apply to all files in this folder</label
                       >
                     </div>
@@ -3280,8 +3291,7 @@
               <h5
                 style="text-align: center; color: var(--color); font-size: 17px"
               >
-                Would you like SODA to auto-generate your 'mandatory' manifest
-                files?
+                Would you like SODA to auto-generate your manifest files?
               </h5>
               <div style="height: 150px; text-align: center; margin: 100px">
                 <div
@@ -3520,7 +3530,7 @@
                         >
                         <div
                           class="field"
-                          style="margin: 5px auto; width: 450px"
+                          style="margin: 5px auto; width: 550px"
                         >
                           <div
                             style="
@@ -3541,7 +3551,13 @@
                                 margin-bottom: 15px;
                               "
                             >
-                              <h5 style="color: #808080; font-size: 15px">
+                              <h5
+                                style="
+                                  color: #808080;
+                                  font-size: 15px;
+                                  padding-left: 43px;
+                                "
+                              >
                                 Current account:
                               </h5>
                               <div
@@ -3554,6 +3570,7 @@
                                     font-weight: 600;
                                     margin-left: 8px;
                                     font-size: 15px;
+                                    padding-left: 14px;
                                   "
                                   id="current-bf-account-generate"
                                   >None</span
@@ -3581,7 +3598,13 @@
                                 margin-bottom: 15px;
                               "
                             >
-                              <h5 style="color: #808080; font-size: 15px">
+                              <h5
+                                style="
+                                  color: #808080;
+                                  font-size: 15px;
+                                  padding-left: 46px;
+                                "
+                              >
                                 Account details:
                               </h5>
                               <p
@@ -3590,6 +3613,7 @@
                                   font-weight: 600;
                                   margin-left: 15px;
                                   font-size: 15px;
+                                  padding-left: 9px;
                                 "
                                 id="para-account-detail-curate-generate"
                               >
@@ -3835,7 +3859,7 @@
                         >
                         <div
                           class="field"
-                          style="margin: 15px auto; width: 450px"
+                          style="margin: 15px auto; width: 550px"
                         >
                           <div
                             style="
@@ -3857,7 +3881,13 @@
                               "
                             >
                               <div>
-                                <h5 style="color: #808080; font-size: 15px">
+                                <h5
+                                  style="
+                                    color: #808080;
+                                    font-size: 15px;
+                                    padding-left: 25px;
+                                  "
+                                >
                                   Current dataset:
                                 </h5>
                               </div>
@@ -3871,6 +3901,7 @@
                                     font-weight: 600;
                                     margin-left: 8px;
                                     font-size: 15px;
+                                    padding-left: 15px;
                                   "
                                   id="current-bf-dataset-generate"
                                   >None</span
@@ -4497,20 +4528,22 @@
                       >
                         Other dataset information
                       </h4>
-                      <div class="card-container generate-preview">
-                        <div>
-                          <h5 class="card-left">
-                            Current account:
-                            <span class="card-right">None</span>
-                          </h5>
+                      <div id="other-dataset-information-container">
+                        <div class="card-container generate-preview">
+                          <div>
+                            <h5 class="card-left">
+                              Current account:
+                              <span class="card-right">None</span>
+                            </h5>
+                          </div>
                         </div>
-                      </div>
-                      <div class="card-container generate-preview">
-                        <div>
-                          <h5 class="card-left">
-                            Current account:
-                            <span class="card-right">None</span>
-                          </h5>
+                        <div class="card-container generate-preview">
+                          <div>
+                            <h5 class="card-left">
+                              Current account:
+                              <span class="card-right">None</span>
+                            </h5>
+                          </div>
                         </div>
                       </div>
                     </div>
