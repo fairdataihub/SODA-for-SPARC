@@ -869,8 +869,8 @@ document
         newManifestData,
         existingManifestData
       ) => {
-        console.log(JSON.stringify(newManifestData));
-        console.log(JSON.stringify(existingManifestData));
+        console.log(newManifestData);
+        console.log(existingManifestData);
         // If no diff checking needs to be performed, return the new manifest data
         if (
           JSON.stringify(newManifestData) ===
@@ -878,6 +878,16 @@ document
         ) {
           console.log("no diff, comparison not needed");
           return newManifestData;
+        }
+
+        let newManifestHighLevelFolders = [];
+
+        for (const highLevelFolder of Object.keys(newManifestData)) {
+          if (!existingManifestData[highLevelFolder]) {
+            //If the high level folder does not exist in the existing manifest data, add it
+            returnObj[highLevelFolder] = newManifestData[highLevelFolder];
+          } else {
+          }
         }
 
         const returnObj = {};
