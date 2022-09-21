@@ -1374,7 +1374,7 @@ async function extractBFDatasetForManifestFile(
 ) {
 
   // hide the entire progress container div 
-  let progressContainer = document.querySelector("#manifest-progress-container") 
+  let progressContainer = document.querySelector("#manifest-progress-container")
   progressContainer.style.display = "block";
 
   // inform user the manifest files are being generated
@@ -1461,7 +1461,7 @@ async function extractBFDatasetForManifestFile(
 
     if (!continueProgressEmptyFolder) {
 
-      
+
       hideProgressContainer(progressContainer)
       spanManifest.style.display = "none";
 
@@ -1518,7 +1518,7 @@ async function extractBFDatasetForManifestFile(
           Swal.hideLoading();
         },
       }).then((result) => { });
-  
+
 
       hideProgressContainer(progressContainer)
       spanManifest.style.display = "none";

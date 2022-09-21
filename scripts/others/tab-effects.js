@@ -166,6 +166,9 @@ const showParentTab = (tabNow, nextOrPrev) => {
   if (tabNow == x.length - 1) {
     // If in step 6, show the generate button and the preview tab
     $("#nextBtn").css("display", "none");
+    console.log(sodaJSONObj);
+    console.log(datasetStructureJSONObj);
+    console.log("fill info details function called");
 
     let dataset_name = fill_info_details();
     datasetStructureJSONObj["files"] = sodaJSONObj["metadata-files"];
