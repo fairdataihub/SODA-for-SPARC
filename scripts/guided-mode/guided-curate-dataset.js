@@ -2030,8 +2030,8 @@ const traverseToTab = async (targetPageID) => {
       if (protocols) {
         renderProtocolFields(protocols);
       } else {
-        document.getElementById("protocols-container").innerHTML =
-          generateProtocolField("", "");
+        const emptyRowWarning = generateAlertElement("warning", "You currently have no protocols for your dataset. To add, click the 'Add a new protocol' button")
+        document.getElementById("protocols-container").innerHTML = emptyRowWarning;
       }
       $("#guided-section-enter-protocols-manually").click();
     }
@@ -4607,6 +4607,10 @@ const addProtocolField = () => {
   scrollToBottomOfGuidedBody();
 };
 
+const viewProtocolDescription = (protocolViewButton) => {
+  console.log("view description");
+}
+
 const removeProtocolField = (protocolDeleteButton) => {
   const protocolField = protocolDeleteButton.parentElement;
   const protocolURL = protocolField.dataset.protocolUrl;
@@ -4632,7 +4636,36 @@ const removeProtocolField = (protocolDeleteButton) => {
   protocolField.remove();
 };
 
-const generateProtocolField = (protocolUrl, protocolDescription) => {
+//TODO: handle new blank protocol fields (when parameter are blank)
+const generateProtocolField = (protocolUrl, protocolType, protocolDescription) => {
+  return `
+    <tr>
+      <td class="middle aligned collapsing link-name-cell">
+        ${protocolURL}
+      </td>
+      <td class"middle aligned collapsing link-name-cell">
+        ${protocolType}
+      </td>
+      <td class="middle aligned collapsing link-name-cell">
+        <button
+          type="button"
+          class="btn btn-primary btn-sm"
+          onclick="viewProtocolDescription(this)"
+        >
+        View Description
+        </button>
+      </td>
+      <td class="middle aligned collapsing link-name-cell">
+        <button
+          type="button"
+          class="btn btn-danger btn-sm" 
+          onclick=removeProtocolField(this)
+        >
+        Delete
+        </button>
+      </td>
+    </tr>
+  `
   return `
     <div
       class="guided--section mt-lg neumorphic guided-protocol-field-container"
@@ -4681,11 +4714,13 @@ const generateProtocolField = (protocolUrl, protocolDescription) => {
   `;
 };
 
+//TO-DO
+//Where protocols are rendered on guided mode
 const renderProtocolFields = (protocolsArray) => {
   const protocolsContainer = document.getElementById("protocols-container");
   let protocolElements = protocolsArray
     .map((protocol) => {
-      return generateProtocolField(protocol["link"], protocol["description"]);
+      return generateProtocolField(protocol["link"], protocol["type"], protocol["description"]);
     })
     .join("\n");
   protocolsContainer.innerHTML = protocolElements;
