@@ -364,7 +364,6 @@ function initialize() {
 }
 
 const checkForAnnouncements = () => {
-  console.log("announcements launching");
   mainWindow.webContents.send("checkForAnnouncements");
 };
 
