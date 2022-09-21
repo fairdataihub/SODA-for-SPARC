@@ -655,6 +655,7 @@ const run_pre_flight_checks = async (check_update = true) => {
                 });
                 if (launchAnnouncement) {
                   await checkForAnnouncements("announcements");
+                  launchAnnouncement = false;
                 }
                 resolve(true);
               }
@@ -670,6 +671,7 @@ const run_pre_flight_checks = async (check_update = true) => {
             });
             if (launchAnnouncement) {
               await checkForAnnouncements("announcements");
+              launchAnnouncement = false;
             }
             resolve(true);
           }
