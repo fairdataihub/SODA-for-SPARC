@@ -812,9 +812,101 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
   }
 };
 
+const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
+  console.log(newManifestData);
+  console.log(existingManifestData);
+
+  // If no diff checking needs to be performed, return the new manifest data
+  if (
+    JSON.stringify(newManifestData) === JSON.stringify(existingManifestData)
+  ) {
+    console.log("no diff, comparison not needed!");
+    return newManifestData;
+  }
+
+  const numImmutableManifestDataCols = 2;
+
+  // Create a hash table for the existing manifest data
+  const existingManifestDataHashTable = {};
+  for (const highLevelFolderName in existingManifestData) {
+    const existingManifestDataHeaders =
+      existingManifestData[highLevelFolderName]["headers"];
+    const existingManifestDataData =
+      existingManifestData[highLevelFolderName]["data"];
+
+    for (const row of existingManifestDataData) {
+      console.log(row);
+      let fileObj = {};
+      const fileName = row[0];
+      //Create a new array from row starting at index 2
+      const fileData = row.slice(numImmutableManifestDataCols);
+      for (const [index, rowValue] of fileData.entries()) {
+        const oldHeader =
+          existingManifestDataHeaders[index + numImmutableManifestDataCols];
+        fileObj[oldHeader] = rowValue;
+      }
+      existingManifestDataHashTable[fileName] = fileObj;
+    }
+  }
+
+  console.log(existingManifestDataHashTable);
+  console.log(newManifestData);
+
+  let returnObj = {};
+
+  for (const highLevelFolder of Object.keys(newManifestData)) {
+    if (!existingManifestData[highLevelFolder]) {
+      console.log("new manifest data folder");
+      //If the high level folder does not exist in the existing manifest data, add it
+      returnObj[highLevelFolder] = newManifestData[highLevelFolder];
+    } else {
+      console.log("Updating existing manifest data folder");
+      //If the high level folder does exist in the existing manifest data, update it
+      let newManifestReturnObj = {};
+      newManifestReturnObj["headers"] =
+        existingManifestData[highLevelFolder]["headers"];
+      newManifestReturnObj["data"] = [];
+
+      const rowData = newManifestData[highLevelFolder]["data"];
+      for (const row of rowData) {
+        const fileName = row[0];
+        const fileData = row.slice(numImmutableManifestDataCols);
+        if (!existingManifestDataHashTable[fileName]) {
+          console.log("new file");
+          //If the file does not exist in the existing manifest data, add it
+          newManifestReturnObj["data"].push(row);
+        } else {
+          console.log("updating existing file");
+          let updatedRow;
+          //set updatedRow to the first two columns of the row
+          updatedRow = row.slice(0, numImmutableManifestDataCols);
+
+          for (const header of newManifestReturnObj["headers"].slice(
+            numImmutableManifestDataCols
+          )) {
+            updatedRow.push(existingManifestDataHashTable[fileName][header]);
+          }
+          newManifestReturnObj["data"].push(updatedRow);
+        }
+        console.log(row);
+        console.log(fileData);
+
+        console.log(newManifestReturnObj);
+        returnObj[highLevelFolder] = newManifestReturnObj;
+      }
+    }
+  }
+
+  return returnObj;
+};
+
 document
   .getElementById("guided-button-auto-generate-manifest-files")
   .addEventListener("click", async () => {
+    if (!sodaJSONObj["temp-manifest-files"]) {
+      sodaJSONObj["temp-manifest-files"] = sodaJSONObj["guided-manifest-files"];
+    }
+
     const manifestFilesCardsContainer = document.getElementById(
       "guided-container-manifest-file-cards"
     );
@@ -822,7 +914,6 @@ document
     manifestFilesCardsContainer.innerHTML = `loading`;
 
     const existingManifestData = sodaJSONObj["guided-manifest-files"];
-    existingManifestData["code"]["headers"].push("foo", "bar");
 
     try {
       //Delete any manifest files that already exist in the sodaJSONObj
@@ -857,59 +948,24 @@ document
         if (manifestFileData.length > 1) {
           //Remove the first element from the array and set it as the headers
           const manifestHeader = manifestFileData.shift();
-          const manifestData = manifestFileData;
 
           newManifestData[highLevelFolderName] = {
             headers: manifestHeader,
-            data: manifestData,
+            data: manifestFileData,
           };
         }
       }
-
-      const diffCheckManifestFiles = (
-        newManifestData,
-        existingManifestData
-      ) => {
-        console.log(newManifestData);
-        console.log(existingManifestData);
-        // If no diff checking needs to be performed, return the new manifest data
-        if (
-          JSON.stringify(newManifestData) ===
-          JSON.stringify(existingManifestData)
-        ) {
-          console.log("no diff, comparison not needed");
-          return newManifestData;
-        }
-
-        // Update the headers of the new manifest obj with the existing manifest obj
-
-        for (const highLevelFolderName in newManifestData) {
-          //If the high level folder name exists in the existing manifest data, update the headers
-          if (existingManifestData[highLevelFolderName]) {
-            newManifestData[highLevelFolderName]["headers"] =
-              existingManifestData[highLevelFolderName]["headers"];
-          }
-        }
-
-        for (const highLevelFolder of Object.keys(newManifestData)) {
-          if (!existingManifestData[highLevelFolder]) {
-            //If the high level folder does not exist in the existing manifest data, add it
-            returnObj[highLevelFolder] = newManifestData[highLevelFolder];
-          } else {
-          }
-        }
-
-        const returnObj = {};
-      };
 
       const updatedManifestData = diffCheckManifestFiles(
         newManifestData,
         existingManifestData
       );
-      //sodaJSONObj["guided-manifest-files"] = newManifestData;
-      //Save the sodaJSONObj with the new manifest files
+      console.log(updatedManifestData);
+      sodaJSONObj["guided-manifest-files"] = updatedManifestData;
+      // Save the sodaJSONObj with the new manifest files
       saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (err) {
+      console.log(err);
       userError(err);
     }
 
