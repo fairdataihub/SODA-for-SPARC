@@ -3,45 +3,45 @@
 
 abstract: Simplifying data curation for researchers funded by the NIH SPARC initiative
 authors:
-  - affiliation: FAIR Data Innovations Hub
-    email: bpatel@calmi2.org
-    family-names: Patel
-    given-names: Bhavesh
-  - affiliation: FAIR Data Innovations Hub
-    email: tno@calmi2.org
-    family-names: Ngo
-    given-names: Tram
-  - affiliation: FAIR Data Innovations Hub
-    email: ssoundarajan@calmi2.org
-    family-names: Soundarajan
-    given-names: Sanjay
-  - affiliation: FAIR Data Innovations Hub
-    email: cmarroquin@calmi2.org
-    family-names: Marroquin
-    given-names: Aaron
-  - affiliation: California Medical Innovations Institute
-    email: jclark@calmi2.org
-    family-names: Clark
-    given-names: Jacob
-  - affiliation: FAIR Data Innovations Hub
-    email: dportillo@calmi2.org
-    family-names: Portillo
-    given-names: Dorian
+- affiliation: FAIR Data Innovations Hub
+  email: bpatel@calmi2.org
+  family-names: Patel
+  given-names: Bhavesh
+- affiliation: FAIR Data Innovations Hub
+  email: tno@calmi2.org
+  family-names: Ngo
+  given-names: Tram
+- affiliation: FAIR Data Innovations Hub
+  email: ssoundarajan@calmi2.org
+  family-names: Soundarajan
+  given-names: Sanjay
+- affiliation: FAIR Data Innovations Hub
+  email: cmarroquin@calmi2.org
+  family-names: Marroquin
+  given-names: Aaron
+- affiliation: California Medical Innovations Institute
+  email: jclark@calmi2.org
+  family-names: Clark
+  given-names: Jacob
+- affiliation: FAIR Data Innovations Hub
+  email: dportillo@calmi2.org
+  family-names: Portillo
+  given-names: Dorian
 cff-version: 1.2.0
-date-released: '2022-09-14'
+date-released: '2022-09-21'
 identifiers:
 - description: DOI for this software's record on Zenodo
   type: doi
-  value: 10.5281/zenodo.7080347
+  value: 10.5281/zenodo.7106162
 keywords:
-  - SPARC
-  - FAIR
-  - data
-  - curation
-  - mac
-  - sparc-dataset
-  - ubuntu
-  - windows
+- SPARC
+- FAIR
+- data
+- curation
+- mac
+- sparc-dataset
+- ubuntu
+- windows
 license: MIT
 message: If you use this software, please cite it as below.
 repository-artifact: https://fairdataihub.org/sodaforsparc
