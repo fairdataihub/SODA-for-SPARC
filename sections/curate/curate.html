@@ -3379,9 +3379,52 @@
               onclick="validateOrganizedDataset()">
                 Validate Dataset
             </button>
-          </div>
 
+            <!-- Table to store validation results for the user -->
+            <div class="grouped fields">
+              <div
+                id="organize--table-validation-errors"
+                style="
+                  visibility: hidden;
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                "
+              >
+                <label style="font-size: 17px; color: var(--color-bg-plum)">
+                  Validation Errors
+                </label>
+                <div
+                  style="
+                    border-radius: 0.5rem;
+                    margin-top: 5px;
+                    width: 550px;
+                    align-self: center;
+                  "
+                >
+                  <p class="tip-content">
+                    The path column indicates where the errors occurred in your
+                    dataset. The message column provides an explanation of what
+                    the errors are. For updated validation results you can re-run
+                    validation.
+                  </p>
+                </div>
+  
+                <table class="ui celled padded table">
+                  <thead>
+                    <tr>
+                      <th>Path</th>
+                      <th>Message</th>
+                      <!-- <th>Fix Here</th> -->
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
           </div>
+          <!--End of step 6-->
+        </div>
 
           <!-- 7. Generate dataset -->
           <div
