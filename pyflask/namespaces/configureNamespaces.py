@@ -15,6 +15,7 @@ class NamespaceEnum(Enum):
     USER = "user"
     DATASETS = "datasets"
     COLLECTIONS = "collections"
+    SKELETON_DATASET = "skeleton_dataset"
 
 # namespaces dictionary that is given a namespace name as a key and returns the corresponding namespace object as a value
 namespaces = { }
@@ -56,6 +57,9 @@ def configure_namespaces():
 
     collections_namespace = Namespace(NamespaceEnum.COLLECTIONS.value, description='Routes for handling collections')
     namespaces[NamespaceEnum.COLLECTIONS] = collections_namespace
+
+    skeleton_dataset_namespace = Namespace(NamespaceEnum.SKELETON_DATASET.value, description='Routes for creating skeleton datasets used for Validation')
+    namespaces[NamespaceEnum.SKELETON_DATASET] = skeleton_dataset_namespace
 
 
 
