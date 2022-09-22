@@ -822,6 +822,7 @@ document
     manifestFilesCardsContainer.innerHTML = `loading`;
 
     const existingManifestData = sodaJSONObj["guided-manifest-files"];
+    existingManifestData["code"]["headers"].push("foo", "bar");
 
     try {
       //Delete any manifest files that already exist in the sodaJSONObj
@@ -880,7 +881,15 @@ document
           return newManifestData;
         }
 
-        let newManifestHighLevelFolders = [];
+        // Update the headers of the new manifest obj with the existing manifest obj
+
+        for (const highLevelFolderName in newManifestData) {
+          //If the high level folder name exists in the existing manifest data, update the headers
+          if (existingManifestData[highLevelFolderName]) {
+            newManifestData[highLevelFolderName]["headers"] =
+              existingManifestData[highLevelFolderName]["headers"];
+          }
+        }
 
         for (const highLevelFolder of Object.keys(newManifestData)) {
           if (!existingManifestData[highLevelFolder]) {
@@ -897,7 +906,7 @@ document
         newManifestData,
         existingManifestData
       );
-      sodaJSONObj["guided-manifest-files"] = newManifestData;
+      //sodaJSONObj["guided-manifest-files"] = newManifestData;
       //Save the sodaJSONObj with the new manifest files
       saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (err) {
