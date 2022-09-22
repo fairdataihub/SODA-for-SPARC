@@ -824,7 +824,7 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
     return newManifestData;
   }
 
-  const numImmutableManifestDataCols = 2;
+  const numImmutableManifestDataCols = 3;
 
   // Create a hash table for the existing manifest data
   const existingManifestDataHashTable = {};
@@ -836,11 +836,13 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
 
     for (const row of existingManifestDataData) {
       console.log(row);
-      let fileObj = {};
+      const fileObj = {};
       const fileName = row[0];
       //Create a new array from row starting at index 2
       const fileData = row.slice(numImmutableManifestDataCols);
+      console.log(fileData);
       for (const [index, rowValue] of fileData.entries()) {
+        console.log(rowValue);
         const oldHeader =
           existingManifestDataHeaders[index + numImmutableManifestDataCols];
         fileObj[oldHeader] = rowValue;
@@ -870,32 +872,30 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
       const rowData = newManifestData[highLevelFolder]["data"];
       for (const row of rowData) {
         const fileName = row[0];
-        const fileData = row.slice(numImmutableManifestDataCols);
-        if (!existingManifestDataHashTable[fileName]) {
-          console.log("new file");
-          //If the file does not exist in the existing manifest data, add it
-          newManifestReturnObj["data"].push(row);
-        } else {
+
+        if (existingManifestDataHashTable[fileName]) {
           console.log("updating existing file");
-          let updatedRow;
+          //Push the new values generated
+          let updatedRow = row.slice(0, numImmutableManifestDataCols);
           //set updatedRow to the first two columns of the row
-          updatedRow = row.slice(0, numImmutableManifestDataCols);
+          updatedRow = newFileStandardVals;
 
           for (const header of newManifestReturnObj["headers"].slice(
             numImmutableManifestDataCols
           )) {
+            console.log(header);
             updatedRow.push(existingManifestDataHashTable[fileName][header]);
           }
           newManifestReturnObj["data"].push(updatedRow);
+        } else {
+          //If the file does not exist in the existing manifest data, add it
+          newManifestReturnObj["data"].push(row);
         }
-        console.log(row);
-        console.log(fileData);
-
-        console.log(newManifestReturnObj);
         returnObj[highLevelFolder] = newManifestReturnObj;
       }
     }
   }
+  console.log(returnObj);
 
   return returnObj;
 };
