@@ -75,6 +75,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   await includeJavaScriptFile("./scripts/metadata-files/datasetDescription.js");
   await includeJavaScriptFile("./scripts/organize-dataset/curate-functions.js");
   await includeJavaScriptFile("./scripts/organize-dataset/organizeDS.js");
+  await includeJavaScriptFile("./scripts/organize-dataset/validation-functions.js");
   await includeJavaScriptFile("./scripts/metadata-files/manifest.js");
   await includeJavaScriptFile("./scripts/metadata-files/readme-changes.js");
   await includeJavaScriptFile("./scripts/metadata-files/subjects-samples.js");
