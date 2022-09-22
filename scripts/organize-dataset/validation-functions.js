@@ -30,13 +30,24 @@ const validateOrganizedDataset = async () => {
         }, {
             timeout: 0
         })
-    } catch(error) {
+    } catch (error) {
         clientError(error)
         //TODO: SWAL
     }
 
-    // list the results in a table ( ideally the one used in the validate feature )
-    console.log(validationResponse)
+    let errors = validationResponse.data;
 
-    // lock the continue button if results are not valid (for now since the validator is incomplete just show a warning message instead)
+    // list the results in a table ( ideally the one used in the validate feature )
+    if (!validationErrorsOccurred(errors)) {
+        return;
+    }
+
+    // display errors onto the page
+    displayValidationErrors(errors, document.querySelector("#organize--table-validation-errors tbody"));
+
+    // show the validation errors to the user
+    document.querySelector("#organize--table-validation-errors").style.visibility = "visible";
+
+    // lock the continue button if results are not valid ( for now since the validator is incomplete just show a warning message instead )
+
 }
