@@ -2025,20 +2025,8 @@ const traverseToTab = async (targetPageID) => {
       }
     }
     if (targetPageID === "guided-protocols-tab") {
-      const protocols =
-        sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
-      if (protocols.length > 0) {
-        console.log(protocols);
-        renderProtocolFields(protocols);
-      } else {
-        const emptyRowWarning = generateAlertElement(
-          "warning",
-          "You currently have no protocols for your dataset. To add, click the 'Add a new protocol' button"
-        );
-        let warningRowElement = `<tr id="protocolAlert"><td colspan="5">${emptyRowWarning}</td></tr>`;
-        document.getElementById("protocols-container").innerHTML =
-          warningRowElement;
-      }
+      renderProtocolsTable();
+      //Click the manual button because we don't currently allow protocols.io import
       $("#guided-section-enter-protocols-manually").click();
     }
     if (targetPageID === "guided-create-description-metadata-tab") {
@@ -4783,11 +4771,23 @@ const generateProtocolField = (
   `;
 };
 
-//TO-DO
-//Where protocols are rendered on guided mode
-const renderProtocolFields = (protocolsArray) => {
+const renderProtocolsTable = () => {
+  const protocols =
+    sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
+
   const protocolsContainer = document.getElementById("protocols-container");
-  let protocolElements = protocolsArray
+
+  if (protocols.length === 0) {
+    const emptyRowWarning = generateAlertElement(
+      "warning",
+      "You currently have no protocols for your dataset. To add, click the 'Add a new protocol' button"
+    );
+    let warningRowElement = `<tr id="protocolAlert"><td colspan="5">${emptyRowWarning}</td></tr>`;
+    protocolsContainer.innerHTML = warningRowElement;
+    return;
+  }
+
+  const protocolElements = protocols
     .map((protocol) => {
       return generateProtocolField(
         protocol["link"],
