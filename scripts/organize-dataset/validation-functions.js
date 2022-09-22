@@ -37,6 +37,24 @@ const validateOrganizedDataset = async () => {
 
     let errors = validationResponse.data;
 
+    // this works because the returned validation results are in an Object Literal. If the returned object is changed this will break (e.g., an array will have a length property as well)
+    let hasValidationErrors = Object.getOwnPropertyNames(errors).length >= 1;
+
+    Swal.fire({
+        title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
+        text: hasValidationErrors
+            ? `Please fix the errors listed in the table below. 
+               That your dataset passes validation before it is shared with the SPARC Curation Consortium is highly encouraged.`
+            : `Your dataset conforms to the SPARC Dataset Structure. Continue to the next step to upload your dataset.`,
+        allowEscapeKey: true,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        showConfirmButton: true,
+        icon: hasValidationErrors ? "error" : "success",
+    });
+
     // list the results in a table ( ideally the one used in the validate feature )
     if (!validationErrorsOccurred(errors)) {
         return;
@@ -48,6 +66,9 @@ const validateOrganizedDataset = async () => {
     // show the validation errors to the user
     document.querySelector("#organize--table-validation-errors").style.visibility = "visible";
 
-    // lock the continue button if results are not valid ( for now since the validator is incomplete just show a warning message instead )
+    // lock the continue button if results are not valid ( for now since the validator is incomplete just show a warning message instead ) -- Maybe never lock it? WIP datasets may not be 
+    // able to pass validation? Well not really just add make things valid as you go. NO metadata equals no validation errors in any case. But in those situations the 
+    // dataset isn't even ready yet. 
+
 
 }
