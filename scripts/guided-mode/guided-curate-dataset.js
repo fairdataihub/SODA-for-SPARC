@@ -4767,7 +4767,7 @@ const generateProtocolField = (
           style="color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);"
           onclick="openProtocolSwal(this.parentElement.parentElement)"
         >
-        View Description
+        View/Edit
         </button>
       </td>
       <td class="middle aligned collapsing link-name-cell">
