@@ -723,8 +723,13 @@ const renderManifestCards = () => {
     })
     .join("\n");
 
-  document.getElementById("guided-container-manifest-file-cards").innerHTML =
-    manifestCards;
+  const manifestFilesCardsContainer = document.getElementById(
+    "guided-container-manifest-file-cards"
+  );
+
+  manifestFilesCardsContainer.innerHTML = manifestCards;
+
+  smoothScrollToElement(manifestFilesCardsContainer);
 };
 
 const generateManifestEditCard = (highLevelFolderName) => {
@@ -763,6 +768,8 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
 
   let guidedManifestTable;
 
+  const readOnlyHeaders = ["filename", "file type", "timestamp"];
+
   const { value: saveManifestFiles } = await Swal.fire({
     title:
       "<span style='font-size: 18px !important;'>Edit the manifest file below: </span> <br><span style='font-size: 13px; font-weight: 500'> Tip: Double click on a cell to edit it.<span>",
@@ -787,6 +794,7 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
         data: manifestFileData,
         columns: manifestFileHeaders.map((header) => {
           return {
+            readOnly: readOnlyHeaders.includes(header) ? true : false,
             type: "text",
             title: header,
             width: 200,
@@ -813,9 +821,6 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
 };
 
 const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
-  console.log(newManifestData);
-  console.log(existingManifestData);
-
   // If no diff checking needs to be performed, return the new manifest data
   if (
     JSON.stringify(newManifestData) === JSON.stringify(existingManifestData)
@@ -877,8 +882,6 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
           console.log("updating existing file");
           //Push the new values generated
           let updatedRow = row.slice(0, numImmutableManifestDataCols);
-          //set updatedRow to the first two columns of the row
-          updatedRow = newFileStandardVals;
 
           for (const header of newManifestReturnObj["headers"].slice(
             numImmutableManifestDataCols
@@ -903,29 +906,25 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
 document
   .getElementById("guided-button-auto-generate-manifest-files")
   .addEventListener("click", async () => {
-    if (!sodaJSONObj["temp-manifest-files"]) {
-      sodaJSONObj["temp-manifest-files"] = sodaJSONObj["guided-manifest-files"];
-    }
+    //Wait for current call stack to finish
+    await new Promise((r) => setTimeout(r, 0));
 
     const manifestFilesCardsContainer = document.getElementById(
       "guided-container-manifest-file-cards"
     );
 
-    manifestFilesCardsContainer.innerHTML = `loading`;
+    manifestFilesCardsContainer.innerHTML = `
+    <div class="guided--section">
+    <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    </div>
+    Updating your dataset's manifest files...
+    `;
 
-    const existingManifestData = sodaJSONObj["guided-manifest-files"];
+    scrollToBottomOfGuidedBody();
+    console.log("called function");
+    //sleep for 5 seconds
 
     try {
-      //Delete any manifest files that already exist in the sodaJSONObj
-      //because new manifest files will be generated after the user leaves this page
-      for (const [highLevelFolder, folderData] of Object.entries(
-        sodaJSONObj["saved-datset-structure-json-obj"]["folders"]
-      )) {
-        delete sodaJSONObj["saved-datset-structure-json-obj"]["folders"][
-          highLevelFolder
-        ]["files"]["manifest.xlsx"];
-      }
-
       // Retrieve the manifest data to be used to generate the manifest files
       const res = await client.post(
         `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
@@ -955,11 +954,18 @@ document
           };
         }
       }
+      const existingManifestData = sodaJSONObj["guided-manifest-files"];
+      let updatedManifestData;
 
-      const updatedManifestData = diffCheckManifestFiles(
-        newManifestData,
-        existingManifestData
-      );
+      if (existingManifestData) {
+        updatedManifestData = diffCheckManifestFiles(
+          newManifestData,
+          existingManifestData
+        );
+      } else {
+        updatedManifestData = newManifestData;
+      }
+
       console.log(updatedManifestData);
       sodaJSONObj["guided-manifest-files"] = updatedManifestData;
       // Save the sodaJSONObj with the new manifest files
