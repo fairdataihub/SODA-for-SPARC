@@ -289,9 +289,9 @@ const validatePennsieveDataset = async () => {
 *******************************************************************************************************************
 */
 
-const displayValidationErrors = (errors) => {
+const displayValidationErrors = (errors, tableBody) => {
   // get the table body
-  let tableBody = document.querySelector("#validate_dataset-question-4 tbody");
+  //let tableBody = document.querySelector("#validate_dataset-question-4 tbody");
 
   for (const [key, value] of Object.entries(errors)) {
     let error = {
