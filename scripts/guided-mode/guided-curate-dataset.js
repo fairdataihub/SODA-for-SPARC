@@ -2027,11 +2027,17 @@ const traverseToTab = async (targetPageID) => {
     if (targetPageID === "guided-protocols-tab") {
       const protocols =
         sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
-      if (protocols) {
+      if (protocols.length > 0) {
+        console.log(protocols);
         renderProtocolFields(protocols);
       } else {
-        const emptyRowWarning = generateAlertElement("warning", "You currently have no protocols for your dataset. To add, click the 'Add a new protocol' button")
-        document.getElementById("protocols-container").innerHTML = emptyRowWarning;
+        const emptyRowWarning = generateAlertElement(
+          "warning",
+          "You currently have no protocols for your dataset. To add, click the 'Add a new protocol' button"
+        );
+        let warningRowElement = `<tr id="protocolAlert"><td colspan="5">${emptyRowWarning}</td></tr>`;
+        document.getElementById("protocols-container").innerHTML =
+          warningRowElement;
       }
       $("#guided-section-enter-protocols-manually").click();
     }
@@ -3186,7 +3192,7 @@ function subSamInputIsValid(subSamInput) {
 }
 const generateAlertElement = (alertType, warningMessageText) => {
   return `
-      <div style="margin-left:.5rem; margin-right:.5rem"class="alert alert-${alertType} guided--alert" role="alert">
+      <div style="margin-right:.5rem"class="alert alert-${alertType} guided--alert" role="alert">
         ${warningMessageText}
       </div>
     `;
@@ -4599,22 +4605,109 @@ const addContributorField = () => {
   smoothScrollToElement(newlyAddedContributorField);
 };
 
-const addProtocolField = () => {
+const addProtocolField = async () => {
   const protocolsContainer = document.getElementById("protocols-container");
-  const newProtocolField = generateProtocolField("", "");
-  protocolsContainer.insertAdjacentHTML("beforeend", newProtocolField);
-  //scroll to the new element
-  scrollToBottomOfGuidedBody();
+  const values = await openProtocolSwal();
+  if (values) {
+    let firstProtocol = protocolsContainer.children[0];
+    if (firstProtocol.id === "protocolAlert") {
+      firstProtocol.remove();
+    }
+    const newProtocolField = generateProtocolField(
+      values[0],
+      values[1],
+      values[3]
+    );
+    //add sweet alert here
+    protocolsContainer.insertAdjacentHTML("beforeend", newProtocolField);
+    //scroll to the new element
+    scrollToBottomOfGuidedBody();
+  }
 };
 
-const viewProtocolDescription = (protocolViewButton) => {
-  console.log("view description");
-}
+const openProtocolSwal = async (protocolElement) => {
+  //pass in name of url and check within soda json
+  let protocolURL = "";
+  let protocolDescription = "";
+  if (protocolElement) {
+    protocolURL = protocolElement.dataset.protocolUrl;
+    protocolDescription = protocolElement.dataset.protocolDescription;
+  }
+  const { value: values } = await Swal.fire({
+    title: "Add a protocol",
+    html:
+      `<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL" value="${protocolURL}">` +
+      `<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description">${protocolDescription}</textarea>`,
+    focusConfirm: false,
+    confirmButtonText: "Add",
+    cancelButtonText: "Cancel",
+    customClass: "swal-content-additional-link",
+    showCancelButton: true,
+    reverseButtons: reverseSwalButtons,
+    heightAuto: false,
+    width: "38rem",
+    backdrop: "rgba(0,0,0, 0.4)",
+    didOpen: () => {
+      $(".swal-popover").popover();
+    },
+    preConfirm: () => {
+      var link = $("#DD-protocol-link").val();
+      let protocolLink = "";
+      if (link === "") {
+        Swal.showValidationMessage(`Please enter a link!`);
+      } else {
+        if (doiRegex.declared({ exact: true }).test(link) === true) {
+          protocolLink = "DOI";
+        } else {
+          //check if link is valid
+          if (validator.isURL(link) != true) {
+            Swal.showValidationMessage(`Please enter a valid link`);
+          } else {
+            //link is valid url and check for 'doi' in link
+            if (link.includes("doi")) {
+              protocolLink = "DOI";
+            } else {
+              protocolLink = "URL";
+            }
+          }
+        }
+      }
+      if ($("#DD-protocol-description").val() === "") {
+        Swal.showValidationMessage(`Please enter a short description!`);
+      }
+      var duplicate = checkLinkDuplicate(
+        $("#DD-protocol-link").val(),
+        document.getElementById("protocol-link-table-dd")
+      );
+      if (duplicate) {
+        Swal.showValidationMessage(
+          "Duplicate protocol. The protocol you entered is already added."
+        );
+      }
+      return [
+        $("#DD-protocol-link").val(),
+        protocolLink,
+        "IsProtocolFor",
+        $("#DD-protocol-description").val(),
+      ];
+    },
+  });
+  if (values) {
+    if (protocolElement) {
+      protocolElement.dataset.protocolUrl = values[0];
+      protocolElement.children[0].innerText = values[0];
+      protocolElement.dataset.protocolType = values[1];
+      protocolElement.children[1].innerText = values[1];
+      protocolElement.dataset.protocolDescription = values[3];
+    } else {
+      return values;
+    }
+  }
+};
 
-const removeProtocolField = (protocolDeleteButton) => {
-  const protocolField = protocolDeleteButton.parentElement;
-  const protocolURL = protocolField.dataset.protocolUrl;
-  const protocolDescription = protocolField.dataset.protocolDescription;
+const removeProtocolField = (protocolElement) => {
+  const protocolURL = protocolElement.dataset.protocolUrl;
+  const protocolDescription = protocolElement.dataset.protocolDescription;
 
   const protocolsBeforeDelete =
     sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
@@ -4633,24 +4726,46 @@ const removeProtocolField = (protocolDeleteButton) => {
       filteredProtocols;
   }
 
-  protocolField.remove();
+  protocolElement.remove();
+  //if all are deleted then append message
+  let protocolsContainer = document.getElementById("protocols-container");
+  if (protocolsContainer.children.length === 0) {
+    const emptyRowWarning = generateAlertElement(
+      "warning",
+      "You currently have no protocols for your dataset. To add, click the 'Add a new protocol' button"
+    );
+    let warningRowElement = `<tr id="protocolAlert"><td colspan="5">${emptyRowWarning}</td></tr>`;
+    document.getElementById("protocols-container").innerHTML =
+      warningRowElement;
+  }
 };
 
 //TODO: handle new blank protocol fields (when parameter are blank)
-const generateProtocolField = (protocolUrl, protocolType, protocolDescription) => {
+const generateProtocolField = (
+  protocolUrl,
+  protocolType,
+  protocolDescription
+) => {
+  console.log(protocolUrl);
   return `
-    <tr>
-      <td class="middle aligned collapsing link-name-cell">
-        ${protocolURL}
+    <tr 
+      class="guided-protocol-field-container"
+      data-protocol-url="${protocolUrl}"
+      data-protocol-description="${protocolDescription}"
+      data-protocol-type="${protocolType}"
+    >
+      <td class="middle aligned collapsing link-name-cell" style="color: black">
+        ${protocolUrl}
       </td>
-      <td class"middle aligned collapsing link-name-cell">
+      <td class="middle aligned collapsing link-name-cell" style="color: black">
         ${protocolType}
       </td>
       <td class="middle aligned collapsing link-name-cell">
         <button
           type="button"
-          class="btn btn-primary btn-sm"
-          onclick="viewProtocolDescription(this)"
+          class="btn btn-sm"
+          style="color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);"
+          onclick="openProtocolSwal(this.parentElement.parentElement)"
         >
         View Description
         </button>
@@ -4659,58 +4774,12 @@ const generateProtocolField = (protocolUrl, protocolType, protocolDescription) =
         <button
           type="button"
           class="btn btn-danger btn-sm" 
-          onclick=removeProtocolField(this)
+          onclick=removeProtocolField(this.parentElement.parentElement)
         >
         Delete
         </button>
       </td>
     </tr>
-  `
-  return `
-    <div
-      class="guided--section mt-lg neumorphic guided-protocol-field-container"
-      data-protocol-url="${protocolUrl}"
-      data-protocol-description="${protocolDescription}"
-      style="position: relative; width: 100%;"
-    >
-      <i
-        class="fas fa-times fa-2x"
-        style="
-          position: absolute;
-          top: 10px;
-          right: 15px;
-          color: black;
-          cursor: pointer;
-        "
-        onclick="removeProtocolField(this)"
-      >
-      </i>
-      <h2 class="guided--text-sub-step">Enter protocol details</h2>
-      <label class="guided--form-label mt-lg required">Protocol link: </label>
-
-      <input
-        class="guided--input guided-protocol-url-input"
-        type="text"
-        placeholder="Enter protocol link here"
-        value="${protocolUrl}"
-        onkeyup="validateInput($(this))"
-      />
-      <p class="guided--text-input-instructions mb-0">
-        Enter the DOI of the protocol if it is already published. Else, enter its protocols.io URL.<br>
-      </p>
-      <label class="guided--form-label mt-lg required">Protocol description:</label>
-      <textarea
-        class="guided--input guided--text-area guided-protocol-description-input"
-        type="text"
-        placeholder="Enter protocol description here"
-        style="height: 7.5em; padding-bottom: 20px"
-        onkeyup="validateInput($(this))"
-      >${protocolDescription ? protocolDescription.trim() : ""}</textarea
-      >
-      <p class="guided--text-input-instructions mb-0">
-        Enter a description of the protocol used to generate your dataset.
-      </p>
-    </div>
   `;
 };
 
@@ -4720,7 +4789,11 @@ const renderProtocolFields = (protocolsArray) => {
   const protocolsContainer = document.getElementById("protocols-container");
   let protocolElements = protocolsArray
     .map((protocol) => {
-      return generateProtocolField(protocol["link"], protocol["type"], protocol["description"]);
+      return generateProtocolField(
+        protocol["link"],
+        protocol["type"],
+        protocol["description"]
+      );
     })
     .join("\n");
   protocolsContainer.innerHTML = protocolElements;
@@ -11407,75 +11480,24 @@ $(document).ready(async () => {
         //If any protocol fields are found invalid, allProtocolFieldsValid will be set to valid
         //and an error will be thrown when next button is clicked.
         let allProtocolFieldsValid = true;
-        let validURL = false;
-        let singleInstance = false;
         let protocols = [];
 
         //loop through protocol fields and get protocol values
         const protocolFieldsArray = Array.from(protocolFields);
         protocolFieldsArray.forEach((protocolField) => {
-          const protocolUrlInput = protocolField.querySelector(
-            ".guided-protocol-url-input"
-          );
-          const protocolDescriptionInput = protocolField.querySelector(
-            ".guided-protocol-description-input"
-          );
-          //Validate all of the protocol fields
-          let protocolLink = "";
-          const textInputs = [protocolUrlInput, protocolDescriptionInput];
-          //check if all text inputs are valid
-          textInputs.forEach((textInput) => {
-            if (
-              doiRegex.declared({ exact: true }).test(textInputs[0].value) ===
-              true
-            ) {
-              protocolLink = "DOI";
-              validURL = true;
-            } else {
-              //check if Url
-              if (validator.isURL(textInputs[0].value) == true) {
-                protocolLink = "URL";
-                validURL = true;
-              } else {
-                textInputs[0].style.setProperty(
-                  "border-color",
-                  "red",
-                  "important"
-                );
-                validURL = false;
-              }
-            }
-            if (textInput.value === "") {
-              textInput.style.setProperty("border-color", "red", "important");
-              allProtocolFieldsValid = false;
-            } else {
-              textInput.style.setProperty(
-                "border-color",
-                "hsl(0, 0%, 88%)",
-                "important"
-              );
-            }
-          });
-          if (!validURL) {
-            singleInstance = true;
-            textInputs[0].style.setProperty("border-color", "red", "important");
-          }
+          const protocolUrlInput = protocolField.dataset.protocolUrl;
+          const protocolDescriptionInput =
+            protocolField.dataset.protocolDescription;
+          const protocolType = protocolField.dataset.protocolType;
+
           const protocolObj = {
-            link: protocolUrlInput.value,
-            type: protocolLink,
+            link: protocolUrlInput,
+            type: protocolType,
             relation: "isProtocolFor",
-            description: protocolDescriptionInput.value,
+            description: protocolDescriptionInput,
           };
           protocols.push(protocolObj);
         });
-
-        if (singleInstance) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please enter a valid URL or DOI",
-          });
-          throw errorArray;
-        }
 
         if (!allProtocolFieldsValid) {
           errorArray.push({
