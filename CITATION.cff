@@ -19,7 +19,7 @@ authors:
   email: cmarroquin@calmi2.org
   family-names: Marroquin
   given-names: Aaron
-- affiliation: California Medical Innovations Institute
+- affiliation: FAIR Data Innovations Hub
   email: jclark@calmi2.org
   family-names: Clark
   given-names: Jacob
@@ -28,11 +28,11 @@ authors:
   family-names: Portillo
   given-names: Dorian
 cff-version: 1.2.0
-date-released: '2022-09-21'
+date-released: '2022-09-23'
 identifiers:
 - description: DOI for this software's record on Zenodo
   type: doi
-  value: 10.5281/zenodo.7106162
+  value: 10.5281/zenodo.7109176
 keywords:
 - SPARC
 - FAIR
@@ -49,4 +49,4 @@ repository-code: https://github.com/fairdataihub/SODA-for-SPARC
 title: SODA (Software to Organize Data Automatically) for SPARC
 type: software
 url: https://fairdataihub.org/
-version: 9.1.0
+version: 9.2.1
