@@ -780,7 +780,6 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
     confirmButtonText: "Confirm",
     showCancelButton: true,
     width: "90%",
-    // height: "80%",
     customClass: "swal-large",
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
@@ -820,16 +819,31 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
   }
 };
 
+const extractFilNamesFromManifestData = (manifestData) => {
+  let allFileNamesinDsStructure = [];
+  for (const highLevelFolder of Object.keys(manifestData)) {
+    for (const row of manifestData[highLevelFolder]["data"]) {
+      allFileNamesinDsStructure.push(row[0]);
+    }
+  }
+  console.log(allFileNamesinDsStructure);
+  //return sorted allFileNamesinDsStructure
+  return allFileNamesinDsStructure.sort();
+};
+
 const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
-  // If no diff checking needs to be performed, return the new manifest data
+  const prevManifestFileNames =
+    extractFilNamesFromManifestData(existingManifestData);
+  const newManifestFileNames = extractFilNamesFromManifestData(newManifestData);
+
   if (
-    JSON.stringify(newManifestData) === JSON.stringify(existingManifestData)
+    JSON.stringify(prevManifestFileNames) ===
+    JSON.stringify(newManifestFileNames)
   ) {
-    console.log("no diff, comparison not needed!");
+    //All files have remained the same, no need to diff check
+    console.log("samesies");
     return newManifestData;
   }
-
-  const numImmutableManifestDataCols = 3;
 
   // Create a hash table for the existing manifest data
   const existingManifestDataHashTable = {};
@@ -840,14 +854,11 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
       existingManifestData[highLevelFolderName]["data"];
 
     for (const row of existingManifestDataData) {
-      console.log(row);
       const fileObj = {};
       const fileName = row[0];
       //Create a new array from row starting at index 2
       const fileData = row.slice(numImmutableManifestDataCols);
-      console.log(fileData);
       for (const [index, rowValue] of fileData.entries()) {
-        console.log(rowValue);
         const oldHeader =
           existingManifestDataHeaders[index + numImmutableManifestDataCols];
         fileObj[oldHeader] = rowValue;
@@ -855,9 +866,6 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
       existingManifestDataHashTable[fileName] = fileObj;
     }
   }
-
-  console.log(existingManifestDataHashTable);
-  console.log(newManifestData);
 
   let returnObj = {};
 
@@ -879,14 +887,12 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
         const fileName = row[0];
 
         if (existingManifestDataHashTable[fileName]) {
-          console.log("updating existing file");
           //Push the new values generated
           let updatedRow = row.slice(0, numImmutableManifestDataCols);
 
           for (const header of newManifestReturnObj["headers"].slice(
             numImmutableManifestDataCols
           )) {
-            console.log(header);
             updatedRow.push(existingManifestDataHashTable[fileName][header]);
           }
           newManifestReturnObj["data"].push(updatedRow);
@@ -898,7 +904,6 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
       }
     }
   }
-  console.log(returnObj);
 
   return returnObj;
 };
@@ -934,6 +939,7 @@ document
         { timeout: 0 }
       );
       const manifestRes = res.data;
+      console.log(manifestRes);
       //loop through each of the high level folders and store their manifest headers and data
       //into the sodaJSONObj
 
