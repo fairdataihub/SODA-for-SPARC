@@ -723,8 +723,13 @@ const renderManifestCards = () => {
     })
     .join("\n");
 
-  document.getElementById("guided-container-manifest-file-cards").innerHTML =
-    manifestCards;
+  const manifestFilesCardsContainer = document.getElementById(
+    "guided-container-manifest-file-cards"
+  );
+
+  manifestFilesCardsContainer.innerHTML = manifestCards;
+
+  smoothScrollToElement(manifestFilesCardsContainer);
 };
 
 const generateManifestEditCard = (highLevelFolderName) => {
@@ -763,6 +768,8 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
 
   let guidedManifestTable;
 
+  const readOnlyHeaders = ["filename", "file type", "timestamp"];
+
   const { value: saveManifestFiles } = await Swal.fire({
     title:
       "<span style='font-size: 18px !important;'>Edit the manifest file below: </span> <br><span style='font-size: 13px; font-weight: 500'> Tip: Double click on a cell to edit it.<span>",
@@ -773,7 +780,6 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
     confirmButtonText: "Confirm",
     showCancelButton: true,
     width: "90%",
-    // height: "80%",
     customClass: "swal-large",
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
@@ -787,6 +793,7 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
         data: manifestFileData,
         columns: manifestFileHeaders.map((header) => {
           return {
+            readOnly: readOnlyHeaders.includes(header) ? true : false,
             type: "text",
             title: header,
             width: 200,
@@ -812,72 +819,166 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
   }
 };
 
+const extractFilNamesFromManifestData = (manifestData) => {
+  let allFileNamesinDsStructure = [];
+  for (const highLevelFolder of Object.keys(manifestData)) {
+    for (const row of manifestData[highLevelFolder]["data"]) {
+      allFileNamesinDsStructure.push(row[0]);
+    }
+  }
+  console.log(allFileNamesinDsStructure);
+  //return sorted allFileNamesinDsStructure
+  return allFileNamesinDsStructure.sort();
+};
+
+const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
+  const prevManifestFileNames =
+    extractFilNamesFromManifestData(existingManifestData);
+  const newManifestFileNames = extractFilNamesFromManifestData(newManifestData);
+
+  if (
+    JSON.stringify(prevManifestFileNames) ===
+    JSON.stringify(newManifestFileNames)
+  ) {
+    //All files have remained the same, no need to diff check
+    console.log("samesies");
+    return newManifestData;
+  }
+
+  // Create a hash table for the existing manifest data
+  const existingManifestDataHashTable = {};
+  for (const highLevelFolderName in existingManifestData) {
+    const existingManifestDataHeaders =
+      existingManifestData[highLevelFolderName]["headers"];
+    const existingManifestDataData =
+      existingManifestData[highLevelFolderName]["data"];
+
+    for (const row of existingManifestDataData) {
+      const fileObj = {};
+      const fileName = row[0];
+      //Create a new array from row starting at index 2
+      const fileData = row.slice(numImmutableManifestDataCols);
+      for (const [index, rowValue] of fileData.entries()) {
+        const oldHeader =
+          existingManifestDataHeaders[index + numImmutableManifestDataCols];
+        fileObj[oldHeader] = rowValue;
+      }
+      existingManifestDataHashTable[fileName] = fileObj;
+    }
+  }
+
+  let returnObj = {};
+
+  for (const highLevelFolder of Object.keys(newManifestData)) {
+    if (!existingManifestData[highLevelFolder]) {
+      console.log("new manifest data folder");
+      //If the high level folder does not exist in the existing manifest data, add it
+      returnObj[highLevelFolder] = newManifestData[highLevelFolder];
+    } else {
+      console.log("Updating existing manifest data folder");
+      //If the high level folder does exist in the existing manifest data, update it
+      let newManifestReturnObj = {};
+      newManifestReturnObj["headers"] =
+        existingManifestData[highLevelFolder]["headers"];
+      newManifestReturnObj["data"] = [];
+
+      const rowData = newManifestData[highLevelFolder]["data"];
+      for (const row of rowData) {
+        const fileName = row[0];
+
+        if (existingManifestDataHashTable[fileName]) {
+          //Push the new values generated
+          let updatedRow = row.slice(0, numImmutableManifestDataCols);
+
+          for (const header of newManifestReturnObj["headers"].slice(
+            numImmutableManifestDataCols
+          )) {
+            updatedRow.push(existingManifestDataHashTable[fileName][header]);
+          }
+          newManifestReturnObj["data"].push(updatedRow);
+        } else {
+          //If the file does not exist in the existing manifest data, add it
+          newManifestReturnObj["data"].push(row);
+        }
+        returnObj[highLevelFolder] = newManifestReturnObj;
+      }
+    }
+  }
+
+  return returnObj;
+};
+
 document
   .getElementById("guided-button-auto-generate-manifest-files")
   .addEventListener("click", async () => {
-    const manifestData = sodaJSONObj["guided-manifest-files"];
+    //Wait for current call stack to finish
+    await new Promise((r) => setTimeout(r, 0));
 
-    //If no manifest file exists, generate the manifest file data
-    if (Object.keys(manifestData).length === 0) {
-      const manifestFilesCardsContainer = document.getElementById(
-        "guided-container-manifest-file-cards"
+    const manifestFilesCardsContainer = document.getElementById(
+      "guided-container-manifest-file-cards"
+    );
+
+    manifestFilesCardsContainer.innerHTML = `
+    <div class="guided--section">
+    <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    </div>
+    Updating your dataset's manifest files...
+    `;
+
+    scrollToBottomOfGuidedBody();
+    console.log("called function");
+    //sleep for 5 seconds
+
+    try {
+      // Retrieve the manifest data to be used to generate the manifest files
+      const res = await client.post(
+        `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
+        {
+          dataset_structure_obj: sodaJSONObj["saved-datset-structure-json-obj"],
+        },
+        { timeout: 0 }
       );
+      const manifestRes = res.data;
+      console.log(manifestRes);
+      //loop through each of the high level folders and store their manifest headers and data
+      //into the sodaJSONObj
 
-      manifestFilesCardsContainer.innerHTML = `loading`;
-      try {
-        //Delete any manifest files that already exist in the sodaJSONObj
-        //because new manifest files will be generated after the user leaves this page
-        for (const [highLevelFolder, folderData] of Object.entries(
-          sodaJSONObj["saved-datset-structure-json-obj"]["folders"]
-        )) {
-          delete sodaJSONObj["saved-datset-structure-json-obj"]["folders"][
-            highLevelFolder
-          ]["files"]["manifest.xlsx"];
+      let newManifestData = {};
+
+      for (const [highLevelFolderName, manifestFileData] of Object.entries(
+        manifestRes
+      )) {
+        //Only save manifest files for hlf that returned more than the headers
+        //(meaning manifest file data was generated in the response)
+        if (manifestFileData.length > 1) {
+          //Remove the first element from the array and set it as the headers
+          const manifestHeader = manifestFileData.shift();
+
+          newManifestData[highLevelFolderName] = {
+            headers: manifestHeader,
+            data: manifestFileData,
+          };
         }
-        // Generate the manifest file data for each high level folder
-        // Data will be returned as an object with a key for each high level folder
-        // and the value for each key will be an array of arrays with the first array
-        // being the headers, and the rest of the arrays being the manifest data.
-        const res = await client.post(
-          `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
-          {
-            dataset_structure_obj:
-              sodaJSONObj["saved-datset-structure-json-obj"],
-          },
-          { timeout: 0 }
-        );
-        const manifestRes = res.data;
-        //loop through each of the high level folders and store their manifest headers and data
-        //into the sodaJSONObj
-
-        for (const [highLevelFolderName, manifestFileData] of Object.entries(
-          manifestRes
-        )) {
-          //Only save manifest files for hlf that returned more than the headers
-          //(meaning manifest file data was generated in the response)
-          if (manifestFileData.length > 1) {
-            //Remove the first element from the array and set it as the headers
-            const manifestHeader = manifestFileData.shift();
-            const manifestData = manifestFileData;
-
-            sodaJSONObj["guided-manifest-files"][highLevelFolderName] = {
-              headers: manifestHeader,
-              data: manifestData,
-            };
-            datasetStructureJSONObj["folders"][highLevelFolderName]["files"][
-              "manifest.xlsx"
-            ] = {
-              name: "manifest.xlsx",
-              size: 0,
-              type: "temp",
-            };
-          }
-        }
-        //Save the sodaJSONObj with the new manifest files
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-      } catch (err) {
-        userError(err);
       }
+      const existingManifestData = sodaJSONObj["guided-manifest-files"];
+      let updatedManifestData;
+
+      if (existingManifestData) {
+        updatedManifestData = diffCheckManifestFiles(
+          newManifestData,
+          existingManifestData
+        );
+      } else {
+        updatedManifestData = newManifestData;
+      }
+
+      console.log(updatedManifestData);
+      sodaJSONObj["guided-manifest-files"] = updatedManifestData;
+      // Save the sodaJSONObj with the new manifest files
+      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+    } catch (err) {
+      console.log(err);
+      userError(err);
     }
 
     //Rerender the manifest cards
