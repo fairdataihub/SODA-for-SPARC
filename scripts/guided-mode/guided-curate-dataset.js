@@ -4479,12 +4479,6 @@ const removeContributorField = (contributorDeleteButton) => {
 const openGuidedAddContributorSwal = async () => {
   const currentDatasetUploadName = sodaJSONObj["digital-metadata"]["name"];
 
-  const contributorLastName = "";
-  const contributorFirstName = "";
-  const contributorORCID = "";
-  const contributorAffiliations = [];
-  const contributorRoles = [];
-
   const { value: newContributorData } = await Swal.fire({
     allowOutsideClick: false,
     allowEscapeKey: false,
@@ -4493,43 +4487,54 @@ const openGuidedAddContributorSwal = async () => {
     heightAuto: false,
     title: "Enter the contributor details for your new contributor",
     html: `
-    <div class="space-between w-100">
-    <div class="guided--flex-center mt-sm" style="width: 45%">
-      <label class="guided--form-label required">Last name: </label>
-      <input
-        class="guided--input guided-last-name-input"
-        type="text"
-        placeholder="Enter last name here"
-        onkeyup="validateInput($(this))"
-      />
-    </div>
-    <div class="guided--flex-center mt-sm" style="width: 45%">
-      <label class="guided--form-label required">First name: </label>
-      <input
-        class="guided--input guided-first-name-input"
-        type="text"
-        placeholder="Enter first name here"
-        onkeyup="validateInput($(this))"
-      />
-    </div>
-  </div>
-  <label class="guided--form-label required mt-md">ORCID: </label>
-  <input
-    class="guided--input guided-orcid-input"
-    type="text"
-    placeholder="Enter ORCID here"
-    onkeyup="validateInput($(this))"
-  />
-  <label class="guided--form-label required mt-md">Affiliation(s): </label>
-  <input class="guided-contributor-affiliation-input"
-        contenteditable="true"
-  />
-
-  <label class="guided--form-label required mt-md">Role(s): </label>
-  <input class="guided-contributor-role-input"
-    contenteditable="true"
-    placeholder='Type here to view and add contributor roles from the list of standard roles'
-  />
+      <div class="space-between w-100">
+          <div class="guided--flex-center mt-sm" style="width: 45%">
+            <label class="guided--form-label required">Last name: </label>
+            <input
+              class="
+                guided--input
+                guided-last-name-input
+              "
+              type="text"
+              placeholder="Enter last name here"
+              value="${"asdf" ? "asdf" : ""}"
+            />
+          </div>
+          <div class="guided--flex-center mt-sm" style="width: 45%">
+            <label class="guided--form-label required">First name: </label>
+            <input
+              class="
+                guided--input
+                guided-first-name-input
+              "
+              type="text"
+              placeholder="Enter first name here"
+              value="${"asdf" ? "asdf" : ""}"
+            />
+          </div>
+        </div>
+        <label class="guided--form-label mt-md required">ORCID: </label>
+        <input
+          class="
+            guided--input
+            guided-orcid-input
+          "
+          type="text"
+          placeholder="Enter ORCID here"
+          onkeyup="validateInput($(this))"
+          value="${"asdf" ? "asdf" : ""}"
+        />
+        <label class="guided--form-label mt-md required">Affiliation(s): </label>
+        <input class="guided-contributor-affiliation-input"
+          contenteditable="true"
+          data-initial-contributor-affiliation="${"asdf"}"
+        />
+        <label class="guided--form-label mt-md required">Role(s): </label>
+        <input class="guided-contributor-role-input"
+          contenteditable="true"
+          data-initial-contributor-roles="${"asdf"}"
+        />
+      </div>
     `,
 
     showCancelButton: true,
