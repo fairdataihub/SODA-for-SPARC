@@ -1656,6 +1656,20 @@ const traverseToTab = async (targetPageID) => {
       $("#guided-back-button").css("visibility", "visible");
     }
 
+    if (targetPageID === "guided-prepare-helpers-tab") {
+      // This controls the UI for the new page
+      // First we get vals from sodaJSONObj, and then update the UI
+      // based on the vals
+      const airTableAccountData =
+        sodaJSONObj["path-to-airtable-data-in-sodajson-obj"];
+
+      if (airTableAccountData) {
+        //This is where we update the UI for the helper page
+      } else {
+        //This is where we reset the UI for the helper page
+      }
+    }
+
     if (targetPageID === "guided-subjects-folder-tab") {
       openSubPageNavigation(targetPageID);
     }
@@ -10513,6 +10527,11 @@ $(document).ready(async () => {
             "import-existing";
           sodaJSONObj["starting-point"]["type"] = "local";
         }
+      }
+
+      if (pageBeingLeftID === "guided-prepare-helpers-tab") {
+        // This is where we save data to the sodaJSONObj
+        // Take a look at logic around here to see how to save data to the sodaJSONObj
       }
 
       if (pageBeingLeftID === "guided-source-folder-tab") {
