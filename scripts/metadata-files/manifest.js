@@ -598,17 +598,8 @@ async function generateManifestPrecheck(manifestEditBoolean, ev) {
     }
   }
 
-  // clean the manifest files by dropping empty columns ( keep the required columns even if empty )
-  await dropEmptyManifestColumns();
-
-  await generateManifest("", type, manifestEditBoolean, ev);
-
-  return;
-}
-
-async function generateManifest(action, type, manifestEditBoolean, ev) {
   Swal.fire({
-    title: "Reviewing the dataset structure.",
+    title: "Generating the manifest.xlsx file(s) - precheck",
     html: "Please wait...",
     allowEscapeKey: false,
     allowOutsideClick: false,
@@ -619,6 +610,28 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
       Swal.showLoading();
     },
   }).then((result) => { });
+
+  // clean the manifest files by dropping empty columns ( keep the required columns even if empty )
+  await dropEmptyManifestColumns();
+
+  await generateManifest("", type, manifestEditBoolean, ev);
+
+  return;
+}
+
+async function generateManifest(action, type, manifestEditBoolean, ev) {
+  // Swal.fire({
+  //   title: "Reviewing the dataset structure.",
+  //   html: "Please wait...",
+  //   allowEscapeKey: false,
+  //   allowOutsideClick: false,
+  //   showConfirmButton: false,
+  //   heightAuto: false,
+  //   backdrop: "rgba(0,0,0, 0.4)",
+  //   didOpen: () => {
+  //     Swal.showLoading();
+  //   },
+  // }).then((result) => { });
   // Case 1: Local dataset
   if (type === "local") {
     if (finalManifestGenerationPath === "") {
@@ -773,6 +786,7 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
           return;
         }
 
+
         generateManifestHelper();
         initiate_generate_manifest_local(
           manifestEditBoolean,
@@ -829,19 +843,7 @@ async function generateManifestHelper() {
       return;
     } else {
       if (generatingBoolean) {
-        Swal.fire({
-          title: "Generating the manifest.xlsx file(s)",
-          text: "Please wait...",
-          allowEscapeKey: false,
-          allowOutsideClick: false,
-          showConfirmButton: false,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          timerProgressBar: false,
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        });
+        console.log("Generating boolean is true line 845 of generate manifest helper")
       }
     }
   }
@@ -853,20 +855,6 @@ async function generateManifestPreview(e) {
 
 
   // set final generation destination to the user's selected location
-  Swal.fire({
-    title: "Generating the manifest.xlsx file(s)",
-    text: "Please wait...",
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    showConfirmButton: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  });
-
   finalManifestGenerationPath = folderPath[0];
 
   // generate manifest precheck
@@ -928,19 +916,6 @@ async function initiate_generate_manifest_local(
   manifestEditBoolean,
   originalDataset
 ) {
-  Swal.fire({
-    title: "Generating the manifest.xlsx file(s)",
-    text: "Please wait...",
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    showConfirmButton: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  });
 
   if (manifestEditBoolean === false) {
     createManifestLocally("local", false, originalDataset);
@@ -1001,19 +976,6 @@ async function initiate_generate_manifest_local(
 var generatingBoolean = false;
 async function initiate_generate_manifest_bf() {
   generatingBoolean = true;
-  Swal.fire({
-    title: "Generating the manifest.xlsx file(s)",
-    text: "Please wait...",
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    showConfirmButton: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  });
   // Initiate curation by calling Python function
   let manifest_files_requested = false;
   var main_curate_status = "Solving";
@@ -1583,6 +1545,20 @@ async function extractBFDatasetForManifestFile(
     }
 
     if (!editBoolean) {
+      Swal.fire({
+        title: "Generating the manifest.xlsx file(s)",
+        text: "Please wait...",
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
       generateManifestOnPennsieve();
     } else {
       $("#preview-manifest-fake-confirm-pennsieve").click();
