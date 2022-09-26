@@ -1392,12 +1392,6 @@ const cleanUpEmptyGuidedStructureFolders = async (
         let result = await Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
           title: "Missing data",
           html: `${highLevelFolder} data was not added to the following samples:<br /><br />
             <ul>
@@ -1980,6 +1974,8 @@ const traverseToTab = async (targetPageID) => {
         sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
       const contributors =
         sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+
+      renderDatasetDescriptionContributorsTable(contributors);
 
       //If contributors already existin in the sodaJSONObj, then show the contributors field
       //and render a card for each contributor
@@ -4478,6 +4474,136 @@ const removeContributorField = (contributorDeleteButton) => {
   }
 
   contributorField.remove();
+};
+
+const openGuidedAddContributorSwal = async () => {
+  const currentDatasetUploadName = sodaJSONObj["digital-metadata"]["name"];
+
+  const contributorLastName = "";
+  const contributorFirstName = "";
+  const contributorORCID = "";
+  const contributorAffiliations = [];
+  const contributorRoles = [];
+
+  const { value: newContributorData } = await Swal.fire({
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    width: "800px",
+    heightAuto: false,
+    title: "Enter the contributor details for your new contributor",
+    html: `
+    <div class="space-between w-100">
+    <div class="guided--flex-center mt-sm" style="width: 45%">
+      <label class="guided--form-label required">Last name: </label>
+      <input
+        class="guided--input guided-last-name-input"
+        type="text"
+        placeholder="Enter last name here"
+        onkeyup="validateInput($(this))"
+      />
+    </div>
+    <div class="guided--flex-center mt-sm" style="width: 45%">
+      <label class="guided--form-label required">First name: </label>
+      <input
+        class="guided--input guided-first-name-input"
+        type="text"
+        placeholder="Enter first name here"
+        onkeyup="validateInput($(this))"
+      />
+    </div>
+  </div>
+  <label class="guided--form-label required mt-md">ORCID: </label>
+  <input
+    class="guided--input guided-orcid-input"
+    type="text"
+    placeholder="Enter ORCID here"
+    onkeyup="validateInput($(this))"
+  />
+  <label class="guided--form-label required mt-md">Affiliation(s): </label>
+  <input class="guided-contributor-affiliation-input"
+        contenteditable="true"
+  />
+
+  <label class="guided--form-label required mt-md">Role(s): </label>
+  <input class="guided-contributor-role-input"
+    contenteditable="true"
+    placeholder='Type here to view and add contributor roles from the list of standard roles'
+  />
+    `,
+
+    showCancelButton: true,
+    confirmButtonText: "Rename",
+    confirmButtonColor: "#3085d6 !important",
+    didOpen: () => {},
+
+    preConfirm: (inputValue) => {
+      if (inputValue === "") {
+        Swal.showValidationMessage("Please enter a name for your dataset!");
+        return false;
+      }
+      if (inputValue === currentDatasetUploadName) {
+        Swal.showValidationMessage("Please enter a new name for your dataset!");
+        return false;
+      }
+    },
+  });
+  if (newContributorData) {
+    sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
+  }
+};
+
+const generateContributorTableRow = (contirbutorObj) => {
+  const contributorFirstName = contirbutorObj["contributorFirstName"];
+  const contributorLastName = contirbutorObj["contributorLastName"];
+  const contributorRoleString = contirbutorObj["conRole"].join(", ");
+  console.log("generating cont table row");
+
+  return `
+    <tr 
+      data-contributor-first-name="${contributorFirstName}"
+      data-contributor-last-name="${contributorLastName}"
+    >
+      <td class="middle aligned collapsing">
+        ${contributorFirstName} ${contributorLastName}
+      </td>
+      <td class="middle aligned collapsing"
+        ${contributorRoleString}
+      </td>
+      <td class="middle aligned collapsing text-center">
+        <button
+          type="button"
+          class="btn btn-sm"
+          style="color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);"
+          onclick="openProtocolSwal(this.parentElement.parentElement)"
+        >
+        View/Edit
+        </button>
+      </td>
+      <td class="middle aligned collapsing text-center">
+        <button
+          type="button"
+          class="btn btn-danger btn-sm" 
+          onclick=removeProtocolField(this.parentElement.parentElement)
+        >
+        Delete
+        </button>
+      </td>
+    </tr>
+  `;
+};
+
+const renderDatasetDescriptionContributorsTable = (contributorsArray) => {
+  const contributorsTable = document.getElementById(
+    "guided-DD-connoributors-table"
+  );
+  const contributorsTableElement = contributorsArray
+    .map((contributor) => {
+      return generateContributorTableRow(contributor);
+    })
+    .join("\n");
+  console.log(contributorsTableElement);
+  contributorsTable.innerHTML = contributorsTableElement;
 };
 
 const addContributorField = () => {
@@ -10785,12 +10911,6 @@ $(document).ready(async () => {
             backdrop: "rgba(0,0,0, 0.4)",
             reverseButtons: reverseSwalButtons,
             heightAuto: false,
-            showClass: {
-              popup: "animate__animated animate__zoomIn animate__faster",
-            },
-            hideClass: {
-              popup: "animate__animated animate__zoomOut animate__faster",
-            },
             allowOutsideClick: false,
           });
           if (!continueWithEmptyFolders) {

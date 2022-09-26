@@ -2477,6 +2477,41 @@
           </div>
         </div>
         <div id="guided-contributors-tab" class="guided--panel hidden">
+          <div class="guided--section">
+            <h1 class="guided--text-sub-step">Contributor information</h1>
+            <p class="guided--help-text">
+              Select the contributors that contributed to your dataset. These
+              individuals do not have to be authors on any publications
+              describing the data, but should be acknowledged for their role in
+              producing and publishing the dataset.
+            </p>
+          </div>
+          <div class="guided--section">
+            <table
+              class="ui celled striped table"
+              id="contributors-table"
+              style="margin-bottom: 25px; width: 800px"
+            >
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Role(s)</th>
+                  <th class="center aligned collapsing">Modify</th>
+                  <th class="center aligned collapsing">Delete</th>
+                </tr>
+              </thead>
+              <tbody id="guided-DD-connoributors-table"></tbody>
+            </table>
+            <button
+              class="ui primary basic button mt-sm"
+              id="guided-button-add-contributor"
+              onclick="openGuidedAddContributorSwal()"
+            >
+              <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new
+              contributor
+            </button>
+          </div>
+
           <div
             class="guided--panel hidden"
             id="guided-div-contributors-imported-from-airtable"
@@ -2488,20 +2523,7 @@
               describing the data, but should be acknowledged for their role in
               producing and publishing the dataset.
             </p>
-            <table
-              class="ui celled striped table"
-              id="contributors-table"
-              style="margin-bottom: 25px; width: 500px"
-            >
-              <thead>
-                <tr>
-                  <th></th>
-                  <th>Last name</th>
-                  <th>First name</th>
-                </tr>
-              </thead>
-              <tbody id="contributors-table-container"></tbody>
-            </table>
+
             <button
               class="ui primary button hidden"
               id="guided-button-edit-checked-contributors"
@@ -2533,14 +2555,6 @@
             </div>
 
             <div class="guided--section" id="contributors-container"></div>
-            <button
-              class="ui primary basic button mt-sm"
-              id="guided-button-add-contributor"
-              onclick="addContributorField()"
-            >
-              <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new
-              contributor
-            </button>
           </div>
         </div>
 
