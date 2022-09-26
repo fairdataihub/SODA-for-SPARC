@@ -1307,6 +1307,13 @@ const createDuplicateManifestDirectory = async (destination) => {
     return folder.includes("SODA Manifest Files")
   })
 
+  // filter out any extensions from the list
+  manifestFolderCopies = manifestFolderCopies.filter((folder) => {
+    return !folder.includes(".")
+  })
+
+  console.log(manifestFolderCopies)
+
   // if there is only one SODA Manifest Files directory create the first copy 
   if (manifestFolderCopies.length === 0) {
     let manifestFolderDirectory = path.join(
