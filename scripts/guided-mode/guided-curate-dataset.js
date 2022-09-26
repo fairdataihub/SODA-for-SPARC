@@ -1665,8 +1665,10 @@ const traverseToTab = async (targetPageID) => {
 
       if (airTableAccountData) {
         //This is where we update the UI for the helper page
+        console.log("huh");
       } else {
         //This is where we reset the UI for the helper page
+        console.log("huh1");
       }
     }
 
@@ -10530,6 +10532,7 @@ $(document).ready(async () => {
       }
 
       if (pageBeingLeftID === "guided-prepare-helpers-tab") {
+        console.log("touch");
         // This is where we save data to the sodaJSONObj
         // Take a look at logic around here to see how to save data to the sodaJSONObj
       }
