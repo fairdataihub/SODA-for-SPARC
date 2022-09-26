@@ -212,7 +212,7 @@ const guidedSaveAndExit = async (exitPoint) => {
     if (returnToGuidedHomeScreen) {
       guidedUnLockSideBar();
       saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-      traverseToTab("guided-dataset-starting-point-tab");
+      traverseToTab("guided-prepare-helpers-tab");
       hideSubNavAndShowMainNav("back");
       $("#guided-button-dataset-intro-back").click();
       $("#guided-button-dataset-intro-back").click();
@@ -390,24 +390,10 @@ const guidedTransitionFromDatasetNameSubtitlePage = () => {
   $("#guided-header-div").css("display", "flex");
   $("#guided-footer-div").css("display", "flex");
 
-  //Manually click the proper dataset structure button since the radio button is not controlled
-  //by the next button/traverseToTab function
-  if (sodaJSONObj["button-config"]["dataset-already-structured"]) {
-    if (sodaJSONObj["button-config"]["dataset-already-structured"] == "yes") {
-      //click element with id guided-button-import-existing-dataset-structure
-      document
-        .getElementById("guided-button-import-existing-dataset-structure")
-        .click();
-    }
-    if (sodaJSONObj["button-config"]["dataset-already-structured"] == "no") {
-      //click element with id guided-button-create-new-dataset-structure
-      document
-        .getElementById("guided-button-guided-dataset-structuring")
-        .click();
-    }
-  }
   //Set the current page to the guided curation page
-  CURRENT_PAGE = $("#guided-dataset-starting-point-tab");
+  CURRENT_PAGE = $("#guided-prepare-helpers-tab");
+
+  traverseToTab("guided-prepare-helpers-tab");
 
   //reset sub-page navigation (Set the first sub-page to be the active sub-page
   //for all pages with sub-pages)
@@ -1657,6 +1643,13 @@ const traverseToTab = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-prepare-helpers-tab") {
+      //Hide the new dataset and existii local dataset capsule containers because
+      //We do now know what the user wants to do yet
+      $("#guided-curate-new-dataset-branch-capsule-container").hide();
+      $(
+        "#guided-curate-existing-local-dataset-branch-capsule-container"
+      ).hide();
+
       // This controls the UI for the new page
       // First we get vals from sodaJSONObj, and then update the UI
       // based on the vals
@@ -3448,7 +3441,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   //If a patch was applied that requires the user to restart from the first page,
   //then force the user to restart from the first page
   if (forceStartFromFirstPage) {
-    pageBeforeExit = "guided-dataset-starting-point-tab";
+    pageBeforeExit = "guided-prepare-helpers-tab";
   }
 
   if (pageBeforeExit) {
@@ -11641,7 +11634,7 @@ $(document).ready(async () => {
   $("#guided-back-button").on("click", () => {
     pageBeingLeftID = CURRENT_PAGE.attr("id");
 
-    if (pageBeingLeftID === "guided-dataset-starting-point-tab") {
+    if (pageBeingLeftID === "guided-prepare-helpers-tab") {
       //Hide dataset name and subtitle parent tab
       document
         .getElementById("guided-mode-starting-container")

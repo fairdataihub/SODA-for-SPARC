@@ -312,13 +312,14 @@
       <div id="prepare-dataset-parent-tab" class="guided--parent-tab hidden">
         <div class="guided--capsule-container">
           <div
-            class="guided--capsule active"
-            id="guided-dataset-starting-point-capsule"
-          ></div>
-          <div
             class="guided--capsule"
             id="guided-prepare-helpers-capsule"
           ></div>
+          <div
+            class="guided--capsule active"
+            id="guided-dataset-starting-point-capsule"
+          ></div>
+
           <div
             class="guided--capsule-container-branch hidden"
             id="guided-curate-new-dataset-branch-capsule-container"
@@ -377,7 +378,79 @@
           ></div>
         </div>
 
-        <div id="guided-dataset-starting-point-tab" class="guided--panel">
+        <div id="guided-prepare-helpers-tab" class="guided--panel">
+          <div class="guided--section">
+            <h1 class="guided--text-sub-step">Before Getting Started</h1>
+            <p class="guided--help-text">
+              To streamline the process as much as possible, Guided Mode
+              requires a couple of things before getting started.
+            </p>
+            <label class="guided--welcome-section-label text-center"
+              >1. Pennsieve Account</label
+            >
+            <p class="guided-help-text">
+              All SPARC datasets must be uploaded on the Pennsieve data
+              platform. Get access to Pennsieve as well as the SPARC Consortium
+              organization on Pennsieve by filling out this
+              <a target="_blank">this form.</a>
+              Once you have access, be sure to connect your Pennsieve account
+              with SODA using the button below.
+            </p>
+            <div>BUTTON</div>
+            <label class="guided--welcome-section-label text-center"
+              >2. Data Deliverable file</label
+            >
+            <p class="guided--help-text">
+              SPARC requires all datasets to include a submission metadata file
+              that includes information regarding the milestone associated with
+              your dataset. This information should match exactly with the Data
+              Deliverables document and how to obtain
+              <a target="_blank">here.</a> Once the document has been prepraed
+              use the button below to submit.
+            </p>
+            <div>BUTTON</div>
+            <label class="guided--welcome-section-label text-center"
+              >3. Protocols.io Account</label
+            >
+            <p class="guided-help-text">
+              All SPARC datasets must have their associated protocols on
+              <a>protocol.io</a>, a platform for creating
+              structure-folder-contents and shareable protocols. Since
+              protocols.io provides a convenient interface to prepare protocols,
+              we recommend you prepare your protocols directly there before
+              continuing. Follow the
+              <a>SPARC instructions for preparing protoco.s on protocols.io</a>
+            </p>
+            <p class="guided-help-text">
+              The dataset_description metada file must contain information about
+              the protocols on protocols.io. You can provide information about
+              the protocols on protocols.io You can provide information about
+              the protocols of your dataset below and SODA will automatically
+              include it in the dataset_description file when it is generated in
+              the last step of this guided workflow. Use the button below to
+              connect your protocols.io account with SODA if you would like to
+              import your protocols information easily.
+            </p>
+            <div>BUTTON</div>
+            <label class="guided--welcome-section-label text-center"
+              >4. Airtable Account (optional)</label
+            >
+            <p class="guided-help-text">
+              The number of the SPARC award associated with your dataset is a
+              required metadata when submitting your SPARC dataset. SODA can
+              help you specify your SPARC award through the SPARC Airtable
+              sheet. To learn more about SPARC Airtable sheet, please visit the
+              <a>SODA Documentation.</a>
+              Use the button below to sign in and import your Airtable sheet.
+            </p>
+            <div>BUTTON</div>
+          </div>
+        </div>
+
+        <div
+          id="guided-dataset-starting-point-tab"
+          class="guided--panel hidden"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">SPARC Data Structure</h1>
             <p class="guided--help-text">
@@ -461,74 +534,7 @@
             </div>
           </div>
         </div>
-        <div id="guided-prepare-helpers-tab" class="guided--panel">
-          <div class="guided--section">
-            <h1 class="guided--text-sub-step">Before Getting Started</h1>
-            <p class="guided--help-text">
-              To streamline the process as much as possible, Guided Mode
-              requires a couple of things before getting started.
-            </p>
-            <label class="guided--welcome-section-label text-center"
-              >1. Pennsieve Account</label
-            >
-            <p class="guided-help-text">
-              All SPARC datasets must be uploaded on the Pennsieve data
-              platform. Get access to Pennsieve as well as the SPARC Consortium
-              organization on Pennsieve by filling out this
-              <a target="_blank">this form.</a>
-              Once you have access, be sure to connect your Pennsieve account
-              with SODA using the button below.
-            </p>
-            <div>BUTTON</div>
-            <label class="guided--welcome-section-label text-center"
-              >2. Data Deliverable file</label
-            >
-            <p class="guided--help-text">
-              SPARC requires all datasets to include a submission metadata file
-              that includes information regarding the milestone associated with
-              your dataset. This information should match exactly with the Data
-              Deliverables document and how to obtain
-              <a target="_blank">here.</a> Once the document has been prepraed
-              use the button below to submit.
-            </p>
-            <div>BUTTON</div>
-            <label class="guided--welcome-section-label text-center"
-              >3. Protocols.io Account</label
-            >
-            <p class="guided-help-text">
-              All SPARC datasets must have their associated protocols on
-              <a>protocol.io</a>, a platform for creating
-              structure-folder-contents and shareable protocols. Since
-              protocols.io provides a convenient interface to prepare protocols,
-              we recommend you prepare your protocols directly there before
-              continuing. Follow the
-              <a>SPARC instructions for preparing protoco.s on protocols.io</a>
-            </p>
-            <p class="guided-help-text">
-              The dataset_description metada file must contain information about
-              the protocols on protocols.io. You can provide information about
-              the protocols on protocols.io You can provide information about
-              the protocols of your dataset below and SODA will automatically
-              include it in the dataset_description file when it is generated in
-              the last step of this guided workflow. Use the button below to
-              connect your protocols.io account with SODA if you would like to
-              import your protocols information easily.
-            </p>
-            <div>BUTTON</div>
-            <label class="guided--welcome-section-label text-center"
-              >4. Airtable Account (optional)</label
-            >
-            <p class="guided-help-text">
-              The number of the SPARC award associated with your dataset is a
-              required metadata when submitting your SPARC dataset. SODA can
-              help you specify your SPARC award through the SPARC Airtable
-              sheet. To learn more about SPARC Airtable sheet, please visit the
-              <a>SODA Documentation.</a>
-              Use the button below to sign in and import your Airtable sheet.
-            </p>
-            <div>BUTTON</div>
-          </div>
-        </div>
+
         <div
           id="guided-subjects-folder-tab"
           class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
