@@ -1205,3 +1205,7 @@ h1.guided--text-sub-step {
 .border-styling {
   border: 2px solid lightgray;
 }
+
+.before-getting-started-btn {
+  margin-bottom: 1.5rem;
+}

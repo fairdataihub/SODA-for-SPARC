@@ -388,7 +388,7 @@
             <label class="guided--welcome-section-label text-center"
               >1. Pennsieve Account</label
             >
-            <p class="guided-help-text">
+            <p class="guided--help-text">
               All SPARC datasets must be uploaded on the Pennsieve data
               platform. Get access to Pennsieve as well as the SPARC Consortium
               organization on Pennsieve by filling out this
@@ -396,7 +396,42 @@
               Once you have access, be sure to connect your Pennsieve account
               with SODA using the button below.
             </p>
-            <div>BUTTON</div>
+            <div class="before-getting-started-btn">
+              <button
+                id="getting-started-pennsieve-account"
+                class="metadata-button button-generate-dataset"
+                style="width: 150px; height: 150px; margin: 12px"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="50px"
+                  height="50px"
+                  viewBox="0 0 448 512"
+                >
+                  <!--! Font Awesome Pro 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+                  <path
+                    d="M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0S96 57.3 96 128s57.3 128 128 128zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"
+                  />
+                </svg>
+                <svg
+                  style="display: none"
+                  width="40px"
+                  height="50px"
+                  viewBox="0 0 16 16"
+                  class="bi bi-check2"
+                  fill="var(--color-light-green)"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                  ></path>
+                </svg>
+                <p style="margin-top: 15px; font-family: 'Raleway', sans-serif">
+                  Pennsieve Account
+                </p>
+              </button>
+            </div>
             <label class="guided--welcome-section-label text-center"
               >2. Data Deliverable file</label
             >
@@ -408,11 +443,52 @@
               <a target="_blank">here.</a> Once the document has been prepraed
               use the button below to submit.
             </p>
-            <div>BUTTON</div>
+            <div class="before-getting-started-btn">
+              <button
+                id="getting-started-data-deliverable-btn"
+                class="metadata-button button-generate-dataset"
+                style="width: 150px; height: 150px; margin: 12px"
+              >
+                <svg
+                  width="50px"
+                  height="50px"
+                  viewBox="0 0 16 16"
+                  class="bi bi-file-earmark-plus"
+                  fill="#13716D"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
+                  ></path>
+                  <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"></path>
+                  <path
+                    fill-rule="evenodd"
+                    d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+                  ></path>
+                </svg>
+                <svg
+                  style="display: none"
+                  width="50px"
+                  height="50px"
+                  viewBox="0 0 16 16"
+                  class="bi bi-check2"
+                  fill="var(--color-light-green)"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                  ></path>
+                </svg>
+                <p style="margin-top: 24px; font-family: 'Raleway', sans-serif">
+                  Data Deliverable
+                </p>
+              </button>
+            </div>
             <label class="guided--welcome-section-label text-center"
               >3. Protocols.io Account</label
             >
-            <p class="guided-help-text">
+            <p class="guided--help-text">
               All SPARC datasets must have their associated protocols on
               <a>protocol.io</a>, a platform for creating
               structure-folder-contents and shareable protocols. Since
@@ -421,7 +497,7 @@
               continuing. Follow the
               <a>SPARC instructions for preparing protoco.s on protocols.io</a>
             </p>
-            <p class="guided-help-text">
+            <p class="guided--help-text">
               The dataset_description metada file must contain information about
               the protocols on protocols.io. You can provide information about
               the protocols on protocols.io You can provide information about
@@ -431,11 +507,33 @@
               connect your protocols.io account with SODA if you would like to
               import your protocols information easily.
             </p>
-            <div>BUTTON</div>
+            <div class="before-getting-started-btn">
+              <button
+                class="guided--radio-button tile-button basic"
+                id="guided-button-import-protocols-io"
+                style="
+                  opacity: 0.5;
+                  cursor: default !important;
+                  pointer-events: none;
+                "
+              >
+                <div class="guided--tile-button-icon">
+                  <img
+                    src="assets/img/Protocols-io-icon.png"
+                    alt="Protocols.io icon"
+                    style="width: 50px; height: 50px; object-fit: contain"
+                  />
+                </div>
+                <div class="guided--tile-body">
+                  <h2>Yes, import my protocols from Protocols.io</h2>
+                </div>
+              </button>
+            </div>
             <label class="guided--welcome-section-label text-center"
               >4. Airtable Account (optional)</label
             >
-            <p class="guided-help-text">
+
+            <p class="guided--help-text">
               The number of the SPARC award associated with your dataset is a
               required metadata when submitting your SPARC dataset. SODA can
               help you specify your SPARC award through the SPARC Airtable
@@ -443,7 +541,23 @@
               <a>SODA Documentation.</a>
               Use the button below to sign in and import your Airtable sheet.
             </p>
-            <div>BUTTON</div>
+            <div class="before-getting-started-btn">
+              <button
+                class="guided--radio-button tile-button basic"
+                id="gettting-started-button-import-sparc-award"
+              >
+                <div class="guided--tile-button-icon">
+                  <img
+                    src="assets/img/Airtable-icon.png"
+                    alt="Airtable icon"
+                    style="width: 50px; height: 50px; object-fit: contain"
+                  />
+                </div>
+                <div class="guided--tile-body">
+                  <h2>Yes, import account from Airtable</h2>
+                </div>
+              </button>
+            </div>
           </div>
         </div>
 
