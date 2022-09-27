@@ -1,3 +1,5 @@
+const { platform } = require('os');
+
 const { copyFile, readdir } = require('fs').promises;
 
 // opendropdown event listeners
@@ -32,29 +34,56 @@ function selectManifestGenerationLocation() {
 }
 
 const openDirectoryAtManifestGenerationLocation = (generationLocation) => {
-  // find a high level folder in the generation location
-  fs.readdir(generationLocation, (err, files) => {
-    if (err) {
-      console.log(err);
-      return;
-    }
+  openFolder(generationLocation)
+  return;
 
-    for (const file of files) {
-      if (
-        file === "primary" ||
-        file === "derivative" ||
-        file === "code" ||
-        file === "docs" ||
-        file === "protocol" ||
-        file === "source"
-      ) {
-        // open the dataset folder
-        shell.showItemInFolder(generationLocation + "/" + file);
-        return;
-      }
-    }
-  });
 }
+
+
+function openFolder(generationLocation) {
+  // create the folder path 
+  console.log("Folder path is: ", generationLocation)
+
+  try {
+    // check the current Operating system
+    if (platform() === "darwin") {
+      // open the file viewer at the generation location
+      require("child_process").spawn(
+        "open",
+        [generationLocation],
+        {
+          stdio: "ignore",
+        }
+      );
+    } else if (platform() === "win32") {
+      require("child_process").spawn(
+        "explorer /select",
+        [generationLocation],
+        {
+          stdio: "ignore",
+        }
+      );
+    } else {
+      console.log("Should try to open")
+      require("child_process").spawn(
+        "xdg-open",
+        [generationLocation],
+        {
+          stdio: "ignore",
+        }
+      );
+    }
+  } catch (error) {
+    console.error(error)
+    Swal.fire({
+      title: "Error",
+      text: `Could not open the new manifest folder for you. Please view your manifest files by navigating to ${generationLocation}.`,
+      icon: "error",
+      confirmButtonText: "Ok",
+    })
+  }
+}
+
 
 $(document).ready(function () {
   ipcRenderer.on(
@@ -1230,11 +1259,11 @@ const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
       })
-      return false
+      return [false, manifestFolderDirectory]
     }
   }
 
-  return true
+  return [true, manifestFolderDirectory]
 }
 
 
@@ -2042,12 +2071,14 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
       Swal.close();
       localDatasetFolderPath = "";
     } else {
+      console.log("In the testing zone???")
       // SODA Manifest Files folder
       let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files");
       let moveFinishedBool;
+      let manifestGenerationDirectory;
       if (originalDataset !== finalManifestGenerationPath) {
         // Move manifest files to the local dataset
-        moveFinishedBool = await moveManifestFilesPreview(
+        [moveFinishedBool, manifestGenerationDirectory] = await moveManifestFilesPreview(
           dir,
           finalManifestGenerationPath
         );
@@ -2056,7 +2087,9 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
         moveFinishedBool = await moveManifestFiles(dir, originalDataset);
       }
 
-      openDirectoryAtManifestGenerationLocation(originalDataset !== finalManifestGenerationPath ? finalManifestGenerationPath : originalDataset);
+      console.log("Generation location path is: ", manifestGenerationDirectory)
+
+      openDirectoryAtManifestGenerationLocation(originalDataset !== finalManifestGenerationPath ? manifestGenerationDirectory : originalDataset);
 
       if (moveFinishedBool) {
         resetManifest(true);
