@@ -48,33 +48,27 @@ function openFolder(generationLocation) {
     // check the current Operating system
     if (platform() === "darwin") {
       // open the file viewer at the generation location
-      require("child_process").spawn(
-        "open",
-        [generationLocation],
-        {
-          stdio: "ignore",
+      client.get('/datasets/open', {
+        params: {
+          dataset_path: generationLocation
         }
-      );
+      })
     } else if (platform() === "win32") {
-      require("child_process").spawn(
-        "explorer /select",
-        [generationLocation],
-        {
-          stdio: "ignore",
+      client.get('/datasets/open', {
+        params: {
+          dataset_path: generationLocation
         }
-      );
+      })
     } else {
-      console.log("Should try to open")
-      require("child_process").spawn(
-        "xdg-open",
-        [generationLocation],
-        {
-          stdio: "ignore",
+      client.get('/datasets/open', {
+        params: {
+          dataset_path: generationLocation
         }
-      );
+      })
     }
   } catch (error) {
     console.error(error)
+    clientError(error)
     Swal.fire({
       title: "Error",
       text: `Could not open the new manifest folder for you. Please view your manifest files by navigating to ${generationLocation}.`,
@@ -953,16 +947,17 @@ async function initiate_generate_manifest_local(
     let dir = path.join(homeDirectory, "SODA", "manifest_files");
     // Move manifest files to the local dataset
     let moveFinishedBool;
+    let generationLocation;
     if (finalManifestGenerationPath == originalDataset) {
       moveFinishedBool = await moveManifestFiles(dir, originalDataset);
     } else {
-      moveFinishedBool = await moveManifestFilesPreview(
+      [moveFinishedBool, generationLocation] = await moveManifestFilesPreview(
         dir,
         finalManifestGenerationPath
       );
     }
 
-    openDirectoryAtManifestGenerationLocation(finalManifestGenerationPath);
+    openDirectoryAtManifestGenerationLocation(finalManifestGenerationPath == originalDataset ? finalManifestGenerationPath : generationLocation);
 
     if (moveFinishedBool) {
       resetManifest(true);
@@ -1210,7 +1205,7 @@ const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
     })
-    return false
+    return [false, ""]
   }
 
   // create a directory for storing the manifest files in the destination folder
@@ -1227,7 +1222,7 @@ const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
     })
-    return false
+    return [false, ""]
   }
 
   // traverse the high level folders in the source folder and copy the source manifest files to the destination folder for user previewing
@@ -2366,7 +2361,7 @@ function checkInvalidHighLevelFolders(datasetStructure) {
 }
 
 // function to generate edited manifest files onto Pennsieve (basically just upload the local SODA Manifest Files folder to Pennsieve)
-function generateAfterEdits() {
+async function generateAfterEdits() {
   let dir = path.join(homeDirectory, "SODA", "manifest_files");
   // set up sodaJSonObject
   sodaJSONObj = {
@@ -2394,8 +2389,15 @@ function generateAfterEdits() {
 
   // move the generated manifest files to the user selected location for preview
   if (pennsievePreview) {
-    moveManifestFilesPreview(dir, finalManifestGenerationPath);
-    openDirectoryAtManifestGenerationLocation(finalManifestGenerationPath);
+    let [moved, location] = await moveManifestFilesPreview(dir, finalManifestGenerationPath)
+    openDirectoryAtManifestGenerationLocation(location);
+    Swal.fire({
+      title: "Successfully generated manifest files at the specified location!",
+      icon: "success",
+      confirmButtonText: "OK",
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+    })
     return;
   }
 

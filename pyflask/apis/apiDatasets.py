@@ -2,7 +2,8 @@ from flask_restx import Resource, reqparse, fields
 from namespaces import get_namespace, NamespaceEnum
 from errorHandlers import notBadRequestException, handle_http_error
 from datasets import get_role, get_dataset_by_id, get_current_collection_names, upload_collection_names, remove_collection_names
-
+import platform 
+import subprocess
 
 api = get_namespace(NamespaceEnum.DATASETS)
 
@@ -117,3 +118,31 @@ class datasetCollection(Resource):
             if notBadRequestException(e):
                 api.abort(500, str(e))
             raise e
+
+
+
+
+@api.route('/open')
+class OpenDataset(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('dataset_path', type=str, required=True, help='Dataset name', location="args")
+
+    @api.expect(parser)
+    @api.doc(responses={200: 'Success', 400: 'Bad Request', 500: "Internal server error"})
+    def get(self):
+        args = self.parser.parse_args()
+        dataset_path = args.get('dataset_path')
+
+        api.logger.info(f"Opening dataset: {dataset_path}")
+
+        try:
+          if platform.system() == "Windows":
+            subprocess.Popen(f"explorer /select,{str(dataset_path)}")
+          elif platform.system() == "Darwin":
+            subprocess.Popen(["open", dataset_path])
+          else:
+            subprocess.Popen(["xdg-open", dataset_path])
+
+          return "SUCCESS"
+        except Exception as e:
+          api.abort(500, str(e))
