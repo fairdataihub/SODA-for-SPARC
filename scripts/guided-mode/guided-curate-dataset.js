@@ -4476,8 +4476,20 @@ const removeContributorField = (contributorDeleteButton) => {
   contributorField.remove();
 };
 
-const openGuidedAddContributorSwal = async () => {
+const openGuidedAddContributorSwal = async (contributorObj) => {
   const currentDatasetUploadName = sodaJSONObj["digital-metadata"]["name"];
+
+  const contributorFirstName = contributorObj["contributorFirstName"];
+  const contributorLastName = contributorObj["contributorLastName"];
+  const contributorFullName = contributorObj["name"];
+
+  const conID = contributorObj["conID"];
+  const conName = contributorObj["conName"];
+  const contributorRoles = contributorObj["conRole"];
+
+  const contributorSwalTitle = contributorFirstName
+    ? `Edit ${contributorObj["contributorFirstName"]}'s details`
+    : `Enter the contributor details for your new contributor`;
 
   const { value: newContributorData } = await Swal.fire({
     allowOutsideClick: false,
@@ -4485,72 +4497,125 @@ const openGuidedAddContributorSwal = async () => {
     backdrop: "rgba(0,0,0, 0.4)",
     width: "800px",
     heightAuto: false,
-    title: "Enter the contributor details for your new contributor",
+    title: contributorSwalTitle,
     html: `
-      <div class="space-between w-100">
-          <div class="guided--flex-center mt-sm" style="width: 45%">
-            <label class="guided--form-label required">Last name: </label>
-            <input
-              class="
-                guided--input
-                guided-last-name-input
-              "
-              type="text"
-              placeholder="Enter last name here"
-              value="${"asdf" ? "asdf" : ""}"
-            />
+      <div class="guided--flex-center mt-sm">
+        <div class="space-between w-100">
+            <div class="guided--flex-center mt-sm" style="width: 45%">
+              <label class="guided--form-label required">Last name: </label>
+              <input
+                class="
+                  guided--input
+                  guided-last-name-input
+                "
+                type="text"
+                placeholder="Enter last name here"
+                value="${contributorLastName ? contributorLastName : ""}"
+              />
+            </div>
+            <div class="guided--flex-center mt-sm" style="width: 45%">
+              <label class="guided--form-label required">First name: </label>
+              <input
+                class="
+                  guided--input
+                  guided-first-name-input
+                "
+                type="text"
+                placeholder="Enter first name here"
+                value="${contributorFirstName ? contributorFirstName : ""}"
+              />
+            </div>
           </div>
-          <div class="guided--flex-center mt-sm" style="width: 45%">
-            <label class="guided--form-label required">First name: </label>
-            <input
-              class="
-                guided--input
-                guided-first-name-input
-              "
-              type="text"
-              placeholder="Enter first name here"
-              value="${"asdf" ? "asdf" : ""}"
-            />
-          </div>
+          <label class="guided--form-label mt-md required">ORCID: </label>
+          <input
+            class="
+              guided--input
+              guided-orcid-input
+            "
+            type="text"
+            placeholder="Enter ORCID here"
+            onkeyup="validateInput($(this))"
+            value="${contributorORCID ? contributorORCID : ""}"
+          />
+          <label class="guided--form-label mt-md required">Affiliation(s): </label>
+          <input id="guided-contributor-affiliation-input"
+            contenteditable="true"
+            data-initial-contributor-affiliation="${"asdf"}"
+          />
+          <label class="guided--form-label mt-md required">Role(s): </label>
+          <input id="guided-contributor-roles-input"
+            contenteditable="true"
+            data-initial-contributor-roles="${"asdf"}"
+          />
         </div>
-        <label class="guided--form-label mt-md required">ORCID: </label>
-        <input
-          class="
-            guided--input
-            guided-orcid-input
-          "
-          type="text"
-          placeholder="Enter ORCID here"
-          onkeyup="validateInput($(this))"
-          value="${"asdf" ? "asdf" : ""}"
-        />
-        <label class="guided--form-label mt-md required">Affiliation(s): </label>
-        <input class="guided-contributor-affiliation-input"
-          contenteditable="true"
-          data-initial-contributor-affiliation="${"asdf"}"
-        />
-        <label class="guided--form-label mt-md required">Role(s): </label>
-        <input class="guided-contributor-role-input"
-          contenteditable="true"
-          data-initial-contributor-roles="${"asdf"}"
-        />
       </div>
     `,
 
     showCancelButton: true,
     confirmButtonText: "Rename",
     confirmButtonColor: "#3085d6 !important",
-    didOpen: () => {},
+    didOpen: () => {
+      //Create Affiliation(s) tagify for each contributor
+      const contributorAffiliationInput = document.getElementById(
+        "guided-contributor-affiliation-input"
+      );
+      const affiliationTagify = new Tagify(contributorAffiliationInput, {
+        duplicate: false,
+      });
+      createDragSort(affiliationTagify);
+
+      const contributorRolesInput = document.getElementById(
+        "guided-contributor-roles-input"
+      );
+      const contributorRolesTagify = new Tagify(contributorRolesInput, {
+        whitelist: [
+          "PrincipleInvestigator",
+          "Creator",
+          "CoInvestigator",
+          "DataCollector",
+          "DataCurator",
+          "DataManager",
+          "Distributor",
+          "Editor",
+          "Producer",
+          "ProjectLeader",
+          "ProjectManager",
+          "ProjectMember",
+          "RelatedPerson",
+          "Researcher",
+          "ResearchGroup",
+          "Sponsor",
+          "Supervisor",
+          "WorkPackageLeader",
+          "Other",
+        ],
+        enforceWhitelist: true,
+        dropdown: {
+          enabled: 0,
+          closeOnSelect: true,
+          position: "auto",
+        },
+      });
+      createDragSort(contributorRolesTagify);
+    },
 
     preConfirm: (inputValue) => {
-      if (inputValue === "") {
-        Swal.showValidationMessage("Please enter a name for your dataset!");
-        return false;
-      }
-      if (inputValue === currentDatasetUploadName) {
-        Swal.showValidationMessage("Please enter a new name for your dataset!");
-        return false;
-      }
+      //get the contributor affiliation tags
+      const contributorAffiliationTagify = contributorField.querySelector(
+        ".guided-contributor-affiliation-input"
+      );
+      const contributorAffiliationTagifyChildren = Array.from(
+        contributorAffiliationTagify.children
+      );
+      //remove the span element from the array so only tag elements are left
+      contributorAffiliationTagifyChildren.pop();
+      //get the titles of the tagify tags
+      const contributorAffiliations = contributorAffiliationTagifyChildren.map(
+        (child) => {
+          return child.title;
+        }
+      );
+      Swal.showValidationMessage("Please enter a name for your dataset!");
     },
   });
   if (newContributorData) {
