@@ -1977,47 +1977,26 @@ const traverseToTab = async (targetPageID) => {
 
       renderDatasetDescriptionContributorsTable(contributors);
 
-      //If contributors already existin in the sodaJSONObj, then show the contributors field
-      //and render a card for each contributor
-      if (contributors) {
-        switchElementVisibility(
-          "guided-div-contributors-imported-from-airtable",
-          "guided-div-contributor-field-set"
-        );
+      // check if airtableconfig has non empty api-key and key-name properties
+      const airTableKeyData = parseJson(airtableConfigPath);
 
-        renderContributorFields(contributors);
-      } else {
-        // check if airtableconfig has non empty api-key and key-name properties
-        const airTableKeyData = parseJson(airtableConfigPath);
-
-        if (
-          sparcAward &&
-          airTableKeyData["api-key"] &&
-          airTableKeyData["api-key"] &&
-          airTableKeyData["key-name"] !== "" &&
-          airTableKeyData["api-key"] !== ""
-        ) {
-          try {
-            //Show contributor fields and hide contributor information fields
-            loadContributorInfofromAirtable(sparcAward, "guided");
-            switchElementVisibility(
-              "guided-div-contributor-field-set",
-              "guided-div-contributors-imported-from-airtable"
-            );
-          } catch (error) {
-            console.log(error);
-            //reset if error fetching contributors from Airtable
-            switchElementVisibility(
-              "guided-div-contributors-imported-from-airtable",
-              "guided-div-contributor-field-set"
-            );
-
-            document.getElementById("contributors-container").innerHTML = "";
-            //add an empty contributor information fieldset
-            addContributorField();
-          }
-        } else {
-          //hide AirTable contributor table and show contributor information fields
+      if (
+        sparcAward &&
+        airTableKeyData["api-key"] &&
+        airTableKeyData["api-key"] &&
+        airTableKeyData["key-name"] !== "" &&
+        airTableKeyData["api-key"] !== ""
+      ) {
+        try {
+          //Show contributor fields and hide contributor information fields
+          loadContributorInfofromAirtable(sparcAward, "guided");
+          switchElementVisibility(
+            "guided-div-contributor-field-set",
+            "guided-div-contributors-imported-from-airtable"
+          );
+        } catch (error) {
+          console.log(error);
+          //reset if error fetching contributors from Airtable
           switchElementVisibility(
             "guided-div-contributors-imported-from-airtable",
             "guided-div-contributor-field-set"
@@ -4477,19 +4456,16 @@ const removeContributorField = (contributorDeleteButton) => {
 };
 
 const openGuidedAddContributorSwal = async (contributorObj) => {
-  const currentDatasetUploadName = sodaJSONObj["digital-metadata"]["name"];
-
   const contributorFirstName = contributorObj["contributorFirstName"];
   const contributorLastName = contributorObj["contributorLastName"];
-  const contributorFullName = contributorObj["name"];
-
+  const contributorFullName = contributorObj["conName"];
   const conID = contributorObj["conID"];
   const conName = contributorObj["conName"];
-  const contributorRoles = contributorObj["conRole"];
+  const contributorRolesArray = contributorObj["conRole"];
 
   const contributorSwalTitle = contributorFirstName
     ? `Edit ${contributorObj["contributorFirstName"]}'s details`
-    : `Enter the contributor details for your new contributor`;
+    : `Enter the contributor's details`;
 
   const { value: newContributorData } = await Swal.fire({
     allowOutsideClick: false,
@@ -4535,7 +4511,7 @@ const openGuidedAddContributorSwal = async (contributorObj) => {
             type="text"
             placeholder="Enter ORCID here"
             onkeyup="validateInput($(this))"
-            value="${contributorORCID ? contributorORCID : ""}"
+            value="${conID ? conID : ""}"
           />
           <label class="guided--form-label mt-md required">Affiliation(s): </label>
           <input id="guided-contributor-affiliation-input"
@@ -4550,7 +4526,6 @@ const openGuidedAddContributorSwal = async (contributorObj) => {
         </div>
       </div>
     `,
-
     showCancelButton: true,
     confirmButtonText: "Rename",
     confirmButtonColor: "#3085d6 !important",
@@ -4615,7 +4590,6 @@ const openGuidedAddContributorSwal = async (contributorObj) => {
           return child.title;
         }
       );
-      Swal.showValidationMessage("Please enter a name for your dataset!");
     },
   });
   if (newContributorData) {
