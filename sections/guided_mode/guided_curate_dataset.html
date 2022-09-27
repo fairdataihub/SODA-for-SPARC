@@ -509,24 +509,41 @@
             </p>
             <div class="before-getting-started-btn">
               <button
-                class="guided--radio-button tile-button basic"
+                class="metadata-button button-generate-dataset"
                 id="guided-button-import-protocols-io"
                 style="
                   opacity: 0.5;
                   cursor: default !important;
                   pointer-events: none;
+                  width: 150px;
+                  height: 150px;
+                  margin: 12px;
                 "
               >
-                <div class="guided--tile-button-icon">
+                <div class="guided--tile-button-icon" style="margin-left: 2rem">
                   <img
                     src="assets/img/Protocols-io-icon.png"
                     alt="Protocols.io icon"
                     style="width: 50px; height: 50px; object-fit: contain"
                   />
                 </div>
-                <div class="guided--tile-body">
-                  <h2>Yes, import my protocols from Protocols.io</h2>
-                </div>
+                <svg
+                  style="display: none"
+                  width="50px"
+                  height="50px"
+                  viewBox="0 0 16 16"
+                  class="bi bi-check2"
+                  fill="var(--color-light-green)"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                  ></path>
+                </svg>
+                <p style="margin-top: 24px; font-family: 'Raleway', sans-serif">
+                  Protocols.io Account
+                </p>
               </button>
             </div>
             <label class="guided--welcome-section-label text-center"
@@ -543,19 +560,34 @@
             </p>
             <div class="before-getting-started-btn">
               <button
-                class="guided--radio-button tile-button basic"
+                class="metadata-button button-generate-dataset"
                 id="gettting-started-button-import-sparc-award"
+                style="width: 150px; height: 150px; margin: 12px"
               >
-                <div class="guided--tile-button-icon">
+                <svg
+                  style="display: none"
+                  width="50px"
+                  height="50px"
+                  viewBox="0 0 16 16"
+                  class="bi bi-check2"
+                  fill="var(--color-light-green)"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                  ></path>
+                </svg>
+                <div class="guided--tile-button-icon" style="margin-left: 2rem">
                   <img
                     src="assets/img/Airtable-icon.png"
                     alt="Airtable icon"
                     style="width: 50px; height: 50px; object-fit: contain"
                   />
                 </div>
-                <div class="guided--tile-body">
-                  <h2>Yes, import account from Airtable</h2>
-                </div>
+                <p style="margin-top: 24px; font-family: 'Raleway', sans-serif">
+                  Airtable Account
+                </p>
               </button>
             </div>
           </div>

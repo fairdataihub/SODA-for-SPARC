@@ -261,6 +261,12 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
           $("#create_empty_dataset_BF_account_span").text(bfacct);
           $(".bf-account-span").text(bfacct);
           updateBfAccountList();
+          //change icons in getting started page (guided mode)
+          const gettingStartedPennsieveBtn = document.getElementById(
+            "getting-started-pennsieve-account"
+          );
+          gettingStartedPennsieveBtn.children[0].style.display = "none";
+          gettingStartedPennsieveBtn.children[1].style.display = "flex";
 
           try {
             let responseObject = await client.get(
@@ -442,6 +448,11 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
               $("#current_sparc_consortium_status").text("None");
               $("#sparc-consortium-share-btn").hide();
               $("#sparc-consortium-unshare-btn").hide();
+              const gettingStartedPennsieveBtn = document.getElementById(
+                "getting-started-pennsieve-account"
+              );
+              gettingStartedPennsieveBtn.children[0].style.display = "none";
+              gettingStartedPennsieveBtn.children[1].style.display = "flex";
 
               showHideDropdownButtons("account", "show");
               confirm_click_account_function();

@@ -1599,6 +1599,7 @@ const guidedResetUserTeamPermissionsDropdowns = () => {
 //If the keys exist, extract the data from the sodaJSONObj and populate the page
 //If the keys do not exist, reset the page (inputs, tables etc.) to the default state
 const traverseToTab = async (targetPageID) => {
+  console.log(targetPageID);
   let itemsContainer = document.getElementById("items-guided-container");
   if (itemsContainer.classList.contains("border-styling")) {
     itemsContainer.classList.remove("border-styling");
@@ -1649,18 +1650,56 @@ const traverseToTab = async (targetPageID) => {
       $(
         "#guided-curate-existing-local-dataset-branch-capsule-container"
       ).hide();
+      const dataDeliverableButton = document.getElementById(
+        "getting-started-data-deliverable-btn"
+      );
+      const airTableGettingStartedBtn = document.getElementById(
+        "gettting-started-button-import-sparc-award"
+      );
+      const importedDataDeliverable =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"];
 
+      console.log(sodaJSONObj);
+      console.log(importedDataDeliverable);
+      if (importedDataDeliverable) {
+        dataDeliverableButton.children[0].style.display = "none";
+        dataDeliverableButton.children[1].style.display = "flex";
+
+        // lottie.loadAnimation({
+        //   container: DDLottie,
+        //   animationData: successCheck,
+        //   renderer: "svg",
+        //   loop: true,
+        //   autoplay: true,
+        // });
+      } else {
+        dataDeliverableButton.children[0].style.display = "flex";
+        dataDeliverableButton.children[1].style.display = "none";
+        // lottie.loadAnimation({
+        //   container: DDLottie,
+        //   animationData: dragDrop,
+        //   renderer: "svg",
+        //   loop: true,
+        //   autoplay: true,
+        // });
+      }
       // This controls the UI for the new page
       // First we get vals from sodaJSONObj, and then update the UI
       // based on the vals
       const airTableAccountData =
-        sodaJSONObj["path-to-airtable-data-in-sodajson-obj"];
+        sodaJSONObj["dataset-metadata"]["shared-metadata"][
+          "imported-sparc-award"
+        ];
 
       if (airTableAccountData) {
         //This is where we update the UI for the helper page
+        airTableGettingStartedBtn.children[1].style.display = "none";
+        airTableGettingStartedBtn.children[0].style.display = "flex";
         console.log("huh");
       } else {
         //This is where we reset the UI for the helper page
+        airTableGettingStartedBtn.children[1].style.display = "flex";
+        airTableGettingStartedBtn.children[0].style.display = "none";
         console.log("huh1");
       }
     }
@@ -12732,17 +12771,21 @@ Drag and Drop your data deliverable
 `;
 
 const dataDeliverableMessage = `
-<div>
-<div class="guided--container-file-import" droppable="true" ondrop="dropHandler(event, 'guided-data-deliverable-para-text', 'DataDeliverablesDocument', 'guided', dataDeliverables=true);" ondragover="return false;">
-  <div class="guided--file-import" data-code-metadata-file-type="data_deliverable" style="min-height: 300px; width: 587px;">
-    <div id="data-deliverable-lottie-container" class="code-metadata-lottie-container" style="height: 100px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300" preserveAspectRatio="xMidYMid meet" style="width: 100%; height: 100%; transform: translate3d(0px, 0px, 0px); content-visibility: visible;"><defs><clipPath id="__lottie_element_791"><rect width="300" height="300" x="0" y="0"></rect></clipPath></defs><g clip-path="url(#__lottie_element_791)"><g transform="matrix(1,0,0,1,99,36.82099914550781)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M12,65.67900085449219 C12,65.67900085449219 12,59.67900085449219 12,59.67900085449219"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 13.893 13.893" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M12,45.7859992980957 C12,45.7859992980957 12,24.94700050354004 12,24.94700050354004"></path></g><g opacity="1" transform="matrix(1,0,0,1,15,15)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-3,3 C-3,3 -3,-3 -3,-3 C-3,-3 3,-3 3,-3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 10.909 10.909" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M28.909000396728516,12 C28.909000396728516,12 132.5449981689453,12 132.5449981689453,12"></path></g><g opacity="1" transform="matrix(1,0,0,1,141,15)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-3,-3 C-3,-3 3,-3 3,-3 C3,-3 3,3 3,3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 10.909 10.909" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M144,28.909000396728516 C144,28.909000396728516 144,132.54600524902344 144,132.54600524902344"></path></g><g opacity="1" transform="matrix(1,0,0,1,141,141)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M3,-3 C3,-3 3,3 3,3 C3,3 -3,3 -3,3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 11.333 11.333" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M126.66699981689453,144 C126.66699981689453,144 109.66699981689453,144 109.66699981689453,144"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M104,144 C104,144 98,144 98,144"></path></g></g><g transform="matrix(1,0,0,1,122.58927917480469,49.94279098510742)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,60.5620002746582,60.5620002746582)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="10" d=" M35.5620002746582,-35.5620002746582 C35.5620002746582,-35.5620002746582 -35.5620002746582,-23.679000854492188 -35.5620002746582,-23.679000854492188 C-35.5620002746582,-23.679000854492188 -10.25100040435791,-10.25100040435791 -10.25100040435791,-10.25100040435791 C-10.25100040435791,-10.25100040435791 -35.20399856567383,14.70300006866455 -35.20399856567383,14.70300006866455 C-35.20399856567383,14.70300006866455 -15.003999710083008,34.90299987792969 -15.003999710083008,34.90299987792969 C-15.003999710083008,34.90299987792969 9.949000358581543,9.949999809265137 9.949000358581543,9.949999809265137 C9.949000358581543,9.949999809265137 23.679000854492188,35.5620002746582 23.679000854492188,35.5620002746582 C23.679000854492188,35.5620002746582 35.5620002746582,-35.5620002746582 35.5620002746582,-35.5620002746582z"></path></g></g><g transform="matrix(1,0,0,1,102.64799499511719,40.451995849609375)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,74.48500061035156,74.48500061035156)"><path stroke-linecap="round" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-66,0 C-66,-33 -66,-66 -66,-66 C-66,-66 66,-66 66,-66 C66,-66 66,66 66,66 C66,66 66,66 66,66 C66,66 -66,66 -66,66 C-66,66 -66,33 -66,0"></path></g></g></g></svg></div>
-    <p class="guided--help-text text-center">
-      Drag and Drop <br><b>data_deliverable.docx</b>
-    </p>
+<div style="margin-top: 1.5rem;">
+<div class="guided--container-file-import" droppable="true" ondrop="dropHandler(event, 'guided-data-deliverable-para-text', 'DataDeliverablesDocument', 'guided-getting-started', dataDeliverables=true);" ondragover="return false;">
+  <div class="guided--file-import" data-code-metadata-file-type="data_deliverable" style="min-height: 333px; width: 550px;">
+    <div id="swal-data-deliverable" class="code-metadata-lottie-container" style="height: 100px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300" preserveAspectRatio="xMidYMid meet" style="width: 100%; height: 100%; transform: translate3d(0px, 0px, 0px); content-visibility: visible;"><defs><clipPath id="__lottie_element_791"><rect width="300" height="300" x="0" y="0"></rect></clipPath></defs><g clip-path="url(#__lottie_element_791)"><g transform="matrix(1,0,0,1,99,36.82099914550781)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M12,65.67900085449219 C12,65.67900085449219 12,59.67900085449219 12,59.67900085449219"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 13.893 13.893" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M12,45.7859992980957 C12,45.7859992980957 12,24.94700050354004 12,24.94700050354004"></path></g><g opacity="1" transform="matrix(1,0,0,1,15,15)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-3,3 C-3,3 -3,-3 -3,-3 C-3,-3 3,-3 3,-3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 10.909 10.909" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M28.909000396728516,12 C28.909000396728516,12 132.5449981689453,12 132.5449981689453,12"></path></g><g opacity="1" transform="matrix(1,0,0,1,141,15)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-3,-3 C-3,-3 3,-3 3,-3 C3,-3 3,3 3,3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 10.909 10.909" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M144,28.909000396728516 C144,28.909000396728516 144,132.54600524902344 144,132.54600524902344"></path></g><g opacity="1" transform="matrix(1,0,0,1,141,141)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M3,-3 C3,-3 3,3 3,3 C3,3 -3,3 -3,3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 11.333 11.333" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M126.66699981689453,144 C126.66699981689453,144 109.66699981689453,144 109.66699981689453,144"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M104,144 C104,144 98,144 98,144"></path></g></g><g transform="matrix(1,0,0,1,122.58927917480469,49.94279098510742)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,60.5620002746582,60.5620002746582)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="10" d=" M35.5620002746582,-35.5620002746582 C35.5620002746582,-35.5620002746582 -35.5620002746582,-23.679000854492188 -35.5620002746582,-23.679000854492188 C-35.5620002746582,-23.679000854492188 -10.25100040435791,-10.25100040435791 -10.25100040435791,-10.25100040435791 C-10.25100040435791,-10.25100040435791 -35.20399856567383,14.70300006866455 -35.20399856567383,14.70300006866455 C-35.20399856567383,14.70300006866455 -15.003999710083008,34.90299987792969 -15.003999710083008,34.90299987792969 C-15.003999710083008,34.90299987792969 9.949000358581543,9.949999809265137 9.949000358581543,9.949999809265137 C9.949000358581543,9.949999809265137 23.679000854492188,35.5620002746582 23.679000854492188,35.5620002746582 C23.679000854492188,35.5620002746582 35.5620002746582,-35.5620002746582 35.5620002746582,-35.5620002746582z"></path></g></g><g transform="matrix(1,0,0,1,102.64799499511719,40.451995849609375)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,74.48500061035156,74.48500061035156)"><path stroke-linecap="round" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-66,0 C-66,-33 -66,-66 -66,-66 C-66,-66 66,-66 66,-66 C66,-66 66,66 66,66 C66,66 66,66 66,66 C66,66 -66,66 -66,66 C-66,66 -66,33 -66,0"></path></g></g></g></svg></div>
+    <div style="display: flex;">
+      <p class="guided--help-text text-center" style="/* width: 284px; *//* display: flex; *//* flex-direction: row; */">
+        Drag and Drop</p>
+        <p style="margin-left: 4px; font-weight: 600;">
+          data deliverables.docx
+        </p>
+    </div>
     <p class="guided--help-text text-center mt-sm mb-sm">
       OR
     </p>
-    <button class="ui primary basic button mt-sm" onclick="helpMilestoneSubmission('guided')">
+    <button class="ui primary basic button" onclick="helpMilestoneSubmission('guided')" style="margin-top: 2rem !important;">
       <i class="fas fa-file-import" style="margin-right: 7px"></i>Import data_deliverable.docx
     </button>
     <p class="guided--help-text small text-center mt-sm" id="guided-data-deliverable-para-text" style="max-width: 240px; overflow-wrap: break-word"></p>
@@ -12752,23 +12795,54 @@ const dataDeliverableMessage = `
 `;
 
 const showDataDeliverableDropDown = async () => {
+  const dataDeliverableButton = document.getElementById(
+    "getting-started-data-deliverable-btn"
+  );
+
   await Swal.fire({
     title: dataDeliverableTitle,
     html: dataDeliverableMessage,
-    showLoaderOnConfirm: true,
     showCancelButton: true,
     showConfirmButton: false,
     focusCancel: true,
     cancelButtonText: "Cancel",
-    // confirmButtonText: "Connect to Pennsieve",
+    confirmButtonText: "Continue",
     reverseButtons: reverseSwalButtons,
     backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
     allowOutsideClick: false,
-    // footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/manage-dataset/connect-your-pennsieve-account-with-soda#how-to-login-with-api-key" style="text-decoration: none;">Help me get an API key</a>`,
     didOpen: () => {
       let swal_container = document.getElementsByClassName("swal2-popup")[0];
+      let swal_actions = document.getElementsByClassName("swal2-actions")[0];
+      let DDLottie = document.getElementById("swal-data-deliverable");
+      let swal_header = document.getElementsByClassName("swal2-header")[0];
+      swal_header.style.borderBottom = "3px solid var(--color-bg-plum)";
+      swal_header.style.marginTop = "-2rem";
+      swal_header.style.padding = ".5rem";
+      DDLottie.innerHTML = "";
       swal_container.style.width = "43rem";
+      swal_actions.style.marginTop = "-2px";
+      swal_actions.style.marginBottom = "-7px";
+
+      if (sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"]) {
+        dataDeliverableButton.children[0].style.display = "none";
+        dataDeliverableButton.children[1].style.display = "flex";
+        lottie.loadAnimation({
+          container: DDLottie,
+          animationData: successCheck,
+          renderer: "svg",
+          loop: true,
+          autoplay: true,
+        });
+      } else {
+        lottie.loadAnimation({
+          container: DDLottie,
+          animationData: dragDrop,
+          renderer: "svg",
+          loop: true,
+          autoplay: true,
+        });
+      }
     },
     showClass: {
       popup: "animate__animated animate__fadeInDown animate__faster",
@@ -12777,6 +12851,13 @@ const showDataDeliverableDropDown = async () => {
       popup: "animate__animated animate__fadeOutUp animate__faster",
     },
   });
+  if (sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"]) {
+    dataDeliverableButton.children[0].style.display = "none";
+    dataDeliverableButton.children[1].style.display = "flex";
+  } else {
+    dataDeliverableButton.children[0].style.display = "flex";
+    dataDeliverableButton.children[1].style.display = "none";
+  }
 };
 
 const pennsieveButton = document.getElementById(
@@ -12793,6 +12874,7 @@ const airTableButton = document.getElementById(
 
 airTableButton.addEventListener("click", async () => {
   console.log("Airtable");
+  await helpSPARCAward("submission", "guided");
 });
 
 dataDeliverableButton.addEventListener("click", async () => {
@@ -12802,5 +12884,5 @@ dataDeliverableButton.addEventListener("click", async () => {
 
 pennsieveButton.addEventListener("click", async () => {
   console.log("here");
-  await showBFAddAccountSweetalert();
+  await openDropdownPrompt(this, "bf");
 });
