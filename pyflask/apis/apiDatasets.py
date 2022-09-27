@@ -4,6 +4,7 @@ from errorHandlers import notBadRequestException, handle_http_error
 from datasets import get_role, get_dataset_by_id, get_current_collection_names, upload_collection_names, remove_collection_names
 import platform 
 import subprocess
+import os
 
 api = get_namespace(NamespaceEnum.DATASETS)
 
@@ -133,11 +134,16 @@ class OpenDataset(Resource):
         args = self.parser.parse_args()
         dataset_path = args.get('dataset_path')
 
-        api.logger.info(f"Opening dataset: {dataset_path}")
+        
 
         try:
           if platform.system() == "Windows":
-            subprocess.Popen(f"explorer /select,{str(dataset_path)}")
+            # check the children of the dataset path to see if there is a .pennsieve folder
+            children = os.listdir(dataset_path)
+            # join first child with dataset path
+            child_path = os.path.join(dataset_path, children[0])
+            api.logger.info(f"Opening dataset: {child_path}")
+            subprocess.Popen(f"explorer /select,{str(child_path)}")
           elif platform.system() == "Darwin":
             subprocess.Popen(["open", dataset_path])
           else:
