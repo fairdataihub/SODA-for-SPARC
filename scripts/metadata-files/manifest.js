@@ -1298,7 +1298,6 @@ const createDuplicateManifestDirectory = async (destination) => {
     return !folder.includes(".")
   })
 
-  console.log(manifestFolderCopies)
 
   // if there is only one SODA Manifest Files directory create the first copy 
   if (manifestFolderCopies.length === 0) {
@@ -1320,7 +1319,21 @@ const createDuplicateManifestDirectory = async (destination) => {
   }
 
   // if there are multiple SODA Manifest Files directories, get the number of the last copy
-  let lastCopyNumber = manifestFolderCopies[manifestFolderCopies.length - 1].split(" ")[3].replace("(", "").replace(")", "")
+  let copyNumbers = []
+  // get the numbers of all the copies
+  for (const copy of manifestFolderCopies) {
+    // check if not the first SODA Manifest Files folder - which doesn't have a number
+    if (copy.split(" ")[3]) {
+      copyNumbers.push(parseInt(copy.split(" ")[3].replace("(", "").replace(")", "")))
+    }
+  }
+
+  // sort the copy numbers
+  copyNumbers.sort((a, b) => {
+    return a - b
+  })
+
+  let lastCopyNumber = copyNumbers[copyNumbers.length - 1]
 
   // create a new SODA Manifest Files directory ending with ' (n)' where n is the number of times the directory has been created
   let manifestFolderDirectory = path.join(
