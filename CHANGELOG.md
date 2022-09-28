@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Prepare Metadata - Create manifest.xlsx: An issue for Windows users that prevents the file explorer from immediately opening after creating manifest files has been corrected. Windows users will now be able to see their manifest files in the explorer post creation to check them for correctness. 
 - Prepare Metadata - Create manifest.xlsx: Users will no longer have to wait to get feedback that their manifest files are being generated for large datasets. 
 
+## Known issues: 
+- Guided Mode - Manifest file entries created with guided mode include their high level SPARC folder in the file name column. 
 
 
 ## v.9.2.1 - 2022-09-23
