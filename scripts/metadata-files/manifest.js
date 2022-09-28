@@ -42,8 +42,6 @@ const openDirectoryAtManifestGenerationLocation = (generationLocation) => {
 
 function openFolder(generationLocation) {
   // create the folder path 
-  console.log("Folder path is: ", generationLocation)
-
   try {
     // check the current Operating system
     if (platform() === "darwin") {
@@ -884,7 +882,6 @@ async function generateManifestHelper() {
       return;
     } else {
       if (generatingBoolean) {
-        console.log("Generating boolean is true line 845 of generate manifest helper")
       }
     }
   }
