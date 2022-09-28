@@ -1944,7 +1944,6 @@ async function generateManifestFolderLocallyForEdit(ev) {
       sodaJSONObj["dataset-structure"]
     );
 
-
     if (continueProgressEmptyFolder === false) {
       Swal.fire({
         title: "Failed to generate the manifest files.",
@@ -2005,6 +2004,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
       { timeout: 0 }
     );
 
+
     let res =
       generate_local_manifest.data.success_message_or_manifest_destination;
 
@@ -2022,6 +2022,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
             timeout: 0,
           }
         );
+
 
         Swal.fire({
           title: "Manifests ready!",
@@ -2066,7 +2067,6 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
       Swal.close();
       localDatasetFolderPath = "";
     } else {
-      console.log("In the testing zone???")
       // SODA Manifest Files folder
       let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files");
       let moveFinishedBool;
@@ -2081,8 +2081,6 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
         // Move manifest files to the local dataset
         moveFinishedBool = await moveManifestFiles(dir, originalDataset);
       }
-
-      console.log("Generation location path is: ", manifestGenerationDirectory)
 
       openDirectoryAtManifestGenerationLocation(originalDataset !== finalManifestGenerationPath ? manifestGenerationDirectory : originalDataset);
 
