@@ -43,27 +43,11 @@ const openDirectoryAtManifestGenerationLocation = (generationLocation) => {
 function openFolder(generationLocation) {
   // create the folder path 
   try {
-    // check the current Operating system
-    if (platform() === "darwin") {
-      // open the file viewer at the generation location
-      client.get('/datasets/open', {
-        params: {
-          dataset_path: generationLocation
-        }
-      })
-    } else if (platform() === "win32") {
-      client.get('/datasets/open', {
-        params: {
-          dataset_path: generationLocation
-        }
-      })
-    } else {
-      client.get('/datasets/open', {
-        params: {
-          dataset_path: generationLocation
-        }
-      })
-    }
+    client.get('/datasets/open', {
+      params: {
+        dataset_path: generationLocation
+      }
+    })
   } catch (error) {
     console.error(error)
     clientError(error)
