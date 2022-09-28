@@ -4489,6 +4489,15 @@ const addContributor = (
   });
 };
 
+const getContributorByOrcid = (orcid) => {
+  const contributors =
+    sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+  const contributor = contributors.find((contributor) => {
+    return contributor.conID == orcid;
+  });
+  return contributor;
+};
+
 const updateContributorByOrcid = (
   contributorFirstName,
   contributorLastName,
@@ -4498,7 +4507,7 @@ const updateContributorByOrcid = (
 ) => {
   const contributorsBeforeUpdate =
     sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
-
+  //Delete the contributor so we can add a new one with the updated information.
   sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] =
     contributorsBeforeUpdate.filter((contributor) => {
       //remove contributors with matching ORCID
@@ -4514,39 +4523,37 @@ const updateContributorByOrcid = (
   );
 };
 
-const deleteContributor = (contributorFirstName, contributorLastName) => {
+const deleteContributor = (orcid) => {
   const contributorsBeforeDelete =
     sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
-  const filteredContributors = contributorsBeforeDelete.filter(
-    (contributor) => {
-      //remove contributors with matching first and last name
-      return !(
-        contributor.contributorFirstName == contributorFirstName &&
-        contributor.contributorLastName == contributorLastName
-      );
-    }
-  );
 
   sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] =
-    filteredContributors;
+    contributorsBeforeDelete.filter((contributor) => {
+      //remove contributors with matching orcid
+      return contributor.conID !== orcid;
+    });
 };
 
-const openGuidedAddContributorSwal = async (contributorObj) => {
+const openGuidedAddContributorSwal = async (contributorOrcid) => {
   const sparcAward =
     sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
 
+  const editingExistingContributor = contributorOrcid ? true : false;
+
   let contributorOptionsElement;
 
-  if (!contributorObj["contributorFirstName"]) {
+  if (!editingExistingContributor) {
     try {
       let contributorData = await fetchContributorDataFromAirTable();
 
-      const contributors =
+      const existingContributors =
         sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
 
-      const contributorNames = contributors.map((contributor) => {
-        return contributor.conName;
-      });
+      const extingContributorOrcids = existingContributors.map(
+        (contributor) => {
+          return contributor.conID;
+        }
+      );
 
       // If contributor data is returned from airtable, add a select option for each contributor with
       // a returned first and last name
@@ -4567,9 +4574,8 @@ const openGuidedAddContributorSwal = async (contributorObj) => {
         console.log(!!contributorOptionsElement);
 
         for (const contributor of contributorData) {
-          const conFullName = `${contributor.firstName} ${contributor.lastName}`;
-          //only display the contributor if they are not already in the contributors array
-          if (!contributorNames.includes(conFullName)) {
+          const contributorOrcid = contributor.orcid; //only display the contributor if they are not already in the contributors array
+          if (!extingContributorOrcids.includes(contributorOrcid)) {
             contributorOptionsElement += `
             <option
               value="${contributor.firstName} ${contributor.lastName}"
@@ -4789,16 +4795,18 @@ const openGuidedAddContributorSwal = async (contributorObj) => {
       ) {
         Swal.showValidationMessage("Please fill out all required fields");
       } else {
-        if (!contributorObj["contributorFirstName"]) {
-          addContributor(
+        if (editingExistingContributor) {
+          updateContributorByOrcid(
             contributorFirstName,
             contributorLastName,
             contributorOrcid,
             contributorAffiliations,
             contributorRoles
           );
-        } else {
-          updateContributorByOrcid(
+        }
+
+        if (!editingExistingContributor) {
+          addContributor(
             contributorFirstName,
             contributorLastName,
             contributorOrcid,
@@ -10750,6 +10758,7 @@ $(document).ready(async () => {
       });
       return;
     }
+
     traverseToTab("guided-dataset-generation-tab");
     guidedPennsieveDatasetUpload();
   });
