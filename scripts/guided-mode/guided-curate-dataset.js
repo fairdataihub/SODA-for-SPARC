@@ -4489,6 +4489,31 @@ const addContributor = (
   });
 };
 
+const updateContributorByOrcid = (
+  contributorFirstName,
+  contributorLastName,
+  contributorORCID,
+  contributorAffiliationsArray,
+  contributorRolesArray
+) => {
+  const contributorsBeforeUpdate =
+    sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+
+  sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] =
+    contributorsBeforeUpdate.filter((contributor) => {
+      //remove contributors with matching ORCID
+      return contributor.conID !== contributorORCID;
+    });
+
+  addContributor(
+    contributorFirstName,
+    contributorLastName,
+    contributorORCID,
+    contributorAffiliationsArray,
+    contributorRolesArray
+  );
+};
+
 const deleteContributor = (contributorFirstName, contributorLastName) => {
   const contributorsBeforeDelete =
     sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
@@ -4510,36 +4535,42 @@ const openGuidedAddContributorSwal = async (contributorObj) => {
   const sparcAward =
     sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
 
-  let contributorOptionsElement = `
-    <option
-      value=""
-      data-first-name=""
-      data-last-name=""
-      data-orcid=""
-      data-affiliation=""
-      data-roles=""
-    >
-      Select a contributor
-    </option>
-  `;
-  try {
-    let contributorData = await fetchContributorDataFromAirTable();
+  let contributorOptionsElement;
 
-    const contributors =
-      sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+  if (!contributorObj["contributorFirstName"]) {
+    try {
+      let contributorData = await fetchContributorDataFromAirTable();
 
-    const contributorNames = contributors.map((contributor) => {
-      return contributor.conName;
-    });
+      const contributors =
+        sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
 
-    // If contributor data is returned from airtable, add a select option for each contributor with
-    // a returned first and last name
-    if (contributorData.length > 0) {
-      for (const contributor of contributorData) {
-        const conFullName = `${contributor.firstName} ${contributor.lastName}`;
-        //only display the contributor if they are not already in the contributors array
-        if (!contributorNames.includes(conFullName)) {
-          contributorOptionsElement += `
+      const contributorNames = contributors.map((contributor) => {
+        return contributor.conName;
+      });
+
+      // If contributor data is returned from airtable, add a select option for each contributor with
+      // a returned first and last name
+      if (contributorData.length > 0) {
+        console.log(!!contributorOptionsElement);
+        contributorOptionsElement = `
+          <option
+            value=""
+            data-first-name=""
+            data-last-name=""
+            data-orcid=""
+            data-affiliation=""
+            data-roles=""
+          >
+            Select a contributor
+          </option>
+        `;
+        console.log(!!contributorOptionsElement);
+
+        for (const contributor of contributorData) {
+          const conFullName = `${contributor.firstName} ${contributor.lastName}`;
+          //only display the contributor if they are not already in the contributors array
+          if (!contributorNames.includes(conFullName)) {
+            contributorOptionsElement += `
             <option
               value="${contributor.firstName} ${contributor.lastName}"
               data-first-name="${contributor.firstName}"
@@ -4551,16 +4582,19 @@ const openGuidedAddContributorSwal = async (contributorObj) => {
               ${contributor.firstName} ${contributor.lastName}
             </option>
           `;
+          }
         }
       }
+    } catch (error) {
+      console.log(error);
     }
-  } catch (error) {
-    console.log(error);
   }
 
   const contributorFirstName = contributorObj["contributorFirstName"];
   const contributorLastName = contributorObj["contributorLastName"];
-  const conID = contributorObj["conID"];
+  const contributorOrcid = contributorObj["conID"];
+  const contributorAffiliations = contributorObj["conAffliation"];
+  const contributorRoles = contributorObj["conRole"];
 
   const contributorSwalTitle = contributorFirstName
     ? `Edit ${contributorObj["contributorFirstName"]}'s details`
@@ -4620,7 +4654,7 @@ const openGuidedAddContributorSwal = async (contributorObj) => {
             type="text"
             placeholder="Enter ORCID here"
             onkeyup="validateInput($(this))"
-            value="${conID ? conID : ""}"
+            value="${contributorOrcid ? contributorOrcid : ""}"
           />
           <p class="guided--text-input-instructions mb-0">
               Provide a set of 3-5 keywords that will aid in the search of your
@@ -4656,6 +4690,10 @@ const openGuidedAddContributorSwal = async (contributorObj) => {
       });
       createDragSort(affiliationTagify);
 
+      if (contributorAffiliations) {
+        affiliationTagify.addTags(contributorAffiliations);
+      }
+
       const contributorRolesInput = document.getElementById(
         "guided-contributor-roles-input"
       );
@@ -4690,38 +4728,42 @@ const openGuidedAddContributorSwal = async (contributorObj) => {
       });
       createDragSort(contributorRolesTagify);
 
-      $("#guided-dd-contributor-dropdown").selectpicker();
-      $("#guided-dd-contributor-dropdown").selectpicker("refresh");
-      $("#guided-dd-contributor-dropdown").on("change", function (e) {
-        const selectedFirstName = $(
-          "#guided-dd-contributor-dropdown option:selected"
-        ).data("first-name");
-        const selectedLastName = $(
-          "#guided-dd-contributor-dropdown option:selected"
-        ).data("last-name");
-        const selectedOrcid = $(
-          "#guided-dd-contributor-dropdown option:selected"
-        ).data("orcid");
-        const selectedAffiliation = $(
-          "#guided-dd-contributor-dropdown option:selected"
-        ).data("affiliation");
-        const selectedRoles = $(
-          "#guided-dd-contributor-dropdown option:selected"
-        ).data("roles");
+      if (contributorRoles) {
+        contributorRolesTagify.addTags(contributorRoles);
+      } else {
+        $("#guided-dd-contributor-dropdown").selectpicker();
+        $("#guided-dd-contributor-dropdown").selectpicker("refresh");
+        $("#guided-dd-contributor-dropdown").on("change", function (e) {
+          const selectedFirstName = $(
+            "#guided-dd-contributor-dropdown option:selected"
+          ).data("first-name");
+          const selectedLastName = $(
+            "#guided-dd-contributor-dropdown option:selected"
+          ).data("last-name");
+          const selectedOrcid = $(
+            "#guided-dd-contributor-dropdown option:selected"
+          ).data("orcid");
+          const selectedAffiliation = $(
+            "#guided-dd-contributor-dropdown option:selected"
+          ).data("affiliation");
+          const selectedRoles = $(
+            "#guided-dd-contributor-dropdown option:selected"
+          ).data("roles");
 
-        document.getElementById("guided-contributor-first-name").value =
-          selectedFirstName;
-        document.getElementById("guided-contributor-last-name").value =
-          selectedLastName;
-        document.getElementById("guided-contributor-orcid").value =
-          selectedOrcid;
+          document.getElementById("guided-contributor-first-name").value =
+            selectedFirstName;
+          document.getElementById("guided-contributor-last-name").value =
+            selectedLastName;
+          document.getElementById("guided-contributor-orcid").value =
+            selectedOrcid;
 
-        affiliationTagify.removeAllTags();
-        affiliationTagify.addTags(selectedAffiliation);
+          affiliationTagify.removeAllTags();
+          affiliationTagify.addTags(selectedAffiliation);
 
-        contributorRolesTagify.removeAllTags();
-        contributorRolesTagify.addTags(selectedRoles.split());
-      });
+          contributorRolesTagify.removeAllTags();
+          contributorRolesTagify.addTags(selectedRoles.split());
+        });
+      }
     },
     didOpen: () => {},
 
@@ -4747,28 +4789,36 @@ const openGuidedAddContributorSwal = async (contributorObj) => {
       ) {
         Swal.showValidationMessage("Please fill out all required fields");
       } else {
-        addContributor(
-          contributorFirstName,
-          contributorLastName,
-          contributorOrcid,
-          contributorAffiliations,
-          contributorRoles
-        );
-
-        //rerender the table after adding a contributor
-        renderDatasetDescriptionContributorsTable();
+        if (!contributorObj["contributorFirstName"]) {
+          addContributor(
+            contributorFirstName,
+            contributorLastName,
+            contributorOrcid,
+            contributorAffiliations,
+            contributorRoles
+          );
+        } else {
+          updateContributorByOrcid(
+            contributorFirstName,
+            contributorLastName,
+            contributorOrcid,
+            contributorAffiliations,
+            contributorRoles
+          );
+        }
       }
+
+      //rerender the table after adding a contributor
+      renderDatasetDescriptionContributorsTable();
     },
   });
-  if (newContributorData) {
-    sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
-  }
 };
 
 const generateContributorTableRow = (contributorObj) => {
   const contributorFirstName = contributorObj["contributorFirstName"];
   const contributorLastName = contributorObj["contributorLastName"];
   const contributorFullName = contributorObj["conName"];
+  const contributorOrcid = contributorObj["conID"];
   const contributorRoleString = contributorObj["conRole"].join(", ");
 
   return `
@@ -7060,6 +7110,7 @@ $("#guided-submission-completion-date-manual").change(function () {
 //////////       GUIDED OBJECT ACCESSORS       //////////
 /////////////////////////////////////////////////////////
 const setOrUpdateGuidedDatasetName = (newDatasetName) => {
+  console.log(newDatasetName);
   return new Promise((resolve, reject) => {
     const previousDatasetName = sodaJSONObj["digital-metadata"]["name"];
     //If updataing the dataset, update the old banner image path with a new one
