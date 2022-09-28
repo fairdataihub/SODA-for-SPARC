@@ -934,7 +934,7 @@ document
       const res = await client.post(
         `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
         {
-          dataset_structure_obj: sodaJSONObj["saved-datset-structure-json-obj"],
+          dataset_structure_obj: datasetStructureJSONObj,
         },
         { timeout: 0 }
       );
@@ -1938,6 +1938,13 @@ const traverseToTab = async (targetPageID) => {
     if (targetPageID === "guided-manifest-file-generation-tab") {
       // Note: manifest file auto-generation is handled by an event listener on the button
       // with the ID: guided-button-auto-generate-manifest-files
+
+      //Delete any manifest files in the dataset structure.
+      for (const folder of Object.keys(datasetStructureJSONObj["folders"])) {
+        delete datasetStructureJSONObj["folders"][folder]["files"][
+          "manifest.xlsx"
+        ];
+      }
     }
 
     if (targetPageID === "guided-airtable-award-tab") {
