@@ -841,9 +841,10 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
     JSON.stringify(newManifestFileNames)
   ) {
     //All files have remained the same, no need to diff check
-    console.log("samesies");
-    return newManifestData;
+    return existingManifestData;
   }
+
+  const numImmutableManifestDataCols = 3;
 
   // Create a hash table for the existing manifest data
   const existingManifestDataHashTable = {};
@@ -927,7 +928,6 @@ document
 
     scrollToBottomOfGuidedBody();
     console.log("called function");
-    //sleep for 5 seconds
 
     try {
       // Retrieve the manifest data to be used to generate the manifest files
