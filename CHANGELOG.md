@@ -5,6 +5,16 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.9.2.2 - 2022-09-28
+
+## Bug fixes:
+
+- Prepare Metadata - Create manifest.xlsx: Manifest files created from large datasets will no longer be 0KB or fail to be created. 
+- Prepare Metadata - Create manifest.xlsx: An issue for Windows users that prevents the file explorer from immediately opening after creating manifest files has been corrected. Windows users will now be able to see their manifest files in the explorer post creation to check them for correctness. 
+- Prepare Metadata - Create manifest.xlsx: Users will no longer have to wait to get feedback that their manifest files are being generated for large datasets. 
+
+
+
 ## v.9.2.1 - 2022-09-23
 
 ## Bug fixes:
