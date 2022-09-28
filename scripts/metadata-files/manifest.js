@@ -553,6 +553,23 @@ var finalManifestGenerationPath = "";
 let pennsievePreview = false;
 
 async function generateManifestPrecheck(manifestEditBoolean, ev) {
+
+  // if doing a local generation ( but not as part of the Pennsieve preview flow ) make sure the input 
+  // that indicates where the manifest files will be generated is not empty
+  if (ev.getAttribute("id") == document.getElementById("btn-local-manifest-gen").getAttribute("id")) {
+    // check if the input is empty
+    if (document.querySelector("#input-manifest-local-gen-location").placeholder === "Browse here") {
+      Swal.fire({
+        title: "Please select a destination folder for the manifest file",
+        icon: "error",
+        confirmButtonText: "OK",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0,0.4)",
+      });
+      return
+    }
+  }
+
   var type = "local";
   pennsievePreview = false;
   if (
@@ -571,6 +588,7 @@ async function generateManifestPrecheck(manifestEditBoolean, ev) {
     type = "local";
     pennsievePreview = true;
   }
+
 
   exitCurate();
   sodaJSONObj["starting-point"] = {};
@@ -622,7 +640,7 @@ async function generateManifestPrecheck(manifestEditBoolean, ev) {
   }
 
   Swal.fire({
-    title: "Generating the manifest.xlsx file(s) - precheck",
+    title: "Generating the manifest.xlsx file(s)",
     html: "Please wait...",
     allowEscapeKey: false,
     allowOutsideClick: false,
