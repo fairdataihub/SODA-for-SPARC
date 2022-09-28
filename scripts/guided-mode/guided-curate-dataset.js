@@ -12766,6 +12766,73 @@ $(document).ready(async () => {
   });
 });
 
+const currentAccount = (account, userDetails) => { 
+return `
+<div style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: space-between;
+                  margin-top: 15px;
+                  height: auto;
+                  box-shadow: 0px 0px 10px #d5d5d5;
+                  padding: 15px 25px;
+                  border-radius: 5px;
+                ">
+                <div style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                  ">
+                  <div class="card-container manage-dataset">
+                    <div style="display: flex">
+                      <h5 class="card-left" style="
+                          text-align: right;
+                          color: #808080;
+                          font-size: 15px;
+                          padding-right: 5px;
+                        ">
+                        Current account:
+                      </h5>
+                      <div class="md-change-current-account" style="margin-left: 10px; display: flex; justify-content: space-between;">
+                        <h5 class="card-right bf-account-span" style="
+                            color: #000;
+                            font-weight: 600;
+                            margin-left: 8px;
+                            font-size: 15px;
+                            width: fit-content;
+                          " id="getting-started-account">${defaultBfAccount}</h5>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div style="
+                    display: flex;
+                    flex-direction: row;
+                    margin-bottom: 15px;
+                  ">
+                  <div class="card-container manage-dataset">
+                    <div>
+                      <h5 class="card-left" style="
+                          text-align: right;
+                          color: #808080;
+                          font-size: 15px;
+                          padding-right: 20px;
+                        ">
+                        Account details:
+                      </h5>
+                      <h5 class="card-right bf-account-details-span" style="
+                          color: #000;
+                          font-weight: 600;
+                          margin-left: 15px;
+                          font-size: 15px;
+                        " id="para_create_empty_dataset_BF_account">${$("#para-account-detail-curate").text()}</h5>
+                    </div>
+                  </div>
+                </div>
+              </div>
+`
+}
+
 const dataDeliverableTitle = `
 Drag and Drop your data deliverable
 `;
@@ -12814,6 +12881,7 @@ const showDataDeliverableDropDown = async () => {
     didOpen: () => {
       let swal_container = document.getElementsByClassName("swal2-popup")[0];
       let swal_actions = document.getElementsByClassName("swal2-actions")[0];
+      let swal_content = document.getElementsByClassName("swal2-content")[0];
       let DDLottie = document.getElementById("swal-data-deliverable");
       let swal_header = document.getElementsByClassName("swal2-header")[0];
       swal_header.style.borderBottom = "3px solid var(--color-bg-plum)";
@@ -12824,7 +12892,13 @@ const showDataDeliverableDropDown = async () => {
       swal_actions.style.marginTop = "-2px";
       swal_actions.style.marginBottom = "-7px";
 
-      if (sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"]) {
+      let ddFilePath = sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"]
+      if (ddFilePath) {
+        //append file path
+        let firstItem = swal_content.children[0]
+        let paragraph = document.createElement("p");
+        paragraph.innerText = ddFilePath;
+        firstItem.prepend(paragraph); 
         dataDeliverableButton.children[0].style.display = "none";
         dataDeliverableButton.children[1].style.display = "flex";
         lottie.loadAnimation({
@@ -12860,6 +12934,50 @@ const showDataDeliverableDropDown = async () => {
   }
 };
 
+const currentUserDropdown = async () => {
+  console.log("currentUser");
+  console.log(defaultBfAccount);
+  console.log($("#para-account-detail-curate").text())
+  const pennsieveDetails = await Swal.fire({
+    title: "Current Pennsieve Details",
+    html: currentAccount(defaultBfAccount, $("#para-account-detail-curate").text()),
+    showCancelButton: true,
+    // showConfirmButton: false,
+    focusCancel: true,
+    cancelButtonText: "Cancel",
+    confirmButtonText: "Change Account",
+    reverseButtons: reverseSwalButtons,
+    backdrop: "rgba(0,0,0, 0.4)",
+    heightAuto: false,
+    allowOutsideClick: false,
+    didOpen: () => {
+      let swal_container = document.getElementsByClassName("swal2-popup")[0];
+      let swal_actions = document.getElementsByClassName("swal2-actions")[0];
+      // let DDLottie = document.getElementById("swal-data-deliverable");
+      let swal_header = document.getElementsByClassName("swal2-header")[0];
+      swal_header.style.borderBottom = "3px solid var(--color-bg-plum)";
+      swal_header.style.marginTop = "-1rem";
+      swal_header.style.padding = ".5rem";
+      // DDLottie.innerHTML = "";
+      swal_container.style.width = "43rem";
+      swal_actions.style.marginTop = "12px";
+      swal_actions.style.marginBottom = "-7px";
+    },
+    showClass: {
+      popup: "animate__animated animate__fadeInDown animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__fadeOutUp animate__faster",
+    },
+  });
+
+  console.log(pennsieveDetails);
+  if(pennsieveDetails.isConfirmed) {
+    console.log('handle');
+    await openDropdownPrompt(this, 'bf');
+  }
+}
+
 const pennsieveButton = document.getElementById(
   "getting-started-pennsieve-account"
 );
@@ -12884,5 +13002,9 @@ dataDeliverableButton.addEventListener("click", async () => {
 
 pennsieveButton.addEventListener("click", async () => {
   console.log("here");
-  await openDropdownPrompt(this, "bf");
+  if(!defaultBfAccount) {
+    await openDropdownPrompt(this, "bf");
+  } else {
+    await currentUserDropdown();
+  }
 });
