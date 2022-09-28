@@ -838,7 +838,6 @@ def monitor_local_json_progress():
 def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     global namespace_logger
 
-    namespace_logger.info("IMPORT HERE")
     high_level_sparc_folders = [
         "code",
         "derivative",
@@ -928,7 +927,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         bf = pennsieve_account
         subfolder = bf._api._get("/packages/" + str(collection_id))
         children_content = subfolder["children"]
-        namespace_logger.info(collection_id)
         for items in children_content:
             item_name = items["content"]["name"]
             create_soda_json_progress += 1
@@ -975,9 +973,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         temp_name = item_name
                     if len(manifest.keys()) > 0:
                         if "filename" in manifest:
-                            namespace_logger.info("filename")
-                            namespace_logger.info(temp_name)
-                            namespace_logger.info(manifest["filename"].values())
                             if temp_name in manifest["filename"].values():
                                 location_index = list(manifest["filename"].values()).index(
                                     temp_name
@@ -993,9 +988,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                 if manifest["file type"][location_index] != "":
                                         subfolder_json["files"][item_name]["file type"] = manifest["file type"][location_index]
                         elif "File Name" in manifest:
-                            namespace_logger.info("file Name")
-                            namespace_logger.info(temp_name)
-                            namespace_logger.info(manifest["File Name"].values())
                             if temp_name in manifest["File Name"].values():
                                 location_index = list(manifest["File Name"].values()).index(
                                     temp_name
@@ -1126,7 +1118,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                 package_name = items["content"]["name"]
                 package_id = items["content"]["id"]
                 if package_name in manifest_sparc:
-                    namespace_logger.info(package_name);
                     # item is manifest
                     file_details = bf._api._get(
                         "/packages/" + str(package_id) + "/view"

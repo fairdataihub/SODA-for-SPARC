@@ -1,3 +1,5 @@
+const { platform } = require('os');
+
 const { copyFile, readdir } = require('fs').promises;
 
 // opendropdown event listeners
@@ -32,29 +34,32 @@ function selectManifestGenerationLocation() {
 }
 
 const openDirectoryAtManifestGenerationLocation = (generationLocation) => {
-  // find a high level folder in the generation location
-  fs.readdir(generationLocation, (err, files) => {
-    if (err) {
-      console.log(err);
-      return;
-    }
+  openFolder(generationLocation)
+  return;
 
-    for (const file of files) {
-      if (
-        file === "primary" ||
-        file === "derivative" ||
-        file === "code" ||
-        file === "docs" ||
-        file === "protocol" ||
-        file === "source"
-      ) {
-        // open the dataset folder
-        shell.showItemInFolder(generationLocation + "/" + file);
-        return;
-      }
-    }
-  });
 }
+
+
+function openFolder(generationLocation) {
+  // create the folder path 
+  try {
+    client.get('/datasets/open', {
+      params: {
+        dataset_path: generationLocation
+      }
+    })
+  } catch (error) {
+    console.error(error)
+    clientError(error)
+    Swal.fire({
+      title: "Error",
+      text: `Could not open the new manifest folder for you. Please view your manifest files by navigating to ${generationLocation}.`,
+      icon: "error",
+      confirmButtonText: "Ok",
+    })
+  }
+}
+
 
 $(document).ready(function () {
   ipcRenderer.on(
@@ -530,6 +535,23 @@ var finalManifestGenerationPath = "";
 let pennsievePreview = false;
 
 async function generateManifestPrecheck(manifestEditBoolean, ev) {
+
+  // if doing a local generation ( but not as part of the Pennsieve preview flow ) make sure the input 
+  // that indicates where the manifest files will be generated is not empty
+  if (ev.getAttribute("id") == document.getElementById("btn-local-manifest-gen").getAttribute("id")) {
+    // check if the input is empty
+    if (document.querySelector("#input-manifest-local-gen-location").placeholder === "Browse here") {
+      Swal.fire({
+        title: "Please select a destination folder for the manifest file",
+        icon: "error",
+        confirmButtonText: "OK",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0,0.4)",
+      });
+      return
+    }
+  }
+
   var type = "local";
   pennsievePreview = false;
   if (
@@ -548,6 +570,7 @@ async function generateManifestPrecheck(manifestEditBoolean, ev) {
     type = "local";
     pennsievePreview = true;
   }
+
 
   exitCurate();
   sodaJSONObj["starting-point"] = {};
@@ -598,17 +621,8 @@ async function generateManifestPrecheck(manifestEditBoolean, ev) {
     }
   }
 
-  // clean the manifest files by dropping empty columns ( keep the required columns even if empty )
-  await dropEmptyManifestColumns();
-
-  await generateManifest("", type, manifestEditBoolean, ev);
-
-  return;
-}
-
-async function generateManifest(action, type, manifestEditBoolean, ev) {
   Swal.fire({
-    title: "Reviewing the dataset structure.",
+    title: "Generating the manifest.xlsx file(s)",
     html: "Please wait...",
     allowEscapeKey: false,
     allowOutsideClick: false,
@@ -619,6 +633,28 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
       Swal.showLoading();
     },
   }).then((result) => { });
+
+  // clean the manifest files by dropping empty columns ( keep the required columns even if empty )
+  await dropEmptyManifestColumns();
+
+  await generateManifest("", type, manifestEditBoolean, ev);
+
+  return;
+}
+
+async function generateManifest(action, type, manifestEditBoolean, ev) {
+  // Swal.fire({
+  //   title: "Reviewing the dataset structure.",
+  //   html: "Please wait...",
+  //   allowEscapeKey: false,
+  //   allowOutsideClick: false,
+  //   showConfirmButton: false,
+  //   heightAuto: false,
+  //   backdrop: "rgba(0,0,0, 0.4)",
+  //   didOpen: () => {
+  //     Swal.showLoading();
+  //   },
+  // }).then((result) => { });
   // Case 1: Local dataset
   if (type === "local") {
     if (finalManifestGenerationPath === "") {
@@ -773,6 +809,7 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
           return;
         }
 
+
         generateManifestHelper();
         initiate_generate_manifest_local(
           manifestEditBoolean,
@@ -829,19 +866,6 @@ async function generateManifestHelper() {
       return;
     } else {
       if (generatingBoolean) {
-        Swal.fire({
-          title: "Generating the manifest.xlsx file(s)",
-          text: "Please wait...",
-          allowEscapeKey: false,
-          allowOutsideClick: false,
-          showConfirmButton: false,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          timerProgressBar: false,
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        });
       }
     }
   }
@@ -853,20 +877,6 @@ async function generateManifestPreview(e) {
 
 
   // set final generation destination to the user's selected location
-  Swal.fire({
-    title: "Generating the manifest.xlsx file(s)",
-    text: "Please wait...",
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    showConfirmButton: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  });
-
   finalManifestGenerationPath = folderPath[0];
 
   // generate manifest precheck
@@ -928,19 +938,6 @@ async function initiate_generate_manifest_local(
   manifestEditBoolean,
   originalDataset
 ) {
-  Swal.fire({
-    title: "Generating the manifest.xlsx file(s)",
-    text: "Please wait...",
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    showConfirmButton: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  });
 
   if (manifestEditBoolean === false) {
     createManifestLocally("local", false, originalDataset);
@@ -949,16 +946,17 @@ async function initiate_generate_manifest_local(
     let dir = path.join(homeDirectory, "SODA", "manifest_files");
     // Move manifest files to the local dataset
     let moveFinishedBool;
+    let generationLocation;
     if (finalManifestGenerationPath == originalDataset) {
       moveFinishedBool = await moveManifestFiles(dir, originalDataset);
     } else {
-      moveFinishedBool = await moveManifestFilesPreview(
+      [moveFinishedBool, generationLocation] = await moveManifestFilesPreview(
         dir,
         finalManifestGenerationPath
       );
     }
 
-    openDirectoryAtManifestGenerationLocation(finalManifestGenerationPath);
+    openDirectoryAtManifestGenerationLocation(finalManifestGenerationPath == originalDataset ? finalManifestGenerationPath : generationLocation);
 
     if (moveFinishedBool) {
       resetManifest(true);
@@ -1001,19 +999,6 @@ async function initiate_generate_manifest_local(
 var generatingBoolean = false;
 async function initiate_generate_manifest_bf() {
   generatingBoolean = true;
-  Swal.fire({
-    title: "Generating the manifest.xlsx file(s)",
-    text: "Please wait...",
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    showConfirmButton: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  });
   // Initiate curation by calling Python function
   let manifest_files_requested = false;
   var main_curate_status = "Solving";
@@ -1219,7 +1204,7 @@ const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
     })
-    return false
+    return [false, ""]
   }
 
   // create a directory for storing the manifest files in the destination folder
@@ -1236,7 +1221,7 @@ const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
     })
-    return false
+    return [false, ""]
   }
 
   // traverse the high level folders in the source folder and copy the source manifest files to the destination folder for user previewing
@@ -1268,11 +1253,11 @@ const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
       })
-      return false
+      return [false, manifestFolderDirectory]
     }
   }
 
-  return true
+  return [true, manifestFolderDirectory]
 }
 
 
@@ -1307,6 +1292,12 @@ const createDuplicateManifestDirectory = async (destination) => {
     return folder.includes("SODA Manifest Files")
   })
 
+  // filter out any extensions from the list
+  manifestFolderCopies = manifestFolderCopies.filter((folder) => {
+    return !folder.includes(".")
+  })
+
+
   // if there is only one SODA Manifest Files directory create the first copy 
   if (manifestFolderCopies.length === 0) {
     let manifestFolderDirectory = path.join(
@@ -1327,7 +1318,21 @@ const createDuplicateManifestDirectory = async (destination) => {
   }
 
   // if there are multiple SODA Manifest Files directories, get the number of the last copy
-  let lastCopyNumber = manifestFolderCopies[manifestFolderCopies.length - 1].split(" ")[3].replace("(", "").replace(")", "")
+  let copyNumbers = []
+  // get the numbers of all the copies
+  for (const copy of manifestFolderCopies) {
+    // check if not the first SODA Manifest Files folder - which doesn't have a number
+    if (copy.split(" ")[3]) {
+      copyNumbers.push(parseInt(copy.split(" ")[3].replace("(", "").replace(")", "")))
+    }
+  }
+
+  // sort the copy numbers
+  copyNumbers.sort((a, b) => {
+    return a - b
+  })
+
+  let lastCopyNumber = copyNumbers[copyNumbers.length - 1]
 
   // create a new SODA Manifest Files directory ending with ' (n)' where n is the number of times the directory has been created
   let manifestFolderDirectory = path.join(
@@ -1576,6 +1581,20 @@ async function extractBFDatasetForManifestFile(
     }
 
     if (!editBoolean) {
+      Swal.fire({
+        title: "Generating the manifest.xlsx file(s)",
+        text: "Please wait...",
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
       generateManifestOnPennsieve();
     } else {
       $("#preview-manifest-fake-confirm-pennsieve").click();
@@ -1937,7 +1956,6 @@ async function generateManifestFolderLocallyForEdit(ev) {
       sodaJSONObj["dataset-structure"]
     );
 
-
     if (continueProgressEmptyFolder === false) {
       Swal.fire({
         title: "Failed to generate the manifest files.",
@@ -1998,6 +2016,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
       { timeout: 0 }
     );
 
+
     let res =
       generate_local_manifest.data.success_message_or_manifest_destination;
 
@@ -2015,6 +2034,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
             timeout: 0,
           }
         );
+
 
         Swal.fire({
           title: "Manifests ready!",
@@ -2062,9 +2082,10 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
       // SODA Manifest Files folder
       let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files");
       let moveFinishedBool;
+      let manifestGenerationDirectory;
       if (originalDataset !== finalManifestGenerationPath) {
         // Move manifest files to the local dataset
-        moveFinishedBool = await moveManifestFilesPreview(
+        [moveFinishedBool, manifestGenerationDirectory] = await moveManifestFilesPreview(
           dir,
           finalManifestGenerationPath
         );
@@ -2073,7 +2094,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
         moveFinishedBool = await moveManifestFiles(dir, originalDataset);
       }
 
-      openDirectoryAtManifestGenerationLocation(originalDataset !== finalManifestGenerationPath ? finalManifestGenerationPath : originalDataset);
+      openDirectoryAtManifestGenerationLocation(originalDataset !== finalManifestGenerationPath ? manifestGenerationDirectory : originalDataset);
 
       if (moveFinishedBool) {
         resetManifest(true);
@@ -2350,7 +2371,7 @@ function checkInvalidHighLevelFolders(datasetStructure) {
 }
 
 // function to generate edited manifest files onto Pennsieve (basically just upload the local SODA Manifest Files folder to Pennsieve)
-function generateAfterEdits() {
+async function generateAfterEdits() {
   let dir = path.join(homeDirectory, "SODA", "manifest_files");
   // set up sodaJSonObject
   sodaJSONObj = {
@@ -2378,8 +2399,15 @@ function generateAfterEdits() {
 
   // move the generated manifest files to the user selected location for preview
   if (pennsievePreview) {
-    moveManifestFilesPreview(dir, finalManifestGenerationPath);
-    openDirectoryAtManifestGenerationLocation(finalManifestGenerationPath);
+    let [moved, location] = await moveManifestFilesPreview(dir, finalManifestGenerationPath)
+    openDirectoryAtManifestGenerationLocation(location);
+    Swal.fire({
+      title: "Successfully generated manifest files at the specified location!",
+      icon: "success",
+      confirmButtonText: "OK",
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+    })
     return;
   }
 
