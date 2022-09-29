@@ -12897,7 +12897,9 @@ const showDataDeliverableDropDown = async () => {
         //append file path
         let firstItem = swal_content.children[0]
         let paragraph = document.createElement("p");
-        paragraph.innerText = ddFilePath;
+        paragraph.style.marginTop = "1rem";
+        paragraph.style.fontWeight = "700";
+        paragraph.innerText = "File Path: " + ddFilePath;
         firstItem.prepend(paragraph); 
         dataDeliverableButton.children[0].style.display = "none";
         dataDeliverableButton.children[1].style.display = "flex";

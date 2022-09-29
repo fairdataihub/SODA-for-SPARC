@@ -326,6 +326,7 @@ async function dropHandler(
             });
 
             if (gettingStartedSection === true) {
+              
               const DDLottie = document.getElementById("swal-data-deliverable");
               DDLottie.innerHTML = "";
               lottie.loadAnimation({
@@ -338,6 +339,18 @@ async function dropHandler(
               let swal_actions =
                 document.getElementsByClassName("swal2-actions")[0];
               swal_actions.children[1].style.display = "flex";
+              let swal_content = document.getElementsByClassName("swal2-content")[0];
+
+              let ddFilePath = sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"]
+              if (ddFilePath) {
+                //append file path
+                let firstItem = swal_content.children[0]
+                let paragraph = document.createElement("p");
+                paragraph.style.marginTop = "1rem";
+                paragraph.style.fontWeight = "700";
+                paragraph.innerText = "File Path: " + ddFilePath;
+                firstItem.prepend(paragraph);
+              }
             }
           }
         } catch (error) {
