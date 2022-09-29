@@ -348,16 +348,26 @@ async function dropHandler(
               if (ddFilePath) {
                 //append file path
                 let firstItem = swal_content.children[0];
+                console.log(swal_content);
                 let paragraph = document.createElement("p");
                 let paragraph2 = document.createElement("p");
+                paragraph.id = "getting-started-filepath";
                 paragraph2.innerText =
                   "To replace the current Data Deliverables just drop in or select a new one.";
                 paragraph2.style.marginBottom = "1rem";
                 paragraph.style.marginTop = "1rem";
                 paragraph.style.fontWeight = "700";
                 paragraph.innerText = "File Path: " + ddFilePath;
+                console.log(firstItem);
+                if (firstItem.children[0].id === "getting-started-filepath") {
+                  firstItem.children[0].remove();
+                  firstItem.children[firstItem.childElementCount - 1].remove();
+                }
                 firstItem.append(paragraph2);
                 firstItem.prepend(paragraph);
+                document
+                  .getElementById("guided-button-import-data-deliverables")
+                  .click();
               }
             }
           }

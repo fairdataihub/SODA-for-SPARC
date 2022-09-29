@@ -1664,6 +1664,9 @@ const traverseToTab = async (targetPageID) => {
       if (importedDataDeliverable) {
         dataDeliverableButton.children[0].style.display = "none";
         dataDeliverableButton.children[1].style.display = "flex";
+        document
+          .getElementById("guided-button-import-data-deliverables")
+          .click();
       } else {
         dataDeliverableButton.children[0].style.display = "flex";
         dataDeliverableButton.children[1].style.display = "none";
@@ -4815,7 +4818,8 @@ const renderProtocolsTable = () => {
 
   const protocolsContainer = document.getElementById("protocols-container");
 
-  if (protocols.length === 0) {
+  console.log(protocols);
+  if (protocols === undefined) {
     const emptyRowWarning = generateAlertElement(
       "warning",
       "You currently have no protocols for your dataset. To add, click the 'Add a new protocol' button"
@@ -12911,6 +12915,9 @@ const showDataDeliverableDropDown = async () => {
           loop: true,
           autoplay: true,
         });
+        document
+          .getElementById("guided-button-import-data-deliverables")
+          .click();
       } else {
         lottie.loadAnimation({
           container: DDLottie,
