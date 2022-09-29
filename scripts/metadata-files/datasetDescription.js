@@ -1118,17 +1118,23 @@ async function helpSPARCAward(filetype, curationMode) {
     }
     if (res[0]) {
       console.log("UHHH HANDLE HERE?");
-      var keyname = res[1];
-      var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'dd\', '${curationMode}')" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4><div
+      let keyname = res[1];
+      let swalElement = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'dd\', '${curationMode}')" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4><div
         class="search-select-box"><select id="select-SPARC-award" class="w-100" data-live-search="true"style="width: 450px;border-radius: 7px;padding: 8px;"data-none-selected-text="Loading awards..."></select></div></div>`;
       const { value: awardVal } = await Swal.fire({
-        html: htmlEle,
+        html: swalElement,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         inputPlaceholder: "Select an award",
         showCancelButton: true,
         confirmButtonText: "Confirm",
         reverseButtons: reverseSwalButtons,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
         didOpen: () => {
           $("#select-sparc-award-dd-spinner").css("display", "none");
           populateSelectSPARCAward(awardObj, "select-SPARC-award");
@@ -1158,6 +1164,12 @@ async function helpSPARCAward(filetype, curationMode) {
               cancelButtonColor: "#f44336",
               confirmButtonColor: "#3085d6",
               confirmButtonText: "Yes",
+              showClass: {
+                popup: "animate__animated animate__zoomIn animate__faster",
+              },
+              hideClass: {
+                popup: "animate__animated animate__zoomOut animate__faster",
+              },
             }).then((boolean) => {
               if (boolean.isConfirmed) {
                 changeAward(award, "free-form");
@@ -1166,8 +1178,10 @@ async function helpSPARCAward(filetype, curationMode) {
           } else {
             changeAward(award, "free-form");
           }
-        }
-        if (curationMode === "guided") {
+        } else if (curationMode === "guided") {
+          changeAward(award, "guided");
+        } else {
+          //curationMode is getting-started page
           changeAward(award, "guided");
         }
       }
@@ -1184,6 +1198,12 @@ async function helpSPARCAward(filetype, curationMode) {
         cancelButtonColor: "#f44336",
         confirmButtonColor: "#3085d6",
         confirmButtonText: "Yes",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
       }).then((boolean) => {
         if (boolean.isConfirmed) {
           showAddAirtableAccountSweetalert("dd", curationMode);
@@ -1202,7 +1222,7 @@ async function helpSPARCAward(filetype, curationMode) {
     }
     currentMilestonesInTextArea = $("#selected-milestone-1");
 
-    if (res[0]) {
+    if (res[0] && curationMode != "guided--getting-started") {
       console.log("OR HERE???");
       var keyname = res[1];
       var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'submission\', '${curationMode}')" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4><div
@@ -1214,6 +1234,12 @@ async function helpSPARCAward(filetype, curationMode) {
         inputPlaceholder: "Select an award",
         showCancelButton: true,
         confirmButtonText: "Confirm",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
         didOpen: () => {
           $("#select-sparc-award-submission-spinner").css("display", "none");
           populateSelectSPARCAward(awardObj, "select-SPARC-award-submission");
@@ -1240,6 +1266,12 @@ async function helpSPARCAward(filetype, curationMode) {
             cancelButtonColor: "#f44336",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "Yes",
+            showClass: {
+              popup: "animate__animated animate__zoomIn animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__zoomOut animate__faster",
+            },
           }).then((boolean) => {
             if (boolean.isConfirmed) {
               if (curationMode === "free-form") {
@@ -1276,6 +1308,91 @@ async function helpSPARCAward(filetype, curationMode) {
           }
         }
       }
+    } else if (res[0] && curationMode == "guided--getting-started") {
+      const airTableGettingStartedBtn = document.getElementById(
+        "gettting-started-button-import-sparc-award"
+      );
+      airTableGettingStartedBtn.children[1].style.display = "none";
+      airTableGettingStartedBtn.children[0].style.display = "flex";
+      var keyname = res[1];
+      var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-around">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span></h4></div>`;
+      const { value: awardVal } = await Swal.fire({
+        html: htmlEle,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showCancelButton: true,
+        confirmButtonText: "Change",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+        didOpen: () => {
+          $("#select-sparc-award-submission-spinner").css("display", "none");
+        },
+      });
+      if (awardVal) {
+        if (currentMilestonesInTextArea.val() !== "") {
+          Swal.fire({
+            title:
+              "Are you sure you want to delete all of the previous milestone information?",
+            showCancelButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            cancelButtonText: `No!`,
+            cancelButtonColor: "#f44336",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "Yes",
+            showClass: {
+              popup: "animate__animated animate__zoomIn animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__zoomOut animate__faster",
+            },
+          }).then((boolean) => {
+            if (boolean.isConfirmed) {
+              if (curationMode === "free-form") {
+                milestoneTagify1.removeAllTags();
+                $("#submission-sparc-award").val(award);
+                $("#ds-description-award-input").val(award);
+                document.getElementById("submission-completion-date").value =
+                  "";
+                loadContributorInfofromAirtable(award, "free-form");
+              }
+              console.log(curationMode);
+              if (curationMode === "guided") {
+                guidedSetImportedSPARCAward(award);
+                loadContributorInfofromAirtable(award, "guided");
+              }
+            }
+          });
+        } else {
+          if (curationMode === "free-form") {
+            milestoneTagify1.removeAllTags();
+            $("#submission-sparc-award").val(award);
+            $("#ds-description-award-input").val(award);
+            document.getElementById("submission-completion-date").value = "";
+          } else if (curationMode === "guided") {
+            const gettingStartedAirtable = document.getElementById(
+              "gettting-started-button-import-sparc-award"
+            );
+            gettingStartedAirtable.children[1].style.display = "none";
+            gettingStartedAirtable.children[0].style.display = "flex";
+            guidedSetImportedSPARCAward(award);
+            loadContributorInfofromAirtable(award, "guided");
+          } else {
+            //curationMode = guided--getting-started
+            const gettingStartedAirtable = document.getElementById(
+              "gettting-started-button-import-sparc-award"
+            );
+            gettingStartedAirtable.children[1].style.display = "none";
+            gettingStartedAirtable.children[0].style.display = "flex";
+            showAddAirtableAccountSweetalert("submission", "guided");
+            document.getElementById("guided-button-import-sparc-award").click();
+          }
+        }
+      }
     } else {
       Swal.fire({
         title:
@@ -1288,6 +1405,12 @@ async function helpSPARCAward(filetype, curationMode) {
         cancelButtonColor: "#f44336",
         confirmButtonColor: "#3085d6",
         confirmButtonText: "Yes",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
       }).then((boolean) => {
         if (boolean.isConfirmed) {
           showAddAirtableAccountSweetalert("submission", curationMode);

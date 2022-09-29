@@ -1691,10 +1691,15 @@ const traverseToTab = async (targetPageID) => {
           "imported-sparc-award"
         ];
 
-      if (airTableAccountData) {
+      console.log(airTableAccountData);
+      // console.log(airTableres);
+      var airKeyContent = parseJson(airtableConfigPath);
+      console.log(airKeyContent);
+      if (Object.keys(airKeyContent).length != 0) {
         //This is where we update the UI for the helper page
         airTableGettingStartedBtn.children[1].style.display = "none";
         airTableGettingStartedBtn.children[0].style.display = "flex";
+        document.getElementById("guided-button-import-sparc-award").click();
         console.log("huh");
       } else {
         //This is where we reset the UI for the helper page
@@ -12766,8 +12771,8 @@ $(document).ready(async () => {
   });
 });
 
-const currentAccount = (account, userDetails) => { 
-return `
+const currentAccount = (account, userDetails) => {
+  return `
 <div style="
                   display: flex;
                   flex-direction: column;
@@ -12825,13 +12830,15 @@ return `
                           font-weight: 600;
                           margin-left: 15px;
                           font-size: 15px;
-                        " id="para_create_empty_dataset_BF_account">${$("#para-account-detail-curate").text()}</h5>
+                        " id="para_create_empty_dataset_BF_account">${$(
+                          "#para-account-detail-curate"
+                        ).text()}</h5>
                     </div>
                   </div>
                 </div>
               </div>
-`
-}
+`;
+};
 
 const dataDeliverableTitle = `
 Drag and Drop your data deliverable
@@ -12878,6 +12885,12 @@ const showDataDeliverableDropDown = async () => {
     backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
     allowOutsideClick: false,
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
     didOpen: () => {
       let swal_container = document.getElementsByClassName("swal2-popup")[0];
       let swal_actions = document.getElementsByClassName("swal2-actions")[0];
@@ -12892,15 +12905,22 @@ const showDataDeliverableDropDown = async () => {
       swal_actions.style.marginTop = "-2px";
       swal_actions.style.marginBottom = "-7px";
 
-      let ddFilePath = sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"]
+      let ddFilePath =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"];
       if (ddFilePath) {
         //append file path
-        let firstItem = swal_content.children[0]
+        let firstItem = swal_content.children[0];
         let paragraph = document.createElement("p");
+        let paragraph2 = document.createElement("p");
+        paragraph2.innerText =
+          "To replace the current Data Deliverables just drop in or select a new one.";
+
+        paragraph2.style.marginBottom = "1rem";
         paragraph.style.marginTop = "1rem";
         paragraph.style.fontWeight = "700";
         paragraph.innerText = "File Path: " + ddFilePath;
-        firstItem.prepend(paragraph); 
+        firstItem.append(paragraph2);
+        firstItem.prepend(paragraph);
         dataDeliverableButton.children[0].style.display = "none";
         dataDeliverableButton.children[1].style.display = "flex";
         lottie.loadAnimation({
@@ -12939,19 +12959,28 @@ const showDataDeliverableDropDown = async () => {
 const currentUserDropdown = async () => {
   console.log("currentUser");
   console.log(defaultBfAccount);
-  console.log($("#para-account-detail-curate").text())
+  console.log($("#para-account-detail-curate").text());
   const pennsieveDetails = await Swal.fire({
     title: "Current Pennsieve Details",
-    html: currentAccount(defaultBfAccount, $("#para-account-detail-curate").text()),
+    html: currentAccount(
+      defaultBfAccount,
+      $("#para-account-detail-curate").text()
+    ),
     showCancelButton: true,
     // showConfirmButton: false,
-    focusCancel: true,
+    // focusCancel: true,
     cancelButtonText: "Cancel",
     confirmButtonText: "Change Account",
     reverseButtons: reverseSwalButtons,
     backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
     allowOutsideClick: false,
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
     didOpen: () => {
       let swal_container = document.getElementsByClassName("swal2-popup")[0];
       let swal_actions = document.getElementsByClassName("swal2-actions")[0];
@@ -12974,11 +13003,11 @@ const currentUserDropdown = async () => {
   });
 
   console.log(pennsieveDetails);
-  if(pennsieveDetails.isConfirmed) {
-    console.log('handle');
-    await openDropdownPrompt(this, 'bf');
+  if (pennsieveDetails.isConfirmed) {
+    console.log("handle");
+    await openDropdownPrompt(this, "bf");
   }
-}
+};
 
 const pennsieveButton = document.getElementById(
   "getting-started-pennsieve-account"
@@ -12994,7 +13023,7 @@ const airTableButton = document.getElementById(
 
 airTableButton.addEventListener("click", async () => {
   console.log("Airtable");
-  await helpSPARCAward("submission", "guided");
+  await helpSPARCAward("submission", "guided--getting-started");
 });
 
 dataDeliverableButton.addEventListener("click", async () => {
@@ -13004,7 +13033,7 @@ dataDeliverableButton.addEventListener("click", async () => {
 
 pennsieveButton.addEventListener("click", async () => {
   console.log("here");
-  if(!defaultBfAccount) {
+  if (!defaultBfAccount) {
     await openDropdownPrompt(this, "bf");
   } else {
     await currentUserDropdown();
