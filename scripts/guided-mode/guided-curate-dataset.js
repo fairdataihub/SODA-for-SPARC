@@ -4885,7 +4885,7 @@ const renderProtocolsTable = () => {
 
   const protocolsContainer = document.getElementById("protocols-container");
 
-  if (protocols.length === 0) {
+  if (protocols === undefined) {
     const emptyRowWarning = generateAlertElement(
       "warning",
       "You currently have no protocols for your dataset. To add, click the 'Add a new protocol' button"
