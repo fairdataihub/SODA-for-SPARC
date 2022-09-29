@@ -1654,7 +1654,7 @@ const traverseToTab = async (targetPageID) => {
         "getting-started-data-deliverable-btn"
       );
       const airTableGettingStartedBtn = document.getElementById(
-        "gettting-started-button-import-sparc-award"
+        "getting-started-button-import-sparc-award"
       );
       const importedDataDeliverable =
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"];
@@ -1664,24 +1664,9 @@ const traverseToTab = async (targetPageID) => {
       if (importedDataDeliverable) {
         dataDeliverableButton.children[0].style.display = "none";
         dataDeliverableButton.children[1].style.display = "flex";
-
-        // lottie.loadAnimation({
-        //   container: DDLottie,
-        //   animationData: successCheck,
-        //   renderer: "svg",
-        //   loop: true,
-        //   autoplay: true,
-        // });
       } else {
         dataDeliverableButton.children[0].style.display = "flex";
         dataDeliverableButton.children[1].style.display = "none";
-        // lottie.loadAnimation({
-        //   container: DDLottie,
-        //   animationData: dragDrop,
-        //   renderer: "svg",
-        //   loop: true,
-        //   autoplay: true,
-        // });
       }
       // This controls the UI for the new page
       // First we get vals from sodaJSONObj, and then update the UI
@@ -12774,69 +12759,67 @@ $(document).ready(async () => {
 const currentAccount = (account, userDetails) => {
   return `
 <div style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
-                ">
-                <div style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                  ">
-                  <div class="card-container manage-dataset">
-                    <div style="display: flex">
-                      <h5 class="card-left" style="
-                          text-align: right;
-                          color: #808080;
-                          font-size: 15px;
-                          padding-right: 5px;
-                        ">
-                        Current account:
-                      </h5>
-                      <div class="md-change-current-account" style="margin-left: 10px; display: flex; justify-content: space-between;">
-                        <h5 class="card-right bf-account-span" style="
-                            color: #000;
-                            font-weight: 600;
-                            margin-left: 8px;
-                            font-size: 15px;
-                            width: fit-content;
-                          " id="getting-started-account">${defaultBfAccount}</h5>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div style="
-                    display: flex;
-                    flex-direction: row;
-                    margin-bottom: 15px;
-                  ">
-                  <div class="card-container manage-dataset">
-                    <div>
-                      <h5 class="card-left" style="
-                          text-align: right;
-                          color: #808080;
-                          font-size: 15px;
-                          padding-right: 20px;
-                        ">
-                        Account details:
-                      </h5>
-                      <h5 class="card-right bf-account-details-span" style="
-                          color: #000;
-                          font-weight: 600;
-                          margin-left: 15px;
-                          font-size: 15px;
-                        " id="para_create_empty_dataset_BF_account">${$(
-                          "#para-account-detail-curate"
-                        ).text()}</h5>
-                    </div>
-                  </div>
-                </div>
-              </div>
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-top: 15px;
+  height: auto;
+  box-shadow: 0px 0px 10px #d5d5d5;
+  padding: 15px 25px;
+  border-radius: 5px;"
+>
+    <div style="
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;"
+    >
+      <div class="card-container manage-dataset">
+        <div style="display: flex">
+          <h5 class="card-left" style="
+              text-align: right;
+              color: #808080;
+              font-size: 15px;
+              padding-right: 5px;
+            ">
+            Current account:
+          </h5>
+          <div class="md-change-current-account" style="margin-left: 10px; display: flex; justify-content: space-between;">
+            <h5 class="card-right bf-account-span" style="
+                color: #000;
+                font-weight: 600;
+                margin-left: 4px;
+                font-size: 15px;
+                width: fit-content;
+              " id="getting-started-account">${defaultBfAccount}</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 15px;"
+    >
+      <div class="card-container manage-dataset">
+        <div>
+          <h5 class="card-left" style="
+              text-align: right;
+              color: #808080;
+              font-size: 15px;
+              padding-right: 20px;
+            ">
+            Account details:
+          </h5>
+          <h5 class="card-right bf-account-details-span" style="
+              color: #000;
+              font-weight: 600;
+              margin-left: 15px;
+              font-size: 15px;
+            " id="account-info-getting-started">${defaultAccountDetails}</h5>
+        </div>
+      </div>
+    </div>
+</div>
 `;
 };
 
@@ -12853,14 +12836,14 @@ const dataDeliverableMessage = `
       <p class="guided--help-text text-center" style="/* width: 284px; *//* display: flex; *//* flex-direction: row; */">
         Drag and Drop</p>
         <p style="margin-left: 4px; font-weight: 600;">
-          data deliverables.docx
+          Data Deliverables document
         </p>
     </div>
     <p class="guided--help-text text-center mt-sm mb-sm">
       OR
     </p>
     <button class="ui primary basic button" onclick="helpMilestoneSubmission('guided')" style="margin-top: 2rem !important;">
-      <i class="fas fa-file-import" style="margin-right: 7px"></i>Import data_deliverable.docx
+      <i class="fas fa-file-import" style="margin-right: 7px"></i>Import Data Deliverables document
     </button>
     <p class="guided--help-text small text-center mt-sm" id="guided-data-deliverable-para-text" style="max-width: 240px; overflow-wrap: break-word"></p>
   </div>
@@ -12897,9 +12880,7 @@ const showDataDeliverableDropDown = async () => {
       let swal_content = document.getElementsByClassName("swal2-content")[0];
       let DDLottie = document.getElementById("swal-data-deliverable");
       let swal_header = document.getElementsByClassName("swal2-header")[0];
-      swal_header.style.borderBottom = "3px solid var(--color-bg-plum)";
-      swal_header.style.marginTop = "-2rem";
-      swal_header.style.padding = ".5rem";
+      swal_header.remove();
       DDLottie.innerHTML = "";
       swal_container.style.width = "43rem";
       swal_actions.style.marginTop = "-2px";
@@ -13018,7 +12999,7 @@ const dataDeliverableButton = document.getElementById(
 );
 
 const airTableButton = document.getElementById(
-  "gettting-started-button-import-sparc-award"
+  "getting-started-button-import-sparc-award"
 );
 
 airTableButton.addEventListener("click", async () => {

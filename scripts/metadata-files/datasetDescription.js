@@ -1299,7 +1299,7 @@ async function helpSPARCAward(filetype, curationMode) {
 
           if (curationMode === "guided") {
             const gettingStartedAirtable = document.getElementById(
-              "gettting-started-button-import-sparc-award"
+              "getting-started-button-import-sparc-award"
             );
             gettingStartedAirtable.children[1].style.display = "none";
             gettingStartedAirtable.children[0].style.display = "flex";
@@ -1310,7 +1310,7 @@ async function helpSPARCAward(filetype, curationMode) {
       }
     } else if (res[0] && curationMode == "guided--getting-started") {
       const airTableGettingStartedBtn = document.getElementById(
-        "gettting-started-button-import-sparc-award"
+        "getting-started-button-import-sparc-award"
       );
       airTableGettingStartedBtn.children[1].style.display = "none";
       airTableGettingStartedBtn.children[0].style.display = "flex";
@@ -1375,7 +1375,7 @@ async function helpSPARCAward(filetype, curationMode) {
             document.getElementById("submission-completion-date").value = "";
           } else if (curationMode === "guided") {
             const gettingStartedAirtable = document.getElementById(
-              "gettting-started-button-import-sparc-award"
+              "getting-started-button-import-sparc-award"
             );
             gettingStartedAirtable.children[1].style.display = "none";
             gettingStartedAirtable.children[0].style.display = "flex";
@@ -1384,7 +1384,7 @@ async function helpSPARCAward(filetype, curationMode) {
           } else {
             //curationMode = guided--getting-started
             const gettingStartedAirtable = document.getElementById(
-              "gettting-started-button-import-sparc-award"
+              "getting-started-button-import-sparc-award"
             );
             gettingStartedAirtable.children[1].style.display = "none";
             gettingStartedAirtable.children[0].style.display = "flex";

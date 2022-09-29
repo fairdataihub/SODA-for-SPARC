@@ -4663,6 +4663,7 @@ async function retrieveBFAccounts() {
   return [bfAccountOptions, bfAccountOptionsStatus];
 }
 
+let defaultAccountDetails = "";
 async function showDefaultBFAccount() {
   try {
     let bf_default_acc_req = await client.get(
@@ -4687,9 +4688,11 @@ async function showDefaultBFAccount() {
         $("#current-bf-account-generate").text(defaultBfAccount);
         $("#create_empty_dataset_BF_account_span").text(defaultBfAccount);
         $(".bf-account-span").text(defaultBfAccount);
-        $("#para-account-detail-curate-generate").html(accountDetails);
+        $("#card-right bf-account-details-span").html(accountDetails);
         $("#para_create_empty_dataset_BF_account").html(accountDetails);
         $(".bf-account-details-span").html(accountDetails);
+        defaultAccountDetails = accountDetails;
+        console.log(defaultAccountDetails);
 
         $("#div-bf-account-load-progress").css("display", "none");
         showHideDropdownButtons("account", "show");
