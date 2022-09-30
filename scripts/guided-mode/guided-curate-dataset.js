@@ -4491,6 +4491,35 @@ const addContributor = (
   });
 };
 
+const editContributorByOrcid = (
+  prevContributorOrcid,
+  contributorFirstName,
+  contributorLastName,
+  newContributorOrcid,
+  contributorAffiliationsArray,
+  contributorRolesArray
+) => {
+  const contributor = getContributorByOrcid(prevContributorOrcid);
+  if (!contributor) {
+    throw new Error("No contributor with the entered ORCID exists");
+  }
+
+  if (prevContributorOrcid !== newContributorOrcid) {
+    if (getContributorByOrcid(newContributorOrcid)) {
+      throw new Error("A contributor with the entered ORCID already exists");
+    }
+  }
+
+  contributor.contributorFirstName = contributorFirstName;
+  contributor.contributorLastName = contributorLastName;
+  contributor.conName = `${contributorFirstName} ${contributorLastName}`;
+  contributor.conID = newContributorOrcid;
+  contributor.conAffliation = contributorAffiliationsArray.map(
+    (affiliation) => affiliation.value
+  );
+  contributor.conRole = contributorRolesArray.map((role) => role.value);
+};
+
 const deleteContributor = (clickedDelContribuButton, contributorOrcid) => {
   const contributorField = clickedDelContribuButton.parentElement.parentElement;
   console.log(contributorField);
@@ -4504,6 +4533,7 @@ const deleteContributor = (clickedDelContribuButton, contributorOrcid) => {
     });
   console.log(contributorField);
   contributorField.remove();
+  //rerender the table after deleting a contributor
   renderDatasetDescriptionContributorsTable();
 };
 
@@ -4549,6 +4579,9 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
   const contributorORCID = contributorData.conID;
   const contributorAffiliationsArray = contributorData.conAffliation;
   const contributorRolesArray = contributorData.conRole;
+
+  let affiliationTagify;
+  let contributorRolesTagify;
 
   await Swal.fire({
     allowOutsideClick: false,
@@ -4626,14 +4659,14 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
       </div>
     `,
     showCancelButton: true,
-    confirmButtonText: "Add contributor",
+    confirmButtonText: "Edit contributor",
     confirmButtonColor: "#3085d6 !important",
     willOpen: () => {
       //Create Affiliation(s) tagify for each contributor
       const contributorAffiliationInput = document.getElementById(
         "guided-contributor-affiliation-input"
       );
-      const affiliationTagify = new Tagify(contributorAffiliationInput, {
+      affiliationTagify = new Tagify(contributorAffiliationInput, {
         duplicate: false,
       });
       createDragSort(affiliationTagify);
@@ -4642,7 +4675,7 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
       const contributorRolesInput = document.getElementById(
         "guided-contributor-roles-input"
       );
-      const contributorRolesTagify = new Tagify(contributorRolesInput, {
+      contributorRolesTagify = new Tagify(contributorRolesInput, {
         whitelist: [
           "PrincipleInvestigator",
           "Creator",
@@ -4699,13 +4732,14 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
         !contributorFirstName ||
         !contributorLastName ||
         !contributorOrcid ||
-        !contributorAffiliations ||
-        !contributorRoles
+        !contributorAffiliations.length > 0 ||
+        !contributorRoles.length > 0
       ) {
         Swal.showValidationMessage("Please fill out all required fields");
       } else {
         try {
-          editContribuutorByOrcid(
+          editContributorByOrcid(
+            contibuttorOrcidToEdit,
             contributorFirstName,
             contributorLastName,
             contributorOrcid,
@@ -4760,6 +4794,7 @@ const openGuidedAddContributorSwal = async () => {
         `;
 
       const contributorOptions = contributorData.map((contributor) => {
+        console.log(contributor);
         return `
           <option
             value="${contributor.firstName} ${contributor.lastName}"
@@ -4767,7 +4802,7 @@ const openGuidedAddContributorSwal = async () => {
             data-last-name="${contributor.lastName}"
             data-orcid="${contributor.orcid ?? ""}"
             data-affiliation="${contributor.affiliation ?? ""}"
-            data-roles="${contributor.roles.join(",") ?? ""}"
+            data-roles="${contributor.roles ? contributor.roles.join(",") : ""}"
           >
             ${contributor.firstName} ${contributor.lastName}
           </option>
@@ -4975,12 +5010,18 @@ const openGuidedAddContributorSwal = async () => {
       const contributorAffiliations = affiliationTagify.value;
       const contributorRoles = contributorRolesTagify.value;
 
+      console.log(contributorFirstName);
+      console.log(contributorLastName);
+      console.log(contributorOrcid);
+      console.log(contributorAffiliations);
+      console.log(contributorRoles);
+
       if (
         !contributorFirstName ||
         !contributorLastName ||
         !contributorOrcid ||
-        !contributorAffiliations ||
-        !contributorRoles
+        !contributorAffiliations.length > 0 ||
+        !contributorRoles.length > 0
       ) {
         Swal.showValidationMessage("Please fill out all required fields");
       } else {
@@ -5010,10 +5051,10 @@ const generateContributorTableRow = (contributorObj) => {
 
   return `
     <tr>
-      <td class="middle aligned collapsing">
+      <td class="middle aligned">
         ${contributorFullName}
       </td>
-      <td class="middle aligned collapsing">
+      <td class="middle aligned">
         ${contributorRoleString}
       </td>
       <td class="middle aligned collapsing text-center">
@@ -5044,15 +5085,29 @@ const renderDatasetDescriptionContributorsTable = () => {
     "guided-DD-connoributors-table"
   );
 
+  let contributorsTableHTML;
+
   const contributors =
     sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
 
-  const contributorsTableElement = contributors
-    .map((contributor) => {
-      return generateContributorTableRow(contributor);
-    })
-    .join("\n");
-  contributorsTable.innerHTML = contributorsTableElement;
+  if (contributors.length === 0) {
+    contributorsTableHTML = `
+      <tr>
+        <td colspan="4">
+          <div style="margin-right:.5rem" class="alert alert-warning guided--alert" role="alert">
+            No contributors have been added to your dataset yet. To add a contributor, click the "Add a new contributor" button below.
+          </div>
+        </td>
+      </tr>
+    `;
+  } else {
+    contributorsTableHTML = contributors
+      .map((contributor) => {
+        return generateContributorTableRow(contributor);
+      })
+      .join("\n");
+  }
+  contributorsTable.innerHTML = contributorsTableHTML;
 };
 
 const addContributorField = () => {
