@@ -771,14 +771,12 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     if not isdir(pathdataset):
         submitdatastatus = "Done"
         error_message = (
-            f"{error_message}Please select a valid local dataset folder<br>"
+            f"{error_message} Please select a valid local dataset folder<br>"
         )
         did_fail = True
         did_upload = False
         abort(400, error_message)
 
-
-    error, c = "", 0
     total_file_size = 1
    
 
@@ -870,162 +868,14 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         abort(500, e)
     
 
-    # upload the dataset 
-    ps.manifest.upload(2)
-
+    # upload the dataset
     try:
-        ## check if agent is running in the background
-        # agent_running()
-
-        # upload 500 files at a time per folder
-        BUCKET_SIZE = 500
-
-        def upload_folder_in_buckets():
-            global submitdataprogress
-            global submitdatastatus
-            global uploaded_files
-            global did_upload
-            global upload_folder_count
-
-            # reset uploaded file counter
-            uploaded_files = 0
-            upload_folder_count = 0
-
-            # tells the front end if
-            did_upload = False
-
-            myds = bf.get_dataset(bfdataset)
-
-            # create the root directory on Pennsieve and store it for later
-            root_folder_name = os.path.basename(os.path.normpath(pathdataset))
-            root_pennsieve_folder = myds.create_collection(root_folder_name)
-            myds.update()
-            folders = {root_folder_name: root_pennsieve_folder}
-            
-            # top down scan through dataset to upload each file/folder
-            for dirpath, child_dirs, files in os.walk(pathdataset, topdown=True):
-                #  get the current root directory's name not its relative path
-                name_of_current_root = os.path.basename(os.path.normpath(dirpath))
-
-                # get the current folder out of the pennsieve folders storage
-                current_folder = folders[name_of_current_root]
-
-                # upload the current directory's child directories
-                for child_dir in child_dirs:
-                    child_dir_pennsieve = current_folder.create_collection(child_dir)
-                    current_folder.update()
-                    myds.update()
-                    # store the folders by their name so they can be accessed when we
-                    # need to upload their children folders and files into their directory
-                    folders[child_dir] = child_dir_pennsieve
-
-                # upload the current directories files in a bucket
-                if len(files) > BUCKET_SIZE:
-                    # bucket the upload
-                    start_index = end_index = 0
-                    # store the aggregate of the amount of files in the folder
-                    total_files = len(files)
-
-                    # while startIndex < files.length
-                    while start_index < total_files:
-                        # set the endIndex to startIndex plus 750
-                        end_index = start_index + BUCKET_SIZE - 1
-
-                        # check if the endIndex is out of bounds
-                        if end_index >= total_files:
-                            # if so set end index to files.length - 1
-                            end_index = len(files) - 1
-
-                        # get the 750 files between startIndex and endIndex (inclusive of endIndex)
-                        upload_bucket = files[start_index : end_index + 1]
-
-                        # TODO: Construct path in dictionary for better information messages
-                        submitdataprogress = (
-                            "Uploading folder '%s' to dataset '%s \n' "
-                            % (dirpath, bfdataset)
-                        )
-
-                        files_with_destination = []
-
-                        # construct upload destination for current bucket
-                        for file in upload_bucket:
-                            # add the Absolute path so the Agent can find the file
-                            file_path = join(dirpath, file)
-                            files_with_destination.append(file_path)
-
-                        # get the current OS
-                        current_os = platform.system()
-
-                        # Mac builds not able to spawn subprocess from Python at the moment
-                        if current_os != "Darwin":
-                            # clear the pennsieve queue
-                            clear_queue()
-
-                        # upload the current bucket
-                        current_folder.upload(*files_with_destination)
-                        current_folder.update()
-
-                        # update the global that tracks the amount of files that have been successfully uploaded
-                        # for this upload session
-                        uploaded_files = BUCKET_SIZE
-
-                        did_upload = True
-
-                        upload_folder_count += 1
-
-                        # update the start_index to end_index + 1
-                        start_index = end_index + 1
-                else:
-
-                    if len(files) > 0:
-                        submitdataprogress = (
-                            "Uploading folder '%s' to dataset '%s \n' "
-                            % (dirpath, bfdataset)
-                        )
-
-                        files_with_destination = []
-
-                        for file in files:
-                            file_path = join(dirpath, file)
-                            files_with_destination.append(file_path)
-
-                        # get the current OS
-                        current_os = platform.system()
-
-                        # Mac builds not able to spawn subprocess from Python at the moment
-                        if current_os != "Darwin":
-                            # clear the pennsieve queue
-                            clear_queue()
-
-                        # upload the files
-                        current_folder.upload(*files_with_destination)
-                        current_folder.update()
-                        myds.update()
-
-                        uploaded_files = len(files)
-                        upload_folder_count += 1
-                        did_upload = True
-
-            # upload completed
-            submitdataprogress = "Success: COMPLETED!"
-            submitdatastatus = "Done"
-
         submitprintstatus = "Uploading"
         start_time_bf_upload = time.time()
         initial_bfdataset_size_submit = bf_dataset_size()
         start_submit = 1
-        gev = []
-        gev.append(gevent.spawn(upload_folder_in_buckets))
-        gevent.sleep(0)
-        gevent.joinall(gev)
+        ps.manifest.upload(1)
         submitdatastatus = "Done"
-
-        try:
-            return gev[0].get()
-        except Exception as e:
-            did_fail = True
-            raise e
-
     except Exception as e:
         submitdatastatus = "Done"
         did_fail = True
