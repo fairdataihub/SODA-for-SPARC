@@ -34,6 +34,8 @@ from pennsieve.api.agent import (
 
 from pennsieve.api.agent import AgentError, socket_address
 from pennsieve import Settings
+
+from pennsieve2.pennsieve import Pennsieve
 from threading import Thread
 
 import platform
@@ -44,7 +46,8 @@ import requests
 
 from flask import abort 
 from namespaces import NamespaceEnum, get_namespace_logger
-from utils import get_dataset, get_authenticated_ps
+from utils import get_dataset, get_authenticated_ps, get_dataset_size
+from authentication import get_access_token
 
 
 ### Global variables
@@ -88,24 +91,6 @@ DEV_TEMPLATE_PATH = join(dirname(__file__), "..", "file_templates")
 # it becomes nested into the pysodadist/api directory
 PROD_TEMPLATE_PATH = join(dirname(__file__), "..", "..", "file_templates")
 TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLATE_PATH
-
-
-def folder_size(path):
-    """
-    Provides the size of the folder indicated by path
-
-    Args:
-        path: path of the folder (string)
-    Returns:
-        total_size: total size of the folder in bytes (integer)
-    """
-    total_size = 0
-    start_path = "."  # To get size of current directory
-    for path, dirs, files in walk(path):
-        for f in files:
-            fp = join(path, f)
-            total_size += getsize(fp)
-    return total_size
 
 
 def bf_dataset_size():
@@ -782,25 +767,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     did_fail = False
     upload_folder_count = 0
 
-    try:
-        bf = Pennsieve(accountname)
-    except Exception as e:
-        submitdatastatus = "Done"
-        did_fail = True
-        did_upload = False
-        error_message = "Please select a valid Pennsieve account"
-        abort(400, error_message)
-
-    error_message, c = "", 0
-    try:
-        myds = bf.get_dataset(bfdataset)
-    except Exception as e:
-        submitdatastatus = "Done"
-        did_fail = True
-        did_upload = False
-        error_message = f"{error_message}Please select a valid Pennsieve dataset<br>"
-        c += 1
-
+    # check if the local dataset folder exists
     if not isdir(pathdataset):
         submitdatastatus = "Done"
         error_message = (
@@ -808,109 +775,110 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         )
         did_fail = True
         did_upload = False
-        c += 1
-
-    if c > 0:
         abort(400, error_message)
+
 
     error, c = "", 0
     total_file_size = 1
-    try:
-        for path, dirs, files in walk(pathdataset):
-            for f in files:
-                fp = join(path, f)
-                mypathsize = getsize(fp)
-                if mypathsize == 0:
-                    c += 1
-                    error = error + fp + " is 0 KB <br>"
-                elif f[:1] == ".":
-                    c += 1
-                    error = (
-                        error
-                        + fp
-                        + " is a hidden file not currently allowed during Pennsieve upload. <br>"
-                    )
-                else:
-                    total_file_size += mypathsize
-            for d in dirs:
-                dp = join(path, d)
-                myfoldersize = folder_size(dp)
-                if myfoldersize == 0:
-                    c += 1
-                    error = error + dp + " is empty <br>"
-    except Exception as e:
-        raise e
+   
 
-    if c > 0:
+    # initialize the Pennsieve client 
+    try:
+        ps = Pennsieve()
+    except Exception as e:
         submitdatastatus = "Done"
-        error = (
-            error
+        did_fail = True
+        did_upload = False
+        error_message = "Please select a valid Pennsieve account"
+        abort(500, e)
+
+
+    # select the user
+    try:
+        ps.user.switch(accountname)
+    except Exception as e:
+        submitdatastatus = "Done"
+        did_fail = True
+        did_upload = False
+        error_message = "Please select a valid Pennsieve account"
+        abort(400, error_message)
+
+
+    # reauthenticate the user
+    try:
+        ps.user.reauthenticate()
+    except Exception as e:
+        submitdatastatus = "Done"
+        did_fail = True
+        did_upload = False
+        error_message = "Could not reauthenticate this user"
+        abort(400, error_message)
+
+    # select the dataset 
+    try:
+        ps.useDataset(bfdataset)
+    except Exception as e:
+        submitdatastatus = "Done"
+        did_fail = True
+        did_upload = False
+        error_message = "Please select a valid Pennsieve dataset"
+        abort(400, error_message)
+
+
+
+    # get the dataset size before starting the upload
+    total_file_size, invalid_dataset_messages = get_dataset_size(pathdataset)
+
+    if invalid_dataset_messages != "":
+        submitdatastatus = "Done"
+        invalid_dataset_messages = (
+            invalid_dataset_messages
             + "<br>Please remove invalid files/folders from your dataset before uploading. If you have hidden files present please remove them before upload. You can find more details <a href='https://docs.sodaforsparc.io/docs/common-errors/issues-regarding-hidden-files-or-folders' target='_blank'>here </a> on how to fix this issue."
         )
         did_fail = True
         did_upload = False
-        abort(400, error)
+        abort(400, invalid_dataset_messages)
 
     total_file_size = total_file_size - 1
 
-    role = bf_get_current_user_permission(bf, myds)
+    role = bf_get_current_user_permission_agent_two(bfdataset)["role"]
     if role not in ["owner", "manager", "editor"]:
         submitdatastatus = "Done"
-        error_message = (
-            "You don't have permissions for uploading to this Pennsieve dataset"
-        )
         did_fail = True
         did_upload = False
-        abort(403, error_message)
+        abort(403, "You don't have permissions for uploading to this Pennsieve dataset")
 
     ## check if agent is installed
+    # try:
+    #     validate_agent_installation(Settings())
+    # except AgentError:
+    #     did_fail = True
+    #     did_upload = False
+    #     raise AgentError(
+    #         "The Pennsieve agent is not installed on your computer. Click <a href='https://docs.sodaforsparc.io/docs/common-errors/installing-the-pennsieve-agent' target='_blank'>here</a> for installation instructions."
+    #     )
+
+
+    # create the manifest file for the dataset
     try:
-        validate_agent_installation(Settings())
-    except AgentError:
+        ps.manifest.create(pathdataset)
+    except Exception as e:
+        submitdatastatus = "Done"
         did_fail = True
         did_upload = False
-        raise AgentError(
-            "The Pennsieve agent is not installed on your computer. Click <a href='https://docs.sodaforsparc.io/docs/common-errors/installing-the-pennsieve-agent' target='_blank'>here</a> for installation instructions."
-        )
+        error_message = "Could not create manifest file for this dataset"
+        abort(500, e)
+    
+
+    # upload the dataset 
+    ps.manifest.upload(2)
 
     try:
         ## check if agent is running in the background
-        agent_running()
+        # agent_running()
 
         # upload 500 files at a time per folder
         BUCKET_SIZE = 500
-
-        def calluploadfolder():
-            try:
-
-                global submitdataprogress
-                global submitdatastatus
-
-                myds = bf.get_dataset(bfdataset)
-
-                for filename in listdir(pathdataset):
-                    filepath = join(pathdataset, filename)
-                    if isdir(filepath):
-                        submitdataprogress = (
-                            "Uploading folder '%s' to dataset '%s \n' "
-                            % (filepath, bfdataset)
-                        )
-                        # CHANGE BACK
-                        # myds.upload(filepath, recursive=True, use_agent=True)
-                        myds.upload(filepath, recursive=True)
-                    else:
-                        submitdataprogress = (
-                            "Uploading file '%s' to dataset '%s \n' "
-                            % (filepath, bfdataset)
-                        )
-                        # CHANGE BACK
-                        # myds.upload(filepath, use_agent=True)
-                        myds.upload(filepath)
-                submitdataprogress = "Success: COMPLETED!"
-                submitdatastatus = "Done"
-
-            except Exception as e:
-                raise e
 
         def upload_folder_in_buckets():
             global submitdataprogress
@@ -1301,6 +1269,19 @@ def bf_get_current_user_permission(bf, myds):
 
     except Exception as e:
         raise e
+
+
+def bf_get_current_user_permission_agent_two(dataset_id):
+    PENNSIEVE_URL = "https://api.pennsieve.io"
+
+    access_token = get_access_token()
+
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/role", headers={"Authorization": f"Bearer {access_token}"})
+    r.raise_for_status()
+
+    return r.json()
+
+
 
 
 def bf_add_permission(
