@@ -5,24 +5,29 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.9.2.3 - 2022-09-29
+
+## Bug fixes:
+
+- Guided Mode: Manifest files - Auto-generated manifest files no longer include their high level folder in their path.
+
 ## v.9.2.2 - 2022-09-28
 
 ## Bug fixes:
 
-- Prepare Metadata - Create manifest.xlsx: Manifest files created from large datasets will no longer be 0KB or fail to be created. 
-- Prepare Metadata - Create manifest.xlsx: An issue for Windows users that prevents the file explorer from immediately opening after creating manifest files has been corrected. Windows users will now be able to see their manifest files in the explorer post creation to check them for correctness. 
-- Prepare Metadata - Create manifest.xlsx: Users will no longer have to wait to get feedback that their manifest files are being generated for large datasets. 
+- Prepare Metadata - Create manifest.xlsx: Manifest files created from large datasets will no longer be 0KB or fail to be created.
+- Prepare Metadata - Create manifest.xlsx: An issue for Windows users that prevents the file explorer from immediately opening after creating manifest files has been corrected. Windows users will now be able to see their manifest files in the explorer post creation to check them for correctness.
+- Prepare Metadata - Create manifest.xlsx: Users will no longer have to wait to get feedback that their manifest files are being generated for large datasets.
 
-## Known issues: 
-- Guided Mode - Manifest file entries created with guided mode include their high level SPARC folder in the file name column. 
+## Known issues:
 
+- Guided Mode - Manifest file entries created with guided mode include their high level SPARC folder in the file name column.
 
 ## v.9.2.1 - 2022-09-23
 
 ## Bug fixes:
 
-- Fixed an issue where medium and large datasets were not being imported in Organize Datasets or the Create manifest.xlsx feature on Darwin. 
-
+- Fixed an issue where medium and large datasets were not being imported in Organize Datasets or the Create manifest.xlsx feature on Darwin.
 
 ## v.9.2.0 - 2022-09-20
 
@@ -83,6 +88,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - In the Organize Dataset feature, if a dataset is large enough and being uploaded to Pennsieve it will not pass the file and folder integrity check. This is a separate issue from those that were fixed as part of the bug fixes section outlined in v.8.0.1. Users should find more large datasets are uploadable to Pennsieve than in the previous release. Note as well this does not apply to the Upload Local Dataset feature, which has a very high upper bound for the amount of files that can be uploaded to Pennsieve as of the current release.
 
 ## v.9.0.1 - 2022-09-02
+
 ## Bug fixes:
 
 - Fixed an issue that caused the Organize Dataset feature to break when switching from Free Form Mode to Guided Mode and back.
