@@ -565,16 +565,16 @@ const generateProgressCardElement = (progressFileJSONObj) => {
         <div class="guided--dataset-card-row">
           <h1
             class="guided--text-dataset-card progress-file-name progress-card-popover"
-            data-content="Dataset name: ${progressFileName}"
+            data-tippy-content="Dataset name: ${progressFileName}"
             rel="popover"
-            data-placement="bottom"
+            placement="bottom"
             data-trigger="hover"
           >${progressFileName}</h1>
         </div>
         <div class="guided--dataset-card-row">
           <h1 
             class="guided--text-dataset-card progress-card-popover"
-            data-content="Dataset subtitle: ${progressFileSubtitle}"
+            data-tippy-content="Dataset subtitle: ${progressFileSubtitle}"
             rel="popover"
             data-placement="bottom"
             data-trigger="hover"
@@ -591,7 +591,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
           <h2 class="guided--text-dataset-card-sub" style="width: auto;">
             <i
               class="fas fa-clock-o progress-card-popover"
-              data-content="Last modified: ${progressFileLastModified}"
+              data-tippy-content="Last modified: ${progressFileLastModified}"
               rel="popover"
               data-placement="bottom"
               data-trigger="hover"
@@ -703,7 +703,10 @@ const renderProgressCards = (progressFileJSONdata) => {
           </p>
         `;
 
-  $(".progress-card-popover").popover();
+  tippy(".progress-card-popover", {
+    allowHTML: true,
+    interactive: true,
+  });
 };
 
 const renderManifestCards = () => {
