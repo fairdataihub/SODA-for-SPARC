@@ -1315,7 +1315,6 @@ def drop_manifest_empty_columns(manifest_file_location):
 
         # for each custom column delete the column if all values are null/empty
         manifest_dict = {x:manifest_df[x].values.tolist() for x in manifest_df}
-        namespace_logger.info(manifest_dict)
 
         for column in custom_columns:
             if all([pd.isna(x) for x in manifest_dict[column]]):

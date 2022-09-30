@@ -1314,6 +1314,8 @@ const create_json_object = (action, sodaJSONObj, root_folder_path) => {
       }
     }
   });
+
+
   // go through each individual high level folder and create the structure
   // If a manifest file exists, read information from the manifest file into a json object
   for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
@@ -1332,6 +1334,7 @@ const create_json_object = (action, sodaJSONObj, root_folder_path) => {
         .parseSubArray(";", ",")
         .getJsonFromCsv(sodaJSONObj["starting-point"][folder]["path"]);
     }
+
     recursive_structure_create(
       action,
       sodaJSONObj["dataset-structure"]["folders"][folder],
@@ -1581,6 +1584,8 @@ const recursive_structure_create = (
         delete dataset_folder["files"][file];
       }
     }
+
+    
     if (stats.isDirectory() && !/(^|\/)\.[^\/\.]/g.test(file)) {
       if (irregularFolderArray.includes(current_file_path)) {
         var renamedFolderName = "";

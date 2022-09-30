@@ -1172,11 +1172,11 @@ async function helpSPARCAward(filetype, curationMode) {
               },
             }).then((boolean) => {
               if (boolean.isConfirmed) {
-                changeAward(award, "free-form");
+                changeAward(award);
               }
             });
           } else {
-            changeAward(award, "free-form");
+            changeAward(award);
           }
         } else if (curationMode === "guided") {
           changeAward(award, "guided");
@@ -1280,12 +1280,11 @@ async function helpSPARCAward(filetype, curationMode) {
                 $("#ds-description-award-input").val(award);
                 document.getElementById("submission-completion-date").value =
                   "";
-                loadContributorInfofromAirtable(award, "free-form");
+                loadContributorInfofromAirtable(award);
               }
               console.log(curationMode);
               if (curationMode === "guided") {
                 guidedSetImportedSPARCAward(award);
-                loadContributorInfofromAirtable(award, "guided");
               }
             }
           });
@@ -1304,7 +1303,6 @@ async function helpSPARCAward(filetype, curationMode) {
             gettingStartedAirtable.children[1].style.display = "none";
             gettingStartedAirtable.children[0].style.display = "flex";
             guidedSetImportedSPARCAward(award);
-            loadContributorInfofromAirtable(award, "guided");
           }
         }
       }
@@ -1434,7 +1432,7 @@ function populateSelectSPARCAward(object, id) {
   }
 }
 
-function changeAward(award, curationMode) {
+function changeAward(award) {
   Swal.fire({
     title: "Loading your award and contributor information.",
     html: "Please wait...",
@@ -1450,7 +1448,7 @@ function changeAward(award, curationMode) {
   }).then((result) => {});
   $("#ds-description-award-input").val(award);
   $("#submission-sparc-award").val(award);
-  loadContributorInfofromAirtable(award, curationMode);
+  loadContributorInfofromAirtable(award);
 }
 
 const generateContributorRowElement = (
@@ -1507,7 +1505,7 @@ const addContributorRowElement = () => {
   divAfter.insertAdjacentHTML("beforebegin", newContributorRowElement);
 };
 
-const loadContributorInfofromAirtable = async (award, curationMode) => {
+const loadContributorInfofromAirtable = async (award) => {
   globalContributorNameObject = {};
   currentContributorsLastNames = [];
   $("#contributor-table-dd tr:gt(0)").remove();
@@ -1546,40 +1544,6 @@ const loadContributorInfofromAirtable = async (award, curationMode) => {
         return;
       }
     }
-  }
-  if (curationMode === "guided") {
-    // render the contributors table on the contributors page
-    let contributorTableRows = Object.keys(globalContributorNameObject)
-      .map((contributor) => {
-        const contributorLast = contributor;
-        const contributorFirst = globalContributorNameObject[contributor];
-        return generateContributorRowElement(contributorLast, contributorFirst);
-      })
-      .join("\n");
-
-    //If the response is empty, hide the contributor selection table
-    //and allow the user to add contributors manually
-    if (contributorTableRows.length === 0) {
-      //create a notyf
-      notyf.error("No contributors found for this award.");
-      //hide AirTable contributor table and show contributor information fields
-      document
-        .getElementById("guided-div-contributors-imported-from-airtable")
-        .classList.add("hidden");
-      document
-        .getElementById("guided-div-contributor-field-set")
-        .classList.remove("hidden");
-
-      document.getElementById("contributors-container").innerHTML = "";
-      //add an empty contributor information fieldset
-      addContributorField();
-      return;
-    }
-
-    const contributorsTableContainer = document.getElementById(
-      "contributors-table-container"
-    );
-    contributorsTableContainer.innerHTML = contributorTableRows;
   }
 };
 
@@ -3005,7 +2969,7 @@ function loadDDFileToUI(object, file_type) {
       // populate awards
       globalSPARCAward = arr[1];
       $("#ds-description-award-input").val(arr[1]);
-      changeAward(globalSPARCAward, "free-form");
+      changeAward(globalSPARCAward);
       populateTagifyDD(otherFundingTagify, arr.splice(2));
     }
   }

@@ -2631,10 +2631,7 @@
           </div>
         </div>
         <div id="guided-contributors-tab" class="guided--panel hidden">
-          <div
-            class="guided--panel hidden"
-            id="guided-div-contributors-imported-from-airtable"
-          >
+          <div class="guided--section">
             <h1 class="guided--text-sub-step">Contributor information</h1>
             <p class="guided--help-text">
               Select the contributors that contributed to your dataset. These
@@ -2642,55 +2639,27 @@
               describing the data, but should be acknowledged for their role in
               producing and publishing the dataset.
             </p>
+          </div>
+          <div class="guided--section">
             <table
               class="ui celled striped table"
               id="contributors-table"
-              style="margin-bottom: 25px; width: 500px"
+              style="margin-bottom: 25px; width: 800px"
             >
               <thead>
                 <tr>
-                  <th></th>
-                  <th>Last name</th>
-                  <th>First name</th>
+                  <th>Name</th>
+                  <th>Role(s)</th>
+                  <th class="center aligned collapsing">Modify</th>
+                  <th class="center aligned collapsing">Delete</th>
                 </tr>
               </thead>
-              <tbody id="contributors-table-container"></tbody>
+              <tbody id="guided-DD-connoributors-table"></tbody>
             </table>
-            <button
-              class="ui primary button hidden"
-              id="guided-button-edit-checked-contributors"
-              style="
-                background-color: var(--color-light-green) !important;
-                display: none;
-              "
-            >
-              Edit selected contributors
-            </button>
-          </div>
-          <div
-            class="guided--panel hidden"
-            id="guided-div-contributor-field-set"
-          >
-            <div class="guided--section">
-              <h1 class="guided--text-sub-step">Contributor information</h1>
-              <p class="guided--help-text">
-                SPARC requires all datasets to include a dataset_description
-                metadata file that includes various information about the
-                dataset including a list of all the contributors. You can
-                provide information about the contributors to your dataset below
-                and SODA will automatically include it in the
-                dataset_description file when it is generated in the last step
-                of this guided workflow. Anyone who participated in the
-                collection/analysis/curation of the dataset should typically be
-                listed here.
-              </p>
-            </div>
-
-            <div class="guided--section" id="contributors-container"></div>
             <button
               class="ui primary basic button mt-sm"
               id="guided-button-add-contributor"
-              onclick="addContributorField()"
+              onclick="openGuidedAddContributorSwal(false)"
             >
               <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new
               contributor

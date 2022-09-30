@@ -407,6 +407,13 @@ const guidedTransitionFromDatasetNameSubtitlePage = () => {
 };
 
 const saveGuidedProgress = (guidedProgressFileName) => {
+  //return if guidedProgressFileName is not a strnig greater than 0
+  if (
+    typeof guidedProgressFileName !== "string" ||
+    guidedProgressFileName.length === 0
+  ) {
+    throw "saveGuidedProgress: guidedProgressFileName must be a string greater than 0";
+  }
   //Destination: HOMEDIR/SODA/Guided-Progress
   sodaJSONObj["last-modified"] = new Date();
 
@@ -709,8 +716,13 @@ const renderManifestCards = () => {
     })
     .join("\n");
 
-  document.getElementById("guided-container-manifest-file-cards").innerHTML =
-    manifestCards;
+  const manifestFilesCardsContainer = document.getElementById(
+    "guided-container-manifest-file-cards"
+  );
+
+  manifestFilesCardsContainer.innerHTML = manifestCards;
+
+  smoothScrollToElement(manifestFilesCardsContainer);
 };
 
 const generateManifestEditCard = (highLevelFolderName) => {
@@ -749,6 +761,8 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
 
   let guidedManifestTable;
 
+  const readOnlyHeaders = ["filename", "file type", "timestamp"];
+
   const { value: saveManifestFiles } = await Swal.fire({
     title:
       "<span style='font-size: 18px !important;'>Edit the manifest file below: </span> <br><span style='font-size: 13px; font-weight: 500'> Tip: Double click on a cell to edit it.<span>",
@@ -759,7 +773,6 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
     confirmButtonText: "Confirm",
     showCancelButton: true,
     width: "90%",
-    // height: "80%",
     customClass: "swal-large",
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
@@ -773,6 +786,7 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
         data: manifestFileData,
         columns: manifestFileHeaders.map((header) => {
           return {
+            readOnly: readOnlyHeaders.includes(header) ? true : false,
             type: "text",
             title: header,
             width: 200,
@@ -798,72 +812,167 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
   }
 };
 
+const extractFilNamesFromManifestData = (manifestData) => {
+  let allFileNamesinDsStructure = [];
+  for (const highLevelFolder of Object.keys(manifestData)) {
+    for (const row of manifestData[highLevelFolder]["data"]) {
+      allFileNamesinDsStructure.push(row[0]);
+    }
+  }
+  console.log(allFileNamesinDsStructure);
+  //return sorted allFileNamesinDsStructure
+  return allFileNamesinDsStructure.sort();
+};
+
+const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
+  const prevManifestFileNames =
+    extractFilNamesFromManifestData(existingManifestData);
+  const newManifestFileNames = extractFilNamesFromManifestData(newManifestData);
+
+  if (
+    JSON.stringify(prevManifestFileNames) ===
+    JSON.stringify(newManifestFileNames)
+  ) {
+    //All files have remained the same, no need to diff check
+    return existingManifestData;
+  }
+
+  const numImmutableManifestDataCols = 3;
+
+  // Create a hash table for the existing manifest data
+  const existingManifestDataHashTable = {};
+  for (const highLevelFolderName in existingManifestData) {
+    const existingManifestDataHeaders =
+      existingManifestData[highLevelFolderName]["headers"];
+    const existingManifestDataData =
+      existingManifestData[highLevelFolderName]["data"];
+
+    for (const row of existingManifestDataData) {
+      const fileObj = {};
+      const fileName = row[0];
+      //Create a new array from row starting at index 2
+      const fileData = row.slice(numImmutableManifestDataCols);
+      for (const [index, rowValue] of fileData.entries()) {
+        const oldHeader =
+          existingManifestDataHeaders[index + numImmutableManifestDataCols];
+        fileObj[oldHeader] = rowValue;
+      }
+      existingManifestDataHashTable[fileName] = fileObj;
+    }
+  }
+
+  let returnObj = {};
+
+  for (const highLevelFolder of Object.keys(newManifestData)) {
+    if (!existingManifestData[highLevelFolder]) {
+      console.log("new manifest data folder");
+      //If the high level folder does not exist in the existing manifest data, add it
+      returnObj[highLevelFolder] = newManifestData[highLevelFolder];
+    } else {
+      console.log("Updating existing manifest data folder");
+      //If the high level folder does exist in the existing manifest data, update it
+      let newManifestReturnObj = {};
+      newManifestReturnObj["headers"] =
+        existingManifestData[highLevelFolder]["headers"];
+      newManifestReturnObj["data"] = [];
+
+      const rowData = newManifestData[highLevelFolder]["data"];
+      for (const row of rowData) {
+        const fileName = row[0];
+
+        if (existingManifestDataHashTable[fileName]) {
+          //Push the new values generated
+          let updatedRow = row.slice(0, numImmutableManifestDataCols);
+
+          for (const header of newManifestReturnObj["headers"].slice(
+            numImmutableManifestDataCols
+          )) {
+            updatedRow.push(existingManifestDataHashTable[fileName][header]);
+          }
+          newManifestReturnObj["data"].push(updatedRow);
+        } else {
+          //If the file does not exist in the existing manifest data, add it
+          newManifestReturnObj["data"].push(row);
+        }
+        returnObj[highLevelFolder] = newManifestReturnObj;
+      }
+    }
+  }
+
+  return returnObj;
+};
+
 document
   .getElementById("guided-button-auto-generate-manifest-files")
   .addEventListener("click", async () => {
-    const manifestData = sodaJSONObj["guided-manifest-files"];
+    //Wait for current call stack to finish
+    await new Promise((r) => setTimeout(r, 0));
 
-    //If no manifest file exists, generate the manifest file data
-    if (Object.keys(manifestData).length === 0) {
-      const manifestFilesCardsContainer = document.getElementById(
-        "guided-container-manifest-file-cards"
+    const manifestFilesCardsContainer = document.getElementById(
+      "guided-container-manifest-file-cards"
+    );
+
+    manifestFilesCardsContainer.innerHTML = `
+    <div class="guided--section">
+    <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    </div>
+    Updating your dataset's manifest files...
+    `;
+
+    scrollToBottomOfGuidedBody();
+    console.log("called function");
+
+    try {
+      // Retrieve the manifest data to be used to generate the manifest files
+      const res = await client.post(
+        `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
+        {
+          dataset_structure_obj: datasetStructureJSONObj,
+        },
+        { timeout: 0 }
       );
+      const manifestRes = res.data;
+      console.log(manifestRes);
+      //loop through each of the high level folders and store their manifest headers and data
+      //into the sodaJSONObj
 
-      manifestFilesCardsContainer.innerHTML = `loading`;
-      try {
-        //Delete any manifest files that already exist in the sodaJSONObj
-        //because new manifest files will be generated after the user leaves this page
-        for (const [highLevelFolder, folderData] of Object.entries(
-          sodaJSONObj["saved-datset-structure-json-obj"]["folders"]
-        )) {
-          delete sodaJSONObj["saved-datset-structure-json-obj"]["folders"][
-            highLevelFolder
-          ]["files"]["manifest.xlsx"];
+      let newManifestData = {};
+
+      for (const [highLevelFolderName, manifestFileData] of Object.entries(
+        manifestRes
+      )) {
+        //Only save manifest files for hlf that returned more than the headers
+        //(meaning manifest file data was generated in the response)
+        if (manifestFileData.length > 1) {
+          //Remove the first element from the array and set it as the headers
+          const manifestHeader = manifestFileData.shift();
+
+          newManifestData[highLevelFolderName] = {
+            headers: manifestHeader,
+            data: manifestFileData,
+          };
         }
-        // Generate the manifest file data for each high level folder
-        // Data will be returned as an object with a key for each high level folder
-        // and the value for each key will be an array of arrays with the first array
-        // being the headers, and the rest of the arrays being the manifest data.
-        const res = await client.post(
-          `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
-          {
-            dataset_structure_obj:
-              sodaJSONObj["saved-datset-structure-json-obj"],
-          },
-          { timeout: 0 }
-        );
-        const manifestRes = res.data;
-        //loop through each of the high level folders and store their manifest headers and data
-        //into the sodaJSONObj
-
-        for (const [highLevelFolderName, manifestFileData] of Object.entries(
-          manifestRes
-        )) {
-          //Only save manifest files for hlf that returned more than the headers
-          //(meaning manifest file data was generated in the response)
-          if (manifestFileData.length > 1) {
-            //Remove the first element from the array and set it as the headers
-            const manifestHeader = manifestFileData.shift();
-            const manifestData = manifestFileData;
-
-            sodaJSONObj["guided-manifest-files"][highLevelFolderName] = {
-              headers: manifestHeader,
-              data: manifestData,
-            };
-            datasetStructureJSONObj["folders"][highLevelFolderName]["files"][
-              "manifest.xlsx"
-            ] = {
-              name: "manifest.xlsx",
-              size: 0,
-              type: "temp",
-            };
-          }
-        }
-        //Save the sodaJSONObj with the new manifest files
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-      } catch (err) {
-        userError(err);
       }
+      const existingManifestData = sodaJSONObj["guided-manifest-files"];
+      let updatedManifestData;
+
+      if (existingManifestData) {
+        updatedManifestData = diffCheckManifestFiles(
+          newManifestData,
+          existingManifestData
+        );
+      } else {
+        updatedManifestData = newManifestData;
+      }
+
+      console.log(updatedManifestData);
+      sodaJSONObj["guided-manifest-files"] = updatedManifestData;
+      // Save the sodaJSONObj with the new manifest files
+      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+    } catch (err) {
+      console.log(err);
+      clientError(err);
+      userError(err);
     }
 
     //Rerender the manifest cards
@@ -1392,12 +1501,6 @@ const cleanUpEmptyGuidedStructureFolders = async (
         let result = await Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
           title: "Missing data",
           html: `${highLevelFolder} data was not added to the following samples:<br /><br />
             <ul>
@@ -1878,6 +1981,17 @@ const traverseToTab = async (targetPageID) => {
     if (targetPageID === "guided-manifest-file-generation-tab") {
       // Note: manifest file auto-generation is handled by an event listener on the button
       // with the ID: guided-button-auto-generate-manifest-files
+
+      //Delete any manifest files in the dataset structure.
+      for (const folder of Object.keys(datasetStructureJSONObj["folders"])) {
+        if (
+          datasetStructureJSONObj["folders"][folder]["files"]["manifest.xlsx"]
+        ) {
+          delete datasetStructureJSONObj["folders"][folder]["files"][
+            "manifest.xlsx"
+          ];
+        }
+      }
     }
 
     if (targetPageID === "guided-airtable-award-tab") {
@@ -2008,62 +2122,7 @@ const traverseToTab = async (targetPageID) => {
       openSubPageNavigation(targetPageID);
     }
     if (targetPageID === "guided-contributors-tab") {
-      const sparcAward =
-        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-      const contributors =
-        sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
-
-      //If contributors already existin in the sodaJSONObj, then show the contributors field
-      //and render a card for each contributor
-      if (contributors) {
-        switchElementVisibility(
-          "guided-div-contributors-imported-from-airtable",
-          "guided-div-contributor-field-set"
-        );
-
-        renderContributorFields(contributors);
-      } else {
-        // check if airtableconfig has non empty api-key and key-name properties
-        const airTableKeyData = parseJson(airtableConfigPath);
-
-        if (
-          sparcAward &&
-          airTableKeyData["api-key"] &&
-          airTableKeyData["api-key"] &&
-          airTableKeyData["key-name"] !== "" &&
-          airTableKeyData["api-key"] !== ""
-        ) {
-          try {
-            //Show contributor fields and hide contributor information fields
-            loadContributorInfofromAirtable(sparcAward, "guided");
-            switchElementVisibility(
-              "guided-div-contributor-field-set",
-              "guided-div-contributors-imported-from-airtable"
-            );
-          } catch (error) {
-            console.log(error);
-            //reset if error fetching contributors from Airtable
-            switchElementVisibility(
-              "guided-div-contributors-imported-from-airtable",
-              "guided-div-contributor-field-set"
-            );
-
-            document.getElementById("contributors-container").innerHTML = "";
-            //add an empty contributor information fieldset
-            addContributorField();
-          }
-        } else {
-          //hide AirTable contributor table and show contributor information fields
-          switchElementVisibility(
-            "guided-div-contributors-imported-from-airtable",
-            "guided-div-contributor-field-set"
-          );
-
-          document.getElementById("contributors-container").innerHTML = "";
-          //add an empty contributor information fieldset
-          addContributorField();
-        }
-      }
+      renderDatasetDescriptionContributorsTable();
     }
     if (targetPageID === "guided-protocols-tab") {
       renderProtocolsTable();
@@ -2131,6 +2190,7 @@ const traverseToTab = async (targetPageID) => {
           "guided-pennsive-intro-account-details"
         );
         pennsieveIntroText.innerHTML = defaultBfAccount;
+
         (async () => {
           try {
             let bf_account_details_req = await client.get(
@@ -3434,6 +3494,13 @@ const patchPreviousGuidedModeVersions = () => {
     forceUserToRestartFromFirstPage = true;
   }
 
+  if (
+    !sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"]
+  ) {
+    sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] =
+      [];
+  }
+
   return forceUserToRestartFromFirstPage;
 };
 
@@ -3551,6 +3618,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["dataset-metadata"]["code-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"] =
     [];
+  sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] = [];
   sodaJSONObj["dataset-metadata"]["README"] = "";
   sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
   sodaJSONObj["digital-metadata"] = {};
@@ -4512,6 +4580,707 @@ const removeContributorField = (contributorDeleteButton) => {
   contributorField.remove();
 };
 
+const fetchContributorDataFromAirTable = async () => {
+  try {
+    const sparcAward =
+      sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+    const airTableKeyData = parseJson(airtableConfigPath);
+    if (
+      sparcAward &&
+      airTableKeyData["api-key"] &&
+      airTableKeyData["api-key"] &&
+      airTableKeyData["key-name"] !== "" &&
+      airTableKeyData["api-key"] !== ""
+    ) {
+      let contributorData = [];
+
+      const airKeyInput = airTableKeyData["api-key"];
+
+      Airtable.configure({
+        endpointUrl: "https://" + airtableHostname,
+        apiKey: airKeyInput,
+      });
+      var base = Airtable.base("appiYd1Tz9Sv857GZ");
+      await base("sparc_members")
+        .select({
+          filterByFormula: `({SPARC_Award_#} = "${sparcAward}")`,
+        })
+        .eachPage(function page(records, fetchNextPage) {
+          records.forEach(function (record) {
+            const firstName = record.get("First_name");
+            const lastName = record.get("Last_name");
+            const orcid = record.get("ORCID");
+            const affiliation = record.get("Institution");
+            const roles = record.get("Dataset_contributor_roles_for_SODA");
+
+            if (firstName !== undefined && lastName !== undefined) {
+              contributorData.push({
+                firstName: firstName,
+                lastName: lastName,
+                orcid: orcid,
+                affiliation: affiliation,
+                roles: roles,
+              });
+            }
+          }),
+            fetchNextPage();
+        });
+
+      return contributorData;
+    } else {
+      //return an empty array if the user is not connected with AirTable
+      return [];
+    }
+  } catch (error) {
+    console.log(error);
+    //If there is an error, return an empty array since no contributor data was fetched.
+    return [];
+  }
+};
+
+const addContributor = (
+  contributorFirstName,
+  contributorLastName,
+  contributorORCID,
+  contributorAffiliationsArray,
+  contributorRolesArray
+) => {
+  if (getContributorByOrcid(contributorORCID)) {
+    throw new Error("A contributor with the entered ORCID already exists");
+  }
+
+  sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"].push({
+    contributorFirstName: contributorFirstName,
+    contributorLastName: contributorLastName,
+    conName: `${contributorFirstName} ${contributorLastName}`,
+    conID: contributorORCID,
+    conAffliation: contributorAffiliationsArray.map(
+      (affiliation) => affiliation.value
+    ),
+    conRole: contributorRolesArray.map((role) => role.value),
+  });
+};
+
+const editContributorByOrcid = (
+  prevContributorOrcid,
+  contributorFirstName,
+  contributorLastName,
+  newContributorOrcid,
+  contributorAffiliationsArray,
+  contributorRolesArray
+) => {
+  const contributor = getContributorByOrcid(prevContributorOrcid);
+  if (!contributor) {
+    throw new Error("No contributor with the entered ORCID exists");
+  }
+
+  if (prevContributorOrcid !== newContributorOrcid) {
+    if (getContributorByOrcid(newContributorOrcid)) {
+      throw new Error("A contributor with the entered ORCID already exists");
+    }
+  }
+
+  contributor.contributorFirstName = contributorFirstName;
+  contributor.contributorLastName = contributorLastName;
+  contributor.conName = `${contributorFirstName} ${contributorLastName}`;
+  contributor.conID = newContributorOrcid;
+  contributor.conAffliation = contributorAffiliationsArray.map(
+    (affiliation) => affiliation.value
+  );
+  contributor.conRole = contributorRolesArray.map((role) => role.value);
+};
+
+const deleteContributor = (clickedDelContribuButton, contributorOrcid) => {
+  const contributorField = clickedDelContribuButton.parentElement.parentElement;
+  console.log(contributorField);
+  console.log(contributorOrcid);
+  const contributorsBeforeDelete =
+    sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+
+  sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] =
+    contributorsBeforeDelete.filter((contributor) => {
+      return contributor.conID !== contributorOrcid;
+    });
+  console.log(contributorField);
+  contributorField.remove();
+  //rerender the table after deleting a contributor
+  renderDatasetDescriptionContributorsTable();
+};
+
+const getContributorByOrcid = (orcid) => {
+  const contributors =
+    sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+  const contributor = contributors.find((contributor) => {
+    return contributor.conID == orcid;
+  });
+  return contributor;
+};
+
+const updateContributorByOrcid = (
+  contributorFirstName,
+  contributorLastName,
+  contributorORCID,
+  contributorAffiliationsArray,
+  contributorRolesArray
+) => {
+  const contributorsBeforeUpdate =
+    sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+  //Delete the contributor so we can add a new one with the updated information.
+  sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] =
+    contributorsBeforeUpdate.filter((contributor) => {
+      //remove contributors with matching ORCID
+      return contributor.conID !== contributorORCID;
+    });
+
+  addContributor(
+    contributorFirstName,
+    contributorLastName,
+    contributorORCID,
+    contributorAffiliationsArray,
+    contributorRolesArray
+  );
+};
+
+const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
+  const contributorData = getContributorByOrcid(contibuttorOrcidToEdit);
+  console.log(contributorData);
+  const contributorFirstName = contributorData.contributorFirstName;
+  const contributorLastName = contributorData.contributorLastName;
+  const contributorORCID = contributorData.conID;
+  const contributorAffiliationsArray = contributorData.conAffliation;
+  const contributorRolesArray = contributorData.conRole;
+
+  let affiliationTagify;
+  let contributorRolesTagify;
+
+  await Swal.fire({
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    width: "800px",
+    heightAuto: false,
+    // title: contributorSwalTitle,
+    html: `
+      <div class="guided--flex-center mt-sm">
+        <label class="guided--form-label centered mb-md">
+          Make changes to the contributor's information below.
+        </label>
+        <div class="space-between w-100">
+            <div class="guided--flex-center mt-sm" style="width: 45%">
+              <label class="guided--form-label required">Last name: </label>
+              <input
+                class="guided--input"
+                id="guided-contributor-last-name"
+                type="text"
+                placeholder="Contributor's Last name"
+                value=""
+              />
+            </div>
+            <div class="guided--flex-center mt-sm" style="width: 45%">
+              <label class="guided--form-label required">First name: </label>
+              <input
+                class="guided--input"
+                id="guided-contributor-first-name"
+                type="text"
+                placeholder="Contributor's first name"
+                value=""
+              />
+            </div>
+          </div>
+          <label class="guided--form-label mt-md required">ORCID: </label>
+          <input
+            class="guided--input"
+            id="guided-contributor-orcid"
+            type="text"
+            placeholder="https://orcid.org/0000-0000-0000-0000"
+            value=""
+          />
+          <p class="guided--text-input-instructions mb-0 text-left">
+            If your contributor does not have an ORCID, have the contributor <a
+            target="_blank"
+            href="https://orcid.org"
+            >sign up for one one orcid.org</a
+          >.
+     
+          </p>
+          <label class="guided--form-label mt-md required">Affiliation(s): </label>
+          <input id="guided-contributor-affiliation-input"
+            contenteditable="true"
+          />
+          <p class="guided--text-input-instructions mb-0 text-left">
+            Institution(s) the contributor is affiliated with.
+            <br />
+            <b>
+              Press enter after entering an institution to add it to the list.
+            </b>
+          </p>
+          <label class="guided--form-label mt-md required">Role(s): </label>
+          <input id="guided-contributor-roles-input"
+            contenteditable="true"
+          />
+          <p class="guided--text-input-instructions mb-0 text-left">
+            Role(s) the contributor played in the creation of the dataset.
+            <br />
+            <b>
+              Select a role from the dropdown to add it to the list.
+            </b>
+          </p>
+        </div>
+      </div>
+    `,
+    showCancelButton: true,
+    confirmButtonText: "Edit contributor",
+    confirmButtonColor: "#3085d6 !important",
+    willOpen: () => {
+      //Create Affiliation(s) tagify for each contributor
+      const contributorAffiliationInput = document.getElementById(
+        "guided-contributor-affiliation-input"
+      );
+      affiliationTagify = new Tagify(contributorAffiliationInput, {
+        duplicate: false,
+      });
+      createDragSort(affiliationTagify);
+      affiliationTagify.addTags(contributorAffiliationsArray);
+
+      const contributorRolesInput = document.getElementById(
+        "guided-contributor-roles-input"
+      );
+      contributorRolesTagify = new Tagify(contributorRolesInput, {
+        whitelist: [
+          "PrincipleInvestigator",
+          "Creator",
+          "CoInvestigator",
+          "DataCollector",
+          "DataCurator",
+          "DataManager",
+          "Distributor",
+          "Editor",
+          "Producer",
+          "ProjectLeader",
+          "ProjectManager",
+          "ProjectMember",
+          "RelatedPerson",
+          "Researcher",
+          "ResearchGroup",
+          "Sponsor",
+          "Supervisor",
+          "WorkPackageLeader",
+          "Other",
+        ],
+        enforceWhitelist: true,
+        dropdown: {
+          enabled: 0,
+          closeOnSelect: true,
+          position: "auto",
+        },
+      });
+      createDragSort(contributorRolesTagify);
+      contributorRolesTagify.addTags(contributorRolesArray);
+
+      document.getElementById("guided-contributor-first-name").value =
+        contributorFirstName;
+      document.getElementById("guided-contributor-last-name").value =
+        contributorLastName;
+      document.getElementById("guided-contributor-orcid").value =
+        contributorORCID;
+    },
+
+    preConfirm: (inputValue) => {
+      const contributorFirstName = document.getElementById(
+        "guided-contributor-first-name"
+      ).value;
+      const contributorLastName = document.getElementById(
+        "guided-contributor-last-name"
+      ).value;
+      const contributorOrcid = document.getElementById(
+        "guided-contributor-orcid"
+      ).value;
+      const contributorAffiliations = affiliationTagify.value;
+      const contributorRoles = contributorRolesTagify.value;
+
+      if (
+        !contributorFirstName ||
+        !contributorLastName ||
+        !contributorOrcid ||
+        !contributorAffiliations.length > 0 ||
+        !contributorRoles.length > 0
+      ) {
+        Swal.showValidationMessage("Please fill out all required fields");
+      } else {
+        try {
+          editContributorByOrcid(
+            contibuttorOrcidToEdit,
+            contributorFirstName,
+            contributorLastName,
+            contributorOrcid,
+            contributorAffiliations,
+            contributorRoles
+          );
+        } catch (error) {
+          Swal.showValidationMessage(error);
+        }
+      }
+
+      //rerender the table after adding a contributor
+      renderDatasetDescriptionContributorsTable();
+    },
+  });
+};
+
+const openGuidedAddContributorSwal = async () => {
+  let contributorAdditionHeader;
+  let addContributorTitle;
+
+  try {
+    const existingContributors =
+      sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+
+    const extingContributorOrcids = existingContributors.map((contributor) => {
+      return contributor.conID;
+    });
+
+    let contributorData = await fetchContributorDataFromAirTable();
+
+    //Filter out contributors that have already been added
+    contributorData = contributorData.filter((contributor) => {
+      return !extingContributorOrcids.includes(contributor.orcid);
+    });
+
+    // If contributor data is returned from airtable, add a select option for each contributor with
+    // a returned first and last name
+    if (contributorData.length > 0) {
+      addContributorTitle =
+        "Select a contributor from the dropdown below or add their information manually.";
+      contributorAdditionHeader = `
+          <option
+            value=""
+            data-first-name=""
+            data-last-name=""
+            data-orcid=""
+            data-affiliation=""
+            data-roles=""
+          >
+            Select a contributor
+          </option>
+        `;
+
+      const contributorOptions = contributorData.map((contributor) => {
+        console.log(contributor);
+        return `
+          <option
+            value="${contributor.firstName} ${contributor.lastName}"
+            data-first-name="${contributor.firstName}"
+            data-last-name="${contributor.lastName}"
+            data-orcid="${contributor.orcid ?? ""}"
+            data-affiliation="${contributor.affiliation ?? ""}"
+            data-roles="${contributor.roles ? contributor.roles.join(",") : ""}"
+          >
+            ${contributor.firstName} ${contributor.lastName}
+          </option>
+        `;
+      });
+
+      contributorAdditionHeader = `
+        <select
+          class="w-100"
+          id="guided-dd-contributor-dropdown"
+          data-live-search="true"
+          name="Dataset contributor"
+        >
+          <option
+            value=""
+            data-first-name=""
+            data-last-name=""
+            data-orcid=""
+            data-affiliation=""
+            data-roles=""
+          >
+            Select a contributor imported from AirTable
+          </option>
+          ${contributorOptions}
+        </select>
+      `;
+    } else {
+      contributorAdditionHeader = ``;
+      addContributorTitle = "Enter the contributor's information below.";
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+  let affiliationTagify;
+  let contributorRolesTagify;
+
+  const { value: newContributorData } = await Swal.fire({
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    width: "800px",
+    heightAuto: false,
+    // title: contributorSwalTitle,
+    html: `
+      <div class="guided--flex-center mt-sm">
+        <label class="guided--form-label centered mb-md">
+          ${addContributorTitle}
+        </label>
+        ${contributorAdditionHeader}
+        <div class="space-between w-100">
+            <div class="guided--flex-center mt-sm" style="width: 45%">
+              <label class="guided--form-label required">Last name: </label>
+              <input
+                class="guided--input"
+                id="guided-contributor-last-name"
+                type="text"
+                placeholder="Contributor's Last name"
+                value=""
+              />
+            </div>
+            <div class="guided--flex-center mt-sm" style="width: 45%">
+              <label class="guided--form-label required">First name: </label>
+              <input
+                class="guided--input"
+                id="guided-contributor-first-name"
+                type="text"
+                placeholder="Contributor's first name"
+                value=""
+              />
+            </div>
+          </div>
+          <label class="guided--form-label mt-md required">ORCID: </label>
+          <input
+            class="guided--input"
+            id="guided-contributor-orcid"
+            type="text"
+            placeholder="https://orcid.org/0000-0000-0000-0000"
+            value=""
+          />
+          <p class="guided--text-input-instructions mb-0 text-left">
+            If your contributor does not have an ORCID, have the contributor <a
+            target="_blank"
+            href="https://orcid.org"
+            >sign up for one one orcid.org</a
+          >.
+     
+          </p>
+          <label class="guided--form-label mt-md required">Affiliation(s): </label>
+          <input id="guided-contributor-affiliation-input"
+            contenteditable="true"
+          />
+          <p class="guided--text-input-instructions mb-0 text-left">
+            Institution(s) the contributor is affiliated with.
+            <br />
+            <b>
+              Press enter after entering an institution to add it to the list.
+            </b>
+          </p>
+          <label class="guided--form-label mt-md required">Role(s): </label>
+          <input id="guided-contributor-roles-input"
+            contenteditable="true"
+          />
+          <p class="guided--text-input-instructions mb-0 text-left">
+            Role(s) the contributor played in the creation of the dataset.
+            <br />
+            <b>
+              Select a role from the dropdown to add it to the list.
+            </b>
+          </p>
+        </div>
+      </div>
+    `,
+    showCancelButton: true,
+    confirmButtonText: "Add contributor",
+    confirmButtonColor: "#3085d6 !important",
+    willOpen: () => {
+      //Create Affiliation(s) tagify for each contributor
+      const contributorAffiliationInput = document.getElementById(
+        "guided-contributor-affiliation-input"
+      );
+      affiliationTagify = new Tagify(contributorAffiliationInput, {
+        duplicate: false,
+      });
+      createDragSort(affiliationTagify);
+
+      const contributorRolesInput = document.getElementById(
+        "guided-contributor-roles-input"
+      );
+      contributorRolesTagify = new Tagify(contributorRolesInput, {
+        whitelist: [
+          "PrincipleInvestigator",
+          "Creator",
+          "CoInvestigator",
+          "DataCollector",
+          "DataCurator",
+          "DataManager",
+          "Distributor",
+          "Editor",
+          "Producer",
+          "ProjectLeader",
+          "ProjectManager",
+          "ProjectMember",
+          "RelatedPerson",
+          "Researcher",
+          "ResearchGroup",
+          "Sponsor",
+          "Supervisor",
+          "WorkPackageLeader",
+          "Other",
+        ],
+        enforceWhitelist: true,
+        dropdown: {
+          enabled: 0,
+          closeOnSelect: true,
+          position: "auto",
+        },
+      });
+      createDragSort(contributorRolesTagify);
+
+      $("#guided-dd-contributor-dropdown").selectpicker();
+      $("#guided-dd-contributor-dropdown").selectpicker("refresh");
+      $("#guided-dd-contributor-dropdown").on("change", function (e) {
+        const selectedFirstName = $(
+          "#guided-dd-contributor-dropdown option:selected"
+        ).data("first-name");
+        const selectedLastName = $(
+          "#guided-dd-contributor-dropdown option:selected"
+        ).data("last-name");
+        const selectedOrcid = $(
+          "#guided-dd-contributor-dropdown option:selected"
+        ).data("orcid");
+        const selectedAffiliation = $(
+          "#guided-dd-contributor-dropdown option:selected"
+        ).data("affiliation");
+        const selectedRoles = $(
+          "#guided-dd-contributor-dropdown option:selected"
+        ).data("roles");
+
+        document.getElementById("guided-contributor-first-name").value =
+          selectedFirstName;
+        document.getElementById("guided-contributor-last-name").value =
+          selectedLastName;
+        document.getElementById("guided-contributor-orcid").value =
+          selectedOrcid;
+
+        affiliationTagify.removeAllTags();
+        affiliationTagify.addTags(selectedAffiliation);
+
+        contributorRolesTagify.removeAllTags();
+        contributorRolesTagify.addTags(selectedRoles.split());
+      });
+    },
+
+    preConfirm: (inputValue) => {
+      const contributorFirstName = document.getElementById(
+        "guided-contributor-first-name"
+      ).value;
+      const contributorLastName = document.getElementById(
+        "guided-contributor-last-name"
+      ).value;
+      const contributorOrcid = document.getElementById(
+        "guided-contributor-orcid"
+      ).value;
+      const contributorAffiliations = affiliationTagify.value;
+      const contributorRoles = contributorRolesTagify.value;
+
+      console.log(contributorFirstName);
+      console.log(contributorLastName);
+      console.log(contributorOrcid);
+      console.log(contributorAffiliations);
+      console.log(contributorRoles);
+
+      if (
+        !contributorFirstName ||
+        !contributorLastName ||
+        !contributorOrcid ||
+        !contributorAffiliations.length > 0 ||
+        !contributorRoles.length > 0
+      ) {
+        Swal.showValidationMessage("Please fill out all required fields");
+      } else {
+        try {
+          addContributor(
+            contributorFirstName,
+            contributorLastName,
+            contributorOrcid,
+            contributorAffiliations,
+            contributorRoles
+          );
+        } catch (error) {
+          Swal.showValidationMessage(error);
+        }
+      }
+
+      //rerender the table after adding a contributor
+      renderDatasetDescriptionContributorsTable();
+    },
+  });
+};
+
+const generateContributorTableRow = (contributorObj) => {
+  const contributorFullName = contributorObj["conName"];
+  const contributorOrcid = contributorObj["conID"];
+  const contributorRoleString = contributorObj["conRole"].join(", ");
+
+  return `
+    <tr>
+      <td class="middle aligned">
+        ${contributorFullName}
+      </td>
+      <td class="middle aligned">
+        ${contributorRoleString}
+      </td>
+      <td class="middle aligned collapsing text-center">
+        <button
+          type="button"
+          class="btn btn-sm"
+          style="color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);"
+          onclick="openGuidedEditContributorSwal('${contributorOrcid}')"
+        >
+        View/Edit
+        </button>
+      </td>
+      <td class="middle aligned collapsing text-center">
+        <button
+          type="button"
+          class="btn btn-danger btn-sm" 
+          onclick="deleteContributor(this, '${contributorOrcid}')"
+        >
+          Delete
+        </button>
+      </td>
+    </tr>
+  `;
+};
+
+const renderDatasetDescriptionContributorsTable = () => {
+  const contributorsTable = document.getElementById(
+    "guided-DD-connoributors-table"
+  );
+
+  let contributorsTableHTML;
+
+  const contributors =
+    sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+
+  if (contributors.length === 0) {
+    contributorsTableHTML = `
+      <tr>
+        <td colspan="4">
+          <div style="margin-right:.5rem" class="alert alert-warning guided--alert" role="alert">
+            No contributors have been added to your dataset. To add a contributor, click the "Add a new contributor" button below.
+          </div>
+        </td>
+      </tr>
+    `;
+  } else {
+    contributorsTableHTML = contributors
+      .map((contributor) => {
+        return generateContributorTableRow(contributor);
+      })
+      .join("\n");
+  }
+  contributorsTable.innerHTML = contributorsTableHTML;
+};
+
 const addContributorField = () => {
   const contributorsContainer = document.getElementById(
     "contributors-container"
@@ -4742,7 +5511,9 @@ const removeProtocolField = (protocolElement) => {
     sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
   //If the protocol has data-protocol-url and data-protocol-description, then it is a protocol that
   //already been added. Delete it from the protocols array.
-  if (protocolURL && protocolDescription) {
+  if (protocolsBeforeDelete != undefined) {
+    //protocolsBeforeDelete will be undefined on a new dataset with no protocols yet
+    //until protocols are saved we won't need to go through this
     const filteredProtocols = protocolsBeforeDelete.filter((protocol) => {
       //remove protocols with matching protocol url and protocol description
       return !(
@@ -6752,6 +7523,7 @@ $("#guided-submission-completion-date-manual").change(function () {
 //////////       GUIDED OBJECT ACCESSORS       //////////
 /////////////////////////////////////////////////////////
 const setOrUpdateGuidedDatasetName = (newDatasetName) => {
+  console.log(newDatasetName);
   return new Promise((resolve, reject) => {
     const previousDatasetName = sodaJSONObj["digital-metadata"]["name"];
     //If updataing the dataset, update the old banner image path with a new one
@@ -10391,6 +11163,7 @@ $(document).ready(async () => {
       });
       return;
     }
+
     traverseToTab("guided-dataset-generation-tab");
     guidedPennsieveDatasetUpload();
   });
@@ -10818,12 +11591,6 @@ $(document).ready(async () => {
             backdrop: "rgba(0,0,0, 0.4)",
             reverseButtons: reverseSwalButtons,
             heightAuto: false,
-            showClass: {
-              popup: "animate__animated animate__zoomIn animate__faster",
-            },
-            hideClass: {
-              popup: "animate__animated animate__zoomOut animate__faster",
-            },
             allowOutsideClick: false,
           });
           if (!continueWithEmptyFolders) {
@@ -11286,221 +12053,6 @@ $(document).ready(async () => {
         }
       }
       if (pageBeingLeftID === "guided-contributors-tab") {
-        ////////////////////////////////////////////////////////////////////////////////
-        const contributorFieldSetDiv = document.getElementById(
-          "guided-div-contributor-field-set"
-        );
-        const airTableContributorImportDiv = document.getElementById(
-          "guided-div-contributors-imported-from-airtable"
-        );
-        //case when user adds contributors manually
-        if (!contributorFieldSetDiv.classList.contains("hidden")) {
-          let allInputsValid = true;
-          let contributors = [];
-          //get all contributor fields
-          const contributorFields = document.querySelectorAll(
-            ".guided-contributor-field-container"
-          );
-          //check if contributorFields is empty
-          if (contributorFields.length === 0) {
-            errorArray.push({
-              type: "notyf",
-              message: "Please add at least one contributor",
-            });
-            throw errorArray;
-          }
-
-          //loop through contributor fields and get values
-          const contributorFieldsArray = Array.from(contributorFields);
-
-          contributorFieldsArray.forEach((contributorField) => {
-            const contributorLastNameInput = contributorField.querySelector(
-              ".guided-last-name-input"
-            );
-            const contributorFirstNameInput = contributorField.querySelector(
-              ".guided-first-name-input"
-            );
-            const contributorORCIDInput = contributorField.querySelector(
-              ".guided-orcid-input"
-            );
-
-            //get the contributor affiliation tags
-            const contributorAffiliationTagify = contributorField.querySelector(
-              ".guided-contributor-affiliation-input"
-            );
-            const contributorAffiliationTagifyChildren = Array.from(
-              contributorAffiliationTagify.children
-            );
-            //remove the span element from the array so only tag elements are left
-            contributorAffiliationTagifyChildren.pop();
-            //get the titles of the tagify tags
-            const contributorAffiliations =
-              contributorAffiliationTagifyChildren.map((child) => {
-                return child.title;
-              });
-
-            //get the contributor role tags
-            const contributorRoleTagify = contributorField.querySelector(
-              ".guided-contributor-role-input"
-            );
-            //get the children of contributorRoleTagify in an array
-            const contributorRoleTagifyChildren = Array.from(
-              contributorRoleTagify.children
-            );
-            //remove the span element from the array so only tag elements are left
-            contributorRoleTagifyChildren.pop();
-            //get the titles of the tagify tags
-            const contributorRoles = contributorRoleTagifyChildren.map(
-              (child) => {
-                return child.title;
-              }
-            );
-            //Validate all of the contributor fields
-            const textInputs = [
-              contributorLastNameInput,
-              contributorFirstNameInput,
-              contributorORCIDInput,
-            ];
-            //check if all text inputs are valid
-            textInputs.forEach((textInput) => {
-              if (textInput.value === "") {
-                textInput.style.setProperty("border-color", "red", "important");
-                allInputsValid = false;
-              } else {
-                textInput.style.setProperty(
-                  "border-color",
-                  "hsl(0, 0%, 88%)",
-                  "important"
-                );
-              }
-            });
-
-            //Check if user added at least one affiliation
-            if (contributorAffiliations.length === 0) {
-              contributorAffiliationTagify.style.setProperty(
-                "border-color",
-                "red",
-                "important"
-              );
-              allInputsValid = false;
-            } else {
-              //remove the red border from the contributor affiliation tagify
-              contributorAffiliationTagify.style.setProperty(
-                "border-color",
-                "hsl(0, 0%, 88%)",
-                "important"
-              );
-            }
-
-            //Check if user added at least one contributor
-            if (contributorRoles.length === 0) {
-              contributorRoleTagify.style.setProperty(
-                "border-color",
-                "red",
-                "important"
-              );
-              allInputsValid = false;
-            } else {
-              //remove the red border from the contributor role tagify
-              contributorRoleTagify.style.setProperty(
-                "border-color",
-                "hsl(0, 0%, 88%)",
-                "important"
-              );
-            }
-
-            const contributorInputObj = {
-              contributorLastName: contributorLastNameInput.value,
-              contributorFirstName: contributorFirstNameInput.value,
-              conName: `${contributorLastNameInput.value}, ${contributorFirstNameInput.value}`,
-              conID: contributorORCIDInput.value,
-              conAffliation: contributorAffiliations,
-              conRole: contributorRoles,
-            };
-            contributors.push(contributorInputObj);
-          });
-          ///////////////////////////////////////////////////////////////////////////////
-          if (!allInputsValid) {
-            errorArray.push({
-              type: "notyf",
-              message: "Please fill out all contributor information fields",
-            });
-            throw errorArray;
-          }
-          sodaJSONObj["dataset-metadata"]["description-metadata"][
-            "contributors"
-          ] = contributors;
-        } else {
-          //case when user selects contributors from airTable
-          if (!airTableContributorImportDiv.classList.contains("hidden")) {
-            const checkedContributors = getCheckedContributors();
-            //if checkedMilestoneData is empty, create notyf
-            if (checkedContributors.length === 0) {
-              errorArray.push({
-                type: "notyf",
-                message: "Please select at least one contributor",
-              });
-              throw errorArray;
-            }
-
-            const airKeyContent = parseJson(airtableConfigPath);
-            const airKeyInput = airKeyContent["api-key"];
-            const base = Airtable.base("appiYd1Tz9Sv857GZ");
-            const sparcAward =
-              sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-            // Create a filter string to select every entry with first and last names that match the checked contributors
-            let contributorInfoFilterString = "OR(";
-            for (const contributor of checkedContributors) {
-              contributorInfoFilterString += `AND({First_name} = "${contributor["contributorFirstName"]}", {Last_name} = "${contributor["contributorLastName"]}", {SPARC_Award_#} = "${sparcAward}"),`;
-            }
-            //replace last comma with closing bracket
-            contributorInfoFilterString =
-              contributorInfoFilterString.slice(0, -1) + ")";
-            try {
-              const contributorInfoResult = await base("sparc_members")
-                .select({
-                  filterByFormula: contributorInfoFilterString,
-                })
-                .all();
-
-              const contributorInfo = contributorInfoResult.map(
-                (contributor) => {
-                  return {
-                    contributorLastName: contributor.fields["Last_name"],
-                    contributorFirstName: contributor.fields["First_name"],
-                    conName: `${contributor.fields["Last_name"]}, ${contributor.fields["First_name"]}`,
-                    conID: contributor.fields["ORCID"],
-                    conAffliation: [contributor.fields["Institution"]],
-                    conRole: contributor.fields["NIH_Project_Role"],
-                  };
-                }
-              );
-              sodaJSONObj["dataset-metadata"]["description-metadata"][
-                "contributors"
-              ] = contributorInfo;
-
-              renderContributorFields(contributorInfo);
-
-              airTableContributorImportDiv.classList.add("hidden");
-              contributorFieldSetDiv.classList.remove("hidden");
-
-              $(this).removeClass("loading");
-            } catch (error) {
-              //If there's an error getting the data from Airtable, create an empty contributor
-              airTableContributorImportDiv.classList.add("hidden");
-              contributorFieldSetDiv.classList.remove("hidden");
-              document.getElementById("contributors-container").innerHTML = "";
-              //add an empty contributor information fieldset
-              addContributorField();
-              notyf.error(
-                "Unable to import contributor information from airtable"
-              );
-              $(this).removeClass("loading");
-              return;
-            }
-            return;
-          }
-        }
       }
       if (pageBeingLeftID === "guided-protocols-tab") {
         const buttonYesImportProtocols = document.getElementById(
