@@ -1937,9 +1937,13 @@ const traverseToTab = async (targetPageID) => {
 
       //Delete any manifest files in the dataset structure.
       for (const folder of Object.keys(datasetStructureJSONObj["folders"])) {
-        delete datasetStructureJSONObj["folders"][folder]["files"][
-          "manifest.xlsx"
-        ];
+        if (
+          datasetStructureJSONObj["folders"][folder]["files"]["manifest.xlsx"]
+        ) {
+          delete datasetStructureJSONObj["folders"][folder]["files"][
+            "manifest.xlsx"
+          ];
+        }
       }
     }
 
