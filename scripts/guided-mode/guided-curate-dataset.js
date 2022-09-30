@@ -4475,8 +4475,10 @@ const addContributor = (
   contributorAffiliationsArray,
   contributorRolesArray
 ) => {
-  console.log(contributorFirstName);
-  console.log(contributorLastName);
+  if (getContributorByOrcid(contributorORCID)) {
+    throw new Error("A contributor with the entered ORCID already exists");
+  }
+
   sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"].push({
     contributorFirstName: contributorFirstName,
     contributorLastName: contributorLastName,
@@ -4487,6 +4489,22 @@ const addContributor = (
     ),
     conRole: contributorRolesArray.map((role) => role.value),
   });
+};
+
+const deleteContributor = (clickedDelContribuButton, contributorOrcid) => {
+  const contributorField = clickedDelContribuButton.parentElement.parentElement;
+  console.log(contributorField);
+  console.log(contributorOrcid);
+  const contributorsBeforeDelete =
+    sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+
+  sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] =
+    contributorsBeforeDelete.filter((contributor) => {
+      return contributor.conID !== contributorOrcid;
+    });
+  console.log(contributorField);
+  contributorField.remove();
+  renderDatasetDescriptionContributorsTable();
 };
 
 const getContributorByOrcid = (orcid) => {
@@ -4523,57 +4541,212 @@ const updateContributorByOrcid = (
   );
 };
 
-const deleteContributor = (orcid) => {
-  const contributorsBeforeDelete =
-    sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
+  const contributorData = getContributorByOrcid(contibuttorOrcidToEdit);
+  console.log(contributorData);
+  const contributorFirstName = contributorData.contributorFirstName;
+  const contributorLastName = contributorData.contributorLastName;
+  const contributorORCID = contributorData.conID;
+  const contributorAffiliationsArray = contributorData.conAffliation;
+  const contributorRolesArray = contributorData.conRole;
 
-  sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] =
-    contributorsBeforeDelete.filter((contributor) => {
-      //remove contributors with matching orcid
-      return contributor.conID !== orcid;
-    });
-};
+  await Swal.fire({
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    width: "800px",
+    heightAuto: false,
+    // title: contributorSwalTitle,
+    html: `
+      <div class="guided--flex-center mt-sm">
+        <label class="guided--form-label centered mb-md">
+          Make changes to the contributor's information below.
+        </label>
+        <div class="space-between w-100">
+            <div class="guided--flex-center mt-sm" style="width: 45%">
+              <label class="guided--form-label required">Last name: </label>
+              <input
+                class="guided--input"
+                id="guided-contributor-last-name"
+                type="text"
+                placeholder="Contributor's Last name"
+                value=""
+              />
+            </div>
+            <div class="guided--flex-center mt-sm" style="width: 45%">
+              <label class="guided--form-label required">First name: </label>
+              <input
+                class="guided--input"
+                id="guided-contributor-first-name"
+                type="text"
+                placeholder="Contributor's first name"
+                value=""
+              />
+            </div>
+          </div>
+          <label class="guided--form-label mt-md required">ORCID: </label>
+          <input
+            class="guided--input"
+            id="guided-contributor-orcid"
+            type="text"
+            placeholder="https://orcid.org/0000-0000-0000-0000"
+            value=""
+          />
+          <p class="guided--text-input-instructions mb-0 text-left">
+            If your contributor does not have an ORCID, have the contributor <a
+            target="_blank"
+            href="https://orcid.org"
+            >sign up for one one orcid.org</a
+          >.
+     
+          </p>
+          <label class="guided--form-label mt-md required">Affiliation(s): </label>
+          <input id="guided-contributor-affiliation-input"
+            contenteditable="true"
+          />
+          <p class="guided--text-input-instructions mb-0 text-left">
+            Institution(s) the contributor is affiliated with.
+            <br />
+            <b>
+              Press enter after entering an institution to add it to the list.
+            </b>
+          </p>
+          <label class="guided--form-label mt-md required">Role(s): </label>
+          <input id="guided-contributor-roles-input"
+            contenteditable="true"
+          />
+          <p class="guided--text-input-instructions mb-0 text-left">
+            Role(s) the contributor played in the creation of the dataset.
+            <br />
+            <b>
+              Select a role from the dropdown to add it to the list.
+            </b>
+          </p>
+        </div>
+      </div>
+    `,
+    showCancelButton: true,
+    confirmButtonText: "Add contributor",
+    confirmButtonColor: "#3085d6 !important",
+    willOpen: () => {
+      //Create Affiliation(s) tagify for each contributor
+      const contributorAffiliationInput = document.getElementById(
+        "guided-contributor-affiliation-input"
+      );
+      const affiliationTagify = new Tagify(contributorAffiliationInput, {
+        duplicate: false,
+      });
+      createDragSort(affiliationTagify);
+      affiliationTagify.addTags(contributorAffiliationsArray);
 
-const openGuidedEditContributorSwal = async (contributorOrcid) => {
-  const contributor = getContributorByOrcid(contributorOrcid);
-  const contributorFirstName = contributor.contributorFirstName;
-  const contributorLastName = contributor.contributorLastName;
-  const contributorORCID = contributor.conID;
-  const contributorAffiliationsArray = contributor.conAffliation.map(
-    (affiliation) => {
-      return { value: affiliation, label: affiliation };
-    }
-  );
-  const contributorRolesArray = contributor.conRole.map((role) => {
-    return { value: role, label: role };
+      const contributorRolesInput = document.getElementById(
+        "guided-contributor-roles-input"
+      );
+      const contributorRolesTagify = new Tagify(contributorRolesInput, {
+        whitelist: [
+          "PrincipleInvestigator",
+          "Creator",
+          "CoInvestigator",
+          "DataCollector",
+          "DataCurator",
+          "DataManager",
+          "Distributor",
+          "Editor",
+          "Producer",
+          "ProjectLeader",
+          "ProjectManager",
+          "ProjectMember",
+          "RelatedPerson",
+          "Researcher",
+          "ResearchGroup",
+          "Sponsor",
+          "Supervisor",
+          "WorkPackageLeader",
+          "Other",
+        ],
+        enforceWhitelist: true,
+        dropdown: {
+          enabled: 0,
+          closeOnSelect: true,
+          position: "auto",
+        },
+      });
+      createDragSort(contributorRolesTagify);
+      contributorRolesTagify.addTags(contributorRolesArray);
+
+      document.getElementById("guided-contributor-first-name").value =
+        contributorFirstName;
+      document.getElementById("guided-contributor-last-name").value =
+        contributorLastName;
+      document.getElementById("guided-contributor-orcid").value =
+        contributorORCID;
+    },
+
+    preConfirm: (inputValue) => {
+      const contributorFirstName = document.getElementById(
+        "guided-contributor-first-name"
+      ).value;
+      const contributorLastName = document.getElementById(
+        "guided-contributor-last-name"
+      ).value;
+      const contributorOrcid = document.getElementById(
+        "guided-contributor-orcid"
+      ).value;
+      const contributorAffiliations = affiliationTagify.value;
+      const contributorRoles = contributorRolesTagify.value;
+
+      if (
+        !contributorFirstName ||
+        !contributorLastName ||
+        !contributorOrcid ||
+        !contributorAffiliations ||
+        !contributorRoles
+      ) {
+        Swal.showValidationMessage("Please fill out all required fields");
+      } else {
+        try {
+          editContribuutorByOrcid(
+            contributorFirstName,
+            contributorLastName,
+            contributorOrcid,
+            contributorAffiliations,
+            contributorRoles
+          );
+        } catch (error) {
+          Swal.showValidationMessage(error);
+        }
+      }
+
+      //rerender the table after adding a contributor
+      renderDatasetDescriptionContributorsTable();
+    },
   });
 };
 
-const openGuidedAddContributorSwal = async (contributorOrcid) => {
-  const sparcAward =
-    sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+const openGuidedAddContributorSwal = async () => {
+  let contributorAdditionHeader;
+  let addContributorTitle;
 
-  const editingExistingContributor = contributorOrcid ? true : false;
+  try {
+    const existingContributors =
+      sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+    const extingContributorOrcids = existingContributors.map((contributor) => {
+      return contributor.conID;
+    });
 
-  let contributorOptionsElement;
+    let contributorData = await fetchContributorDataFromAirTable();
 
-  if (!editingExistingContributor) {
-    try {
-      let contributorData = await fetchContributorDataFromAirTable();
+    //Filter out contributors that have already been added
+    contributorData = contributorData.filter((contributor) => {
+      return !extingContributorOrcids.includes(contributor.orcid);
+    });
 
-      const existingContributors =
-        sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
-
-      const extingContributorOrcids = existingContributors.map(
-        (contributor) => {
-          return contributor.conID;
-        }
-      );
-
-      // If contributor data is returned from airtable, add a select option for each contributor with
-      // a returned first and last name
-      if (contributorData.length > 0) {
-        contributorOptionsElement = `
+    // If contributor data is returned from airtable, add a select option for each contributor with
+    // a returned first and last name
+    if (contributorData.length > 0) {
+      addContributorTitle =
+        "Select a contributor from the dropdown below or add their information manually.";
+      contributorAdditionHeader = `
           <option
             value=""
             data-first-name=""
@@ -4586,32 +4759,48 @@ const openGuidedAddContributorSwal = async (contributorOrcid) => {
           </option>
         `;
 
-        for (const contributor of contributorData) {
-          const contributorOrcid = contributor.orcid; //only display the contributor if they are not already in the contributors array
-          if (!extingContributorOrcids.includes(contributorOrcid)) {
-            contributorOptionsElement += `
-            <option
-              value="${contributor.firstName} ${contributor.lastName}"
-              data-first-name="${contributor.firstName}"
-              data-last-name="${contributor.lastName}"
-              data-orcid="${contributor.orcid ?? ""}"
-              data-affiliation="${contributor.affiliation ?? ""}"
-              data-roles="${contributor.roles.join(",") ?? ""}"
-            >
-              ${contributor.firstName} ${contributor.lastName}
-            </option>
-          `;
-          }
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
+      const contributorOptions = contributorData.map((contributor) => {
+        return `
+          <option
+            value="${contributor.firstName} ${contributor.lastName}"
+            data-first-name="${contributor.firstName}"
+            data-last-name="${contributor.lastName}"
+            data-orcid="${contributor.orcid ?? ""}"
+            data-affiliation="${contributor.affiliation ?? ""}"
+            data-roles="${contributor.roles.join(",") ?? ""}"
+          >
+            ${contributor.firstName} ${contributor.lastName}
+          </option>
+        `;
+      });
 
-  const contributorSwalTitle = editingExistingContributor
-    ? `Edit ${contributorObj["contributorFirstName"]}'s details`
-    : `Enter the contributor's details`;
+      contributorAdditionHeader = `
+        <select
+          class="w-100"
+          id="guided-dd-contributor-dropdown"
+          data-live-search="true"
+          name="Dataset contributor"
+        >
+          <option
+            value=""
+            data-first-name=""
+            data-last-name=""
+            data-orcid=""
+            data-affiliation=""
+            data-roles=""
+          >
+            Select a contributor imported from AirTable
+          </option>
+          ${contributorOptions}
+        </select>
+      `;
+    } else {
+      contributorAdditionHeader = ``;
+      addContributorTitle = "Enter the contributor's information below.";
+    }
+  } catch (error) {
+    console.log(error);
+  }
 
   let affiliationTagify;
   let contributorRolesTagify;
@@ -4625,19 +4814,10 @@ const openGuidedAddContributorSwal = async (contributorOrcid) => {
     // title: contributorSwalTitle,
     html: `
       <div class="guided--flex-center mt-sm">
-        <p class="guided--help-text mb-sm">Select a contributor from the dropdown or enter a new contributor's details.</p>
-        <select
-          class="w-100"
-          id="guided-dd-contributor-dropdown"
-          data-live-search="true"
-          name="Dataset contributor"
-          style="
-            border-radius: 7px;
-            padding: 8px;
-          "
-        >
-          ${contributorOptionsElement}
-        </select>
+        <label class="guided--form-label centered mb-md">
+          ${addContributorTitle}
+        </label>
+        ${contributorAdditionHeader}
         <div class="space-between w-100">
             <div class="guided--flex-center mt-sm" style="width: 45%">
               <label class="guided--form-label required">Last name: </label>
@@ -4645,8 +4825,8 @@ const openGuidedAddContributorSwal = async (contributorOrcid) => {
                 class="guided--input"
                 id="guided-contributor-last-name"
                 type="text"
-                placeholder="Enter last name here"
-                value="${contributorLastName ? contributorLastName : ""}"
+                placeholder="Contributor's Last name"
+                value=""
               />
             </div>
             <div class="guided--flex-center mt-sm" style="width: 45%">
@@ -4655,8 +4835,8 @@ const openGuidedAddContributorSwal = async (contributorOrcid) => {
                 class="guided--input"
                 id="guided-contributor-first-name"
                 type="text"
-                placeholder="Enter first name here"
-                value="${contributorFirstName ? contributorFirstName : ""}"
+                placeholder="Contributor's first name"
+                value=""
               />
             </div>
           </div>
@@ -4665,28 +4845,39 @@ const openGuidedAddContributorSwal = async (contributorOrcid) => {
             class="guided--input"
             id="guided-contributor-orcid"
             type="text"
-            placeholder="Enter ORCID here"
-            onkeyup="validateInput($(this))"
-            value="${contributorOrcid ? contributorOrcid : ""}"
+            placeholder="https://orcid.org/0000-0000-0000-0000"
+            value=""
           />
-          <p class="guided--text-input-instructions mb-0">
-              Provide a set of 3-5 keywords that will aid in the search of your
-              dataset when published on the SPARC portal.<br />
-              <b
-                >Hit enter after typing a keyword to add the text as a
-                keyword.</b
-              >
-            </p>
+          <p class="guided--text-input-instructions mb-0 text-left">
+            If your contributor does not have an ORCID, have the contributor <a
+            target="_blank"
+            href="https://orcid.org"
+            >sign up for one one orcid.org</a
+          >.
+     
+          </p>
           <label class="guided--form-label mt-md required">Affiliation(s): </label>
           <input id="guided-contributor-affiliation-input"
             contenteditable="true"
-            data-initial-contributor-affiliation="${"asdf"}"
           />
+          <p class="guided--text-input-instructions mb-0 text-left">
+            Institution(s) the contributor is affiliated with.
+            <br />
+            <b>
+              Press enter after entering an institution to add it to the list.
+            </b>
+          </p>
           <label class="guided--form-label mt-md required">Role(s): </label>
           <input id="guided-contributor-roles-input"
             contenteditable="true"
-            data-initial-contributor-roles="${"asdf"}"
           />
+          <p class="guided--text-input-instructions mb-0 text-left">
+            Role(s) the contributor played in the creation of the dataset.
+            <br />
+            <b>
+              Select a role from the dropdown to add it to the list.
+            </b>
+          </p>
         </div>
       </div>
     `,
@@ -4702,10 +4893,6 @@ const openGuidedAddContributorSwal = async (contributorOrcid) => {
         duplicate: false,
       });
       createDragSort(affiliationTagify);
-
-      if (contributorAffiliations) {
-        affiliationTagify.addTags(contributorAffiliations);
-      }
 
       const contributorRolesInput = document.getElementById(
         "guided-contributor-roles-input"
@@ -4741,44 +4928,39 @@ const openGuidedAddContributorSwal = async (contributorOrcid) => {
       });
       createDragSort(contributorRolesTagify);
 
-      if (contributorRoles) {
-        contributorRolesTagify.addTags(contributorRoles);
-      } else {
-        $("#guided-dd-contributor-dropdown").selectpicker();
-        $("#guided-dd-contributor-dropdown").selectpicker("refresh");
-        $("#guided-dd-contributor-dropdown").on("change", function (e) {
-          const selectedFirstName = $(
-            "#guided-dd-contributor-dropdown option:selected"
-          ).data("first-name");
-          const selectedLastName = $(
-            "#guided-dd-contributor-dropdown option:selected"
-          ).data("last-name");
-          const selectedOrcid = $(
-            "#guided-dd-contributor-dropdown option:selected"
-          ).data("orcid");
-          const selectedAffiliation = $(
-            "#guided-dd-contributor-dropdown option:selected"
-          ).data("affiliation");
-          const selectedRoles = $(
-            "#guided-dd-contributor-dropdown option:selected"
-          ).data("roles");
+      $("#guided-dd-contributor-dropdown").selectpicker();
+      $("#guided-dd-contributor-dropdown").selectpicker("refresh");
+      $("#guided-dd-contributor-dropdown").on("change", function (e) {
+        const selectedFirstName = $(
+          "#guided-dd-contributor-dropdown option:selected"
+        ).data("first-name");
+        const selectedLastName = $(
+          "#guided-dd-contributor-dropdown option:selected"
+        ).data("last-name");
+        const selectedOrcid = $(
+          "#guided-dd-contributor-dropdown option:selected"
+        ).data("orcid");
+        const selectedAffiliation = $(
+          "#guided-dd-contributor-dropdown option:selected"
+        ).data("affiliation");
+        const selectedRoles = $(
+          "#guided-dd-contributor-dropdown option:selected"
+        ).data("roles");
 
-          document.getElementById("guided-contributor-first-name").value =
-            selectedFirstName;
-          document.getElementById("guided-contributor-last-name").value =
-            selectedLastName;
-          document.getElementById("guided-contributor-orcid").value =
-            selectedOrcid;
+        document.getElementById("guided-contributor-first-name").value =
+          selectedFirstName;
+        document.getElementById("guided-contributor-last-name").value =
+          selectedLastName;
+        document.getElementById("guided-contributor-orcid").value =
+          selectedOrcid;
 
-          affiliationTagify.removeAllTags();
-          affiliationTagify.addTags(selectedAffiliation);
+        affiliationTagify.removeAllTags();
+        affiliationTagify.addTags(selectedAffiliation);
 
-          contributorRolesTagify.removeAllTags();
-          contributorRolesTagify.addTags(selectedRoles.split());
-        });
-      }
+        contributorRolesTagify.removeAllTags();
+        contributorRolesTagify.addTags(selectedRoles.split());
+      });
     },
-    didOpen: () => {},
 
     preConfirm: (inputValue) => {
       const contributorFirstName = document.getElementById(
@@ -4802,17 +4984,7 @@ const openGuidedAddContributorSwal = async (contributorOrcid) => {
       ) {
         Swal.showValidationMessage("Please fill out all required fields");
       } else {
-        if (editingExistingContributor) {
-          updateContributorByOrcid(
-            contributorFirstName,
-            contributorLastName,
-            contributorOrcid,
-            contributorAffiliations,
-            contributorRoles
-          );
-        }
-
-        if (!editingExistingContributor) {
+        try {
           addContributor(
             contributorFirstName,
             contributorLastName,
@@ -4820,6 +4992,8 @@ const openGuidedAddContributorSwal = async (contributorOrcid) => {
             contributorAffiliations,
             contributorRoles
           );
+        } catch (error) {
+          Swal.showValidationMessage(error);
         }
       }
 
@@ -4830,17 +5004,12 @@ const openGuidedAddContributorSwal = async (contributorOrcid) => {
 };
 
 const generateContributorTableRow = (contributorObj) => {
-  const contributorFirstName = contributorObj["contributorFirstName"];
-  const contributorLastName = contributorObj["contributorLastName"];
   const contributorFullName = contributorObj["conName"];
   const contributorOrcid = contributorObj["conID"];
   const contributorRoleString = contributorObj["conRole"].join(", ");
 
   return `
-    <tr 
-      data-contributor-first-name="${contributorFirstName}"
-      data-contributor-last-name="${contributorLastName}"
-    >
+    <tr>
       <td class="middle aligned collapsing">
         ${contributorFullName}
       </td>
@@ -4852,7 +5021,7 @@ const generateContributorTableRow = (contributorObj) => {
           type="button"
           class="btn btn-sm"
           style="color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);"
-          onclick="openProtocolSwal(this.parentElement.parentElement)"
+          onclick="openGuidedEditContributorSwal('${contributorOrcid}')"
         >
         View/Edit
         </button>
@@ -4861,9 +5030,9 @@ const generateContributorTableRow = (contributorObj) => {
         <button
           type="button"
           class="btn btn-danger btn-sm" 
-          onclick=removeProtocolField(this.parentElement.parentElement)
+          onclick="deleteContributor(this, '${contributorOrcid}')"
         >
-        Delete
+          Delete
         </button>
       </td>
     </tr>
