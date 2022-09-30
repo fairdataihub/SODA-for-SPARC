@@ -5095,7 +5095,7 @@ const renderDatasetDescriptionContributorsTable = () => {
       <tr>
         <td colspan="4">
           <div style="margin-right:.5rem" class="alert alert-warning guided--alert" role="alert">
-            No contributors have been added to your dataset yet. To add a contributor, click the "Add a new contributor" button below.
+            No contributors have been added to your dataset. To add a contributor, click the "Add a new contributor" button below.
           </div>
         </td>
       </tr>
