@@ -3376,7 +3376,7 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
         hlf_data_array = []
 
         # create an array to keep track of the path to the obj being recursed over
-        relative_structure_path = [high_level_folder]
+        relative_structure_path = []
 
         hlf_data_array.append([
         "filename",
