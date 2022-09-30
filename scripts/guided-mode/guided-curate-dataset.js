@@ -4581,6 +4581,9 @@ const fetchContributorDataFromAirTable = async () => {
         });
 
       return contributorData;
+    } else {
+      //return an empty array if the user is not connected with AirTable
+      return [];
     }
   } catch (error) {
     console.log(error);
@@ -4885,6 +4888,7 @@ const openGuidedAddContributorSwal = async () => {
   try {
     const existingContributors =
       sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+
     const extingContributorOrcids = existingContributors.map((contributor) => {
       return contributor.conID;
     });
