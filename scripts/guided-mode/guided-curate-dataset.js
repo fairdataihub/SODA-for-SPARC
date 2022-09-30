@@ -5465,7 +5465,9 @@ const removeProtocolField = (protocolElement) => {
     sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
   //If the protocol has data-protocol-url and data-protocol-description, then it is a protocol that
   //already been added. Delete it from the protocols array.
-  if (protocolURL && protocolDescription) {
+  if (protocolsBeforeDelete != undefined) {
+    //protocolsBeforeDelete will be undefined on a new dataset with no protocols yet
+    //until protocols are saved we won't need to go through this
     const filteredProtocols = protocolsBeforeDelete.filter((protocol) => {
       //remove protocols with matching protocol url and protocol description
       return !(
