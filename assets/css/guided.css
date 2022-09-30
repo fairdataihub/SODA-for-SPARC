@@ -2,6 +2,12 @@
   box-sizing: border-box;
 }
 
+.guided--body p,
+.guided--body h1,
+.guided--body h2 {
+  font-family: "Roboto", sans-serif;
+}
+
 .container {
   max-width: 400px;
   margin: 0 auto;
