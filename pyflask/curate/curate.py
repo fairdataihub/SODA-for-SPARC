@@ -1340,7 +1340,6 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
                             folder["files"][item]["timestamp"]
                         )
                     elif folder["files"][item]["type"] == "local":
-                        namespace_logger.info("create_high_level_manifest_files_existing_bf_starting_point local files")
                         file_path = folder["files"][item]["path"]
                         filepath = pathlib.Path(file_path)
                         mtime = filepath.stat().st_mtime
@@ -1349,8 +1348,6 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
                         )
 
                         tm = lastmodtime.isoformat().replace(".", ",").replace("+00:00", "Z")
-
-                        namespace_logger.info(tm)
                         dict_folder_manifest["timestamp"].append(tm)
                 else:
                     dict_folder_manifest["timestamp"].append("")
@@ -1924,8 +1921,6 @@ def bf_get_existing_files_details(bf_folder):
 
             if file_name_with_extension == "":
                 continue
-            namespace_logger.info("file_name_with_extension")
-            namespace_logger.info(file_name_with_extension)
             bf_existing_files_name_with_extension.append(file_name_with_extension)
     else:
         #is collection
@@ -2326,15 +2321,6 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             global main_total_generate_dataset_size
 
             my_bf_folder = my_tracking_folder["value"] #ds (dataset)
-            # namespace_logger.info("my_bf_folder EHRERERE")
-            # namespace_logger.info(my_bf_folder)
-            # namespace_logger.info(my_bf_folder.id)
-            
-            # namespace_logger.info("HERERERER")
-            # namespace_logger.info(my_folder)
-            # namespace_logger.info(my_folder.id)
-
-
 
             if "folders" in my_folder.keys():
                 (
@@ -2548,7 +2534,6 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
         # main_curate_progress_message = "About to update after doing recursive dataset scan"
         # 3. Add high-level metadata files to a list
         ds.update()
-        namespace_logger.info("UHFLKAJSL:KJERT")
         list_upload_metadata_files = []
         if "metadata-files" in soda_json_structure.keys():
             namespace_logger.info("bf_generate_new_dataset (optional) step 3 create high level metadata list")
