@@ -4534,6 +4534,21 @@ const deleteContributor = (orcid) => {
     });
 };
 
+const openGuidedEditContributorSwal = async (contributorOrcid) => {
+  const contributor = getContributorByOrcid(contributorOrcid);
+  const contributorFirstName = contributor.contributorFirstName;
+  const contributorLastName = contributor.contributorLastName;
+  const contributorORCID = contributor.conID;
+  const contributorAffiliationsArray = contributor.conAffliation.map(
+    (affiliation) => {
+      return { value: affiliation, label: affiliation };
+    }
+  );
+  const contributorRolesArray = contributor.conRole.map((role) => {
+    return { value: role, label: role };
+  });
+};
+
 const openGuidedAddContributorSwal = async (contributorOrcid) => {
   const sparcAward =
     sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
@@ -4558,7 +4573,6 @@ const openGuidedAddContributorSwal = async (contributorOrcid) => {
       // If contributor data is returned from airtable, add a select option for each contributor with
       // a returned first and last name
       if (contributorData.length > 0) {
-        console.log(!!contributorOptionsElement);
         contributorOptionsElement = `
           <option
             value=""
@@ -4571,7 +4585,6 @@ const openGuidedAddContributorSwal = async (contributorOrcid) => {
             Select a contributor
           </option>
         `;
-        console.log(!!contributorOptionsElement);
 
         for (const contributor of contributorData) {
           const contributorOrcid = contributor.orcid; //only display the contributor if they are not already in the contributors array
@@ -4596,13 +4609,7 @@ const openGuidedAddContributorSwal = async (contributorOrcid) => {
     }
   }
 
-  const contributorFirstName = contributorObj["contributorFirstName"];
-  const contributorLastName = contributorObj["contributorLastName"];
-  const contributorOrcid = contributorObj["conID"];
-  const contributorAffiliations = contributorObj["conAffliation"];
-  const contributorRoles = contributorObj["conRole"];
-
-  const contributorSwalTitle = contributorFirstName
+  const contributorSwalTitle = editingExistingContributor
     ? `Edit ${contributorObj["contributorFirstName"]}'s details`
     : `Enter the contributor's details`;
 
