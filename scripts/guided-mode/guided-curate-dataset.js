@@ -971,6 +971,7 @@ document
       saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (err) {
       console.log(err);
+      clientError(err);
       userError(err);
     }
 
@@ -3447,6 +3448,13 @@ const patchPreviousGuidedModeVersions = () => {
     forceUserToRestartFromFirstPage = true;
   }
 
+  if (
+    !sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"]
+  ) {
+    sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] =
+      [];
+  }
+
   return forceUserToRestartFromFirstPage;
 };
 
@@ -3564,6 +3572,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["dataset-metadata"]["code-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"] =
     [];
+  sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] = [];
   sodaJSONObj["dataset-metadata"]["README"] = "";
   sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
   sodaJSONObj["digital-metadata"] = {};
