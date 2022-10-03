@@ -222,7 +222,7 @@ for (const infoDropdown of Array.from(infoDropdowns)) {
 
     const infoContainerIsopen =
       infoContainer.classList.contains("container-open");
-    console.log(infoContainerIsopen);
+
     if (infoContainerIsopen) {
       infoContainerChevron.style.transform = "rotate(0deg)";
       infoContainer.classList.remove("container-open");
