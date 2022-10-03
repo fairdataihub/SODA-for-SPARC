@@ -851,7 +851,8 @@ class BfCreateDatasetFolder(Resource):
   @api.expect(parser_submit_dataset)
   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 200: 'OK'}, description="Add data to an existing dataset entity on the Pennsieve platform.")
   def put(self):
-    from pennsieve.api.agent import AgentError
+
+    api.logger.info("In the route")
 
     data = self.parser_submit_dataset.parse_args()
 
@@ -863,12 +864,7 @@ class BfCreateDatasetFolder(Resource):
     try:
       return bf_submit_dataset(selected_account, selected_dataset, filepath)
     except Exception as e:
-      # TODO: Test this has 'message' property
-      if isinstance(e, AgentError):
-        # for now raise the mysterious AgentError all the way back to the client. 
-        # pretty sure we don't have to do this but I'll have to verify with tests later
-        api.abort(400, str(e))
-      elif notBadRequestException(e): 
+      if notBadRequestException(e): 
         api.abort(500, str(e))
       else:
         raise e
