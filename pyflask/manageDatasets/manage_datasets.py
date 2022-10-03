@@ -137,99 +137,96 @@ def bf_dataset_size(dataset_id):
 
 
 ### Manage datasets (Pennsieve interface)
-# def bf_add_account_api_key(keyname, key, secret):
-#     """
-#     Associated with 'Add account' button in 'Login to your Pennsieve account' section of SODA
+def bf_add_account_api_key(keyname, key, secret):
+    """
+    Associated with 'Add account' button in 'Login to your Pennsieve account' section of SODA
 
-#     Args:
-#         keyname: Name of the account to be associated with the given credentials (string)
-#         key: API key (string)
-#         secret: API Secret (string)
-#     Action:
-#         Adds account to the Pennsieve configuration file (local machine)
-#     """
-#     try:
-#         error = ""
-#         keyname = keyname.strip()
-#         if (not keyname) or (not key) or (not secret):
-#             abort(401, "Please enter valid keyname, key, and/or secret")
+    Args:
+        keyname: Name of the account to be associated with the given credentials (string)
+        key: API key (string)
+        secret: API Secret (string)
+    Action:
+        Adds account to the Pennsieve configuration file (local machine)
+    """
+    try:
+        error = ""
+        keyname = keyname.strip()
+        if (not keyname) or (not key) or (not secret):
+            abort(401, "Please enter valid keyname, key, and/or secret")
 
-#         if (keyname.isspace()) or (key.isspace()) or (secret.isspace()):
-#             abort(401, "Please enter valid keyname, key, and/or secret")
+        if (keyname.isspace()) or (key.isspace()) or (secret.isspace()):
+            abort(401, "Please enter valid keyname, key, and/or secret")
 
-#         bfpath = join(userpath, ".pennsieve")
-#         # Load existing or create new config file
-#         config = ConfigParser()
-#         if exists(configpath):
-#             config.read(configpath)
-#             if config.has_section(keyname):
-#                 abort(400, "Key name already exists")
-#         else:
-#             if not exists(bfpath):
-#                 mkdir(bfpath)
-#             if not exists(join(bfpath, "cache")):
-#                 mkdir(join(bfpath, "cache"))
+        ps_path = join(userpath, ".pennsieve")
+        # Load existing or create new config file
+        config = ConfigParser()
+        if exists(configpath):
+            config.read(configpath)
+            if config.has_section(keyname):
+                abort(400, "Key name already exists")
+        else:
+            if not exists(ps_path):
+                mkdir(ps_path)
+            if not exists(join(ps_path, "cache")):
+                mkdir(join(ps_path, "cache"))
 
-#         # Add agent section
-#         agentkey = "agent"
-#         if not config.has_section(agentkey):
-#             config.add_section(agentkey)
-#             config.set(agentkey, "proxy_local_port", "8080")
-#             config.set(agentkey, "uploader", "true")
-#             config.set(agentkey, "cache_hard_cache_size", "10000000000")
-#             config.set(agentkey, "status_port", "11235")
-#             config.set(agentkey, "metrics", "true")
-#             config.set(agentkey, "cache_page_size", "100000")
-#             config.set(agentkey, "proxy", "true")
-#             config.set(agentkey, "cache_soft_cache_size", "5000000000")
-#             config.set(agentkey, "timeseries_local_port", "9090")
-#             config.set(agentkey, "timeseries", "true")
+        # Add agent section
+        agentkey = "agent"
+        if not config.has_section(agentkey):
+            config.add_section(agentkey)
+            config.set(agentkey, "port", "9000")
+            config.set(agentkey, "upload_workers", "10")
+            config.set(agentkey, "upload_chunk_size", "32")
 
-#         # Add new account
-#         config.add_section(keyname)
-#         config.set(keyname, "api_token", key)
-#         config.set(keyname, "api_secret", secret)
+        # Add new account
+        config.add_section(keyname)
+        config.set(keyname, "api_token", key)
+        config.set(keyname, "api_secret", secret)
+        config.set(keyname, "api_host", "https://api.pennsieve.io")
 
-#         with open(configpath, "w") as configfile:
-#             config.write(configfile)
+        with open(configpath, "w") as configfile:
+            config.write(configfile)
 
-#     except Exception as e:
-#         raise e
+    except Exception as e:
+        raise e
 
-#     # Check key and secret are valid, if not delete account from config
-#     try:
-#         bf = Pennsieve(keyname)
+    # Check key and secret are valid, if not delete account from config
+    try:
+        ps = Pennsieve()
+        ps.user.switch(keyname)
+        ps.user.reauthenticate()
 
-#     except Exception:
-#         bf_delete_account(keyname)
-#         abort(401, 
-#             "Please check that key name, key, and secret are entered properly"
-#         )
+    except Exception as e:
+        namespace_logger.error(e)
+        bf_delete_account(keyname)
+        abort(401, 
+            "Please check that key name, key, and secret are entered properly"
+        )
 
-#     # Check that the Pennsieve account is in the SPARC Consortium organization
-#     try:
-#         org_id = bf.context.id
+    # Check that the Pennsieve account is in the SPARC Consortium organization
+    try:
+        org_id = ps.getUser()["organization_id"]
 
-#         # CHANGE BACK
-#         if org_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-#             abort(403,
-#                 "Please check that your account is within the SPARC Consortium Organization"
-#             )
+        # CHANGE BACK
+        if org_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
+            abort(403,
+                "Please check that your account is within the SPARC Consortium Organization"
+            )
 
-#         if not config.has_section("global"):
-#             config.add_section("global")
+        if not config.has_section("global"):
+            config.add_section("global")
 
-#         default_acc = config["global"]
-#         default_acc["default_profile"] = keyname
+        default_acc = config["global"]
+        default_acc["default_profile"] = keyname
 
-#         with open(configpath, "w") as configfile:
-#             config.write(configfile)
+        with open(configpath, "w") as configfile:
+            config.write(configfile)
 
-#         return {"message": f"Successfully added account {str(bf)}"}
+        return {"message": f"Successfully added account {str(bf)}"}
 
-#     except Exception as e:
-#         bf_delete_account(keyname)
-#         raise e
+    except Exception as e:
+        bf_delete_account(keyname)
+        raise e
 
 
 # def bf_add_account_username(keyname, key, secret):
@@ -325,6 +322,19 @@ def bf_dataset_size(dataset_id):
 #         raise e
 
 
+def bf_delete_account(keyname):
+#     """
+#     Args:
+#         keyname: name of local Pennsieve account key (string)
+#     Action:
+#         Deletes account information from the Pennsieve config file
+#     """
+    config = ConfigParser()
+    config.read(configpath)
+    config.remove_section(keyname)
+    with open(configpath, "w") as configfile:
+        config.write(configfile)
+
 # def check_forbidden_characters(my_string):
 #     """
 #     Check for forbidden characters in file/folder name
@@ -359,18 +369,7 @@ def bf_dataset_size(dataset_id):
 #         return True
 
 
-# def bf_delete_account(keyname):
-#     """
-#     Args:
-#         keyname: name of local Pennsieve account key (string)
-#     Action:
-#         Deletes account information from the Pennsieve config file
-#     """
-#     config = ConfigParser()
-#     config.read(configpath)
-#     config.remove_section(keyname)
-#     with open(configpath, "w") as configfile:
-#         config.write(configfile)
+
 
 
 # def bf_remove_additional_accounts():

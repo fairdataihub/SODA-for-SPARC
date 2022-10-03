@@ -3,7 +3,7 @@ from manageDatasets import (
     # get_pennsieve_api_key_secret, 
     # get_number_of_files_and_folders_locally,
     # submit_dataset_progress,
-    # bf_add_account_api_key,
+    bf_add_account_api_key,
     # bf_add_account_username,
     # bf_account_list,
     # bf_dataset_account,
@@ -132,10 +132,10 @@ api = get_namespace(NamespaceEnum.MANAGE_DATASETS)
 
 
 
-# ## the model for the submit_dataset_progress endpoint defines what is returned from the endpoint
-# successMessage = api.model('SuccessMessage', {
-#   'message': fields.String(required=True, description="A message indicating success of the operation."),
-#   })
+## the model for the submit_dataset_progress endpoint defines what is returned from the endpoint
+successMessage = api.model('SuccessMessage', {
+  'message': fields.String(required=True, description="A message indicating success of the operation."),
+  })
 
 # model_status_options = api.model('StatusOptions', {
 #   'id': fields.String(required=True, description="The id of the dataset"),
@@ -783,31 +783,31 @@ api = get_namespace(NamespaceEnum.MANAGE_DATASETS)
 
 
 
-# @api.route("/account/api_key")
-# class BfAddAccountApiKey(Resource):
+@api.route("/account/api_key")
+class BfAddAccountApiKey(Resource):
 
-#   parser_add_api_key = reqparse.RequestParser(bundle_errors=True)
-#   parser_add_api_key.add_argument('keyname', type=str, required=True, location='json', help="Name of the account to be associated with the given credentials.")
-#   parser_add_api_key.add_argument('key', type=str, required=True, location='json', help="The API key the user generated on Pennsieve.")
-#   parser_add_api_key.add_argument('secret', type=str, required=True, location='json', help="The API secret the user generated on Pennsieve.")
+  parser_add_api_key = reqparse.RequestParser(bundle_errors=True)
+  parser_add_api_key.add_argument('keyname', type=str, required=True, location='json', help="Name of the account to be associated with the given credentials.")
+  parser_add_api_key.add_argument('key', type=str, required=True, location='json', help="The API key the user generated on Pennsieve.")
+  parser_add_api_key.add_argument('secret', type=str, required=True, location='json', help="The API secret the user generated on Pennsieve.")
 
-#   @api.expect(parser_add_api_key)
-#   @api.doc(responses={500: "Internal Server Error", 400: "Bad Request", 401: "Unauthenticated", 403: "Forbidden"}, description="Adds account to the Pennsieve configuration file. Used when connecting account to Pennsieve with an API key and secret.")
-#   @api.marshal_with(successMessage, 200, False)
-#   def put(self):
+  @api.expect(parser_add_api_key)
+  @api.doc(responses={500: "Internal Server Error", 400: "Bad Request", 401: "Unauthenticated", 403: "Forbidden"}, description="Adds account to the Pennsieve configuration file. Used when connecting account to Pennsieve with an API key and secret.")
+  @api.marshal_with(successMessage, 200, False)
+  def put(self):
 
-#     data = self.parser_add_api_key.parse_args()
+    data = self.parser_add_api_key.parse_args()
 
-#     keyname = data.get('keyname')
-#     key = data.get('key')
-#     secret = data.get('secret')
+    keyname = data.get('keyname')
+    key = data.get('key')
+    secret = data.get('secret')
 
-#     try:
-#       return bf_add_account_api_key(keyname, key, secret)
-#     except Exception as e:
-#       if notBadRequestException(e):
-#         api.abort(500, str(e))
-#       raise e
+    try:
+      return bf_add_account_api_key(keyname, key, secret)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
 
 
 
