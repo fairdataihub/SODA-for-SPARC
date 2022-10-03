@@ -1,5 +1,9 @@
-* {
-  box-sizing: border-box;
+@import url("https://fonts.googleapis.com/css?family=Poppins:400,500,600,700");
+
+.guided--body p,
+.guided--body h1,
+.guided--body h2 {
+  font-family: "Poppins", sans-serif;
 }
 
 .container {
