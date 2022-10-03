@@ -1892,104 +1892,104 @@ def bf_get_current_user_permission_agent_two(dataset_id):
 #     return {"totalFiles": totalFiles, "totalDir": totalDir}
 
 
-# def get_pennsieve_api_key_secret(email, password, keyname):
+def get_pennsieve_api_key_secret(email, password, keyname):
 
-#     PENNSIEVE_URL = "https://api.pennsieve.io"
+    PENNSIEVE_URL = "https://api.pennsieve.io"
 
-#     try:
-#         response = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
-#         response.raise_for_status()
-#         cognito_app_client_id = response.json()["userPool"]["appClientId"]
-#         cognito_region = response.json()["userPool"]["region"]
-#         cognito_client = boto3.client(
-#             "cognito-idp",
-#             region_name=cognito_region,
-#             aws_access_key_id="",
-#             aws_secret_access_key="",
-#         )
-#     except Exception as e:
-#         raise Exception(e)
+    try:
+        response = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
+        response.raise_for_status()
+        cognito_app_client_id = response.json()["userPool"]["appClientId"]
+        cognito_region = response.json()["userPool"]["region"]
+        cognito_client = boto3.client(
+            "cognito-idp",
+            region_name=cognito_region,
+            aws_access_key_id="",
+            aws_secret_access_key="",
+        )
+    except Exception as e:
+        raise Exception(e)
 
-#     try:
-#         login_response = cognito_client.initiate_auth(
-#             AuthFlow="USER_PASSWORD_AUTH",
-#             AuthParameters={"USERNAME": email, "PASSWORD": password},
-#             ClientId=cognito_app_client_id,
-#         )
-#     except Exception as e:
-#         abort(400, "Username or password was incorrect.")
+    try:
+        login_response = cognito_client.initiate_auth(
+            AuthFlow="USER_PASSWORD_AUTH",
+            AuthParameters={"USERNAME": email, "PASSWORD": password},
+            ClientId=cognito_app_client_id,
+        )
+    except Exception as e:
+        abort(400, "Username or password was incorrect.")
 
-#     try:
-#         api_key = login_response["AuthenticationResult"]["AccessToken"]
-#         response = requests.get(
-#             f"{PENNSIEVE_URL}/user", headers={"Authorization": f"Bearer {api_key}"}
-#         )
-#         response.raise_for_status()
-#     except Exception as e:
-#         raise e
+    try:
+        api_key = login_response["AuthenticationResult"]["AccessToken"]
+        response = requests.get(
+            f"{PENNSIEVE_URL}/user", headers={"Authorization": f"Bearer {api_key}"}
+        )
+        response.raise_for_status()
+    except Exception as e:
+        raise e
 
-#     try:
-#         url = "https://api.pennsieve.io/session/switch-organization"
+    try:
+        url = "https://api.pennsieve.io/session/switch-organization"
 
-#         sparc_org_id = "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
-#         querystring = {
-#             "organization_id": "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
-#         }
+        sparc_org_id = "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
+        querystring = {
+            "organization_id": "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
+        }
 
-#         headers = {"Accept": "application/json", "Authorization": f"Bearer {api_key}"}
+        headers = {"Accept": "application/json", "Authorization": f"Bearer {api_key}"}
 
-#         response = requests.request("PUT", url, headers=headers, params=querystring)
-#     except Exception as e:
-#         raise e
+        response = requests.request("PUT", url, headers=headers, params=querystring)
+    except Exception as e:
+        raise e
 
-#     try:
-#         url = "https://api.pennsieve.io/session/switch-organization"
+    try:
+        url = "https://api.pennsieve.io/session/switch-organization"
 
-#         querystring = {
-#             "organization_id": "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
-#         }
+        querystring = {
+            "organization_id": "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
+        }
 
-#         headers = {"Accept": "application/json", "Authorization": f"Bearer {api_key}"}
+        headers = {"Accept": "application/json", "Authorization": f"Bearer {api_key}"}
 
-#         response = requests.request("PUT", url, headers=headers, params=querystring)
+        response = requests.request("PUT", url, headers=headers, params=querystring)
 
-#         response = requests.get(
-#             f"{PENNSIEVE_URL}/user", headers={"Authorization": f"Bearer {api_key}"}
-#         )
-#         response.raise_for_status()
-#         response = response.json()
-#         if "preferredOrganization" in response:
-#             if response["preferredOrganization"] != sparc_org_id:
-#                 error = "Could not switch to the SPARC Consortium organization. Please log in and switch to the organization and try again."
-#                 raise Exception(error)
-#         else:
-#             error = "Could not switch to the SPARC Consortium organization. Please log in and switch to the organization and try again."
-#             raise Exception(error)
-#     except Exception as error:
-#         error = "Could not switch to the SPARC Consortium organization. Please log in and switch to the organization and try again."
-#         raise error
+        response = requests.get(
+            f"{PENNSIEVE_URL}/user", headers={"Authorization": f"Bearer {api_key}"}
+        )
+        response.raise_for_status()
+        response = response.json()
+        if "preferredOrganization" in response:
+            if response["preferredOrganization"] != sparc_org_id:
+                error = "Could not switch to the SPARC Consortium organization. Please log in and switch to the organization and try again."
+                raise Exception(error)
+        else:
+            error = "Could not switch to the SPARC Consortium organization. Please log in and switch to the organization and try again."
+            raise Exception(error)
+    except Exception as error:
+        error = "Could not switch to the SPARC Consortium organization. Please log in and switch to the organization and try again."
+        raise error
 
-#     try:
-#         url = "https://api.pennsieve.io/token/"
+    try:
+        url = "https://api.pennsieve.io/token/"
 
-#         payload = {"name": f"{keyname}"}
-#         headers = {
-#             "Accept": "*/*",
-#             "Content-Type": "application/json",
-#             "Authorization": f"Bearer {api_key}",
-#         }
+        payload = {"name": f"{keyname}"}
+        headers = {
+            "Accept": "*/*",
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {api_key}",
+        }
 
-#         response = requests.request("POST", url, json=payload, headers=headers)
-#         response.raise_for_status()
-#         response = response.json()
-#         return { 
-#             "success": "success", 
-#             "key": response["key"], 
-#             "secret": response["secret"], 
-#             "name": response["name"]
-#         }
-#     except Exception as e:
-#         raise e
+        response = requests.request("POST", url, json=payload, headers=headers)
+        response.raise_for_status()
+        response = response.json()
+        return { 
+            "success": "success", 
+            "key": response["key"], 
+            "secret": response["secret"], 
+            "name": response["name"]
+        }
+    except Exception as e:
+        raise e
 
 
 
