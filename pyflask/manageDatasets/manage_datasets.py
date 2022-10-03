@@ -374,23 +374,23 @@ def bf_delete_account(keyname):
 
 
 
-# def bf_account_list():
-#     """
-#     Action:
-#         Returns list of accounts stored in the system
-#     """
-#     try:
-#         accountlist = ["Select"]
-#         if exists(configpath):
-#             # # CHANGE BACK
-#             valid_account = bf_get_accounts()
-#             if valid_account != "":
-#                 accountlist.append(valid_account)
-#         return {"accounts": accountlist}
-#         # My accountlist
+def bf_account_list():
+    """
+    Action:
+        Returns list of accounts stored in the system
+    """
+    try:
+        accountlist = ["Select"]
+        if exists(configpath):
+            # # CHANGE BACK
+            valid_account = bf_get_accounts()
+            if valid_account != "":
+                accountlist.append(valid_account)
+        return {"accounts": accountlist}
+        # My accountlist
 
-#     except Exception as e:
-#         raise e
+    except Exception as e:
+        raise e
 
 
 def bf_default_account_load():

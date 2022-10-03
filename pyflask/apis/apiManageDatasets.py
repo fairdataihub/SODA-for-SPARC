@@ -5,7 +5,7 @@ from manageDatasets import (
     # submit_dataset_progress,
     bf_add_account_api_key,
     # bf_add_account_username,
-    # bf_account_list,
+    bf_account_list,
     # bf_dataset_account,
     bf_account_details,
     bf_submit_dataset,
@@ -211,19 +211,19 @@ successMessage = api.model('SuccessMessage', {
 
 
 
-# account_list_model = api.model('AccountList', {
-#   'accounts': fields.List(fields.String, required=True, description="List of the user's accounts"),
-#   })
+account_list_model = api.model('AccountList', {
+  'accounts': fields.List(fields.String, required=True, description="List of the user's accounts"),
+  })
 
-# @api.route('/bf_account_list')
-# class BfAccountList(Resource):
-#   @api.marshal_with(account_list_model, False, 200)
-#   @api.doc(responses={500: 'There was an internal server error'}, description="Returns a list of the user's accounts stored in the system.")
-#   def get(self):
-#     try:
-#       return bf_account_list()
-#     except Exception as e:
-#       api.abort(500, str(e))
+@api.route('/bf_account_list')
+class BfAccountList(Resource):
+  @api.marshal_with(account_list_model, False, 200)
+  @api.doc(responses={500: 'There was an internal server error'}, description="Returns a list of the user's accounts stored in the system.")
+  def get(self):
+    try:
+      return bf_account_list()
+    except Exception as e:
+      api.abort(500, str(e))
 
 
 
