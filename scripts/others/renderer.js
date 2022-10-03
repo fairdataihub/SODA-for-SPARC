@@ -498,6 +498,8 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
 let launchAnnouncement = false;
 ipcRenderer.on("checkForAnnouncements", (event, index) => {
   launchAnnouncement = true;
+  let nodeStorage = new JSONStorage(app.getPath("userData"));
+  nodeStorage.setItem("announcements", false);
 });
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
