@@ -193,6 +193,46 @@ const checkIfDatasetExistsOnPennsieve = async (datasetNameOrID) => {
   return datasetExists;
 };
 
+// Adds the click handlers to the info drop downs in Guided Mode
+// The selectors also append the info icon before the label depending on data attributes
+// passed in the HTML
+const infoDropdowns = document.getElementsByClassName("guided--info-dropdown");
+for (const infoDropdown of Array.from(infoDropdowns)) {
+  const infoTextElement = infoDropdown.querySelector(".guided--dropdown-text");
+  const dropdownType = infoTextElement.dataset.dropdownType;
+  if (dropdownType === "info") {
+    //insert the info icon before the text
+    infoTextElement.insertAdjacentHTML(
+      "beforebegin",
+      ` <i class="fas fa-info-circle"></i>`
+    );
+  }
+  if (dropdownType === "warning") {
+    //insert the warning icon before the text
+    infoTextElement.insertAdjacentHTML(
+      "beforebegin",
+      ` <i class="fas fa-exclamation-triangle"></i>`
+    );
+  }
+
+  infoDropdown.addEventListener("click", () => {
+    const infoContainer = infoDropdown.nextElementSibling;
+    const infoContainerChevron =
+      infoDropdown.querySelector(".fa-chevron-right");
+
+    const infoContainerIsopen =
+      infoContainer.classList.contains("container-open");
+    console.log(infoContainerIsopen);
+    if (infoContainerIsopen) {
+      infoContainerChevron.style.transform = "rotate(0deg)";
+      infoContainer.classList.remove("container-open");
+    } else {
+      infoContainerChevron.style.transform = "rotate(90deg)";
+      infoContainer.classList.add("container-open");
+    }
+  });
+}
+
 const guidedSaveAndExit = async (exitPoint) => {
   if (exitPoint === "main-nav" || exitPoint === "sub-nav") {
     const { value: returnToGuidedHomeScreen } = await Swal.fire({
