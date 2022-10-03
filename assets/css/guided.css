@@ -1,10 +1,11 @@
 @import url("https://fonts.googleapis.com/css?family=Poppins:400,500,600,700");
 
-.guided--body p,
-.guided--body h1,
-.guided--body h2 {
+/* change the font to siblints of guided--body to Poppins except i elemenets */
+
+.guided--body *:not(i) {
   font-family: "Poppins", sans-serif;
 }
+
 
 .container {
   max-width: 400px;
