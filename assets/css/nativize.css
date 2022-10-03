@@ -3,6 +3,12 @@
 ** Makes the UI feel more native
 */
 
+@import url("https://fonts.googleapis.com/css?family=Poppins:400,500,600,700");
+
+*:not(i) {
+  font-family: "Poppins", sans-serif !important;
+}
+
 html {
   font-family: sans-serif;
   -webkit-user-select: none; /* disable selection */
