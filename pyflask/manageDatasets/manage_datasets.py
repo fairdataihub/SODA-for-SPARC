@@ -2,9 +2,9 @@
 
 ### Import required python modules
 import cv2
-from gevent import monkey
+# from gevent import monkey
 
-monkey.patch_all()
+# monkey.patch_all()
 import os
 from os import listdir, mkdir, walk
 from os.path import (
@@ -19,21 +19,11 @@ import time
 import shutil
 from configparser import ConfigParser
 import subprocess
-from websocket import create_connection
+# from websocket import create_connection
 import socket
 import errno
 import re
 import gevent
-# from pennsieve import Pennsieve
-# from pennsieve.api.agent import (
-#     agent_cmd,
-#     validate_agent_installation,
-#     agent_env,
-#     agent_cmd,
-# )
-
-# from pennsieve.api.agent import AgentError, socket_address
-# from pennsieve import Settings
 
 from pennsieve2.pennsieve import Pennsieve
 from threading import Thread
@@ -46,7 +36,8 @@ import requests
 
 from flask import abort 
 from namespaces import NamespaceEnum, get_namespace_logger
-from utils import get_dataset, get_authenticated_ps, get_dataset_size
+#from utils import get_dataset, get_authenticated_ps, get_dataset_size
+from utils import get_dataset_size
 from authentication import get_access_token
 
 
@@ -93,19 +84,32 @@ PROD_TEMPLATE_PATH = join(dirname(__file__), "..", "..", "file_templates")
 TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLATE_PATH
 
 
-# def bf_dataset_size():
-#     """
-#     Function to get storage size of a dataset on Pennsieve
-#     """
-#     global bf
-#     global myds
+def bf_dataset_size(dataset_id):
+    """
+    Function to get storage size of a dataset on Pennsieve
+    """
+    PENNSIEVE_URL = "https://api.pennsieve.io"
 
-#     try:
-#         selected_dataset_id = myds.id
-#         bf_response = bf._api._get(f"/datasets/{str(selected_dataset_id)}")
-#         return bf_response["storage"] if "storage" in bf_response.keys() else 0
-#     except Exception as e:
-#         raise e
+    try:
+        # get access token 
+        token = get_access_token()
+
+        headers = {
+            "Accept": "*/*",
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {token}"
+        }
+
+ 
+        # get the 
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(dataset_id)}", headers=headers)
+        r.raise_for_status()
+
+        dataset_obj = r.json()
+
+        return dataset_obj["storage"] if "storage" in dataset_obj.keys() else 0
+    except Exception as e:
+        raise e
 
 
 # def time_format(elapsed_time):
@@ -755,6 +759,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     global did_upload
     global did_fail
     global upload_folder_count
+    global namespace_logger
 
     submitdataprogress = " "
     submitdatastatus = " "
@@ -767,6 +772,10 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     did_fail = False
     upload_folder_count = 0
 
+    namespace_logger.info("Yes we are here")
+
+    
+
     # check if the local dataset folder exists
     if not isdir(pathdataset):
         submitdatastatus = "Done"
@@ -776,6 +785,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         did_fail = True
         did_upload = False
         abort(400, error_message)
+
+    namespace_logger.info("Dataset folder exists")
 
     total_file_size = 1
    
@@ -789,6 +800,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         did_upload = False
         error_message = "Please select a valid Pennsieve account"
         abort(500, e)
+
+    namespace_logger.info("Created a ps instance")
 
 
     # select the user
@@ -872,14 +885,19 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     try:
         submitprintstatus = "Uploading"
         start_time_bf_upload = time.time()
-        initial_bfdataset_size_submit = bf_dataset_size()
+        initial_bfdataset_size_submit = bf_dataset_size(bfdataset)
         start_submit = 1
-        ps.manifest.upload(1)
+        ps.manifest.upload(2)
+        res = ps.subscribe(2)
+        namespace_logger.info(res)
+
         submitdatastatus = "Done"
     except Exception as e:
         submitdatastatus = "Done"
         did_fail = True
         raise e
+
+    return "Done"
 
 
 # sends back the current amount of files that have been uploaded by bf_submit_dataset
