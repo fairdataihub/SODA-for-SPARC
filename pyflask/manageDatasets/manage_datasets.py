@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ### Import required python modules
+import contextlib
 import cv2
 import os
 from os import listdir, mkdir, walk
@@ -31,7 +32,7 @@ import platform
 import boto3
 import requests
 
-from flask import abort 
+from flask import abort
 from namespaces import NamespaceEnum, get_namespace_logger
 #from utils import get_dataset, get_authenticated_ps, get_dataset_size
 from utils import get_dataset_size
@@ -372,51 +373,6 @@ def bf_delete_account(keyname):
 
 
 
-# def bf_remove_additional_accounts():
-# def bf_get_accounts():
-#     """
-#     Args:
-#         None
-#     Action:
-#         Gets the appropriate SPARC account from the config file
-#     """
-#     config = ConfigParser()
-#     config.read(configpath)
-#     accountname = config.sections()
-
-#     if SODA_SPARC_API_KEY in accountname:
-#         try:
-#             ps = Pennsieve(SODA_SPARC_API_KEY)
-#             return SODA_SPARC_API_KEY
-#         except Exception:
-#             pass
-#     elif "global" in accountname:
-#         if "default_profile" in config["global"]:
-#             default_profile = config["global"]["default_profile"]
-#             if default_profile in accountname:
-#                 try:
-#                     ps = Pennsieve(default_profile)
-#                     return default_profile
-#                 except Exception as e:
-#                     pass
-#     else:
-#         for account in accountname:
-#             ps = Pennsieve(account)
-#             acc_id = ps.context.id
-
-#             if acc_id == "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-#                 if not config.has_section("global"):
-#                     config.add_section("global")
-
-#                 default_acc = config["global"]
-#                 default_acc["default_profile"] = account
-
-#                 with open(configpath, "w+") as configfile:
-#                     config.write(configfile)
-
-#                 return account
-#     return ""
-
 
 # def bf_account_list():
 #     """
@@ -437,20 +393,68 @@ def bf_delete_account(keyname):
 #         raise e
 
 
-# def bf_default_account_load():
-#     """
-#     Action:
-#         Returns the first valid account as the default account
-#     """
-#     try:
-#         accountlist = []
-#         if exists(configpath):
-#             valid_account = bf_get_accounts()
-#             if valid_account != "":
-#                 accountlist.append(valid_account)
-#         return {"defaultAccounts": accountlist}
-#     except Exception as e:
-#         raise e
+def bf_default_account_load():
+    """
+    Action:
+        Returns the first valid account as the default account
+    """
+    try:
+        accountlist = []
+        if exists(configpath):
+            valid_account = bf_get_accounts()
+            if valid_account != "":
+                accountlist.append(valid_account)
+        return {"defaultAccounts": accountlist}
+    except Exception as e:
+        raise e
+
+
+
+def bf_get_accounts():
+    """
+    Args:
+        None
+    Action:
+        Gets the appropriate SPARC account from the config file
+    """
+    config = ConfigParser()
+    config.read(configpath)
+    accountname = config.sections()
+
+    if SODA_SPARC_API_KEY in accountname:
+        with contextlib.suppress(Exception):
+            ps = Pennsieve()
+            ps.user.switch(SODA_SPARC_API_KEY)
+            return SODA_SPARC_API_KEY
+    elif "global" in accountname:
+        if "default_profile" in config["global"]:
+            default_profile = config["global"]["default_profile"]
+            if default_profile in accountname:
+                with contextlib.suppress(Exception):
+                    ps = Pennsieve()
+                    ps.user.switch(default_profile)
+                    return default_profile
+    else:
+        for account in accountname:
+            if account != 'agent':
+                with contextlib.suppress(Exception):
+                    ps = Pennsieve()
+                    ps.user.switch(account)
+                    org_id = ps.getUser()['organization_id']
+
+                    if org_id == "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
+                        if not config.has_section("global"):
+                            config.add_section("global")
+
+                        default_acc = config["global"]
+                        default_acc["default_profile"] = account
+
+                        with open(configpath, "w+") as configfile:
+                            config.write(configfile)
+
+                        return account
+    return ""
+
 
 
 # def bf_dataset_account(accountname):

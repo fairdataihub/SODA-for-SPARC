@@ -26,7 +26,7 @@ from manageDatasets import (
     # bf_add_license,
     # bf_get_dataset_status,
     # bf_change_dataset_status,
-    # bf_default_account_load,
+    bf_default_account_load,
     get_username,
     # check_agent_install,
     SODA_SPARC_API_KEY,
@@ -231,19 +231,19 @@ successMessage = api.model('SuccessMessage', {
 
 
 
-# default_account_model = api.model('DefaultAccount', {
-#   'defaultAccounts': fields.List(fields.String,required=True, description="The default account"),
-# })
+default_account_model = api.model('DefaultAccount', {
+  'defaultAccounts': fields.List(fields.String,required=True, description="The default account"),
+})
 
-# @api.route('/bf_default_account_load')
-# class BfDefaultAccountLoad(Resource):
-#   @api.marshal_with(default_account_model, False, 200)
-#   @api.doc(responses={500: 'There was an internal server error'}, description="Returns the first valid account as the default account. Usually SODA-Pennsieve.")
-#   def get(self):
-#     try:
-#       return bf_default_account_load()
-#     except Exception as e:
-#       api.abort(500, str(e))
+@api.route('/bf_default_account_load')
+class BfDefaultAccountLoad(Resource):
+  @api.marshal_with(default_account_model, False, 200)
+  @api.doc(responses={500: 'There was an internal server error'}, description="Returns the first valid account as the default account. Usually SODA-Pennsieve.")
+  def get(self):
+    try:
+      return bf_default_account_load()
+    except Exception as e:
+      api.abort(500, str(e))
 
 
 

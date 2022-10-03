@@ -25,7 +25,7 @@ from .manage_datasets import (
     # bf_add_license,
     # bf_get_dataset_status,
     # bf_change_dataset_status,
-    # bf_default_account_load,
+    bf_default_account_load,
     get_username,
     # check_agent_install,
     SODA_SPARC_API_KEY,
