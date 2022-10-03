@@ -84,6 +84,8 @@ PROD_TEMPLATE_PATH = join(dirname(__file__), "..", "..", "file_templates")
 TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLATE_PATH
 
 
+PENNSIEVE_URL = "https://api.pennsieve.io"
+
 def bf_dataset_size(dataset_id):
     """
     Function to get storage size of a dataset on Pennsieve
@@ -501,21 +503,44 @@ def bf_delete_account(keyname):
 #     return {"datasets": sorted_bf_datasets}
 
 
-# def get_username(accountname):
-#     """
-#     Input: User's accountname and the name of the selected dataset
+def get_username(accountname):
+    """
+    Input: User's account name
 
-#     Output: User's name
-#     """
+    Output: User's first and last name for display in SODA's UI.
+    """
 
-#     try:
-#         bf = Pennsieve(accountname)
-#     except Exception as e:
-#         abort(400, "Please select a valid Pennsieve account.")
+    # ensure the given account name is a valid profile saved in the .pennsieve/config file 
+    try:
+        ps = Pennsieve()
+        ps.user.switch(accountname)
+    except Exception as e:
+        abort(400, "Please select a valid Pennsieve account.")
+
+    # reauthenticate the user
+    ps.user.reauthenticate()
+
+    # get the api access token for the user's current session
+    token = ps.getUser()["session_token"]
+
+    # request the user's first and last name stored on Pennsieve
+    try:
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {token}",
+        }
+
+        r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers)
+
+        r.raise_for_status()
+    except Exception as e:
+        abort(500, "Something went wrong while authenticating the user or connecting to Pennsieve.")
+
+    user_info = r.json()
     
-#     bfname = f"{bf.profile.first_name} {bf.profile.last_name}"
+    username = f"{user_info['firstName']} {user_info['lastName']}"
 
-#     return {"username": bfname}
+    return {"username": username}
 
 
 # def bf_account_details(accountname):
