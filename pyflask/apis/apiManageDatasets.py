@@ -7,7 +7,7 @@ from manageDatasets import (
     # bf_add_account_username,
     # bf_account_list,
     # bf_dataset_account,
-    # bf_account_details,
+    bf_account_details,
     bf_submit_dataset,
     # bf_new_dataset_folder,
     # bf_rename_dataset,
@@ -310,28 +310,28 @@ successMessage = api.model('SuccessMessage', {
 
 
 
-# model_account_details_response = api.model('AccountDetailsResponse', {
-#   'account_details': fields.String(required=True, description="The email and organization for the given Pennsieve account."),
-# })
+model_account_details_response = api.model('AccountDetailsResponse', {
+  'account_details': fields.String(required=True, description="The email and organization for the given Pennsieve account."),
+})
 
-# @api.route('/bf_account_details')
-# class BfAccountDetails(Resource):
+@api.route('/bf_account_details')
+class BfAccountDetails(Resource):
 
-#   parser_account_details = reqparse.RequestParser(bundle_errors=True)
-#   parser_account_details.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve details for.')
+  parser_account_details = reqparse.RequestParser(bundle_errors=True)
+  parser_account_details.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve details for.')
 
-#   @api.marshal_with(model_account_details_response, False, 200)
-#   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns the email and organization for the given Pennsieve account.")
-#   @api.expect(parser_account_details)
-#   def get(self):
-#     try:
-#       # get the selected account out of the request args
-#       selected_account = self.parser_account_details.parse_args().get('selected_account')
-#       return bf_account_details(selected_account)
-#     except Exception as e:
-#       if notBadRequestException(e):
-#         api.abort(500, str(e))
-#       raise e
+  @api.marshal_with(model_account_details_response, False, 200)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns the email and organization for the given Pennsieve account.")
+  @api.expect(parser_account_details)
+  def get(self):
+    try:
+      # get the selected account out of the request args
+      selected_account = self.parser_account_details.parse_args().get('selected_account')
+      return bf_account_details(selected_account)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
 
 
 

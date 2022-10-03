@@ -2,9 +2,6 @@
 
 ### Import required python modules
 import cv2
-# from gevent import monkey
-
-# monkey.patch_all()
 import os
 from os import listdir, mkdir, walk
 from os.path import (
@@ -39,6 +36,7 @@ from namespaces import NamespaceEnum, get_namespace_logger
 #from utils import get_dataset, get_authenticated_ps, get_dataset_size
 from utils import get_dataset_size
 from authentication import get_access_token
+from users import get_user_information, update_config_account_name
 
 
 ### Global variables
@@ -325,12 +323,12 @@ def bf_add_account_api_key(keyname, key, secret):
 
 
 def bf_delete_account(keyname):
-#     """
-#     Args:
-#         keyname: name of local Pennsieve account key (string)
-#     Action:
-#         Deletes account information from the Pennsieve config file
-#     """
+    """
+    Args:
+        keyname: name of local Pennsieve account key (string)
+    Action:
+        Deletes account information from the Pennsieve config file
+    """
     config = ConfigParser()
     config.read(configpath)
     config.remove_section(keyname)
@@ -525,60 +523,56 @@ def get_username(accountname):
 
     # request the user's first and last name stored on Pennsieve
     try:
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {token}",
-        }
-
-        r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers)
-
-        r.raise_for_status()
+        user_info = get_user_information(token)
     except Exception as e:
         abort(500, "Something went wrong while authenticating the user or connecting to Pennsieve.")
-
-    user_info = r.json()
     
     username = f"{user_info['firstName']} {user_info['lastName']}"
 
     return {"username": username}
 
 
-# def bf_account_details(accountname):
-#     """
-#     Args:
-#         accountname: name of local Pennsieve account key (string)
-#     Return:
-#         acc_details: account user email and organization (string)
-#     Action:
-#         Returns: return details of user associated with the account
-#     """
-#     try:
-#         bf = Pennsieve(accountname)
-#     except Exception as e:
-#         abort(400, str(e))
+def bf_account_details(accountname):
+    """
+    Args:
+        accountname: name of local Pennsieve account key (string)
+    Return:
+        acc_details: account user email and organization (string)
+    Action:
+        Returns: return details of user associated with the account
+    """
+    try:
+        ps = Pennsieve()
+        ps.user.switch(accountname)
+    except Exception as e:
+        abort(400, "Please select a valid Pennsieve account.")
 
-#     acc_details = f"User email: {bf.profile.email}<br>"
-#     acc_details = f"{acc_details}Organization: {bf.context.name}"
+    
+    # authenticate the user
+    ps.user.reauthenticate()
 
-#     try: 
-#         if exists(configpath):
-#             config = ConfigParser()
-#             config.read(configpath)
+    # get the access token 
+    token = ps.getUser()["session_token"]
 
-#         if not config.has_section("global"):
-#             config.add_section("global")
-#             config.set("global", "default_profile", accountname)
-#         else:
-#             config["global"]["default_profile"] = accountname
+    try:
+        user_info = get_user_information(token)
+    except Exception as e:
+        abort(500, "Something went wrong while authenticating the user or connecting to Pennsieve.")
 
-#         with open(configpath, "w") as configfile:
-#             config.write(configfile)
+    acc_details = f"User email: {user_info['email']}<br>"
+    acc_details = f"{acc_details}Organization: {user_info['preferredOrganization']}"
 
-#         ## return account details and datasets where such an account has some permission
-#         return {"account_details": acc_details}
+    try:
+        # if a user hasn't added their account name to their config file then we want to write it now
+        # TODO: Ensure this is necessary. I think we may do this just in case at startup this gets called before something else
+        #       that may also want to update the account name if possible? 
+        update_config_account_name(accountname)
+        
+        ## return account details and datasets where such an account has some permission
+        return {"account_details": acc_details}
 
-#     except Exception as e:
-#         raise e
+    except Exception as e:
+        raise e
 
 
 # def bf_new_dataset_folder(datasetname, accountname):
