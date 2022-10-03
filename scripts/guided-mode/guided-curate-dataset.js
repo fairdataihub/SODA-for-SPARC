@@ -10311,7 +10311,9 @@ $(document).ready(async () => {
       //Upload the dataset files
       const mainCurationResponse = await guidedUploadDatasetToPennsieve();
     } catch (error) {
-      const userErrorMessage = userError(error);
+      console.log(error);
+      clientError(error);
+      let emessage = userErrorMessage(error);
       //make an unclosable sweet alert that forces the user to close out of the app
       await Swal.fire({
         allowOutsideClick: false,
@@ -10321,7 +10323,7 @@ $(document).ready(async () => {
         icon: "error",
         title: "An error occurred during your upload",
         html: `
-          <p>Error message: ${userErrorMessage}</p>
+          <p>Error message: ${emessage}</p>
           <p>
             Please close the SODA app and restart it again. You will be able to resume your upload
             in progress by returning to Guided Mode and clicking the "Resume Upload" 
@@ -10538,6 +10540,8 @@ $(document).ready(async () => {
         }
       })
       .catch(async (error) => {
+        clientError(error);
+        let emessage = userErrorMessage(error);
         try {
           let responseObject = await client.get(
             `manage_datasets/bf_dataset_account`,
@@ -10569,7 +10573,6 @@ $(document).ready(async () => {
           datasetUploadSession,
           true
         );
-        const userErrorMessage = userError(error);
         //make an unclosable sweet alert that forces the user to close out of the app
         await Swal.fire({
           allowOutsideClick: false,
@@ -10579,7 +10582,7 @@ $(document).ready(async () => {
           icon: "error",
           title: "An error occurred during your upload",
           html: `
-          <p>Error message: ${userErrorMessage}</p>
+          <p>Error message: ${emessage}</p>
           <p>
             Please close the SODA app and restart it again. You will be able to resume your upload
             in progress by returning to Guided Mode and clicking the "Resume Upload" 
