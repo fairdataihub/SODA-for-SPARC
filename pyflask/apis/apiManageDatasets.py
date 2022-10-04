@@ -17,7 +17,7 @@ from manageDatasets import (
     bf_get_teams,
     # bf_add_permission_team,
     # bf_add_subtitle,
-    # bf_get_subtitle,
+    bf_get_subtitle,
     # bf_get_description,
     # bf_add_description,
     # bf_get_banner_image,
@@ -399,33 +399,33 @@ class BfDatasetAccount(Resource):
 
 
 
-# model_get_dataset_subtitle_response = api.model('GetDatasetSubtitleResponse', {
-#   'subtitle': fields.String(required=True, description="The subtitle for the given dataset."),
-# })
+model_get_dataset_subtitle_response = api.model('GetDatasetSubtitleResponse', {
+  'subtitle': fields.String(required=True, description="The subtitle for the given dataset."),
+})
 
-# @api.route('/bf_dataset_subtitle')
-# class DatasetSubtitle(Resource):
+@api.route('/bf_dataset_subtitle')
+class DatasetSubtitle(Resource):
 
-#   parser_dataset_subtitle = reqparse.RequestParser(bundle_errors=True)
-#   parser_dataset_subtitle.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve the dataset subitle for.')
-#   parser_dataset_subtitle.add_argument('selected_dataset', type=str, required=True, location='args', help='The name or id of the dataset to retrieve the subtitle for.')
+  parser_dataset_subtitle = reqparse.RequestParser(bundle_errors=True)
+  parser_dataset_subtitle.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve the dataset subitle for.')
+  parser_dataset_subtitle.add_argument('selected_dataset', type=str, required=True, location='args', help='The name or id of the dataset to retrieve the subtitle for.')
 
 
-#   @api.marshal_with(model_get_dataset_subtitle_response, False, 200)
-#   @api.expect(parser_dataset_subtitle)
-#   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns the subtitle for the given dataset.")
-#   def get(self):
-#     data = self.parser_dataset_subtitle.parse_args()
+  @api.marshal_with(model_get_dataset_subtitle_response, False, 200)
+  @api.expect(parser_dataset_subtitle)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns the subtitle for the given dataset.")
+  def get(self):
+    data = self.parser_dataset_subtitle.parse_args()
 
-#     selected_account = data.get('selected_account')
-#     selected_dataset = data.get('selected_dataset')
+    selected_account = data.get('selected_account')
+    selected_dataset = data.get('selected_dataset')
 
-#     try:
-#       return bf_get_subtitle(selected_account, selected_dataset)
-#     except Exception as e:
-#       if notBadRequestException(e):
-#         api.abort(500, str(e))
-#       raise e
+    try:
+      return bf_get_subtitle(selected_account, selected_dataset)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
 
 #   parser_add_dataset_subtitle = parser_dataset_subtitle.copy()
 #   parser_add_dataset_subtitle.add_argument('input_subtitle', type=str, required=True, location='json', help='The subtitle to add to the dataset.')

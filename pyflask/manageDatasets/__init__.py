@@ -16,7 +16,7 @@ from .manage_datasets import (
     bf_get_teams,
     # bf_add_permission_team,
     # bf_add_subtitle,
-    # bf_get_subtitle,
+    bf_get_subtitle,
     # bf_get_description,
     # bf_add_description,
     # bf_get_banner_image,

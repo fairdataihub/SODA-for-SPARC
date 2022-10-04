@@ -1470,41 +1470,54 @@ def bf_get_current_user_permission_agent_two(dataset_id):
 
 
 
-# def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
-#     """
-#     Function to get current subtitle associated with a selected dataset
+def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
+    """
+    Function to get current subtitle associated with a selected dataset
 
-#     Args:
-#         selected_bfaccount: name of selected Pennsieve acccount (string)
-#         selected_bfdataset: name of selected Pennsieve dataset (string)
-#     Return:
-#         License name, if any, or "No license" message
-#     """
+    Args:
+        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
+    Return:
+        License name, if any, or "No license" message
+    """
 
 
-#     try:
-#         bf = Pennsieve(selected_bfaccount)
-#     except Exception as e:
-#         error_message = "Please select a valid Pennsieve account"
-#         abort(400, error_message)
+    try:
+        ps = Pennsieve()
+        ps.user.switch(selected_bfaccount)
+    except Exception as e:
+        abort(400, "Please select a valid Pennsieve account")
 
-#     try:
-#         myds = bf.get_dataset(selected_bfdataset)
-#     except Exception as e:
-#         error_message = "Please select a valid Pennsieve dataset"
-#         abort(400, error_message)
+    
+    try:
+        ps.user.reauthenticate()
+    except Exception as e:
+        abort(401, "Could not reauthenticate this account with Pennsieve.")
 
-#     try:
-#         selected_dataset_id = myds.id
-#         dataset_info = bf._api._get("/datasets/" + str(selected_dataset_id))
 
-#         res = ""
-#         if "description" in dataset_info["content"]:
-#             res = dataset_info["content"]["description"]
-#         return {"subtitle": res}
-#         # return json.dumps(dataset_info)
-#     except Exception as e:
-#         raise Exception(e)
+    try:
+        ds = ps.getDatasets()
+        selected_dataset_id = ds[selected_bfdataset]
+    except Exception as e:
+        error_message = "Please select a valid Pennsieve dataset"
+        abort(400, error_message)
+
+    try:
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + ps.getUser()["session_token"],
+        }
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
+        r.raise_for_status()
+
+        dataset_info = r.json()
+
+        res = ""
+        if "description" in dataset_info["content"]:
+            res = dataset_info["content"]["description"]
+        return {"subtitle": res}
+    except Exception as e:
+        raise Exception(e)
 
 
 
