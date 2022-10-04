@@ -2,9 +2,9 @@
 
 /* change the font to siblints of guided--body to Poppins except i elemenets */
 
-.guided--body *:not(i) {
+/*.guided--body *:not(i) {
   font-family: "Poppins", sans-serif;
-}
+}*/
 
 
 .container {
