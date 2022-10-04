@@ -1084,91 +1084,111 @@ def bf_get_teams(selected_bfaccount):
         raise e
 
 
-# def bf_get_permission(selected_bfaccount, selected_bfdataset):
+def bf_get_permission(selected_bfaccount, selected_bfdataset):
 
-#     """
-#     Function to get permission for a selected dataset
+    """
+    Function to get permission for a selected dataset
 
-#     Args:
-#         selected_bfaccount: name of selected Pennsieve acccount (string)
-#         selected_bfdataset: name of selected Pennsieve dataset (string)
-#     Output:
-#         list_permission: list of permission (first name -- last name -- role) associated with the
-#         selected dataset (list of string)
-#     """
+    Args:
+        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
+    Output:
+        list_permission: list of permission (first name -- last name -- role) associated with the
+        selected dataset (list of string)
+    """
 
-#     try:
-#         bf = Pennsieve(selected_bfaccount)
-#     except Exception as e:
-#         abort(400, "Please select a valid Pennsieve account")
+    global namespace_logger
 
-#     try:
-#         myds = bf.get_dataset(selected_bfdataset)
-#     except Exception as e:
-#         abort(400, "Please select a valid Pennsieve dataset" + "<br>")
+    try:
+        ps = Pennsieve()
+        ps.user.switch(selected_bfaccount)
+    except Exception as e:
+        abort(400, "Please select a valid Pennsieve account.")
 
-#     try:
-#         # user permissions
-#         selected_dataset_id = myds.id
-#         list_dataset_permission = bf._api._get(
-#             f"/datasets/{str(selected_dataset_id)}/collaborators/users"
-#         )
-#         list_dataset_permission_first_last_role = []
-#         for i in range(len(list_dataset_permission)):
-#             first_name = list_dataset_permission[i]["firstName"]
-#             last_name = list_dataset_permission[i]["lastName"]
-#             role = list_dataset_permission[i]["role"]
-#             list_dataset_permission_first_last_role.append(
-#                 f"User: {first_name} {last_name} , role: {role}"
-#             )
+    try:
+        ps.user.reauthenticate()
+    except Exception as e:
+        abort(401, "Cannot reauthenticate this Pennsieve account.")
 
-#         # team permissions
-#         list_dataset_permission_teams = bf._api._get(
-#             "/datasets/" + str(selected_dataset_id) + "/collaborators/teams"
-#         )
-#         for i in range(len(list_dataset_permission_teams)):
-#             team_keys = list(list_dataset_permission_teams[i].keys())
-#             if "role" in team_keys:
-#                 team_name = list_dataset_permission_teams[i]["name"]
-#                 team_role = list_dataset_permission_teams[i]["role"]
-#                 list_dataset_permission_first_last_role.append(
-#                     "Team: " + team_name + ", role: " + team_role
-#                 )
+    try:
+        ds = ps.getDatasets()
+        namespace_logger.info(ds)
+        selected_dataset_id = ds[selected_bfdataset]
+    except Exception as e:
+        abort(400, "Please select a valid Pennsieve dataset.")
 
-#         # Organization permissions
-#         list_dataset_permission_organizations = bf._api._get(
-#             "/datasets/" + str(selected_dataset_id) + "/collaborators/organizations"
-#         )
-#         if type(list_dataset_permission_organizations) is dict:
-#             organization_keys = list(list_dataset_permission_organizations.keys())
-#             if "role" in organization_keys:
-#                 organization_name = list_dataset_permission_organizations["name"]
-#                 organization_role = list_dataset_permission_organizations["role"]
-#                 list_dataset_permission_first_last_role.append(
-#                     "Organization: "
-#                     + organization_name
-#                     + ", role: "
-#                     + organization_role
-#                 )
-#         else:
-#             for i in range(len(list_dataset_permission_organizations)):
-#                 organization_keys = list(
-#                     list_dataset_permission_organizations[i].keys()
-#                 )
-#                 if "role" in organization_keys:
-#                     organization_name = list_dataset_permission_organizations[i]["name"]
-#                     organization_role = list_dataset_permission_organizations[i]["role"]
-#                     list_dataset_permission_first_last_role.append(
-#                         "Organization: "
-#                         + organization_name
-#                         + ", role: "
-#                         + organization_role
-#                     )
+    try:
+        global PENNSIEVE_URL
+        headers = {
+            "Authorization": "Bearer " + ps.getUser()["session_token"],
+            "Content-Type": "application/json",
+        }
+        # user permissions
+        r = requests.get(
+            f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=headers
+        )
+        r.raise_for_status()
+        list_dataset_permission = r.json()
+        list_dataset_permission_first_last_role = []
+        for i in range(len(list_dataset_permission)):
+            first_name = list_dataset_permission[i]["firstName"]
+            last_name = list_dataset_permission[i]["lastName"]
+            role = list_dataset_permission[i]["role"]
+            list_dataset_permission_first_last_role.append(
+                f"User: {first_name} {last_name} , role: {role}"
+            )
 
-#         return {"permissions": list_dataset_permission_first_last_role}
+        # team permissions
+        r = requests.get(
+            f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/teams", headers=headers
+        )
+        r.raise_for_status()
+        list_dataset_permission_teams = r.json()
+        for i in range(len(list_dataset_permission_teams)):
+            team_keys = list(list_dataset_permission_teams[i].keys())
+            if "role" in team_keys:
+                team_name = list_dataset_permission_teams[i]["name"]
+                team_role = list_dataset_permission_teams[i]["role"]
+                list_dataset_permission_first_last_role.append(
+                    "Team: " + team_name + ", role: " + team_role
+                )
 
-#     except Exception as e:
-#         raise e
+        # Organization permissions
+        r = requests.get(
+            f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/organizations", headers=headers
+        )
+        r.raise_for_status()
+        list_dataset_permission_organizations = r.json()
+        if type(list_dataset_permission_organizations) is dict:
+            organization_keys = list(list_dataset_permission_organizations.keys())
+            if "role" in organization_keys:
+                organization_name = list_dataset_permission_organizations["name"]
+                organization_role = list_dataset_permission_organizations["role"]
+                list_dataset_permission_first_last_role.append(
+                    "Organization: "
+                    + organization_name
+                    + ", role: "
+                    + organization_role
+                )
+        else:
+            for i in range(len(list_dataset_permission_organizations)):
+                organization_keys = list(
+                    list_dataset_permission_organizations[i].keys()
+                )
+                if "role" in organization_keys:
+                    organization_name = list_dataset_permission_organizations[i]["name"]
+                    organization_role = list_dataset_permission_organizations[i]["role"]
+                    list_dataset_permission_first_last_role.append(
+                        "Organization: "
+                        + organization_name
+                        + ", role: "
+                        + organization_role
+                    )
+
+        return {"permissions": list_dataset_permission_first_last_role}
+
+    except Exception as e:
+        raise e
 
 
 # def bf_get_current_user_permission(bf, myds):

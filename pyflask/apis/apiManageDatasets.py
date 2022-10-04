@@ -13,7 +13,7 @@ from manageDatasets import (
     # bf_rename_dataset,
     # bf_add_permission,
     bf_get_users,
-    # bf_get_permission,
+    bf_get_permission,
     bf_get_teams,
     # bf_add_permission_team,
     # bf_add_subtitle,
@@ -507,32 +507,32 @@ class BfDatasetAccount(Resource):
 
 
 
-# model_get_permissions_response = api.model('GetPermissionsResponse', {
-#   'permissions': fields.List(fields.String, required=True, description="A list of the users/organizations/teams and their roles (viewer, manager, owner, etc) for the given dataset."),
-# })
+model_get_permissions_response = api.model('GetPermissionsResponse', {
+  'permissions': fields.List(fields.String, required=True, description="A list of the users/organizations/teams and their roles (viewer, manager, owner, etc) for the given dataset."),
+})
 
-# @api.route('/bf_dataset_permissions')
-# class DatasetPermissions(Resource):
-#   parser_dataset_permissions = reqparse.RequestParser(bundle_errors=True)
-#   parser_dataset_permissions.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve the dataset permissions for.')
-#   parser_dataset_permissions.add_argument('selected_dataset', type=str, required=True, location='args', help='The name or id of the dataset to retrieve the permissions for.')
+@api.route('/bf_dataset_permissions')
+class DatasetPermissions(Resource):
+  parser_dataset_permissions = reqparse.RequestParser(bundle_errors=True)
+  parser_dataset_permissions.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve the dataset permissions for.')
+  parser_dataset_permissions.add_argument('selected_dataset', type=str, required=True, location='args', help='The name or id of the dataset to retrieve the permissions for.')
 
  
-#   @api.marshal_with(model_get_permissions_response, False, 200)
-#   @api.expect(parser_dataset_permissions)
-#   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns the permissions for the given dataset. Permissions are a list of the users/organizations/teams and their roles (viewer, manager, owner, etc) for the given dataset. Format: ['organization: org_name, role: viewer', 'user: username, role: manager]")
-#   def get(self):
-#     data = self.parser_dataset_permissions.parse_args()
+  @api.marshal_with(model_get_permissions_response, False, 200)
+  @api.expect(parser_dataset_permissions)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns the permissions for the given dataset. Permissions are a list of the users/organizations/teams and their roles (viewer, manager, owner, etc) for the given dataset. Format: ['organization: org_name, role: viewer', 'user: username, role: manager]")
+  def get(self):
+    data = self.parser_dataset_permissions.parse_args()
 
-#     selected_account = data.get('selected_account')
-#     selected_dataset = data.get('selected_dataset')
+    selected_account = data.get('selected_account')
+    selected_dataset = data.get('selected_dataset')
 
-#     try:
-#       return bf_get_permission(selected_account, selected_dataset)
-#     except Exception as e:
-#       if notBadRequestException(e):
-#         api.abort(500, str(e))
-#       raise e
+    try:
+      return bf_get_permission(selected_account, selected_dataset)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
 
   
 #   parser_add_dataset_permissions = parser_dataset_permissions.copy()

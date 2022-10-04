@@ -12,7 +12,7 @@ from .manage_datasets import (
     # bf_rename_dataset,
     # bf_add_permission,
     bf_get_users,
-    # bf_get_permission,
+    bf_get_permission,
     bf_get_teams,
     # bf_add_permission_team,
     # bf_add_subtitle,
