@@ -5,6 +5,13 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.9.2.4 - 2022-10-04
+
+## Feature additions:
+- Guided Mode has a new page to let users know what accounts and documents they will be needing to curate a dataset.
+## Bug fixes:
+- Announcements should launch on auto-updates moving forward now!
+
 ## v.9.2.1 - 2022-09-23
 
 ## Bug fixes:
