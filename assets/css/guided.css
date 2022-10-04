@@ -1,10 +1,11 @@
 @import url("https://fonts.googleapis.com/css?family=Poppins:400,500,600,700");
 
-.guided--body p,
-.guided--body h1,
-.guided--body h2 {
+/* change the font to siblints of guided--body to Poppins except i elemenets */
+
+.guided--body *:not(i) {
   font-family: "Poppins", sans-serif;
 }
+
 
 .container {
   max-width: 400px;
@@ -13,6 +14,51 @@
   padding: 40px;
 }
 
+
+
+.guided--info-dropdown {
+  width: 100%;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: start;
+  align-items: center;
+  cursor: pointer;
+}
+
+.guided--info-dropdown p {
+  margin: 0px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #000;
+}
+.guided--info-dropdown i {
+  margin-left: 6px;
+  margin-right: 6px;
+  font-size: 12px;
+  color: #000;
+}
+
+.guided--info-container {
+  background-color: var(--color-transparent-soda-green);
+
+  margin-top: 5px;
+  padding: 10px;
+
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+
+  text-align: justify;
+
+  border: 1px solid var(--color-light-green);
+  border-radius: 3px;
+}
+
+.container-open {
+  display: flex;
+  margin-bottom: 0px;
+  animation: demo-box-fade-in 0.2s cubic-bezier(0, 0.2, 0.2, 0.96);
+}
 .hide {
   pointer-events: none;
   visibility: hidden;
@@ -354,6 +400,11 @@
   box-shadow: 0px 0px 10px #d5d5d5;
   padding: 8px;
   border-radius: 5px;
+}
+
+.guided--select-picker {
+  border-radius: 5px;
+  border: 1px solid var(--color-light-green);
 }
 
 .neumorphic {
@@ -1210,6 +1261,8 @@ h1.guided--text-sub-step {
   border: 2px solid lightgray;
 }
 
+.before-getting-started-btn {
+  margin-bottom: 1.5rem;
 .lds-roller {
   display: inline-block;
   position: relative;

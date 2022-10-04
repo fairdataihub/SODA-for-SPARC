@@ -193,6 +193,46 @@ const checkIfDatasetExistsOnPennsieve = async (datasetNameOrID) => {
   return datasetExists;
 };
 
+// Adds the click handlers to the info drop downs in Guided Mode
+// The selectors also append the info icon before the label depending on data attributes
+// passed in the HTML
+const infoDropdowns = document.getElementsByClassName("guided--info-dropdown");
+for (const infoDropdown of Array.from(infoDropdowns)) {
+  const infoTextElement = infoDropdown.querySelector(".guided--dropdown-text");
+  const dropdownType = infoTextElement.dataset.dropdownType;
+  if (dropdownType === "info") {
+    //insert the info icon before the text
+    infoTextElement.insertAdjacentHTML(
+      "beforebegin",
+      ` <i class="fas fa-info-circle"></i>`
+    );
+  }
+  if (dropdownType === "warning") {
+    //insert the warning icon before the text
+    infoTextElement.insertAdjacentHTML(
+      "beforebegin",
+      ` <i class="fas fa-exclamation-triangle"></i>`
+    );
+  }
+
+  infoDropdown.addEventListener("click", () => {
+    const infoContainer = infoDropdown.nextElementSibling;
+    const infoContainerChevron =
+      infoDropdown.querySelector(".fa-chevron-right");
+
+    const infoContainerIsopen =
+      infoContainer.classList.contains("container-open");
+
+    if (infoContainerIsopen) {
+      infoContainerChevron.style.transform = "rotate(0deg)";
+      infoContainer.classList.remove("container-open");
+    } else {
+      infoContainerChevron.style.transform = "rotate(90deg)";
+      infoContainer.classList.add("container-open");
+    }
+  });
+}
+
 const guidedSaveAndExit = async (exitPoint) => {
   if (exitPoint === "main-nav" || exitPoint === "sub-nav") {
     const { value: returnToGuidedHomeScreen } = await Swal.fire({
@@ -1705,6 +1745,7 @@ const guidedResetUserTeamPermissionsDropdowns = () => {
 //If the keys exist, extract the data from the sodaJSONObj and populate the page
 //If the keys do not exist, reset the page (inputs, tables etc.) to the default state
 const traverseToTab = async (targetPageID) => {
+  console.log(targetPageID);
   let itemsContainer = document.getElementById("items-guided-container");
   if (itemsContainer.classList.contains("border-styling")) {
     itemsContainer.classList.remove("border-styling");
@@ -1755,6 +1796,51 @@ const traverseToTab = async (targetPageID) => {
       $(
         "#guided-curate-existing-local-dataset-branch-capsule-container"
       ).hide();
+      const dataDeliverableButton = document.getElementById(
+        "getting-started-data-deliverable-btn"
+      );
+      const airTableGettingStartedBtn = document.getElementById(
+        "getting-started-button-import-sparc-award"
+      );
+      const importedDataDeliverable =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"];
+
+      console.log(sodaJSONObj);
+      console.log(importedDataDeliverable);
+      if (importedDataDeliverable) {
+        dataDeliverableButton.children[0].style.display = "none";
+        dataDeliverableButton.children[1].style.display = "flex";
+        document
+          .getElementById("guided-button-import-data-deliverables")
+          .click();
+      } else {
+        dataDeliverableButton.children[0].style.display = "flex";
+        dataDeliverableButton.children[1].style.display = "none";
+      }
+      // This controls the UI for the new page
+      // First we get vals from sodaJSONObj, and then update the UI
+      // based on the vals
+      const airTableAccountData =
+        sodaJSONObj["dataset-metadata"]["shared-metadata"][
+          "imported-sparc-award"
+        ];
+
+      console.log(airTableAccountData);
+      // console.log(airTableres);
+      var airKeyContent = parseJson(airtableConfigPath);
+      console.log(airKeyContent);
+      if (Object.keys(airKeyContent).length != 0) {
+        //This is where we update the UI for the helper page
+        airTableGettingStartedBtn.children[1].style.display = "none";
+        airTableGettingStartedBtn.children[0].style.display = "flex";
+        document.getElementById("guided-button-import-sparc-award").click();
+        console.log("huh");
+      } else {
+        //This is where we reset the UI for the helper page
+        airTableGettingStartedBtn.children[1].style.display = "flex";
+        airTableGettingStartedBtn.children[0].style.display = "none";
+        console.log("huh1");
+      }
     }
 
     if (targetPageID === "guided-subjects-folder-tab") {
@@ -5091,7 +5177,9 @@ const openGuidedAddContributorSwal = async () => {
       });
       createDragSort(contributorRolesTagify);
 
-      $("#guided-dd-contributor-dropdown").selectpicker();
+      $("#guided-dd-contributor-dropdown").selectpicker({
+        style: "guided--select-picker",
+      });
       $("#guided-dd-contributor-dropdown").selectpicker("refresh");
       $("#guided-dd-contributor-dropdown").on("change", function (e) {
         const selectedFirstName = $(
@@ -5546,6 +5634,7 @@ const renderProtocolsTable = () => {
 
   const protocolsContainer = document.getElementById("protocols-container");
 
+  console.log(protocols);
   if (protocols === undefined) {
     const emptyRowWarning = generateAlertElement(
       "warning",
@@ -10224,7 +10313,9 @@ $(document).ready(async () => {
       //Upload the dataset files
       const mainCurationResponse = await guidedUploadDatasetToPennsieve();
     } catch (error) {
-      const userErrorMessage = userError(error);
+      console.log(error);
+      clientError(error);
+      let emessage = userErrorMessage(error);
       //make an unclosable sweet alert that forces the user to close out of the app
       await Swal.fire({
         allowOutsideClick: false,
@@ -10234,7 +10325,7 @@ $(document).ready(async () => {
         icon: "error",
         title: "An error occurred during your upload",
         html: `
-          <p>Error message: ${userErrorMessage}</p>
+          <p>Error message: ${emessage}</p>
           <p>
             Please close the SODA app and restart it again. You will be able to resume your upload
             in progress by returning to Guided Mode and clicking the "Resume Upload" 
@@ -10451,6 +10542,8 @@ $(document).ready(async () => {
         }
       })
       .catch(async (error) => {
+        clientError(error);
+        let emessage = userErrorMessage(error);
         try {
           let responseObject = await client.get(
             `manage_datasets/bf_dataset_account`,
@@ -10482,7 +10575,6 @@ $(document).ready(async () => {
           datasetUploadSession,
           true
         );
-        const userErrorMessage = userError(error);
         //make an unclosable sweet alert that forces the user to close out of the app
         await Swal.fire({
           allowOutsideClick: false,
@@ -10492,7 +10584,7 @@ $(document).ready(async () => {
           icon: "error",
           title: "An error occurred during your upload",
           html: `
-          <p>Error message: ${userErrorMessage}</p>
+          <p>Error message: ${emessage}</p>
           <p>
             Please close the SODA app and restart it again. You will be able to resume your upload
             in progress by returning to Guided Mode and clicking the "Resume Upload" 
@@ -13266,4 +13358,272 @@ $(document).ready(async () => {
   $("#guided-import-folder").on("click", () => {
     ipcRenderer.send("open-folders-organize-datasets-dialog");
   });
+});
+
+const currentAccount = (account, userDetails) => {
+  return `
+<div style="
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-top: 15px;
+  height: auto;
+  box-shadow: 0px 0px 10px #d5d5d5;
+  padding: 15px 25px;
+  border-radius: 5px;"
+>
+    <div style="
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;"
+    >
+      <div class="card-container manage-dataset">
+        <div style="display: flex">
+          <h5 class="card-left" style="
+              text-align: right;
+              color: #808080;
+              font-size: 15px;
+              padding-right: 5px;
+            ">
+            Current account:
+          </h5>
+          <div class="md-change-current-account" style="margin-left: 10px; display: flex; justify-content: space-between;">
+            <h5 class="card-right bf-account-span" style="
+                color: #000;
+                font-weight: 600;
+                margin-left: 4px;
+                font-size: 15px;
+                width: fit-content;
+              " id="getting-started-account">${defaultBfAccount}</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 15px;"
+    >
+      <div class="card-container manage-dataset">
+        <div>
+          <h5 class="card-left" style="
+              text-align: right;
+              color: #808080;
+              font-size: 15px;
+              padding-right: 20px;
+            ">
+            Account details:
+          </h5>
+          <h5 class="card-right bf-account-details-span" style="
+              color: #000;
+              font-weight: 600;
+              margin-left: 15px;
+              font-size: 15px;
+            " id="account-info-getting-started">${defaultAccountDetails}</h5>
+        </div>
+      </div>
+    </div>
+</div>
+`;
+};
+
+const dataDeliverableTitle = `
+Drag and Drop your data deliverable
+`;
+
+const dataDeliverableMessage = `
+<div style="margin-top: 1.5rem;">
+<div class="guided--container-file-import" droppable="true" ondrop="dropHandler(event, 'guided-data-deliverable-para-text', 'DataDeliverablesDocument', 'guided-getting-started', dataDeliverables=true);" ondragover="return false;">
+  <div class="guided--file-import" data-code-metadata-file-type="data_deliverable" style="min-height: 333px; width: 550px;">
+    <div id="swal-data-deliverable" class="code-metadata-lottie-container" style="height: 100px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300" preserveAspectRatio="xMidYMid meet" style="width: 100%; height: 100%; transform: translate3d(0px, 0px, 0px); content-visibility: visible;"><defs><clipPath id="__lottie_element_791"><rect width="300" height="300" x="0" y="0"></rect></clipPath></defs><g clip-path="url(#__lottie_element_791)"><g transform="matrix(1,0,0,1,99,36.82099914550781)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M12,65.67900085449219 C12,65.67900085449219 12,59.67900085449219 12,59.67900085449219"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 13.893 13.893" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M12,45.7859992980957 C12,45.7859992980957 12,24.94700050354004 12,24.94700050354004"></path></g><g opacity="1" transform="matrix(1,0,0,1,15,15)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-3,3 C-3,3 -3,-3 -3,-3 C-3,-3 3,-3 3,-3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 10.909 10.909" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M28.909000396728516,12 C28.909000396728516,12 132.5449981689453,12 132.5449981689453,12"></path></g><g opacity="1" transform="matrix(1,0,0,1,141,15)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-3,-3 C-3,-3 3,-3 3,-3 C3,-3 3,3 3,3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 10.909 10.909" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M144,28.909000396728516 C144,28.909000396728516 144,132.54600524902344 144,132.54600524902344"></path></g><g opacity="1" transform="matrix(1,0,0,1,141,141)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M3,-3 C3,-3 3,3 3,3 C3,3 -3,3 -3,3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 11.333 11.333" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M126.66699981689453,144 C126.66699981689453,144 109.66699981689453,144 109.66699981689453,144"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M104,144 C104,144 98,144 98,144"></path></g></g><g transform="matrix(1,0,0,1,122.58927917480469,49.94279098510742)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,60.5620002746582,60.5620002746582)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="10" d=" M35.5620002746582,-35.5620002746582 C35.5620002746582,-35.5620002746582 -35.5620002746582,-23.679000854492188 -35.5620002746582,-23.679000854492188 C-35.5620002746582,-23.679000854492188 -10.25100040435791,-10.25100040435791 -10.25100040435791,-10.25100040435791 C-10.25100040435791,-10.25100040435791 -35.20399856567383,14.70300006866455 -35.20399856567383,14.70300006866455 C-35.20399856567383,14.70300006866455 -15.003999710083008,34.90299987792969 -15.003999710083008,34.90299987792969 C-15.003999710083008,34.90299987792969 9.949000358581543,9.949999809265137 9.949000358581543,9.949999809265137 C9.949000358581543,9.949999809265137 23.679000854492188,35.5620002746582 23.679000854492188,35.5620002746582 C23.679000854492188,35.5620002746582 35.5620002746582,-35.5620002746582 35.5620002746582,-35.5620002746582z"></path></g></g><g transform="matrix(1,0,0,1,102.64799499511719,40.451995849609375)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,74.48500061035156,74.48500061035156)"><path stroke-linecap="round" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-66,0 C-66,-33 -66,-66 -66,-66 C-66,-66 66,-66 66,-66 C66,-66 66,66 66,66 C66,66 66,66 66,66 C66,66 -66,66 -66,66 C-66,66 -66,33 -66,0"></path></g></g></g></svg></div>
+    <div style="display: flex;">
+      <p class="guided--help-text text-center" style="/* width: 284px; *//* display: flex; *//* flex-direction: row; */">
+        Drag and Drop</p>
+        <p style="margin-left: 4px; font-weight: 600;">
+          Data Deliverables document
+        </p>
+    </div>
+    <p class="guided--help-text text-center mt-sm mb-sm">
+      OR
+    </p>
+    <button class="ui primary basic button" onclick="helpMilestoneSubmission('guided')" style="margin-top: 2rem !important;">
+      <i class="fas fa-file-import" style="margin-right: 7px"></i>Import Data Deliverables document
+    </button>
+    <p class="guided--help-text small text-center mt-sm" id="guided-data-deliverable-para-text" style="max-width: 240px; overflow-wrap: break-word"></p>
+  </div>
+</div>
+</div>
+`;
+
+const showDataDeliverableDropDown = async () => {
+  const dataDeliverableButton = document.getElementById(
+    "getting-started-data-deliverable-btn"
+  );
+
+  await Swal.fire({
+    title: dataDeliverableTitle,
+    html: dataDeliverableMessage,
+    showCancelButton: true,
+    showConfirmButton: false,
+    focusCancel: true,
+    cancelButtonText: "Cancel",
+    confirmButtonText: "Continue",
+    reverseButtons: reverseSwalButtons,
+    backdrop: "rgba(0,0,0, 0.4)",
+    heightAuto: false,
+    allowOutsideClick: false,
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
+    didOpen: () => {
+      let swal_container = document.getElementsByClassName("swal2-popup")[0];
+      let swal_actions = document.getElementsByClassName("swal2-actions")[0];
+      let swal_content = document.getElementsByClassName("swal2-content")[0];
+      let DDLottie = document.getElementById("swal-data-deliverable");
+      let swal_header = document.getElementsByClassName("swal2-header")[0];
+      swal_header.remove();
+      DDLottie.innerHTML = "";
+      swal_container.style.width = "43rem";
+      swal_actions.style.marginTop = "-2px";
+      swal_actions.style.marginBottom = "-7px";
+
+      let ddFilePath =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"];
+      if (ddFilePath) {
+        //append file path
+        let firstItem = swal_content.children[0];
+        let paragraph = document.createElement("p");
+        let paragraph2 = document.createElement("p");
+        paragraph2.innerText =
+          "To replace the current Data Deliverables just drop in or select a new one.";
+
+        paragraph2.style.marginBottom = "1rem";
+        paragraph.style.marginTop = "1rem";
+        paragraph.style.fontWeight = "700";
+        paragraph.innerText = "File Path: " + ddFilePath;
+        firstItem.append(paragraph2);
+        firstItem.prepend(paragraph);
+        dataDeliverableButton.children[0].style.display = "none";
+        dataDeliverableButton.children[1].style.display = "flex";
+        lottie.loadAnimation({
+          container: DDLottie,
+          animationData: successCheck,
+          renderer: "svg",
+          loop: true,
+          autoplay: true,
+        });
+        document
+          .getElementById("guided-button-import-data-deliverables")
+          .click();
+      } else {
+        lottie.loadAnimation({
+          container: DDLottie,
+          animationData: dragDrop,
+          renderer: "svg",
+          loop: true,
+          autoplay: true,
+        });
+      }
+    },
+    showClass: {
+      popup: "animate__animated animate__fadeInDown animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__fadeOutUp animate__faster",
+    },
+  });
+  if (sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"]) {
+    dataDeliverableButton.children[0].style.display = "none";
+    dataDeliverableButton.children[1].style.display = "flex";
+  } else {
+    dataDeliverableButton.children[0].style.display = "flex";
+    dataDeliverableButton.children[1].style.display = "none";
+  }
+};
+
+const currentUserDropdown = async () => {
+  console.log("currentUser");
+  console.log(defaultBfAccount);
+  console.log($("#para-account-detail-curate").text());
+  const pennsieveDetails = await Swal.fire({
+    title: "Current Pennsieve Details",
+    html: currentAccount(
+      defaultBfAccount,
+      $("#para-account-detail-curate").text()
+    ),
+    showCancelButton: true,
+    // showConfirmButton: false,
+    // focusCancel: true,
+    cancelButtonText: "Cancel",
+    confirmButtonText: "Change Account",
+    reverseButtons: reverseSwalButtons,
+    backdrop: "rgba(0,0,0, 0.4)",
+    heightAuto: false,
+    allowOutsideClick: false,
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
+    didOpen: () => {
+      let swal_container = document.getElementsByClassName("swal2-popup")[0];
+      let swal_actions = document.getElementsByClassName("swal2-actions")[0];
+      // let DDLottie = document.getElementById("swal-data-deliverable");
+      let swal_header = document.getElementsByClassName("swal2-header")[0];
+      swal_header.style.borderBottom = "3px solid var(--color-bg-plum)";
+      swal_header.style.marginTop = "-1rem";
+      swal_header.style.padding = ".5rem";
+      // DDLottie.innerHTML = "";
+      swal_container.style.width = "43rem";
+      swal_actions.style.marginTop = "12px";
+      swal_actions.style.marginBottom = "-7px";
+    },
+    showClass: {
+      popup: "animate__animated animate__fadeInDown animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__fadeOutUp animate__faster",
+    },
+  });
+
+  console.log(pennsieveDetails);
+  if (pennsieveDetails.isConfirmed) {
+    console.log("handle");
+    await openDropdownPrompt(this, "bf");
+  }
+};
+
+const pennsieveButton = document.getElementById(
+  "getting-started-pennsieve-account"
+);
+
+const dataDeliverableButton = document.getElementById(
+  "getting-started-data-deliverable-btn"
+);
+
+const airTableButton = document.getElementById(
+  "getting-started-button-import-sparc-award"
+);
+
+airTableButton.addEventListener("click", async () => {
+  console.log("Airtable");
+  await helpSPARCAward("submission", "guided--getting-started");
+});
+
+dataDeliverableButton.addEventListener("click", async () => {
+  console.log("DD");
+  await showDataDeliverableDropDown();
+});
+
+pennsieveButton.addEventListener("click", async () => {
+  console.log("here");
+  if (!defaultBfAccount) {
+    await openDropdownPrompt(this, "bf");
+  } else {
+    await currentUserDropdown();
+  }
 });

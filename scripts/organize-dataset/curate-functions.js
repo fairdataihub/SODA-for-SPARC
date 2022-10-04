@@ -203,6 +203,16 @@ async function dropHandler(
   curationMode,
   dataDeliverables = false
 ) {
+  console.log(ev);
+  console.log(paraElement);
+  console.log(metadataFile);
+  console.log(curationMode);
+  console.log(dataDeliverables);
+  var gettingStartedSection = false;
+  if (curationMode === "guided-getting-started") {
+    curationMode = "guided";
+    var gettingStartedSection = true;
+  }
   // Prevent default behavior (Prevent file from being opened)
   ev.preventDefault();
   document.getElementById(paraElement).innerHTML = "";
@@ -255,7 +265,9 @@ async function dropHandler(
 
           //Handle guided mode submission data
           if (curationMode === "guided") {
+            console.log("within guided if");
             const guidedMilestoneData = res;
+            console.log(res);
             //create a string with today's date in the format xxxx/xx/xx
             const today = new Date();
             const todayString = `
@@ -279,6 +291,13 @@ async function dropHandler(
             sodaJSONObj["dataset-metadata"]["submission-metadata"][
               "temp-imported-milestones"
             ] = guidedMilestoneData;
+
+            console.log(guidedMilestoneData);
+            console.log(
+              sodaJSONObj["dataset-metadata"]["submission-metadata"][
+                "temp-imported-milestones"
+              ]
+            );
 
             sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] =
               filepath;
@@ -305,6 +324,52 @@ async function dropHandler(
               loop: true,
               autoplay: true,
             });
+
+            if (gettingStartedSection === true) {
+              const DDLottie = document.getElementById("swal-data-deliverable");
+              DDLottie.innerHTML = "";
+              lottie.loadAnimation({
+                container: DDLottie,
+                animationData: successCheck,
+                renderer: "svg",
+                loop: true,
+                autoplay: true,
+              });
+              let swal_actions =
+                document.getElementsByClassName("swal2-actions")[0];
+              swal_actions.children[1].style.display = "flex";
+              let swal_content =
+                document.getElementsByClassName("swal2-content")[0];
+
+              let ddFilePath =
+                sodaJSONObj["dataset-metadata"]["submission-metadata"][
+                  "filepath"
+                ];
+              if (ddFilePath) {
+                //append file path
+                let firstItem = swal_content.children[0];
+                console.log(swal_content);
+                let paragraph = document.createElement("p");
+                let paragraph2 = document.createElement("p");
+                paragraph.id = "getting-started-filepath";
+                paragraph2.innerText =
+                  "To replace the current Data Deliverables just drop in or select a new one.";
+                paragraph2.style.marginBottom = "1rem";
+                paragraph.style.marginTop = "1rem";
+                paragraph.style.fontWeight = "700";
+                paragraph.innerText = "File Path: " + ddFilePath;
+                console.log(firstItem);
+                if (firstItem.children[0].id === "getting-started-filepath") {
+                  firstItem.children[0].remove();
+                  firstItem.children[firstItem.childElementCount - 1].remove();
+                }
+                firstItem.append(paragraph2);
+                firstItem.prepend(paragraph);
+                document
+                  .getElementById("guided-button-import-data-deliverables")
+                  .click();
+              }
+            }
           }
         } catch (error) {
           clientError(error);
@@ -316,6 +381,7 @@ async function dropHandler(
           });
         }
       } else {
+        console.log("DD???");
         //dataDelieravles is true for the name to be however it needs to be, just check extension is doc or docx
         if (metadataWithoutExtension === metadataFile) {
           if (metadataFileExtensionObject[metadataFile].includes(extension)) {
