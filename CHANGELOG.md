@@ -8,16 +8,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## v.9.2.4 - 2022-10-04
 
 ## Feature additions:
-- Guided Mode has a new page to let users know what accounts and documents they will be needing to curate a dataset.
+
+- Guided Mode: Added a new page to let users know what accounts and documents they will be needing to curate a dataset.
+- Guided Mode: Manifest files now automatically update when changes are made to a dataset's structure.
+- Guided Mode: Contributor addition flow upgraded to make AirTable contributor importation more intuitive.
+- Guided Mode: dataset upload error alerts now give a clearer reason as to why the dataset upload failed and what can be done to remedy the issue.
+
 ## Bug fixes:
+
 - Announcements should launch on auto-updates moving forward now!
 
 ## v.9.2.1 - 2022-09-23
 
 ## Bug fixes:
 
-- Fixed an issue where medium and large datasets were not being imported in Organize Datasets or the Create manifest.xlsx feature on Darwin. 
-
+- Fixed an issue where medium and large datasets were not being imported in Organize Datasets or the Create manifest.xlsx feature on Darwin.
 
 ## v.9.2.0 - 2022-09-20
 
@@ -78,6 +83,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - In the Organize Dataset feature, if a dataset is large enough and being uploaded to Pennsieve it will not pass the file and folder integrity check. This is a separate issue from those that were fixed as part of the bug fixes section outlined in v.8.0.1. Users should find more large datasets are uploadable to Pennsieve than in the previous release. Note as well this does not apply to the Upload Local Dataset feature, which has a very high upper bound for the amount of files that can be uploaded to Pennsieve as of the current release.
 
 ## v.9.0.1 - 2022-09-02
+
 ## Bug fixes:
 
 - Fixed an issue that caused the Organize Dataset feature to break when switching from Free Form Mode to Guided Mode and back.
