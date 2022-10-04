@@ -4151,6 +4151,7 @@ async function loadDefaultAccount() {
     svgElements[0].style.display = "none";
     svgElements[1].style.display = "flex";
     defaultBfAccount = myitemselect;
+
     $("#current-bf-account").text(myitemselect);
     $("#current-bf-account-generate").text(myitemselect);
     $("#create_empty_dataset_BF_account_span").text(myitemselect);
@@ -4701,6 +4702,7 @@ async function showDefaultBFAccount() {
         $(".bf-account-span").text(defaultBfAccount);
         $("#card-right bf-account-details-span").html(accountDetails);
         $("#para_create_empty_dataset_BF_account").html(accountDetails);
+        $("#para-account-detail-curate-generate").html(accountDetails);
         $(".bf-account-details-span").html(accountDetails);
         defaultAccountDetails = accountDetails;
         console.log(defaultAccountDetails);
@@ -8826,6 +8828,9 @@ async function showBFAddAccountSweetalert() {
                       accountDetails
                     );
                     $("#para_create_empty_dataset_BF_account").html(
+                      accountDetails
+                    );
+                    $("#para-account-detail-curate-generate").html(
                       accountDetails
                     );
                     $(".bf-account-details-span").html(accountDetails);

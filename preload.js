@@ -439,6 +439,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
               $(".bf-dataset-span").html("None");
               $("#para-account-detail-curate-generate").html(result);
               $("#para_create_empty_dataset_BF_account").html(result);
+              $("#para-account-detail-curate-generate").html(result);
               $(".bf-account-details-span").html(result);
               $("#para-continue-bf-dataset-getting-started").text("");
 
