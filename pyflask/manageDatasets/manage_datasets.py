@@ -989,45 +989,57 @@ def submit_dataset_progress():
     }
 
 
-# def bf_get_users(selected_bfaccount):
-#     """
-#     Function to get list of users belonging to the organization of
-#     the given Pennsieve account
+def bf_get_users(selected_bfaccount):
+    """
+    Function to get list of users belonging to the organization of
+    the given Pennsieve account
 
-#     Args:
-#       selected_bfaccount: name of selected Pennsieve acccount (string)
-#     Retun:
-#         list_users : list of users (first name -- last name) associated with the organization of the
-#         selected Pennsieve account (list of string)
-#     """
+    Args:
+      selected_bfaccount: name of selected Pennsieve acccount (string)
+    Retun:
+        list_users : list of users (first name -- last name) associated with the organization of the
+        selected Pennsieve account (list of string)
+    """
 
-#     global namespace_logger
-#     try:
-#         bf = Pennsieve(selected_bfaccount)
-#     except Exception as e:
-#         abort(400, f"{e}")
+    global namespace_logger
+    try:
+        ps = Pennsieve()
+        ps.user.switch(selected_bfaccount)
+    except Exception as e:
+        abort(400, "Please select a valid Pennsieve account.")
+
+
+    try:
+        ps.user.reauthenticate()
+    except Exception as e:
+        abort(401, "Cannot reauthenticate this Pennsieve account.")
         
-#     try:
-#         # organization_name = bf.context.name
-#         organization_id = bf.context.id
-#         list_users = bf._api._get(f"/organizations/{str(organization_id)}/members")
-#         list_users_first_last = []
-#         for i in range(len(list_users)):
-#             # first_last = list_users[i]['firstName'] + ' ' + list_users[i]['lastName']
-#             first_last = (
-#                 list_users[i]["firstName"].capitalize()
-#                 + " "
-#                 + list_users[i]["lastName"].capitalize()
-#                 + " ("
-#                 + list_users[i]["email"]
-#                 + ") !|**|!"
-#                 + list_users[i]["id"]
-#             )
-#             list_users_first_last.append(first_last)
-#         list_users_first_last.sort()  # Returning the list of users in alphabetical order
-#         return {"users": list_users_first_last}
-#     except Exception as e:
-#         raise e
+    try:
+        global PENNSIEVE_URL
+        organization_id = ps.getUser()["organization_id"]
+        headers = {
+            "Authorization": "Bearer " + ps.getUser()["session_token"],
+            "Content-Type": "application/json",
+        }
+        r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(organization_id)}/members", headers=headers)
+        r.raise_for_status()
+        list_users = r.json()
+        list_users_first_last = []
+        for i in range(len(list_users)):
+            first_last = (
+                list_users[i]["firstName"].capitalize()
+                + " "
+                + list_users[i]["lastName"].capitalize()
+                + " ("
+                + list_users[i]["email"]
+                + ") !|**|!"
+                + list_users[i]["id"]
+            )
+            list_users_first_last.append(first_last)
+        list_users_first_last.sort()  # Returning the list of users in alphabetical order
+        return {"users": list_users_first_last}
+    except Exception as e:
+        raise e
 
 
 # def bf_get_teams(selected_bfaccount):
