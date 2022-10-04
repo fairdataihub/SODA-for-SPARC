@@ -4,7 +4,7 @@ from manageDatasets import (
     # get_number_of_files_and_folders_locally,
     # submit_dataset_progress,
     bf_add_account_api_key,
-    # bf_add_account_username,
+    bf_add_account_username,
     bf_account_list,
     bf_dataset_account,
     bf_account_details,
@@ -754,30 +754,30 @@ class BfGetUsername(Resource):
       raise e
 
   
-#   parser_add_username = reqparse.RequestParser(bundle_errors=True)
-#   parser_add_username.add_argument('keyname', type=str, required=True, location='json', help="Name of the account to be associated with the given credentials.")
-#   parser_add_username.add_argument('key', type=str, required=True, location='json', help="The API key the user generated on Pennsieve.")
-#   parser_add_username.add_argument('secret', type=str, required=True, location='json', help="The API secret the user generated on Pennsieve.")
+  parser_add_username = reqparse.RequestParser(bundle_errors=True)
+  parser_add_username.add_argument('keyname', type=str, required=True, location='json', help="Name of the account to be associated with the given credentials.")
+  parser_add_username.add_argument('key', type=str, required=True, location='json', help="The API key the user generated on Pennsieve.")
+  parser_add_username.add_argument('secret', type=str, required=True, location='json', help="The API secret the user generated on Pennsieve.")
 
 
-#   @api.expect(parser_add_username)
-#   @api.doc(responses={500: "Internal Server Error", 400: "Bad Request", 401: "Unauthenticated", 403: "Forbidden"}, description="Adds account username to the Pennsieve configuration file.")
-#   @api.marshal_with(successMessage, 200, False)
-#   def put(self):
+  @api.expect(parser_add_username)
+  @api.doc(responses={500: "Internal Server Error", 400: "Bad Request", 401: "Unauthenticated", 403: "Forbidden"}, description="Adds account username to the Pennsieve configuration file.")
+  @api.marshal_with(successMessage, 200, False)
+  def put(self):
 
-#     data = self.parser_add_username.parse_args()
+    data = self.parser_add_username.parse_args()
 
-#     keyname = data.get('keyname')
-#     key = data.get('key')
-#     secret = data.get('secret')
+    keyname = data.get('keyname')
+    key = data.get('key')
+    secret = data.get('secret')
 
 
-#     try:
-#       return bf_add_account_username(keyname, key, secret)
-#     except Exception as e:
-#       if notBadRequestException(e):
-#         api.abort(500, str(e))
-#       raise e
+    try:
+      return bf_add_account_username(keyname, key, secret)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
 
 
 
