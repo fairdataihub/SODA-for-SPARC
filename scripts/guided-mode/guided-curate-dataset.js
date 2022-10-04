@@ -5177,7 +5177,9 @@ const openGuidedAddContributorSwal = async () => {
       });
       createDragSort(contributorRolesTagify);
 
-      $("#guided-dd-contributor-dropdown").selectpicker();
+      $("#guided-dd-contributor-dropdown").selectpicker({
+        style: "guided--select-picker",
+      });
       $("#guided-dd-contributor-dropdown").selectpicker("refresh");
       $("#guided-dd-contributor-dropdown").on("change", function (e) {
         const selectedFirstName = $(
