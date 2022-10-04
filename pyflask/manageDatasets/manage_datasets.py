@@ -1042,31 +1042,45 @@ def bf_get_users(selected_bfaccount):
         raise e
 
 
-# def bf_get_teams(selected_bfaccount):
-#     """
-#     Args:
-#       selected_bfaccount: name of selected Pennsieve acccount (string)
-#     Return:
-#         list_teams : list of teams (name) associated with the organization of the
-#         selected Pennsieve account (list of string)
-#     Action:
-#         Provides list of teams belonging to the organization of
-#         the given Pennsieve account
-#     """
-#     try:
-#         bf = Pennsieve(selected_bfaccount)
-#     except Exception as e:
-#         abort(400, f"{e}")
+def bf_get_teams(selected_bfaccount):
+    """
+    Args:
+      selected_bfaccount: name of selected Pennsieve acccount (string)
+    Return:
+        list_teams : list of teams (name) associated with the organization of the
+        selected Pennsieve account (list of string)
+    Action:
+        Provides list of teams belonging to the organization of
+        the given Pennsieve account
+    """
+    try:
+        ps = Pennsieve()
+        ps.user.switch(selected_bfaccount)
+    except Exception as e:
+        abort(400, "Please select a valid Pennsieve account.")
 
-#     try:
-#         organization_id = bf.context.id
-#         list_teams = bf._api._get(f"/organizations/{str(organization_id)}/teams")
-#         list_teams_name = [list_teams[i]["team"]["name"] for i in range(len(list_teams))]
+    
+    try:
+        ps.user.reauthenticate()
+    except Exception as e:
+        abort(401, "Cannot reauthenticate this Pennsieve account.")
 
-#         list_teams_name.sort()  # Returning the list of teams in alphabetical order
-#         return {"teams": list_teams_name}
-#     except Exception as e:
-#         raise e
+
+    try:
+        organization_id = ps.getUser()["organization_id"]
+        headers = {
+            "Authorization": "Bearer " + ps.getUser()["session_token"],
+            "Content-Type": "application/json",
+        }
+        global PENNSIEVE_URL
+        r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(organization_id)}/teams", headers=headers)
+        list_teams = r.json()
+        list_teams_name = [list_teams[i]["team"]["name"] for i in range(len(list_teams))]
+
+        list_teams_name.sort()  # Returning the list of teams in alphabetical order
+        return {"teams": list_teams_name}
+    except Exception as e:
+        raise e
 
 
 # def bf_get_permission(selected_bfaccount, selected_bfdataset):

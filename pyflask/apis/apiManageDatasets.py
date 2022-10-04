@@ -14,7 +14,7 @@ from manageDatasets import (
     # bf_add_permission,
     bf_get_users,
     # bf_get_permission,
-    # bf_get_teams,
+    bf_get_teams,
     # bf_add_permission_team,
     # bf_add_subtitle,
     # bf_get_subtitle,
@@ -284,26 +284,26 @@ class BfGetUsers(Resource):
 
 
 
-# model_bf_get_teams_response = api.model('BfGetTeamsResponse', {'teams': fields.List(fields.String, required=True, description="List of the teams in the user's organization.")})
+model_bf_get_teams_response = api.model('BfGetTeamsResponse', {'teams': fields.List(fields.String, required=True, description="List of the teams in the user's organization.")})
 
-# @api.route('/bf_get_teams')
-# class BfGetTeams(Resource):
+@api.route('/bf_get_teams')
+class BfGetTeams(Resource):
 
-#   parser_get_teams = reqparse.RequestParser(bundle_errors=True)
-#   parser_get_teams.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve inter-organization teams for.')
+  parser_get_teams = reqparse.RequestParser(bundle_errors=True)
+  parser_get_teams.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve inter-organization teams for.')
 
-#   @api.marshal_with(model_bf_get_teams_response, False, 200)
-#   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns a list of the teams in the given Pennsieve Account's organization.")
-#   def get(self):
-#     try:
-#       # get the selected account out of the request args
-#       selected_account = self.parser_get_teams.parse_args().get('selected_account')
+  @api.marshal_with(model_bf_get_teams_response, False, 200)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns a list of the teams in the given Pennsieve Account's organization.")
+  def get(self):
+    try:
+      # get the selected account out of the request args
+      selected_account = self.parser_get_teams.parse_args().get('selected_account')
       
-#       return bf_get_teams(selected_account)
-#     except Exception as e:
-#       if notBadRequestException(e):
-#         api.abort(500, str(e))
-#       raise e
+      return bf_get_teams(selected_account)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
 
 
 
