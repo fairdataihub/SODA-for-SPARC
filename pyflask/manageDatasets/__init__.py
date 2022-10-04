@@ -5,7 +5,7 @@ from .manage_datasets import (
     bf_add_account_api_key,
     # bf_add_account_username,
     bf_account_list,
-    # bf_dataset_account,
+    bf_dataset_account,
     bf_account_details,
     bf_submit_dataset,
     # bf_new_dataset_folder,

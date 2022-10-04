@@ -2,6 +2,7 @@
 
 ### Import required python modules
 import contextlib
+from unicodedata import name
 import cv2
 import os
 from os import listdir, mkdir, walk
@@ -457,52 +458,66 @@ def bf_get_accounts():
 
 
 
-# def bf_dataset_account(accountname):
-#     """
-#     This function filters dataset dropdowns across SODA by the permissions granted to users.
+def bf_dataset_account(accountname):
+    """
+    This function filters dataset dropdowns across SODA by the permissions granted to users.
 
-#     Input: BFaccountname
-#     Output: a filtered dataset list with objects as elements: {"name": dataset's name, "id": dataset's id, "role": permission}
+    Input: BFaccountname
+    Output: a filtered dataset list with objects as elements: {"name": dataset's name, "id": dataset's id, "role": permission}
 
-#     """
-#     try:
-#         bf = Pennsieve(accountname)
-#     except Exception as e:
-#         abort(400, str(e))
+    """
+    PENNSIEVE_URL = "https://api.pennsieve.io"
+
+    try:
+        ps = Pennsieve()
+        ps.user.switch(accountname)
+        ps.user.reauthenticate()
+    except Exception as e:
+        abort(400, "Please select a valid Pennsieve account.")
     
-#     # bfaccountname = bf.profile.id
-#     datasets_list = bf.datasets()
-#     # all_bf_datasets = []
+    datasets_dict = ps.getDatasets()
 
-#     def filter_dataset(datasets_list, store=None):
-#         if store is None:
-#             store = []
-#         for dataset in datasets_list:
-#             selected_dataset_id = dataset.id
-#             user_role = bf._api._get(f"/datasets/{str(selected_dataset_id)}/role")["role"]
-#             if user_role not in ["viewer", "editor"]:
-#                 store.append(
-#                     {"id": selected_dataset_id, "name": dataset.name, "role": user_role}
-#                 )
-#         return store
+    # get the session token
+    token = ps.getUser()["session_token"]
 
-#     # filter_dataset(datasets_list)
-#     store = []
-#     threads = []
-#     nthreads = 8
-#     # create the threads
-#     for i in range(nthreads):
-#         sub_datasets_list = datasets_list[i::nthreads]
-#         t = Thread(target=filter_dataset, args=(sub_datasets_list, store))
-#         threads.append(t)
+    datasets_list = []
+    for name in datasets_dict.keys():
+        datasets_list.append({"name": name, "id": datasets_dict[name]})
 
-#     # start the threads
-#     [t.start() for t in threads]
-#     # wait for the threads to finish
-#     [t.join() for t in threads]
+    def filter_dataset(datasets_list, store=None):
+        if store is None:
+            store = []
+        for dataset in datasets_list:
+            selected_dataset_id = dataset['id']
+            headers = {
+                'Authorization': f'Bearer {token}',
+                'Content-Type': 'application/json'
+            }
 
-#     sorted_bf_datasets = sorted(store, key=lambda k: k["name"].upper())
-#     return {"datasets": sorted_bf_datasets}
+            r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/role", headers=headers)
+            user_role = r.json()["role"]
+            if user_role not in ["viewer", "editor"]:
+                store.append(
+                    {"id": selected_dataset_id, "name": dataset['name'], "role": user_role}
+                )
+        return store
+
+    store = []
+    threads = []
+    nthreads = 8
+    # create the threads
+    for i in range(nthreads):
+        sub_datasets_list = datasets_list[i::nthreads]
+        t = Thread(target=filter_dataset, args=(sub_datasets_list, store))
+        threads.append(t)
+
+    # start the threads
+    [t.start() for t in threads]
+    # wait for the threads to finish
+    [t.join() for t in threads]
+
+    sorted_bf_datasets = sorted(store, key=lambda k: k["name"].upper())
+    return {"datasets": sorted_bf_datasets}
 
 
 def get_username(accountname):

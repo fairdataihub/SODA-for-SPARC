@@ -6,7 +6,7 @@ from manageDatasets import (
     bf_add_account_api_key,
     # bf_add_account_username,
     bf_account_list,
-    # bf_dataset_account,
+    bf_dataset_account,
     bf_account_details,
     bf_submit_dataset,
     # bf_new_dataset_folder,
@@ -364,34 +364,34 @@ class BfAccountDetails(Resource):
 
 
 
-# model_account_dataset = api.model('AccountDataset', {
-#   'id': fields.String(required=True, description="The UUID of the dataset."),
-#   'name': fields.String(required=True, description="The name of the dataset for the given Pennsieve account."),
-#   'role': fields.String(required=True, description="The dataset account's role for the dataset"),
-# })
+model_account_dataset = api.model('AccountDataset', {
+  'id': fields.String(required=True, description="The UUID of the dataset."),
+  'name': fields.String(required=True, description="The name of the dataset for the given Pennsieve account."),
+  'role': fields.String(required=True, description="The dataset account's role for the dataset"),
+})
 
-# model_account_datasets_list_response = api.model('AccountDatasetsResponse', {
-#   'datasets': fields.List(fields.Nested(model_account_dataset), required=True, description="List of the datasets in the user's organization."),
-# })
+model_account_datasets_list_response = api.model('AccountDatasetsResponse', {
+  'datasets': fields.List(fields.Nested(model_account_dataset), required=True, description="List of the datasets in the user's organization."),
+})
 
-# @api.route('/bf_dataset_account')
-# class BfDatasetAccount(Resource):
+@api.route('/bf_dataset_account')
+class BfDatasetAccount(Resource):
 
-#   parser_dataset_account = reqparse.RequestParser(bundle_errors=True)
-#   parser_dataset_account.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve datasets for.')
+  parser_dataset_account = reqparse.RequestParser(bundle_errors=True)
+  parser_dataset_account.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve datasets for.')
 
-#   @api.marshal_with(model_account_datasets_list_response, False, 200)
-#   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns a list of the datasets the given Pennsieve account has access to.")
-#   @api.expect(parser_dataset_account)
-#   def get(self):
-#     try:
-#       # get the selected account out of the request args
-#       selected_account = self.parser_dataset_account.parse_args().get('selected_account')
-#       return bf_dataset_account(selected_account)
-#     except Exception as e:
-#       if notBadRequestException(e):
-#         api.abort(500, str(e))
-#       raise e
+  @api.marshal_with(model_account_datasets_list_response, False, 200)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns a list of the datasets the given Pennsieve account has access to.")
+  @api.expect(parser_dataset_account)
+  def get(self):
+    try:
+      # get the selected account out of the request args
+      selected_account = self.parser_dataset_account.parse_args().get('selected_account')
+      return bf_dataset_account(selected_account)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
 
 
 
