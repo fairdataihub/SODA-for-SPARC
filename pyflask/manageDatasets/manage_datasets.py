@@ -1074,6 +1074,7 @@ def bf_get_teams(selected_bfaccount):
         }
         global PENNSIEVE_URL
         r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(organization_id)}/teams", headers=headers)
+        r.raise_for_status()
         list_teams = r.json()
         list_teams_name = [list_teams[i]["team"]["name"] for i in range(len(list_teams))]
 
