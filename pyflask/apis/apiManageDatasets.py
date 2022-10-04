@@ -18,7 +18,7 @@ from manageDatasets import (
     # bf_add_permission_team,
     # bf_add_subtitle,
     bf_get_subtitle,
-    # bf_get_description,
+    bf_get_description,
     # bf_add_description,
     # bf_get_banner_image,
     # bf_add_banner_image,
@@ -454,31 +454,31 @@ class DatasetSubtitle(Resource):
 
 
 
-# model_get_dataset_description_response = api.model('GetDatasetDescriptionResponse', {
-#   'description': fields.String(required=True, description="The description for the given dataset."),
-# })
+model_get_dataset_description_response = api.model('GetDatasetDescriptionResponse', {
+  'description': fields.String(required=True, description="The description for the given dataset."),
+})
 
-# @api.route('/bf_dataset_description')
-# class DatasetDescription(Resource):
+@api.route('/bf_dataset_description')
+class DatasetDescription(Resource):
   
-#     parser_dataset_description = reqparse.RequestParser(bundle_errors=True)
-#     parser_dataset_description.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve the dataset description for.')
-#     parser_dataset_description.add_argument('selected_dataset', type=str, required=True, location='args', help='The name or id of the dataset to retrieve the description for.')
+    parser_dataset_description = reqparse.RequestParser(bundle_errors=True)
+    parser_dataset_description.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve the dataset description for.')
+    parser_dataset_description.add_argument('selected_dataset', type=str, required=True, location='args', help='The name or id of the dataset to retrieve the description for.')
 
-#     @api.marshal_with(model_get_dataset_description_response, False, 200)
-#     @api.expect(parser_dataset_description)
-#     @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns the description for the given dataset.")
-#     def get(self):
-#       data = self.parser_dataset_description.parse_args()
-#       selected_account = data.get('selected_account')
-#       selected_dataset = data.get('selected_dataset')
+    @api.marshal_with(model_get_dataset_description_response, False, 200)
+    @api.expect(parser_dataset_description)
+    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns the description for the given dataset.")
+    def get(self):
+      data = self.parser_dataset_description.parse_args()
+      selected_account = data.get('selected_account')
+      selected_dataset = data.get('selected_dataset')
 
-#       try:
-#         return bf_get_description(selected_account, selected_dataset)
-#       except Exception as e:
-#         if notBadRequestException(e):
-#           api.abort(500, str(e))
-#         raise e
+      try:
+        return bf_get_description(selected_account, selected_dataset)
+      except Exception as e:
+        if notBadRequestException(e):
+          api.abort(500, str(e))
+        raise e
 
 
 #     parser_add_dataset_description = parser_dataset_description.copy()
