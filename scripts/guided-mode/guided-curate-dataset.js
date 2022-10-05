@@ -11465,6 +11465,7 @@ $(document).ready(async () => {
             });
             throw errorArray;
           }
+          $("#guided-add-code-metadata-tab").attr("data-skip-page", "false");
         }
         if (guidedButtonUserNoCodeData.classList.contains("selected")) {
           if (
@@ -11472,6 +11473,7 @@ $(document).ready(async () => {
             Object.keys(codeFolder.files).length === 0
           ) {
             delete datasetStructureJSONObj["folders"]["code"];
+            $("#guided-add-code-metadata-tab").attr("data-skip-page", "true");
           } else {
             const { value: deleteCodeFolderWithData } = await Swal.fire({
               title: "Delete code folder?",
@@ -11487,6 +11489,7 @@ $(document).ready(async () => {
             });
             if (deleteCodeFolderWithData) {
               delete datasetStructureJSONObj["folders"]["code"];
+              $("#guided-add-code-metadata-tab").attr("data-skip-page", "true");
             } else {
               guidedButtonUserHasCodeData.click();
             }
