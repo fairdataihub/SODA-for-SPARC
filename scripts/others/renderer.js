@@ -1574,6 +1574,14 @@ downloadSamples.addEventListener("click", (event) => {
 downloadManifest.addEventListener("click", (event) => {
   ipcRenderer.send("open-folder-dialog-save-metadata", templateArray[4]);
 });
+document
+  .getElementById("guided-data-deliverables-download-button")
+  .addEventListener("click", (event) => {
+    ipcRenderer.send(
+      "open-folder-dialog-save-metadata",
+      "code_description.xlsx"
+    );
+  });
 ipcRenderer.on("selected-metadata-download-folder", (event, path, filename) => {
   if (path.length > 0) {
     downloadTemplates(filename, path[0]);

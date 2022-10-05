@@ -4201,15 +4201,45 @@
               >
               Alternatively, you can download the code_description.xslx template
               <a
-                href="https://github.com/SciCrunch/sparc-curation/releases/download/dataset-template-2.0.0/DatasetTemplate.zip"
-                target="_blank"
+                id="guided-data-deliverables-download-button"
+                style="text-decoration: underline"
                 >here</a
               >
               and fill it out manually
             </p>
           </div>
-
           <div class="guided--section">
+            <label class="guided--form-label centered">
+              Does your dataset contain computational modeling-related code
+              files?
+            </label>
+
+            <div class="guided--radio-button-container">
+              <button
+                class="ui positive button guided--radio-button"
+                id="guided-button-has-computational-modeling-data"
+                data-next-element="guided-section-import-computational-modeling-data"
+                data-button-config-value="dataset-contains-computational-modeling-data"
+                data-button-config-value-state="yes"
+              >
+                Yes
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                id="guided-button-no-computational-modeling-data"
+                data-next-element="guided-section-no-computational-modeling-data"
+                data-button-config-value="dataset-contains-computational-modeling-data"
+                data-button-config-value-state="no"
+              >
+                No
+              </button>
+            </div>
+          </div>
+
+          <div
+            class="guided--section"
+            id="guided-section-import-computational-modeling-data"
+          >
             <h2 class="guided--text-sub-step">
               Import the code_description metadata file
             </h2>
@@ -4251,6 +4281,15 @@
                 ></p>
               </div>
             </div>
+          </div>
+          <div
+            class="guided--section"
+            id="guided-section-no-computational-modeling-data"
+          >
+            <p class="guided--help-text">
+              Your dataset does not require a code_description.xlsx file. Click
+              "Save and Continue" below.
+            </p>
           </div>
         </div>
         <div
