@@ -9,7 +9,7 @@ from .manage_datasets import (
     bf_account_details,
     bf_submit_dataset,
     # bf_new_dataset_folder,
-    # bf_rename_dataset,
+    bf_rename_dataset,
     # bf_add_permission,
     bf_get_users,
     bf_get_permission,
@@ -34,7 +34,7 @@ from .manage_datasets import (
     # bf_get_current_user_permission,
     update_dataset_readme,
     get_dataset_readme,
-    # get_dataset_tags,
-    # update_dataset_tags,
-    # scale_image
+    get_dataset_tags,
+    update_dataset_tags,
+    scale_image
 )

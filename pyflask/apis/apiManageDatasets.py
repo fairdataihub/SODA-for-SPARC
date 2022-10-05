@@ -10,7 +10,7 @@ from manageDatasets import (
     bf_account_details,
     bf_submit_dataset,
     # bf_new_dataset_folder,
-    # bf_rename_dataset,
+    bf_rename_dataset,
     # bf_add_permission,
     bf_get_users,
     bf_get_permission,
@@ -34,9 +34,9 @@ from manageDatasets import (
     bf_get_current_user_permission_agent_two,
     update_dataset_readme,
     get_dataset_readme,
-    # get_dataset_tags,
-    # update_dataset_tags,
-    # scale_image
+    get_dataset_tags,
+    update_dataset_tags,
+    scale_image
 )
 
 from namespaces import get_namespace, NamespaceEnum
@@ -572,25 +572,25 @@ class DatasetPermissions(Resource):
 #         raise e
 
 
-# scale_image_model = api.model("postScaledImage", {
-#   'scaled_image_path': fields.String(required=True, description="The file path for the scaled image."),
-# })
+scale_image_model = api.model("postScaledImage", {
+  'scaled_image_path': fields.String(required=True, description="The file path for the scaled image."),
+})
 
-# @api.route("/bf_banner_image/scale_image")
-# class scaleBannerImage(Resource):
-#   parser_image = reqparse.RequestParser(bundle_errors=True)
-#   parser_image.add_argument('image_file_path', type=str, required=True, location='json', help='The file path of the image to be resized.')
+@api.route("/bf_banner_image/scale_image")
+class scaleBannerImage(Resource):
+  parser_image = reqparse.RequestParser(bundle_errors=True)
+  parser_image.add_argument('image_file_path', type=str, required=True, location='json', help='The file path of the image to be resized.')
 
-#   @api.doc(responses={500: 'There was an internal server error'}, description="Scale an image to be under 5Mb in size.")
-#   @api.expect(parser_image)
-#   @api.marshal_with(scale_image_model, False, 200)
-#   def post(self):
-#     data = self.parser_image.parse_args()
-#     image_path = data.get('image_file_path')
-#     try:
-#       return scale_image(image_path)
-#     except Exception as e:
-#       api.abort(500, str(e))
+  @api.doc(responses={500: 'There was an internal server error'}, description="Scale an image to be under 5Mb in size.")
+  @api.expect(parser_image)
+  @api.marshal_with(scale_image_model, False, 200)
+  def post(self):
+    data = self.parser_image.parse_args()
+    image_path = data.get('image_file_path')
+    try:
+      return scale_image(image_path)
+    except Exception as e:
+      api.abort(500, str(e))
 
 
 model_get_banner_image_response = api.model('GetBannerImageResponse', {
@@ -695,29 +695,29 @@ class BfLicense(Resource):
 
 
 
-# @api.route("/bf_rename_dataset")
-# class BfRenameDataset(Resource):
-#   parser_rename_dataset = reqparse.RequestParser(bundle_errors=True)
-#   parser_rename_dataset.add_argument('selected_account', type=str, required=True, location='args', help='The target account to rename the dataset for.')
-#   parser_rename_dataset.add_argument('selected_dataset', type=str, required=True, location='args', help='The target account to rename the dataset for.')
-#   parser_rename_dataset.add_argument('input_new_name', type=str, required=True, location='json', help='The new name for the dataset.')
+@api.route("/bf_rename_dataset")
+class BfRenameDataset(Resource):
+  parser_rename_dataset = reqparse.RequestParser(bundle_errors=True)
+  parser_rename_dataset.add_argument('selected_account', type=str, required=True, location='args', help='The target account to rename the dataset for.')
+  parser_rename_dataset.add_argument('selected_dataset', type=str, required=True, location='args', help='The target account to rename the dataset for.')
+  parser_rename_dataset.add_argument('input_new_name', type=str, required=True, location='json', help='The new name for the dataset.')
 
-#   @api.expect(parser_rename_dataset)
-#   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 403: 'Forbidden', 200: 'OK'}, description="Renames the given dataset.")
-#   def put(self):
-#     # update the dataset name for the selected account and dataset ID
-#     data = self.parser_rename_dataset.parse_args()
+  @api.expect(parser_rename_dataset)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 403: 'Forbidden', 200: 'OK'}, description="Renames the given dataset.")
+  def put(self):
+    # update the dataset name for the selected account and dataset ID
+    data = self.parser_rename_dataset.parse_args()
 
-#     selected_account = data.get('selected_account')
-#     selected_dataset = data.get('selected_dataset')
-#     input_new_name = data.get('input_new_name')
+    selected_account = data.get('selected_account')
+    selected_dataset = data.get('selected_dataset')
+    input_new_name = data.get('input_new_name')
 
-#     try:
-#       return bf_rename_dataset(selected_account, selected_dataset, input_new_name)
-#     except Exception as e:
-#       if notBadRequestException(e):
-#         api.abort(500, str(e))
-#       raise e
+    try:
+      return bf_rename_dataset(selected_account, selected_dataset, input_new_name)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
 
 
 
@@ -980,49 +980,49 @@ class BfGetDatasetReadme(Resource):
 
 
 
-# model_get_ds_tags = api.model("GetDsTagsResponse", {
-#   'tags': fields.List(fields.String, required=True, description="The tags for the dataset."),
-# })
+model_get_ds_tags = api.model("GetDsTagsResponse", {
+  'tags': fields.List(fields.String, required=True, description="The tags for the dataset."),
+})
 
-# @api.route('/datasets/<string:dataset_name_or_id>/tags')
-# class BfGetDatasetTags(Resource):
+@api.route('/datasets/<string:dataset_name_or_id>/tags')
+class BfGetDatasetTags(Resource):
   
-#     parser_tags = reqparse.RequestParser(bundle_errors=True)
-#     parser_tags.add_argument('selected_account', type=str, required=True, location='args', help='The account to get dataset tags for.')
+    parser_tags = reqparse.RequestParser(bundle_errors=True)
+    parser_tags.add_argument('selected_account', type=str, required=True, location='args', help='The account to get dataset tags for.')
 
-#     @api.expect(parser_tags)
-#     @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Get the tags for a dataset.")
-#     @api.marshal_with(model_get_ds_tags, False, 200)
-#     def get(self, dataset_name_or_id):
-#       data = self.parser_tags.parse_args()
+    @api.expect(parser_tags)
+    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Get the tags for a dataset.")
+    @api.marshal_with(model_get_ds_tags, False, 200)
+    def get(self, dataset_name_or_id):
+      data = self.parser_tags.parse_args()
 
-#       selected_account = data.get('selected_account')
+      selected_account = data.get('selected_account')
 
-#       try:
-#         return get_dataset_tags(selected_account, dataset_name_or_id)
-#       except Exception as e:
-#         if notBadRequestException(e):
-#           api.abort(500, str(e))
-#         raise e
+      try:
+        return get_dataset_tags(selected_account, dataset_name_or_id)
+      except Exception as e:
+        if notBadRequestException(e):
+          api.abort(500, str(e))
+        raise e
 
     
 
-#     parser_tags_put = parser_tags.copy()
-#     parser_tags_put.add_argument('tags', type=list, required=True, location='json', help='The tags to add to the dataset.')
+    parser_tags_put = parser_tags.copy()
+    parser_tags_put.add_argument('tags', type=list, required=True, location='json', help='The tags to add to the dataset.')
 
-#     @api.expect(parser_tags_put)
-#     @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 403: 'Forbidden'}, description="Add tags to a dataset.")
-#     @api.marshal_with(successMessage, False, 200)
-#     def put(self, dataset_name_or_id):
-#       data = self.parser_tags_put.parse_args()
+    @api.expect(parser_tags_put)
+    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 403: 'Forbidden'}, description="Add tags to a dataset.")
+    @api.marshal_with(successMessage, False, 200)
+    def put(self, dataset_name_or_id):
+      data = self.parser_tags_put.parse_args()
 
-#       selected_account = data.get('selected_account')
-#       tags = data.get('tags')
+      selected_account = data.get('selected_account')
+      tags = data.get('tags')
 
-#       try:
-#         return update_dataset_tags(selected_account, dataset_name_or_id, tags)
-#       except Exception as e:
-#         if notBadRequestException(e):
-#           api.abort(500, str(e))
-#         raise e
+      try:
+        return update_dataset_tags(selected_account, dataset_name_or_id, tags)
+      except Exception as e:
+        if notBadRequestException(e):
+          api.abort(500, str(e))
+        raise e
 

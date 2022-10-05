@@ -349,21 +349,21 @@ def bf_delete_account(keyname):
 #         return True
 
 
-# def check_forbidden_characters_bf(my_string):
-#     """
-#     Check for forbidden characters in Pennsieve file/folder name
+def check_forbidden_characters_bf(my_string):
+    """
+    Check for forbidden characters in Pennsieve file/folder name
 
-#     Args:
-#         my_string: string with characters (string)
-#     Returns:
-#         False: no forbidden character
-#         True: presence of forbidden character(s)
-#     """
-#     regex = re.compile(f"[{forbidden_characters_bf}]")
-#     if regex.search(my_string) == None and "\\" not in r"%r" % my_string:
-#         return False
-#     else:
-#         return True
+    Args:
+        my_string: string with characters (string)
+    Returns:
+        False: no forbidden character
+        True: presence of forbidden character(s)
+    """
+    regex = re.compile(f"[{forbidden_characters_bf}]")
+    if regex.search(my_string) == None and "\\" not in r"%r" % my_string:
+        return False
+    else:
+        return True
 
 
 
@@ -636,65 +636,74 @@ def bf_account_details(accountname):
 #         raise e
 
 
-# def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
-#     """
-#     Args:
-#         accountname: account in which the dataset needs to be created (string)
-#         current_dataset_name: current name of the dataset
-#         renamed_dataset_name: new name of the dataset
+def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
+    """
+    Args:
+        accountname: account in which the dataset needs to be created (string)
+        current_dataset_name: current name of the dataset
+        renamed_dataset_name: new name of the dataset
 
-#     Action:
-#         Creates dataset for the account specified
-#     """
-#     error, c = "", 0
-#     datasetname = renamed_dataset_name.strip()
+    Action:
+        Creates dataset for the account specified
+    """
+    error, c = "", 0
+    datasetname = renamed_dataset_name.strip()
 
-#     if check_forbidden_characters_bf(datasetname):
-#         error = (
-#             error
-#             + "A Pennsieve dataset name cannot contain any of the following characters: "
-#             + forbidden_characters_bf
-#             + "<br>"
-#         )
-#         c += 1
+    if check_forbidden_characters_bf(datasetname):
+        error = f"{error}A Pennsieve dataset name cannot contain any of the following characters: {forbidden_characters_bf}<br>"
 
-#     if not datasetname:
-#         error = f"{error}Please enter valid new dataset name<br>"
-#         c += 1
+        c += 1
 
-#     if datasetname.isspace():
-#         error = f"{error}Please enter valid new dataset name<br>"
-#         c += 1
+    if not datasetname:
+        error = f"{error}Please enter valid new dataset name<br>"
+        c += 1
 
-#     try:
-#         bf = Pennsieve(accountname)
-#     except Exception as e:
-#         error = f"{error}Please select a valid Pennsieve account<br>"
-#         c += 1
+    if datasetname.isspace():
+        error = f"{error}Please enter valid new dataset name<br>"
+        c += 1
 
-#     if c > 0:
-#         abort(400, error)
+    try:
+        ps = Pennsieve()
+        ps.user.switch(accountname)
+    except Exception as e:
+        error = f"{error}Please select a valid Pennsieve account<br>"
+        c += 1
 
-#     try:
-#         myds = bf.get_dataset(current_dataset_name)
-#     except Exception as e:
-#         error = "Please select a valid Pennsieve dataset"
-#         abort(400, error)
-
-#     role = bf_get_current_user_permission(bf, myds)
-#     if role not in ["owner", "manager"]:
-#         error_message = "You don't have permissions to change the name of this Pennsieve dataset"
-#         abort(403, error_message)
+    try: 
+        ps.user.reauthenticate()
+    except Exception as e:
+        error = f"{error}Could not reauthenticate your Pennsieve account."
+        c +=1
 
 
-#     dataset_list = [ds.name for ds in bf.datasets()]
-#     if datasetname in dataset_list:
-#         raise Exception("Dataset name already exists")
+    if c > 0:
+        abort(400, error)
 
-#     myds = bf.get_dataset(current_dataset_name)
-#     selected_dataset_id = myds.id
-#     jsonfile = {"name": datasetname}
-#     bf._api.datasets._put(f"/{str(selected_dataset_id)}", json=jsonfile)
+    try:
+        myds = ps.getDatasets()
+        selected_dataset_id = myds[current_dataset_name]
+        # myds = bf.get_dataset(current_dataset_name)
+    except Exception as e:
+        error = "Please select a valid Pennsieve dataset"
+        abort(400, error)
+
+    role = bf_get_current_user_permission_agent_two(selected_dataset_id)["role"]
+    if role not in ["owner", "manager"]:
+        error_message = "You don't have permissions to change the name of this Pennsieve dataset"
+        abort(403, error_message)
+
+
+    dataset_list = [ds.name for ds in ps.getDatasets()]
+    if datasetname in dataset_list:
+        raise Exception("Dataset name already exists")
+
+    jsonfile = {"name": renamed_dataset_name}
+    try: 
+        r = requests.put(f"{PENNSIEVE_URL}/{str(selected_dataset_id)}", json=jsonfile, headers=create_request_headers(ps))
+        r.raise_for_status()
+        return {"message": f"Dataset renamed to {renamed_dataset_name}"}
+    except Exception as e:
+        raise Exception(e) from e
 
 
 # def clear_queue():
@@ -1472,7 +1481,7 @@ def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
     except Exception as e:
         abort(400, "Please select a valid Pennsieve account")
 
-    
+
     try:
         ps.user.reauthenticate()
     except Exception as e:
@@ -1497,7 +1506,7 @@ def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
             res = dataset_info["content"]["description"]
         return {"subtitle": res}
     except Exception as e:
-        raise Exception(e)
+        raise Exception(e) from e
 
 
 
@@ -1633,7 +1642,7 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
         r.raise_for_status()
         return{ "message": "Description added!"}
     except Exception as e:
-        raise Exception(e)
+        raise Exception(e) from e
 
 
 
@@ -1680,7 +1689,7 @@ def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
             res = "No banner image"
         return {"banner_image": res}
     except Exception as e:
-        raise Exception(e)
+        raise Exception(e) from e
 
 
 
@@ -2134,69 +2143,103 @@ def update_dataset_readme(selected_account, selected_dataset, updated_readme):
     return {"message": "Readme updated"}
 
 
-# def get_dataset_tags(selected_account, selected_dataset):
-#     """
-#     Function to get tags for a dataset
+def get_dataset_tags(selected_account, selected_dataset):
+    """
+    Function to get tags for a dataset
     
-#         Args:
-#             selected_account: account name
-#             selected_dataset: dataset name
-#         Return:
-#             Tags for the dataset
-#     """
+        Args:
+            selected_account: account name
+            selected_dataset: dataset name
+        Return:
+            Tags for the dataset
+    """
 
-#     ps = get_authenticated_ps(selected_account)
+    try:
+        ps = Pennsieve()
+        ps.user.switch(selected_account)
+    except Exception as e:
+        abort(400, "Please select a valid pennsieve account.")
 
-#     myds = get_dataset(ps, selected_dataset)
-
-#     resp = ps._api._get(f"/datasets/{myds.id}")
-
-#     tags = resp["content"]["tags"] if "tags" in resp["content"] else []
-
-#     return {"tags": tags}
-
-
-# def update_dataset_tags(selected_account, selected_dataset, updated_tags):
-#     """
-#     Update the tags of a dataset on Pennsieve with the given tags list.
-#     """
-
-#     ps = get_authenticated_ps(selected_account)
-
-#     myds = get_dataset(ps, selected_dataset)
-
-#     # check user permissions
-#     role = bf_get_current_user_permission(ps, myds)
-#     if role not in ["owner", "manager"]:
-#         abort(403, "You don't have permissions to modify this dataset.")
+    try:
+        ps.user.reauthenticate()
+    except Exception as e:
+        abort(401, "Could not reauthenticate this account with Pennsieve.")
 
 
-#     ps._api._put(f"/datasets/{myds.id}", json={"tags": updated_tags})
+    try:
+        ds = ps.getDatasets()
+        selected_dataset_id = ds[selected_dataset]
+    except Exception as e:
+        abort(401, "Please select a valid Pennsieve dataset.")
 
-#     return {"message": "Tags updated"}
+    try:
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps))
+        r.raise_for_status()
+
+        dataset_info = r.json()
+        tags = dataset_info["content"]["tags"] if "tags" in dataset_info["content"] else []
+        return {"tags": tags}
+    except Exception as e:
+        raise Exception(e) from e
+
+
+def update_dataset_tags(selected_account, selected_dataset, updated_tags):
+    """
+    Update the tags of a dataset on Pennsieve with the given tags list.
+    """
+
+    try:
+        ps = Pennsieve()
+        ps.user.switch(selected_account)
+    except Exception as e:
+        abort(400, "Please select a valid Pennsieve account.")
+
+    try:
+        ps.user.reauthenticate()
+    except Exception as e:
+        abort(401, "Could not reauthenticate your Pennsieve account")
+    
+    try:
+        ds = ps.getDatasets()
+        selected_dataset_id = ds[selected_dataset]
+    except Exception as e:
+        abort(401, "Please select a valid Pennsieve dataset.")
+
+    
+    role = bf_get_current_user_permission_agent_two(selected_dataset_id)['role']
+    if role not in ["owner", "manager"]:
+        abort(403, "You don't have permissions for modifying this dataset.")
+
+    try:
+        jsonfile = {"tags": updated_tags}
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=create_request_headers(ps), json=jsonfile)
+        r.raise_for_status()
+        return {"message": "Tags updated"}
+    except Exception as e:
+        raise Exception(e) from e
 
 
 
-# def scale_image(imagePath):
-#     """
-#     Scale the image to be within the file size limit for banner images (5MB)
-#     """
-#     max_image_size = 2048
-#     filename, file_extension = os.path.splitext(imagePath)
-#     img = cv2.imread(imagePath)
-#     original_width = int(img.shape[1])
-#     original_height = int(img.shape[0])
-#     home_path = os.path.expanduser('~')
-#     store_image_path = os.path.join(home_path, 'SODA', 'banner-image', (filename + file_extension))
-#     #file size is greater than 5mb
-#     if original_width > max_image_size or original_height > max_image_size:
-#         width = 2048
-#         height = 2048
-#         dim = (width, height)
+def scale_image(imagePath):
+    """
+    Scale the image to be within the file size limit for banner images (5MB)
+    """
+    max_image_size = 2048
+    filename, file_extension = os.path.splitext(imagePath)
+    img = cv2.imread(imagePath)
+    original_width = int(img.shape[1])
+    original_height = int(img.shape[0])
+    home_path = os.path.expanduser('~')
+    store_image_path = os.path.join(home_path, 'SODA', 'banner-image', (filename + file_extension))
+    #file size is greater than 5mb
+    if original_width > max_image_size or original_height > max_image_size:
+        width = 2048
+        height = 2048
+        dim = (width, height)
 
-#         # resize image into 2048x2048
-#         resized_image = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
-#         cv2.imwrite(store_image_path, resized_image)
+        # resize image into 2048x2048
+        resized_image = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+        cv2.imwrite(store_image_path, resized_image)
 
-#     return { "scaled_image_path": store_image_path }
+    return { "scaled_image_path": store_image_path }
 
