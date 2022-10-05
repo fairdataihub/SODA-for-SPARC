@@ -1706,42 +1706,41 @@ def bf_get_license(selected_bfaccount, selected_bfdataset):
 
 
 
-# def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
-#     """
-#     Function to get current status for a selected dataset
+def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
+    """
+    Function to get current status for a selected dataset
 
-#     Args:
-#         selected_bfaccount: name of selected Pennsieve account (string)
-#         selected_bfdataset: name of selected Pennsieve dataset (string)
-#     Return:
-#         List of available status options for the account (list of string).
-#         Current dataset status (string)
-#     """
+    Args:
+        selected_bfaccount: name of selected Pennsieve account (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
+    Return:
+        List of available status options for the account (list of string).
+        Current dataset status (string)
+    """
 
-#     try:
-#         bf = Pennsieve(selected_bfaccount)
-#     except Exception as e:
-#         error_message = "Please select a valid Pennsieve account"
-#         abort(400, error_message)
+    ps = connect_pennsieve_client()
 
-#     try:
-#         myds = bf.get_dataset(selected_bfdataset)
-#     except Exception as e:
-#         error_message = "Please select a valid Pennsieve dataset"
-#         abort(400, error_message)
+    authenticate_user_with_client(ps, selected_bfaccount)
 
-#     try:
-#         # get list of available status options
-#         organization_id = bf.context.id
-#         list_status = bf._api._get(f"/organizations/{str(organization_id)}/dataset-status")
+    selected_dataset_id = get_dataset_id(ps, selected_bfdataset)
 
-#         # get current status of select dataset
-#         selected_dataset_id = myds.id
-#         dataset_current_status = bf._api._get(f"/datasets/{str(selected_dataset_id)}")["content"]["status"]
+    try:
+        headers = create_request_headers(ps)
 
-#         return {"status_options": list_status, "current_status": dataset_current_status}
-#     except Exception as e:
-#         raise e
+        # get list of available status options
+        organization_id = ps.getUser()['organization_id']
+        r = requests.get(f"{PENNSIEVE_URL}/organizations/{organization_id}/dataset-status", headers=headers)
+        r.raise_for_status()
+        list_status = r.json()
+
+        # get current status of select dataset
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers) 
+        r.raise_for_status()
+        dataset_current_status = r.json()["content"]["status"]
+
+        return {"status_options": list_status, "current_status": dataset_current_status}
+    except Exception as e:
+        raise e
 
 
 # """
