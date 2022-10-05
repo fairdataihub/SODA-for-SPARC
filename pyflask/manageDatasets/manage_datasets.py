@@ -1667,41 +1667,52 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
 
 
 
-# def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
-#     """
-#     Function to get url of current banner image associated with a selected dataset
+def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
+    """
+    Function to get url of current banner image associated with a selected dataset
 
-#     Args:
-#         selected_bfaccount: name of selected Pennsieve acccount (string)
-#         selected_bfdataset: name of selected Pennsieve dataset (string)
-#     Return:
-#         url of banner image (string)
-#     """
+    Args:
+        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
+    Return:
+        url of banner image (string)
+    """
 
-#     try:
-#         bf = Pennsieve(selected_bfaccount)
-#     except Exception as e:
-#         error_message = "Please select a valid Pennsieve account"
-#         abort(400, error_message)
+    try:
+        ps = Pennsieve()
+        ps.user.switch(selected_bfaccount)
+    except Exception as e:
+        abort(400, "Please select a valid Pennsieve account")
 
-#     try:
-#         myds = bf.get_dataset(selected_bfdataset)
-#     except Exception as e:
-#         error_message = "Please select a valid Pennsieve dataset"
-#         abort(400, error_message)
 
-#     try:
-#         selected_dataset_id = myds.id
-#         dataset_banner_info = bf._api._get(f"/datasets/{str(selected_dataset_id)}/banner")
+    try:
+        ps.user.reauthenticate()
+    except Exception as e:
+        abort(401, "Could not reauthenticate this account with Pennsieve.")
 
-#         list_keys = dataset_banner_info.keys()
-#         if "banner" in list_keys:
-#             res = dataset_banner_info["banner"]
-#         else:
-#             res = "No banner image"
-#         return {"banner_image": res}
-#     except Exception as e:
-#         raise Exception(e)
+    try:
+        ds = ps.getDatasets()
+        selected_dataset_id = ds[selected_bfdataset]
+    except Exception as e:
+        abort(400, "Please select a valid Pennsieve dataset")
+
+    try:
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + ps.getUser()["session_token"],
+        }
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/banner", headers=headers)
+        r.raise_for_status()
+
+        dataset_banner_info = r.json()
+        list_keys = dataset_banner_info.keys()
+        if "banner" in list_keys:
+            res = dataset_banner_info["banner"]
+        else:
+            res = "No banner image"
+        return {"banner_image": res}
+    except Exception as e:
+        raise Exception(e)
 
 
 

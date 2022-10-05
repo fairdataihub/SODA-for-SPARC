@@ -20,7 +20,7 @@ from manageDatasets import (
     bf_get_subtitle,
     bf_get_description,
     bf_add_description,
-    # bf_get_banner_image,
+    bf_get_banner_image,
     # bf_add_banner_image,
     # bf_get_license,
     # bf_add_license,
@@ -593,30 +593,30 @@ class DatasetPermissions(Resource):
 #       api.abort(500, str(e))
 
 
-# model_get_banner_image_response = api.model('GetBannerImageResponse', {
-#   'banner_image': fields.String(required=True, description="AWS URI for the dataset banner image."),
-# })
-# @api.route("/bf_banner_image")
-# class BfBannerImage(Resource):
-#   parser_banner_image = reqparse.RequestParser(bundle_errors=True)
-#   parser_banner_image.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve the banner image for.')
-#   parser_banner_image.add_argument('selected_dataset', type=str, required=True, location='args', help='The name or id of the dataset to retrieve the banner image for.')
+model_get_banner_image_response = api.model('GetBannerImageResponse', {
+  'banner_image': fields.String(required=True, description="AWS URI for the dataset banner image."),
+})
+@api.route("/bf_banner_image")
+class BfBannerImage(Resource):
+  parser_banner_image = reqparse.RequestParser(bundle_errors=True)
+  parser_banner_image.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve the banner image for.')
+  parser_banner_image.add_argument('selected_dataset', type=str, required=True, location='args', help='The name or id of the dataset to retrieve the banner image for.')
 
-#   @api.marshal_with(model_get_banner_image_response, False, 200)
-#   @api.expect(parser_banner_image)
-#   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns the AWS URI for the dataset banner image.")
-#   def get(self):
-#     data = self.parser_banner_image.parse_args()
+  @api.marshal_with(model_get_banner_image_response, False, 200)
+  @api.expect(parser_banner_image)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns the AWS URI for the dataset banner image.")
+  def get(self):
+    data = self.parser_banner_image.parse_args()
 
-#     selected_account = data.get('selected_account')
-#     selected_dataset = data.get('selected_dataset')
+    selected_account = data.get('selected_account')
+    selected_dataset = data.get('selected_dataset')
 
-#     try:
-#       return bf_get_banner_image(selected_account, selected_dataset)
-#     except Exception as e:
-#       if notBadRequestException(e):
-#         api.abort(500, str(e))
-#       raise e
+    try:
+      return bf_get_banner_image(selected_account, selected_dataset)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
 
 
 #   parser_add_banner_image = parser_banner_image.copy()
