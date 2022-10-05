@@ -31,7 +31,6 @@ from manageDatasets import (
     # check_agent_install,
     SODA_SPARC_API_KEY,
     bf_submit_dataset_upload_details,
-    bf_get_current_user_permission_agent_two,
     update_dataset_readme,
     get_dataset_readme,
     get_dataset_tags,

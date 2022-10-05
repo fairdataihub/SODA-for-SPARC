@@ -334,22 +334,6 @@ def bf_delete_account(keyname):
     with open(configpath, "w") as configfile:
         config.write(configfile)
 
-# def check_forbidden_characters(my_string):
-#     """
-#     Check for forbidden characters in file/folder name
-
-#     Args:
-#         my_string: string with characters (string)
-#     Returns:
-#         False: no forbidden character
-#         True: presence of forbidden character(s)
-#     """
-#     regex = re.compile(f"[{forbidden_characters}]")
-#     if regex.search(my_string) == None and "\\" not in r"%r" % my_string:
-#         return False
-#     else:
-#         return True
-
 
 def check_forbidden_characters_bf(my_string):
     """
@@ -366,9 +350,6 @@ def check_forbidden_characters_bf(my_string):
         return False
     else:
         return True
-
-
-
 
 
 
