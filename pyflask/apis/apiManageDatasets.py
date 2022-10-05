@@ -16,7 +16,7 @@ from manageDatasets import (
     bf_get_permission,
     bf_get_teams,
     bf_add_permission_team,
-    # bf_add_subtitle,
+    bf_add_subtitle,
     bf_get_subtitle,
     bf_get_description,
     bf_add_description,
@@ -427,26 +427,26 @@ class DatasetSubtitle(Resource):
         api.abort(500, str(e))
       raise e
 
-#   parser_add_dataset_subtitle = parser_dataset_subtitle.copy()
-#   parser_add_dataset_subtitle.add_argument('input_subtitle', type=str, required=True, location='json', help='The subtitle to add to the dataset.')
+  parser_add_dataset_subtitle = parser_dataset_subtitle.copy()
+  parser_add_dataset_subtitle.add_argument('input_subtitle', type=str, required=True, location='json', help='The subtitle to add to the dataset.')
 
-#   @api.marshal_with(successMessage, False, 200)
-#   @api.expect(parser_add_dataset_subtitle)
-#   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 403: 'Forbidden'}, description="Adds a subtitle to the given dataset.")
-#   def put(self): 
-#     # update the dataset subtitle for the selected account and dataset ID
-#     data = self.parser_add_dataset_subtitle.parse_args()
+  @api.marshal_with(successMessage, False, 200)
+  @api.expect(parser_add_dataset_subtitle)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 403: 'Forbidden'}, description="Adds a subtitle to the given dataset.")
+  def put(self): 
+    # update the dataset subtitle for the selected account and dataset ID
+    data = self.parser_add_dataset_subtitle.parse_args()
 
-#     selected_account = data.get('selected_account')
-#     selected_dataset = data.get('selected_dataset')
-#     input_subtitle = data.get('input_subtitle')
+    selected_account = data.get('selected_account')
+    selected_dataset = data.get('selected_dataset')
+    input_subtitle = data.get('input_subtitle')
 
-#     try:
-#       return bf_add_subtitle(selected_account, selected_dataset, input_subtitle)
-#     except Exception as e:
-#       if notBadRequestException(e):
-#         api.abort(500, str(e))
-#       raise e
+    try:
+      return bf_add_subtitle(selected_account, selected_dataset, input_subtitle)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
 
 
 

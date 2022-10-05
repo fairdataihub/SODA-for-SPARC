@@ -1429,43 +1429,33 @@ def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
 
 
 
-# def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
-#     """
-#     Args:
-#         selected_bfaccount: name of selected Pennsieve account (string)
-#         selected_bfdataset: name of selected Pennsieve dataset (string)
-#         input_subtitle: subtitle limited to 256 characters (string)
-#     Action:
-#         Add/change subtitle for a selected dataset
-#     Return:
-#         Success message or error
-#     """
+def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
+    """
+    Args:
+        selected_bfaccount: name of selected Pennsieve account (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
+        input_subtitle: subtitle limited to 256 characters (string)
+    Action:
+        Add/change subtitle for a selected dataset
+    Return:
+        Success message or error
+    """
+    ps = connect_pennsieve_client()
 
-#     try:
-#         bf = Pennsieve(selected_bfaccount)
-#     except Exception as e:
-#         error_message = "Please select a valid Pennsieve account"
-#         abort(400, error_message)
+    authenticate_user_with_client(ps, selected_bfaccount)
 
-#     try:
-#         myds = bf.get_dataset(selected_bfdataset)
-#     except Exception as e:
-#         error_message = "Please select a valid Pennsieve dataset"
-#         abort(400, error_message)
+    selected_dataset_id = get_dataset_id(ps, selected_bfdataset)
 
-  
-#     role = bf_get_current_user_permission(bf, myds)
-#     if role not in ["owner", "manager"]:
-#         error_message = "You don't have permissions for editing metadata on this Pennsieve dataset"
-#         abort(403, error_message)
+    if not has_edit_permissions(ps, selected_dataset_id):
+        abort(401, "You do not have permission to edit this dataset.")
 
-#     try:
-#         selected_dataset_id = myds.id
-#         jsonfile = {"description": input_subtitle}
-#         bf._api.datasets._put("/" + str(selected_dataset_id), json=jsonfile)
-#         return{ "message": "Subtitle added!"}
-#     except Exception as e:
-#         raise Exception(e)
+    try:
+        jsonfile = {"description": input_subtitle}
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", json=jsonfile, headers=create_request_headers(ps))
+        r.raise_for_status()
+        return{ "message": "Subtitle added!"}
+    except Exception as e:
+        raise Exception(e)
 
 
 
