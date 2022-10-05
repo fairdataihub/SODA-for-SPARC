@@ -23,7 +23,7 @@ from manageDatasets import (
     bf_get_banner_image,
     bf_add_banner_image,
     bf_get_license,
-    # bf_add_license,
+    bf_add_license,
     bf_get_dataset_status,
     # bf_change_dataset_status,
     bf_default_account_load,
@@ -668,26 +668,26 @@ class BfLicense(Resource):
       raise e
 
   
-#   parser_add_license = parser_license.copy()
-#   parser_add_license.add_argument('input_license', type=str, required=True, location='json', help='License for the dataset.')
+  parser_add_license = parser_license.copy()
+  parser_add_license.add_argument('input_license', type=str, required=True, location='json', help='License for the dataset.')
 
-#   @api.marshal_with(successMessage, False, 200)
-#   @api.expect(parser_add_license)
-#   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 403: 'Forbidden'}, description="Adds a license to the given dataset.")
-#   def put(self):
-#     # update the dataset license for the selected account and dataset ID
-#     data = self.parser_add_license.parse_args()
+  @api.marshal_with(successMessage, False, 200)
+  @api.expect(parser_add_license)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 403: 'Forbidden'}, description="Adds a license to the given dataset.")
+  def put(self):
+    # update the dataset license for the selected account and dataset ID
+    data = self.parser_add_license.parse_args()
 
-#     selected_account = data.get('selected_account')
-#     selected_dataset = data.get('selected_dataset')
-#     input_license = data.get('input_license')
+    selected_account = data.get('selected_account')
+    selected_dataset = data.get('selected_dataset')
+    input_license = data.get('input_license')
 
-#     try:
-#       return bf_add_license(selected_account, selected_dataset, input_license)
-#     except Exception as e:
-#       if notBadRequestException(e):
-#         api.abort(500, str(e))
-#       raise e
+    try:
+      return bf_add_license(selected_account, selected_dataset, input_license)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
 
 
 

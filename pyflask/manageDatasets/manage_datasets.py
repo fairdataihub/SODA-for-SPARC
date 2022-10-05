@@ -1644,62 +1644,52 @@ def bf_get_license(selected_bfaccount, selected_bfdataset):
 
 
 
-# def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
-#     """
-#     Args:
-#         selected_bfaccount: name of selected Pennsieve account (string)
-#         selected_bfdataset: name of selected Pennsieve dataset (string)
-#         selected_license: name of selected license (string)
-#     Action:
-#         Add/change license for a selected dataset
-#     Return:
-#         Success message or error
-#     """
+def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
+    """
+    Args:
+        selected_bfaccount: name of selected Pennsieve account (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
+        selected_license: name of selected license (string)
+    Action:
+        Add/change license for a selected dataset
+    Return:
+        Success message or error
+    """
 
-#     try:
-#         bf = Pennsieve(selected_bfaccount)
-#     except Exception as e:
-#         error_message = "Please select a valid Pennsieve account"
-#         abort(400, error_message)
+    ps = connect_pennsieve_client()
 
-#     try:
-#         myds = bf.get_dataset(selected_bfdataset)
-#     except Exception as e:
-#         error_message = "Please select a valid Pennsieve dataset"
-#         abort(400, error_message)
+    authenticate_user_with_client(ps, selected_bfaccount)
+
+    selected_dataset_id = get_dataset_id(ps, selected_bfdataset)
+
+    if not has_edit_permissions(ps, selected_dataset_id):
+        abort(401, "You do not have permission to edit this dataset.")
 
 
-#     role = bf_get_current_user_permission(bf, myds)
-#     if role not in ["owner", "manager"]:
-#         error_message = "You don't have permissions for editing metadata on this Pennsieve dataset"
-#         abort(403, error_message)
-
-
-#     allowed_licenses_list = [
-#         "Community Data License Agreement – Permissive",
-#         "Community Data License Agreement – Sharing",
-#         "Creative Commons Zero 1.0 Universal",
-#         "Creative Commons Attribution",
-#         "Creative Commons Attribution - ShareAlike",
-#         "Open Data Commons Open Database",
-#         "Open Data Commons Attribution",
-#         "Open Data Commons Public Domain Dedication and License",
-#         "Apache 2.0",
-#         "GNU General Public License v3.0",
-#         "GNU Lesser General Public License",
-#         "MIT",
-#         "Mozilla Public License 2.0",
-#     ]
-#     if selected_license not in allowed_licenses_list:
-#         error = "Please select a valid license"
-#         abort(403, error)
-#     selected_dataset_id = myds.id
-#     jsonfile = {"license": selected_license}
-#     try: 
-#         bf._api.datasets._put(f"/{str(selected_dataset_id)}", json=jsonfile)
-#     except Exception as e:
-#         raise Exception(e) from e
-#     return {"message": "License added!"}
+    allowed_licenses_list = [
+        "Community Data License Agreement – Permissive",
+        "Community Data License Agreement – Sharing",
+        "Creative Commons Zero 1.0 Universal",
+        "Creative Commons Attribution",
+        "Creative Commons Attribution - ShareAlike",
+        "Open Data Commons Open Database",
+        "Open Data Commons Attribution",
+        "Open Data Commons Public Domain Dedication and License",
+        "Apache 2.0",
+        "GNU General Public License v3.0",
+        "GNU Lesser General Public License",
+        "MIT",
+        "Mozilla Public License 2.0",
+    ]
+    if selected_license not in allowed_licenses_list:
+        abort(403, "Please select a valid license.")
+    jsonfile = {"license": selected_license}
+    try: 
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", json=jsonfile, headers=create_request_headers(ps))
+        r.raise_for_status()
+    except Exception as e:
+        raise Exception(e) from e
+    return {"message": "License added!"}
 
 
 
