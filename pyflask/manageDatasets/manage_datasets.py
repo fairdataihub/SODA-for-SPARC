@@ -584,55 +584,47 @@ def bf_account_details(accountname):
         raise e
 
 
-# def bf_new_dataset_folder(datasetname, accountname):
-#     """
-#     Associated with 'Create' button in 'Create new dataset folder'
+def create_new_dataset(datasetname, accountname):
+    """
+    Associated with 'Create' button in 'Create new dataset folder'
 
-#     Args:
-#         datasetname: name of the dataset to be created (string)
-#         accountname: account in which the dataset needs to be created (string)
-#     Action:
-#         Creates dataset for the account specified
-#     """
-#     try:
-#         error, c = "", 0
-#         datasetname = datasetname.strip()
+    Args:
+        datasetname: name of the dataset to be created (string)
+        accountname: account in which the dataset needs to be created (string)
+    Action:
+        Creates dataset for the account specified
+    """
+    try:
+        datasetname = datasetname.strip()
 
-#         if check_forbidden_characters_bf(datasetname):
-#             error = (
-#                 error
-#                 + "A Pennsieve dataset name cannot contain any of the following characters: "
-#                 + forbidden_characters_bf
-#                 + "<br>"
-#             )
-#             c += 1
+        if check_forbidden_characters_bf(datasetname):
+            error = (
+                "A Pennsieve dataset name cannot contain any of the following characters: "
+                + forbidden_characters_bf
+                + "<br>"
+            )
+            abort(400, error)
 
-#         if not datasetname:
-#             error = f"{error}Please enter valid dataset name<br>"
-#             c += 1
+        if not datasetname or datasetname.isspace():
+            error = f"{error}Please enter valid dataset name."
+            abort(400, error)
 
-#         if datasetname.isspace():
-#             error = f"{error}Please enter valid dataset name<br>"
-#             c += 1
+        ps = connect_pennsieve_client()
 
-#         try:
-#             bf = Pennsieve(accountname)
-#         except Exception as e:
-#             error = f"{error}Please select a valid Pennsieve account<br>"
-#             c += 1
+        authenticate_user_with_client(ps, accountname)
 
-#         if c > 0:
-#             abort(400, error)
+        ds = ps.getDatasets()
 
-#         dataset_list = [ds.name for ds in bf.datasets()]
-#         if datasetname in dataset_list:
-#             abort(400, "Dataset name already exists")
-#         else:
-#             d = bf.create_dataset(datasetname)
-#             return {"id": d.id}
+        if datasetname in ds:
+            abort(400, "Dataset name already exists")
+        else:
+            r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(ps), json={"name": datasetname})
+            r.raise_for_status()
+            ds_id = r.json()["id"]
+            return {"id": ds_id}
 
-#     except Exception as e:
-#         raise e
+    except Exception as e:
+        raise e
 
 
 def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
@@ -1135,30 +1127,6 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
 
     except Exception as e:
         raise e
-
-
-# def bf_get_current_user_permission(bf, myds):
-
-#     """
-#     Function to get the permission of currently logged in user for a selected dataset
-
-#     Args:
-#         bf: logged Pennsieve account (dict)
-#         myds: selected Pennsieve dataset (dict)
-#     Output:
-#         permission of current user (string)
-#     """
-
-#     try:
-#         selected_dataset_id = myds.id
-#         return bf._api._get(f"/datasets/{str(selected_dataset_id)}/role")["role"]
-
-#     except Exception as e:
-#         raise e
-
-
-
-
 
 
 

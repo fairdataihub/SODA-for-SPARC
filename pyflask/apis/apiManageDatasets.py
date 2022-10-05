@@ -9,7 +9,7 @@ from manageDatasets import (
     bf_dataset_account,
     bf_account_details,
     bf_submit_dataset,
-    # bf_new_dataset_folder,
+    create_new_dataset,
     bf_rename_dataset,
     bf_add_permission,
     bf_get_users,
@@ -817,32 +817,32 @@ class BfAddAccountApiKey(Resource):
 
 
 
-# model_dataset_folder_response = api.model("DatasetFolderResponse", {
-#   'id': fields.String(required=True, description="The ID of the dataset that has been created.")
-# })
+model_dataset_folder_response = api.model("DatasetFolderResponse", {
+  'id': fields.String(required=True, description="The ID of the dataset that has been created.")
+})
 
 @api.route('/datasets')
 class BfCreateDatasetFolder(Resource):
-#   parser_create_dataset_folder = reqparse.RequestParser(bundle_errors=True)
-#   parser_create_dataset_folder.add_argument('selected_account', type=str, required=True, location='args', help='The target account to rename the dataset for.')
-#   parser_create_dataset_folder.add_argument('input_dataset_name', type=str, required=True, location='json', help='The name of the dataset to create.')
+  parser_create_dataset_folder = reqparse.RequestParser(bundle_errors=True)
+  parser_create_dataset_folder.add_argument('selected_account', type=str, required=True, location='args', help='The target account to rename the dataset for.')
+  parser_create_dataset_folder.add_argument('input_dataset_name', type=str, required=True, location='json', help='The name of the dataset to create.')
 
-#   @api.expect(parser_create_dataset_folder)
-#   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 200: 'OK'}, description="Creates a new dataset on the Pennsieve platform.")
-#   @api.marshal_with(model_dataset_folder_response, 200, False)
-#   def post(self):
-#     # create a new dataset folder for the selected account and dataset ID
-#     data = self.parser_create_dataset_folder.parse_args()
+  @api.expect(parser_create_dataset_folder)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 200: 'OK'}, description="Creates a new dataset on the Pennsieve platform.")
+  @api.marshal_with(model_dataset_folder_response, 200, False)
+  def post(self):
+    # create a new dataset folder for the selected account and dataset ID
+    data = self.parser_create_dataset_folder.parse_args()
 
-#     selected_account = data.get('selected_account')
-#     dataset_name = data.get('input_dataset_name')
+    selected_account = data.get('selected_account')
+    dataset_name = data.get('input_dataset_name')
 
-#     try:
-#       return bf_new_dataset_folder(dataset_name, selected_account)
-#     except Exception as e:
-#       if notBadRequestException(e):
-#         api.abort(500, str(e))
-#       raise e
+    try:
+      return create_new_dataset(dataset_name, selected_account)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
 
 
   parser_submit_dataset = reqparse.RequestParser(bundle_errors=True)
