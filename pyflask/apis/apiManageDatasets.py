@@ -1,7 +1,7 @@
 from flask_restx import Resource, fields, reqparse
 from manageDatasets import ( 
     get_pennsieve_api_key_secret, 
-    # get_number_of_files_and_folders_locally,
+    get_number_of_files_and_folders_locally,
     # submit_dataset_progress,
     bf_add_account_api_key,
     bf_add_account_username,
@@ -96,35 +96,35 @@ class PennsieveAPIKeyAndSecret(Resource):
 
 
 
-# getNumberOfFilesAndFoldersLocally =  api.model('FilesAndFolders', {
-#     "totalFiles": fields.Integer(required=True, description="Total number of files in the dataset"),
-#     "totalDir": fields.Integer(required=True, description="Total number of folders in the dataset"),
-# })
+getNumberOfFilesAndFoldersLocally =  api.model('FilesAndFolders', {
+    "totalFiles": fields.Integer(required=True, description="Total number of files in the dataset"),
+    "totalDir": fields.Integer(required=True, description="Total number of folders in the dataset"),
+})
 
-# @api.route('/get_number_of_files_and_folders_locally')
-# class GetNumberOfFilesAndFoldersLocally(Resource):
+@api.route('/get_number_of_files_and_folders_locally')
+class GetNumberOfFilesAndFoldersLocally(Resource):
 
-#   files_folders_parser = reqparse.RequestParser(bundle_errors=True)
-#   files_folders_parser.add_argument('filepath', type=str, required=True, help='Path to the local dataset folder', location="args")
+  files_folders_parser = reqparse.RequestParser(bundle_errors=True)
+  files_folders_parser.add_argument('filepath', type=str, required=True, help='Path to the local dataset folder', location="args")
 
-#   @api.marshal_with( getNumberOfFilesAndFoldersLocally, False, 200)
-#   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'})
-#   # the request parameters
-#   @api.expect(files_folders_parser)
-#   def get(self):
-#     # get the filepath from the request object
-#     data = self.files_folders_parser.parse_args()
-#     filepath = data.get('filepath')
+  @api.marshal_with( getNumberOfFilesAndFoldersLocally, False, 200)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'})
+  # the request parameters
+  @api.expect(files_folders_parser)
+  def get(self):
+    # get the filepath from the request object
+    data = self.files_folders_parser.parse_args()
+    filepath = data.get('filepath')
 
-#     api.logger.info(f' get_number_of_files_and_folders_locally --  args -- filepath: {filepath}')
+    api.logger.info(f' get_number_of_files_and_folders_locally --  args -- filepath: {filepath}')
 
-#     if filepath is None:
-#       api.abort(400, "Cannot get number of files and folders locally without a filepath")
+    if filepath is None:
+      api.abort(400, "Cannot get number of files and folders locally without a filepath")
 
-#     try:
-#       return get_number_of_files_and_folders_locally(filepath)
-#     except Exception as e:
-#       api.abort(500, e.args[0])
+    try:
+      return get_number_of_files_and_folders_locally(filepath)
+    except Exception as e:
+      api.abort(500, e.args[0])
     
 
 

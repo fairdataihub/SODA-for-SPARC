@@ -1730,29 +1730,29 @@ def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_st
         raise e
 
 
-# def get_number_of_files_and_folders_locally(filepath):
-#     """
-#     Function to get number of files and folders in a local dataset
+def get_number_of_files_and_folders_locally(filepath):
+    """
+    Function to get number of files and folders in a local dataset
 
-#     Args:
-#         filepath: local dataset location
-#     Return:
-#         Number of files and folders
-#     """
-#     global namespace_logger
+    Args:
+        filepath: local dataset location
+    Return:
+        Number of files and folders
+    """
+    global namespace_logger
 
-#     totalDir = 0
-#     totalFiles = 0
-#     for base, dirs, files in os.walk(filepath):
-#         for _ in dirs:
-#             totalDir += 1
-#         for _ in files:
-#             totalFiles += 1
+    totalDir = 0
+    totalFiles = 0
+    for base, dirs, files in os.walk(filepath):
+        for _ in dirs:
+            totalDir += 1
+        for _ in files:
+            totalFiles += 1
 
-#     namespace_logger.info(f"Number of files: {str(totalFiles)}")
-#     namespace_logger.info(f"Number of folders: {str(totalDir)}")
+    namespace_logger.info(f"Number of files: {str(totalFiles)}")
+    namespace_logger.info(f"Number of folders: {str(totalDir)}")
 
-#     return {"totalFiles": totalFiles, "totalDir": totalDir}
+    return {"totalFiles": totalFiles, "totalDir": totalDir}
 
 
 def get_pennsieve_api_key_secret(email, password, keyname):

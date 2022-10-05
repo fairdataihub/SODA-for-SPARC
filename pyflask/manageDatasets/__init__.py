@@ -1,6 +1,6 @@
 from .manage_datasets import (
     get_pennsieve_api_key_secret, 
-    # get_number_of_files_and_folders_locally,
+    get_number_of_files_and_folders_locally,
     # submit_dataset_progress,
     bf_add_account_api_key,
     bf_add_account_username,
