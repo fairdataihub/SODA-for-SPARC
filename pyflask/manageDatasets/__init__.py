@@ -30,10 +30,10 @@ from .manage_datasets import (
     # check_agent_install,
     SODA_SPARC_API_KEY,
     bf_submit_dataset_upload_details,
-    bf_get_current_user_permission_agent_two
+    bf_get_current_user_permission_agent_two,
     # bf_get_current_user_permission,
-    # update_dataset_readme,
-    # get_dataset_readme,
+    update_dataset_readme,
+    get_dataset_readme,
     # get_dataset_tags,
     # update_dataset_tags,
     # scale_image

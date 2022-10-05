@@ -31,9 +31,9 @@ from manageDatasets import (
     # check_agent_install,
     SODA_SPARC_API_KEY,
     bf_submit_dataset_upload_details,
-    bf_get_current_user_permission_agent_two
-    # update_dataset_readme,
-    # get_dataset_readme,
+    bf_get_current_user_permission_agent_two,
+    update_dataset_readme,
+    get_dataset_readme,
     # get_dataset_tags,
     # update_dataset_tags,
     # scale_image
@@ -928,53 +928,51 @@ class BfCreateDatasetFolder(Resource):
 
 
 
-# model_get_readme_response = api.model("GetReadmeResponse", {
-#   'readme': fields.String(required=True, description="The readme for the dataset."),
-# })
+model_get_readme_response = api.model("GetReadmeResponse", {
+  'readme': fields.String(required=True, description="The readme for the dataset."),
+})
 
-# @api.route('/datasets/<string:dataset_name_or_id>/readme')
-# class BfGetDatasetReadme(Resource):
+@api.route('/datasets/<string:dataset_name_or_id>/readme')
+class BfGetDatasetReadme(Resource):
+  parser_readme = reqparse.RequestParser(bundle_errors=True)
+  parser_readme.add_argument('selected_account', type=str, required=True, location='args', help='The target account to rename the dataset for.')
+  parser_readme.add_argument('updated_readme', type=str, required=True, location='json', help='The updated readme content to save.')
 
+  @api.expect(parser_readme)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 200: 'OK'}, description="Update the readme for a dataset.")
+  @api.marshal_with(successMessage, False, 200)
+  def put(self, dataset_name_or_id):
+    data = self.parser_readme.parse_args()
 
-#   parser_readme = reqparse.RequestParser(bundle_errors=True)
-#   parser_readme.add_argument('selected_account', type=str, required=True, location='args', help='The target account to rename the dataset for.')
-#   parser_readme.add_argument('updated_readme', type=str, required=True, location='json', help='The updated readme content to save.')
+    selected_account = data.get('selected_account')
+    updated_readme = data.get('updated_readme')
 
-#   @api.expect(parser_readme)
-#   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 200: 'OK'}, description="Update the readme for a dataset.")
-#   @api.marshal_with(successMessage, False, 200)
-#   def put(self, dataset_name_or_id):
-#     data = self.parser_readme.parse_args()
-
-#     selected_account = data.get('selected_account')
-#     updated_readme = data.get('updated_readme')
-
-#     try:
-#       return update_dataset_readme(selected_account, dataset_name_or_id , updated_readme)
-#     except Exception as e:
-#       if notBadRequestException(e):
-#         api.abort(500, str(e))
-#       raise e
+    try:
+      return update_dataset_readme(selected_account, dataset_name_or_id , updated_readme)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
 
 
 
-#   parser_readme_get = reqparse.RequestParser(bundle_errors=True)
-#   parser_readme_get.add_argument('selected_account', type=str, required=True, location='args', help='The target account to rename the dataset for.')
+  parser_readme_get = reqparse.RequestParser(bundle_errors=True)
+  parser_readme_get.add_argument('selected_account', type=str, required=True, location='args', help='The target account to rename the dataset for.')
 
-#   @api.expect(parser_readme_get)
-#   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Get the readme for a dataset.")
-#   @api.marshal_with(model_get_readme_response, False, 200)
-#   def get(self, dataset_name_or_id):
-#     data = self.parser_readme_get.parse_args()
+  @api.expect(parser_readme_get)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Get the readme for a dataset.")
+  @api.marshal_with(model_get_readme_response, False, 200)
+  def get(self, dataset_name_or_id):
+    data = self.parser_readme_get.parse_args()
 
-#     selected_account = data.get('selected_account')
+    selected_account = data.get('selected_account')
 
-#     try:
-#       return get_dataset_readme(selected_account, dataset_name_or_id)
-#     except Exception as e:
-#       if notBadRequestException(e):
-#         api.abort(500, str(e))
-#       raise e
+    try:
+      return get_dataset_readme(selected_account, dataset_name_or_id)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
 
 
 

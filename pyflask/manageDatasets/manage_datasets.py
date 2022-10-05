@@ -2056,42 +2056,87 @@ def get_pennsieve_api_key_secret(email, password, keyname):
 
 
 
-# def get_dataset_readme(selected_account, selected_dataset):
-#     """
-#     Function to get readme for a dataset
+def get_dataset_readme(selected_account, selected_dataset):
+    """
+    Function to get readme for a dataset
     
-#         Args:
-#             selected_account: account name
-#             selected_dataset: dataset name
-#         Return:
-#             Readme for the dataset
-#     """
+        Args:
+            selected_account: account name
+            selected_dataset: dataset name
+        Return:
+            Readme for the dataset
+    """
+    try:
+        ps = Pennsieve()
+        ps.user.switch(selected_account)
+    except Exception as e:
+        abort(400, "Please select a valid Pennsieve account")
 
-#     ps = get_authenticated_ps(selected_account)
-
-#     myds = get_dataset(ps, selected_dataset)
-
-#     return ps._api._get(f"/datasets/{myds.id}/readme")
-
-
-
-# def update_dataset_readme(selected_account, selected_dataset, updated_readme):
-#     """
-#     Update the readme of a dataset on Pennsieve with the given readme string.
-#     """
-
-#     ps = get_authenticated_ps(selected_account)
-
-#     myds = get_dataset(ps, selected_dataset)
-
-#     role = bf_get_current_user_permission(ps, myds)
-#     if role not in ["owner", "manager"]:
-#         abort(403, "You don't have permissions to modify this dataset.")
+    try:
+        ps.user.reauthenticate()
+    except Exception as e:
+        abort(401, "Could not reauthenticate this account with Pennsieve.")
 
 
-#     ps._api._put(f"/datasets/{myds.id}/readme", json={"readme": updated_readme})
+    try:
+        ds = ps.getDatasets()
+        selected_dataset_id = ds[selected_dataset]
+    except Exception as e:
+        abort(401, "Please select a valid Pennsieve dataset.")
 
-#     return {"message": "Readme updated"}
+    try:
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + ps.getUser()["session_token"],
+        }
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=headers)
+        r.raise_for_status()
+
+        readme = r.json()
+    except Exception as e:
+        raise Exception(e)
+
+    return readme
+
+
+
+def update_dataset_readme(selected_account, selected_dataset, updated_readme):
+    """
+    Update the readme of a dataset on Pennsieve with the given readme string.
+    """
+
+    try:
+        ps = Pennsieve()
+        ps.user.switch(selected_account)
+    except Exception as e:
+        abort(400, "Please select a valid Pennsieve account.")
+
+    try:
+        ps.user.reauthenticate()
+    except Exception as e:
+        abort(401, "Could not reauthenticate this account with Pennsieve.")
+
+    try:
+        ds = ps.getDatasets()
+        selected_dataset_id = ds[selected_dataset]
+
+        role = bf_get_current_user_permission_agent_two(selected_dataset_id)["role"]
+        if role not in ["owner", "manager"]:
+            abort(403, "You don't have permissions to modify this dataset.")
+    except Exception as e:
+        abort(401, "Please select a valid Pennsieve dataset.")
+
+    try:
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + ps.getUser()["session_token"],
+        }
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", json={"readme": updated_readme}, headers=headers)
+        r.raise_for_status()
+    except Exception as e:
+        raise Exception(e)
+
+    return {"message": "Readme updated"}
 
 
 # def get_dataset_tags(selected_account, selected_dataset):
