@@ -466,7 +466,7 @@ def bf_dataset_account(accountname):
     datasets_dict = ps.getDatasets()
 
     # get the session token
-    token = ps.getUser()["session_token"]
+    headers = create_request_headers(ps)
 
     datasets_list = []
     for name in datasets_dict.keys():
@@ -477,12 +477,8 @@ def bf_dataset_account(accountname):
             store = []
         for dataset in datasets_list:
             selected_dataset_id = dataset['id']
-            headers = {
-                'Authorization': f'Bearer {token}',
-                'Content-Type': 'application/json'
-            }
-
             r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/role", headers=headers)
+            r.raise_for_status()
             user_role = r.json()["role"]
             if user_role not in ["viewer", "editor"]:
                 store.append(
@@ -1017,11 +1013,7 @@ def bf_get_users(selected_bfaccount):
     try:
         global PENNSIEVE_URL
         organization_id = ps.getUser()["organization_id"]
-        headers = {
-            "Authorization": "Bearer " + ps.getUser()["session_token"],
-            "Content-Type": "application/json",
-        }
-        r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(organization_id)}/members", headers=headers)
+        r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(organization_id)}/members", headers=create_request_headers(ps))
         r.raise_for_status()
         list_users = r.json()
         list_users_first_last = []
@@ -1068,12 +1060,8 @@ def bf_get_teams(selected_bfaccount):
 
     try:
         organization_id = ps.getUser()["organization_id"]
-        headers = {
-            "Authorization": "Bearer " + ps.getUser()["session_token"],
-            "Content-Type": "application/json",
-        }
         global PENNSIEVE_URL
-        r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(organization_id)}/teams", headers=headers)
+        r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(organization_id)}/teams", headers=create_request_headers(ps))
         r.raise_for_status()
         list_teams = r.json()
         list_teams_name = [list_teams[i]["team"]["name"] for i in range(len(list_teams))]
@@ -1119,10 +1107,7 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
 
     try:
         global PENNSIEVE_URL
-        headers = {
-            "Authorization": "Bearer " + ps.getUser()["session_token"],
-            "Content-Type": "application/json",
-        }
+        headers = create_request_headers(ps)
         # user permissions
         r = requests.get(
             f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=headers
@@ -1503,11 +1488,7 @@ def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
         abort(400, error_message)
 
     try:
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + ps.getUser()["session_token"],
-        }
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps))
         r.raise_for_status()
 
         dataset_info = r.json()
@@ -1594,11 +1575,7 @@ def bf_get_description(selected_bfaccount, selected_bfdataset):
         abort(400, "Please select a valid Pennsieve dataset")
 
     try:
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + ps.getUser()["session_token"],
-        }
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=headers)
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=create_request_headers(ps))
         r.raise_for_status()
 
         dataset_readme_info = r.json()
@@ -1652,12 +1629,8 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
 
 
     try:
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + ps.getUser()["session_token"],
-        }
         jsonfile = {"readme": markdown_input}
-        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=headers, json=jsonfile)
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=create_request_headers(ps), json=jsonfile)
         r.raise_for_status()
         return{ "message": "Description added!"}
     except Exception as e:
@@ -1697,11 +1670,7 @@ def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
         abort(400, "Please select a valid Pennsieve dataset")
 
     try:
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + ps.getUser()["session_token"],
-        }
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/banner", headers=headers)
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/banner", headers=create_request_headers(ps))
         r.raise_for_status()
 
         dataset_banner_info = r.json()
@@ -1756,13 +1725,9 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
 
 
     try:
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + ps.getUser()["session_token"],
-        }
         def upload_image():
             with open(banner_image_path, "rb") as f:
-                requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/banner", files={"banner": f}, headers=headers)
+                requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/banner", files={"banner": f}, headers=create_request_headers(ps))
 
         # delete banner image folder if it is located in SODA
         upload_image()
@@ -2136,11 +2101,7 @@ def get_dataset_readme(selected_account, selected_dataset):
         abort(401, "Please select a valid Pennsieve dataset.")
 
     try:
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + ps.getUser()["session_token"],
-        }
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=headers)
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=create_request_headers(ps))
         r.raise_for_status()
 
         readme = r.json()
@@ -2178,11 +2139,7 @@ def update_dataset_readme(selected_account, selected_dataset, updated_readme):
         abort(401, "Please select a valid Pennsieve dataset.")
 
     try:
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + ps.getUser()["session_token"],
-        }
-        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", json={"readme": updated_readme}, headers=headers)
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", json={"readme": updated_readme}, headers=create_request_headers(ps))
         r.raise_for_status()
     except Exception as e:
         raise Exception(e)
