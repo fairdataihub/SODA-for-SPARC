@@ -5,7 +5,98 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.9.2.4 - 2022-10-04
 
+## Feature additions:
+
+- Guided Mode: Added a new page to let users know what accounts and documents they will be needing to curate a dataset.
+- Guided Mode: Manifest files now automatically update when changes are made to a dataset's structure.
+- Guided Mode: Contributor addition flow upgraded to make AirTable contributor importation more intuitive.
+- Guided Mode: dataset upload error alerts now give a clearer reason as to why the dataset upload failed and what can be done to remedy the issue.
+
+## Bug fixes:
+
+- Announcements should launch on auto-updates moving forward now!
+
+## v.9.2.1 - 2022-09-23
+
+## Bug fixes:
+
+- Fixed an issue where medium and large datasets were not being imported in Organize Datasets or the Create manifest.xlsx feature on Darwin.
+
+## v.9.2.0 - 2022-09-20
+
+## Feature additions:
+
+- An announcements system has been added to give the user updates on recents changes/additions to SODA.
+- Guided Mode: Added the ability to retry uploading a dataset if an upload in progress fails.
+
+## Bug fixes:
+
+- In organize dataset: When moving files/folders to another location there will be a check if any duplicates are there already.
+- On startup the server will try to connect continuosly. (backOff was replaced)
+- Organize dataset: import dataset will correctly check manifest details.
+- Guided Mode: Fixed the automatically generated headers for manifest files
+- Guided Mode: Changed the generated filepath from the filepath on the user's local machine to the path relative to the
+  SPARC dataset structure
+
+### Known issues:
+
+## v.9.1.0 - 2022-09-13
+
+## Feature additions:
+
+- Tags throughout SODA are now sortable. (Ex: Dataset tags, milestone tags, etc.)
+- Prepare Metadata - Create manifest.xlsx: Automated synchronization between manifest files and their Pennsieve dataset. E.g., if a file is removed from a dataset, the file's corresponding manifest file entry will be removed.
+- Prepare Metadata - Create manifest.xlsx: Empty columns are dropped from manifest files once the user generates their files locally or on Pennsieve.
+- Prepare Metadata - Create manifest.xlsx: Preview manifest files locally before they are uploaded to Pennsieve.
+- Prepare Metadata - Create manifest.xlsx: Generate manfiest files locally in your directory of choice.
+- Guided Mode - added the ability to edit auto-generated manifest files in a spreadsheet like UI.
+- Freeform Mode - Ability to add your dataset to a collection has been added. Intended to better group datasets.
+- Image optimzation for banner images. Image sizes that exceed over 2048 x 2048 will be prompted to scale the image accordingly for upload.
+
+## Bug fixes:
+
+- In Organize datasets, when importing files/folders the loading screen's z-index was higher than the duplicate alert popup. The issue has been resolved by lowering the loading screen's z-index.
+- When uploading a dataset "Preparing list of files to upload" would verify files from Pennsieve individually. For datasets with large files this would cause a long wait time during this step. Another method of verifying files was created to verify files by retrieving the information folder by folder, reducing wait time significantly.
+- Manifest files generated in SODA include timestamps following the designated SPARC format.
+- Prepare Metadata - Create manifest.xlsx: The manifest editor's 'Save' and 'Cancel' buttons now are always viewable without having to scroll to the bottom of the manifest file.
+
+### Known Issues:
+
+- When a user has a large amount of files the step "Creating folder structure" can take a good amount of time.
+
+## v.9.0.1 - 2022-09-02
+
+## Bug fixes:
+
+- Fixed an issue that caused the Organize Dataset feature to break when switching from Free Form Mode to Guided Mode and back.
+
+### Known Issues:
+
+- There is a bug when switching to Guided Mode before uploading Dataset Metadata in Free Form mode and then switching back to Free Form Mode. This will be addressed in the next update
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.
+- When uploading a dataset through Upload Local Dataset or Organize Dataset feature to Pennsieve the upload will sometimes freeze. When this occurs it is best to reset the upload and ensure the Pennsieve Agent has been stopped before attempting to upload again. It is also necessary to verify the integrity of uploaded files up to that point. This can be done by simply ensuring all files from folders that have been uploaded are included in the Pennsieve dataset.
+- The Organize Datasets option to upload duplicate files to Pennsieve uploads some duplicates but does not upload all.
+- When using the Create manifest.xlsx feature any custom columns added to a manifest file stored on Pennsieve will not be imported for editing.
+- The Create manifest.xlsx feature will spawn an error while generating manifest files for a local dataset if there are hidden files in the dataset directory. SODA will not tell the user the cause is the presence of the hidden files.
+- In the Organize Dataset feature, if a dataset is large enough and being uploaded to Pennsieve it will not pass the file and folder integrity check. This is a separate issue from those that were fixed as part of the bug fixes section outlined in v.8.0.1. Users should find more large datasets are uploadable to Pennsieve than in the previous release. Note as well this does not apply to the Upload Local Dataset feature, which has a very high upper bound for the amount of files that can be uploaded to Pennsieve as of the current release.
+
+## v.9.0.1 - 2022-09-02
+
+## Bug fixes:
+
+- Fixed an issue that caused the Organize Dataset feature to break when switching from Free Form Mode to Guided Mode and back.
+
+### Known Issues:
+
+- There is a bug when switching to Guided Mode before uploading Dataset Metadata in Free Form mode and then switching back to Free Form Mode. This will be addressed in the next update
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.
+- When uploading a dataset through Upload Local Dataset or Organize Dataset feature to Pennsieve the upload will sometimes freeze. When this occurs it is best to reset the upload and ensure the Pennsieve Agent has been stopped before attempting to upload again. It is also necessary to verify the integrity of uploaded files up to that point. This can be done by simply ensuring all files from folders that have been uploaded are included in the Pennsieve dataset.
+- The Organize Datasets option to upload duplicate files to Pennsieve uploads some duplicates but does not upload all.
+- When using the Create manifest.xlsx feature any custom columns added to a manifest file stored on Pennsieve will not be imported for editing.
+- The Create manifest.xlsx feature will spawn an error while generating manifest files for a local dataset if there are hidden files in the dataset directory. SODA will not tell the user the cause is the presence of the hidden files.
+- In the Organize Dataset feature, if a dataset is large enough and being uploaded to Pennsieve it will not pass the file and folder integrity check. This is a separate issue from those that were fixed as part of the bug fixes section outlined in v.8.0.1. Users should find more large datasets are uploadable to Pennsieve than in the previous release. Note as well this does not apply to the Upload Local Dataset feature, which has a very high upper bound for the amount of files that can be uploaded to Pennsieve as of the current release.
 
 ## v.9.0.0 - 2022-08-30
 
@@ -13,7 +104,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Guided Mode, a new dataset curation mode, is now available. Guided Mode streamlines the SPARC data curation process by guiding users step-by-step through the entire process. Currently, it only supports curating new datasets from scratch.
 - The SODA server will run on a free port if the default port is not available.
-
 
 ### Known Issues:
 
@@ -23,8 +113,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - When using the Create manifest.xlsx feature any custom columns added to a manifest file stored on Pennsieve will not be imported for editing.
 - The Create manifest.xlsx feature will spawn an error while generating manifest files for a local dataset if there are hidden files in the dataset directory. SODA will not tell the user the cause is the presence of the hidden files.
 - In the Organize Dataset feature, if a dataset is large enough and being uploaded to Pennsieve it will not pass the file and folder integrity check. This is a separate issue from those that were fixed as part of the bug fixes section outlined in v.8.0.1. Users should find more large datasets are uploadable to Pennsieve than in the previous release. Note as well this does not apply to the Upload Local Dataset feature, which has a very high upper bound for the amount of files that can be uploaded to Pennsieve as of the current release.
-
-
 
 ## v.8.0.1 - 2022-08-26
 

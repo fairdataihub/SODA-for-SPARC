@@ -254,10 +254,10 @@ function populateProtocolLink(ev) {
       for (var key of Object.keys(protocolResearcherList)) {
         $("#select-misc-links").append(
           '<option value="' +
-          protocolResearcherList[key] +
-          '">' +
-          key +
-          "</option>"
+            protocolResearcherList[key] +
+            '">' +
+            key +
+            "</option>"
         );
       }
     }
@@ -334,6 +334,7 @@ function createConsRoleTagify(inputField) {
       closeOnSelect: true,
     },
   });
+  createDragSort(tagify);
 }
 
 function createConsAffliationTagify(inputField) {
@@ -347,6 +348,7 @@ function createConsAffliationTagify(inputField) {
     },
     duplicates: false,
   });
+  createDragSort(tagify);
 }
 
 /*
@@ -359,7 +361,7 @@ function cancelOtherContributors(table) {
   var rowIndex = rowcount - 1;
   var currentRow =
     document.getElementById(table).rows[
-    document.getElementById(table).rows.length - 1
+      document.getElementById(table).rows.length - 1
     ];
   currentRow.cells[0].outerHTML =
     "<td class='grab'><select id='ds-description-contributor-list-last-" +
@@ -383,7 +385,7 @@ function addOtherContributors(table) {
   var rowIndex = rowcount;
   var currentRow =
     document.getElementById(table).rows[
-    document.getElementById(table).rows.length - 1
+      document.getElementById(table).rows.length - 1
     ];
   currentRow.cells[0].outerHTML =
     "<td><input type='text' placeholder='Type here' contenteditable='true' id='other-contributors-last-" +
@@ -460,7 +462,7 @@ function resetDDUI(table) {
   var rowIndex = rowcount - 1;
   var currentRow =
     document.getElementById(table).rows[
-    document.getElementById(table).rows.length - 1
+      document.getElementById(table).rows.length - 1
     ];
 
   $("#SPARC-Award-raw-input-div-dd").css("display", "none");
@@ -762,7 +764,7 @@ const generateDDFile = async (uploadBFBoolean) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   var datasetInfoValueObj = grabDSInfoEntries();
   var studyInfoValueObject = grabStudyInfoEntries();
   //// grab entries from contributor info section and pass values to conSectionArray
@@ -1110,21 +1112,29 @@ async function helpSPARCAward(filetype, curationMode) {
   var award = "";
   if (filetype === "dd") {
     var res = airtableRes;
+    console.log(res);
     if (curationMode === "free-form") {
       $("#select-sparc-award-dd-spinner").css("display", "block");
     }
     if (res[0]) {
-      var keyname = res[1];
-      var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'dd\', '${curationMode}')" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4><div
+      console.log("UHHH HANDLE HERE?");
+      let keyname = res[1];
+      let swalElement = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'dd\', '${curationMode}')" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4><div
         class="search-select-box"><select id="select-SPARC-award" class="w-100" data-live-search="true"style="width: 450px;border-radius: 7px;padding: 8px;"data-none-selected-text="Loading awards..."></select></div></div>`;
       const { value: awardVal } = await Swal.fire({
-        html: htmlEle,
+        html: swalElement,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         inputPlaceholder: "Select an award",
         showCancelButton: true,
         confirmButtonText: "Confirm",
         reverseButtons: reverseSwalButtons,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
         didOpen: () => {
           $("#select-sparc-award-dd-spinner").css("display", "none");
           populateSelectSPARCAward(awardObj, "select-SPARC-award");
@@ -1154,16 +1164,24 @@ async function helpSPARCAward(filetype, curationMode) {
               cancelButtonColor: "#f44336",
               confirmButtonColor: "#3085d6",
               confirmButtonText: "Yes",
+              showClass: {
+                popup: "animate__animated animate__zoomIn animate__faster",
+              },
+              hideClass: {
+                popup: "animate__animated animate__zoomOut animate__faster",
+              },
             }).then((boolean) => {
               if (boolean.isConfirmed) {
-                changeAward(award, "free-form");
+                changeAward(award);
               }
             });
           } else {
-            changeAward(award, "free-form");
+            changeAward(award);
           }
-        }
-        if (curationMode === "guided") {
+        } else if (curationMode === "guided") {
+          changeAward(award, "guided");
+        } else {
+          //curationMode is getting-started page
           changeAward(award, "guided");
         }
       }
@@ -1180,6 +1198,12 @@ async function helpSPARCAward(filetype, curationMode) {
         cancelButtonColor: "#f44336",
         confirmButtonColor: "#3085d6",
         confirmButtonText: "Yes",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
       }).then((boolean) => {
         if (boolean.isConfirmed) {
           showAddAirtableAccountSweetalert("dd", curationMode);
@@ -1190,6 +1214,7 @@ async function helpSPARCAward(filetype, curationMode) {
   }
   if (filetype === "submission") {
     var res = airtableRes;
+    console.log(res);
     let currentMilestonesInTextArea = null;
     if (curationMode == "free-form") {
       $("#select-sparc-award-submission-spinner").css("display", "block");
@@ -1197,7 +1222,8 @@ async function helpSPARCAward(filetype, curationMode) {
     }
     currentMilestonesInTextArea = $("#selected-milestone-1");
 
-    if (res[0]) {
+    if (res[0] && curationMode != "guided--getting-started") {
+      console.log("OR HERE???");
       var keyname = res[1];
       var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'submission\', '${curationMode}')" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4><div
         class="search-select-box"><select id="select-SPARC-award-submission" class="w-100" data-live-search="true"style="width: 450px;border-radius: 7px;padding: 8px;"data-none-selected-text="Loading awards..."></select></div></div>`;
@@ -1208,6 +1234,12 @@ async function helpSPARCAward(filetype, curationMode) {
         inputPlaceholder: "Select an award",
         showCancelButton: true,
         confirmButtonText: "Confirm",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
         didOpen: () => {
           $("#select-sparc-award-submission-spinner").css("display", "none");
           populateSelectSPARCAward(awardObj, "select-SPARC-award-submission");
@@ -1234,6 +1266,12 @@ async function helpSPARCAward(filetype, curationMode) {
             cancelButtonColor: "#f44336",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "Yes",
+            showClass: {
+              popup: "animate__animated animate__zoomIn animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__zoomOut animate__faster",
+            },
           }).then((boolean) => {
             if (boolean.isConfirmed) {
               if (curationMode === "free-form") {
@@ -1242,12 +1280,11 @@ async function helpSPARCAward(filetype, curationMode) {
                 $("#ds-description-award-input").val(award);
                 document.getElementById("submission-completion-date").value =
                   "";
-                loadContributorInfofromAirtable(award, "free-form");
+                loadContributorInfofromAirtable(award);
               }
-
+              console.log(curationMode);
               if (curationMode === "guided") {
                 guidedSetImportedSPARCAward(award);
-                loadContributorInfofromAirtable(award, "guided");
               }
             }
           });
@@ -1260,8 +1297,97 @@ async function helpSPARCAward(filetype, curationMode) {
           }
 
           if (curationMode === "guided") {
+            const gettingStartedAirtable = document.getElementById(
+              "getting-started-button-import-sparc-award"
+            );
+            gettingStartedAirtable.children[1].style.display = "none";
+            gettingStartedAirtable.children[0].style.display = "flex";
+            guidedSetImportedSPARCAward(award);
+          }
+        }
+      }
+    } else if (res[0] && curationMode == "guided--getting-started") {
+      const airTableGettingStartedBtn = document.getElementById(
+        "getting-started-button-import-sparc-award"
+      );
+      airTableGettingStartedBtn.children[1].style.display = "none";
+      airTableGettingStartedBtn.children[0].style.display = "flex";
+      var keyname = res[1];
+      var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-around">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span></h4></div>`;
+      const { value: awardVal } = await Swal.fire({
+        html: htmlEle,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showCancelButton: true,
+        confirmButtonText: "Change",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+        didOpen: () => {
+          $("#select-sparc-award-submission-spinner").css("display", "none");
+        },
+      });
+      if (awardVal) {
+        if (currentMilestonesInTextArea.val() !== "") {
+          Swal.fire({
+            title:
+              "Are you sure you want to delete all of the previous milestone information?",
+            showCancelButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            cancelButtonText: `No!`,
+            cancelButtonColor: "#f44336",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "Yes",
+            showClass: {
+              popup: "animate__animated animate__zoomIn animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__zoomOut animate__faster",
+            },
+          }).then((boolean) => {
+            if (boolean.isConfirmed) {
+              if (curationMode === "free-form") {
+                milestoneTagify1.removeAllTags();
+                $("#submission-sparc-award").val(award);
+                $("#ds-description-award-input").val(award);
+                document.getElementById("submission-completion-date").value =
+                  "";
+                loadContributorInfofromAirtable(award, "free-form");
+              }
+              console.log(curationMode);
+              if (curationMode === "guided") {
+                guidedSetImportedSPARCAward(award);
+                loadContributorInfofromAirtable(award, "guided");
+              }
+            }
+          });
+        } else {
+          if (curationMode === "free-form") {
+            milestoneTagify1.removeAllTags();
+            $("#submission-sparc-award").val(award);
+            $("#ds-description-award-input").val(award);
+            document.getElementById("submission-completion-date").value = "";
+          } else if (curationMode === "guided") {
+            const gettingStartedAirtable = document.getElementById(
+              "getting-started-button-import-sparc-award"
+            );
+            gettingStartedAirtable.children[1].style.display = "none";
+            gettingStartedAirtable.children[0].style.display = "flex";
             guidedSetImportedSPARCAward(award);
             loadContributorInfofromAirtable(award, "guided");
+          } else {
+            //curationMode = guided--getting-started
+            const gettingStartedAirtable = document.getElementById(
+              "getting-started-button-import-sparc-award"
+            );
+            gettingStartedAirtable.children[1].style.display = "none";
+            gettingStartedAirtable.children[0].style.display = "flex";
+            showAddAirtableAccountSweetalert("submission", "guided");
+            document.getElementById("guided-button-import-sparc-award").click();
           }
         }
       }
@@ -1277,6 +1403,12 @@ async function helpSPARCAward(filetype, curationMode) {
         cancelButtonColor: "#f44336",
         confirmButtonColor: "#3085d6",
         confirmButtonText: "Yes",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
       }).then((boolean) => {
         if (boolean.isConfirmed) {
           showAddAirtableAccountSweetalert("submission", curationMode);
@@ -1300,7 +1432,7 @@ function populateSelectSPARCAward(object, id) {
   }
 }
 
-function changeAward(award, curationMode) {
+function changeAward(award) {
   Swal.fire({
     title: "Loading your award and contributor information.",
     html: "Please wait...",
@@ -1313,10 +1445,10 @@ function changeAward(award, curationMode) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   $("#ds-description-award-input").val(award);
   $("#submission-sparc-award").val(award);
-  loadContributorInfofromAirtable(award, curationMode);
+  loadContributorInfofromAirtable(award);
 }
 
 const generateContributorRowElement = (
@@ -1373,7 +1505,7 @@ const addContributorRowElement = () => {
   divAfter.insertAdjacentHTML("beforebegin", newContributorRowElement);
 };
 
-const loadContributorInfofromAirtable = async (award, curationMode) => {
+const loadContributorInfofromAirtable = async (award) => {
   globalContributorNameObject = {};
   currentContributorsLastNames = [];
   $("#contributor-table-dd tr:gt(0)").remove();
@@ -1412,40 +1544,6 @@ const loadContributorInfofromAirtable = async (award, curationMode) => {
         return;
       }
     }
-  }
-  if (curationMode === "guided") {
-    // render the contributors table on the contributors page
-    let contributorTableRows = Object.keys(globalContributorNameObject)
-      .map((contributor) => {
-        const contributorLast = contributor;
-        const contributorFirst = globalContributorNameObject[contributor];
-        return generateContributorRowElement(contributorLast, contributorFirst);
-      })
-      .join("\n");
-
-    //If the response is empty, hide the contributor selection table
-    //and allow the user to add contributors manually
-    if (contributorTableRows.length === 0) {
-      //create a notyf
-      notyf.error("No contributors found for this award.");
-      //hide AirTable contributor table and show contributor information fields
-      document
-        .getElementById("guided-div-contributors-imported-from-airtable")
-        .classList.add("hidden");
-      document
-        .getElementById("guided-div-contributor-field-set")
-        .classList.remove("hidden");
-
-      document.getElementById("contributors-container").innerHTML = "";
-      //add an empty contributor information fieldset
-      addContributorField();
-      return;
-    }
-
-    const contributorsTableContainer = document.getElementById(
-      "contributors-table-container"
-    );
-    contributorsTableContainer.innerHTML = contributorTableRows;
   }
 };
 
@@ -1559,6 +1657,8 @@ function showContributorSweetalert(key) {
           duplicates: false,
         }
       );
+      createDragSort(currentContributortagify);
+
       currentAffliationtagify = new Tagify(
         document.getElementById("input-con-affiliation"),
         {
@@ -1573,6 +1673,8 @@ function showContributorSweetalert(key) {
           duplicates: false,
         }
       );
+      createDragSort(currentAffliationtagify);
+
       // load contributor names onto Select
       if (Object.keys(globalContributorNameObject).length !== 0) {
         if (key === false) {
@@ -1744,6 +1846,8 @@ function showContributorSweetalert(key) {
           duplicates: false,
         }
       );
+      createDragSort(currentContributortagify);
+
       currentAffliationtagify = new Tagify(
         document.getElementById("input-con-affiliation"),
         {
@@ -1758,6 +1862,8 @@ function showContributorSweetalert(key) {
           duplicates: false,
         }
       );
+      createDragSort(currentAffliationtagify);
+
       // load contributor names onto Select
       if (Object.keys(globalContributorNameObject).length !== 0) {
         if (key === false) {
@@ -1942,6 +2048,8 @@ function edit_current_con_id(ev) {
           duplicates: false,
         }
       );
+      createDragSort(currentContributortagify);
+
       currentAffliationtagify = new Tagify(
         document.getElementById("input-con-affiliation"),
         {
@@ -1956,6 +2064,8 @@ function edit_current_con_id(ev) {
           duplicates: false,
         }
       );
+      createDragSort(currentAffliationtagify);
+
       for (var contributor of contributorArray) {
         if (contributor.conName === name) {
           // add existing tags to tagifies
@@ -2260,7 +2370,7 @@ function addNewRow(table) {
   var rowIndex = rowcount;
   var currentRow =
     document.getElementById(table).rows[
-    document.getElementById(table).rows.length - 1
+      document.getElementById(table).rows.length - 1
     ];
   if (table === "doi-table") {
     if (
@@ -2693,7 +2803,7 @@ function importExistingDDFile() {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       setTimeout(loadDDfileDataframe(filePath), 1000);
     }
   }
@@ -2859,7 +2969,7 @@ function loadDDFileToUI(object, file_type) {
       // populate awards
       globalSPARCAward = arr[1];
       $("#ds-description-award-input").val(arr[1]);
-      changeAward(globalSPARCAward, "free-form");
+      changeAward(globalSPARCAward);
       populateTagifyDD(otherFundingTagify, arr.splice(2));
     }
   }

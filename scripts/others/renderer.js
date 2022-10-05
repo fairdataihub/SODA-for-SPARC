@@ -32,6 +32,8 @@ const validator = require("validator");
 const doiRegex = require("doi-regex");
 const lottie = require("lottie-web");
 const select2 = require("select2")();
+const DragSort = require("@yaireo/dragsort");
+
 // TODO: Test with a build
 const {
   datasetUploadSession,
@@ -221,6 +223,8 @@ document.getElementById("getting_starting_tab").click();
 
 let client = null;
 
+// get port number from the main process
+
 // TODO: change the default port so it is based off the discovered port in Main.js
 client = axios.create({
   baseURL: `http://127.0.0.1:${port}/`,
@@ -363,7 +367,7 @@ const startupServerAndApiCheck = async () => {
   // notify the user that the application is starting connecting to the server
   Swal.fire({
     icon: "info",
-    title: `Connecting to the SODA server`,
+    title: `Initializing SODA's background services...`,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: "Restart now",
@@ -380,27 +384,37 @@ const startupServerAndApiCheck = async () => {
   // ( during the wait period the server should start )
   // Bonus:  doesn't stop Windows and Linux users from starting right away
   // NOTE: backOff is bad at surfacing errors to the console
-  try {
-    await backOff(serverIsLiveStartup, {
-      delayFirstAttempt: true,
-      startingDelay: 1000, // 1 second + 2 second + 4 second + 8 second + 16 seconds + 32 seconds
-      timeMultiple: 2,
-      numOfAttempts: 6,
-      maxDelay: 32000, // 16 seconds max wait time
-    });
-  } catch (e) {
-    log.error(e);
-    console.error(e);
+  //while variable is false keep requesting, if time exceeds two minutes break
+  let status = false;
+  let time_start = new Date();
+  let error = "";
+  while (true) {
+    try {
+      status = await serverIsLiveStartup();
+    } catch (e) {
+      error = e;
+      status = false;
+    }
+    time_pass = new Date() - time_start;
+    if (status) break;
+    if (time_pass > 120000) break; //break after two minutes
+    await wait(2000);
+  }
+
+  if (!status) {
+    //two minutes pass then handle connection error
+    // SWAL that the server needs to be restarted for the app to work
+    clientError(error);
     ipcRenderer.send(
       "track-event",
       "Error",
       "Establishing Python Connection",
-      e
+      error
     );
-    // SWAL that the server needs to be restarted for the app to work
+
     await Swal.fire({
       icon: "error",
-      html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+      html: `Something went wrong while initializing SODA's background services. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Restart now",
@@ -429,6 +443,15 @@ const startupServerAndApiCheck = async () => {
   } catch (e) {
     // api versions do not match
     app.exit();
+  }
+
+  let nodeStorage = new JSONStorage(app.getPath("userData"));
+  launchAnnouncement = nodeStorage.getItem("announcements");
+  console.log(launchAnnouncement);
+  if (launchAnnouncement) {
+    nodeStorage.setItem("announcements", false);
+    await checkForAnnouncements("announcements");
+    launchAnnouncement = false;
   }
 
   apiVersionChecked = true;
@@ -470,6 +493,13 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
   }
 
   ipcRenderer.send("track-event", "Success", "Setting Templates Path");
+});
+
+let launchAnnouncement = false;
+ipcRenderer.on("checkForAnnouncements", (event, index) => {
+  launchAnnouncement = true;
+  let nodeStorage = new JSONStorage(app.getPath("userData"));
+  nodeStorage.setItem("announcements", false);
 });
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
@@ -634,6 +664,10 @@ const run_pre_flight_checks = async (check_update = true) => {
                   type: "final",
                   message: "You're all set!",
                 });
+                if (launchAnnouncement) {
+                  await checkForAnnouncements("announcements");
+                  launchAnnouncement = false;
+                }
                 resolve(true);
               }
             });
@@ -646,6 +680,10 @@ const run_pre_flight_checks = async (check_update = true) => {
               type: "final",
               message: "You're all set!",
             });
+            if (launchAnnouncement) {
+              await checkForAnnouncements("announcements");
+              launchAnnouncement = false;
+            }
             resolve(true);
           }
         }
@@ -690,7 +728,6 @@ const serverIsLiveStartup = async () => {
   try {
     echoResponseObject = await client.get("/startup/echo?arg=server ready");
   } catch (error) {
-    clientError(error);
     throw error;
   }
 
@@ -722,7 +759,7 @@ const apiVersionsMatch = async () => {
 
     await Swal.fire({
       icon: "error",
-      html: `The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+      html: `Something went wrong while initializing SODA's background services. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Close now",
@@ -749,13 +786,15 @@ const apiVersionsMatch = async () => {
 
     await Swal.fire({
       icon: "error",
-      html: `${serverAppVersion} ${appVersion} The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+      html: `${appVersion} ${serverAppVersion}The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA or check to see if a previous version is running in the background with the instructions on our <a href='https://docs.sodaforsparc.io/docs/common-errors/pennsieve-agent-is-already-running' target='_blank'>documentation page.</a> If this issue occurs multiple times, please email <a href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Close now",
       allowOutsideClick: false,
       allowEscapeKey: false,
     });
+
+    //await checkForAnnouncements("update")
 
     throw new Error();
   }
@@ -787,7 +826,7 @@ const check_internet_connection = async (show_notification = true) => {
   }
   await wait(800);
 
-  return require("dns").resolve("www.google.com", (err) => {
+  return require("dns").resolve("www.google.com", async (err) => {
     if (err) {
       console.error("No internet connection");
       log.error("No internet connection");
@@ -1006,7 +1045,7 @@ ipcRenderer.on("update_available", () => {
 });
 
 // When the update is downloaded, show the restart notification
-ipcRenderer.on("update_downloaded", () => {
+ipcRenderer.on("update_downloaded", async () => {
   ipcRenderer.removeAllListeners("update_downloaded");
   ipcRenderer.send(
     "track-event",
@@ -1028,13 +1067,15 @@ ipcRenderer.on("update_downloaded", () => {
         "Update downloaded. It will be installed on the restart of the app. Click here to restart SODA now.",
     });
   }
-  update_downloaded_notification.on("click", ({ target, event }) => {
+  update_downloaded_notification.on("click", async ({ target, event }) => {
     restartApp();
+    //a sweet alert will pop up announcing user to manually update if SODA fails to restart
+    checkForAnnouncements("update");
   });
 });
 
 // Restart the app for update. Does not restart on macos
-const restartApp = () => {
+const restartApp = async () => {
   notyf.open({
     type: "app_update_warning",
     message: "Closing SODA now...",
@@ -1290,14 +1331,14 @@ var guidedProgressFilePath = path.join(
 const guidedManifestFilePath = path.join(
   homeDirectory,
   "SODA",
-  "Guided-Manifest-Files"
+  "guided_manifest_files"
 );
 var protocolConfigPath = path.join(metadataPath, protocolConfigFileName);
 var allCollectionTags = {};
 var currentTags = {};
 var currentCollectionTags = [];
 
-if (process.platform === "darwin" || process.platform === "linux") {
+if (process.platform === "linux") {
   //check if data exists inside of the Soda folder, and if it does, move it into the capitalized SODA folder
   if (fs.existsSync(path.join(homeDirectory, "Soda"))) {
     //copy the folder contents of home/Soda to home/SODA
@@ -1309,6 +1350,19 @@ if (process.platform === "darwin" || process.platform === "linux") {
     fs.removeSync(path.join(homeDirectory, "Soda"));
   }
 }
+
+const createDragSort = (tagify) => {
+  const onDragEnd = () => {
+    tagify.updateValueByDOMTags();
+  };
+  new DragSort(tagify.DOM.scope, {
+    selector: "." + tagify.settings.classNames.tag,
+    callbacks: {
+      dragEnd: onDragEnd,
+    },
+  });
+};
+
 //initialize Tagify input field for guided submission milestones
 const guidedSubmissionTagsInput = document.getElementById(
   "guided-tagify-submission-milestone-tags-import"
@@ -1324,6 +1378,7 @@ const guidedSubmissionTagsTagify = new Tagify(guidedSubmissionTagsInput, {
     closeOnSelect: true,
   },
 });
+createDragSort(guidedSubmissionTagsTagify);
 
 const guidedSubmissionTagsInputManual = document.getElementById(
   "guided-tagify-submission-milestone-tags-manual"
@@ -1341,6 +1396,7 @@ const guidedSubmissionTagsTagifyManual = new Tagify(
     },
   }
 );
+createDragSort(guidedSubmissionTagsTagifyManual);
 
 // initiate Tagify input fields for Dataset description file
 var keywordInput = document.getElementById("ds-keywords"),
@@ -1348,10 +1404,13 @@ var keywordInput = document.getElementById("ds-keywords"),
     duplicates: false,
   });
 
+createDragSort(keywordTagify);
+
 var otherFundingInput = document.getElementById("ds-other-funding"),
   otherFundingTagify = new Tagify(otherFundingInput, {
     duplicates: false,
   });
+createDragSort(otherFundingTagify);
 
 var collectionDatasetInput = document.getElementById("tagify-collection-tags"),
   collectionDatasetTags = new Tagify(collectionDatasetInput, {
@@ -1368,6 +1427,7 @@ var collectionDatasetInput = document.getElementById("tagify-collection-tags"),
       rightKey: true,
     },
   });
+createDragSort(collectionDatasetTags);
 
 var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
   studyOrganSystemsTagify = new Tagify(studyOrganSystemsInput, {
@@ -1398,27 +1458,32 @@ var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
       closeOnSelect: true,
     },
   });
+createDragSort(studyOrganSystemsTagify);
 
 var studyTechniquesInput = document.getElementById("ds-study-technique"),
   studyTechniquesTagify = new Tagify(studyTechniquesInput, {
     duplicates: false,
   });
+createDragSort(studyTechniquesTagify);
 
 var studyApproachesInput = document.getElementById("ds-study-approach"),
   studyApproachesTagify = new Tagify(studyApproachesInput, {
     duplicates: false,
   });
+createDragSort(studyApproachesTagify);
 
 // tagify the input inside of the "Add/edit tags" manage dataset section
 var datasetTagsInput = document.getElementById("tagify-dataset-tags"),
   // initialize Tagify on the above input node reference
   datasetTagsTagify = new Tagify(datasetTagsInput);
+createDragSort(datasetTagsTagify);
 
 var guidedDatasetTagsInput = document.getElementById(
     "guided-tagify-dataset-tags"
   ),
   // initialize Tagify on the above input node reference
   guidedDatasetTagsTagify = new Tagify(guidedDatasetTagsInput);
+createDragSort(guidedDatasetTagsTagify);
 
 ///////////////////// Airtable Authentication /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -1540,6 +1605,7 @@ var milestoneTagify1 = new Tagify(milestoneInput1, {
     closeOnSelect: true,
   },
 });
+createDragSort(milestoneTagify1);
 
 // generate subjects file
 ipcRenderer.on(
@@ -2619,6 +2685,8 @@ function loadContributorInfo(lastName, firstName) {
       closeOnSelect: true,
     },
   });
+  createDragSort(tagifyRole);
+
   var tagifyAffliation = new Tagify(
     document.getElementById("input-con-affiliation"),
     {
@@ -2633,6 +2701,8 @@ function loadContributorInfo(lastName, firstName) {
       duplicates: false,
     }
   );
+  createDragSort(tagifyAffliation);
+
   tagifyRole.removeAllTags();
   tagifyAffliation.removeAllTags();
   var contactLabel = $("#ds-contact-person");
@@ -3178,6 +3248,7 @@ const { resolve } = require("path");
 const { background } = require("jimp");
 const { rename } = require("fs");
 const { resolveSoa } = require("dns");
+const internal = require("stream");
 var cropOptions = {
   aspectRatio: 1,
   movable: false,
@@ -4073,7 +4144,14 @@ async function loadDefaultAccount() {
 
   if (accounts.length > 0) {
     var myitemselect = accounts[0];
+    const guidedPennsieveAccount = document.getElementById(
+      "getting-started-pennsieve-account"
+    );
+    svgElements = guidedPennsieveAccount.children;
+    svgElements[0].style.display = "none";
+    svgElements[1].style.display = "flex";
     defaultBfAccount = myitemselect;
+
     $("#current-bf-account").text(myitemselect);
     $("#current-bf-account-generate").text(myitemselect);
     $("#create_empty_dataset_BF_account_span").text(myitemselect);
@@ -4597,6 +4675,7 @@ async function retrieveBFAccounts() {
   return [bfAccountOptions, bfAccountOptionsStatus];
 }
 
+let defaultAccountDetails = "";
 async function showDefaultBFAccount() {
   try {
     let bf_default_acc_req = await client.get(
@@ -4621,9 +4700,12 @@ async function showDefaultBFAccount() {
         $("#current-bf-account-generate").text(defaultBfAccount);
         $("#create_empty_dataset_BF_account_span").text(defaultBfAccount);
         $(".bf-account-span").text(defaultBfAccount);
-        $("#para-account-detail-curate-generate").html(accountDetails);
+        $("#card-right bf-account-details-span").html(accountDetails);
         $("#para_create_empty_dataset_BF_account").html(accountDetails);
+        $("#para-account-detail-curate-generate").html(accountDetails);
         $(".bf-account-details-span").html(accountDetails);
+        defaultAccountDetails = accountDetails;
+        console.log(defaultAccountDetails);
 
         $("#div-bf-account-load-progress").css("display", "none");
         showHideDropdownButtons("account", "show");
@@ -4735,11 +4817,15 @@ ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
       try {
         await client.post(
           `/organize_datasets/datasets`,
+
           {
             generation_type: "create-new",
             generation_destination_path: filepath[0],
             dataset_name: newDSName,
             soda_json_directory_structure: datasetStructureJSONObj,
+          },
+          {
+            timeout: 0,
           },
           {
             timeout: 0,
@@ -4800,7 +4886,7 @@ ipcRenderer.on("selected-files-organize-datasets", async (event, path) => {
     });
   }
   if (path.length > 0) {
-    if (path.length < 500) {
+    if (path.length < 0) {
       await addFilesfunction(
         path,
         myPath,
@@ -4889,7 +4975,7 @@ ipcRenderer.on(
       }).then(async (result) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
-          if (pathElement.length > 500) {
+          if (pathElement.length > 0) {
             let load_spinner_promise = new Promise(async (resolved) => {
               let background = document.createElement("div");
               let spinner_container = document.createElement("div");
@@ -4936,7 +5022,7 @@ ipcRenderer.on(
             );
           }
         } else if (result.isDenied) {
-          if (pathElement.length > 500) {
+          if (pathElement.length > 0) {
             let load_spinner_promise = new Promise(async (resolved) => {
               let background = document.createElement("div");
               let spinner_container = document.createElement("div");
@@ -4985,7 +5071,7 @@ ipcRenderer.on(
         }
       });
     } else {
-      if (pathElement.length > 500) {
+      if (pathElement.length > 0) {
         let load_spinner_promise = new Promise(async (resolved) => {
           let background = document.createElement("div");
           let spinner_container = document.createElement("div");
@@ -5028,12 +5114,12 @@ ipcRenderer.on(
   }
 );
 
-async function addFoldersfunction(
+const addFoldersfunction = async (
   action,
   nonallowedFolderArray,
   folderArray,
   currentLocation
-) {
+) => {
   let importToast = new Notyf({
     position: { x: "right", y: "bottom" },
     ripple: true,
@@ -5218,7 +5304,7 @@ async function addFoldersfunction(
       );
     }
   }
-}
+};
 
 //// Step 3. Organize dataset: Add files or folders with drag&drop
 function allowDrop(ev) {
@@ -5310,10 +5396,80 @@ async function drop(ev) {
       } else {
         return;
       }
-      dropHelper(
+      let load_spinner_promise = new Promise(async (resolved) => {
+        let background = document.createElement("div");
+        let spinner_container = document.createElement("div");
+        let spinner_icon = document.createElement("div");
+        spinner_container.setAttribute("id", "items_loading_container");
+        spinner_icon.setAttribute("id", "item_load");
+        spinner_icon.setAttribute(
+          "class",
+          "ui large active inline loader icon-wrapper"
+        );
+        background.setAttribute("class", "loading-items-background");
+        background.setAttribute("id", "loading-items-background-overlay");
+
+        spinner_container.append(spinner_icon);
+        document.body.prepend(background);
+        document.body.prepend(spinner_container);
+        let loading_items_spinner = document.getElementById(
+          "items_loading_container"
+        );
+        loading_items_spinner.style.display = "block";
+        if (loading_items_spinner.style.display === "block") {
+          setTimeout(() => {
+            resolved();
+          }, 100);
+        }
+      }).then(async () => {
+        await dropHelper(
+          filesElement,
+          targetElement,
+          action,
+          myPath,
+          importedFiles,
+          importedFolders,
+          nonAllowedDuplicateFiles,
+          uiFiles,
+          uiFolders
+        );
+        // Swal.close();
+        document.getElementById("loading-items-background-overlay").remove();
+        document.getElementById("items_loading_container").remove();
+        // background.remove();
+      });
+    });
+  } else {
+    let load_spinner_promise = new Promise(async (resolved) => {
+      let background = document.createElement("div");
+      let spinner_container = document.createElement("div");
+      let spinner_icon = document.createElement("div");
+      spinner_container.setAttribute("id", "items_loading_container");
+      spinner_icon.setAttribute("id", "item_load");
+      spinner_icon.setAttribute(
+        "class",
+        "ui large active inline loader icon-wrapper"
+      );
+      background.setAttribute("class", "loading-items-background");
+      background.setAttribute("id", "loading-items-background-overlay");
+
+      spinner_container.append(spinner_icon);
+      document.body.prepend(background);
+      document.body.prepend(spinner_container);
+      let loading_items_spinner = document.getElementById(
+        "items_loading_container"
+      );
+      loading_items_spinner.style.display = "block";
+      if (loading_items_spinner.style.display === "block") {
+        setTimeout(() => {
+          resolved();
+        }, 100);
+      }
+    }).then(async () => {
+      await dropHelper(
         filesElement,
         targetElement,
-        action,
+        "",
         myPath,
         importedFiles,
         importedFolders,
@@ -5321,23 +5477,15 @@ async function drop(ev) {
         uiFiles,
         uiFolders
       );
+      // Swal.close();
+      document.getElementById("loading-items-background-overlay").remove();
+      document.getElementById("items_loading_container").remove();
+      // background.remove();
     });
-  } else {
-    dropHelper(
-      filesElement,
-      targetElement,
-      "",
-      myPath,
-      importedFiles,
-      importedFolders,
-      nonAllowedDuplicateFiles,
-      uiFiles,
-      uiFolders
-    );
   }
 }
 
-async function dropHelper(
+const dropHelper = async (
   ev1,
   ev2,
   action,
@@ -5347,7 +5495,7 @@ async function dropHelper(
   nonAllowedDuplicateFiles,
   uiFiles,
   uiFolders
-) {
+) => {
   let importToast = new Notyf({
     position: { x: "right", y: "bottom" },
     ripple: true,
@@ -5820,7 +5968,7 @@ async function dropHelper(
   }
   beginScrollListen();
   $("body").removeClass("waiting");
-}
+};
 
 var irregularFolderArray = [];
 function detectIrregularFolders(folderName, pathEle) {
@@ -6111,18 +6259,30 @@ function fileContextMenu(event) {
 }
 
 $(document).ready(function () {
-  tippy("[data-tippy-content]:not(.tippy-content-main)", {
-    allowHTML: true,
-    interactive: true,
-    placement: "top",
-    theme: "light",
-  });
+  tippy(
+    "[data-tippy-content]:not(.tippy-content-main):not(.guided-tippy-wrapper)",
+    {
+      allowHTML: true,
+      interactive: true,
+      placement: "top",
+      theme: "light",
+    }
+  );
 
   tippy(".tippy-content-main", {
     allowHTML: true,
     interactive: true,
     placement: "bottom",
     theme: "light",
+  });
+
+  tippy(".guided-tippy-wrapper", {
+    allowHTML: true,
+    interactive: true,
+    placement: "bottom",
+    theme: "light",
+    /*apply -5 bottom margin to negate button bottom margin*/
+    offset: [0, -3],
   });
 });
 
@@ -6753,7 +6913,10 @@ $("#inputNewNameDataset").on("click", () => {
 });
 
 $("#inputNewNameDataset").keyup(function () {
-  $("#nextBtn").prop("disabled", true);
+  let step6 = document.getElementById("generate-dataset-tab");
+  if (step6.classList.contains("tab-active")) {
+    $("#nextBtn").prop("disabled", true);
+  }
 
   var newName = $("#inputNewNameDataset").val().trim();
 
@@ -7527,6 +7690,9 @@ var uploadComplete = new Notyf({
 
 // Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
 async function initiate_generate() {
+  // Disable the Guided Mode sidebar button to prevent the sodaJSONObj from being modified
+  document.getElementById("guided_mode_view").style.pointerEvents = "none";
+
   // Initiate curation by calling Python function
   let manifest_files_requested = false;
   var main_curate_status = "Solving";
@@ -7657,6 +7823,8 @@ async function initiate_generate() {
         uploadedFiles,
         false
       );
+      //Allow guided_mode_view to be clicked again
+      document.getElementById("guided_mode_view").style.pointerEvents = "";
 
       try {
         let responseObject = await client.get(
@@ -7674,6 +7842,9 @@ async function initiate_generate() {
       }
     })
     .catch(async (error) => {
+      //Allow guided_mode_view to be clicked again
+      document.getElementById("guided_mode_view").style.pointerEvents = "";
+
       clientError(error);
       let emessage = userErrorMessage(error);
       organizeDataset_option_buttons.style.display = "flex";
@@ -7878,8 +8049,9 @@ async function initiate_generate() {
         var progressMessage = "";
         var statusProgressMessage = "";
         progressMessage += main_curate_progress_message + "<br>";
-        statusProgressMessage += main_curate_progress_message + "<br>";
         statusProgressMessage += "Progress: " + value.toFixed(2) + "%" + "<br>";
+        statusProgressMessage +=
+          "Elapsed time: " + elapsed_time_formatted + "<br>";
         progressMessage +=
           "Progress: " +
           value.toFixed(2) +
@@ -8275,106 +8447,6 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
   }
 });
 
-/**
- *
- * @param {object} sodaJSONObj - The SODA json object used for tracking files, folders, and basic dataset curation information such as providence (local or Pennsieve).
- * @returns {
- *    "soda_json_structure": {}
- *    "success_message": ""
- *    "manifest_error_message": ""
- * }
- */
-var bf_request_and_populate_dataset = async (sodaJSONObj) => {
-  let progress_container = document.getElementById("loading_pennsieve_dataset");
-  let percentage_text = document.getElementById(
-    "pennsieve_loading_dataset_percentage"
-  );
-  let left_progress_bar = document.getElementById(
-    "pennsieve_left-side_less_than_50"
-  );
-  let right_progress_bar = document.getElementById(
-    "pennsieve_right-side_greater_than_50"
-  );
-  percentage_text.innerText = "0%";
-  progress_container.style.display = "block";
-  left_progress_bar.style.transform = `rotate(0deg)`;
-  right_progress_bar.style.transform = `rotate(0deg)`;
-  let pennsieve_progress = setInterval(progressReport, 500);
-  async function progressReport() {
-    let progressResponse;
-    try {
-      progressResponse = await client.get(
-        "/organize_datasets/dataset_files_and_folders/progress"
-      );
-    } catch (error) {
-      clientError(error);
-      clearInterval(pennsieve_progress);
-      return;
-    }
-
-    let res = progressResponse.data;
-
-    let percentage_amount = res["import_progress_percentage"].toFixed(2);
-    finished = res["import_completed_items"];
-    percentage_text.innerText = percentage_amount + "%";
-    if (percentage_amount <= 50) {
-      left_progress_bar.style.transform = `rotate(${
-        percentage_amount * 0.01 * 360
-      }deg)`;
-    } else {
-      left_progress_bar.style.transition = "";
-      left_progress_bar.classList.add("notransition");
-      left_progress_bar.style.transform = `rotate(180deg)`;
-      right_progress_bar.style.transform = `rotate(${
-        percentage_amount * 0.01 * 180
-      }deg)`;
-    }
-
-    if (finished === 1) {
-      percentage_text.innerText = "100%";
-      left_progress_bar.style.transform = `rotate(180deg)`;
-      right_progress_bar.style.transform = `rotate(180deg)`;
-      right_progress_bar.classList.remove("notransition");
-      clearInterval(pennsieve_progress);
-      setTimeout(() => {
-        progress_container.style.display = "none";
-      }, 2000);
-    }
-  }
-
-  try {
-    let filesFoldersResponse = await client.post(
-      `/organize_datasets/dataset_files_and_folders`,
-      {
-        sodajsonobject: sodaJSONObj,
-      },
-      { timeout: 0 }
-    );
-
-    let data = filesFoldersResponse.data;
-
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      "Retrieve Dataset - Pennsieve",
-      defaultBfDatasetId
-    );
-
-    return data;
-  } catch (error) {
-    clearInterval(pennsieve_progress);
-    progress_container.style.display = "none";
-    clientError(error);
-    ipcRenderer.send(
-      "track-event",
-      "Error",
-      "Retrieve Dataset - Pennsieve",
-      defaultBfDatasetId
-    );
-    throw Error(userErrorMessage(error));
-  }
-};
-
 // When mode = "update", the buttons won't be hidden or shown to prevent button flickering effect
 const curation_consortium_check = async (mode = "") => {
   let selected_account = defaultBfAccount;
@@ -8756,6 +8828,9 @@ async function showBFAddAccountSweetalert() {
                       accountDetails
                     );
                     $("#para_create_empty_dataset_BF_account").html(
+                      accountDetails
+                    );
+                    $("#para-account-detail-curate-generate").html(
                       accountDetails
                     );
                     $(".bf-account-details-span").html(accountDetails);
@@ -9476,7 +9551,6 @@ $("#validate_dataset_bttn").on("click", async () => {
 
 //function used to scale banner images
 const scaleBannerImage = async (imagePath) => {
-  console.log("scaling");
   try {
     let imageScaled = await client.post(
       `/manage_datasets/bf_banner_image/scale_image`,

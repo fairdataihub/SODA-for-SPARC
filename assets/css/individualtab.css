@@ -1447,6 +1447,9 @@ body.swal2-shown > [aria-hidden="true"] {
 /* .swal2-content {
   text-align: left !important;
 } */
+.swal2-content .guided--form-label {
+  text-align: left;
+}
 
 /* Use this for any hide animations on sweet alert. Seems to look okay and makes the message disappear faster */
 .animate_fastest {

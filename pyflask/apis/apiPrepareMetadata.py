@@ -13,7 +13,9 @@ from prepareMetadata import (
     upload_RC_file,
     delete_manifest_dummy_folders,
     set_template_path, 
-    import_bf_manifest_file
+    import_bf_manifest_file,
+    manifest_creation_progress,
+    edit_bf_manifest_file
 )
 from flask import request
 import json
@@ -557,9 +559,9 @@ class GenerateManifestFilesPennsieve(Resource):
     def post(self):
         data = request.get_json()
 
-        selected_account = data["selected_account"]
-        selected_dataset = data["selected_dataset"]
-        soda_json_object = data["soda_json_object"]
+        selected_account = data.get("selected_account")
+        selected_dataset = data.get("selected_dataset")
+        soda_json_object = data.get("soda_json_object")
 
         if not selected_account or not selected_dataset or not soda_json_object:
             api.abort(400, "Error: To generate manifest files for Pennsieve provide a selected_account, selected_dataset, and soda_json_object.")
@@ -568,3 +570,39 @@ class GenerateManifestFilesPennsieve(Resource):
             return import_bf_manifest_file(soda_json_object, selected_account, selected_dataset)
         except Exception as e:
             api.abort(500, str(e))
+
+
+    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request'},
+             description="Edit manifest files that are stored locally. Used in the standalone manifest generator to edit manifest files before uploading to Pennsieve.")
+    def put(self):
+        data = request.get_json()
+
+        edit_action = data.get("action")
+        manifest_type = data.get("type")
+
+        if not edit_action or not manifest_type:
+            api.abort(400, "Cannot edit manifest files without the action and type provided.")
+
+        try:
+            return edit_bf_manifest_file(edit_action, manifest_type)
+        except Exception as e:
+            api.abort(500, str(e))
+
+
+manifest_creation_progress_model = api.model('ManifestCreationProgress', {
+    'total_manifest_files': fields.Integer(description='Total amount of manifest files that need to be created for the current dataset.'),
+    'manifest_files_uploaded': fields.Integer(description='Total amount of manifest files that have been created for the client.'),
+    'finished': fields.Boolean(description='Whether or not the manifest creation process has finished.')
+})
+
+@api.route('/manifest_files/pennsieve/progress')
+class GetManifestFilesPennsieveProgress(Resource):
+    
+        @api.doc(responses={500: 'There was an internal server error'}, 
+                description="Get the progress of the manifest file generation for Pennsieve. This is used to update the progress bar on the client side.")
+        @api.marshal_with(manifest_creation_progress_model, False, 200)
+        def get(self):
+            try:
+                return manifest_creation_progress()
+            except Exception as e:
+                api.abort(500, str(e))

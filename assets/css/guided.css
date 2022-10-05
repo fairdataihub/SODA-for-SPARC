@@ -1,6 +1,11 @@
-* {
-  box-sizing: border-box;
-}
+@import url("https://fonts.googleapis.com/css?family=Poppins:400,500,600,700");
+
+/* change the font to siblints of guided--body to Poppins except i elemenets */
+
+/*.guided--body *:not(i) {
+  font-family: "Poppins", sans-serif;
+}*/
+
 
 .container {
   max-width: 400px;
@@ -9,6 +14,51 @@
   padding: 40px;
 }
 
+
+
+.guided--info-dropdown {
+  width: 100%;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: start;
+  align-items: center;
+  cursor: pointer;
+}
+
+.guided--info-dropdown p {
+  margin: 0px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #000;
+}
+.guided--info-dropdown i {
+  margin-left: 6px;
+  margin-right: 6px;
+  font-size: 12px;
+  color: #000;
+}
+
+.guided--info-container {
+  background-color: var(--color-transparent-soda-green);
+
+  margin-top: 5px;
+  padding: 10px;
+
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+
+  text-align: justify;
+
+  border: 1px solid var(--color-light-green);
+  border-radius: 3px;
+}
+
+.container-open {
+  display: flex;
+  margin-bottom: 0px;
+  animation: demo-box-fade-in 0.2s cubic-bezier(0, 0.2, 0.2, 0.96);
+}
 .hide {
   pointer-events: none;
   visibility: hidden;
@@ -352,6 +402,11 @@
   border-radius: 5px;
 }
 
+.guided--select-picker {
+  border-radius: 5px;
+  border: 1px solid var(--color-light-green);
+}
+
 .neumorphic {
   border-radius: 10px;
   background: #ffffff;
@@ -571,6 +626,11 @@ h1.guided--text-sub-step {
   align-items: flex-start;
   flex-wrap: nowrap;
 }
+
+.guided--dataset-card-body.shrink {
+  height: auto;
+}
+
 .guided--dataset-card-item {
   display: flex;
   flex-direction: column;
@@ -1197,7 +1257,93 @@ h1.guided--text-sub-step {
   border-radius: 0;
 }
 
-
 .border-styling {
   border: 2px solid lightgray;
+}
+
+.before-getting-started-btn {
+  margin-bottom: 1.5rem;
+.lds-roller {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+.lds-roller div {
+  animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  transform-origin: 40px 40px;
+}
+.lds-roller div:after {
+  content: " ";
+  display: block;
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-light-green);
+  margin: -4px 0 0 -4px;
+}
+.lds-roller div:nth-child(1) {
+  animation-delay: -0.036s;
+}
+.lds-roller div:nth-child(1):after {
+  top: 63px;
+  left: 63px;
+}
+.lds-roller div:nth-child(2) {
+  animation-delay: -0.072s;
+}
+.lds-roller div:nth-child(2):after {
+  top: 68px;
+  left: 56px;
+}
+.lds-roller div:nth-child(3) {
+  animation-delay: -0.108s;
+}
+.lds-roller div:nth-child(3):after {
+  top: 71px;
+  left: 48px;
+}
+.lds-roller div:nth-child(4) {
+  animation-delay: -0.144s;
+}
+.lds-roller div:nth-child(4):after {
+  top: 72px;
+  left: 40px;
+}
+.lds-roller div:nth-child(5) {
+  animation-delay: -0.18s;
+}
+.lds-roller div:nth-child(5):after {
+  top: 71px;
+  left: 32px;
+}
+.lds-roller div:nth-child(6) {
+  animation-delay: -0.216s;
+}
+.lds-roller div:nth-child(6):after {
+  top: 68px;
+  left: 24px;
+}
+.lds-roller div:nth-child(7) {
+  animation-delay: -0.252s;
+}
+.lds-roller div:nth-child(7):after {
+  top: 63px;
+  left: 17px;
+}
+.lds-roller div:nth-child(8) {
+  animation-delay: -0.288s;
+}
+.lds-roller div:nth-child(8):after {
+  top: 56px;
+  left: 12px;
+}
+@keyframes lds-roller {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

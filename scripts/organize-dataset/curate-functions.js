@@ -4,7 +4,6 @@ var metadataFile = "";
 var jstreePreview = document.getElementById("div-dataset-tree-preview");
 const nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
 
-
 // per change event of current dataset span text
 function confirm_click_function() {
   let temp = $(".bf-dataset-span").html();
@@ -76,9 +75,6 @@ document
 //   .addEventListener("click", function () {
 //     openDropdownPrompt(this, "dataset");
 //   });
-
-
-
 
 $(".button-individual-metadata.remove").click(function () {
   var metadataFileStatus = $($(this).parents()[1]).find(
@@ -207,6 +203,16 @@ async function dropHandler(
   curationMode,
   dataDeliverables = false
 ) {
+  console.log(ev);
+  console.log(paraElement);
+  console.log(metadataFile);
+  console.log(curationMode);
+  console.log(dataDeliverables);
+  var gettingStartedSection = false;
+  if (curationMode === "guided-getting-started") {
+    curationMode = "guided";
+    var gettingStartedSection = true;
+  }
   // Prevent default behavior (Prevent file from being opened)
   ev.preventDefault();
   document.getElementById(paraElement).innerHTML = "";
@@ -219,7 +225,6 @@ async function dropHandler(
       var file = ev.dataTransfer.items[0].getAsFile();
       var metadataWithoutExtension = file.name.slice(0, file.name.indexOf("."));
       var extension = file.name.slice(file.name.indexOf("."));
-
 
       if (dataDeliverables === true) {
         let filepath = file.path;
@@ -260,29 +265,39 @@ async function dropHandler(
 
           //Handle guided mode submission data
           if (curationMode === "guided") {
+            console.log("within guided if");
             const guidedMilestoneData = res;
+            console.log(res);
             //create a string with today's date in the format xxxx/xx/xx
             const today = new Date();
             const todayString = `
-                  ${today.getFullYear()}-${today.getMonth() + 1
-              }-${today.getDate()}
+                  ${today.getFullYear()}-${
+              today.getMonth() + 1
+            }-${today.getDate()}
                 `;
             //add a custom milestone row for when the user wants to add a custom milestone
             //not included in the dataset deliverables document
             guidedMilestoneData[
               "Not included in the Dataset Deliverables document"
             ] = [
-                {
-                  "Description of data":
-                    "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
-                  "Expected date of completion": "N/A",
-                },
-              ];
+              {
+                "Description of data":
+                  "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
+                "Expected date of completion": "N/A",
+              },
+            ];
 
             //save the unselected milestones into sodaJSONObj
             sodaJSONObj["dataset-metadata"]["submission-metadata"][
               "temp-imported-milestones"
             ] = guidedMilestoneData;
+
+            console.log(guidedMilestoneData);
+            console.log(
+              sodaJSONObj["dataset-metadata"]["submission-metadata"][
+                "temp-imported-milestones"
+              ]
+            );
 
             sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] =
               filepath;
@@ -309,6 +324,52 @@ async function dropHandler(
               loop: true,
               autoplay: true,
             });
+
+            if (gettingStartedSection === true) {
+              const DDLottie = document.getElementById("swal-data-deliverable");
+              DDLottie.innerHTML = "";
+              lottie.loadAnimation({
+                container: DDLottie,
+                animationData: successCheck,
+                renderer: "svg",
+                loop: true,
+                autoplay: true,
+              });
+              let swal_actions =
+                document.getElementsByClassName("swal2-actions")[0];
+              swal_actions.children[1].style.display = "flex";
+              let swal_content =
+                document.getElementsByClassName("swal2-content")[0];
+
+              let ddFilePath =
+                sodaJSONObj["dataset-metadata"]["submission-metadata"][
+                  "filepath"
+                ];
+              if (ddFilePath) {
+                //append file path
+                let firstItem = swal_content.children[0];
+                console.log(swal_content);
+                let paragraph = document.createElement("p");
+                let paragraph2 = document.createElement("p");
+                paragraph.id = "getting-started-filepath";
+                paragraph2.innerText =
+                  "To replace the current Data Deliverables just drop in or select a new one.";
+                paragraph2.style.marginBottom = "1rem";
+                paragraph.style.marginTop = "1rem";
+                paragraph.style.fontWeight = "700";
+                paragraph.innerText = "File Path: " + ddFilePath;
+                console.log(firstItem);
+                if (firstItem.children[0].id === "getting-started-filepath") {
+                  firstItem.children[0].remove();
+                  firstItem.children[firstItem.childElementCount - 1].remove();
+                }
+                firstItem.append(paragraph2);
+                firstItem.prepend(paragraph);
+                document
+                  .getElementById("guided-button-import-data-deliverables")
+                  .click();
+              }
+            }
           }
         } catch (error) {
           clientError(error);
@@ -320,6 +381,7 @@ async function dropHandler(
           });
         }
       } else {
+        console.log("DD???");
         //dataDelieravles is true for the name to be however it needs to be, just check extension is doc or docx
         if (metadataWithoutExtension === metadataFile) {
           if (metadataFileExtensionObject[metadataFile].includes(extension)) {
@@ -752,7 +814,7 @@ function populateMetadataProgress(
 //////////////////////// Main Import progress function
 let missing_dataset_files = [];
 let missing_metadata_files = [];
-function loadProgressFile(ev) {
+const loadProgressFile = (ev) => {
   let return_option = "";
   missing_dataset_files = [];
   missing_metadata_files = [];
@@ -764,7 +826,7 @@ function loadProgressFile(ev) {
   var jsonContent = progressFileParse(ev);
 
   $("#para-progress-file-status").html("");
-  $("#nextBtn").prop("disabled", true);
+  // $("#nextBtn").prop("disabled", true);
 
   // create loading effect
   $("#div-progress-file-loader").css("display", "block");
@@ -784,7 +846,10 @@ function loadProgressFile(ev) {
         document.getElementById("div-progress-file-loader").style.display =
           "none";
         $("body").removeClass("waiting");
-        document.getElementById("nextBtn").disabled = false;
+        let nextBtn = document.getElementById("nextBtn");
+        if (nextBtn.disabled) {
+          nextBtn.removeAttribute("disabled");
+        }
         document.getElementById("para-progress-file-status").innerHTML =
           "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
 
@@ -797,7 +862,7 @@ function loadProgressFile(ev) {
           Destinations.SAVED
         );
       }
-    }, 1300);
+    }, 1000);
   } else {
     sodaJSONObj =
       '{"starting-point":"new","dataset-structure":{},"metadata-files":{}}';
@@ -816,7 +881,7 @@ function loadProgressFile(ev) {
       }
     }, 500);
   }
-}
+};
 
 const verify_missing_files = (mode) => {
   let missing_files = missing_metadata_files.concat(missing_dataset_files);
@@ -1369,11 +1434,13 @@ $(document).ready(function () {
   });
 });
 
-async function moveItems(ev, category) {
+const moveItems = async (ev, category) => {
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   var selectedOriginalLocation = filtered[filtered.length - 1];
   var selectedItem = ev.parentElement.innerText;
+  let item_name = ev.nextSibling.innerText;
+
   /*
   Reset previously selected items first, create jsTreeData again with updated dataset structure JSON object.
   Always remember to exclude/delete:
@@ -1386,9 +1453,9 @@ async function moveItems(ev, category) {
   for (var highLevelFol in datasetStructureJSONObj["folders"]) {
     if (
       "manifest.xlsx" in
-      datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
+        datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
       datasetStructureJSONObj["folders"][highLevelFol]["files"][
-      "manifest.xlsx"
+        "manifest.xlsx"
       ]["forTreeview"] === true
     ) {
       delete datasetStructureJSONObj["folders"][highLevelFol]["files"][
@@ -1479,6 +1546,9 @@ async function moveItems(ev, category) {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     }).then((result) => {
+      let duplicateItems = [`<ul style="text-align: center;">`];
+      // let duplicateBool = false;
+      // duplicateItems[0] = `<ul style="text-align: start;">`;
       let numberItems = $("div.single-item.selected-item").toArray().length;
       let timer = 2000;
       if (numberItems > 10) {
@@ -1500,59 +1570,127 @@ async function moveItems(ev, category) {
             Swal.showLoading();
           },
         }).then(() => {
-          Swal.fire({
-            backdrop: "rgba(0,0,0, 0.4)",
-            heightAuto: false,
-            icon: "success",
-            text: "Successfully moved items!",
-            didOpen: () => {
-              Swal.hideLoading();
-            },
-          });
-        });
-        // action to move and delete here
-        // multiple files/folders
-        if ($("div.single-item.selected-item").toArray().length > 1) {
-          $("div.single-item.selected-item")
-            .toArray()
-            .forEach((element) => {
-              let itemToMove = element.textContent;
-              var itemType;
-              if ($(element.firstElementChild).hasClass("myFile")) {
-                itemType = "files";
-              } else if ($(element.firstElementChild).hasClass("myFol")) {
-                itemType = "folders";
+          // action to move and delete here
+          // multiple files/folders
+          let split = selectedPath.split("/");
+          let datasetCopy = datasetStructureJSONObj;
+          if ($("div.single-item.selected-item").toArray().length > 1) {
+            $("div.single-item.selected-item")
+              .toArray()
+              .forEach((element) => {
+                datasetCopy = datasetStructureJSONObj;
+                let itemToMove = element.textContent;
+                var itemType;
+                if ($(element.firstElementChild).hasClass("myFile")) {
+                  itemType = "file";
+                } else if ($(element.firstElementChild).hasClass("myFol")) {
+                  itemType = "folder";
+                }
+                //do a check here
+                //store duplicates into array and then skip
+                //let user know which ones were duplicates
+
+                for (let i = 1; i < split.length; i++) {
+                  if (datasetCopy["folders"].hasOwnProperty(split[i])) {
+                    datasetCopy = datasetCopy["folders"][split[i]];
+                  }
+                }
+                if (itemType == "file") {
+                  datasetCopy = datasetCopy["files"];
+                } else {
+                  datasetCopy = datasetCopy["folders"];
+                }
+
+                if (datasetCopy.hasOwnProperty(itemToMove)) {
+                  if (itemType == "folder") {
+                    itemToMove = itemToMove + "/";
+                  }
+                  duplicateItems.push(
+                    `<li style="font-size: large;">${itemToMove}</li>`
+                  );
+                } else {
+                  moveItemsHelper(itemToMove, selectedPath, itemType);
+                  ev.parentElement.remove();
+                }
+              });
+            duplicateItems.push(`</ul>`);
+
+            if (duplicateItems.length > 2) {
+              Swal.fire({
+                backdrop: "rgba(0,0,0, 0.4)",
+                heightAuto: false,
+                icon: "error",
+                title: "The following are already in the folder destination!",
+                html: `${duplicateItems.join("")}`,
+                didOpen: () => {
+                  Swal.hideLoading();
+                },
+              });
+            }
+            // only 1 file/folder
+          } else {
+            let itemToMove = ev.parentElement.textContent;
+            var itemType;
+
+            if ($(ev).hasClass("myFile")) {
+              itemType = "file";
+            } else if ($(ev).hasClass("myFol")) {
+              itemType = "folder";
+            }
+
+            for (let i = 1; i < split.length; i++) {
+              if (split[i] in datasetCopy["folders"]) {
+                datasetCopy = datasetCopy["folders"][split[i]];
               }
+            }
+
+            if (itemType == "file") {
+              datasetCopy = datasetCopy["files"];
+            } else {
+              datasetCopy = datasetCopy["folders"];
+            }
+            if (datasetCopy.hasOwnProperty(itemToMove)) {
+              Swal.fire({
+                backdrop: "rgba(0,0,0, 0.4)",
+                heightAuto: false,
+                icon: "error",
+                title: `The ${itemType} is already in the folder destination!`,
+                html: `<ul style="text-align: center;"><li>${itemToMove}</li></ul>`,
+                didOpen: () => {
+                  Swal.hideLoading();
+                },
+              });
+            } else {
+              // return selectedPath;
               moveItemsHelper(itemToMove, selectedPath, itemType);
               ev.parentElement.remove();
-            });
-          // only 1 file/folder
-        } else {
-          let itemToMove = ev.parentElement.textContent;
-          var itemType;
-          if ($(ev).hasClass("myFile")) {
-            itemType = "files";
-          } else if ($(ev).hasClass("myFol")) {
-            itemType = "folders";
+              Swal.fire({
+                backdrop: "rgba(0,0,0, 0.4)",
+                heightAuto: false,
+                icon: "success",
+                text: "Successfully moved items!",
+                didOpen: () => {
+                  Swal.hideLoading();
+                },
+              });
+            }
           }
-          moveItemsHelper(itemToMove, selectedPath, itemType);
-          ev.parentElement.remove();
-        }
-        document.getElementById("input-global-path").value =
-          "My_dataset_folder/";
-        listItems(datasetStructureJSONObj, "#items", 500, (reset = true));
-        organizeLandingUIEffect();
-        // reconstruct div with new elements
-        getInFolder(
-          ".single-item",
-          "#items",
-          organizeDSglobalPath,
-          datasetStructureJSONObj
-        );
+          document.getElementById("input-global-path").value =
+            "My_dataset_folder/";
+          listItems(datasetStructureJSONObj, "#items", 500, (reset = true));
+          organizeLandingUIEffect();
+          // reconstruct div with new elements
+          getInFolder(
+            ".single-item",
+            "#items",
+            organizeDSglobalPath,
+            datasetStructureJSONObj
+          );
+        });
       }
     });
   }
-}
+};
 
 function moveItemsHelper(item, destination, category) {
   var filtered = getGlobalPath(organizeDSglobalPath);
@@ -1564,7 +1702,8 @@ function moveItemsHelper(item, destination, category) {
   );
 
   // handle duplicates in destination folder
-  if (category === "files") {
+  if (category === "file") {
+    category = "files";
     var uiFiles = {};
     if (JSON.stringify(destinationPath["files"]) !== "{}") {
       for (var file in destinationPath["files"]) {
@@ -1595,7 +1734,8 @@ function moveItemsHelper(item, destination, category) {
       }
     }
     destinationPath[category][fileBaseName] = myPath[category][item];
-  } else if (category === "folders") {
+  } else if (category === "folder") {
+    category = "folders";
     var uiFolders = {};
     if (JSON.stringify(destinationPath["folders"]) !== "{}") {
       for (var folder in destinationPath["folders"]) {

@@ -1,6 +1,7 @@
 ### Import required python modules
 from gevent import monkey
 from flask import abort
+
 monkey.patch_all()
 import platform
 import os
@@ -23,6 +24,8 @@ import gevent
 from pennsieve import Pennsieve
 import pathlib
 from datetime import datetime, timezone
+from namespaces import NamespaceEnum, get_namespace_logger
+namespace_logger = get_namespace_logger(NamespaceEnum.ORGANIZE_DATASETS)
 
 from manageDatasets import bf_get_current_user_permission
 
@@ -833,6 +836,8 @@ def monitor_local_json_progress():
 
 
 def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
+    global namespace_logger
+
     high_level_sparc_folders = [
         "code",
         "derivative",
@@ -886,6 +891,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     create_soda_json_completed = 0
 
     def verify_file_name(file_name, extension):
+        global namespace_logger
         if extension == "":
             return file_name
 
@@ -910,9 +916,13 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         else:
             return file_name + ("." + extension)
 
+    
+
     def createFolderStructure(subfolder_json, pennsieve_account, manifest):
         # root level folder will pass subfolders into this function and will recursively check if there are subfolders while creating the json structure
+        global namespace_logger
         global create_soda_json_progress
+        
         collection_id = subfolder_json["path"]
         bf = pennsieve_account
         subfolder = bf._api._get("/packages/" + str(collection_id))
@@ -933,16 +943,21 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                     else:
                         item_name = verify_file_name(item_name, children_content["extension"])
                         
+                    ## verify timestamps
+                    timestamp = items["content"]["createdAt"]
+                    formatted_timestamp = timestamp.replace('.', ',')
                     subfolder_json["files"][item_name] = {
                         "action": ["existing"],
                         "path": item_id,
                         "bfpath": [],
-                        "timestamp": items["content"]["createdAt"],
+                        "timestamp": formatted_timestamp,
                         "type": "bf",
                     }
                     for paths in subfolder_json["bfpath"]:
                         subfolder_json["files"][item_name]["bfpath"].append(paths)
 
+                    
+                    # creates path for item_name (stored in temp_name)
                     if len(subfolder_json["files"][item_name]["bfpath"]) > 1:
                         temp_name = ""
                         for i in range(
@@ -957,18 +972,36 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                     else:
                         temp_name = item_name
                     if len(manifest.keys()) > 0:
-                        if temp_name in manifest["filename"].values():
-                            location_index = list(manifest["filename"].values()).index(
-                                temp_name
-                            )
-                            if manifest["description"][location_index] != "":
-                                subfolder_json["files"][item_name][
-                                    "description"
-                                ] = manifest["description"][location_index]
-                            if manifest["Additional Metadata"] != "":
-                                subfolder_json["files"][item_name][
-                                    "additional-metadata"
-                                ] = manifest["Additional Metadata"][location_index]
+                        if "filename" in manifest:
+                            if temp_name in manifest["filename"].values():
+                                location_index = list(manifest["filename"].values()).index(
+                                    temp_name
+                                )
+                                if manifest["description"][location_index] != "":
+                                    subfolder_json["files"][item_name][
+                                        "description"
+                                    ] = manifest["description"][location_index]
+                                if manifest["Additional Metadata"] != "":
+                                    subfolder_json["files"][item_name][
+                                        "additional-metadata"
+                                    ] = manifest["Additional Metadata"][location_index]
+                                if manifest["file type"][location_index] != "":
+                                        subfolder_json["files"][item_name]["file type"] = manifest["file type"][location_index]
+                        elif "File Name" in manifest:
+                            if temp_name in manifest["File Name"].values():
+                                location_index = list(manifest["File Name"].values()).index(
+                                    temp_name
+                                )
+                                if manifest["description"][location_index] != "":
+                                    subfolder_json["files"][item_name][
+                                        "description"
+                                    ] = manifest["description"][location_index]
+                                if manifest["Additional Metadata"] != "":
+                                    subfolder_json["files"][item_name][
+                                        "additional-metadata"
+                                    ] = manifest["Additional Metadata"][location_index]
+                                if manifest["file type"][location_index] != "":
+                                        subfolder_json["files"][item_name]["file type"] = manifest["file type"][location_index]
             else:  # another subfolder found
                 subfolder_json["folders"][item_name] = {
                     "action": ["existing"],
@@ -1070,6 +1103,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                     "bfpath": [item_name],
                 }
 
+
     # manifest information is needed so it is looked for before the recursive calls are made
     if len(soda_json_structure["dataset-structure"]["folders"].keys()) != 0:
         for folder in soda_json_structure["dataset-structure"]["folders"].keys():
@@ -1078,9 +1112,9 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             ]
             subfolder = bf._api._get("/packages/" + str(collection_id))
             children_content = subfolder["children"]
+            manifest_dict[folder] = {}
             for items in children_content:
                 # check subfolders surface to see if manifest files exist to then use within recursive_subfolder_check
-                manifest_dict[folder] = {}
                 package_name = items["content"]["name"]
                 package_id = items["content"]["id"]
                 if package_name in manifest_sparc:
@@ -1100,7 +1134,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         else:
                             df = pd.read_csv(manifest_url["url"])
                             df = df.fillna("")
-                        manifest_dict[folder] = df.to_dict()
+                        manifest_dict[folder].update(df.to_dict())
                     except Exception as e:
                         manifest_error_message.append(
                             items["parent"]["content"]["name"]
@@ -1108,9 +1142,11 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             subfolder_section = soda_json_structure["dataset-structure"]["folders"][
                 folder
             ]
-            createFolderStructure(
-                subfolder_section, bf, manifest_dict[folder]
-            )  # passing item's json and the collection ID
+
+            if folder in manifest_dict:
+                createFolderStructure(
+                    subfolder_section, bf, manifest_dict[folder]
+                )  # passing item's json and the collection ID
 
     success_message = (
         "Data files under a valid high-level SPARC folders have been imported"

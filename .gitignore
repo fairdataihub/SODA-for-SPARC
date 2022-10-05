@@ -6,11 +6,13 @@ node_modules
 build/api
 pysodadist
 pyflaskdist
+pyflask/ds 
 dist
 src/Users
 semantic
 semantic.json
 .env
+build/
 
 app.spec
 

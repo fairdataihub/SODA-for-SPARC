@@ -1273,7 +1273,7 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
                   if (one_input === true) {
                     confirm_button[0].disabled = true;
                   } else {
-                    input_fields.forEach(function (element) { });
+                    input_fields.forEach(function (element) {});
                     confirm_button[0].disabled = false;
                   }
                 }
@@ -1690,14 +1690,14 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
   }
 }
 
-async function addFilesfunction(
+const addFilesfunction = async (
   fileArray,
   currentLocation,
   organizeCurrentLocation,
   uiItem,
   singleUIItem,
   globalPathValue
-) {
+) => {
   //toast alert created with Notyf
   let importToast = new Notyf({
     position: { x: "right", y: "bottom" },
@@ -1724,6 +1724,10 @@ async function addFilesfunction(
   var hiddenFiles = [];
   var nonAllowedCharacterFiles = [];
   const fileNameRegex = /[^-a-zA-z0-9]/g;
+  let loadingIcon = document.getElementById("items_loading_container");
+  let loadingContainer = document.getElementById(
+    "loading-items-background-overlay"
+  );
 
   for (var i = 0; i < fileArray.length; i++) {
     var fileName = fileArray[i];
@@ -1746,12 +1750,20 @@ async function addFilesfunction(
     // check if dataset structure level is at high level folder
     var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
     if (slashCount === 1) {
+      if (loadingContainer != undefined) {
+        loadingContainer.style.display = "none";
+        loadingIcon.style.display = "none";
+      }
       Swal.fire({
         icon: "error",
         html: "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
       });
+      if (loadingContainer != undefined) {
+        loadingContainer.style.display = "flex";
+        loadingIcon.style.display = "block";
+      }
       // log the error
       logCurationForAnalytics(
         "Error",
@@ -1830,6 +1842,10 @@ async function addFilesfunction(
   }
 
   if (hiddenFiles.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
     await Swal.fire({
       title:
         "The following files have an unexpected name starting with a period. How should we handle them?",
@@ -1851,6 +1867,10 @@ async function addFilesfunction(
       if (result.isConfirmed) {
         //replace characters
         //check for already imported
+        if (loadingContainer != undefined) {
+          loadingContainer.style.display = "flex";
+          loadingIcon.style.display = "block";
+        }
         for (let i = 0; i < hiddenFiles.length; i++) {
           let file_name = path.parse(hiddenFiles[i]).base;
           let path_name = hiddenFiles[i];
@@ -1899,6 +1919,10 @@ async function addFilesfunction(
       }
       if (result.isDenied) {
         //leave as is
+        if (loadingContainer != undefined) {
+          loadingContainer.style.display = "flex";
+          loadingIcon.style.display = "block";
+        }
         for (let i = 0; i < hiddenFiles.length; i++) {
           let file_name = path.parse(hiddenFiles[i]).base;
           let path_name = hiddenFiles[i];
@@ -1977,6 +2001,10 @@ async function addFilesfunction(
         html_word = "Folders";
       }
     }
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
     await Swal.fire({
       title: titleSwal,
       icon: "warning",
@@ -2010,9 +2038,17 @@ async function addFilesfunction(
       <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
       </div>`,
     });
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "flex";
+      loadingIcon.style.display = "block";
+    }
   }
 
   if (nonAllowedFiles.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
     await Swal.fire({
       title:
         "The following files are banned as per SPARC guidelines and will not be imported",
@@ -2026,7 +2062,10 @@ async function addFilesfunction(
       confirmButtonText: "Okay",
     });
   }
-
+  if (loadingContainer != undefined) {
+    loadingContainer.style.display = "flex";
+    loadingIcon.style.display = "block";
+  }
   // now handle non-allowed duplicates (show message), allowed duplicates (number duplicates & append to UI),
   // and regular files (append to UI)
   if (Object.keys(regularFiles).length > 0) {
@@ -2074,7 +2113,7 @@ async function addFilesfunction(
       determineDatasetLocation()
     );
   }
-}
+};
 
 //create intersection observ
 let scroll_box = document.querySelector("#organize-dataset-tab");
@@ -2140,7 +2179,6 @@ async function lazyLoad() {
   let myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
 
   //if there's less than 20 items event listener will be removed
-
 
   //load spinner is prepended to beginning to elements if any de-rendered
   //itemscrollTop is > item_box.scrollHeight - 280 (for scrolling bottom)

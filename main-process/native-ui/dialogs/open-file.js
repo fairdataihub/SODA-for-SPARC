@@ -701,6 +701,25 @@ ipcMain.on("open-file-dialog-local-dataset-manifest-purpose", async (event) => {
   }
 });
 
+ipcMain.on(
+  "open-file-dialog-local-dataset-manifest-generate-purpose",
+  async (event) => {
+    let mainWindow = BrowserWindow.getFocusedWindow();
+
+    let files = await dialog.showOpenDialog(mainWindow, {
+      title: "Select dataset folder",
+      properties: ["openDirectory"],
+    });
+
+    if (files) {
+      mainWindow.webContents.send(
+        "selected-local-dataset-manifest-generate-purpose",
+        files.filePaths
+      );
+    }
+  }
+);
+
 // Prepare Datasets
 ipcMain.on("open-folder-dialog-validate-local-dataset", async (event) => {
   let mainWindow = BrowserWindow.getFocusedWindow();
@@ -728,4 +747,15 @@ ipcMain.on("open-file-dialog-log-destination", async () => {
   });
 
   mainWindow.webContents.send("selected-log-folder", result);
+});
+
+ipcMain.handle("open-manifest-preview-location", async () => {
+  let mainWindow = BrowserWindow.getFocusedWindow();
+
+  const result = await dialog.showOpenDialog(mainWindow, {
+    properties: ["openDirectory"],
+    title: "Select a directory",
+  });
+
+  return result.filePaths;
 });

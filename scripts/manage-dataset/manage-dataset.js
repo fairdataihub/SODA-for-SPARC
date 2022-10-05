@@ -2029,7 +2029,6 @@ $("#save-banner-image").click((event) => {
           }).then((result) => {
             if (result.isConfirmed) {
               // uploadBannerImage();
-              console.log("handle scaling here");
               uploadBannerImage();
             }
           });
@@ -2634,7 +2633,6 @@ $("#button-submit-dataset").click(async () => {
       });
 
       log.info("Completed submit function");
-      console.log("Completed submit function");
 
       // can tell us how many successful upload sessions a dataset ID had (the value is implicitly set to 1 via Total Events query in Analytics) within a given timeframe
       ipcRenderer.send(
@@ -2837,7 +2835,12 @@ $("#button-submit-dataset").click(async () => {
             }
 
             $("#para-please-wait-manage-dataset").html("");
-            cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%";
+            // cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%";
+            if(statusMessage.indexOf("<br")) {
+              let timeIndex = statusMessage.indexOf("<br");
+              let timePhrase = statusMessage.substring(timeIndex);
+              cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%" + timePhrase;
+            }
             $("#para-progress-bar-status").html(
               statusMessage +
               "Progress: " +
