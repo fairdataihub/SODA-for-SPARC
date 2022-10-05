@@ -3738,7 +3738,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
             "pools"
           ][subject.poolName][prevSubjectName];
 
-          //Rename the subjects folders in the datasetStructeJSONObj
+          //Rename the subjects folders in the datasetStructJSONObj
           for (const highLevelFolder of guidedHighLevelFolders) {
             if (
               datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.[
@@ -6389,6 +6389,9 @@ const specifySubject = (event, subjectNameInput) => {
 };
 
 const specifySample = (event, sampleNameInput) => {
+  let buttonContainer = sampleNameInput[0].parentElement.parentElement.parentElement.parentElement.previousElementSibling;
+  // console.log(buttonContainer);
+  let addSampleButton = buttonContainer.children[0].children[0].children[1];
   if (event.which == 13) {
     try {
       const sampleName = `sam-${sampleNameInput.val().trim()}`;
@@ -6432,6 +6435,8 @@ const specifySample = (event, sampleNameInput) => {
           );
         } else {
           //Add the new sample to sodaJSONObj
+          // console.log(sampleNameInput[0])
+          console.log(addSampleButton);
           sodaJSONObj.addSampleToSubject(
             sampleName,
             subjectsPoolToAddSampleTo,
@@ -6441,7 +6446,11 @@ const specifySample = (event, sampleNameInput) => {
           sampleTrashCan.style.display = "block";
         }
         sampleIdCellToAddNameTo.html(sampleRenameElement);
+        if (!sampleNameInput.attr("data-prev-name")) {
+          addSampleSpecificationTableRow(addSampleButton);
+        }
       }
+
     } catch (error) {
       notyf.open({
         duration: "3000",
@@ -6817,11 +6826,13 @@ const confirmEnter = (button) => {
 const keydownListener = (event) => {
   if (event.key === "Enter") {
     enterKey = true;
+  } else {
+    enterKey = false;
   }
 };
 
 const onBlurEvent = (element) => {
-  if (event.path[0].value != "") {
+  if (event.path[0].value.length > 0) {
     if (enterKey === false) {
       confirmEnter(event.path[1].children[2]);
     }
@@ -6883,13 +6894,16 @@ const addSampleSpecificationTableRow = (clickedSubjectAddSampleButton) => {
   const sampleSpecificationTableInput = addSampleTableBody.querySelector(
     "input[name='guided-sample-id']"
   );
+  console.log("within add sample function");
   //check for any
 
   if (sampleSpecificationTableInput) {
+    // console.log("exists");
     //focus on the input that already exists
     //No need to create a new row
     sampleSpecificationTableInput.focus();
   } else {
+    // console.log("doesnt exist");
     //create a new table row Input element
     addSampleTableBody.innerHTML += generateSampleSpecificationRowElement();
     const newSamplerow = addSampleTableBody.querySelector("tr:last-child");

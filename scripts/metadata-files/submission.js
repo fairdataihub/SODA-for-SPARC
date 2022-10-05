@@ -154,7 +154,7 @@ function resetSubmissionFields() {
   checkAirtableStatus("");
 }
 
-async function helpMilestoneSubmission(curationMode) {
+const helpMilestoneSubmission = async (curationMode) => {
   var filepath = "";
   var informationJson = {};
 
@@ -375,11 +375,10 @@ const getCheckedMilestones = () => {
   return checkedMilestoneData;
 };
 
-async function openDDDimport() {
+const openDDDimport = async () => {
   let filepath = await ipcRenderer.invoke("open-file-dialog-data-deliverables");
   if (filepath.length > 0) {
     document.getElementById("input-milestone-select").placeholder = filepath[0];
-
     // log the successful attempt to import a data deliverables document from the user's computer
     ipcRenderer.send(
       "track-event",

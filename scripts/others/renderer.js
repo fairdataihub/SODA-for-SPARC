@@ -9574,6 +9574,7 @@ const scaleBannerImage = async (imagePath) => {
 function openFeedbackForm() {
   let feedback_btn = document.getElementById("feedback-btn");
   if (!feedback_btn.classList.contains("is-open")) {
+    console.log("UH")
     feedback_btn.click();
   }
   setTimeout(() => {
