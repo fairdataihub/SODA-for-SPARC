@@ -463,12 +463,9 @@ def bf_dataset_account(accountname):
     """
     PENNSIEVE_URL = "https://api.pennsieve.io"
 
-    try:
-        ps = Pennsieve()
-        ps.user.switch(accountname)
-        ps.user.reauthenticate()
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve account.")
+    ps = connect_pennsieve_client()
+
+    authenticate_user_with_client(ps, accountname)
     
     datasets_dict = ps.getDatasets()
 
@@ -662,40 +659,18 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
         error = f"{error}Please enter valid new dataset name<br>"
         c += 1
 
-    try:
-        ps = Pennsieve()
-        ps.user.switch(accountname)
-    except Exception as e:
-        error = f"{error}Please select a valid Pennsieve account<br>"
-        c += 1
+    ps = connect_pennsieve_client()
 
-    try: 
-        ps.user.reauthenticate()
-    except Exception as e:
-        error = f"{error}Could not reauthenticate your Pennsieve account."
-        c +=1
+    authenticate_user_with_client(ps, accountname)
 
+    selected_dataset_id = get_dataset_id(ps, current_dataset_name)
 
-    if c > 0:
-        abort(400, error)
-
-    try:
-        myds = ps.getDatasets()
-        selected_dataset_id = myds[current_dataset_name]
-        # myds = bf.get_dataset(current_dataset_name)
-    except Exception as e:
-        error = "Please select a valid Pennsieve dataset"
-        abort(400, error)
-
-    role = bf_get_current_user_permission_agent_two(selected_dataset_id)["role"]
-    if role not in ["owner", "manager"]:
-        error_message = "You don't have permissions to change the name of this Pennsieve dataset"
-        abort(403, error_message)
-
+    if not has_edit_permissions(ps, selected_dataset_id):
+        abort(401, "You do not have permission to edit this dataset.")
 
     dataset_list = [ds.name for ds in ps.getDatasets()]
     if datasetname in dataset_list:
-        raise Exception("Dataset name already exists")
+        abort(400, "Dataset name already exists.")
 
     jsonfile = {"name": renamed_dataset_name}
     try: 
@@ -1013,18 +988,9 @@ def bf_get_users(selected_bfaccount):
         selected Pennsieve account (list of string)
     """
 
-    global namespace_logger
-    try:
-        ps = Pennsieve()
-        ps.user.switch(selected_bfaccount)
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve account.")
+    ps = connect_pennsieve_client()
 
-
-    try:
-        ps.user.reauthenticate()
-    except Exception as e:
-        abort(401, "Cannot reauthenticate this Pennsieve account.")
+    authenticate_user_with_client(ps, selected_bfaccount)
         
     try:
         global PENNSIEVE_URL
@@ -1061,18 +1027,9 @@ def bf_get_teams(selected_bfaccount):
         Provides list of teams belonging to the organization of
         the given Pennsieve account
     """
-    try:
-        ps = Pennsieve()
-        ps.user.switch(selected_bfaccount)
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve account.")
+    ps = connect_pennsieve_client()
 
-    
-    try:
-        ps.user.reauthenticate()
-    except Exception as e:
-        abort(401, "Cannot reauthenticate this Pennsieve account.")
-
+    authenticate_user_with_client(ps, selected_bfaccount)
 
     try:
         organization_id = ps.getUser()["organization_id"]
@@ -1101,25 +1058,11 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
         selected dataset (list of string)
     """
 
-    global namespace_logger
+    ps = connect_pennsieve_client()
 
-    try:
-        ps = Pennsieve()
-        ps.user.switch(selected_bfaccount)
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve account.")
+    authenticate_user_with_client(ps, selected_bfaccount)
 
-    try:
-        ps.user.reauthenticate()
-    except Exception as e:
-        abort(401, "Cannot reauthenticate this Pennsieve account.")
-
-    try:
-        ds = ps.getDatasets()
-        namespace_logger.info(ds)
-        selected_dataset_id = ds[selected_bfdataset]
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve dataset.")
+    selected_dataset_id = get_dataset_id(ps, selected_bfdataset)
 
     try:
         global PENNSIEVE_URL
@@ -1474,26 +1417,11 @@ def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
         License name, if any, or "No license" message
     """
 
+    ps = connect_pennsieve_client()
 
-    try:
-        ps = Pennsieve()
-        ps.user.switch(selected_bfaccount)
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve account")
+    authenticate_user_with_client(ps, selected_bfaccount)
 
-
-    try:
-        ps.user.reauthenticate()
-    except Exception as e:
-        abort(401, "Could not reauthenticate this account with Pennsieve.")
-
-
-    try:
-        ds = ps.getDatasets()
-        selected_dataset_id = ds[selected_bfdataset]
-    except Exception as e:
-        error_message = "Please select a valid Pennsieve dataset"
-        abort(400, error_message)
+    selected_dataset_id = get_dataset_id(ps, selected_bfdataset)
 
     try:
         r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps))
@@ -1563,24 +1491,11 @@ def bf_get_description(selected_bfaccount, selected_bfdataset):
         Description (string with markdown code)
     """
 
-    try:
-        ps = Pennsieve()
-        ps.user.switch(selected_bfaccount)
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve account")
+    ps = connect_pennsieve_client()
 
-    
-    try:
-        ps.user.reauthenticate()
-    except Exception as e:
-        abort(401, "Could not reauthenticate this account with Pennsieve.")
+    authenticate_user_with_client(ps, selected_bfaccount)
 
-
-    try:
-        ds = ps.getDatasets()
-        selected_dataset_id = ds[selected_bfdataset]
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve dataset")
+    selected_dataset_id = get_dataset_id(ps, selected_bfdataset)
 
     try:
         r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=create_request_headers(ps))
@@ -1608,33 +1523,14 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
         Success message or error
     """
 
-    try:
-        ps = Pennsieve()
-        ps.user.switch(selected_bfaccount)
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve account.")
+    ps = connect_pennsieve_client()
 
-    
-    try:
-        ps.user.reauthenticate()
-    except Exception as e:
-        abort(401, "Could not reauthenticate this account with Pennsieve.")
+    authenticate_user_with_client(ps, selected_bfaccount)
 
+    selected_dataset_id = get_dataset_id(ps, selected_bfdataset)
 
-    try:
-        ds = ps.getDatasets()
-        selected_dataset_id = ds[selected_bfdataset]
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve dataset")
-
-    
-
-
-    role = bf_get_current_user_permission_agent_two(selected_dataset_id)['role']
-    namespace_logger.info(role)
-    if role not in ["owner", "manager"]:
-        abort(403, "You don't have permissions for editing metadata on this Pennsieve dataset")
-
+    if not has_edit_permissions(ps, selected_dataset_id):
+        abort(401, "You do not have permission to edit this dataset.")
 
     try:
         jsonfile = {"readme": markdown_input}
@@ -1659,23 +1555,11 @@ def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
         url of banner image (string)
     """
 
-    try:
-        ps = Pennsieve()
-        ps.user.switch(selected_bfaccount)
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve account")
+    ps = connect_pennsieve_client()
 
+    authenticate_user_with_client(ps, selected_bfaccount)
 
-    try:
-        ps.user.reauthenticate()
-    except Exception as e:
-        abort(401, "Could not reauthenticate this account with Pennsieve.")
-
-    try:
-        ds = ps.getDatasets()
-        selected_dataset_id = ds[selected_bfdataset]
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve dataset")
+    selected_dataset_id = get_dataset_id(ps, selected_bfdataset)
 
     try:
         r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/banner", headers=create_request_headers(ps))
@@ -1706,31 +1590,14 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
     Return:
         Success or error message
     """
+    ps = connect_pennsieve_client()
 
-    try:
-        ps = Pennsieve()
-        ps.user.switch(selected_bfaccount)
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve account")
+    authenticate_user_with_client(ps, selected_bfaccount)
 
-    
-    try:
-        ps.user.reauthenticate()
-    except Exception as e:
-        abort(401, "Could not reauthenticate this account with Pennsieve.")
-    
+    selected_dataset_id = get_dataset_id(ps, selected_bfdataset)
 
-    try:
-        ds = ps.getDatasets()
-        selected_dataset_id = ds[selected_bfdataset]
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve dataset.")
-
-
-    role = bf_get_current_user_permission_agent_two(selected_dataset_id)['role']
-    if role not in ["owner", "manager"]:
-        abort(403, "You don't have permissions for editing metadata on this Pennsieve dataset.")
-
+    if not has_edit_permissions(ps, selected_dataset_id):
+        abort(401, "You do not have permission to edit this dataset.")
 
     try:
         def upload_image():
@@ -1765,23 +1632,11 @@ def bf_get_license(selected_bfaccount, selected_bfdataset):
         License name, if any, or "No license" message
     """
 
-    try:
-        ps = Pennsieve()
-        ps.user.switch(selected_bfaccount)
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve account.")
+    ps = connect_pennsieve_client()
 
+    authenticate_user_with_client(ps, selected_bfaccount)
 
-    try:
-        ps.user.reauthenticate()
-    except Exception as e:
-        abort(401, "Could not reauthenticate this account with Pennsieve.")
-
-
-    try:
-        selected_dataset_id = ps.getDatasets()[selected_bfdataset]
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve dataset.")
+    selected_dataset_id = get_dataset_id(ps, selected_bfdataset)
 
     try:
         r  = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps))
@@ -2090,23 +1945,11 @@ def get_dataset_readme(selected_account, selected_dataset):
         Return:
             Readme for the dataset
     """
-    try:
-        ps = Pennsieve()
-        ps.user.switch(selected_account)
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve account")
+    ps = connect_pennsieve_client()
 
-    try:
-        ps.user.reauthenticate()
-    except Exception as e:
-        abort(401, "Could not reauthenticate this account with Pennsieve.")
+    authenticate_user_with_client(ps, selected_account)
 
-
-    try:
-        ds = ps.getDatasets()
-        selected_dataset_id = ds[selected_dataset]
-    except Exception as e:
-        abort(401, "Please select a valid Pennsieve dataset.")
+    selected_dataset_id = get_dataset_id(ps, selected_dataset)
 
     try:
         r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=create_request_headers(ps))
@@ -2154,23 +1997,11 @@ def get_dataset_tags(selected_account, selected_dataset):
             Tags for the dataset
     """
 
-    try:
-        ps = Pennsieve()
-        ps.user.switch(selected_account)
-    except Exception as e:
-        abort(400, "Please select a valid pennsieve account.")
+    ps = connect_pennsieve_client()
 
-    try:
-        ps.user.reauthenticate()
-    except Exception as e:
-        abort(401, "Could not reauthenticate this account with Pennsieve.")
+    authenticate_user_with_client(ps, selected_account)
 
-
-    try:
-        ds = ps.getDatasets()
-        selected_dataset_id = ds[selected_dataset]
-    except Exception as e:
-        abort(401, "Please select a valid Pennsieve dataset.")
+    selected_dataset_id = get_dataset_id(ps, selected_dataset)
 
     try:
         r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps))
@@ -2188,27 +2019,14 @@ def update_dataset_tags(selected_account, selected_dataset, updated_tags):
     Update the tags of a dataset on Pennsieve with the given tags list.
     """
 
-    try:
-        ps = Pennsieve()
-        ps.user.switch(selected_account)
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve account.")
+    ps = connect_pennsieve_client()
 
-    try:
-        ps.user.reauthenticate()
-    except Exception as e:
-        abort(401, "Could not reauthenticate your Pennsieve account")
-    
-    try:
-        ds = ps.getDatasets()
-        selected_dataset_id = ds[selected_dataset]
-    except Exception as e:
-        abort(401, "Please select a valid Pennsieve dataset.")
+    authenticate_user_with_client(ps, selected_account)
 
-    
-    role = bf_get_current_user_permission_agent_two(selected_dataset_id)['role']
-    if role not in ["owner", "manager"]:
-        abort(403, "You don't have permissions for modifying this dataset.")
+    selected_dataset_id = get_dataset_id(ps, selected_dataset)
+
+    if not has_edit_permissions(ps, selected_dataset_id):
+        abort(401, "You do not have permission to edit this dataset.")
 
     try:
         jsonfile = {"tags": updated_tags}
