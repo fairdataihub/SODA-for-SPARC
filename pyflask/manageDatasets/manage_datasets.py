@@ -36,7 +36,7 @@ import requests
 from flask import abort
 from namespaces import NamespaceEnum, get_namespace_logger
 #from utils import get_dataset, get_authenticated_ps, get_dataset_size
-from utils import get_dataset_size
+from utils import get_dataset_size, create_request_headers
 from authentication import get_access_token
 from users import get_user_information, update_config_account_name
 
@@ -1811,11 +1811,7 @@ def bf_get_license(selected_bfaccount, selected_bfdataset):
         abort(400, "Please select a valid Pennsieve dataset.")
 
     try:
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + ps.getUser()["session_token"],
-        }
-        r  = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
+        r  = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps))
         r.raise_for_status()
         dataset_info = r.json()
         list_keys = dataset_info["content"].keys()
