@@ -11,11 +11,11 @@ from manageDatasets import (
     bf_submit_dataset,
     # bf_new_dataset_folder,
     bf_rename_dataset,
-    # bf_add_permission,
+    bf_add_permission,
     bf_get_users,
     bf_get_permission,
     bf_get_teams,
-    # bf_add_permission_team,
+    bf_add_permission_team,
     # bf_add_subtitle,
     bf_get_subtitle,
     bf_get_description,
@@ -535,41 +535,41 @@ class DatasetPermissions(Resource):
       raise e
 
   
-#   parser_add_dataset_permissions = parser_dataset_permissions.copy()
-#   parser_add_dataset_permissions.add_argument('scope', type=str, required=True, location='args', help='Defines who or what will have their permissions for the dataset changed. Options are: team or user.')
-#   parser_add_dataset_permissions.add_argument('input_role', type=str, required=True, location='json', help='The permissions to add to the dataset. Can be either: owner, manager, viewer, remove current permissions.')
-#   parser_add_dataset_permissions.add_argument('name', type=str, required=True, location='args', help='The name of the team or user to change permissions for.')
+  parser_add_dataset_permissions = parser_dataset_permissions.copy()
+  parser_add_dataset_permissions.add_argument('scope', type=str, required=True, location='args', help='Defines who or what will have their permissions for the dataset changed. Options are: team or user.')
+  parser_add_dataset_permissions.add_argument('input_role', type=str, required=True, location='json', help='The permissions to add to the dataset. Can be either: owner, manager, viewer, remove current permissions.')
+  parser_add_dataset_permissions.add_argument('name', type=str, required=True, location='args', help='The name of the team or user to change permissions for.')
 
-#   @api.marshal_with(successMessage, False, 200)
-#   @api.expect(parser_add_dataset_permissions)
-#   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 403: 'Forbidden'}, description="Adds permissions to the given dataset. Permissions are a list of the users/organizations/teams and their roles (viewer, manager, owner, etc) for the given dataset.")
-#   def patch(self):
-#     # update the dataset permissions for the selected account and dataset ID
-#     data = self.parser_add_dataset_permissions.parse_args()
+  @api.marshal_with(successMessage, False, 200)
+  @api.expect(parser_add_dataset_permissions)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 403: 'Forbidden'}, description="Adds permissions to the given dataset. Permissions are a list of the users/organizations/teams and their roles (viewer, manager, owner, etc) for the given dataset.")
+  def patch(self):
+    # update the dataset permissions for the selected account and dataset ID
+    data = self.parser_add_dataset_permissions.parse_args()
 
-#     selected_account = data.get('selected_account')
-#     selected_dataset = data.get('selected_dataset')
-#     scope = data.get('scope')
-#     input_role = data.get('input_role')
-#     name = data.get('name')
+    selected_account = data.get('selected_account')
+    selected_dataset = data.get('selected_dataset')
+    scope = data.get('scope')
+    input_role = data.get('input_role')
+    name = data.get('name')
 
-#     if scope not in ['team', 'user']:
-#       api.abort(400, 'Invalid scope. Must be either team or user.')
+    if scope not in ['team', 'user']:
+      api.abort(400, 'Invalid scope. Must be either team or user.')
 
-#     if scope == 'team':
-#       try:
-#         return bf_add_permission_team(selected_account, selected_dataset, name, input_role)
-#       except Exception as e:
-#         if notBadRequestException(e):
-#           api.abort(500, str(e))
-#         raise e
-#     else:
-#       try:
-#         return bf_add_permission(selected_account, selected_dataset, name, input_role)
-#       except Exception as e:
-#         if notBadRequestException(e):
-#           api.abort(500, str(e))
-#         raise e
+    if scope == 'team':
+      try:
+        return bf_add_permission_team(selected_account, selected_dataset, name, input_role)
+      except Exception as e:
+        if notBadRequestException(e):
+          api.abort(500, str(e))
+        raise e
+    else:
+      try:
+        return bf_add_permission(selected_account, selected_dataset, name, input_role)
+      except Exception as e:
+        if notBadRequestException(e):
+          api.abort(500, str(e))
+        raise e
 
 
 scale_image_model = api.model("postScaledImage", {
