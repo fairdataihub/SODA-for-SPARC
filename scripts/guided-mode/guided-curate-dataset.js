@@ -2448,6 +2448,9 @@ const traverseToTab = async (targetPageID) => {
       const datasetSubtitleReviewText = document.getElementById(
         "guided-review-dataset-subtitle"
       );
+      const datasetDescriptionReviewText = document.getElementById(
+        "guided-review-dataset-description"
+      );
       const datasetPiOwnerReviewText = document.getElementById(
         "guided-review-dataset-pi-owner"
       );
@@ -2466,6 +2469,22 @@ const traverseToTab = async (targetPageID) => {
 
       datasetNameReviewText.innerHTML = datsetName;
       datasetSubtitleReviewText.innerHTML = datsetSubtitle;
+
+      datasetDescriptionReviewText.innerHTML = Object.keys(
+        sodaJSONObj["digital-metadata"]["description"]
+      )
+        .map((key) => {
+          const description =
+            sodaJSONObj["digital-metadata"]["description"][key];
+          //change - to spaces in description and then capitalize
+          const descriptionTitle = key
+            .split("-")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
+          return `<b>${descriptionTitle}</b>: ${sodaJSONObj["digital-metadata"]["description"][key]}<br />`;
+        })
+        .join("\n");
+
       datasetPiOwnerReviewText.innerHTML = datasetPiOwner;
 
       if (datasetUserPermissions.length > 0) {
