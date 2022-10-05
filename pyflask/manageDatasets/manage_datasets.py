@@ -1473,7 +1473,7 @@ def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
     except Exception as e:
         abort(400, "Please select a valid Pennsieve account")
 
-    
+
     try:
         ps.user.reauthenticate()
     except Exception as e:
@@ -1498,7 +1498,7 @@ def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
             res = dataset_info["content"]["description"]
         return {"subtitle": res}
     except Exception as e:
-        raise Exception(e)
+        raise Exception(e) from e
 
 
 
@@ -2147,26 +2147,44 @@ def update_dataset_readme(selected_account, selected_dataset, updated_readme):
     return {"message": "Readme updated"}
 
 
-# def get_dataset_tags(selected_account, selected_dataset):
-#     """
-#     Function to get tags for a dataset
+def get_dataset_tags(selected_account, selected_dataset):
+    """
+    Function to get tags for a dataset
     
-#         Args:
-#             selected_account: account name
-#             selected_dataset: dataset name
-#         Return:
-#             Tags for the dataset
-#     """
+        Args:
+            selected_account: account name
+            selected_dataset: dataset name
+        Return:
+            Tags for the dataset
+    """
 
-#     ps = get_authenticated_ps(selected_account)
+    try:
+        ps = Pennsieve()
+        ps.user.switch(selected_account)
+    except Exception as e:
+        abort(400, "Please select a valid pennsieve account.")
 
-#     myds = get_dataset(ps, selected_dataset)
+    try:
+        ps.user.reauthenticate()
+    except Exception as e:
+        abort(401, "Could not reauthenticate this account with Pennsieve.")
 
-#     resp = ps._api._get(f"/datasets/{myds.id}")
 
-#     tags = resp["content"]["tags"] if "tags" in resp["content"] else []
+    try:
+        ds = ps.getDatasets()
+        selected_dataset_id = ds[selected_dataset]
+    except Exception as e:
+        abort(401, "Please select a valid Pennsieve dataset.")
 
-#     return {"tags": tags}
+    try:
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps))
+        r.raise_for_status()
+
+        dataset_info = r.json()
+        tags = dataset_info["content"]["tags"] if "tags" in dataset_info["content"] else []
+        return {"tags": tags}
+    except Exception as e:
+        raise Exception(e) from e
 
 
 # def update_dataset_tags(selected_account, selected_dataset, updated_tags):
