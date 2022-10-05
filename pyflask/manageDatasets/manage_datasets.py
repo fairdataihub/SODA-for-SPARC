@@ -1563,80 +1563,105 @@ def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
 
 
 
-# def bf_get_description(selected_bfaccount, selected_bfdataset):
-#     """
-#     Function to get current description associated with a selected dataset
+def bf_get_description(selected_bfaccount, selected_bfdataset):
+    """
+    Function to get current description associated with a selected dataset
 
-#     Args:
-#         selected_bfaccount: name of selected Pennsieve acccount (string)
-#         selected_bfdataset: name of selected Pennsieve dataset (string)
-#     Return:
-#         Description (string with markdown code)
-#     """
+    Args:
+        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
+    Return:
+        Description (string with markdown code)
+    """
 
-#     try:
-#         bf = Pennsieve(selected_bfaccount)
-#     except Exception as e:
-#         error_message = "Please select a valid Pennsieve account"
-#         abort(400, error_message)
+    try:
+        ps = Pennsieve()
+        ps.user.switch(selected_bfaccount)
+    except Exception as e:
+        abort(400, "Please select a valid Pennsieve account")
 
-#     try:
-#         myds = bf.get_dataset(selected_bfdataset)
-#     except Exception as e:
-#         error_message = "Please select a valid Pennsieve dataset"
-#         abort(400, error_message)
-
-#     try:
-#         selected_dataset_id = myds.id
-#         dataset_readme_info = bf._api._get(f"/datasets/{str(selected_dataset_id)}/readme")
-
-#         res = dataset_readme_info["readme"]
-#         return {"description": res}
-#     except Exception as e:
-#         raise Exception(e)
+    
+    try:
+        ps.user.reauthenticate()
+    except Exception as e:
+        abort(401, "Could not reauthenticate this account with Pennsieve.")
 
 
+    try:
+        ds = ps.getDatasets()
+        selected_dataset_id = ds[selected_bfdataset]
+    except Exception as e:
+        abort(400, "Please select a valid Pennsieve dataset")
+
+    try:
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + ps.getUser()["session_token"],
+        }
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=headers)
+        r.raise_for_status()
+
+        dataset_readme_info = r.json()
+        res = dataset_readme_info["readme"]
+        return {"description": res}
+    except Exception as e:
+        raise Exception(e)
 
 
 
-# def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
-#     """
-#     Args:
-#         selected_bfaccount: name of selected Pennsieve acccount (string)
-#         selected_bfdataset: name of selected Pennsieve dataset (string)
-#         markdown_input: description with markdown formatting (string)
-#     Action:
-#         Add/change desciption for a selected dataset
-#     Return:
-#         Success messsge or error
-#     """
-
-#     try:
-#         bf = Pennsieve(selected_bfaccount)
-#     except Exception as e:
-#         error_message = "Please select a valid Pennsieve account"
-#         abort(400, error_message)
-
-#     try:
-#         myds = bf.get_dataset(selected_bfdataset)
-#     except Exception as e:
-#         error_message = "Please select a valid Pennsieve dataset"
-#         abort(400, error_message)
 
 
-#     role = bf_get_current_user_permission(bf, myds)
-#     if role not in ["owner", "manager"]:
-#         error_message = "You don't have permissions for editing metadata on this Pennsieve dataset"
-#         abort(403, error_message)
+def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
+    """
+    Args:
+        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
+        markdown_input: description with markdown formatting (string)
+    Action:
+        Add/change desciption for a selected dataset
+    Return:
+        Success messsge or error
+    """
+
+    try:
+        ps = Pennsieve()
+        ps.user.switch(selected_bfaccount)
+    except Exception as e:
+        abort(400, "Please select a valid Pennsieve account.")
+
+    
+    try:
+        ps.user.reauthenticate()
+    except Exception as e:
+        abort(401, "Could not reauthenticate this account with Pennsieve.")
 
 
-#     try:
-#         selected_dataset_id = myds.id
-#         jsonfile = {"readme": markdown_input}
-#         bf._api.datasets._put(f"/{str(selected_dataset_id)}/readme", json=jsonfile)
-#         return{ "message": "Description added!"}
-#     except Exception as e:
-#         raise Exception(e)
+    try:
+        ds = ps.getDatasets()
+        selected_dataset_id = ds[selected_bfdataset]
+    except Exception as e:
+        abort(400, "Please select a valid Pennsieve dataset")
+
+    
+
+
+    role = bf_get_current_user_permission_agent_two(selected_dataset_id)['role']
+    namespace_logger.info(role)
+    if role not in ["owner", "manager"]:
+        abort(403, "You don't have permissions for editing metadata on this Pennsieve dataset")
+
+
+    try:
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + ps.getUser()["session_token"],
+        }
+        jsonfile = {"readme": markdown_input}
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=headers, json=jsonfile)
+        r.raise_for_status()
+        return{ "message": "Description added!"}
+    except Exception as e:
+        raise Exception(e)
 
 
 
