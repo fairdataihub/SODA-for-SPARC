@@ -19,7 +19,7 @@ from manageDatasets import (
     # bf_add_subtitle,
     bf_get_subtitle,
     bf_get_description,
-    # bf_add_description,
+    bf_add_description,
     # bf_get_banner_image,
     # bf_add_banner_image,
     # bf_get_license,
@@ -481,26 +481,26 @@ class DatasetDescription(Resource):
         raise e
 
 
-#     parser_add_dataset_description = parser_dataset_description.copy()
-#     parser_add_dataset_description.add_argument('input_description', type=str, required=True, location='json', help='The description to add to the dataset.')
+    parser_add_dataset_description = parser_dataset_description.copy()
+    parser_add_dataset_description.add_argument('input_description', type=str, required=True, location='json', help='The description to add to the dataset.')
 
-#     @api.marshal_with(successMessage, False, 200)
-#     @api.expect(parser_add_dataset_description)
-#     @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 403: 'Forbidden'}, description="Adds a description to the given dataset.")
-#     def put(self):
-#       # update the dataset description for the selected account and dataset ID
-#       data = self.parser_add_dataset_description.parse_args()
+    @api.marshal_with(successMessage, False, 200)
+    @api.expect(parser_add_dataset_description)
+    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 403: 'Forbidden'}, description="Adds a description to the given dataset.")
+    def put(self):
+      # update the dataset description for the selected account and dataset ID
+      data = self.parser_add_dataset_description.parse_args()
 
-#       selected_account = data.get('selected_account')
-#       selected_dataset = data.get('selected_dataset')
-#       input_description = data.get('input_description')
+      selected_account = data.get('selected_account')
+      selected_dataset = data.get('selected_dataset')
+      input_description = data.get('input_description')
 
-#       try:
-#         return bf_add_description(selected_account, selected_dataset, input_description)
-#       except Exception as e:
-#         if notBadRequestException(e):
-#           api.abort(500, str(e))
-#         raise e
+      try:
+        return bf_add_description(selected_account, selected_dataset, input_description)
+      except Exception as e:
+        if notBadRequestException(e):
+          api.abort(500, str(e))
+        raise e
 
 
 

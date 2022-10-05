@@ -18,7 +18,7 @@ from .manage_datasets import (
     # bf_add_subtitle,
     bf_get_subtitle,
     bf_get_description,
-    # bf_add_description,
+    bf_add_description,
     # bf_get_banner_image,
     # bf_add_banner_image,
     # bf_get_license,
