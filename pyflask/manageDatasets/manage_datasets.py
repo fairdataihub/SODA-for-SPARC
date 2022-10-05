@@ -38,9 +38,16 @@ import requests
 from flask import abort
 from namespaces import NamespaceEnum, get_namespace_logger
 #from utils import get_dataset, get_authenticated_ps, get_dataset_size
-from utils import get_dataset_size, create_request_headers
+from utils import ( 
+    get_dataset_size, 
+    create_request_headers, 
+    connect_pennsieve_client, 
+    authenticate_user_with_client, 
+    get_dataset_id
+)
 from authentication import get_access_token
 from users import get_user_information, update_config_account_name
+from permissions import has_edit_permissions, bf_get_current_user_permission_agent_two
 
 
 ### Global variables
@@ -1207,15 +1214,7 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
 #         raise e
 
 
-def bf_get_current_user_permission_agent_two(dataset_id):
-    PENNSIEVE_URL = "https://api.pennsieve.io"
 
-    access_token = get_access_token()
-
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/role", headers={"Authorization": f"Bearer {access_token}"})
-    r.raise_for_status()
-
-    return r.json()
 
 
 
@@ -2165,32 +2164,20 @@ def update_dataset_readme(selected_account, selected_dataset, updated_readme):
     Update the readme of a dataset on Pennsieve with the given readme string.
     """
 
-    try:
-        ps = Pennsieve()
-        ps.user.switch(selected_account)
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve account.")
+    ps = connect_pennsieve_client()
 
-    try:
-        ps.user.reauthenticate()
-    except Exception as e:
-        abort(401, "Could not reauthenticate this account with Pennsieve.")
+    authenticate_user_with_client(ps, selected_account)
 
-    try:
-        ds = ps.getDatasets()
-        selected_dataset_id = ds[selected_dataset]
+    selected_dataset_id = get_dataset_id(ps, selected_dataset)
 
-        role = bf_get_current_user_permission_agent_two(selected_dataset_id)["role"]
-        if role not in ["owner", "manager"]:
-            abort(403, "You don't have permissions to modify this dataset.")
-    except Exception as e:
-        abort(401, "Please select a valid Pennsieve dataset.")
+    if not has_edit_permissions(ps, selected_dataset_id):
+        abort(401, "You do not have permission to edit this dataset.")
 
     try:
         r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", json={"readme": updated_readme}, headers=create_request_headers(ps))
         r.raise_for_status()
     except Exception as e:
-        raise Exception(e)
+        raise Exception(e) from e
 
     return {"message": "Readme updated"}
 
