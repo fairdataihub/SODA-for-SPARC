@@ -1634,7 +1634,7 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
         r.raise_for_status()
         return{ "message": "Description added!"}
     except Exception as e:
-        raise Exception(e)
+        raise Exception(e) from e
 
 
 
@@ -1681,7 +1681,7 @@ def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
             res = "No banner image"
         return {"banner_image": res}
     except Exception as e:
-        raise Exception(e)
+        raise Exception(e) from e
 
 
 
@@ -2187,47 +2187,63 @@ def get_dataset_tags(selected_account, selected_dataset):
         raise Exception(e) from e
 
 
-# def update_dataset_tags(selected_account, selected_dataset, updated_tags):
-#     """
-#     Update the tags of a dataset on Pennsieve with the given tags list.
-#     """
+def update_dataset_tags(selected_account, selected_dataset, updated_tags):
+    """
+    Update the tags of a dataset on Pennsieve with the given tags list.
+    """
 
-#     ps = get_authenticated_ps(selected_account)
+    try:
+        ps = Pennsieve()
+        ps.user.switch(selected_account)
+    except Exception as e:
+        abort(400, "Please select a valid Pennsieve account.")
 
-#     myds = get_dataset(ps, selected_dataset)
+    try:
+        ps.user.reauthenticate()
+    except Exception as e:
+        abort(401, "Could not reauthenticate your Pennsieve account")
+    
+    try:
+        ds = ps.getDatasets()
+        selected_dataset_id = ds[selected_dataset]
+    except Exception as e:
+        abort(401, "Please select a valid Pennsieve dataset.")
 
-#     # check user permissions
-#     role = bf_get_current_user_permission(ps, myds)
-#     if role not in ["owner", "manager"]:
-#         abort(403, "You don't have permissions to modify this dataset.")
+    
+    role = bf_get_current_user_permission_agent_two(selected_dataset_id)['role']
+    if role not in ["owner", "manager"]:
+        abort(403, "You don't have permissions for modifying this dataset.")
+
+    try:
+        jsonfile = {"tags": updated_tags}
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=create_request_headers(ps), json=jsonfile)
+        r.raise_for_status()
+        return {"message": "Tags updated"}
+    except Exception as e:
+        raise Exception(e) from e
 
 
-#     ps._api._put(f"/datasets/{myds.id}", json={"tags": updated_tags})
 
-#     return {"message": "Tags updated"}
+def scale_image(imagePath):
+    """
+    Scale the image to be within the file size limit for banner images (5MB)
+    """
+    max_image_size = 2048
+    filename, file_extension = os.path.splitext(imagePath)
+    img = cv2.imread(imagePath)
+    original_width = int(img.shape[1])
+    original_height = int(img.shape[0])
+    home_path = os.path.expanduser('~')
+    store_image_path = os.path.join(home_path, 'SODA', 'banner-image', (filename + file_extension))
+    #file size is greater than 5mb
+    if original_width > max_image_size or original_height > max_image_size:
+        width = 2048
+        height = 2048
+        dim = (width, height)
 
+        # resize image into 2048x2048
+        resized_image = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+        cv2.imwrite(store_image_path, resized_image)
 
-
-# def scale_image(imagePath):
-#     """
-#     Scale the image to be within the file size limit for banner images (5MB)
-#     """
-#     max_image_size = 2048
-#     filename, file_extension = os.path.splitext(imagePath)
-#     img = cv2.imread(imagePath)
-#     original_width = int(img.shape[1])
-#     original_height = int(img.shape[0])
-#     home_path = os.path.expanduser('~')
-#     store_image_path = os.path.join(home_path, 'SODA', 'banner-image', (filename + file_extension))
-#     #file size is greater than 5mb
-#     if original_width > max_image_size or original_height > max_image_size:
-#         width = 2048
-#         height = 2048
-#         dim = (width, height)
-
-#         # resize image into 2048x2048
-#         resized_image = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
-#         cv2.imwrite(store_image_path, resized_image)
-
-#     return { "scaled_image_path": store_image_path }
+    return { "scaled_image_path": store_image_path }
 
