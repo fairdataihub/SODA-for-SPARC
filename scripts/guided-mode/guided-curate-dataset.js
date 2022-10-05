@@ -862,7 +862,6 @@ const extractFilNamesFromManifestData = (manifestData) => {
       allFileNamesinDsStructure.push(row[0]);
     }
   }
-  console.log(allFileNamesinDsStructure);
   //return sorted allFileNamesinDsStructure
   return allFileNamesinDsStructure.sort();
 };
@@ -908,11 +907,9 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
 
   for (const highLevelFolder of Object.keys(newManifestData)) {
     if (!existingManifestData[highLevelFolder]) {
-      console.log("new manifest data folder");
       //If the high level folder does not exist in the existing manifest data, add it
       returnObj[highLevelFolder] = newManifestData[highLevelFolder];
     } else {
-      console.log("Updating existing manifest data folder");
       //If the high level folder does exist in the existing manifest data, update it
       let newManifestReturnObj = {};
       newManifestReturnObj["headers"] =
@@ -963,7 +960,6 @@ document
     `;
 
     scrollToBottomOfGuidedBody();
-    console.log("called function");
 
     try {
       // Retrieve the manifest data to be used to generate the manifest files
@@ -975,7 +971,6 @@ document
         { timeout: 0 }
       );
       const manifestRes = res.data;
-      console.log(manifestRes);
       //loop through each of the high level folders and store their manifest headers and data
       //into the sodaJSONObj
 
@@ -1008,7 +1003,6 @@ document
         updatedManifestData = newManifestData;
       }
 
-      console.log(updatedManifestData);
       sodaJSONObj["guided-manifest-files"] = updatedManifestData;
       // Save the sodaJSONObj with the new manifest files
       saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
@@ -1745,7 +1739,6 @@ const guidedResetUserTeamPermissionsDropdowns = () => {
 //If the keys exist, extract the data from the sodaJSONObj and populate the page
 //If the keys do not exist, reset the page (inputs, tables etc.) to the default state
 const traverseToTab = async (targetPageID) => {
-  console.log(targetPageID);
   let itemsContainer = document.getElementById("items-guided-container");
   if (itemsContainer.classList.contains("border-styling")) {
     itemsContainer.classList.remove("border-styling");
@@ -1805,8 +1798,7 @@ const traverseToTab = async (targetPageID) => {
       const importedDataDeliverable =
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"];
 
-      console.log(sodaJSONObj);
-      console.log(importedDataDeliverable);
+
       if (importedDataDeliverable) {
         dataDeliverableButton.children[0].style.display = "none";
         dataDeliverableButton.children[1].style.display = "flex";
@@ -1825,21 +1817,16 @@ const traverseToTab = async (targetPageID) => {
           "imported-sparc-award"
         ];
 
-      console.log(airTableAccountData);
-      // console.log(airTableres);
       var airKeyContent = parseJson(airtableConfigPath);
-      console.log(airKeyContent);
       if (Object.keys(airKeyContent).length != 0) {
         //This is where we update the UI for the helper page
         airTableGettingStartedBtn.children[1].style.display = "none";
         airTableGettingStartedBtn.children[0].style.display = "flex";
         document.getElementById("guided-button-import-sparc-award").click();
-        console.log("huh");
       } else {
         //This is where we reset the UI for the helper page
         airTableGettingStartedBtn.children[1].style.display = "flex";
         airTableGettingStartedBtn.children[0].style.display = "none";
-        console.log("huh1");
       }
     }
 
@@ -4735,8 +4722,6 @@ const editContributorByOrcid = (
 
 const deleteContributor = (clickedDelContribuButton, contributorOrcid) => {
   const contributorField = clickedDelContribuButton.parentElement.parentElement;
-  console.log(contributorField);
-  console.log(contributorOrcid);
   const contributorsBeforeDelete =
     sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
 
@@ -4744,7 +4729,6 @@ const deleteContributor = (clickedDelContribuButton, contributorOrcid) => {
     contributorsBeforeDelete.filter((contributor) => {
       return contributor.conID !== contributorOrcid;
     });
-  console.log(contributorField);
   contributorField.remove();
   //rerender the table after deleting a contributor
   renderDatasetDescriptionContributorsTable();
@@ -4786,7 +4770,6 @@ const updateContributorByOrcid = (
 
 const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
   const contributorData = getContributorByOrcid(contibuttorOrcidToEdit);
-  console.log(contributorData);
   const contributorFirstName = contributorData.contributorFirstName;
   const contributorLastName = contributorData.contributorLastName;
   const contributorORCID = contributorData.conID;
@@ -5008,7 +4991,6 @@ const openGuidedAddContributorSwal = async () => {
         `;
 
       const contributorOptions = contributorData.map((contributor) => {
-        console.log(contributor);
         return `
           <option
             value="${contributor.firstName} ${contributor.lastName}"
@@ -5225,12 +5207,6 @@ const openGuidedAddContributorSwal = async () => {
       ).value;
       const contributorAffiliations = affiliationTagify.value;
       const contributorRoles = contributorRolesTagify.value;
-
-      console.log(contributorFirstName);
-      console.log(contributorLastName);
-      console.log(contributorOrcid);
-      console.log(contributorAffiliations);
-      console.log(contributorRoles);
 
       if (
         !contributorFirstName ||
@@ -5591,7 +5567,6 @@ const generateProtocolField = (
   protocolType,
   protocolDescription
 ) => {
-  console.log(protocolUrl);
   return `
     <tr 
       class="guided-protocol-field-container"
@@ -5634,7 +5609,6 @@ const renderProtocolsTable = () => {
 
   const protocolsContainer = document.getElementById("protocols-container");
 
-  console.log(protocols);
   if (protocols === undefined) {
     const emptyRowWarning = generateAlertElement(
       "warning",
@@ -6381,9 +6355,7 @@ const specifySubject = (event, subjectNameInput) => {
         </div>
       `;
       const subjectIdCellToAddNameTo = subjectNameInput.parent();
-      console.log(subjectIdCellToAddNameTo);
       const trashCanElement = subjectIdCellToAddNameTo[0].parentElement.nextElementSibling.children[0];
-      console.log(trashCanElement);
       trashCanElement.style.display = "block";
 
       if (subjectName.length > 0) {
@@ -6402,8 +6374,6 @@ const specifySubject = (event, subjectNameInput) => {
         } else {
           //case where subject name is valid and not being renamed:
           sodaJSONObj.addSubject(subjectName);
-          console.log("show trash here");
-          console.log(subjectNameInput);
         }
         subjectIdCellToAddNameTo.html(subjectNameElement);
         addSubjectSpecificationTableRow();
@@ -6434,9 +6404,7 @@ const specifySample = (event, sampleNameInput) => {
       </div>
     `;
       const sampleIdCellToAddNameTo = sampleNameInput.parent();
-      console.log(sampleIdCellToAddNameTo);
       let sampleTrashCan = sampleIdCellToAddNameTo[0].parentElement.nextElementSibling.children[0];
-      console.log(sampleTrashCan);
 
       //get the pool of the subject that the sample is being added to
       const subjectSampleAdditionTable = sampleNameInput.closest("table");
@@ -6470,10 +6438,6 @@ const specifySample = (event, sampleNameInput) => {
             subjectToAddSampleTo
           );
           //then show trash can svg
-          console.log(sampleName);
-          console.log(subjectToAddSampleTo);
-          console.log(subjectsPoolToAddSampleTo);
-          console.log(sampleNameInput);
           sampleTrashCan.style.display = "block";
         }
         sampleIdCellToAddNameTo.html(sampleRenameElement);
@@ -6539,7 +6503,6 @@ const specifyPool = (event, poolNameInput) => {
 
           //Add the new pool to sodaJSONObj
           sodaJSONObj.addPool(poolName);
-          console.log(poolTrashcan);
           poolTrashcan.style.display = "block";
 
           //Add the select2 base element
@@ -7585,7 +7548,6 @@ $("#guided-submission-completion-date-manual").change(function () {
 //////////       GUIDED OBJECT ACCESSORS       //////////
 /////////////////////////////////////////////////////////
 const setOrUpdateGuidedDatasetName = (newDatasetName) => {
-  console.log(newDatasetName);
   return new Promise((resolve, reject) => {
     const previousDatasetName = sodaJSONObj["digital-metadata"]["name"];
     //If updataing the dataset, update the old banner image path with a new one
@@ -11396,7 +11358,6 @@ $(document).ready(async () => {
       }
 
       if (pageBeingLeftID === "guided-prepare-helpers-tab") {
-        console.log("touch");
         // This is where we save data to the sodaJSONObj
         // Take a look at logic around here to see how to save data to the sodaJSONObj
       }
@@ -13562,9 +13523,6 @@ const showDataDeliverableDropDown = async () => {
 };
 
 const currentUserDropdown = async () => {
-  console.log("currentUser");
-  console.log(defaultBfAccount);
-  console.log($("#para-account-detail-curate").text());
   const pennsieveDetails = await Swal.fire({
     title: "Current Pennsieve Details",
     html: currentAccount(
