@@ -1750,6 +1750,23 @@ const traverseToTab = async (targetPageID) => {
     updateGuidedRadioButtonsFromJSON(targetPageID);
     //refresh selectPickers if page has them
 
+    //Hide the high level progress steps and green pills if the user is on the before getting started page
+    if (targetPageID === "guided-prepare-helpers-tab") {
+      document
+        .getElementById("structure-dataset-capsule-container")
+        .classList.add("hidden");
+      document
+        .querySelector(".guided--progression-tab-container")
+        .classList.add("hidden");
+    } else {
+      document
+        .getElementById("structure-dataset-capsule-container")
+        .classList.remove("hidden");
+      document
+        .querySelector(".guided--progression-tab-container")
+        .classList.remove("hidden");
+    }
+
     if (targetPageID === "guided-designate-pi-owner-tab") {
       $("#guided_bf_list_users_pi").selectpicker("refresh");
 
@@ -2372,11 +2389,19 @@ const traverseToTab = async (targetPageID) => {
       const generateOrRetryDatasetUploadButton = document.getElementById(
         "guided-generate-dataset-button"
       );
-      sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
-        ? (generateOrRetryDatasetUploadButton.innerHTML =
-            "Resume Pennsieve upload in progress")
-        : (generateOrRetryDatasetUploadButton.innerHTML =
-            "Upload dataset to Pennsieve");
+      const reviewGenerateButtionTextElement = document.getElementById(
+        "review-generate-button-text"
+      );
+      if (sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]) {
+        const generateButtonText = "Resume Pennsieve upload in progress";
+        generateOrRetryDatasetUploadButton.innerHTML = generateButtonText;
+        reviewGenerateButtionTextElement.innerHTML = generateButtonText;
+      } else {
+        const generateButtonText = "Upload dataset to Pennsieve";
+        generateOrRetryDatasetUploadButton.innerHTML = generateButtonText;
+        reviewGenerateButtionTextElement.innerHTML = generateButtonText;
+      }
+
       //Reset the dataset upload UI
       const pennsieveMetadataUploadTable = document.getElementById(
         "guided-tbody-pennsieve-metadata-upload"
@@ -2435,6 +2460,9 @@ const traverseToTab = async (targetPageID) => {
       const datasetSubtitleReviewText = document.getElementById(
         "guided-review-dataset-subtitle"
       );
+      const datasetDescriptionReviewText = document.getElementById(
+        "guided-review-dataset-description"
+      );
       const datasetPiOwnerReviewText = document.getElementById(
         "guided-review-dataset-pi-owner"
       );
@@ -2453,6 +2481,22 @@ const traverseToTab = async (targetPageID) => {
 
       datasetNameReviewText.innerHTML = datsetName;
       datasetSubtitleReviewText.innerHTML = datsetSubtitle;
+
+      datasetDescriptionReviewText.innerHTML = Object.keys(
+        sodaJSONObj["digital-metadata"]["description"]
+      )
+        .map((key) => {
+          const description =
+            sodaJSONObj["digital-metadata"]["description"][key];
+          //change - to spaces in description and then capitalize
+          const descriptionTitle = key
+            .split("-")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
+          return `<b>${descriptionTitle}</b>: ${sodaJSONObj["digital-metadata"]["description"][key]}<br /><br />`;
+        })
+        .join("\n");
+
       datasetPiOwnerReviewText.innerHTML = datasetPiOwner;
 
       if (datasetUserPermissions.length > 0) {
@@ -6425,6 +6469,7 @@ const specifySample = (event, sampleNameInput) => {
           return;
         }
         removeAlertMessageIfExists(sampleNameInput);
+
         if (sampleNameInput.attr("data-prev-name")) {
           const sampleToRename = sampleNameInput.attr("data-prev-name");
           sodaJSONObj.renameSample(
@@ -11438,6 +11483,7 @@ $(document).ready(async () => {
             });
             throw errorArray;
           }
+          $("#guided-add-code-metadata-tab").attr("data-skip-page", "false");
         }
         if (guidedButtonUserNoCodeData.classList.contains("selected")) {
           if (
@@ -11445,6 +11491,7 @@ $(document).ready(async () => {
             Object.keys(codeFolder.files).length === 0
           ) {
             delete datasetStructureJSONObj["folders"]["code"];
+            $("#guided-add-code-metadata-tab").attr("data-skip-page", "true");
           } else {
             const { value: deleteCodeFolderWithData } = await Swal.fire({
               title: "Delete code folder?",
@@ -11460,6 +11507,7 @@ $(document).ready(async () => {
             });
             if (deleteCodeFolderWithData) {
               delete datasetStructureJSONObj["folders"]["code"];
+              $("#guided-add-code-metadata-tab").attr("data-skip-page", "true");
             } else {
               guidedButtonUserHasCodeData.click();
             }
@@ -11710,15 +11758,25 @@ $(document).ready(async () => {
         }
       }
       if (pageBeingLeftID === "guided-add-code-metadata-tab") {
-        const requiredCodeDescriptionFilePath =
-          sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"];
-        /*if (!requiredCodeDescriptionFilePath) {
+        const buttonYesComputationalModelingData = document.getElementById(
+          "guided-button-has-computational-modeling-data"
+        );
+        const buttonNoComputationalModelingData = document.getElementById(
+          "guided-button-no-computational-modeling-data"
+        );
+        if (
+          !buttonYesComputationalModelingData.classList.contains("selected") &&
+          !buttonNoComputationalModelingData.classList.contains("selected")
+        ) {
           errorArray.push({
             type: "notyf",
-            message: "Please import a code_description file",
+            message:
+              "Please specify if your dataset contains computational modeling data",
           });
           throw errorArray;
-        }*/
+        }
+        if (buttonYesComputationalModelingData.classList.contains("selected")) {
+        }
       }
       if (pageBeingLeftID === "guided-pennsieve-intro-tab") {
         const confirmAccountbutton = document.getElementById(
