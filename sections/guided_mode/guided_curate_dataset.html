@@ -260,7 +260,10 @@
         </div>
       </div>
       <div id="prepare-dataset-parent-tab" class="guided--parent-tab hidden">
-        <div class="guided--capsule-container">
+        <div
+          class="guided--capsule-container"
+          id="structure-dataset-capsule-container"
+        >
           <div
             class="guided--capsule"
             id="guided-prepare-helpers-capsule"
@@ -5280,8 +5283,8 @@
                   />
                   <p class="guided--text-input-instructions mb-0">
                     <b
-                      >Enter the name that you would like to upload your dataset
-                      to Pennsieve under</b
+                      >The name of the dataset on Pennsieve that will be
+                      available for all to see.</b
                     >
                   </p>
                 </div>
@@ -5481,6 +5484,19 @@
           id="guided-dataset-generation-confirmation-tab"
           class="guided--panel hidden"
         >
+          <div class="guided--section">
+            <h1 class="guided--text-sub-step">
+              Review your dataset structure and metadata
+            </h1>
+            <p class="guided--help-text">
+              A summary of your dataset as it will be generated on Pennsieve can
+              be found below. If you have any changes that you would like to
+              make before you generate your dataset on Pennsieve, you may go
+              back and make them. If you are ready to generate on Pennsieve,
+              click "<span id="review-generate-button-text"></span>" below the
+              review panel to generate the dataset on Pennsieve.
+            </p>
+          </div>
           <div class="guided--container-data-display">
             <div
               style="
