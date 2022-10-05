@@ -342,21 +342,21 @@ def bf_delete_account(keyname):
 #         return True
 
 
-# def check_forbidden_characters_bf(my_string):
-#     """
-#     Check for forbidden characters in Pennsieve file/folder name
+def check_forbidden_characters_bf(my_string):
+    """
+    Check for forbidden characters in Pennsieve file/folder name
 
-#     Args:
-#         my_string: string with characters (string)
-#     Returns:
-#         False: no forbidden character
-#         True: presence of forbidden character(s)
-#     """
-#     regex = re.compile(f"[{forbidden_characters_bf}]")
-#     if regex.search(my_string) == None and "\\" not in r"%r" % my_string:
-#         return False
-#     else:
-#         return True
+    Args:
+        my_string: string with characters (string)
+    Returns:
+        False: no forbidden character
+        True: presence of forbidden character(s)
+    """
+    regex = re.compile(f"[{forbidden_characters_bf}]")
+    if regex.search(my_string) == None and "\\" not in r"%r" % my_string:
+        return False
+    else:
+        return True
 
 
 
@@ -629,65 +629,74 @@ def bf_account_details(accountname):
 #         raise e
 
 
-# def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
-#     """
-#     Args:
-#         accountname: account in which the dataset needs to be created (string)
-#         current_dataset_name: current name of the dataset
-#         renamed_dataset_name: new name of the dataset
+def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
+    """
+    Args:
+        accountname: account in which the dataset needs to be created (string)
+        current_dataset_name: current name of the dataset
+        renamed_dataset_name: new name of the dataset
 
-#     Action:
-#         Creates dataset for the account specified
-#     """
-#     error, c = "", 0
-#     datasetname = renamed_dataset_name.strip()
+    Action:
+        Creates dataset for the account specified
+    """
+    error, c = "", 0
+    datasetname = renamed_dataset_name.strip()
 
-#     if check_forbidden_characters_bf(datasetname):
-#         error = (
-#             error
-#             + "A Pennsieve dataset name cannot contain any of the following characters: "
-#             + forbidden_characters_bf
-#             + "<br>"
-#         )
-#         c += 1
+    if check_forbidden_characters_bf(datasetname):
+        error = f"{error}A Pennsieve dataset name cannot contain any of the following characters: {forbidden_characters_bf}<br>"
 
-#     if not datasetname:
-#         error = f"{error}Please enter valid new dataset name<br>"
-#         c += 1
+        c += 1
 
-#     if datasetname.isspace():
-#         error = f"{error}Please enter valid new dataset name<br>"
-#         c += 1
+    if not datasetname:
+        error = f"{error}Please enter valid new dataset name<br>"
+        c += 1
 
-#     try:
-#         bf = Pennsieve(accountname)
-#     except Exception as e:
-#         error = f"{error}Please select a valid Pennsieve account<br>"
-#         c += 1
+    if datasetname.isspace():
+        error = f"{error}Please enter valid new dataset name<br>"
+        c += 1
 
-#     if c > 0:
-#         abort(400, error)
+    try:
+        ps = Pennsieve()
+        ps.user.switch(accountname)
+    except Exception as e:
+        error = f"{error}Please select a valid Pennsieve account<br>"
+        c += 1
 
-#     try:
-#         myds = bf.get_dataset(current_dataset_name)
-#     except Exception as e:
-#         error = "Please select a valid Pennsieve dataset"
-#         abort(400, error)
-
-#     role = bf_get_current_user_permission(bf, myds)
-#     if role not in ["owner", "manager"]:
-#         error_message = "You don't have permissions to change the name of this Pennsieve dataset"
-#         abort(403, error_message)
+    try: 
+        ps.user.reauthenticate()
+    except Exception as e:
+        error = f"{error}Could not reauthenticate your Pennsieve account."
+        c +=1
 
 
-#     dataset_list = [ds.name for ds in bf.datasets()]
-#     if datasetname in dataset_list:
-#         raise Exception("Dataset name already exists")
+    if c > 0:
+        abort(400, error)
 
-#     myds = bf.get_dataset(current_dataset_name)
-#     selected_dataset_id = myds.id
-#     jsonfile = {"name": datasetname}
-#     bf._api.datasets._put(f"/{str(selected_dataset_id)}", json=jsonfile)
+    try:
+        myds = ps.getDatasets()
+        selected_dataset_id = myds[current_dataset_name]
+        # myds = bf.get_dataset(current_dataset_name)
+    except Exception as e:
+        error = "Please select a valid Pennsieve dataset"
+        abort(400, error)
+
+    role = bf_get_current_user_permission_agent_two(selected_dataset_id)["role"]
+    if role not in ["owner", "manager"]:
+        error_message = "You don't have permissions to change the name of this Pennsieve dataset"
+        abort(403, error_message)
+
+
+    dataset_list = [ds.name for ds in ps.getDatasets()]
+    if datasetname in dataset_list:
+        raise Exception("Dataset name already exists")
+
+    jsonfile = {"name": renamed_dataset_name}
+    try: 
+        r = requests.put(f"{PENNSIEVE_URL}/{str(selected_dataset_id)}", json=jsonfile, headers=create_request_headers(ps))
+        r.raise_for_status()
+        return {"message": f"Dataset renamed to {renamed_dataset_name}"}
+    except Exception as e:
+        raise Exception(e) from e
 
 
 # def clear_queue():
