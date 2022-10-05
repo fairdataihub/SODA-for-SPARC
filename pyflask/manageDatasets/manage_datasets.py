@@ -1718,56 +1718,64 @@ def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
 
 
 
-# def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_path):
-#     """
-#     Function to add banner to a selected dataset
+def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_path):
+    """
+    Function to add banner to a selected dataset
 
-#     Args:
-#         selected_bfaccount: name of selected Pennsieve account (string)
-#         selected_bfdataset: name of selected Pennsieve dataset (string)
-#         selected_banner_image: name of selected Pennsieve dataset (data-uri)
-#     Return:
-#         Success or error message
-#     """
+    Args:
+        selected_bfaccount: name of selected Pennsieve account (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
+        selected_banner_image: name of selected Pennsieve dataset (data-uri)
+    Return:
+        Success or error message
+    """
 
-#     try:
-#         bf = Pennsieve(selected_bfaccount)
-#     except Exception as e:
-#         error_message = "Please select a valid Pennsieve account"
-#         abort(400, error_message)
+    try:
+        ps = Pennsieve()
+        ps.user.switch(selected_bfaccount)
+    except Exception as e:
+        abort(400, "Please select a valid Pennsieve account")
 
-#     try:
-#         myds = bf.get_dataset(selected_bfdataset)
-#     except Exception as e:
-#         error_message = "Please select a valid Pennsieve dataset"
-#         abort(400, error_message)
+    
+    try:
+        ps.user.reauthenticate()
+    except Exception as e:
+        abort(401, "Could not reauthenticate this account with Pennsieve.")
+    
+
+    try:
+        ds = ps.getDatasets()
+        selected_dataset_id = ds[selected_bfdataset]
+    except Exception as e:
+        abort(400, "Please select a valid Pennsieve dataset.")
 
 
-#     role = bf_get_current_user_permission(bf, myds)
-#     if role not in ["owner", "manager"]:
-#         error_message = "You don't have permissions for editing metadata on this Pennsieve dataset"
-#         abort(403, error_message)
+    role = bf_get_current_user_permission_agent_two(selected_dataset_id)['role']
+    if role not in ["owner", "manager"]:
+        abort(403, "You don't have permissions for editing metadata on this Pennsieve dataset.")
 
 
-#     try:
-#         selected_dataset_id = myds.id
+    try:
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + ps.getUser()["session_token"],
+        }
+        def upload_image():
+            with open(banner_image_path, "rb") as f:
+                requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/banner", files={"banner": f}, headers=headers)
 
-#         def upload_image():
-#             with open(banner_image_path, "rb") as f:
-#                 bf._api._put(f"/datasets/{str(selected_dataset_id)}/banner", files={"banner": f})
-
-#         # delete banner image folder if it is located in SODA
-#         gevent.spawn(upload_image())
-#         image_folder = dirname(banner_image_path)
-#         if (
-#             isdir(image_folder)
-#             and ("SODA" in image_folder)
-#             and ("guided-banner-images" not in image_folder)
-#         ):
-#             shutil.rmtree(image_folder, ignore_errors=True)
-#         return {"message": "Uploaded!"}
-#     except Exception as e:
-#         raise Exception(e)
+        # delete banner image folder if it is located in SODA
+        upload_image()
+        image_folder = dirname(banner_image_path)
+        if (
+            isdir(image_folder)
+            and ("SODA" in image_folder)
+            and ("guided-banner-images" not in image_folder)
+        ):
+            shutil.rmtree(image_folder, ignore_errors=True)
+        return {"message": "Uploaded!"}
+    except Exception as e:
+        raise Exception(e)
 
 
 

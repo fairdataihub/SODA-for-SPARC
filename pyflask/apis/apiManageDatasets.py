@@ -21,7 +21,7 @@ from manageDatasets import (
     bf_get_description,
     bf_add_description,
     bf_get_banner_image,
-    # bf_add_banner_image,
+    bf_add_banner_image,
     # bf_get_license,
     # bf_add_license,
     # bf_get_dataset_status,
@@ -619,26 +619,26 @@ class BfBannerImage(Resource):
       raise e
 
 
-#   parser_add_banner_image = parser_banner_image.copy()
-#   parser_add_banner_image.add_argument('input_banner_image_path', type=str, required=True, location='json', help='File path to the local banner image. Will be uploaded to AWS.')
+  parser_add_banner_image = parser_banner_image.copy()
+  parser_add_banner_image.add_argument('input_banner_image_path', type=str, required=True, location='json', help='File path to the local banner image. Will be uploaded to AWS.')
 
-#   @api.marshal_with(successMessage, False, 200)
-#   @api.expect(parser_add_banner_image)
-#   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 403: 'Forbidden'}, description="Adds a banner image to the given dataset. The banner image will be uploaded to AWS.")
-#   def put(self):
-#     # update the dataset banner image for the selected account and dataset ID
-#     data = self.parser_add_banner_image.parse_args()
+  @api.marshal_with(successMessage, False, 200)
+  @api.expect(parser_add_banner_image)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 403: 'Forbidden'}, description="Adds a banner image to the given dataset. The banner image will be uploaded to AWS.")
+  def put(self):
+    # update the dataset banner image for the selected account and dataset ID
+    data = self.parser_add_banner_image.parse_args()
 
-#     selected_account = data.get('selected_account')
-#     selected_dataset = data.get('selected_dataset')
-#     input_banner_image_path = data.get('input_banner_image_path')
+    selected_account = data.get('selected_account')
+    selected_dataset = data.get('selected_dataset')
+    input_banner_image_path = data.get('input_banner_image_path')
 
-#     try:
-#       return bf_add_banner_image(selected_account, selected_dataset, input_banner_image_path)
-#     except Exception as e:
-#       if notBadRequestException(e):
-#         api.abort(500, str(e))
-#       raise e
+    try:
+      return bf_add_banner_image(selected_account, selected_dataset, input_banner_image_path)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
 
 
 # model_get_license_response = api.model('GetLicenseResponse', {

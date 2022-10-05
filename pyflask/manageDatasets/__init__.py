@@ -20,7 +20,7 @@ from .manage_datasets import (
     bf_get_description,
     bf_add_description,
     bf_get_banner_image,
-    # bf_add_banner_image,
+    bf_add_banner_image,
     # bf_get_license,
     # bf_add_license,
     # bf_get_dataset_status,
