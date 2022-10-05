@@ -24,7 +24,7 @@ from .manage_datasets import (
     bf_get_license,
     bf_add_license,
     bf_get_dataset_status,
-    # bf_change_dataset_status,
+    bf_change_dataset_status,
     bf_default_account_load,
     get_username,
     # check_agent_install,

@@ -25,7 +25,7 @@ from manageDatasets import (
     bf_get_license,
     bf_add_license,
     bf_get_dataset_status,
-    # bf_change_dataset_status,
+    bf_change_dataset_status,
     bf_default_account_load,
     get_username,
     # check_agent_install,
@@ -154,32 +154,32 @@ model_get_dataset_status_response = api.model('GetDatasetStatusResponse', {
 class BfChangeDatasetStatus(Resource):
 
 
-#   # selected_bfaccount, selected_bfdataset, selected_status
-#   parser_change_dataset_status = reqparse.RequestParser(bundle_errors=True)
-#   parser_change_dataset_status.add_argument('selected_bfaccount', type=str, required=True, help='The selected bfaccount.', location='json')
-#   parser_change_dataset_status.add_argument('selected_bfdataset', type=str, required=True, help='The selected bfdataset id or name.', location='json')
-#   parser_change_dataset_status.add_argument('selected_status', type=str, required=True, help='The target status for the dataset.', location='json')
+  # selected_bfaccount, selected_bfdataset, selected_status
+  parser_change_dataset_status = reqparse.RequestParser(bundle_errors=True)
+  parser_change_dataset_status.add_argument('selected_bfaccount', type=str, required=True, help='The selected bfaccount.', location='json')
+  parser_change_dataset_status.add_argument('selected_bfdataset', type=str, required=True, help='The selected bfdataset id or name.', location='json')
+  parser_change_dataset_status.add_argument('selected_status', type=str, required=True, help='The target status for the dataset.', location='json')
 
-#   @api.marshal_with(successMessage, False, 200)
-#   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Change the status of a dataset.")
-#   # the request parameters
-#   @api.expect(parser_change_dataset_status)
-#   def put(self):
-#     # get the selected_bfaccount, selected_bfdataset, selected_status from the request object
-#     data = self.parser_change_dataset_status.parse_args(strict=True)
-#     selected_bfaccount = data['selected_bfaccount']
-#     selected_bfdataset = data['selected_bfdataset']
-#     selected_status = data['selected_status']
+  @api.marshal_with(successMessage, False, 200)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Change the status of a dataset.")
+  # the request parameters
+  @api.expect(parser_change_dataset_status)
+  def put(self):
+    # get the selected_bfaccount, selected_bfdataset, selected_status from the request object
+    data = self.parser_change_dataset_status.parse_args(strict=True)
+    selected_bfaccount = data['selected_bfaccount']
+    selected_bfdataset = data['selected_bfdataset']
+    selected_status = data['selected_status']
 
-#     api.logger.info(f' bf_change_dataset_status --  args -- selected_bfaccount: {selected_bfaccount} selected_bfdataset: {selected_bfdataset} selected_status: {selected_status}')
+    api.logger.info(f' bf_change_dataset_status --  args -- selected_bfaccount: {selected_bfaccount} selected_bfdataset: {selected_bfdataset} selected_status: {selected_status}')
 
-#     try:
-#       return bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_status)
-#     except Exception as e:
-#       # something unexpected happened so abort with a 500
-#       if notBadRequestException(e):
-#         api.abort(500, str(e))
-#       raise e
+    try:
+      return bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_status)
+    except Exception as e:
+      # something unexpected happened so abort with a 500
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
 
 
   parser_dataset_status = reqparse.RequestParser(bundle_errors=True)

@@ -1733,58 +1733,43 @@ def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
         raise e
 
 
-# """
-#     Function to get current status for a selected dataset
-
-#     Args:
-#         selected_bfaccount: name of selected Pennsieve account (string)
-#         selected_bfdataset: name of selected Pennsieve dataset (string)
-#         selected_status: display name of selected status (string)
-#     Return:
-#         success message
-#     """
 
 
-# def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_status):
-#     try:
-#         bf = Pennsieve(selected_bfaccount)
-#     except Exception as e:
-#         abort(400, str(e))
+def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_status):
+    ps = connect_pennsieve_client()
 
-#     try:
-#         myds = bf.get_dataset(selected_bfdataset)
-#     except Exception as e:
-#         abort(400, str(e))
+    authenticate_user_with_client(ps, selected_bfaccount)
 
-#     try:
-#         role = bf_get_current_user_permission(bf, myds)
-#         if role not in ["owner", "manager"]:
-#             abort(403, "You don't have permissions for changing the status of this Pennsieve dataset")
-#     except Exception as e:
-#         raise e
+    selected_dataset_id = get_dataset_id(ps, selected_bfdataset)
 
-#     try:
-#         # find name corresponding to display name or show error message
-#         organization_id = bf.context.id
-#         list_status = bf._api._get(
-#             "/organizations/" + str(organization_id) + "/dataset-status"
-#         )
-#         c = 0
-#         for option in list_status:
-#             if option["displayName"] == selected_status:
-#                 new_status = option["name"]
-#                 c += 1
-#                 break
-#         if c == 0:
-#             abort(400, "Selected status is not available for this Pennsieve account.")
+    if not has_edit_permissions(ps, selected_dataset_id):
+        abort(401, "You do not have permission to edit this dataset.")
 
-#         # gchange dataset status
-#         selected_dataset_id = myds.id
-#         jsonfile = {"status": new_status}
-#         bf._api.datasets._put("/" + str(selected_dataset_id), json=jsonfile)
-#         return { "message": "Success: Changed dataset status to '" + selected_status + "'" }
-#     except Exception as e:
-#         raise e
+    try:
+        headers = create_request_headers(ps)
+        # find name corresponding to display name or show error message
+        organization_id = ps.getUser()['organization_id']
+        r = requests.get(
+            f"{PENNSIEVE_URL}/organizations/{organization_id}/dataset-status", headers=headers
+        )
+        r.raise_for_status()
+        list_status = r.json()
+        c = 0
+        for option in list_status:
+            if option["displayName"] == selected_status:
+                new_status = option["name"]
+                c += 1
+                break
+        if c == 0:
+            abort(400, "Selected status is not available for this Pennsieve account.")
+
+        # gchange dataset status
+        jsonfile = {"status": new_status}
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", json=jsonfile, headers=headers)
+        r.raise_for_status()
+        return { "message": "Success: Changed dataset status to '" + selected_status + "'" }
+    except Exception as e:
+        raise e
 
 
 # def get_number_of_files_and_folders_locally(filepath):
