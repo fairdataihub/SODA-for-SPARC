@@ -995,8 +995,8 @@ def bf_get_users(selected_bfaccount):
     the given Pennsieve account
 
     Args:
-      selected_bfaccount: name of selected Pennsieve acccount (string)
-    Retun:
+      selected_bfaccount: name of selected Pennsieve account (string)
+    Return:
         list_users : list of users (first name -- last name) associated with the organization of the
         selected Pennsieve account (list of string)
     """
@@ -1045,7 +1045,7 @@ def bf_get_users(selected_bfaccount):
 def bf_get_teams(selected_bfaccount):
     """
     Args:
-      selected_bfaccount: name of selected Pennsieve acccount (string)
+      selected_bfaccount: name of selected Pennsieve account (string)
     Return:
         list_teams : list of teams (name) associated with the organization of the
         selected Pennsieve account (list of string)
@@ -1090,7 +1090,7 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
     Function to get permission for a selected dataset
 
     Args:
-        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfaccount: name of selected Pennsieve account (string)
         selected_bfdataset: name of selected Pennsieve dataset (string)
     Output:
         list_permission: list of permission (first name -- last name -- role) associated with the
@@ -1197,7 +1197,7 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
 #     Function to get the permission of currently logged in user for a selected dataset
 
 #     Args:
-#         bf: logged Pennsieve acccount (dict)
+#         bf: logged Pennsieve account (dict)
 #         myds: selected Pennsieve dataset (dict)
 #     Output:
 #         permission of current user (string)
@@ -1229,10 +1229,10 @@ def bf_get_current_user_permission_agent_two(dataset_id):
 # ):
 
 #     """
-#     Function to add/remove permission for a suser to a selected dataset
+#     Function to add/remove permission for a user to a selected dataset
 
 #     Args:
-#         selected_bfaccount: name of selected Pennsieve acccount (string)
+#         selected_bfaccount: name of selected Pennsieve account (string)
 #         selected_bfdataset: name of selected Pennsieve dataset (string)
 #         selected_user: name (first name -- last name) of selected Pennsieve user (string)
 #         selected_role: desired role ('manager', 'viewer', 'editor', 'remove current permissions') (string)
@@ -1357,7 +1357,7 @@ def bf_get_current_user_permission_agent_two(dataset_id):
 #     Function to add/remove permission fo a team to a selected dataset
 
 #     Args:
-#         selected_bfaccount: name of selected Pennsieve acccount (string)
+#         selected_bfaccount: name of selected Pennsieve account (string)
 #         selected_bfdataset: name of selected Pennsieve dataset (string)
 #         selected_team: name of selected Pennsieve team (string)
 #         selected_role: desired role ('manager', 'viewer', 'editor', 'remove current permissions') (string)
@@ -1475,7 +1475,7 @@ def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
     Function to get current subtitle associated with a selected dataset
 
     Args:
-        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfaccount: name of selected Pennsieve account (string)
         selected_bfdataset: name of selected Pennsieve dataset (string)
     Return:
         License name, if any, or "No license" message
@@ -1526,13 +1526,13 @@ def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
 # def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
 #     """
 #     Args:
-#         selected_bfaccount: name of selected Pennsieve acccount (string)
+#         selected_bfaccount: name of selected Pennsieve account (string)
 #         selected_bfdataset: name of selected Pennsieve dataset (string)
 #         input_subtitle: subtitle limited to 256 characters (string)
 #     Action:
 #         Add/change subtitle for a selected dataset
 #     Return:
-#         Success messsge or error
+#         Success message or error
 #     """
 
 #     try:
@@ -1568,7 +1568,7 @@ def bf_get_description(selected_bfaccount, selected_bfdataset):
     Function to get current description associated with a selected dataset
 
     Args:
-        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfaccount: name of selected Pennsieve account (string)
         selected_bfdataset: name of selected Pennsieve dataset (string)
     Return:
         Description (string with markdown code)
@@ -1614,13 +1614,13 @@ def bf_get_description(selected_bfaccount, selected_bfdataset):
 def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
     """
     Args:
-        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfaccount: name of selected Pennsieve account (string)
         selected_bfdataset: name of selected Pennsieve dataset (string)
         markdown_input: description with markdown formatting (string)
     Action:
-        Add/change desciption for a selected dataset
+        Add/change description for a selected dataset
     Return:
-        Success messsge or error
+        Success message or error
     """
 
     try:
@@ -1672,7 +1672,7 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
 #     Function to get url of current banner image associated with a selected dataset
 
 #     Args:
-#         selected_bfaccount: name of selected Pennsieve acccount (string)
+#         selected_bfaccount: name of selected Pennsieve account (string)
 #         selected_bfdataset: name of selected Pennsieve dataset (string)
 #     Return:
 #         url of banner image (string)
@@ -1712,7 +1712,7 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
 #     Function to add banner to a selected dataset
 
 #     Args:
-#         selected_bfaccount: name of selected Pennsieve acccount (string)
+#         selected_bfaccount: name of selected Pennsieve account (string)
 #         selected_bfdataset: name of selected Pennsieve dataset (string)
 #         selected_banner_image: name of selected Pennsieve dataset (data-uri)
 #     Return:
@@ -1767,7 +1767,7 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
 #     Function to get current license associated with a selected dataset
 
 #     Args:
-#         selected_bfaccount: name of selected Pennsieve acccount (string)
+#         selected_bfaccount: name of selected Pennsieve account (string)
 #         selected_bfdataset: name of selected Pennsieve dataset (string)
 #     Return:
 #         License name, if any, or "No license" message
@@ -1804,13 +1804,13 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
 # def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
 #     """
 #     Args:
-#         selected_bfaccount: name of selected Pennsieve acccount (string)
+#         selected_bfaccount: name of selected Pennsieve account (string)
 #         selected_bfdataset: name of selected Pennsieve dataset (string)
 #         selected_license: name of selected license (string)
 #     Action:
 #         Add/change license for a selected dataset
 #     Return:
-#         Success messsge or error
+#         Success message or error
 #     """
 
 #     try:
@@ -1868,7 +1868,7 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
 #     Function to get current status for a selected dataset
 
 #     Args:
-#         selected_bfaccount: name of selected Pennsieve acccount (string)
+#         selected_bfaccount: name of selected Pennsieve account (string)
 #         selected_bfdataset: name of selected Pennsieve dataset (string)
 #     Return:
 #         List of available status options for the account (list of string).
@@ -1905,7 +1905,7 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
 #     Function to get current status for a selected dataset
 
 #     Args:
-#         selected_bfaccount: name of selected Pennsieve acccount (string)
+#         selected_bfaccount: name of selected Pennsieve account (string)
 #         selected_bfdataset: name of selected Pennsieve dataset (string)
 #         selected_status: display name of selected status (string)
 #     Return:
