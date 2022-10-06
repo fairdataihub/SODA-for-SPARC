@@ -13,16 +13,15 @@ client.useDataset("N:dataset:1cb4bf59-2b6d-48c9-8dae-88f722c6e328")
 
 
 
-client.manifest.upload(5)
+client.manifest.upload(12)
 sub = client.subscribe(10)
 
 counter = 0 
 end_counter = 1000
 msgs = []
-print(dir(sub))
 for msg in sub:
     if msg.upload_status.total == msg.upload_status.current:
-        print("Finished")
+        print(msg)
         counter += 1
         print(counter)
     
