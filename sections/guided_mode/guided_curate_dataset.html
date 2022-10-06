@@ -4556,7 +4556,6 @@
                 <button
                   class="ui positive basic button guided--radio-button"
                   id="guided-confirm-pennsieve-account-button"
-                  data-next-element="guided-add-permissions"
                   style="width: 220px"
                 >
                   Yes, this is the account
@@ -4915,52 +4914,29 @@
               </li>
             </ul>
           </div>
-          <table
-            class="ui celled striped table"
-            style="margin-bottom: 25px; width: 800px"
-          >
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th class="remove-left-border" style="width: 300px">
-                  Permission
-                </th>
-                <th
-                  class="center aligned remove-left-border"
-                  style="width: 30px"
-                >
-                  Delete
-                </th>
-              </tr>
-            </thead>
-            <tbody id="permissions-table-body"></tbody>
-          </table>
-          <label class="guided--form-label centered mt-md">
-            Would you like to add more permissions to your dataset?
-          </label>
-          <div class="guided--radio-button-container mb-sm">
-            <button
-              class="ui positive basic button guided--radio-button"
-              id="guided-button-add-permissions"
-              data-next-element="guided-add-permissions"
-              data-button-config-value="add-other-user-team-permissions"
-              data-button-config-value-state="yes"
+          <div class="guided--section">
+            <table
+              class="ui celled striped table"
+              style="margin-bottom: 25px; width: 800px"
             >
-              Yes
-            </button>
-            <button
-              class="ui negative basic button guided--radio-button"
-              id="guided-button-no-permissions"
-              data-next-element="guided-no-permissions"
-              data-button-config-value="add-other-user-team-permissions"
-              data-button-config-value-state="no"
-            >
-              No
-            </button>
-          </div>
-          <div class="guided--panel hidden" id="guided-add-permissions">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th class="remove-left-border" style="width: 300px">
+                    Permission
+                  </th>
+                  <th
+                    class="center aligned remove-left-border"
+                    style="width: 30px"
+                  >
+                    Delete
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="permissions-table-body"></tbody>
+            </table>
             <h1 class="guided--text-sub-step">
-              Designate permissions for users and teams:
+              Designate permissions for other users and teams below:
             </h1>
             <div class="guided--container-permissions">
               <div style="flex-grow: 1">
@@ -5027,7 +5003,6 @@
               </button>
             </div>
           </div>
-          <div class="guided--panel hidden" id="guided-no-permissions"></div>
         </div>
         <div id="guided-add-description-tab" class="guided--panel hidden">
           <div class="guided--section">
