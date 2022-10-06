@@ -408,7 +408,9 @@ def bf_get_accounts():
     elif "global" in accountname:
         if "default_profile" in config["global"]:
             default_profile = config["global"]["default_profile"]
+            namespace_logger.info(f"Default profile: {default_profile}")
             if default_profile in accountname:
+                namespace_logger.info(f"Default profile in account name")
                 with contextlib.suppress(Exception):
                     ps = Pennsieve()
                     ps.user.switch(default_profile)
@@ -432,6 +434,7 @@ def bf_get_accounts():
                             config.write(configfile)
 
                         return account
+    namespace_logger.info("Returning empty string?")
     return ""
 
 

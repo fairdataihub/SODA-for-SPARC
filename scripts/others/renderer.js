@@ -4642,7 +4642,9 @@ async function showDefaultBFAccount() {
     let bf_default_acc_req = await client.get(
       "manage_datasets/bf_default_account_load"
     );
+    console.log("Default account load called")
     let accounts = bf_default_acc_req.data.defaultAccounts;
+    console.log("Result is: ", bf_default_acc_req.data)
     if (accounts.length > 0) {
       var myitemselect = accounts[0];
       defaultBfAccount = myitemselect;
