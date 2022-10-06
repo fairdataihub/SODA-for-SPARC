@@ -5647,8 +5647,9 @@ const renderProtocolsTable = () => {
     sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
 
   const protocolsContainer = document.getElementById("protocols-container");
-
-  if (protocols === undefined) {
+  // console.log(protocols);
+  //protocols is either undefined when brand new dataset or 0 when returning from a saved dataset
+  if (protocols === undefined || protocols.length === 0) {
     const emptyRowWarning = generateAlertElement(
       "warning",
       "You currently have no protocols for your dataset. To add, click the 'Add a new protocol' button"
