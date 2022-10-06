@@ -203,11 +203,6 @@ async function dropHandler(
   curationMode,
   dataDeliverables = false
 ) {
-  console.log(ev);
-  console.log(paraElement);
-  console.log(metadataFile);
-  console.log(curationMode);
-  console.log(dataDeliverables);
   var gettingStartedSection = false;
   if (curationMode === "guided-getting-started") {
     curationMode = "guided";
@@ -265,9 +260,7 @@ async function dropHandler(
 
           //Handle guided mode submission data
           if (curationMode === "guided") {
-            console.log("within guided if");
             const guidedMilestoneData = res;
-            console.log(res);
             //create a string with today's date in the format xxxx/xx/xx
             const today = new Date();
             const todayString = `
@@ -291,13 +284,6 @@ async function dropHandler(
             sodaJSONObj["dataset-metadata"]["submission-metadata"][
               "temp-imported-milestones"
             ] = guidedMilestoneData;
-
-            console.log(guidedMilestoneData);
-            console.log(
-              sodaJSONObj["dataset-metadata"]["submission-metadata"][
-                "temp-imported-milestones"
-              ]
-            );
 
             sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] =
               filepath;

@@ -4578,7 +4578,6 @@
                 <button
                   class="ui positive basic button guided--radio-button"
                   id="guided-confirm-pennsieve-account-button"
-                  data-next-element="guided-add-permissions"
                   style="width: 220px"
                 >
                   Yes, this is the account
@@ -4937,52 +4936,29 @@
               </li>
             </ul>
           </div>
-          <table
-            class="ui celled striped table"
-            style="margin-bottom: 25px; width: 800px"
-          >
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th class="remove-left-border" style="width: 300px">
-                  Permission
-                </th>
-                <th
-                  class="center aligned remove-left-border"
-                  style="width: 30px"
-                >
-                  Delete
-                </th>
-              </tr>
-            </thead>
-            <tbody id="permissions-table-body"></tbody>
-          </table>
-          <label class="guided--form-label centered mt-md">
-            Would you like to add more permissions to your dataset?
-          </label>
-          <div class="guided--radio-button-container mb-sm">
-            <button
-              class="ui positive basic button guided--radio-button"
-              id="guided-button-add-permissions"
-              data-next-element="guided-add-permissions"
-              data-button-config-value="add-other-user-team-permissions"
-              data-button-config-value-state="yes"
+          <div class="guided--section">
+            <table
+              class="ui celled striped table"
+              style="margin-bottom: 25px; width: 800px"
             >
-              Yes
-            </button>
-            <button
-              class="ui negative basic button guided--radio-button"
-              id="guided-button-no-permissions"
-              data-next-element="guided-no-permissions"
-              data-button-config-value="add-other-user-team-permissions"
-              data-button-config-value-state="no"
-            >
-              No
-            </button>
-          </div>
-          <div class="guided--panel hidden" id="guided-add-permissions">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th class="remove-left-border" style="width: 300px">
+                    Permission
+                  </th>
+                  <th
+                    class="center aligned remove-left-border"
+                    style="width: 30px"
+                  >
+                    Delete
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="permissions-table-body"></tbody>
+            </table>
             <h1 class="guided--text-sub-step">
-              Designate permissions for users and teams:
+              Designate permissions for other users and teams below:
             </h1>
             <div class="guided--container-permissions">
               <div style="flex-grow: 1">
@@ -5049,7 +5025,6 @@
               </button>
             </div>
           </div>
-          <div class="guided--panel hidden" id="guided-no-permissions"></div>
         </div>
         <div id="guided-add-description-tab" class="guided--panel hidden">
           <div class="guided--section">
@@ -5369,7 +5344,7 @@
                   <p class="guided--text-input-instructions mb-0">
                     <b
                       >The name of the dataset on Pennsieve that will be
-                      available for all to see.</b
+                      available for all to see</b
                     >
                   </p>
                 </div>
@@ -6044,6 +6019,25 @@
                     ></div>
                   </td>
                 </tr>
+                <tr
+                  class="hidden"
+                  id="guided-code-description-metadata-upload-tr"
+                >
+                  <td
+                    class="middle aligned"
+                    id="guided-code-description-metadata-upload-text"
+                  >
+                    Dataset description metadata
+                  </td>
+                  <td
+                    class="middle aligned text-center collapsing border-left-0 p-0"
+                  >
+                    <div
+                      class="guided--container-upload-status"
+                      id="guided-code-description-metadata-upload-status"
+                    ></div>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -6109,9 +6103,8 @@
             <h1 class="guided--text-sub-step">
               Share with the SPARC Curation Team
             </h1>
-            <p class="guided--help-text text-center">
-              View dataset on Pennsieve
-            </p>
+            <h2 class="guided--text-sub-step">View dataset on Pennsieve</h2>
+
             <p
               class="guided--help-text text-center"
               style="margin-bottom: 1rem; text-align: justify !important"
@@ -6141,7 +6134,7 @@
             </p>
           </div>
           <div class="guided--section">
-            <p class="guided--help-text text-center">Edit dataset</p>
+            <h2 class="guided--text-sub-step mt-0">Editing this dataset</h2>
             <p class="guided--help-text">
               Now that your initial dataset upload via Guided Mode has been
               completed, modifications to your dataset can be made by clicking
@@ -6153,9 +6146,10 @@
             </p>
           </div>
           <div class="guided--section">
-            <p class="guided--help-text text-center">
-              Share with the Curation Team
-            </p>
+            <h2 class="guided--text-sub-step mt-0">
+              Share with the curation team
+            </h2>
+
             <p class="guided--help-text">
               Sharing your dataset with the SPARC Curation Team will inform the
               Curation Team that your dataset is ready to be reviewed. It is

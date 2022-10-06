@@ -1800,7 +1800,7 @@ const traverseToTab = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-prepare-helpers-tab") {
-      //Hide the new dataset and existii local dataset capsule containers because
+      //Hide the new dataset and existings local dataset capsule containers because
       //We do now know what the user wants to do yet
       $("#guided-curate-new-dataset-branch-capsule-container").hide();
       $(
@@ -1825,15 +1825,9 @@ const traverseToTab = async (targetPageID) => {
         dataDeliverableButton.children[0].style.display = "flex";
         dataDeliverableButton.children[1].style.display = "none";
       }
-      // This controls the UI for the new page
-      // First we get vals from sodaJSONObj, and then update the UI
-      // based on the vals
-      const airTableAccountData =
-        sodaJSONObj["dataset-metadata"]["shared-metadata"][
-          "imported-sparc-award"
-        ];
 
       var airKeyContent = parseJson(airtableConfigPath);
+      console.log(airKeyContent);
       if (Object.keys(airKeyContent).length != 0) {
         //This is where we update the UI for the helper page
         airTableGettingStartedBtn.children[1].style.display = "none";
@@ -2688,7 +2682,8 @@ const traverseToTab = async (targetPageID) => {
       );
     }
     if (targetPageID === "guided-add-code-metadata-tab") {
-      const codeMetadata = sodaJSONObj["dataset-metadata"]["code-metadata"];
+      const codeDescriptionPath =
+        sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"];
 
       const codeDescriptionLottieContainer = document.getElementById(
         "code-description-lottie-container"
@@ -2697,7 +2692,7 @@ const traverseToTab = async (targetPageID) => {
         "guided-code-description-para-text"
       );
 
-      if (codeMetadata["code_description"]) {
+      if (codeDescriptionPath) {
         codeDescriptionLottieContainer.innerHTML = "";
         lottie.loadAnimation({
           container: codeDescriptionLottieContainer,
@@ -2706,7 +2701,7 @@ const traverseToTab = async (targetPageID) => {
           loop: false,
           autoplay: true,
         });
-        codeDescriptionParaText.innerHTML = codeMetadata["code_description"];
+        codeDescriptionParaText.innerHTML = codeDescriptionPath;
       } else {
         //reset the code metadata lotties and para text
         codeDescriptionLottieContainer.innerHTML = "";
@@ -3695,6 +3690,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["dataset-metadata"]["README"] = "";
   sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
   sodaJSONObj["digital-metadata"] = {};
+  sodaJSONObj["previously-uploaded-data"] = {};
   sodaJSONObj["digital-metadata"]["description"] = {};
   sodaJSONObj["digital-metadata"]["pi-owner"] = {};
   sodaJSONObj["digital-metadata"]["user-permissions"] = [];
@@ -7273,39 +7269,6 @@ const openSampleRenameInput = (subjectNameEditButton) => {
   sampleIdCellToRename.html(sampleRenameElement);
 };
 
-const generateSampleMetadataRowElement = (tableIndex, sampleName) => {
-  return `
-    <tr>
-      <td class="middle aligned collapsing text-center">
-        <span class="sample-metadata-table-index">${tableIndex}</span>
-      </td>
-      <td class="middle aligned sample-metadata-id-cell">
-        <span class="sample-metadata-id">${sampleName}</span>
-      </td>
-      <td class="middle aligned collapsing text-center" style="min-width: 130px">
-        <button
-          type="button"
-          class="btn btn-primary btn-sm"
-          style="
-            background-color: var(--color-light-green) !important;
-            margin-right: 5px;
-          "
-          onclick="openModifySampleMetadataPage($(this))"
-        >
-          Edit metadata
-        </button>
-        <button
-          type="button"
-          class="btn btn-primary btn-sm"
-          onclick="openCopySampleMetadataPopup($(this))"
-        >
-          Copy metadata
-        </button>
-      </td>
-    </tr>
-  `;
-};
-
 const removePermission = (clickedPermissionRemoveButton) => {
   let permissionElementToRemove = clickedPermissionRemoveButton.closest("tr");
   let permissionEntityType = permissionElementToRemove.attr("data-entity-type");
@@ -8312,7 +8275,7 @@ const renderSamplesMetadataAsideItems = () => {
           data-samples-pool-id="${sample.poolName ? sample.poolName : ""}"
         >
           <span class="sample-metadata-id">
-            ${sample.sampleName}
+          ${sample.subjectName}/${sample.sampleName}
           </span>
         </a>
         `;
@@ -8373,7 +8336,7 @@ const renderSamplesMetadataAsideItems = () => {
 
       //call openModifySampleMetadataPage function on clicked item
       openModifySampleMetadataPage(
-        e.target.innerText,
+        e.target.innerText.split("/")[1],
         samplesSubject,
         samplesPool
       );
@@ -10056,6 +10019,46 @@ $(document).ready(async () => {
     }
   };
 
+  const guidedUploadCodeDescriptionMetadata = async (
+    bfAccount,
+    datasetName,
+    codeDescriptionFilePath
+  ) => {
+    document
+      .getElementById("guided-code-description-metadata-upload-tr")
+      .classList.remove("hidden");
+    const codeDescriptionMetadataUploadText = document.getElementById(
+      "guided-code-description-metadata-upload-text"
+    );
+    codeDescriptionMetadataUploadText.innerHTML =
+      "Uploading code description metadata...";
+    guidedUploadStatusIcon(
+      "guided-code-description-metadata-upload-status",
+      "loading"
+    );
+
+    try {
+      await client.post("/prepare_metadata/code_description_file", {
+        filepath: codeDescriptionFilePath,
+        selected_account: bfAccount,
+        selected_dataset: datasetName,
+      });
+      guidedUploadStatusIcon(
+        "guided-code-description-metadata-upload-status",
+        "success"
+      );
+      codeDescriptionMetadataUploadText.innerHTML =
+        "Code description metadata successfully added to Pennsieve";
+    } catch (error) {
+      guidedUploadStatusIcon(
+        "guided-code-description-metadata-upload-status",
+        "error"
+      );
+      codeDescriptionMetadataUploadText.innerHTML = `Failed to upload code description metadata`;
+      clientError(error);
+    }
+  };
+
   const guidedUploadREADMEorCHANGESMetadata = async (
     bfAccount,
     datasetName,
@@ -10344,6 +10347,17 @@ $(document).ready(async () => {
           guidedDatasetName,
           "changes",
           guidedChangesMetadata
+        );
+      }
+      if (
+        fs.existsSync(
+          sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]
+        )
+      ) {
+        let codeDescriptionRes = await guidedUploadCodeDescriptionMetadata(
+          guidedBfAccount,
+          guidedDatasetName,
+          sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]
         );
       }
 
@@ -11768,6 +11782,7 @@ $(document).ready(async () => {
         const buttonNoComputationalModelingData = document.getElementById(
           "guided-button-no-computational-modeling-data"
         );
+
         if (
           !buttonYesComputationalModelingData.classList.contains("selected") &&
           !buttonNoComputationalModelingData.classList.contains("selected")
@@ -11779,7 +11794,40 @@ $(document).ready(async () => {
           });
           throw errorArray;
         }
+
         if (buttonYesComputationalModelingData.classList.contains("selected")) {
+          const codeDescriptionPathElement = document.getElementById(
+            "guided-code-description-para-text"
+          );
+          //check if the innerhtml of the code description path element is a valid path
+          if (codeDescriptionPathElement.innerHTML === "") {
+            errorArray.push({
+              type: "notyf",
+              message: "Please import your code description file",
+            });
+            throw errorArray;
+          }
+
+          const codeDescriptionPath = codeDescriptionPathElement.innerHTML;
+          //Check if the code description file is valid
+          if (!fs.existsSync(codeDescriptionPath)) {
+            errorArray.push({
+              type: "notyf",
+              message: "The imported code_description file is not valid",
+            });
+            throw errorArray;
+          }
+        }
+
+        if (buttonNoComputationalModelingData.classList.contains("selected")) {
+          //If the user had imported a code description file, remove it
+          if (
+            sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]
+          ) {
+            delete sodaJSONObj["dataset-metadata"]["code-metadata"][
+              "code_description"
+            ];
+          }
         }
       }
       if (pageBeingLeftID === "guided-pennsieve-intro-tab") {

@@ -156,7 +156,7 @@ def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, val_arr
 
     ## if generating directly on Pennsieve, then call upload function and then delete the destination path
     if upload_boolean:
-        upload_metadata_file("submission.xlsx", bfaccount, bfdataset, destination)
+        upload_metadata_file("submission.xlsx", bfaccount, bfdataset, destination, True)
 
     return {"size": size}
 
@@ -172,12 +172,12 @@ def upload_RC_file(text_string, file_type, bfaccount, bfdataset):
 
     size = getsize(file_path)
 
-    upload_metadata_file(file_type, bfaccount, bfdataset, file_path)
+    upload_metadata_file(file_type, bfaccount, bfdataset, file_path, True)
 
     return { "size": size, "filepath": file_path }
 
 
-def upload_metadata_file(file_type, bfaccount, bfdataset, file_path):
+def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_after_upload):
     ## check if agent is running in the background
     agent_running()
 
@@ -210,8 +210,8 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path):
 
     myds.upload(file_path)
     # delete the local file that was created for the purpose of uploading to Pennsieve
-    os.remove(file_path)
-
+    if delete_after_upload:
+        os.remove(file_path)
 
 def excel_columns(start_index=0):
     """
@@ -440,7 +440,7 @@ def save_ds_description_file(
     ## if generating directly on Pennsieve, then call upload function and then delete the destination path
     if upload_boolean:
         upload_metadata_file(
-            "dataset_description.xlsx", bfaccount, bfdataset, destination
+            "dataset_description.xlsx", bfaccount, bfdataset, destination, True
         )
 
     return {"size": size}
@@ -496,6 +496,10 @@ samplesTemplateHeaderList = [
     "protocol title",
     "protocol url or doi",
 ]
+
+def upload_code_description_metadata(filepath, bfAccount, bfDataset):
+    upload_metadata_file("code_description.xlsx", bfAccount, bfDataset, filepath, False)
+        
 
 
 def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastructure):
@@ -565,7 +569,7 @@ def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastruc
 
     ## if generating directly on Pennsieve, then call upload function and then delete the destination path
     if upload_boolean:
-        upload_metadata_file("subjects.xlsx", bfaccount, bfdataset, destination)
+        upload_metadata_file("subjects.xlsx", bfaccount, bfdataset, destination, True)
 
     return size
 
@@ -633,7 +637,7 @@ def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastruct
 
     ## if generating directly on Pennsieve, call upload function
     if upload_boolean:
-        upload_metadata_file("samples.xlsx", bfaccount, bfdataset, destination)
+        upload_metadata_file("samples.xlsx", bfaccount, bfdataset, destination, True)
 
     return {"size": size}
 
