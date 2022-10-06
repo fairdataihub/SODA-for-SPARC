@@ -1851,12 +1851,10 @@ const traverseToTab = async (targetPageID) => {
         airTableGettingStartedBtn.children[1].style.display = "none";
         airTableGettingStartedBtn.children[0].style.display = "flex";
         document.getElementById("guided-button-import-sparc-award").click();
-        console.log("huh");
       } else {
         //This is where we reset the UI for the helper page
         airTableGettingStartedBtn.children[1].style.display = "flex";
         airTableGettingStartedBtn.children[0].style.display = "none";
-        console.log("huh1");
       }
     }
 
@@ -3710,6 +3708,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["dataset-metadata"]["README"] = "";
   sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
   sodaJSONObj["digital-metadata"] = {};
+  sodaJSONObj["previously-uploaded-data"] = {};
   sodaJSONObj["digital-metadata"]["description"] = {};
   sodaJSONObj["digital-metadata"]["pi-owner"] = {};
   sodaJSONObj["digital-metadata"]["user-permissions"] = [];
