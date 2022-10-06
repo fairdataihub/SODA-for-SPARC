@@ -1,5 +1,3 @@
-const { existsSync } = require("fs");
-
 const updateDatasetUploadProgressTable = (progressObject) => {
   const datasetUploadTableBody = document.getElementById(
     "guided-tbody-dataset-upload"
@@ -10062,6 +10060,46 @@ $(document).ready(async () => {
     }
   };
 
+  const guidedUploadCodeDescriptionMetadata = async (
+    bfAccount,
+    datasetName,
+    codeDescriptionFilePath
+  ) => {
+    document
+      .getElementById("guided-code-description-metadata-upload-tr")
+      .classList.remove("hidden");
+    const codeDescriptionMetadataUploadText = document.getElementById(
+      "guided-code-description-metadata-upload-text"
+    );
+    codeDescriptionMetadataUploadText.innerHTML =
+      "Uploading code description metadata...";
+    guidedUploadStatusIcon(
+      "guided-code-description-metadata-upload-status",
+      "loading"
+    );
+
+    try {
+      await client.post("/prepare_metadata/code_description_file", {
+        filepath: codeDescriptionFilePath,
+        selected_account: bfAccount,
+        selected_dataset: datasetName,
+      });
+      guidedUploadStatusIcon(
+        "guided-code-description-metadata-upload-status",
+        "success"
+      );
+      codeDescriptionMetadataUploadText.innerHTML =
+        "Code description metadata successfully added to Pennsieve";
+    } catch (error) {
+      guidedUploadStatusIcon(
+        "guided-code-description-metadata-upload-status",
+        "error"
+      );
+      codeDescriptionMetadataUploadText.innerHTML = `Failed to upload code description metadata`;
+      clientError(error);
+    }
+  };
+
   const guidedUploadREADMEorCHANGESMetadata = async (
     bfAccount,
     datasetName,
@@ -10350,6 +10388,17 @@ $(document).ready(async () => {
           guidedDatasetName,
           "changes",
           guidedChangesMetadata
+        );
+      }
+      if (
+        fs.existsSync(
+          sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]
+        )
+      ) {
+        let codeDescriptionRes = await guidedUploadCodeDescriptionMetadata(
+          guidedBfAccount,
+          guidedDatasetName,
+          sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]
         );
       }
 
@@ -11803,7 +11852,7 @@ $(document).ready(async () => {
 
           const codeDescriptionPath = codeDescriptionPathElement.innerHTML;
           //Check if the code description file is valid
-          if (!existsSync(codeDescriptionPath)) {
+          if (!fs.existsSync(codeDescriptionPath)) {
             errorArray.push({
               type: "notyf",
               message: "The imported code_description file is not valid",

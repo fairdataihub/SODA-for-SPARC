@@ -1,6 +1,7 @@
 from prepareMetadata import (
     save_submission_file,
     save_ds_description_file,
+    upload_code_description_metadata,
     extract_milestone_info,
     import_milestone,
     save_subjects_file,
@@ -243,6 +244,36 @@ class DatasetDescriptionFile(Resource):
 
         try:
             return save_ds_description_file(upload_boolean, selected_account, selected_dataset, filepath, dataset_str, study_str, contributor_str, related_info_str)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
+
+
+
+
+
+
+@api.route('/code_description_file')
+class CodeDescriptionFile(Resource):
+
+    parser_upload_code_description_file = reqparse.RequestParser(bundle_errors=True)
+    parser_upload_code_description_file.add_argument('filepath', type=str, help="Path to the code description file on the user\'s machine", location="json", required=True)
+    parser_upload_code_description_file.add_argument('selected_account', type=str, help='Pennsieve account to save the code_description file to', location="json", required=True)
+    parser_upload_code_description_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset to save the code_description file to', location="json", required=True)
+
+    @api.expect(parser_upload_code_description_file)
+    @api.doc(description='Upload the code_description file on the user\'s machine directly to Pennsieve', responses={500: "Internal Server Error", 400: "Bad Request"})
+    
+    def post(self):
+        data = self.parser_upload_code_description_file.parse_args()
+
+        filepath = data.get('filepath')
+        selected_account = data.get('selected_account')
+        selected_dataset = data.get('selected_dataset')
+
+        try:
+            return upload_code_description_metadata(filepath, selected_account, selected_dataset)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
