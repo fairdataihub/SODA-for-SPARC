@@ -1807,7 +1807,7 @@ const traverseToTab = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-prepare-helpers-tab") {
-      //Hide the new dataset and existii local dataset capsule containers because
+      //Hide the new dataset and existings local dataset capsule containers because
       //We do now know what the user wants to do yet
       $("#guided-curate-new-dataset-branch-capsule-container").hide();
       $(
@@ -1822,8 +1822,6 @@ const traverseToTab = async (targetPageID) => {
       const importedDataDeliverable =
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"];
 
-      console.log(sodaJSONObj);
-      console.log(importedDataDeliverable);
       if (importedDataDeliverable) {
         dataDeliverableButton.children[0].style.display = "none";
         dataDeliverableButton.children[1].style.display = "flex";
@@ -1834,18 +1832,9 @@ const traverseToTab = async (targetPageID) => {
         dataDeliverableButton.children[0].style.display = "flex";
         dataDeliverableButton.children[1].style.display = "none";
       }
-      // This controls the UI for the new page
-      // First we get vals from sodaJSONObj, and then update the UI
-      // based on the vals
-      const airTableAccountData =
-        sodaJSONObj["dataset-metadata"]["shared-metadata"][
-          "imported-sparc-award"
-        ];
 
-      console.log(airTableAccountData);
       // console.log(airTableres);
       var airKeyContent = parseJson(airtableConfigPath);
-      console.log(airKeyContent);
       if (Object.keys(airKeyContent).length != 0) {
         //This is where we update the UI for the helper page
         airTableGettingStartedBtn.children[1].style.display = "none";
