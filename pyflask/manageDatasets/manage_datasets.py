@@ -123,10 +123,10 @@ def bf_dataset_size(dataset_id):
         raise e
 
 
-# def time_format(elapsed_time):
-#     mins, secs = divmod(elapsed_time, 60)
-#     hours, mins = divmod(mins, 60)
-#     return "%dh:%02dmin:%02ds" % (hours, mins, secs)
+def time_format(elapsed_time):
+    mins, secs = divmod(elapsed_time, 60)
+    hours, mins = divmod(mins, 60)
+    return "%dh:%02dmin:%02ds" % (hours, mins, secs)
 
 
 # def bf_keep_only_account(keyname):
@@ -839,12 +839,14 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
     total_file_size = total_file_size - 1
 
-    role = bf_get_current_user_permission_agent_two(bfdataset)["role"]
-    if role not in ["owner", "manager", "editor"]:
+    selected_dataset_id = get_dataset_id(ps, bfdataset)
+
+    if not has_edit_permissions(ps, selected_dataset_id):
         submitdatastatus = "Done"
         did_fail = True
         did_upload = False
         abort(403, "You don't have permissions for uploading to this Pennsieve dataset")
+
 
     ## check if agent is installed
     # try:
@@ -874,9 +876,38 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         start_time_bf_upload = time.time()
         initial_bfdataset_size_submit = bf_dataset_size(bfdataset)
         start_submit = 1
-        ps.manifest.upload(2)
-        res = ps.subscribe(2)
-        namespace_logger.info(res)
+        ps.manifest.upload(1)
+        subscription_rendezvous_object = ps.subscribe(10)
+
+        counter = 0 
+        # each message is a response from the Go Agent ( serialized as a Python dict ) that contains this information:
+        #   type: UPLOAD_STATUS
+        #   upload_status {
+        #       file_id: "/home/cmarroquin/Desktop/Pennsieve-dataset-115-version-2/files/docs/Video_S4.mp4"
+        #       total: 26954999
+        #       current: 26954999
+        #       worker_id: 9
+        #   }
+        # Workers ( the worker sending the given message denoted by worker_id ) are uploading files and informing us whenever a chunk has been uploaded.
+        for msg in subscription_rendezvous_object:
+            current_bytes_uploaded = msg.upload_status.current 
+            total_bytes_to_upload = msg.upload_status.total
+
+            # calculate the total amount of bytes that have been uploaded so far
+            uploaded_file_size += total_bytes_to_upload - current_bytes_uploaded
+
+            # if a file has finished uploading then update the files uploaded tracker - this can tell us when to unsubscribe
+            if current_bytes_uploaded == total_bytes_to_upload:
+                counter += 1
+            
+
+            namespace_logger.info(f"Uploaded {uploaded_file_size} out of {total_file_size} bytes")
+
+            # check if the upload is complete
+            if uploaded_file_size == total_file_size:
+                namespace_logger.info("Upload complete unsubscribing from channel for id 10.")
+                ps.unsubscribe(10)
+
 
         submitdatastatus = "Done"
     except Exception as e:
@@ -930,7 +961,6 @@ def submit_dataset_progress():
     global initial_bfdataset_size_submit
 
     if start_submit == 1:
-        uploaded_file_size = bf_dataset_size() - initial_bfdataset_size_submit
         elapsed_time = time.time() - start_time_bf_upload
         elapsed_time_formatted = time_format(elapsed_time)
         elapsed_time_formatted_display = (
