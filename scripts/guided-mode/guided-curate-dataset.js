@@ -1800,7 +1800,7 @@ const traverseToTab = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-prepare-helpers-tab") {
-      //Hide the new dataset and existii local dataset capsule containers because
+      //Hide the new dataset and existings local dataset capsule containers because
       //We do now know what the user wants to do yet
       $("#guided-curate-new-dataset-branch-capsule-container").hide();
       $(
@@ -1825,15 +1825,9 @@ const traverseToTab = async (targetPageID) => {
         dataDeliverableButton.children[0].style.display = "flex";
         dataDeliverableButton.children[1].style.display = "none";
       }
-      // This controls the UI for the new page
-      // First we get vals from sodaJSONObj, and then update the UI
-      // based on the vals
-      const airTableAccountData =
-        sodaJSONObj["dataset-metadata"]["shared-metadata"][
-          "imported-sparc-award"
-        ];
 
       var airKeyContent = parseJson(airtableConfigPath);
+      console.log(airKeyContent);
       if (Object.keys(airKeyContent).length != 0) {
         //This is where we update the UI for the helper page
         airTableGettingStartedBtn.children[1].style.display = "none";
@@ -7275,39 +7269,6 @@ const openSampleRenameInput = (subjectNameEditButton) => {
   sampleIdCellToRename.html(sampleRenameElement);
 };
 
-const generateSampleMetadataRowElement = (tableIndex, sampleName) => {
-  return `
-    <tr>
-      <td class="middle aligned collapsing text-center">
-        <span class="sample-metadata-table-index">${tableIndex}</span>
-      </td>
-      <td class="middle aligned sample-metadata-id-cell">
-        <span class="sample-metadata-id">${sampleName}</span>
-      </td>
-      <td class="middle aligned collapsing text-center" style="min-width: 130px">
-        <button
-          type="button"
-          class="btn btn-primary btn-sm"
-          style="
-            background-color: var(--color-light-green) !important;
-            margin-right: 5px;
-          "
-          onclick="openModifySampleMetadataPage($(this))"
-        >
-          Edit metadata
-        </button>
-        <button
-          type="button"
-          class="btn btn-primary btn-sm"
-          onclick="openCopySampleMetadataPopup($(this))"
-        >
-          Copy metadata
-        </button>
-      </td>
-    </tr>
-  `;
-};
-
 const removePermission = (clickedPermissionRemoveButton) => {
   let permissionElementToRemove = clickedPermissionRemoveButton.closest("tr");
   let permissionEntityType = permissionElementToRemove.attr("data-entity-type");
@@ -8314,7 +8275,7 @@ const renderSamplesMetadataAsideItems = () => {
           data-samples-pool-id="${sample.poolName ? sample.poolName : ""}"
         >
           <span class="sample-metadata-id">
-            ${sample.sampleName}
+          ${sample.subjectName}/${sample.sampleName}
           </span>
         </a>
         `;
@@ -8375,7 +8336,7 @@ const renderSamplesMetadataAsideItems = () => {
 
       //call openModifySampleMetadataPage function on clicked item
       openModifySampleMetadataPage(
-        e.target.innerText,
+        e.target.innerText.split("/")[1],
         samplesSubject,
         samplesPool
       );
