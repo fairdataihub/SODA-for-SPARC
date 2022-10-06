@@ -1,3 +1,5 @@
+const { existsSync } = require("fs");
+
 const updateDatasetUploadProgressTable = (progressObject) => {
   const datasetUploadTableBody = document.getElementById(
     "guided-tbody-dataset-upload"
@@ -2702,7 +2704,8 @@ const traverseToTab = async (targetPageID) => {
       );
     }
     if (targetPageID === "guided-add-code-metadata-tab") {
-      const codeMetadata = sodaJSONObj["dataset-metadata"]["code-metadata"];
+      const codeDescriptionPath =
+        sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"];
 
       const codeDescriptionLottieContainer = document.getElementById(
         "code-description-lottie-container"
@@ -2711,7 +2714,7 @@ const traverseToTab = async (targetPageID) => {
         "guided-code-description-para-text"
       );
 
-      if (codeMetadata["code_description"]) {
+      if (codeDescriptionPath) {
         codeDescriptionLottieContainer.innerHTML = "";
         lottie.loadAnimation({
           container: codeDescriptionLottieContainer,
@@ -2720,7 +2723,7 @@ const traverseToTab = async (targetPageID) => {
           loop: false,
           autoplay: true,
         });
-        codeDescriptionParaText.innerHTML = codeMetadata["code_description"];
+        codeDescriptionParaText.innerHTML = codeDescriptionPath;
       } else {
         //reset the code metadata lotties and para text
         codeDescriptionLottieContainer.innerHTML = "";
@@ -11772,6 +11775,7 @@ $(document).ready(async () => {
         const buttonNoComputationalModelingData = document.getElementById(
           "guided-button-no-computational-modeling-data"
         );
+
         if (
           !buttonYesComputationalModelingData.classList.contains("selected") &&
           !buttonNoComputationalModelingData.classList.contains("selected")
@@ -11783,7 +11787,40 @@ $(document).ready(async () => {
           });
           throw errorArray;
         }
+
         if (buttonYesComputationalModelingData.classList.contains("selected")) {
+          const codeDescriptionPathElement = document.getElementById(
+            "guided-code-description-para-text"
+          );
+          //check if the innerhtml of the code description path element is a valid path
+          if (codeDescriptionPathElement.innerHTML === "") {
+            errorArray.push({
+              type: "notyf",
+              message: "Please import your code description file",
+            });
+            throw errorArray;
+          }
+
+          const codeDescriptionPath = codeDescriptionPathElement.innerHTML;
+          //Check if the code description file is valid
+          if (!existsSync(codeDescriptionPath)) {
+            errorArray.push({
+              type: "notyf",
+              message: "The imported code_description file is not valid",
+            });
+            throw errorArray;
+          }
+        }
+
+        if (buttonNoComputationalModelingData.classList.contains("selected")) {
+          //If the user had imported a code description file, remove it
+          if (
+            sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]
+          ) {
+            delete sodaJSONObj["dataset-metadata"]["code-metadata"][
+              "code_description"
+            ];
+          }
         }
       }
       if (pageBeingLeftID === "guided-pennsieve-intro-tab") {
