@@ -7264,39 +7264,6 @@ const openSampleRenameInput = (subjectNameEditButton) => {
   sampleIdCellToRename.html(sampleRenameElement);
 };
 
-const generateSampleMetadataRowElement = (tableIndex, sampleName) => {
-  return `
-    <tr>
-      <td class="middle aligned collapsing text-center">
-        <span class="sample-metadata-table-index">${tableIndex}</span>
-      </td>
-      <td class="middle aligned sample-metadata-id-cell">
-        <span class="sample-metadata-id">${sampleName}</span>
-      </td>
-      <td class="middle aligned collapsing text-center" style="min-width: 130px">
-        <button
-          type="button"
-          class="btn btn-primary btn-sm"
-          style="
-            background-color: var(--color-light-green) !important;
-            margin-right: 5px;
-          "
-          onclick="openModifySampleMetadataPage($(this))"
-        >
-          Edit metadata
-        </button>
-        <button
-          type="button"
-          class="btn btn-primary btn-sm"
-          onclick="openCopySampleMetadataPopup($(this))"
-        >
-          Copy metadata
-        </button>
-      </td>
-    </tr>
-  `;
-};
-
 const removePermission = (clickedPermissionRemoveButton) => {
   let permissionElementToRemove = clickedPermissionRemoveButton.closest("tr");
   let permissionEntityType = permissionElementToRemove.attr("data-entity-type");
@@ -8304,7 +8271,7 @@ const renderSamplesMetadataAsideItems = () => {
           data-samples-pool-id="${sample.poolName ? sample.poolName : ""}"
         >
           <span class="sample-metadata-id">
-            ${sample.sampleName}
+          ${sample.subjectName}/${sample.sampleName}
           </span>
         </a>
         `;
@@ -8365,7 +8332,7 @@ const renderSamplesMetadataAsideItems = () => {
 
       //call openModifySampleMetadataPage function on clicked item
       openModifySampleMetadataPage(
-        e.target.innerText,
+        e.target.innerText.split("/")[1],
         samplesSubject,
         samplesPool
       );
