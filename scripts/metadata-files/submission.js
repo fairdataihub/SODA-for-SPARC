@@ -256,7 +256,7 @@ const helpMilestoneSubmission = async (curationMode) => {
       });
     }
   });
-}
+};
 
 let guidedMilestoneData = {};
 
@@ -375,11 +375,9 @@ const getCheckedMilestones = () => {
   return checkedMilestoneData;
 };
 
-const openDDDimport = async () => {
+const openDDDimport = async (curationMode) => {
   let filepath = await ipcRenderer.invoke("open-file-dialog-data-deliverables");
   if (filepath.length > 0) {
-    document.getElementById("input-milestone-select").placeholder = filepath[0];
-    // log the successful attempt to import a data deliverables document from the user's computer
     ipcRenderer.send(
       "track-event",
       "Success",
@@ -387,8 +385,51 @@ const openDDDimport = async () => {
       "Data Deliverables Document",
       1
     );
+    if (curationMode === "guided") {
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] =
+        filepath[0];
+      let swal_container = document.getElementsByClassName("swal2-popup")[0];
+      let swal_actions = document.getElementsByClassName("swal2-actions")[0];
+      let swal_content = document.getElementsByClassName("swal2-content")[0];
+      let DDLottie = document.getElementById("swal-data-deliverable");
+      let swal_header = document.getElementsByClassName("swal2-header")[0];
+      //append file path
+      DDLottie.innerHTML = "";
+      let firstItem = swal_content.children[0];
+      console.log(swal_content);
+      let paragraph = document.createElement("p");
+      let paragraph2 = document.createElement("p");
+      paragraph.id = "getting-started-filepath";
+      paragraph2.innerText =
+        "To replace the current Data Deliverables just drop in or select a new one.";
+      paragraph2.style.marginBottom = "1rem";
+      paragraph.style.marginTop = "1rem";
+      paragraph.style.fontWeight = "700";
+      paragraph.innerText = "File Path: " + filepath[0];
+      console.log(firstItem);
+      if (firstItem.children[0].id === "getting-started-filepath") {
+        firstItem.children[0].remove();
+        firstItem.children[firstItem.childElementCount - 1].remove();
+      }
+      firstItem.append(paragraph2);
+      firstItem.prepend(paragraph);
+      lottie.loadAnimation({
+        container: DDLottie,
+        animationData: successCheck,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+      document.getElementById("guided-button-import-data-deliverables").click();
+      document.getElementsByClassName("swal2-confirm")[0].style.display =
+        "block";
+    } else {
+      document.getElementById("input-milestone-select").placeholder =
+        filepath[0];
+      // log the successful attempt to import a data deliverables document from the user's computer
+    }
   }
-}
+};
 
 // onboarding for submission file
 function onboardingSubmission() {

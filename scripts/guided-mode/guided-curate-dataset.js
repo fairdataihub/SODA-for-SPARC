@@ -1815,7 +1815,6 @@ const traverseToTab = async (targetPageID) => {
       const importedDataDeliverable =
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"];
 
-
       if (importedDataDeliverable) {
         dataDeliverableButton.children[0].style.display = "none";
         dataDeliverableButton.children[1].style.display = "flex";
@@ -6399,7 +6398,9 @@ const specifySubject = (event, subjectNameInput) => {
         </div>
       `;
       const subjectIdCellToAddNameTo = subjectNameInput.parent();
-      const trashCanElement = subjectIdCellToAddNameTo[0].parentElement.nextElementSibling.children[0];
+      const trashCanElement =
+        subjectIdCellToAddNameTo[0].parentElement.nextElementSibling
+          .children[0];
       trashCanElement.style.display = "block";
 
       if (subjectName.length > 0) {
@@ -6433,7 +6434,9 @@ const specifySubject = (event, subjectNameInput) => {
 };
 
 const specifySample = (event, sampleNameInput) => {
-  let buttonContainer = sampleNameInput[0].parentElement.parentElement.parentElement.parentElement.previousElementSibling;
+  let buttonContainer =
+    sampleNameInput[0].parentElement.parentElement.parentElement.parentElement
+      .previousElementSibling;
   // console.log(buttonContainer);
   let addSampleButton = buttonContainer.children[0].children[0].children[1];
   if (event.which == 13) {
@@ -6451,7 +6454,8 @@ const specifySample = (event, sampleNameInput) => {
       </div>
     `;
       const sampleIdCellToAddNameTo = sampleNameInput.parent();
-      let sampleTrashCan = sampleIdCellToAddNameTo[0].parentElement.nextElementSibling.children[0];
+      let sampleTrashCan =
+        sampleIdCellToAddNameTo[0].parentElement.nextElementSibling.children[0];
 
       //get the pool of the subject that the sample is being added to
       const subjectSampleAdditionTable = sampleNameInput.closest("table");
@@ -6495,7 +6499,6 @@ const specifySample = (event, sampleNameInput) => {
           addSampleSpecificationTableRow(addSampleButton);
         }
       }
-
     } catch (error) {
       notyf.open({
         duration: "3000",
@@ -6530,7 +6533,8 @@ const specifyPool = (event, poolNameInput) => {
         ></select>
       `;
       const poolSubjectsDropdownCell = poolNameInput.parent().parent().next();
-      const poolTrashcan = poolSubjectsDropdownCell[0].nextElementSibling.children[0];
+      const poolTrashcan =
+        poolSubjectsDropdownCell[0].nextElementSibling.children[0];
       const poolIdCellToAddNameTo = poolNameInput.parent();
       let poolsTable = $("#pools-table");
       if (poolName !== "pool-") {
@@ -13496,7 +13500,7 @@ const dataDeliverableMessage = `
     <p class="guided--help-text text-center mt-sm mb-sm">
       OR
     </p>
-    <button class="ui primary basic button" onclick="helpMilestoneSubmission('guided')" style="margin-top: 2rem !important;">
+    <button class="ui primary basic button" onclick="openDDDimport('guided')" style="margin-top: 2rem !important;">
       <i class="fas fa-file-import" style="margin-right: 7px"></i>Import Data Deliverables document
     </button>
     <p class="guided--help-text small text-center mt-sm" id="guided-data-deliverable-para-text" style="max-width: 240px; overflow-wrap: break-word"></p>
@@ -13554,6 +13558,10 @@ const showDataDeliverableDropDown = async () => {
         paragraph.style.marginTop = "1rem";
         paragraph.style.fontWeight = "700";
         paragraph.innerText = "File Path: " + ddFilePath;
+        if (firstItem.children[0].id === "getting-started-filepath") {
+          firstItem.children[0].remove();
+          firstItem.children[firstItem.childElementCount - 1].remove();
+        }
         firstItem.append(paragraph2);
         firstItem.prepend(paragraph);
         dataDeliverableButton.children[0].style.display = "none";
