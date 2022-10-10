@@ -458,6 +458,11 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
               showHideDropdownButtons("account", "show");
               confirm_click_account_function();
               updateBfAccountList();
+
+              // If the clicked button is the Guided Mode log in button, refresh the page to update UI
+              if (ev.getAttribute("id") === "guided-button-pennsieve-log-in") {
+                traverseToTab("guided-pennsieve-intro-tab");
+              }
             } catch (error) {
               clientError(error);
               Swal.fire({
