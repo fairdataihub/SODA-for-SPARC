@@ -12221,6 +12221,18 @@ $(document).ready(async () => {
         }
       }
       if (pageBeingLeftID === "guided-contributors-tab") {
+        // Make sure the user has added at least one contributor
+        const contributors =
+          sodaJSONObj["dataset-metadata"]["description-metadata"][
+            "contributors"
+          ];
+        if (contributors.length === 0) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please add at least one contributor to your dataset",
+          });
+          throw errorArray;
+        }
       }
       if (pageBeingLeftID === "guided-protocols-tab") {
         const buttonYesImportProtocols = document.getElementById(
