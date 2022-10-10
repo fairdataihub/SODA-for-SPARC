@@ -1421,8 +1421,11 @@ $(document).ready(function () {
 });
 
 const moveItems = async (ev, category) => {
+  console.log(organizeDSglobalPath);
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+  console.log(filtered);
+  console.log(myPath);
   var selectedOriginalLocation = filtered[filtered.length - 1];
   var selectedItem = ev.parentElement.innerText;
   let item_name = ev.nextSibling.innerText;
@@ -1661,17 +1664,37 @@ const moveItems = async (ev, category) => {
               });
             }
           }
-          document.getElementById("input-global-path").value =
-            "My_dataset_folder/";
-          listItems(datasetStructureJSONObj, "#items", 500, (reset = true));
+          let pathAsArray = selectedPath.split("/");
+          listItems(datasetStructureJSONObj, "#items", 500);
           organizeLandingUIEffect();
           // reconstruct div with new elements
+          console.log(organizeDSglobalPath);
           getInFolder(
             ".single-item",
             "#items",
             organizeDSglobalPath,
             datasetStructureJSONObj
           );
+
+          // if moved into an empty folder we need to remove the class 'empty'
+          // from the folder destination
+          let folderDestinationName = pathAsArray[pathAsArray.length - 1];
+          if (
+            Object.keys(myPath?.["folders"]?.[folderDestinationName]).length > 0
+          ) {
+            console.log("NOt empty");
+            //check if element has empty class
+            let listedItems = document.getElementsByClassName("folder_desc");
+            console.log(listedItems);
+            for (let i = 0; i < listedItems.length; i++) {
+              if (listedItems[i].innerText === folderDestinationName) {
+                console.log(listedItems[i].parentElement);
+                listedItems[i].parentElement.children[0].classList.remove(
+                  "empty"
+                );
+              }
+            }
+          }
         });
       }
     });

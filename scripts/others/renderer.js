@@ -6786,7 +6786,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
   }
 };
 
-async function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
+const getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
   $(singleUIItem).dblclick(async function () {
     if ($(this).children("h1").hasClass("myFol")) {
       start = 0;
@@ -6821,7 +6821,7 @@ async function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
       // getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
     }
   });
-}
+};
 
 function sliceStringByValue(string, endingValue) {
   var newString = string.slice(string.indexOf(endingValue) + 1);
@@ -9582,7 +9582,7 @@ const scaleBannerImage = async (imagePath) => {
 function openFeedbackForm() {
   let feedback_btn = document.getElementById("feedback-btn");
   if (!feedback_btn.classList.contains("is-open")) {
-    console.log("UH")
+    console.log("UH");
     feedback_btn.click();
   }
   setTimeout(() => {
