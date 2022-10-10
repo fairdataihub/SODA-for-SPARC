@@ -4864,7 +4864,7 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
             If your contributor does not have an ORCID, have the contributor <a
             target="_blank"
             href="https://orcid.org"
-            >sign up for one one orcid.org</a
+            >sign up for one on orcid.org</a
           >.
      
           </p>
@@ -5122,7 +5122,7 @@ const openGuidedAddContributorSwal = async () => {
             If your contributor does not have an ORCID, have the contributor <a
             target="_blank"
             href="https://orcid.org"
-            >sign up for one one orcid.org</a
+            >sign up for one on orcid.org</a
           >.
      
           </p>
