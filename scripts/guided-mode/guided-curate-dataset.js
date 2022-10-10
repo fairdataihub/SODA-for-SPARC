@@ -2231,6 +2231,13 @@ const traverseToTab = async (targetPageID) => {
         );
         pennsieveIntroText.innerHTML = defaultBfAccount;
 
+        setTimeout(() => {
+          pennsieveIntroAccountDetailsText.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }, 0);
+
         (async () => {
           try {
             let bf_account_details_req = await client.get(
