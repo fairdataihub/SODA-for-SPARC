@@ -3991,59 +3991,61 @@ const attachGuidedMethodsToSodaJSONObj = () => {
   };
   sodaJSONObj.renamePool = function (prevPoolName, newPoolName) {
     //check if name already exists
-    if (
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-        newPoolName
-      ]
-    ) {
-      throw new Error("Pool names must be unique.");
-    }
+    if (prevPoolName != newPoolName) {
+      if (
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+          newPoolName
+        ]
+      ) {
+        throw new Error("Pool names must be unique.");
+      }
 
-    if (
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-        prevPoolName
-      ]
-    ) {
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-        newPoolName
-      ] =
+      if (
         this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
           prevPoolName
-        ];
-      delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-        prevPoolName
-      ];
-
-      //Rename the pool folder in the datasetStructureJSONObj
-      for (const highLevelFolder of guidedHighLevelFolders) {
-        if (
-          datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.[
-            "folders"
-          ]?.[prevPoolName]
-        ) {
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-            newPoolName
-          ] =
-            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-              prevPoolName
-            ];
-          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+        ]
+      ) {
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+          newPoolName
+        ] =
+          this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
             prevPoolName
           ];
-        }
-      }
+        delete this["dataset-metadata"]["pool-subject-sample-structure"][
+          "pools"
+        ][prevPoolName];
 
-      //Rename the pool in the subjectsTableData
-      for (const subjectDataArray of subjectsTableData.slice(1)) {
-        if (subjectDataArray[1] === prevPoolName) {
-          subjectDataArray[1] = newPoolName;
+        //Rename the pool folder in the datasetStructureJSONObj
+        for (const highLevelFolder of guidedHighLevelFolders) {
+          if (
+            datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.[
+              "folders"
+            ]?.[prevPoolName]
+          ) {
+            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+              newPoolName
+            ] =
+              datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                prevPoolName
+              ];
+            delete datasetStructureJSONObj["folders"][highLevelFolder][
+              "folders"
+            ][prevPoolName];
+          }
         }
-      }
 
-      //Rename the pool in the samplesTableData
-      for (const sampleDataArray of samplesTableData.slice(1)) {
-        if (sampleDataArray[3] === prevPoolName) {
-          sampleDataArray[3] = newPoolName;
+        //Rename the pool in the subjectsTableData
+        for (const subjectDataArray of subjectsTableData.slice(1)) {
+          if (subjectDataArray[1] === prevPoolName) {
+            subjectDataArray[1] = newPoolName;
+          }
+        }
+
+        //Rename the pool in the samplesTableData
+        for (const sampleDataArray of samplesTableData.slice(1)) {
+          if (sampleDataArray[3] === prevPoolName) {
+            sampleDataArray[3] = newPoolName;
+          }
         }
       }
     }
@@ -4153,89 +4155,95 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     }
   };
   sodaJSONObj.renameSample = function (prevSampleName, newSampleName) {
+    console.log(prevSampleName);
+    console.log(newSampleName);
     const [samplesInPools, samplesOutsidePools] =
       sodaJSONObj.getAllSamplesFromSubjects();
     //Combine sample data from samples in and out of pools
     let samples = [...samplesInPools, ...samplesOutsidePools];
 
-    //Check samples already added and throw an error if a sample with the sample name already exists.
-    for (const sample of samples) {
-      if (sample.sampleName === newSampleName) {
-        throw new Error(
-          `Sample names must be unique. \n${newSampleName} already exists in ${sample.subjectName}`
-        );
-      }
-    }
-
-    //find the sample and rename it
-    for (const sample of samples) {
-      if (sample.sampleName === prevSampleName) {
-        //Rename the sample's sample metadata
-        for (const sampleMetadataRow of samplesTableData.slice(1)) {
-          if (sampleMetadataRow[1] === prevSampleName) {
-            sampleMetadataRow[1] = newSampleName;
-          }
+    if (prevSampleName != newSampleName) {
+      //Check samples already added and throw an error if a sample with the sample name already exists.
+      for (const sample of samples) {
+        if (sample.sampleName === newSampleName) {
+          throw new Error(
+            `Sample names must be unique. \n${newSampleName} already exists in ${sample.subjectName}`
+          );
         }
+      }
 
-        if (sample.poolName) {
-          this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-            sample.poolName
-          ][sample.subjectName][newSampleName] =
-            this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-              sample.poolName
-            ][sample.subjectName][prevSampleName];
-          delete this["dataset-metadata"]["pool-subject-sample-structure"][
-            "pools"
-          ][sample.poolName][sample.subjectName][prevSampleName];
-
-          //Rename the samples folders in the datasetStructeJSONObj
-          for (const highLevelFolder of guidedHighLevelFolders) {
-            if (
-              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.[
-                "folders"
-              ]?.[sample.poolName]?.["folders"]?.[sample.subjectName]?.[
-                "folders"
-              ]?.[prevSampleName]
-            ) {
-              datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                sample.poolName
-              ]["folders"][sample.subjectName]["folders"][newSampleName] =
-                datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                  sample.poolName
-                ]["folders"][sample.subjectName]["folders"][prevSampleName];
-              delete datasetStructureJSONObj["folders"][highLevelFolder][
-                "folders"
-              ][sample.poolName]["folders"][sample.subjectName]["folders"][
-                prevSampleName
-              ];
+      //find the sample and rename it
+      for (const sample of samples) {
+        if (sample.sampleName === prevSampleName) {
+          //Rename the sample's sample metadata
+          for (const sampleMetadataRow of samplesTableData.slice(1)) {
+            if (sampleMetadataRow[1] === prevSampleName) {
+              sampleMetadataRow[1] = newSampleName;
             }
           }
-        } else {
-          this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
-            sample.subjectName
-          ][newSampleName] =
+
+          if (sample.poolName) {
+            this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+              sample.poolName
+            ][sample.subjectName][newSampleName] =
+              this["dataset-metadata"]["pool-subject-sample-structure"][
+                "pools"
+              ][sample.poolName][sample.subjectName][prevSampleName];
+            delete this["dataset-metadata"]["pool-subject-sample-structure"][
+              "pools"
+            ][sample.poolName][sample.subjectName][prevSampleName];
+
+            //Rename the samples folders in the datasetStructeJSONObj
+            for (const highLevelFolder of guidedHighLevelFolders) {
+              if (
+                datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.[
+                  "folders"
+                ]?.[sample.poolName]?.["folders"]?.[sample.subjectName]?.[
+                  "folders"
+                ]?.[prevSampleName]
+              ) {
+                datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  sample.poolName
+                ]["folders"][sample.subjectName]["folders"][newSampleName] =
+                  datasetStructureJSONObj["folders"][highLevelFolder][
+                    "folders"
+                  ][sample.poolName]["folders"][sample.subjectName]["folders"][
+                    prevSampleName
+                  ];
+                delete datasetStructureJSONObj["folders"][highLevelFolder][
+                  "folders"
+                ][sample.poolName]["folders"][sample.subjectName]["folders"][
+                  prevSampleName
+                ];
+              }
+            }
+          } else {
             this["dataset-metadata"]["pool-subject-sample-structure"][
               "subjects"
+            ][sample.subjectName][newSampleName] =
+              this["dataset-metadata"]["pool-subject-sample-structure"][
+                "subjects"
+              ][sample.subjectName][prevSampleName];
+            delete this["dataset-metadata"]["pool-subject-sample-structure"][
+              "subjects"
             ][sample.subjectName][prevSampleName];
-          delete this["dataset-metadata"]["pool-subject-sample-structure"][
-            "subjects"
-          ][sample.subjectName][prevSampleName];
-          //Rename the samples folders in the datasetStructeJSONObj
-          for (const highLevelFolder of guidedHighLevelFolders) {
-            if (
-              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.[
-                "folders"
-              ]?.[sample.subjectName]?.["folders"]?.[prevSampleName]
-            ) {
-              datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                sample.subjectName
-              ]["folders"][newSampleName] =
+            //Rename the samples folders in the datasetStructeJSONObj
+            for (const highLevelFolder of guidedHighLevelFolders) {
+              if (
+                datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.[
+                  "folders"
+                ]?.[sample.subjectName]?.["folders"]?.[prevSampleName]
+              ) {
                 datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                   sample.subjectName
-                ]["folders"][prevSampleName];
-              delete datasetStructureJSONObj["folders"][highLevelFolder][
-                "folders"
-              ][sample.subjectName]["folders"][prevSampleName];
+                ]["folders"][newSampleName] =
+                  datasetStructureJSONObj["folders"][highLevelFolder][
+                    "folders"
+                  ][sample.subjectName]["folders"][prevSampleName];
+                delete datasetStructureJSONObj["folders"][highLevelFolder][
+                  "folders"
+                ][sample.subjectName]["folders"][prevSampleName];
+              }
             }
           }
         }
@@ -6618,8 +6626,12 @@ const updatePoolDropdown = (poolDropDown, poolName) => {
 
 //On edit button click, creates a new subject ID rename input box
 const openSubjectRenameInput = (subjectNameEditButton) => {
+  console.log(subjectNameEditButton);
   const subjectIdCellToRename = subjectNameEditButton.closest("td");
   const prevSubjectName = subjectIdCellToRename.find(".subject-id").text();
+  console.log(prevSubjectName);
+  console.log(prevSubjectName.search("-"));
+  prevSubjectInput = prevSubjectName.substr(prevSubjectName.search("-") + 1);
   const subjectRenameElement = `
     <div class="space-between w-100" style="align-items: center">
       <span style="margin-right: 5px;">sub-</span>
@@ -6627,7 +6639,8 @@ const openSubjectRenameInput = (subjectNameEditButton) => {
         class="guided--input"
         type="text"
         name="guided-subject-id"
-        placeholder="Enter a new subject ID and press enter"
+        value=${prevSubjectInput}
+        placeholder="Enter subject ID and press enter"
         onkeyup="specifySubject(event, $(this))"
         data-input-set="guided-subjects-folder-tab"
         data-alert-message="Subject IDs may not contain spaces or special characters"
@@ -6642,6 +6655,7 @@ const openSubjectRenameInput = (subjectNameEditButton) => {
 const openPoolRenameInput = (poolNameEditButton) => {
   const poolIdCellToRename = poolNameEditButton.closest("td");
   const prevPoolName = poolIdCellToRename.find(".pool-id").text();
+  const prevPoolInput = prevPoolName.substr(prevPoolName.search("-") + 1);
   const poolRenameElement = `
     <div class="space-between" style="align-items: center; width: 250px;">
       <span style="margin-right: 5px;">pool-</span>
@@ -6649,6 +6663,7 @@ const openPoolRenameInput = (poolNameEditButton) => {
         class="guided--input"
         type="text"
         name="guided-pool-id"
+        value=${prevPoolInput}
         placeholder="Enter new pool ID"
         onkeyup="specifyPool(event, $(this))"
         data-input-set="guided-pools-folder-tab"
@@ -7250,12 +7265,14 @@ const createSampleFolder = (event, sampleNameInput) => {
 const openSampleRenameInput = (subjectNameEditButton) => {
   const sampleIdCellToRename = subjectNameEditButton.closest("td");
   const prevSampleName = sampleIdCellToRename.find(".sample-id").text();
+  const prevSampleInput = prevSampleName.substr(prevSampleName.search("-") + 1);
   const sampleRenameElement = `
     <div class="space-between w-100" style="align-items: center">
       <span style="margin-right: 5px;">sam-</span>
       <input
         class="guided--input"
         type="text"
+        value=${prevSampleInput}
         name="guided-sample-id"
         placeholder="Enter new sample ID"
         onkeyup="specifySample(event, $(this))"
