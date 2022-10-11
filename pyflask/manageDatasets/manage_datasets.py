@@ -95,25 +95,15 @@ TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLAT
 
 PENNSIEVE_URL = "https://api.pennsieve.io"
 
-def bf_dataset_size(dataset_id):
+def bf_dataset_size(ps, dataset_id):
     """
     Function to get storage size of a dataset on Pennsieve
     """
     PENNSIEVE_URL = "https://api.pennsieve.io"
 
-    try:
-        # get access token 
-        token = get_access_token()
-
-        headers = {
-            "Accept": "*/*",
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {token}"
-        }
-
- 
+    try: 
         # get the 
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(dataset_id)}", headers=headers)
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(dataset_id)}", headers=create_request_headers(ps))
         r.raise_for_status()
 
         dataset_obj = r.json()
@@ -777,8 +767,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
     namespace_logger.info("Yes we are here")
 
-    
-
     # check if the local dataset folder exists
     if not isdir(pathdataset):
         submitdatastatus = "Done"
@@ -828,9 +816,11 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         error_message = "Could not reauthenticate this user"
         abort(400, error_message)
 
+    selected_dataset_id = get_dataset_id(ps, bfdataset)
+
     # select the dataset 
     try:
-        ps.useDataset(bfdataset)
+        ps.useDataset(selected_dataset_id)
     except Exception as e:
         submitdatastatus = "Done"
         did_fail = True
@@ -841,7 +831,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
 
     # get the dataset size before starting the upload
-    total_file_size, invalid_dataset_messages = get_dataset_size(pathdataset)
+    total_file_size, invalid_dataset_messages, total_files_atm = get_dataset_size(pathdataset)
 
     if invalid_dataset_messages != "":
         submitdatastatus = "Done"
@@ -854,8 +844,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         abort(400, invalid_dataset_messages)
 
     total_file_size = total_file_size - 1
-
-    selected_dataset_id = get_dataset_id(ps, bfdataset)
 
     if not has_edit_permissions(ps, selected_dataset_id):
         submitdatastatus = "Done"
@@ -874,7 +862,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     #         "The Pennsieve agent is not installed on your computer. Click <a href='https://docs.sodaforsparc.io/docs/common-errors/installing-the-pennsieve-agent' target='_blank'>here</a> for installation instructions."
     #     )
 
-
     # create the manifest file for the dataset
     try:
         ps.manifest.create(pathdataset)
@@ -890,9 +877,9 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     try:
         submitprintstatus = "Uploading"
         start_time_bf_upload = time.time()
-        initial_bfdataset_size_submit = bf_dataset_size(bfdataset)
+        initial_bfdataset_size_submit = bf_dataset_size(ps, selected_dataset_id)
         start_submit = 1
-        ps.manifest.upload(1)
+        ps.manifest.upload(3)
         subscription_rendezvous_object = ps.subscribe(10)
 
         counter = 0 
@@ -917,10 +904,11 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                 counter += 1
             
 
-            namespace_logger.info(f"Uploaded {uploaded_file_size} out of {total_file_size} bytes")
+            #namespace_logger.info(f"Uploaded {uploaded_file_size} out of {total_file_size} bytes")
 
             # check if the upload is complete
-            if uploaded_file_size == total_file_size:
+            if uploaded_file_size == total_file_size or counter == total_files_atm:
+                namespace_logger.info(f"Uploaded {counter} of {total_files_atm} files")
                 namespace_logger.info("Upload complete unsubscribing from channel for id 10.")
                 ps.unsubscribe(10)
 

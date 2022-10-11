@@ -10,6 +10,7 @@ def get_dataset_size(path_to_ds):
     """
     total_file_size = 0
     invalid_dataset_message = ""
+    total_files = 0
 
     try:
         for path, dirs, files in walk(path_to_ds):
@@ -18,13 +19,14 @@ def get_dataset_size(path_to_ds):
                 invalid_dataset_message += verify_file(f, fp)
                 mypathsize = getsize(fp)
                 total_file_size += mypathsize
+                total_files += 1
             for d in dirs:
                 dp = join(path, d)
                 myfoldersize = folder_size(dp)
                 if myfoldersize == 0:
                     invalid_dataset_message = invalid_dataset_message + dp + " is empty <br>"
 
-        return total_file_size, invalid_dataset_message
+        return total_file_size, invalid_dataset_message, total_files
     except Exception as e:
         raise e
 

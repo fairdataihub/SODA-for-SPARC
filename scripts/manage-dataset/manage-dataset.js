@@ -2563,8 +2563,11 @@ $("#button-submit-dataset").click(async () => {
   organizeDatasetButton.style = "background-color: #f6f6f6";
   organzieDatasetButtonDiv.className = "disabled-animated-div";
 
+  console.log("About to run preflight checks")
+
   let supplementary_checks = await run_pre_flight_checks(false);
   if (!supplementary_checks) {
+    console.log("Supplementat checks failed")
     return;
   }
 
@@ -2612,8 +2615,9 @@ $("#button-submit-dataset").click(async () => {
   }
 
   // clear the queue before uploading
-  clearQueue();
+  // clearQueue();
 
+  console.log("About to upload the dataset")
   client
     .put(
       `/manage_datasets/datasets`,
@@ -2627,6 +2631,7 @@ $("#button-submit-dataset").click(async () => {
       }
     )
     .then(async () => {
+      console.log("Dataset is uploading")
       $("#upload_local_dataset_progress_div")[0].scrollIntoView({
         behavior: "smooth",
         block: "start",

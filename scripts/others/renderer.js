@@ -479,6 +479,7 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
   log.info("Running pre flight checks");
+  console.log("Preflight checks")
   return new Promise(async (resolve) => {
     let connection_response = "";
     let agent_installed_response = "";
@@ -686,6 +687,8 @@ const run_pre_flight_checks = async (check_update = true) => {
       //   });
       //   resolve(false);
       // }
+      console.log("Returning from preflight checks")
+      resolve(true)
     }
   });
 };
