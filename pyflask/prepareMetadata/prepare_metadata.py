@@ -17,7 +17,7 @@ import shutil
 import numpy as np
 #from pennsieve2.pennsieve import Pennsieve
 from pennsieve import Pennsieve
-from pyflask.manageDatasets.manage_datasets import PENNSIEVE_URL, bf_dataset_account
+from manageDatasets import bf_dataset_account
 from utils import ( connect_pennsieve_client, authenticate_user_with_client, get_dataset_id, create_request_headers)
 from permissions import has_edit_permissions, bf_get_current_user_permission_agent_two
 from collections import defaultdict
@@ -33,10 +33,6 @@ from openpyxl.styles import PatternFill, Font
 from docx import Document
 
 from flask import abort 
-
-from manageDatasets import (
-    bf_get_current_user_permission,
-)
 from curate import create_high_level_manifest_files_existing_bf_starting_point, get_name_extension
 
 from pysodaUtils import agent_running
@@ -162,20 +158,20 @@ def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, val_arr
     return {"size": size}
 
 
-# # this function saves and uploads the README/CHANGES to Pennsieve, just when users choose to generate onto Pennsieve
-# ## (not used for generating locally)
-# def upload_RC_file(text_string, file_type, bfaccount, bfdataset):
+# this function saves and uploads the README/CHANGES to Pennsieve, just when users choose to generate onto Pennsieve
+## (not used for generating locally)
+def upload_RC_file(text_string, file_type, bfaccount, bfdataset):
 
-#     file_path = join(METADATA_UPLOAD_BF_PATH, file_type)
+    file_path = join(METADATA_UPLOAD_BF_PATH, file_type)
 
-#     with open(file_path, "w") as f:
-#         f.write(text_string)
+    with open(file_path, "w") as f:
+        f.write(text_string)
 
-#     size = getsize(file_path)
+    size = getsize(file_path)
 
-#     upload_metadata_file(file_type, bfaccount, bfdataset, file_path)
+    upload_metadata_file(file_type, bfaccount, bfdataset, file_path)
 
-#     return { "size": size, "filepath": file_path }
+    return { "size": size, "filepath": file_path }
 
 
 def upload_metadata_file(file_type, bfaccount, bfdataset, file_path):

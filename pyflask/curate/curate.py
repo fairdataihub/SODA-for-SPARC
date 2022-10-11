@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ### Import required python modules
-from gevent import monkey
 import requests
-
-monkey.patch_all()
 import platform
 import os
 from os import listdir, makedirs, mkdir, walk, rename

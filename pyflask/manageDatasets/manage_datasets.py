@@ -547,13 +547,26 @@ def bf_account_details(accountname):
     # get the access token 
     token = ps.getUser()["session_token"]
 
+    namespace_logger.info(f"Token: {token}")
+
     try:
         user_info = get_user_information(token)
     except Exception as e:
         abort(500, "Something went wrong while authenticating the user or connecting to Pennsieve.")
 
     acc_details = f"User email: {user_info['email']}<br>"
-    acc_details = f"{acc_details}Organization: {user_info['preferredOrganization']}"
+    #acc_details = f"{acc_details}Organization: {user_info['preferredOrganization']}"
+
+    # get the organizations this user account has access to 
+    r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=create_request_headers(ps))
+    r.raise_for_status()
+
+    # add the sparc consortium as the organization name if the user is a member of the consortium
+    organizations = r.json()
+    for org in organizations["organizations"]:
+        if org["organization"]["id"] == "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
+            acc_details = f"{acc_details}Organization: {org['organization']['name']}"
+
 
     try:
         # if a user hasn't added their account name to their config file then we want to write it now

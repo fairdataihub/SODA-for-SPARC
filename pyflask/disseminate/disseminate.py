@@ -1,18 +1,11 @@
 # -*- coding: utf-8 -*-
 
 ### Import required python modules
-
-from gevent import monkey
-
-monkey.patch_all()
-
-from pennsieve import Pennsieve
 from flask import abort 
 import requests
+from permissions import bf_get_current_user_permission_agent_two, has_edit_permissions
+from utils import connect_pennsieve_client, get_dataset_id, authenticate_user_with_client, create_request_headers
 
-from manageDatasets import bf_get_current_user_permission
-from utils import get_dataset, get_authenticated_ps
-from authentication import get_access_token
 
 
 PENNSIEVE_URL = "https://api.pennsieve.io"
@@ -125,30 +118,29 @@ def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
         Current reqpusblishing status
     """
 
-    try:
-        bf = Pennsieve(selected_bfaccount)
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve account")
+    ps = connect_pennsieve_client()
 
-    try:
-        myds = bf.get_dataset(selected_bfdataset)
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve dataset")
+    authenticate_user_with_client(ps, selected_bfaccount)
 
-    try:
-        selected_dataset_id = myds.id
+    selected_dataset_id = get_dataset_id(ps, selected_bfdataset)
 
-        review_request_status = bf._api._get(f"/datasets/{str(selected_dataset_id)}")["publication"]["status"]
+    headers= create_request_headers(ps)
 
-        publishing_status = bf._api._get(f"/datasets/{str(selected_dataset_id)}/published")["status"]
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
+    r.raise_for_status()
+    review_request_status = r.json()["publication"]["status"]
 
 
-        return { 
-            "publishing_status": review_request_status, 
-            "review_request_status": publishing_status
-        }
-    except Exception as e:
-        raise e
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/published", headers=headers)
+    r.raise_for_status()
+    publishing_status = r.json()["status"]
+
+
+    return { 
+        "publishing_status": publishing_status, 
+        "review_request_status": review_request_status
+    }
+
 
 
 

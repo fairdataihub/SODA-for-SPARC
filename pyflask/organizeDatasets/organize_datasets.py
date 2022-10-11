@@ -1,7 +1,5 @@
 ### Import required python modules
-from gevent import monkey
 from flask import abort
-monkey.patch_all()
 import platform
 import os
 from os import makedirs, mkdir, walk
@@ -24,7 +22,7 @@ from pennsieve import Pennsieve
 import pathlib
 from datetime import datetime, timezone
 
-from manageDatasets import bf_get_current_user_permission
+from permissions import bf_get_current_user_permission_agent_two
 
 
 ### Global variables
@@ -1024,7 +1022,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
     # check that the user has permission to edit this dataset
     try:
-        role = bf_get_current_user_permission(bf, myds)
+        role = bf_get_current_user_permission_agent_two(bf, myds)
         if role not in ["owner", "manager", "editor"]:
             curatestatus = "Done"
             error.append(
