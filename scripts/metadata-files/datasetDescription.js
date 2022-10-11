@@ -1108,7 +1108,7 @@ const guidedSetImportedSPARCAward = (awardString) => {
     "Edit award information from Airtable";
 };
 
-async function helpSPARCAward(filetype, curationMode) {
+const helpSPARCAward = async (filetype, curationMode) => {
   var award = "";
   if (filetype === "dd") {
     var res = airtableRes;
@@ -1417,7 +1417,7 @@ async function helpSPARCAward(filetype, curationMode) {
       $("#select-sparc-award-submission-spinner").css("display", "none");
     }
   }
-}
+};
 
 function populateSelectSPARCAward(object, id) {
   removeOptions(document.getElementById(id));

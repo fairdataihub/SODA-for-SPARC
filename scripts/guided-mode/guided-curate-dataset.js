@@ -1832,7 +1832,9 @@ const traverseToTab = async (targetPageID) => {
         //This is where we update the UI for the helper page
         airTableGettingStartedBtn.children[1].style.display = "none";
         airTableGettingStartedBtn.children[0].style.display = "flex";
-        document.getElementById("guided-button-import-sparc-award").click();
+        // This auto selects the airtable button within
+        // the SPARC Award number page
+        // document.getElementById("guided-button-import-sparc-award").click();
       } else {
         //This is where we reset the UI for the helper page
         airTableGettingStartedBtn.children[1].style.display = "flex";
