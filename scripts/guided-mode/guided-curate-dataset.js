@@ -11174,6 +11174,7 @@ $(document).ready(async () => {
     let studyDataCollection = null;
     let studyPrimaryConclusion = null;
     let studyCollectionTitle = null;
+
     //Throw an error if any study information variables are not filled out
     if (!studyPurposeInput.value.trim()) {
       throw "Please add a study purpose";
@@ -11189,6 +11190,15 @@ $(document).ready(async () => {
       throw "Please add a study primary conclusion";
     } else {
       studyPrimaryConclusion = studyPrimaryConclusionInput.value.trim();
+    }
+    if (studyOrganSystemTags.length < 1) {
+      throw "Please add at least one study organ system";
+    }
+    if (studyApproachTags.length < 1) {
+      throw "Please add at least one study approach";
+    }
+    if (studyTechniqueTags.length < 1) {
+      throw "Please add at least one study technique";
     }
 
     studyCollectionTitle = studyCollectionTitleInput.value.trim();
@@ -12198,7 +12208,7 @@ $(document).ready(async () => {
             errorArray.push({
               type: "notyf",
               message:
-                "Please click 'Import award information from Airtable' to import a SPARC award. If you would not like to connect your Airtable account, please click 'No, I'll enter my SPARC award manually'",
+                "Please click 'Import award information from Airtable' to import SPARC award information",
             });
             throw errorArray;
           }
