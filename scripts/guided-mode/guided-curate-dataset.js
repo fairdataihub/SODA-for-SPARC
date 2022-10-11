@@ -659,7 +659,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
                     margin: 4px;
                     margin-bottom: 15px;
                   "
-                  onClick="openEditGuidedDatasetSwal('${progressFileName}')"
+                  onClick="guidedResumeProgress($(this))"
                 >
                   Edit dataset
                 </button>
@@ -10600,6 +10600,9 @@ $(document).ready(async () => {
 
         sodaJSONObj["previous-guided-upload-dataset-name"] =
           sodaJSONObj["digital-metadata"]["name"];
+
+        // Save the sodaJSONObj after a successfull upload
+        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
         //Display the click next text
         document
