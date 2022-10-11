@@ -2356,6 +2356,9 @@ function showAddAirtableAccountSweetalert(keyword, curationMode) {
     },
   }).then((result) => {
     if (result.isConfirmed) {
+      console.log(keyword);
+      console.log(curationMode);
+      // if (curationMode === "guided--getting-started") curationMode = "guided";
       addAirtableAccountInsideSweetalert(keyword, curationMode);
     }
   });
@@ -2671,7 +2674,10 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
       });
     }
 
-    if (curationMode === "guided") {
+    if (
+      curationMode === "guided" ||
+      curationMode === "guided--getting-started"
+    ) {
       const optionsSparcTable = {
         hostname: airtableHostname,
         port: 443,
