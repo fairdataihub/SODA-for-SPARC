@@ -12198,7 +12198,7 @@ $(document).ready(async () => {
             errorArray.push({
               type: "notyf",
               message:
-                "Please import a SPARC award of select no to enter a SPARC award manually",
+                "Please click 'Import award information from Airtable' to import a SPARC award. If you would not like to connect your Airtable account, please click 'No, I'll enter my SPARC award manually'",
             });
             throw errorArray;
           }
@@ -12387,12 +12387,12 @@ $(document).ready(async () => {
 
       traverseToTab(targetPageID);
     } catch (error) {
-      console.log(error);
-      //check to see if the type of error is array
+      log.error(error);
       errorArray.map((error) => {
+        // get the total number of words in error.message
         if (error.type === "notyf") {
           notyf.open({
-            duration: "4000",
+            duration: "5500",
             type: "error",
             message: error.message,
           });
