@@ -2390,7 +2390,7 @@ const traverseToTab = async (targetPageID) => {
         generateOrRetryDatasetUploadButton.innerHTML = generateButtonText;
         reviewGenerateButtionTextElement.innerHTML = generateButtonText;
       } else {
-        const generateButtonText = "Upload dataset to Pennsieve";
+        const generateButtonText = "Generate dataset on Pennsieve";
         generateOrRetryDatasetUploadButton.innerHTML = generateButtonText;
         reviewGenerateButtionTextElement.innerHTML = generateButtonText;
       }
