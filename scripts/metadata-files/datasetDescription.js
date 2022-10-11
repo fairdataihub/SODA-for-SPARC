@@ -1119,7 +1119,9 @@ const helpSPARCAward = async (filetype, curationMode) => {
     if (res[0]) {
       console.log("UHHH HANDLE HERE?");
       let keyname = res[1];
-      let swalElement = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'dd\', '${curationMode}')" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4><div
+      let swalElement = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'dd\', '${curationMode}')" style="font-weight:500;text-decoration: underline"><svg class="svg-change-current-account bi bi-pencil-fill" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" viewBox="0 0 16 16">
+      <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"></path>
+    </svg></a></span></h4><h4 style="text-align:left">Select your award: </h4><div
         class="search-select-box"><select id="select-SPARC-award" class="w-100" data-live-search="true"style="width: 450px;border-radius: 7px;padding: 8px;"data-none-selected-text="Loading awards..."></select></div></div>`;
       const { value: awardVal } = await Swal.fire({
         html: swalElement,
@@ -1225,15 +1227,33 @@ const helpSPARCAward = async (filetype, curationMode) => {
     if (res[0] && curationMode != "guided--getting-started") {
       console.log("OR HERE???");
       var keyname = res[1];
-      var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'submission\', '${curationMode}')" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4><div
+      var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'submission\', '${curationMode}')" style="font-weight:500;text-decoration: underline"><svg class="svg-change-current-account bi bi-pencil-fill" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" viewBox="0 0 16 16">
+      <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"></path>
+    </svg></a></span></h4><h4 style="text-align:left">Select your award: </h4><div
         class="search-select-box"><select id="select-SPARC-award-submission" class="w-100" data-live-search="true"style="width: 450px;border-radius: 7px;padding: 8px;"data-none-selected-text="Loading awards..."></select></div></div>`;
       const { value: awardVal } = await Swal.fire({
         html: htmlEle,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         inputPlaceholder: "Select an award",
+        focusConfirm: false,
+        focusCancel: false,
         showCancelButton: true,
         confirmButtonText: "Confirm",
+        footer: `
+        <div style="display: flex; width: 100%">
+        <div class="info-container" style="width: 100%">
+                <div class="demo-wrapper info-container-wrapper">
+                  <button id="airtable-information-footer" class="js-container-target demo-toggle-button info-summary">
+                    I don't see my SPARC award in the list
+                  </button>
+
+                  <div class="demo-box details-box" id="no-airtable">
+                  If you don't see your award in the list, you can add it yourself in the <a target="_blank" href="https://airtable.com/appiYd1Tz9Sv857GZ/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide">SPARC Airtable sheet</a> then open the popup again to refresh. Alternatively, you can just add the award number manually.
+                  </div>
+                </div>
+              </div>
+        </div>`,
         showClass: {
           popup: "animate__animated animate__zoomIn animate__faster",
         },
@@ -1241,6 +1261,16 @@ const helpSPARCAward = async (filetype, curationMode) => {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
         didOpen: () => {
+          document
+            .getElementById("airtable-information-footer")
+            .addEventListener("click", () => {
+              let dropdown = document.getElementById("no-airtable");
+              if (dropdown.style.display === "none") {
+                dropdown.style.display = "block";
+              } else {
+                dropdown.style.display = "none";
+              }
+            });
           $("#select-sparc-award-submission-spinner").css("display", "none");
           populateSelectSPARCAward(awardObj, "select-SPARC-award-submission");
           $("#select-SPARC-award-submission").selectpicker();
@@ -2322,7 +2352,7 @@ function grabStudyInfoEntries() {
 }
 
 function showAddAirtableAccountSweetalert(keyword, curationMode) {
-  var htmlTitle = `<h4 style="text-align:center">Please enter your Airtable API key below: <i class="fas fa-info-circle swal-popover" data-tippy-content="Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
+  var htmlTitle = `<h4 style="text-align:center">Please enter your Airtable API key below: </h4>`;
 
   var bootb = Swal.fire({
     title: htmlTitle,
