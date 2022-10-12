@@ -3641,12 +3641,30 @@ const patchPreviousGuidedModeVersions = () => {
 
 //Loads UI when continue curation button is pressed
 const guidedResumeProgress = async (resumeProgressButton) => {
+  resumeProgressButton.addClass("loading");
   const datasetNameToResume = resumeProgressButton
     .parent()
     .siblings()
     .find($(".progress-file-name"))
     .html();
   const datasetResumeJsonObj = await getProgressFileData(datasetNameToResume);
+
+  // If the dataset had been previously successfully uploaded, check to make sure it exists on Pennsieve still.
+  if (datasetResumeJsonObj["previous-guided-upload-dataset-name"]) {
+    const previouslyUploadedName =
+      datasetResumeJsonObj["previous-guided-upload-dataset-name"];
+    const datasetToResumeExistsOnPennsieve =
+      await checkIfDatasetExistsOnPennsieve(previouslyUploadedName);
+    if (!datasetToResumeExistsOnPennsieve) {
+      notyf.open({
+        type: "error",
+        message: `The dataset ${previouslyUploadedName} was not found on Pennsieve therefore you can no longer modify this dataset via Guided Mode.`,
+        duration: 7000,
+      });
+      resumeProgressButton.removeClass("loading");
+      return;
+    }
+  }
   sodaJSONObj = datasetResumeJsonObj;
 
   attachGuidedMethodsToSodaJSONObj();
@@ -3659,6 +3677,20 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   //and returns a boolean to indicate if the user should be forced to restart from the first page
   const forceStartFromFirstPage = patchPreviousGuidedModeVersions();
 
+  //Return the user to the last page they exited on
+  let pageToReturnTo = datasetResumeJsonObj["page-before-exit"];
+
+  //If a patch was applied that requires the user to restart from the first page,
+  //then force the user to restart from the first page
+  if (forceStartFromFirstPage) {
+    pageToReturnTo = "guided-prepare-helpers-tab";
+  }
+
+  //If the dataset was successfully uploaded, send the user to the share with curation team
+  if (datasetResumeJsonObj["previous-guided-upload-dataset-name"]) {
+    pageToReturnTo = "guided-dataset-dissemination-tab";
+  }
+
   guidedTransitionFromHome();
   //Set the dataset name and subtitle input values using the
   //previously saved dataset name and subtitle
@@ -3669,25 +3701,16 @@ const guidedResumeProgress = async (resumeProgressButton) => {
 
   guidedTransitionFromDatasetNameSubtitlePage();
 
-  //Return the user to the last page they exited on
-  let pageBeforeExit = datasetResumeJsonObj["page-before-exit"];
-
-  //If a patch was applied that requires the user to restart from the first page,
-  //then force the user to restart from the first page
-  if (forceStartFromFirstPage) {
-    pageBeforeExit = "guided-prepare-helpers-tab";
-  }
-
-  if (pageBeforeExit) {
+  if (pageToReturnTo) {
     //Hide the sub-page navigation and show the main page navigation footer
     //If the user traverses to a page that requires the sub-page navigation,
     //the sub-page will be shown during traverseToTab() function
     $("#guided-sub-page-navigation-footer-div").hide();
     $("#guided-footer-div").css("display", "flex");
     //If the last page the exited was the upload page, take them to the review page
-    pageBeforeExit === "guided-dataset-generation-tab"
+    pageToReturnTo === "guided-dataset-generation-tab"
       ? traverseToTab("guided-dataset-generation-confirmation-tab")
-      : traverseToTab(pageBeforeExit);
+      : traverseToTab(pageToReturnTo);
   }
   guidedLockSideBar();
 };
