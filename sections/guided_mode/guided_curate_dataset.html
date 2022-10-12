@@ -267,7 +267,7 @@
           id="structure-dataset-capsule-container"
         >
           <div
-            class="guided--capsule"
+            class="guided--capsule hidden"
             id="guided-prepare-helpers-capsule"
           ></div>
           <div
@@ -2364,10 +2364,7 @@
                   id="guided-sparc-award-dropdown"
                 ></select>
               </div>
-              <div
-                class="guided--info-dropdown mt-lg"
-                style="justify-content: center"
-              >
+              <div class="guided--info-dropdown mt-lg">
                 <p class="guided--dropdown-text" data-dropdown-type="warning">
                   I don't see my SPARC Award in the dropdown
                 </p>
@@ -4991,43 +4988,68 @@
             <h1 class="guided--text-sub-step">Dataset permissions</h1>
             <p class="guided--help-text text-left">
               Dataset permissions control which users or teams can view, edit,
-              or manage your dataset on Pennsieve. Read below for a breakdown of
-              the different types of dataset permissions:
+              or manage your dataset on Pennsieve. Current permissions are
+              listed in the table below. If you need anyone else to view or
+              contribute to your dataset, you can grant them permissions using
+              the interface below.
             </p>
-            <ul class="guided--help-text">
-              <li
-                class="guided--help-text text-left mb-2"
-                style="color: hsl(0, 0%, 22%)"
-              >
-                <b>Managers</b> can invite people and teams to a dataset, edit
-                and delete models, records and files, but cannot publish a
-                dataset.
-              </li>
-              <li
-                class="guided--help-text text-left mb-2"
-                style="color: hsl(0, 0%, 22%)"
-              >
-                <b>Editors</b> can create, edit, or delete records and files in
-                a dataset.
-              </li>
-              <li
-                class="guided--help-text text-left mb-2"
-                style="color: hsl(0, 0%, 22%)"
-              >
-                <b>Viewers</b> can view and browse all information in a dataset,
-                but have no other permissions.
-              </li>
-            </ul>
+            <div class="guided--info-dropdown">
+              <p class="guided--dropdown-text" data-dropdown-type="info">
+                Learn more about dataset Permissions on Pennsieve
+              </p>
+              <i
+                class="fas fa-chevron-right"
+                style="transform: rotate(0deg)"
+              ></i>
+            </div>
+            <div class="guided--info-container" style="margin-bottom: 1.5rem">
+              <p class="guided--help-text">
+                Pennsieve has 3 levels of permissions for datasets:
+              </p>
+              <ul class="guided--help-text">
+                <li
+                  class="guided--help-text text-left mb-2"
+                  style="color: hsl(0, 0%, 22%)"
+                >
+                  <b>Viewer:</b> Give this permission to collaborators who only
+                  need to view your dataset.
+                </li>
+
+                <li
+                  class="guided--help-text text-left mb-2"
+                  style="color: hsl(0, 0%, 22%)"
+                >
+                  <b>Editor:</b> Give this permission to collaborators who only
+                  need to view your dataset and upload files to it.
+                </li>
+                <li
+                  class="guided--help-text text-left mb-2"
+                  style="color: hsl(0, 0%, 22%)"
+                >
+                  <b>Manager:</b> Give this permission to collaborators who need
+                  full editing access to your dataset (except publish the
+                  dataset).
+                </li>
+                <li
+                  class="guided--help-text text-left mb-2"
+                  style="color: hsl(0, 0%, 22%)"
+                >
+                  <b>Owner:</b> This permission is typically given to the
+                  Principal Investigator of the award. The owner can do
+                  everything with the dataset, including publishing it.
+                </li>
+              </ul>
+            </div>
           </div>
           <div class="guided--section">
             <table
               class="ui celled striped table"
-              style="margin-bottom: 25px; width: 800px"
+              style="margin-bottom: 10px; width: 800px"
             >
               <thead>
                 <tr>
                   <th>Name</th>
-                  <th class="remove-left-border" style="width: 300px">
+                  <th class="remove-left-border" style="width: 268px">
                     Permission
                   </th>
                   <th
@@ -5040,9 +5062,7 @@
               </thead>
               <tbody id="permissions-table-body"></tbody>
             </table>
-            <h1 class="guided--text-sub-step">
-              Designate permissions for other users and teams below:
-            </h1>
+
             <div class="guided--container-permissions">
               <div style="flex-grow: 1">
                 <div
@@ -5076,7 +5096,9 @@
                       "
                       id="guided_bf_list_users_and_teams"
                     >
-                      <option>Select individuals or teams</option>
+                      <option>
+                        Select individuals or teams to grant permissions to
+                      </option>
                     </select>
                   </div>
                 </div>
@@ -5102,6 +5124,8 @@
                   height: 35px;
                   background-color: var(--color-light-green) !important;
                   padding: 0.7em 1.3em;
+                  width: 175px;
+                  margin-right: 0px;
                 "
               >
                 Designate permission
