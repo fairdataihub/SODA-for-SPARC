@@ -1419,7 +1419,6 @@ const helpSPARCAward = async (filetype, curationMode) => {
             gettingStartedAirtable.children[1].style.display = "none";
             gettingStartedAirtable.children[0].style.display = "flex";
             showAddAirtableAccountSweetalert("submission", "guided");
-            document.getElementById("guided-button-import-sparc-award").click();
           }
         }
       }
@@ -2391,7 +2390,7 @@ function showAddAirtableAccountSweetalert(keyword, curationMode) {
       console.log(keyword);
       console.log(curationMode);
       if (curationMode === "guided--getting-started") {
-        document.getElementById("guided-button-import-sparc-award").click();
+        //document.getElementById("guided-button-import-sparc-award").click();
       }
       addAirtableAccountInsideSweetalert(keyword, curationMode);
     }
