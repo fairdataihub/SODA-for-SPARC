@@ -1809,7 +1809,9 @@ const guidedLoadDescriptionContributorInformation = () => {
 };
 
 const guidedResetUserTeamPermissionsDropdowns = () => {
-  $("#guided_bf_list_users_and_teams").val("Select individuals or teams");
+  $("#guided_bf_list_users_and_teams").val(
+    "Select individuals or teams to grant permissions to"
+  );
   $("#guided_bf_list_users_and_teams").selectpicker("refresh");
   $("#select-permission-list-users-and-teams").val("Select role");
 };
@@ -8695,7 +8697,10 @@ $(document).ready(async () => {
       );
 
       //throw error if no user/team or role is selected
-      if (newPermissionElement.val().trim() === "Select individuals or teams") {
+      if (
+        newPermissionElement.val().trim() ===
+        "Select individuals or teams to grant permissions to"
+      ) {
         throw "Please select a user or team to designate a permission to";
       }
       if (newPermissionRoleElement.val().trim() === "Select role") {
@@ -10160,7 +10165,7 @@ $(document).ready(async () => {
         "success"
       );
       codeDescriptionMetadataUploadText.innerHTML =
-        "Code description metadata successfully added to Pennsieve";
+        "Code description metadata added to Pennsieve";
     } catch (error) {
       guidedUploadStatusIcon(
         "guided-code-description-metadata-upload-status",

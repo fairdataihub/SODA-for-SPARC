@@ -17,8 +17,8 @@
 
 
 .guided--info-dropdown {
-  width: 100%;
   display: flex;
+  align-self: flex-start;
   flex-wrap: nowrap;
   justify-content: start;
   align-items: center;
@@ -52,6 +52,10 @@
 
   border: 1px solid var(--color-light-green);
   border-radius: 3px;
+}
+
+.guided--info-container .guided--help-text {
+  font-size: 14px;
 }
 
 .container-open {
