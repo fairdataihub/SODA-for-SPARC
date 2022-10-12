@@ -562,7 +562,7 @@ def bf_account_details(accountname):
             config.write(configfile)
 
         ## return account details and datasets where such an account has some permission
-        return {"account_details": acc_details}
+        return {"account_details": acc_details, "organization_id": bf.context.id}
 
     except Exception as e:
         raise e

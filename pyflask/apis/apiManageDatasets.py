@@ -311,6 +311,7 @@ class BfGetTeams(Resource):
 
 model_account_details_response = api.model('AccountDetailsResponse', {
   'account_details': fields.String(required=True, description="The email and organization for the given Pennsieve account."),
+  "organization_id": fields.String(required=True, description="The organization id for the given Pennsieve account."),
 })
 
 @api.route('/bf_account_details')
