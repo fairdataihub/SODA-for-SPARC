@@ -13,13 +13,14 @@ manifest = client.manifest.create(local_ds)
 
 
 
-client.manifest.upload(32)
+client.manifest.upload(49)
 sub = client.subscribe(10)
 
-counter = 0 
+counter = 0
 end_counter = 1000
 msgs = []
 for msg in sub:
+    print(msg)
     # print(dir(msg))
     # print("Upload status: ", msg.upload_status)
     # print("Event info", msg.event_info)
@@ -31,15 +32,15 @@ for msg in sub:
     current_bytes_uploaded = msg.upload_status.current 
     total_bytes_to_upload = msg.upload_status.total
 
-    print(f"Current bytes uploaded: {current_bytes_uploaded}")
-    print(f"Total bytes to upload: {total_bytes_to_upload}")
-    if msg.upload_status.total == msg.upload_status.current:
-        counter += 1
-        print(counter)
-    
+    if total_bytes_to_upload != 0:
+        if msg.upload_status.total == msg.upload_status.current:
+            counter += 1
+            print(counter)
+        
 
-    # if counter == 10:
-    #     client.unsubscribe(10)
+        if counter == 4:
+            print("Unsubscribing")
+            client.unsubscribe(10)
 
 print("Done")
 

@@ -833,6 +833,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     # get the dataset size before starting the upload
     total_file_size, invalid_dataset_messages, total_files_atm = get_dataset_size(pathdataset)
 
+    namespace_logger.info("Total file size we calculated is: " + str(total_file_size))
+
     if invalid_dataset_messages != "":
         submitdatastatus = "Done"
         invalid_dataset_messages = (
@@ -842,8 +844,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         did_fail = True
         did_upload = False
         abort(400, invalid_dataset_messages)
-
-    total_file_size = total_file_size - 1
 
     if not has_edit_permissions(ps, selected_dataset_id):
         submitdatastatus = "Done"
@@ -879,10 +879,14 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         start_time_bf_upload = time.time()
         initial_bfdataset_size_submit = bf_dataset_size(ps, selected_dataset_id)
         start_submit = 1
-        ps.manifest.upload(33)
+        ps.manifest.upload(56)
         subscription_rendezvous_object = ps.subscribe(10)
 
-        counter = 0 
+        counter = 0
+
+        # store the amount of bytes uploaded for each file_id
+        bytes_uploaded_per_file = {}
+
         # each message is a response from the Go Agent ( serialized as a Python dict ) that contains this information:
         #   type: UPLOAD_STATUS
         #   upload_status {
@@ -894,26 +898,31 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         # Workers ( the worker sending the given message denoted by worker_id ) are uploading files and informing us whenever a chunk has been uploaded.
         for msg in subscription_rendezvous_object:
             # print properties of the msg
-            print(dir(msg))
             current_bytes_uploaded = msg.upload_status.current 
             total_bytes_to_upload = msg.upload_status.total
+            file_id = msg.upload_status.file_id
 
             if total_bytes_to_upload != 0:
+                namespace_logger.info(msg)
 
-                namespace_logger.info(f"Current bytes uploaded: {current_bytes_uploaded}")
-                namespace_logger.info(f"Total bytes to upload: {total_bytes_to_upload}")
+                # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
+                previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
 
-                # calculate the total amount of bytes that have been uploaded so far
-                uploaded_file_size += total_bytes_to_upload - current_bytes_uploaded
+                # update the file id's current total bytes uploaded value 
+                bytes_uploaded_per_file[file_id] = current_bytes_uploaded
 
-                namespace_logger.info(f"uploaded_file_size: {uploaded_file_size}")
+                # calculate the additional amount of bytes that have just been uploaded for the given file id
+                bytes_increase = current_bytes_uploaded - previous_bytes_uploaded
+
+                # update the total bytes uploaded so far value 
+                uploaded_file_size += bytes_increase
 
                 # if a file has finished uploading then update the files uploaded tracker - this can tell us when to unsubscribe
                 if current_bytes_uploaded == total_bytes_to_upload:
                     counter += 1
                 
                 # check if the upload is complete
-                if uploaded_file_size == total_file_size or counter == total_files_atm:
+                if counter == total_files_atm:
                     namespace_logger.info(f"Uploaded {counter} of {total_files_atm} files")
                     namespace_logger.info(f"Uploaded {uploaded_file_size} in upload function")
                     namespace_logger.info("Upload complete unsubscribing from channel for id 10.")
