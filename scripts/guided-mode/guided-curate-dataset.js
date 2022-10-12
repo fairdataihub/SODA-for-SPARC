@@ -1051,6 +1051,21 @@ const renderGuidedAwardSelectionDropdown = () => {
 };
 
 document
+  .getElementById("guided-button-refresh-sparc-award-dropdown")
+  .addEventListener("click", () => {
+    //call update the awardObj
+    loadAwardData();
+    //Update the dropdown
+    renderGuidedAwardSelectionDropdown();
+    //Notify the user that the dropdown has been updated
+    notyf.open({
+      duration: "4000",
+      type: "success",
+      message: "The SPARC Award dropdown was successfully updated",
+    });
+  });
+
+document
   .getElementById("guided-button-import-sparc-award")
   .addEventListener("click", async () => {
     const divToShowWhenConnected = document.getElementById(
@@ -12268,11 +12283,6 @@ $(document).ready(async () => {
           //Set the sparc award to the imported sparc award's value
           sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] =
             selectedAwardFromDropdown;
-
-          console.log(
-            "sparc award",
-            sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"]
-          );
         }
 
         if (buttonNoEnterSparcAwardManually.classList.contains("selected")) {
