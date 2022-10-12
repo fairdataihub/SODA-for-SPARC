@@ -3703,6 +3703,9 @@ const guidedResumeProgress = async (resumeProgressButton) => {
 
   guidedTransitionFromDatasetNameSubtitlePage();
 
+  //Hide the before getting started page so it doesn't flash when resuming progress
+  $("#guided-prepare-helpers-tab").css("display", "none");
+
   if (pageToReturnTo) {
     //Hide the sub-page navigation and show the main page navigation footer
     //If the user traverses to a page that requires the sub-page navigation,
