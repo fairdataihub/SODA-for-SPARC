@@ -879,7 +879,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         start_time_bf_upload = time.time()
         initial_bfdataset_size_submit = bf_dataset_size(ps, selected_dataset_id)
         start_submit = 1
-        ps.manifest.upload(14)
+        ps.manifest.upload(33)
         subscription_rendezvous_object = ps.subscribe(10)
 
         counter = 0 
@@ -893,23 +893,35 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         #   }
         # Workers ( the worker sending the given message denoted by worker_id ) are uploading files and informing us whenever a chunk has been uploaded.
         for msg in subscription_rendezvous_object:
+            # print properties of the msg
+            print(dir(msg))
             current_bytes_uploaded = msg.upload_status.current 
             total_bytes_to_upload = msg.upload_status.total
 
-            # calculate the total amount of bytes that have been uploaded so far
-            uploaded_file_size += total_bytes_to_upload - current_bytes_uploaded
+            if total_bytes_to_upload != 0:
 
-            # if a file has finished uploading then update the files uploaded tracker - this can tell us when to unsubscribe
-            if current_bytes_uploaded == total_bytes_to_upload:
-                counter += 1
-            
-            # check if the upload is complete
-            if uploaded_file_size == total_file_size or counter == total_files_atm:
-                namespace_logger.info(f"Uploaded {counter} of {total_files_atm} files")
-                namespace_logger.info("Upload complete unsubscribing from channel for id 10.")
-                ps.unsubscribe(10)
+                namespace_logger.info(f"Current bytes uploaded: {current_bytes_uploaded}")
+                namespace_logger.info(f"Total bytes to upload: {total_bytes_to_upload}")
+
+                # calculate the total amount of bytes that have been uploaded so far
+                uploaded_file_size += total_bytes_to_upload - current_bytes_uploaded
+
+                namespace_logger.info(f"uploaded_file_size: {uploaded_file_size}")
+
+                # if a file has finished uploading then update the files uploaded tracker - this can tell us when to unsubscribe
+                if current_bytes_uploaded == total_bytes_to_upload:
+                    counter += 1
+                
+                # check if the upload is complete
+                if uploaded_file_size == total_file_size or counter == total_files_atm:
+                    namespace_logger.info(f"Uploaded {counter} of {total_files_atm} files")
+                    namespace_logger.info(f"Uploaded {uploaded_file_size} in upload function")
+                    namespace_logger.info("Upload complete unsubscribing from channel for id 10.")
+                    ps.unsubscribe(10)
 
 
+
+        namespace_logger.info("Upload complete now no more messages")
         submitdatastatus = "Done"
     except Exception as e:
         submitdatastatus = "Done"
