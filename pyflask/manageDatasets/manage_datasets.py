@@ -864,7 +864,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
     # create the manifest file for the dataset
     try:
-        ps.manifest.create(pathdataset)
+        manifest_data = ps.manifest.create(pathdataset)
     except Exception as e:
         submitdatastatus = "Done"
         did_fail = True
@@ -879,7 +879,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         start_time_bf_upload = time.time()
         initial_bfdataset_size_submit = bf_dataset_size(ps, selected_dataset_id)
         start_submit = 1
-        ps.manifest.upload(56)
+        manifest_id = manifest_data.manifest_id
+        ps.manifest.upload(manifest_id)
         subscription_rendezvous_object = ps.subscribe(10)
 
         counter = 0
