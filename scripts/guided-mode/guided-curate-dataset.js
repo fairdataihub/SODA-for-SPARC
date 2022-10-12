@@ -1016,6 +1016,36 @@ document
     renderManifestCards();
   });
 
+$("#guided-sparc-award-dropdown").selectpicker();
+
+const renderGuidedAwardSelectionDropdown = () => {
+  $("#guided-sparc-award-dropdown").selectpicker("refresh");
+  const awardDropDownElements = document.getElementById(
+    "guided-sparc-award-dropdown"
+  );
+  //remove the elements
+  for (const dropDownElement of awardDropDownElements) {
+    dropDownElement.remove();
+  }
+  // Append the select an award option
+  const selectAnAwardOption = document.createElement("option");
+  selectAnAwardOption.textContent = "Select an award";
+  selectAnAwardOption.value = "";
+  awardDropDownElements.appendChild(selectAnAwardOption);
+
+  for (const [val, key] of Object.entries(awardObj)) {
+    let awardElement = document.createElement("option");
+    awardElement.textContent = key;
+    awardElement.value = val;
+    console.log(awardElement);
+
+    //add the award to the guided-sparc-award-dropdown selectpicker
+    awardDropDownElements.appendChild(awardElement);
+  }
+
+  $("#guided-sparc-award-dropdown").selectpicker("refresh");
+};
+
 document
   .getElementById("guided-button-import-sparc-award")
   .addEventListener("click", async () => {
