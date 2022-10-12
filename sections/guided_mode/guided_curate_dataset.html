@@ -2306,21 +2306,19 @@
             class="guided--section hidden"
             id="guided-div-SPARC-award-import"
           >
-            <button
-              class="ui primary button"
-              id="guided-button-import-airtable-award"
-              style="background-color: var(--color-light-green) !important"
-              onclick="helpSPARCAward('submission', 'guided')"
-            >
-              Import award information from Airtable
-            </button>
-            <div
-              class="guided--panel hidden mt-md"
-              id="guided-div-imported-SPARC-award"
-            >
+            <div class="guided--panel" id="guided-div-connect-airtable">
+              <button
+                class="ui primary button"
+                id="guided-button-connect-airtable-account"
+                style="background-color: var(--color-light-green) !important"
+                onclick="showAddAirtableAccountSweetalert('submission', 'guided')"
+              ></button>
+            </div>
+            <div class="guided--panel" id="guided-div-imported-SPARC-award">
               <label class="guided--label-accordion-field w-100 text-center"
-                >Imported SPARC Award number</label
+                >Select a SPARC award from the dropdown below</label
               >
+              <!-- THIS IS WHERE THE INPUT SELECTPICKER DROPDOWN WILL GO!-->
               <div class="ui input modified" style="width: 50%">
                 <input
                   class="text-center"

@@ -1117,7 +1117,6 @@ async function helpSPARCAward(filetype, curationMode) {
       $("#select-sparc-award-dd-spinner").css("display", "block");
     }
     if (res[0]) {
-      console.log("UHHH HANDLE HERE?");
       let keyname = res[1];
       let swalElement = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'dd\', '${curationMode}')" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4><div
         class="search-select-box"><select id="select-SPARC-award" class="w-100" data-live-search="true"style="width: 450px;border-radius: 7px;padding: 8px;"data-none-selected-text="Loading awards..."></select></div></div>`;
@@ -2691,10 +2690,12 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
 
           $("#current-airtable-account").html(name);
           $("#bootbox-airtable-key").val("");
+          console.log(awardObj);
           loadAwardData();
+          console.log(awardObj);
           Swal.fire({
             title: "Successfully connected. Loading your Airtable account...",
-            timer: 10000,
+            timer: 3000,
             timerProgressBar: false,
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
@@ -2705,7 +2706,8 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
               Swal.showLoading();
             },
           }).then((result) => {
-            helpSPARCAward("submission", curationMode);
+            renderGuidedAwardSelectionDropdown();
+            //helpSPARCAward("submission", curationMode);
           });
           ipcRenderer.send(
             "track-event",

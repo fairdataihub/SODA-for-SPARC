@@ -1016,6 +1016,29 @@ document
     renderManifestCards();
   });
 
+document
+  .getElementById("guided-button-import-sparc-award")
+  .addEventListener("click", async () => {
+    const divToShowWhenConnected = document.getElementById(
+      "guided-div-imported-SPARC-award"
+    );
+    const guidedButtonConnectAirtableAccount = document.getElementById(
+      "guided-button-connect-airtable-account"
+    );
+    const airTableKeyObj = parseJson(airtableConfigPath);
+    console.log(Object.keys(airTableKeyObj).length === 0);
+    if (Object.keys(airTableKeyObj).length === 0) {
+      console.log("show connect button");
+      //If the airtable key object is empty, show the div to connect to airtable
+      divToShowWhenConnected.classList.add("hidden");
+      guidedButtonConnectAirtableAccount.innerHTML = `Connect Airtable account with SODA`;
+    } else {
+      //If the airtable key object is not empty, show the div to select the SPARC award
+      divToShowWhenConnected.classList.remove("hidden");
+      guidedButtonConnectAirtableAccount.innerHTML = `Change Airtable account connected to SODA`;
+    }
+  });
+
 const setActiveCapsule = (targetPageID) => {
   $(".guided--capsule").removeClass("active");
   let targetCapsuleID = targetPageID.replace("-tab", "-capsule");
@@ -2035,26 +2058,8 @@ const traverseToTab = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-airtable-award-tab") {
-      const sparcAwardImportedFromAirtable =
-        sodaJSONObj["dataset-metadata"]["shared-metadata"][
-          "imported-sparc-award"
-        ];
       const sparcAward =
         sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-
-      //If a sparc award has been imported from Airtable, show the imported award
-      //If not, reset the HTML
-      if (sparcAwardImportedFromAirtable) {
-        guidedSetImportedSPARCAward(sparcAwardImportedFromAirtable);
-      } else {
-        //hide the imported div
-        document
-          .getElementById("guided-div-imported-SPARC-award")
-          .classList.add("hidden");
-        document.getElementById(
-          "guided-button-import-airtable-award"
-        ).innerHTML = "Import award information from Airtable";
-      }
 
       const sparcAwardInput = document.getElementById(
         "guided-input-sparc-award"
