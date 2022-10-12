@@ -1109,6 +1109,7 @@ const guidedSetImportedSPARCAward = (awardString) => {
 };
 
 const helpSPARCAward = async (filetype, curationMode) => {
+  console.log(curationMode);
   var award = "";
   if (filetype === "dd") {
     var res = airtableRes;
@@ -1180,9 +1181,11 @@ const helpSPARCAward = async (filetype, curationMode) => {
           } else {
             changeAward(award);
           }
-        } else if (curationMode === "guided") {
+        }
+        if (curationMode === "guided") {
           changeAward(award, "guided");
-        } else {
+        }
+        if (curationMode === "guided--getting-started") {
           //curationMode is getting-started page
           changeAward(award, "guided");
         }
@@ -1402,6 +1405,7 @@ const helpSPARCAward = async (filetype, curationMode) => {
             $("#ds-description-award-input").val(award);
             document.getElementById("submission-completion-date").value = "";
           } else if (curationMode === "guided") {
+            console.log("ASD");
             const gettingStartedAirtable = document.getElementById(
               "getting-started-button-import-sparc-award"
             );
@@ -1417,6 +1421,7 @@ const helpSPARCAward = async (filetype, curationMode) => {
             gettingStartedAirtable.children[1].style.display = "none";
             gettingStartedAirtable.children[0].style.display = "flex";
             showAddAirtableAccountSweetalert("submission", "guided");
+            console.log("UHASD");
             document.getElementById("guided-button-import-sparc-award").click();
           }
         }
@@ -2388,7 +2393,9 @@ function showAddAirtableAccountSweetalert(keyword, curationMode) {
     if (result.isConfirmed) {
       console.log(keyword);
       console.log(curationMode);
-      // if (curationMode === "guided--getting-started") curationMode = "guided";
+      if (curationMode === "guided--getting-started") {
+        document.getElementById("guided-button-import-sparc-award").click();
+      }
       addAirtableAccountInsideSweetalert(keyword, curationMode);
     }
   });
