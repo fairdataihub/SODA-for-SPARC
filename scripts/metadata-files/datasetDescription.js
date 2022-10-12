@@ -1404,7 +1404,6 @@ const helpSPARCAward = async (filetype, curationMode) => {
             $("#ds-description-award-input").val(award);
             document.getElementById("submission-completion-date").value = "";
           } else if (curationMode === "guided") {
-            console.log("ASD");
             const gettingStartedAirtable = document.getElementById(
               "getting-started-button-import-sparc-award"
             );
@@ -1420,7 +1419,6 @@ const helpSPARCAward = async (filetype, curationMode) => {
             gettingStartedAirtable.children[1].style.display = "none";
             gettingStartedAirtable.children[0].style.display = "flex";
             showAddAirtableAccountSweetalert("submission", "guided");
-            console.log("UHASD");
             document.getElementById("guided-button-import-sparc-award").click();
           }
         }
@@ -2733,9 +2731,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
 
           $("#current-airtable-account").html(name);
           $("#bootbox-airtable-key").val("");
-          console.log(awardObj);
           loadAwardData();
-          console.log(awardObj);
           Swal.fire({
             title: "Successfully connected. Loading your Airtable account...",
             timer: 3000,
@@ -2749,8 +2745,11 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
               Swal.showLoading();
             },
           }).then((result) => {
-            renderGuidedAwardSelectionDropdown();
-            //helpSPARCAward("submission", curationMode);
+            if (curationMode === "guided") {
+              document
+                .getElementById("guided-button-import-sparc-award")
+                .click();
+            }
           });
           ipcRenderer.send(
             "track-event",

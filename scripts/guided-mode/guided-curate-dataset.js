@@ -1023,23 +1023,29 @@ const renderGuidedAwardSelectionDropdown = () => {
   const awardDropDownElements = document.getElementById(
     "guided-sparc-award-dropdown"
   );
-  //remove the elements
-  for (const dropDownElement of awardDropDownElements) {
-    dropDownElement.remove();
-  }
+
+  //reset the options before adding new ones
+  awardDropDownElements.innerHTML = "";
+  $("#guided-sparc-award-dropdown").selectpicker("refresh");
+
   // Append the select an award option
   const selectAnAwardOption = document.createElement("option");
   selectAnAwardOption.textContent = "Select an award";
   selectAnAwardOption.value = "";
+  selectAnAwardOption.selected = true;
   awardDropDownElements.appendChild(selectAnAwardOption);
+
+  const currentSparcAward =
+    sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
 
   for (const [val, key] of Object.entries(awardObj)) {
     let awardElement = document.createElement("option");
     awardElement.textContent = key;
     awardElement.value = val;
-    console.log(awardElement);
+    if (currentSparcAward && currentSparcAward === val) {
+      awardElement.selected = true;
+    }
 
-    //add the award to the guided-sparc-award-dropdown selectpicker
     awardDropDownElements.appendChild(awardElement);
   }
 
@@ -1052,6 +1058,9 @@ document
     const divToShowWhenConnected = document.getElementById(
       "guided-div-imported-SPARC-award"
     );
+    const divToShowWhenNotConnected = document.getElementById(
+      "guided-div-connect-airtable"
+    );
     const guidedButtonConnectAirtableAccount = document.getElementById(
       "guided-button-connect-airtable-account"
     );
@@ -1061,11 +1070,16 @@ document
       console.log("show connect button");
       //If the airtable key object is empty, show the div to connect to airtable
       divToShowWhenConnected.classList.add("hidden");
-      guidedButtonConnectAirtableAccount.innerHTML = `Connect Airtable account with SODA`;
+      divToShowWhenNotConnected.classList.remove("hidden");
     } else {
+      const airTablePreviewText = document.getElementById(
+        "guided-current-sparc-award"
+      );
+      airTablePreviewText.innerHTML = airTableKeyObj["key-name"];
       //If the airtable key object is not empty, show the div to select the SPARC award
       divToShowWhenConnected.classList.remove("hidden");
-      guidedButtonConnectAirtableAccount.innerHTML = `Change Airtable account connected to SODA`;
+      divToShowWhenNotConnected.classList.add("hidden");
+      renderGuidedAwardSelectionDropdown();
     }
   });
 
@@ -12244,21 +12258,27 @@ $(document).ready(async () => {
         }
 
         if (buttonYesImportSparcAward.classList.contains("selected")) {
-          const sparcAwardImportedFromAirtable =
-            sodaJSONObj["dataset-metadata"]["shared-metadata"][
-              "imported-sparc-award"
-            ];
-          if (!sparcAwardImportedFromAirtable) {
+          const selectedAwardFromDropdown = $(
+            "#guided-sparc-award-dropdown option:selected"
+          ).val();
+
+          if (selectedAwardFromDropdown === "") {
             errorArray.push({
               type: "notyf",
               message:
-                "Please click 'Import award information from Airtable' to import SPARC award information",
+                "Please select a SPARC award option from the dropdown menu",
             });
             throw errorArray;
           }
+
           //Set the sparc award to the imported sparc award's value
           sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] =
-            sparcAwardImportedFromAirtable;
+            selectedAwardFromDropdown;
+
+          console.log(
+            "sparc award",
+            sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"]
+          );
         }
 
         if (buttonNoEnterSparcAwardManually.classList.contains("selected")) {

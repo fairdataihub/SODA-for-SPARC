@@ -2310,21 +2310,60 @@
                 id="guided-button-connect-airtable-account"
                 style="background-color: var(--color-light-green) !important"
                 onclick="showAddAirtableAccountSweetalert('submission', 'guided')"
-              ></button>
+              >
+                Connect Airtable account with SODA
+              </button>
             </div>
             <div class="guided--panel" id="guided-div-imported-SPARC-award">
-              <label class="guided--label-accordion-field w-100 text-center"
-                >Select a SPARC award from the dropdown below</label
+              <div class="guided--input-container">
+                <div
+                  class="guided--container-data-display mt-sm"
+                  style="width: 100%"
+                >
+                  <div class="guided--card-dataset-info">
+                    <div class="guided--dataset-description-container">
+                      <h5 class="guided--dataset-description">
+                        Airtable account:
+                      </h5>
+                    </div>
+                    <div
+                      class="guided--dataset-content-container"
+                      onclick="showAddAirtableAccountSweetalert('submission', 'guided')"
+                    >
+                      <h5
+                        id="guided-current-sparc-award"
+                        class="guided--dataset-content"
+                      ></h5>
+                      <i class="far fa-edit jump-back" style="color: #000"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <label class="guided--form-label centered mb-0"
+                >Select a SPARC Award from the dropdown below
+              </label>
+              <div
+                id="guided_sparc_award_bootstrap_select_div"
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-around;
+                  width: 100%;
+                "
               >
-              <!-- THIS IS WHERE THE INPUT SELECTPICKER DROPDOWN WILL GO!-->
-
-              <select
-                data-live-search="true"
-                class=""
-                id="guided-sparc-award-dropdown"
-              >
-                <option>Select individuals or teams</option>
-              </select>
+                <select
+                  class="selectpicker"
+                  data-live-search="true"
+                  style="
+                    padding: 8px 12px;
+                    margin-right: 30px;
+                    height: 38px;
+                    border-radius: 5px;
+                    border: 1px solid black;
+                  "
+                  id="guided-sparc-award-dropdown"
+                ></select>
+              </div>
             </div>
           </div>
           <div
