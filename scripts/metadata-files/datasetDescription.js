@@ -2750,6 +2750,13 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
                 .getElementById("guided-button-import-sparc-award")
                 .click();
             }
+            if (curationMode === "guided--getting-started") {
+              const airTableGettingStartedBtn = document.getElementById(
+                "getting-started-button-import-sparc-award"
+              );
+              airTableGettingStartedBtn.children[1].style.display = "none";
+              airTableGettingStartedBtn.children[0].style.display = "flex";
+            }
           });
           ipcRenderer.send(
             "track-event",

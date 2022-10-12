@@ -313,9 +313,7 @@ const unPulseNextButton = () => {
 const enableProgressButton = () => {
   $("#guided-next-button").prop("disabled", false);
 };
-const disableProgressButton = () => {
-  $("#guided-next-button").prop("disabled", true);
-};
+
 const disableElementById = (id) => {
   elementToDisable = document.getElementById(id);
   elementToDisable.style.opacity = "0.5";
@@ -1885,16 +1883,12 @@ const traverseToTab = async (targetPageID) => {
       if (importedDataDeliverable) {
         dataDeliverableButton.children[0].style.display = "none";
         dataDeliverableButton.children[1].style.display = "flex";
-        document
-          .getElementById("guided-button-import-data-deliverables")
-          .click();
       } else {
         dataDeliverableButton.children[0].style.display = "flex";
         dataDeliverableButton.children[1].style.display = "none";
       }
 
       var airKeyContent = parseJson(airtableConfigPath);
-      console.log(airKeyContent);
       if (Object.keys(airKeyContent).length != 0) {
         //This is where we update the UI for the helper page
         airTableGettingStartedBtn.children[1].style.display = "none";
