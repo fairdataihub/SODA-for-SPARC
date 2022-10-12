@@ -2,7 +2,7 @@ from flask_restx import Resource, fields, reqparse
 from manageDatasets import ( 
     get_pennsieve_api_key_secret, 
     get_number_of_files_and_folders_locally,
-    # submit_dataset_progress,
+    submit_dataset_progress,
     bf_add_account_api_key,
     bf_add_account_username,
     bf_account_list,
@@ -876,25 +876,25 @@ class BfCreateDatasetFolder(Resource):
 
 
 
-# model_upload_progress_response = api.model("UploadProgressResponse", {
-#   'progress': fields.String(required=True, description="The current progress of the upload."),
-#   'submit_dataset_status': fields.String(required=True, description="The status of the upload."),
-#   'submit_print_status': fields.String(required=True, description="The status of the print."),
-#   'total_file_size': fields.Integer(required=True, description="The total size of the file being uploaded."),
-#   'upload_file_size': fields.Integer(required=True, description="The size of the file being uploaded."),
-#   'elapsed_time_formatted': fields.String(required=True, description="The elapsed time of the upload."),
-# })
+model_upload_progress_response = api.model("UploadProgressResponse", {
+  'progress': fields.String(required=True, description="The current progress of the upload."),
+  'submit_dataset_status': fields.String(required=True, description="The status of the upload."),
+  'submit_print_status': fields.String(required=True, description="The status of the print."),
+  'total_file_size': fields.Integer(required=True, description="The total size of the file being uploaded."),
+  'upload_file_size': fields.Integer(required=True, description="The size of the file being uploaded."),
+  'elapsed_time_formatted': fields.String(required=True, description="The elapsed time of the upload."),
+})
 
-# @api.route('/datasets/upload_progress')
-# class BfGetUploadProgress(Resource):
+@api.route('/datasets/upload_progress')
+class BfGetUploadProgress(Resource):
 
-#   @api.doc(responses={500: 'There was an internal server error'}, description="Get the progress of the upload.")
-#   @api.marshal_with(model_upload_progress_response, 200, False)
-#   def get(self):
-#     try:
-#       return submit_dataset_progress()
-#     except Exception as e:
-#       api.abort(500, str(e))
+  @api.doc(responses={500: 'There was an internal server error'}, description="Get the progress of the upload.")
+  @api.marshal_with(model_upload_progress_response, 200, False)
+  def get(self):
+    try:
+      return submit_dataset_progress()
+    except Exception as e:
+      api.abort(500, str(e))
 
 
 

@@ -879,7 +879,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         start_time_bf_upload = time.time()
         initial_bfdataset_size_submit = bf_dataset_size(ps, selected_dataset_id)
         start_submit = 1
-        ps.manifest.upload(3)
+        ps.manifest.upload(14)
         subscription_rendezvous_object = ps.subscribe(10)
 
         counter = 0 
@@ -903,9 +903,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             if current_bytes_uploaded == total_bytes_to_upload:
                 counter += 1
             
-
-            #namespace_logger.info(f"Uploaded {uploaded_file_size} out of {total_file_size} bytes")
-
             # check if the upload is complete
             if uploaded_file_size == total_file_size or counter == total_files_atm:
                 namespace_logger.info(f"Uploaded {counter} of {total_files_atm} files")
@@ -971,10 +968,12 @@ def submit_dataset_progress():
             "<br>" + "Elapsed time: " + elapsed_time_formatted + "<br>"
         )
     else:
-        uploaded_file_size = 0
+        #uploaded_file_size = 0
         elapsed_time_formatted = 0
         elapsed_time_formatted_display = "<br>" + "Initiating..." + "<br>"
-    # gevent.sleep(0)
+
+    namespace_logger.info(f"Total file size in upload: {uploaded_file_size}")
+        
     return {
         'progress': submitdataprogress + elapsed_time_formatted_display,
         'submit_dataset_status': submitdatastatus,
