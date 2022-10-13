@@ -8532,21 +8532,16 @@ const curation_consortium_check = async (mode = "") => {
         let consortium_return_status = false;
 
         for (var team of team_ids) {
-          console.log(team)
           // SPARC Data Curation Team's id
           if (team["team_id"] == "N:team:d296053d-91db-46ae-ac80-3c137ea144e4") {
-            console.log("Yes curation team is shared")
             if (team["team_role"] == "manager") {
-              console.log("Yes their role is maanager")
               curation_permission_satisfied = true;
             }
           }
 
           // SPARC Embargoed Data Sharing Group's id
           if (team["team_id"] == "N:team:ee8d665b-d317-40f8-b63d-56874cf225a1") {
-            console.log("yes shared with consortium")
             if (team["team_role"] == "viewer") {
-              console.log("Yes they are a viewer")
               consortium_permission_satisfied = true;
             }
           }
