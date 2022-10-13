@@ -1078,9 +1078,8 @@ document
       "guided-button-connect-airtable-account"
     );
     const airTableKeyObj = parseJson(airtableConfigPath);
-    console.log(Object.keys(airTableKeyObj).length === 0);
+
     if (Object.keys(airTableKeyObj).length === 0) {
-      console.log("show connect button");
       //If the airtable key object is empty, show the div to connect to airtable
       divToShowWhenConnected.classList.add("hidden");
       divToShowWhenNotConnected.classList.remove("hidden");
@@ -4251,8 +4250,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     }
   };
   sodaJSONObj.renameSample = function (prevSampleName, newSampleName) {
-    console.log(prevSampleName);
-    console.log(newSampleName);
     const [samplesInPools, samplesOutsidePools] =
       sodaJSONObj.getAllSamplesFromSubjects();
     //Combine sample data from samples in and out of pools
@@ -5751,7 +5748,7 @@ const renderProtocolsTable = () => {
     sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
 
   const protocolsContainer = document.getElementById("protocols-container");
-  // console.log(protocols);
+
   //protocols is either undefined when brand new dataset or 0 when returning from a saved dataset
   if (protocols === undefined || protocols.length === 0) {
     const emptyRowWarning = generateAlertElement(
@@ -6542,7 +6539,7 @@ const specifySample = (event, sampleNameInput) => {
   let buttonContainer =
     sampleNameInput[0].parentElement.parentElement.parentElement.parentElement
       .previousElementSibling;
-  // console.log(buttonContainer);
+
   let addSampleButton = buttonContainer.children[0].children[0].children[1];
   if (event.which == 13) {
     try {
@@ -13240,6 +13237,8 @@ $(document).ready(async () => {
     currentParentPageID = CURRENT_PAGE.attr("id");
     //Get the id of the sub-page that's currently open
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
+    console.log(currentParentPageID);
+    console.log(openSubPageID);
 
     switch (currentParentPageID) {
       case "guided-subjects-folder-tab": {
@@ -13322,6 +13321,13 @@ $(document).ready(async () => {
         const buttonNoEnterSubmissionDataManually = document.getElementById(
           "guided-button-enter-submission-metadata-manually"
         );
+        if (
+          !buttonYesImportDataDerivatives.classList.contains("selected") &&
+          !buttonNoEnterSubmissionDataManually.classList.contains("selected")
+        ) {
+          hideSubNavAndShowMainNav("back");
+          break;
+        }
         if (buttonYesImportDataDerivatives.classList.contains("selected")) {
           switch (openSubPageID) {
             case "guided-data-derivative-import-page": {
@@ -13840,7 +13846,6 @@ const currentUserDropdown = async () => {
     },
   });
 
-  console.log(pennsieveDetails);
   if (pennsieveDetails.isConfirmed) {
     console.log("handle");
     await openDropdownPrompt(this, "bf");
