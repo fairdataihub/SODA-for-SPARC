@@ -28,6 +28,10 @@ def get_access_token():
     ClientId=cognito_app_client_id,
     )
 
+    # write access token to a file
+    with open("access_token.txt", "w") as f:
+        f.write(login_response["AuthenticationResult"]["AccessToken"])
+        
     return login_response["AuthenticationResult"]["AccessToken"]
 
 

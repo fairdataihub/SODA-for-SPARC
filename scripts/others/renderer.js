@@ -8523,22 +8523,30 @@ const curation_consortium_check = async (mode = "") => {
             },
           }
         );
-        let res = bf_get_permissions.data.permissions;
+        // let permissions = bf_get_permissions.data.permissions;
+        let team_ids = bf_get_permissions.data.team_ids;
 
         let curation_permission_satisfied = false;
         let consortium_permission_satisfied = false;
         let curation_return_status = false;
         let consortium_return_status = false;
 
-        for (var i in res) {
-          let permission = String(res[i]);
-          if (permission.search("SPARC Data Curation Team") != -1) {
-            if (permission.search("manager") != -1) {
+        for (var team of team_ids) {
+          console.log(team)
+          // SPARC Data Curation Team's id
+          if (team["team_id"] == "N:team:d296053d-91db-46ae-ac80-3c137ea144e4") {
+            console.log("Yes curation team is shared")
+            if (team["team_role"] == "manager") {
+              console.log("Yes their role is maanager")
               curation_permission_satisfied = true;
             }
           }
-          if (permission.search("SPARC Embargoed Data Sharing Group") != -1) {
-            if (permission.search("viewer") != -1) {
+
+          // SPARC Embargoed Data Sharing Group's id
+          if (team["team_id"] == "N:team:ee8d665b-d317-40f8-b63d-56874cf225a1") {
+            console.log("yes shared with consortium")
+            if (team["team_role"] == "viewer") {
+              console.log("Yes they are a viewer")
               consortium_permission_satisfied = true;
             }
           }
