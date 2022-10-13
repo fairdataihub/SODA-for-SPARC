@@ -2830,11 +2830,12 @@ const traverseToTab = async (targetPageID) => {
           copyIcon.classList.remove("fa-copy");
           copyIcon.classList.add("fa-check");
 
-          notyf.open({
+          // TODO: removed link copied notyf until we can get it to not fire twice.
+          /*notyf.open({
             duration: "2000",
             type: "success",
             message: "Link copied!",
-          });
+          });*/
         });
       }
 
