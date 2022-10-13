@@ -2827,6 +2827,7 @@ const traverseToTab = async (targetPageID) => {
         pennsieveDatasetLink.innerHTML = linkIcon + datasetLink;
         pennsieveDatasetLink.href = datasetLink;
 
+        // TODO: removed link copied notyf until we can get it to not fire twice.
         function copyLink() {
           Clipboard.writeText(datasetLink);
           copyIcon.classList.remove("fa-copy");

@@ -507,8 +507,15 @@ class DatasetDescription(Resource):
 
 
 
+
+model_get_permissions_team = api.model('GetPermissionsTeam', {
+  'team_id': fields.String(required=True, description="The name of the team."),
+  'team_role': fields.String(required=True, description="The role of the team."),
+})
+
 model_get_permissions_response = api.model('GetPermissionsResponse', {
   'permissions': fields.List(fields.String, required=True, description="A list of the users/organizations/teams and their roles (viewer, manager, owner, etc) for the given dataset."),
+  'team_ids': fields.List(fields.Nested(model_get_permissions_team), required=True, description="A list of the team ids for the given dataset."),
 })
 
 @api.route('/bf_dataset_permissions')
