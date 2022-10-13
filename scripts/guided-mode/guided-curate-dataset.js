@@ -1078,9 +1078,8 @@ document
       "guided-button-connect-airtable-account"
     );
     const airTableKeyObj = parseJson(airtableConfigPath);
-    console.log(Object.keys(airTableKeyObj).length === 0);
+
     if (Object.keys(airTableKeyObj).length === 0) {
-      console.log("show connect button");
       //If the airtable key object is empty, show the div to connect to airtable
       divToShowWhenConnected.classList.add("hidden");
       divToShowWhenNotConnected.classList.remove("hidden");
@@ -2840,7 +2839,6 @@ const traverseToTab = async (targetPageID) => {
           // });
         }
 
-        console.log("removing event listener then adding");
         // pennsieveCopy.removeEventListener("click", copyLink);
         $(pennsieveCopy).on("click", copyLink);
       }
@@ -4257,8 +4255,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     }
   };
   sodaJSONObj.renameSample = function (prevSampleName, newSampleName) {
-    console.log(prevSampleName);
-    console.log(newSampleName);
     const [samplesInPools, samplesOutsidePools] =
       sodaJSONObj.getAllSamplesFromSubjects();
     //Combine sample data from samples in and out of pools
@@ -5757,7 +5753,7 @@ const renderProtocolsTable = () => {
     sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
 
   const protocolsContainer = document.getElementById("protocols-container");
-  // console.log(protocols);
+
   //protocols is either undefined when brand new dataset or 0 when returning from a saved dataset
   if (protocols === undefined || protocols.length === 0) {
     const emptyRowWarning = generateAlertElement(
@@ -6548,7 +6544,7 @@ const specifySample = (event, sampleNameInput) => {
   let buttonContainer =
     sampleNameInput[0].parentElement.parentElement.parentElement.parentElement
       .previousElementSibling;
-  // console.log(buttonContainer);
+
   let addSampleButton = buttonContainer.children[0].children[0].children[1];
   if (event.which == 13) {
     try {
@@ -6595,8 +6591,6 @@ const specifySample = (event, sampleNameInput) => {
           );
         } else {
           //Add the new sample to sodaJSONObj
-          // console.log(sampleNameInput[0])
-          console.log(addSampleButton);
           sodaJSONObj.addSampleToSubject(
             sampleName,
             subjectsPoolToAddSampleTo,
@@ -6732,11 +6726,8 @@ const updatePoolDropdown = (poolDropDown, poolName) => {
 
 //On edit button click, creates a new subject ID rename input box
 const openSubjectRenameInput = (subjectNameEditButton) => {
-  console.log(subjectNameEditButton);
   const subjectIdCellToRename = subjectNameEditButton.closest("td");
   const prevSubjectName = subjectIdCellToRename.find(".subject-id").text();
-  console.log(prevSubjectName);
-  console.log(prevSubjectName.search("-"));
   prevSubjectInput = prevSubjectName.substr(prevSubjectName.search("-") + 1);
   const subjectRenameElement = `
     <div class="space-between w-100" style="align-items: center">
@@ -7061,16 +7052,13 @@ const addSampleSpecificationTableRow = (clickedSubjectAddSampleButton) => {
   const sampleSpecificationTableInput = addSampleTableBody.querySelector(
     "input[name='guided-sample-id']"
   );
-  console.log("within add sample function");
   //check for any
 
   if (sampleSpecificationTableInput) {
-    // console.log("exists");
     //focus on the input that already exists
     //No need to create a new row
     sampleSpecificationTableInput.focus();
   } else {
-    // console.log("doesnt exist");
     //create a new table row Input element
     addSampleTableBody.innerHTML += generateSampleSpecificationRowElement();
     const newSamplerow = addSampleTableBody.querySelector("tr:last-child");
@@ -13328,6 +13316,13 @@ $(document).ready(async () => {
         const buttonNoEnterSubmissionDataManually = document.getElementById(
           "guided-button-enter-submission-metadata-manually"
         );
+        if (
+          !buttonYesImportDataDerivatives.classList.contains("selected") &&
+          !buttonNoEnterSubmissionDataManually.classList.contains("selected")
+        ) {
+          hideSubNavAndShowMainNav("back");
+          break;
+        }
         if (buttonYesImportDataDerivatives.classList.contains("selected")) {
           switch (openSubPageID) {
             case "guided-data-derivative-import-page": {
@@ -13846,9 +13841,7 @@ const currentUserDropdown = async () => {
     },
   });
 
-  console.log(pennsieveDetails);
   if (pennsieveDetails.isConfirmed) {
-    console.log("handle");
     await openDropdownPrompt(this, "bf");
   }
 };
@@ -13866,17 +13859,14 @@ const airTableButton = document.getElementById(
 );
 
 airTableButton.addEventListener("click", async () => {
-  console.log("Airtable");
   await helpSPARCAward("submission", "guided--getting-started");
 });
 
 dataDeliverableButton.addEventListener("click", async () => {
-  console.log("DD");
   await showDataDeliverableDropDown();
 });
 
 pennsieveButton.addEventListener("click", async () => {
-  console.log("here");
   if (!defaultBfAccount) {
     await openDropdownPrompt(this, "bf");
   } else {

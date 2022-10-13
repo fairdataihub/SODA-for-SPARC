@@ -17,7 +17,7 @@ build/
 app.spec
 
 *.pyc
-src/package-lock.json
+package-lock.json
 src/.DS_Store
 .DS_Store
 electron-builder.yml

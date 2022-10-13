@@ -1109,7 +1109,6 @@ const guidedSetImportedSPARCAward = (awardString) => {
 };
 
 const helpSPARCAward = async (filetype, curationMode) => {
-  console.log(curationMode);
   var award = "";
   if (filetype === "dd") {
     var res = airtableRes;
@@ -1227,7 +1226,6 @@ const helpSPARCAward = async (filetype, curationMode) => {
     currentMilestonesInTextArea = $("#selected-milestone-1");
 
     if (res[0] && curationMode != "guided--getting-started") {
-      console.log("OR HERE???");
       var keyname = res[1];
       var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'submission\', '${curationMode}')" style="font-weight:500;text-decoration: underline"><svg class="svg-change-current-account bi bi-pencil-fill" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" viewBox="0 0 16 16">
       <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"></path>
@@ -1314,7 +1312,6 @@ const helpSPARCAward = async (filetype, curationMode) => {
                   "";
                 loadContributorInfofromAirtable(award);
               }
-              console.log(curationMode);
               if (curationMode === "guided") {
                 guidedSetImportedSPARCAward(award);
               }
@@ -1390,7 +1387,6 @@ const helpSPARCAward = async (filetype, curationMode) => {
                   "";
                 loadContributorInfofromAirtable(award, "free-form");
               }
-              console.log(curationMode);
               if (curationMode === "guided") {
                 guidedSetImportedSPARCAward(award);
                 loadContributorInfofromAirtable(award, "guided");
@@ -2387,8 +2383,6 @@ function showAddAirtableAccountSweetalert(keyword, curationMode) {
     },
   }).then((result) => {
     if (result.isConfirmed) {
-      console.log(keyword);
-      console.log(curationMode);
       if (curationMode === "guided--getting-started") {
         //document.getElementById("guided-button-import-sparc-award").click();
       }
