@@ -1816,6 +1816,8 @@ const guidedResetUserTeamPermissionsDropdowns = () => {
   $("#select-permission-list-users-and-teams").val("Select role");
 };
 
+let createEventListenerforCopyLink = true;
+
 //Main function that prepares individual pages based on the state of the sodaJSONObj
 //The general flow is to check if there is values for the keys relevant to the page
 //If the keys exist, extract the data from the sodaJSONObj and populate the page
@@ -2825,17 +2827,21 @@ const traverseToTab = async (targetPageID) => {
         pennsieveDatasetLink.innerHTML = linkIcon + datasetLink;
         pennsieveDatasetLink.href = datasetLink;
 
-        pennsieveCopy.addEventListener("click", function () {
+        function copyLink() {
           Clipboard.writeText(datasetLink);
           copyIcon.classList.remove("fa-copy");
           copyIcon.classList.add("fa-check");
 
-          notyf.open({
-            duration: "2000",
-            type: "success",
-            message: "Link copied!",
-          });
-        });
+          // notyf.open({
+          //   duration: "2000",
+          //   type: "success",
+          //   message: "Link copied!",
+          // });
+        }
+
+        console.log("removing event listener then adding");
+        // pennsieveCopy.removeEventListener("click", copyLink);
+        $(pennsieveCopy).on("click", copyLink);
       }
 
       /*
