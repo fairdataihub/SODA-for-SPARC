@@ -762,6 +762,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             }
 
             if (dropdownEventID === "dd-select-pennsieve-dataset") {
+              console.log("HUH");
               $("#ds-name").val(bfDataset);
               $("body").removeClass("waiting");
               $(".svg-change-current-account.dataset").css("display", "block");
@@ -795,12 +796,46 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
         });
 
         if ($("#current-bf-dataset-generate").text() === "None") {
+          console.log("HUH");
           showHideDropdownButtons("dataset", "hide");
         } else {
+          console.log("HUH");
           showHideDropdownButtons("dataset", "show");
         }
         //currently changing it but not visually in the UI
         $("#bf_list_users_pi").val("Select PI");
+
+        let oldDatasetButtonSelected = document.getElementById(
+          "oldDatasetDescription-selection"
+        );
+        let newDatasetButtonSelected = document.getElementById(
+          "newDatasetDescription-selection"
+        );
+
+        if (newDatasetButtonSelected.classList.contains("checked")) {
+          document
+            .getElementById("Question-prepare-dd-2")
+            .classList.add("show");
+        } else {
+          document
+            .getElementById("Question-prepare-dd-4")
+            .classList.add("show");
+          let onMyCompButton = document.getElementById(
+            "Question-prepare-dd-4-new"
+          );
+          let onPennsieveButton =
+            onMyCompButton.parentElement.parentElement.children[1].children[0];
+          console.log(onPennsieveButton);
+          if (onMyCompButton.classList.contains("checked")) {
+            document
+              .getElementById("Question-prepare-dd-3")
+              .classList.add("show");
+          } else {
+            document
+              .getElementById("Question-prepare-dd-5")
+              .classList.add("show");
+          }
+        }
 
         // update the gloabl dataset id
         for (const item of datasetList) {
