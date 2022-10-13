@@ -5,7 +5,7 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## v.9.2.2 - 2022-10-12
+## v.9.3.0 - 2022-10-12
 
 ## Feature additions:
 
@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Guided Mode: Contributor addition flow upgraded to make AirTable contributor importation more intuitive.
 - Guided Mode: dataset upload error alerts now give a clearer reason as to why the dataset upload failed and what can be done to remedy the issue.
 - Guided Mode: simplified the UI for selecting a SPARC award.
+- Freeform Mode: Add Airtable popup now has dropdown information for "I can't find my SPARC Award".
 
 ## Bug fixes:
 
