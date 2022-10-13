@@ -1,6 +1,7 @@
 from .prepare_metadata import (
     save_submission_file,
     save_ds_description_file,
+    upload_code_description_metadata,
     extract_milestone_info,
     import_milestone,
     save_subjects_file,

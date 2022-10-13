@@ -562,7 +562,7 @@ def bf_account_details(accountname):
             config.write(configfile)
 
         ## return account details and datasets where such an account has some permission
-        return {"account_details": acc_details}
+        return {"account_details": acc_details, "organization_id": bf.context.id}
 
     except Exception as e:
         raise e
@@ -1238,6 +1238,7 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
         list_dataset_permission_teams = bf._api._get(
             "/datasets/" + str(selected_dataset_id) + "/collaborators/teams"
         )
+        team_ids = []
         for i in range(len(list_dataset_permission_teams)):
             team_keys = list(list_dataset_permission_teams[i].keys())
             if "role" in team_keys:
@@ -1246,6 +1247,8 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
                 list_dataset_permission_first_last_role.append(
                     "Team: " + team_name + ", role: " + team_role
                 )
+                team_id = list_dataset_permission_teams[i]["id"]
+                team_ids.append({"team_id": team_id, "team_role": team_role})
 
         # Organization permissions
         list_dataset_permission_organizations = bf._api._get(
@@ -1277,7 +1280,7 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
                         + organization_role
                     )
 
-        return {"permissions": list_dataset_permission_first_last_role}
+        return {"permissions": list_dataset_permission_first_last_role, "team_ids": team_ids}
 
     except Exception as e:
         raise e

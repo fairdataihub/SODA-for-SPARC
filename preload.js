@@ -261,6 +261,12 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
           $("#create_empty_dataset_BF_account_span").text(bfacct);
           $(".bf-account-span").text(bfacct);
           updateBfAccountList();
+          //change icons in getting started page (guided mode)
+          const gettingStartedPennsieveBtn = document.getElementById(
+            "getting-started-pennsieve-account"
+          );
+          gettingStartedPennsieveBtn.children[0].style.display = "none";
+          gettingStartedPennsieveBtn.children[1].style.display = "flex";
 
           try {
             let responseObject = await client.get(
@@ -433,6 +439,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
               $(".bf-dataset-span").html("None");
               $("#para-account-detail-curate-generate").html(result);
               $("#para_create_empty_dataset_BF_account").html(result);
+              $("#para-account-detail-curate-generate").html(result);
               $(".bf-account-details-span").html(result);
               $("#para-continue-bf-dataset-getting-started").text("");
 
@@ -442,10 +449,20 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
               $("#current_sparc_consortium_status").text("None");
               $("#sparc-consortium-share-btn").hide();
               $("#sparc-consortium-unshare-btn").hide();
+              const gettingStartedPennsieveBtn = document.getElementById(
+                "getting-started-pennsieve-account"
+              );
+              gettingStartedPennsieveBtn.children[0].style.display = "none";
+              gettingStartedPennsieveBtn.children[1].style.display = "flex";
 
               showHideDropdownButtons("account", "show");
               confirm_click_account_function();
               updateBfAccountList();
+
+              // If the clicked button is the Guided Mode log in button, refresh the page to update UI
+              if (ev.getAttribute("id") === "guided-button-pennsieve-log-in") {
+                traverseToTab("guided-pennsieve-intro-tab");
+              }
             } catch (error) {
               clientError(error);
               Swal.fire({

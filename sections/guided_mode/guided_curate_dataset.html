@@ -80,7 +80,8 @@
             include all necessary information such that no prior knowledge of
             the SPARC data standards is required. Contrary to the Free Form
             Mode, the Guided Mode interfaces are interconnected and form a
-            single workflow such the curation process is streamlined further.
+            single workflow such that the curation process is streamlined
+            further.
           </p>
           <div
             class="justify-center"
@@ -159,86 +160,37 @@
           <div class="guided--section">
             <p class="guided--help-text">
               Guided Mode is designed to be the simplest and most efficient
-              method of curating a SPARC dataset if you are starting from
-              scratch. If you're not familiar with SPARC dataset curation
-              standards, no worries! We will guide you step-by-step into
-              curating your dataset according to the SPARC data standards. The
-              user interfaces are designed to be very intuitive and will
-              typically require you to only provide basic inputs or answer
-              simple questions about your dataset.
+              method of curating and sharing a SPARC dataset if you are starting
+              from scratch. Guided Mode guides you through the entire SPARC
+              curation and sharing process via intuitive user interfaces that
+              typically only require you to provide basic inputs or answer
+              simple questions.
             </p>
-            <p class="guided--help-text">
-              Guided Mode is broken down into four main sections described
-              below. During the first three sections, you will be guided to
-              specify your data files locations and provide information about
-              your dataset (i.e. metadata). Then, that information will be used
-              in the fourth section by SODA to generate your dataset with the
-              right folder structure and metadata files directly on Pennsieve.
-              Note that none of your local data files will be ever modified or
-              moved.
-            </p>
-          </div>
-          <div class="guided--section">
-            <label class="guided--welcome-section-label text-center"
-              >1. Structure dataset</label
-            >
-            <p class="guided--help-text">
-              In this section, you will be asked information about the subjects
-              and samples in your study. You will also be guided into specifying
-              your data files locations from your computer such that they are
-              included in the correct SPARC folders when the dataset is
-              generated in section four of this process.
-            </p>
-          </div>
-          <div class="guided--section">
-            <label class="guided--welcome-section-label text-center"
-              >2. Provide metadata</label
-            >
-            <p class="guided--help-text">
-              All SPARC datasets must include several metadata files, each
-              containing various information that describes the content of the
-              dataset. These include information such as the contributors that
-              were involved in collecting/processing/curating the data, or the
-              primary conclusion of the study. You will be guided in this
-              section to provide all the required metadata. SODA will use that
-              information to automatically create and include the required SPARC
-              metadata files in your dataset when it is generated in section
-              four of this process.
-            </p>
-          </div>
-          <div class="guided--section">
-            <label class="guided--welcome-section-label text-center"
-              >3. Add Pennsieve metadata</label
-            >
-            <p class="guided--help-text">
-              All SPARC datasets need to be uploaded on Pennsieve, a cloud-based
-              data platform. For each of them, specific metadata is required on
-              Pennsieve (such as a banner image or your dataset's description).
-              This metadata will then be carried over to the SPARC Data Portal
-              when your dataset becomes publicly available (this is handled
-              outside the Guided Mode). In this section you will be guided to
-              connect your Pennsieve account with SODA and provide all the
-              required Pennsieve metadata that will be added to your Pennsieve
-              dataset when it is generated in section four of this process.
-            </p>
-          </div>
-          <div class="guided--section">
-            <label class="guided--welcome-section-label text-center"
-              >4. Generate dataset</label
-            >
-            <p class="guided--help-text">
-              In this final section, SODA will make use of all the information
-              you have provided in the previous three sections to generate and
-              upload you data and metadata on Pennsieve. Once generated, you
-              will be able to see your dataset under your account on
-              <a href="https://app.pennsieve.io" target="_blank"
-                >the Pennsieve web platform</a
-              >. Note that the dataset will only be visible to you and anyone
-              you have provided permission to. Only after it has been reviewed
-              by the Curation team and eventually made public by the PI of the
-              dataset it will become publicly available on the
-              <a href="https://sparc.science/">SPARC Data Portal</a> (this is
-              not handled in the Guided Mode).
+            <div class="guided--info-dropdown">
+              <p class="guided--dropdown-text" data-dropdown-type="info">
+                Learn more about curating and submitting SPARC datasets
+              </p>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="guided--info-container">
+              <p class="guided--help-text">
+                Although not required to use Guided Mode, you can learn more
+                about the SPARC data curation and sharing process in the
+                <a
+                  href="https://docs.sparc.science/docs/data-submission-overview"
+                  target="_blank"
+                  >SPARC Data Submission Overview document page</a
+                >.
+              </p>
+            </div>
+            <p class="guided--help-text" style="margin-top: 1em">
+              Guided Moded is divived in four high-level sections. During the
+              first three sections, you will be directed to specify the files to
+              include in your dataset and provide information about your
+              dataset. On the final section, SODA will automatically generate
+              your dataset on Pennsieve with the proper folder structure and
+              metadata files. Note that none of your local data files will ever
+              be modified or moved.
             </p>
           </div>
         </div>
@@ -310,11 +262,19 @@
         </div>
       </div>
       <div id="prepare-dataset-parent-tab" class="guided--parent-tab hidden">
-        <div class="guided--capsule-container">
+        <div
+          class="guided--capsule-container"
+          id="structure-dataset-capsule-container"
+        >
+          <div
+            class="guided--capsule hidden"
+            id="guided-prepare-helpers-capsule"
+          ></div>
           <div
             class="guided--capsule active"
             id="guided-dataset-starting-point-capsule"
           ></div>
+
           <div
             class="guided--capsule-container-branch hidden"
             id="guided-curate-new-dataset-branch-capsule-container"
@@ -323,6 +283,7 @@
               class="guided--capsule"
               id="guided-subjects-folder-capsule"
             ></div>
+
             <div
               class="guided--capsule"
               id="guided-primary-data-organization-capsule"
@@ -372,7 +333,310 @@
           ></div>
         </div>
 
-        <div id="guided-dataset-starting-point-tab" class="guided--panel">
+        <div
+          id="guided-prepare-helpers-tab"
+          class="guided--panel"
+          style="margin-top: -1rem"
+        >
+          <div class="guided--section">
+            <h1
+              class="guided--text-sub-step"
+              style="
+                border-bottom: 5px solid var(--color-bg-plum);
+                width: 131%;
+                margin-bottom: 2rem;
+                padding-bottom: 1rem;
+              "
+            >
+              Before Getting Started
+            </h1>
+            <p class="guided--help-text">
+              Several resources are required to curate and share a SPARC
+              dataset. They are listed below so you can make sure you can have
+              access to them before getting started. You can optionally connect
+              them to SODA here although you will also be able to do so later on
+              as well.
+            </p>
+            <label class="guided--welcome-section-label text-center"
+              >1. Pennsieve Account</label
+            >
+            <p class="guided--help-text">
+              All SPARC datasets must be uploaded on the Pennsieve data
+              platform. You will therefore need a Pennsieve account and access
+              to the SPARC Consortium Organization on Pennsieve. Once you have
+              access you can connect your Pennsieve account with SODA using the
+              button below.
+            </p>
+            <div class="guided--info-dropdown">
+              <p class="guided--dropdown-text" data-dropdown-type="warning">
+                I don't have a Pennsieve account
+              </p>
+              <i
+                class="fas fa-chevron-right"
+                style="transform: rotate(0deg)"
+              ></i>
+            </div>
+            <div class="guided--info-container" style="margin-bottom: 1.5rem">
+              <p class="guided--help-text">
+                Get access to Pennsieve as well as the SPARC Consortium
+                organization on Pennsieve by filling out this
+                <a
+                  target="_blank"
+                  href="https://www.wrike.com/frontend/requestforms/index.html?token=eyJhY2NvdW50SWQiOjMyMDM1ODgsInRhc2tGb3JtSWQiOjUwMzQzN30JNDgwNTg4NjU3MjA3Nwk0MTg5ZTY0ODEyZGYxNTU1ZDJkYmU5MzIxNWZiNTQyZWUwZTMzY2U4NDQ5ODI0ZWI0YzZiMWZhNjVhYzgyOTRm"
+                  >this form.</a
+                >
+              </p>
+            </div>
+            <div class="before-getting-started-btn">
+              <button
+                id="getting-started-pennsieve-account"
+                class="metadata-button button-generate-dataset"
+                style="width: 150px; height: 150px; margin: 12px"
+              >
+                <div>
+                  <img
+                    src="assets\img\pennsieveLogo.png"
+                    alt="PennsieveLogo"
+                    width="50px"
+                    height="50px"
+                  />
+                </div>
+
+                <svg
+                  style="display: none"
+                  width="40px"
+                  height="50px"
+                  viewBox="0 0 16 16"
+                  class="bi bi-check2"
+                  fill="var(--color-light-green)"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                  ></path>
+                </svg>
+                <p style="margin-top: 11px">Connect Pennsieve Account</p>
+              </button>
+            </div>
+            <label class="guided--welcome-section-label text-center"
+              >2. Data Deliverables document</label
+            >
+            <p class="guided--help-text">
+              The milestones and associated datasets as agreed between awardees
+              and SPARC are summarized in a document called Data Deliverables
+              document. Information contained in this document is required in
+              one of the metadata files to be included in your dataset. You will
+              therefore need access to the Data Deliverables document associated
+              with your SPARC award. Once you have this document you can
+              optionally import it into SODA to easily prepare your metadata
+              file.
+            </p>
+            <div class="guided--info-dropdown">
+              <p class="guided--dropdown-text" data-dropdown-type="info">
+                Where can I find my Data Deliverables document?
+              </p>
+              <i
+                class="fas fa-chevron-right"
+                style="transform: rotate(0deg)"
+              ></i>
+            </div>
+            <div class="guided--info-container" style="margin-bottom: 1.5rem">
+              <p class="guided--help-text">
+                To obtain the Data Deliverables document associated with your
+                award, simply ask your PI or grant manager. Download a template
+                of the Data Deliverables document
+                <a
+                  target="_blank"
+                  href="https://github.com/fairdataihub/SODA-for-SPARC/blob/main/file_templates/DataDeliverablesDocument-template.docx?raw=true"
+                  >here</a
+                >
+                to see the expected format.
+              </p>
+            </div>
+            <div class="before-getting-started-btn" style="margin-top: 1rem">
+              <button
+                id="getting-started-data-deliverable-btn"
+                class="metadata-button button-generate-dataset"
+                style="width: 150px; height: 150px; margin: 12px"
+              >
+                <svg
+                  width="50px"
+                  height="50px"
+                  viewBox="0 0 16 16"
+                  class="bi bi-file-earmark-plus"
+                  fill="#13716D"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
+                  ></path>
+                  <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"></path>
+                  <path
+                    fill-rule="evenodd"
+                    d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+                  ></path>
+                </svg>
+                <svg
+                  style="display: none"
+                  width="50px"
+                  height="50px"
+                  viewBox="0 0 16 16"
+                  class="bi bi-check2"
+                  fill="var(--color-light-green)"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                  ></path>
+                </svg>
+                <p style="margin-top: 11px">
+                  Import Data Deliverables document
+                </p>
+              </button>
+            </div>
+            <label class="guided--welcome-section-label text-center"
+              >3. Protocols.io Account</label
+            >
+            <p class="guided--help-text">
+              All SPARC datasets must have their associated protocols on
+              <a target="_blank" href="https://www.protocols.io/"
+                >protocols.io</a
+              >, a platform for creating shareable protocols. We recommend you
+              prepare your protocols directly there before continuing by
+              following the
+              <a
+                target="_blank"
+                href="https://docs.sparc.science/docs/protocols"
+                >SPARC instructions for preparing protocols on protocols.io</a
+              >
+            </p>
+            <p class="guided--help-text" style="display: none">
+              The dataset_description metadata file must contain information
+              about the protocols on protocols.io. You can provide information
+              about the protocols on protocols.io You can provide information
+              about the protocols of your dataset below and SODA will
+              automatically include it in the dataset_description file when it
+              is generated in the last step of this guided workflow. Use the
+              button below to connect your protocols.io account with SODA if you
+              would like to import your protocols information easily.
+            </p>
+            <div class="before-getting-started-btn" style="display: none">
+              <button
+                class="metadata-button button-generate-dataset"
+                id="guided-button-import-protocols-io"
+                style="
+                  opacity: 0.5;
+                  cursor: default !important;
+                  pointer-events: none;
+                  width: 150px;
+                  height: 150px;
+                  margin: 12px;
+                "
+              >
+                <div class="guided--tile-button-icon" style="margin-left: 2rem">
+                  <img
+                    src="assets/img/Protocols-io-icon.png"
+                    alt="Protocols.io icon"
+                    style="width: 50px; height: 50px; object-fit: contain"
+                  />
+                </div>
+                <svg
+                  style="display: none"
+                  width="50px"
+                  height="50px"
+                  viewBox="0 0 16 16"
+                  class="bi bi-check2"
+                  fill="var(--color-light-green)"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                  ></path>
+                </svg>
+                <p style="margin-top: 17px">Protocols.io Account</p>
+              </button>
+            </div>
+            <label class="guided--welcome-section-label text-center"
+              >4. Airtable Account (optional)</label
+            >
+
+            <p class="guided--help-text">
+              The SPARC program maintains a spreadsheet on the Airtable platform
+              with SPARC award numbers and contact information about the SPARC
+              consortium members. SPARC members are encouraged to check and
+              frequently update information about them and their team members.
+            </p>
+            <p class="guided--help-text">
+              We recommend you to connect this Airtable sheet with SODA to
+              easily add metadata to your dataset such as award number and
+              contributor information.
+            </p>
+            <div class="guided--info-dropdown">
+              <p class="guided--dropdown-text" data-dropdown-type="info">
+                How do I get access to the SPARC Airtable sheet?
+              </p>
+              <i
+                class="fas fa-chevron-right"
+                style="transform: rotate(0deg)"
+              ></i>
+            </div>
+            <div
+              class="guided--info-container"
+              style="margin-bottom: 1.5rem; margin-left: -6rem"
+            >
+              <p class="guided--help-text">
+                To get access to the SPARC Airtable sheet first create an
+                <a target="_blank" href="https://www.airtable.com/"
+                  >Airtable account</a
+                >
+                then request access
+                <a
+                  target="_blank"
+                  href="https://www.wrike.com/frontend/requestforms/index.html?token=eyJhY2NvdW50SWQiOjMyMDM1ODgsInRhc2tGb3JtSWQiOjUwMzQzN30JNDgwNTg4NjU3MjA3Nwk0MTg5ZTY0ODEyZGYxNTU1ZDJkYmU5MzIxNWZiNTQyZWUwZTMzY2U4NDQ5ODI0ZWI0YzZiMWZhNjVhYzgyOTRm"
+                  >here</a
+                >.
+              </p>
+            </div>
+            <div class="before-getting-started-btn" style="margin-top: 1rem">
+              <button
+                class="metadata-button button-generate-dataset"
+                id="getting-started-button-import-sparc-award"
+                style="width: 150px; height: 150px; margin: 12px"
+              >
+                <svg
+                  style="display: none"
+                  width="50px"
+                  height="50px"
+                  viewBox="0 0 16 16"
+                  class="bi bi-check2"
+                  fill="var(--color-light-green)"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                  ></path>
+                </svg>
+                <div class="guided--tile-button-icon" style="margin-left: 2rem">
+                  <img
+                    src="assets/img/Airtable-icon.png"
+                    alt="Airtable icon"
+                    style="width: 50px; height: 50px; object-fit: contain"
+                  />
+                </div>
+                <p style="margin-top: 24px">Connect Airtable Account</p>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div
+          id="guided-dataset-starting-point-tab"
+          class="guided--panel hidden"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">SPARC Data Structure</h1>
             <p class="guided--help-text">
@@ -444,7 +708,7 @@
             >
               <p class="guided--help-text">
                 No problem, SODA will help you structure your data according to
-                the SPARC dataset structure guidelines.
+                the SPARC Data Structure.
               </p>
               <button
                 class="ui primary button"
@@ -456,6 +720,7 @@
             </div>
           </div>
         </div>
+
         <div
           id="guided-subjects-folder-tab"
           class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
@@ -1661,7 +1926,6 @@
                       display: flex;
                       flex-grow: 1;
                       border: none;
-                      font-family: 'Raleway', sans-serif;
                       font-size: 16px;
                       font-weight: 600;
                       cursor: default;
@@ -1811,11 +2075,12 @@
                 data-button-config-value-state="yes"
               >
                 <div class="guided--tile-button-icon">
-                  <img
-                    src="assets/img/logo-new-green.png"
-                    alt="SODA logo"
-                    style="height: 50px; width: 40px"
-                  />
+                  <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 640 512">
+                    <path
+                      fill="currentColor"
+                      d="M320 0c17.7 0 32 14.3 32 32V96H480c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H160c-35.3 0-64-28.7-64-64V160c0-35.3 28.7-64 64-64H288V32c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H208zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H304zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H400zM264 256c0-22.1-17.9-40-40-40s-40 17.9-40 40s17.9 40 40 40s40-17.9 40-40zm152 40c22.1 0 40-17.9 40-40s-17.9-40-40-40s-40 17.9-40 40s17.9 40 40 40zM48 224H64V416H48c-26.5 0-48-21.5-48-48V272c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48v96c0 26.5-21.5 48-48 48H576V224h16z"
+                    />
+                  </svg>
                 </div>
                 <div class="guided--tile-body">
                   <h2>Yes, auto-generate my manifest files</h2>
@@ -1999,7 +2264,7 @@
                   />
                 </div>
                 <div class="guided--tile-body">
-                  <h2>Yes, import account from Airtable</h2>
+                  <h2>Yes, import award metadata from Airtable</h2>
                 </div>
               </button>
               <button
@@ -2030,7 +2295,7 @@
                   </svg>
                 </div>
                 <div class="guided--tile-body">
-                  <h2>No, I'll enter my SPARC award manually</h2>
+                  <h2>No, I'll enter my award metadata manually</h2>
                 </div>
               </button>
             </div>
@@ -2039,28 +2304,97 @@
             class="guided--section hidden"
             id="guided-div-SPARC-award-import"
           >
-            <button
-              class="ui primary button"
-              id="guided-button-import-airtable-award"
-              style="background-color: var(--color-light-green) !important"
-              onclick="helpSPARCAward('submission', 'guided')"
-            >
-              Import award information from Airtable
-            </button>
-            <div
-              class="guided--panel hidden mt-md"
-              id="guided-div-imported-SPARC-award"
-            >
-              <label class="guided--label-accordion-field w-100 text-center"
-                >Imported SPARC Award number</label
+            <div class="guided--panel" id="guided-div-connect-airtable">
+              <button
+                class="ui primary button"
+                id="guided-button-connect-airtable-account"
+                style="background-color: var(--color-light-green) !important"
+                onclick="showAddAirtableAccountSweetalert('submission', 'guided')"
               >
-              <div class="ui input modified" style="width: 50%">
-                <input
-                  class="text-center"
-                  type="text"
-                  id="guided-input-submission-sparc-award-import"
-                  disabled
-                />
+                Connect Airtable account with SODA
+              </button>
+            </div>
+            <div class="guided--panel" id="guided-div-imported-SPARC-award">
+              <div class="guided--input-container">
+                <div
+                  class="guided--container-data-display mt-sm"
+                  style="width: 100%"
+                >
+                  <div class="guided--card-dataset-info">
+                    <div class="guided--dataset-description-container">
+                      <h5 class="guided--dataset-description">
+                        Airtable account:
+                      </h5>
+                    </div>
+                    <div
+                      class="guided--dataset-content-container"
+                      onclick="showAddAirtableAccountSweetalert('submission', 'guided')"
+                    >
+                      <h5
+                        id="guided-current-sparc-award"
+                        class="guided--dataset-content"
+                      ></h5>
+                      <i class="far fa-edit jump-back" style="color: #000"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <label class="guided--form-label centered mb-sm mt-lg"
+                >Select a SPARC Award from the dropdown below
+              </label>
+              <div
+                id="guided_sparc_award_bootstrap_select_div"
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-around;
+                  width: 100%;
+                "
+              >
+                <select
+                  class="selectpicker"
+                  data-live-search="true"
+                  style="
+                    padding: 8px 12px;
+                    margin-right: 30px;
+                    height: 38px;
+                    border-radius: 5px;
+                    border: 1px solid black;
+                  "
+                  id="guided-sparc-award-dropdown"
+                ></select>
+              </div>
+              <div class="guided--info-dropdown mt-lg">
+                <p class="guided--dropdown-text" data-dropdown-type="warning">
+                  I don't see my SPARC Award in the dropdown
+                </p>
+                <i class="fas fa-chevron-right"></i>
+              </div>
+              <div class="guided--info-container">
+                <p class="guided--help-text mb-0">
+                  If you don't see your SPARC award in the dropdown above, you
+                  can add it yourself in the
+                  <a
+                    target="_blank"
+                    href="https://airtable.com/appiYd1Tz9Sv857GZ/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide"
+                    >SPARC Airtable sheet</a
+                  >, and click the button below to refresh the dropdown.
+                </p>
+                <div class="guided--flex-center w-100 my-md-3">
+                  <button
+                    class="ui primary button"
+                    id="guided-button-refresh-sparc-award-dropdown"
+                    style="
+                      background-color: var(--color-light-green) !important;
+                    "
+                  >
+                    Refresh SPARC Award dropdown
+                  </button>
+                </div>
+                <p class="guided--help-text">
+                  Alternatively, you can select 'No, I'll enter my award
+                  metadata manually' to manually enter your award metadata.
+                </p>
               </div>
             </div>
           </div>
@@ -2226,8 +2560,13 @@
                         class="code-metadata-lottie-container"
                         style="height: 100px"
                       ></div>
-                      <p class="guided--help-text text-center">
-                        Drag and Drop <br /><b>data_deliverable.docx</b>
+                      <p
+                        class="guided--help-text text-center"
+                        style="max-width: 190px"
+                      >
+                        Drag and Drop <br /><b
+                          >Data Deliverables document in docx format</b
+                        >
                       </p>
                       <p class="guided--help-text text-center mt-sm mb-sm">
                         OR
@@ -2235,12 +2574,17 @@
                       <button
                         class="ui primary basic button mt-sm"
                         onclick="helpMilestoneSubmission('guided')"
+                        style="
+                          display: flex;
+                          align-items: center;
+                          justify-content: space-around;
+                        "
                       >
                         <i
                           class="fas fa-file-import"
                           style="margin-right: 7px"
                         ></i
-                        >Import data_deliverable.docx
+                        >Import Data Deliverables document in docx format
                       </button>
                       <p
                         class="guided--help-text small text-center mt-sm"
@@ -2398,66 +2742,40 @@
           </div>
         </div>
         <div id="guided-contributors-tab" class="guided--panel hidden">
-          <div
-            class="guided--panel hidden"
-            id="guided-div-contributors-imported-from-airtable"
-          >
+          <div class="guided--section">
             <h1 class="guided--text-sub-step">Contributor information</h1>
             <p class="guided--help-text">
-              Select the contributors that contributed to your dataset. These
+              The dataset_description file requires all contributors that
+              participated in the creation of the dataset to be listed. These
               individuals do not have to be authors on any publications
               describing the data, but should be acknowledged for their role in
               producing and publishing the dataset.
             </p>
+          </div>
+          <div class="guided--section">
+            <h2 class="guided--text-sub-step mb-0">
+              Add the contributors that participated in the creation of the
+              dataset
+            </h2>
             <table
               class="ui celled striped table"
               id="contributors-table"
-              style="margin-bottom: 25px; width: 500px"
+              style="margin-bottom: 25px; width: 800px"
             >
               <thead>
                 <tr>
-                  <th></th>
-                  <th>Last name</th>
-                  <th>First name</th>
+                  <th>Name</th>
+                  <th>Role(s)</th>
+                  <th class="center aligned collapsing">Modify</th>
+                  <th class="center aligned collapsing">Delete</th>
                 </tr>
               </thead>
-              <tbody id="contributors-table-container"></tbody>
+              <tbody id="guided-DD-connoributors-table"></tbody>
             </table>
-            <button
-              class="ui primary button hidden"
-              id="guided-button-edit-checked-contributors"
-              style="
-                background-color: var(--color-light-green) !important;
-                display: none;
-              "
-            >
-              Edit selected contributors
-            </button>
-          </div>
-          <div
-            class="guided--panel hidden"
-            id="guided-div-contributor-field-set"
-          >
-            <div class="guided--section">
-              <h1 class="guided--text-sub-step">Contributor information</h1>
-              <p class="guided--help-text">
-                SPARC requires all datasets to include a dataset_description
-                metadata file that includes various information about the
-                dataset including a list of all the contributors. You can
-                provide information about the contributors to your dataset below
-                and SODA will automatically include it in the
-                dataset_description file when it is generated in the last step
-                of this guided workflow. Anyone who participated in the
-                collection/analysis/curation of the dataset should typically be
-                listed here.
-              </p>
-            </div>
-
-            <div class="guided--section" id="contributors-container"></div>
             <button
               class="ui primary basic button mt-sm"
               id="guided-button-add-contributor"
-              onclick="addContributorField()"
+              onclick="openGuidedAddContributorSwal(false)"
             >
               <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new
               contributor
@@ -2581,9 +2899,18 @@
               Add details about each protocol associated with this dataset
             </h2>
 
-            <div class="guided--panel" id="protocols-container"></div>
+            <div class="guided--panel"></div>
+            <table>
+              <tr>
+                <th style="min-width: 250px">Link</th>
+                <th>Type</th>
+                <th class="text-center">Description</th>
+                <th class="text-center">Delete</th>
+              </tr>
+              <tbody id="protocols-container"></tbody>
+            </table>
             <button
-              class="ui primary basic button mt-sm"
+              class="ui primary basic button mt-lg"
               id="guided-button-add-protocol"
               onclick="addProtocolField()"
             >
@@ -2782,7 +3109,7 @@
             </p>
           </div>
           <div class="guided--section neumorphic mt-xl">
-            <h2 class="guided--text-sub-step mt-0">Related information:</h2>
+            <h2 class="guided--text-sub-step mt-0">Related information</h2>
             <label class="guided--form-label mt-xl">Additional links</label>
             <table
               class="ui celled striped table"
@@ -2807,7 +3134,7 @@
             </button>
           </div>
           <div class="guided--section neumorphic mt-xl">
-            <h2 class="guided--text-sub-step mt-0">Additional information:</h2>
+            <h2 class="guided--text-sub-step mt-0">Additional information</h2>
             <label class="guided--form-label mt-xl"
               >Study collection title:</label
             >
@@ -2897,7 +3224,7 @@
                 id="guided-button-subject-metadata-copy"
                 class="btn btn-primary btn-sm"
                 onclick="openCopySubjectMetadataPopup()"
-                style="width: 88%; margin-top: 10px; height: 35px !important"
+                style="margin-top: 10px; height: 35px !important"
               >
                 Copy metadata from other subjects
               </button>
@@ -3597,7 +3924,7 @@
                 class="btn btn-primary btn-sm"
                 id="guided-button-sample-metadata-copy"
                 onclick="openCopySampleMetadataPopup()"
-                style="width: 88%; margin: 10px; height: 42px !important"
+                style="margin: 10px; height: 42px !important"
               >
                 Copy metadata from other samples
               </button>
@@ -4042,16 +4369,46 @@
               >
               Alternatively, you can download the code_description.xslx template
               <a
-                href="https://github.com/SciCrunch/sparc-curation/releases/download/dataset-template-2.0.0/DatasetTemplate.zip"
-                target="_blank"
+                id="guided-data-deliverables-download-button"
+                style="text-decoration: underline"
                 >here</a
               >
               and fill it out manually
             </p>
           </div>
-
           <div class="guided--section">
-            <h2 class="guided--text-sub-step required">
+            <label class="guided--form-label centered">
+              Does your dataset contain computational modeling-related code
+              files?
+            </label>
+
+            <div class="guided--radio-button-container">
+              <button
+                class="ui positive button guided--radio-button"
+                id="guided-button-has-computational-modeling-data"
+                data-next-element="guided-section-import-computational-modeling-data"
+                data-button-config-value="dataset-contains-computational-modeling-data"
+                data-button-config-value-state="yes"
+              >
+                Yes
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                id="guided-button-no-computational-modeling-data"
+                data-next-element="guided-section-no-computational-modeling-data"
+                data-button-config-value="dataset-contains-computational-modeling-data"
+                data-button-config-value-state="no"
+              >
+                No
+              </button>
+            </div>
+          </div>
+
+          <div
+            class="guided--section"
+            id="guided-section-import-computational-modeling-data"
+          >
+            <h2 class="guided--text-sub-step">
               Import the code_description metadata file
             </h2>
             <p class="guided--help-text small text-center mt-sm">
@@ -4092,6 +4449,15 @@
                 ></p>
               </div>
             </div>
+          </div>
+          <div
+            class="guided--section"
+            id="guided-section-no-computational-modeling-data"
+          >
+            <p class="guided--help-text">
+              Your dataset does not require a code_description.xlsx file. Click
+              "Save and Continue" below.
+            </p>
           </div>
         </div>
         <div
@@ -4292,7 +4658,6 @@
                 <button
                   class="ui positive basic button guided--radio-button"
                   id="guided-confirm-pennsieve-account-button"
-                  data-next-element="guided-add-permissions"
                   style="width: 220px"
                 >
                   Yes, this is the account
@@ -4623,81 +4988,81 @@
             <h1 class="guided--text-sub-step">Dataset permissions</h1>
             <p class="guided--help-text text-left">
               Dataset permissions control which users or teams can view, edit,
-              or manage your dataset on Pennsieve. Read below for a breakdown of
-              the different types of dataset permissions:
+              or manage your dataset on Pennsieve. Current permissions are
+              listed in the table below. If you need anyone else to view or
+              contribute to your dataset, you can grant them permissions using
+              the interface below.
             </p>
-            <ul class="guided--help-text">
-              <li
-                class="guided--help-text text-left mb-2"
-                style="color: hsl(0, 0%, 22%)"
-              >
-                <b>Managers</b> can invite people and teams to a dataset, edit
-                and delete models, records and files, but cannot publish a
-                dataset.
-              </li>
-              <li
-                class="guided--help-text text-left mb-2"
-                style="color: hsl(0, 0%, 22%)"
-              >
-                <b>Editors</b> can create, edit, or delete records and files in
-                a dataset.
-              </li>
-              <li
-                class="guided--help-text text-left mb-2"
-                style="color: hsl(0, 0%, 22%)"
-              >
-                <b>Viewers</b> can view and browse all information in a dataset,
-                but have no other permissions.
-              </li>
-            </ul>
-          </div>
-          <table
-            class="ui celled striped table"
-            style="margin-bottom: 25px; width: 800px"
-          >
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th class="remove-left-border" style="width: 300px">
-                  Permission
-                </th>
-                <th
-                  class="center aligned remove-left-border"
-                  style="width: 30px"
+            <div class="guided--info-dropdown">
+              <p class="guided--dropdown-text" data-dropdown-type="info">
+                Learn more about dataset Permissions on Pennsieve
+              </p>
+              <i
+                class="fas fa-chevron-right"
+                style="transform: rotate(0deg)"
+              ></i>
+            </div>
+            <div class="guided--info-container" style="margin-bottom: 1.5rem">
+              <p class="guided--help-text">
+                Pennsieve has 3 levels of permissions for datasets:
+              </p>
+              <ul class="guided--help-text">
+                <li
+                  class="guided--help-text text-left mb-2"
+                  style="color: hsl(0, 0%, 22%)"
                 >
-                  Delete
-                </th>
-              </tr>
-            </thead>
-            <tbody id="permissions-table-body"></tbody>
-          </table>
-          <label class="guided--form-label centered mt-md">
-            Would you like to add more permissions to your dataset?
-          </label>
-          <div class="guided--radio-button-container mb-sm">
-            <button
-              class="ui positive basic button guided--radio-button"
-              id="guided-button-add-permissions"
-              data-next-element="guided-add-permissions"
-              data-button-config-value="add-other-user-team-permissions"
-              data-button-config-value-state="yes"
-            >
-              Yes
-            </button>
-            <button
-              class="ui negative basic button guided--radio-button"
-              id="guided-button-no-permissions"
-              data-next-element="guided-no-permissions"
-              data-button-config-value="add-other-user-team-permissions"
-              data-button-config-value-state="no"
-            >
-              No
-            </button>
+                  <b>Viewer:</b> Give this permission to collaborators who only
+                  need to view your dataset.
+                </li>
+
+                <li
+                  class="guided--help-text text-left mb-2"
+                  style="color: hsl(0, 0%, 22%)"
+                >
+                  <b>Editor:</b> Give this permission to collaborators who only
+                  need to view your dataset and upload files to it.
+                </li>
+                <li
+                  class="guided--help-text text-left mb-2"
+                  style="color: hsl(0, 0%, 22%)"
+                >
+                  <b>Manager:</b> Give this permission to collaborators who need
+                  full editing access to your dataset (except publish the
+                  dataset).
+                </li>
+                <li
+                  class="guided--help-text text-left mb-2"
+                  style="color: hsl(0, 0%, 22%)"
+                >
+                  <b>Owner:</b> This permission is typically given to the
+                  Principal Investigator of the award. The owner can do
+                  everything with the dataset, including publishing it.
+                </li>
+              </ul>
+            </div>
           </div>
-          <div class="guided--panel hidden" id="guided-add-permissions">
-            <h1 class="guided--text-sub-step">
-              Designate permissions for users and teams:
-            </h1>
+          <div class="guided--section">
+            <table
+              class="ui celled striped table"
+              style="margin-bottom: 10px; width: 800px"
+            >
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th class="remove-left-border" style="width: 268px">
+                    Permission
+                  </th>
+                  <th
+                    class="center aligned remove-left-border"
+                    style="width: 30px"
+                  >
+                    Delete
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="permissions-table-body"></tbody>
+            </table>
+
             <div class="guided--container-permissions">
               <div style="flex-grow: 1">
                 <div
@@ -4731,7 +5096,9 @@
                       "
                       id="guided_bf_list_users_and_teams"
                     >
-                      <option>Select individuals or teams</option>
+                      <option>
+                        Select individuals or teams to grant permissions to
+                      </option>
                     </select>
                   </div>
                 </div>
@@ -4757,13 +5124,14 @@
                   height: 35px;
                   background-color: var(--color-light-green) !important;
                   padding: 0.7em 1.3em;
+                  width: 175px;
+                  margin-right: 0px;
                 "
               >
                 Designate permission
               </button>
             </div>
           </div>
-          <div class="guided--panel hidden" id="guided-no-permissions"></div>
         </div>
         <div id="guided-add-description-tab" class="guided--panel hidden">
           <div class="guided--section">
@@ -5082,8 +5450,8 @@
                   />
                   <p class="guided--text-input-instructions mb-0">
                     <b
-                      >Enter the name that you would like to upload your dataset
-                      to Pennsieve under</b
+                      >The name of the dataset on Pennsieve that will be
+                      available for all to see</b
                     >
                   </p>
                 </div>
@@ -5283,6 +5651,19 @@
           id="guided-dataset-generation-confirmation-tab"
           class="guided--panel hidden"
         >
+          <div class="guided--section">
+            <h1 class="guided--text-sub-step">
+              Review your dataset structure and metadata
+            </h1>
+            <p class="guided--help-text">
+              A summary of your dataset as it will be generated on Pennsieve can
+              be found below. If you have any changes that you would like to
+              make before you generate your dataset on Pennsieve, you may go
+              back and make them. If you are ready to generate on Pennsieve,
+              click "<span id="review-generate-button-text"></span>" below the
+              review panel to generate the dataset on Pennsieve.
+            </p>
+          </div>
           <div class="guided--container-data-display">
             <div
               style="
@@ -5294,14 +5675,12 @@
                 max-width: 800px;
               "
             >
-              <label
-                class="guided--form-label mt-md mb-sm"
-                style="text-align: left"
+              <label class="guided--form-label mt-md mb-sm text-center"
                 >Current dataset structure:</label
               >
               <div
                 id="guided-folder-structure-review-generate"
-                style="display: block; margin-left: 0px; margin-right: 0px"
+                style="display: block; margin-left: 35%"
               ></div>
             </div>
             <div class="guided--card-dataset-info">
@@ -5335,6 +5714,19 @@
                 >
                   None
                 </h5>
+              </div>
+            </div>
+            <div class="guided--card-dataset-info">
+              <div class="guided--dataset-description-container">
+                <h5 class="guided--dataset-description">
+                  Dataset description:
+                </h5>
+              </div>
+              <div class="guided--dataset-content-container">
+                <h5
+                  class="guided--dataset-content"
+                  id="guided-review-dataset-description"
+                ></h5>
               </div>
             </div>
             <div class="guided--card-dataset-info">
@@ -5732,6 +6124,25 @@
                     ></div>
                   </td>
                 </tr>
+                <tr
+                  class="hidden"
+                  id="guided-code-description-metadata-upload-tr"
+                >
+                  <td
+                    class="middle aligned"
+                    id="guided-code-description-metadata-upload-text"
+                  >
+                    Dataset description metadata
+                  </td>
+                  <td
+                    class="middle aligned text-center collapsing border-left-0 p-0"
+                  >
+                    <div
+                      class="guided--container-upload-status"
+                      id="guided-code-description-metadata-upload-status"
+                    ></div>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -5797,9 +6208,8 @@
             <h1 class="guided--text-sub-step">
               Share with the SPARC Curation Team
             </h1>
-            <p class="guided--help-text text-center">
-              View dataset on Pennsieve
-            </p>
+            <h2 class="guided--text-sub-step">View dataset on Pennsieve</h2>
+
             <p
               class="guided--help-text text-center"
               style="margin-bottom: 1rem; text-align: justify !important"
@@ -5829,7 +6239,7 @@
             </p>
           </div>
           <div class="guided--section">
-            <p class="guided--help-text text-center">Edit dataset</p>
+            <h2 class="guided--text-sub-step mt-0">Editing this dataset</h2>
             <p class="guided--help-text">
               Now that your initial dataset upload via Guided Mode has been
               completed, modifications to your dataset can be made by clicking
@@ -5841,9 +6251,10 @@
             </p>
           </div>
           <div class="guided--section">
-            <p class="guided--help-text text-center">
-              Share with the Curation Team
-            </p>
+            <h2 class="guided--text-sub-step mt-0">
+              Share with the curation team
+            </h2>
+
             <p class="guided--help-text">
               Sharing your dataset with the SPARC Curation Team will inform the
               Curation Team that your dataset is ready to be reviewed. It is

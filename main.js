@@ -25,7 +25,6 @@ autoUpdater.logger = log;
 global.trackEvent = trackEvent;
 
 const nodeStorage = new JSONStorage(app.getPath("userData"));
-// console.log(nodeStorage);
 /*************************************************************
  * Python Process
  *************************************************************/
@@ -231,6 +230,10 @@ function initialize() {
       }
     });
 
+    const checkForAnnouncements = () => {
+      mainWindow.webContents.send("checkForAnnouncements");
+    };
+
     mainWindow.on("close", async (e) => {
       if (!user_restart_confirmed) {
         if (app.showExitPrompt) {
@@ -256,6 +259,7 @@ function initialize() {
       } else {
         var first_launch = nodeStorage.getItem("firstlaunch");
         nodeStorage.setItem("firstlaunch", true);
+        nodeStorage.setItem("announcements", true);
         await exitPyProc();
         app.exit();
       }
@@ -323,12 +327,11 @@ function initialize() {
           nodeStorage.setItem("firstlaunch", false);
           run_pre_flight_checks();
         }
-        run_pre_flight_checks();
-        autoUpdater.checkForUpdatesAndNotify();
         if (announcementsLaunch == true || announcementsLaunch == undefined) {
           checkForAnnouncements();
-          nodeStorage.setItem("announcements", false);
         }
+        run_pre_flight_checks();
+        autoUpdater.checkForUpdatesAndNotify();
         updatechecked = true;
       }, 6000);
     });
@@ -362,10 +365,6 @@ function initialize() {
     app.quit();
   });
 }
-
-const checkForAnnouncements = () => {
-  mainWindow.webContents.send("checkForAnnouncements");
-};
 
 function run_pre_flight_checks() {
   console.log("Running pre-checks");
@@ -452,7 +451,7 @@ autoUpdater.on("update-downloaded", () => {
 
 ipcMain.on("restart_app", async () => {
   user_restart_confirmed = true;
-  nodeStorage.getItem("announcements", true); //set to true for when they install and update
+  nodeStorage.removeItem("announcements");
   log.info("quitAndInstall");
   autoUpdater.quitAndInstall();
 });

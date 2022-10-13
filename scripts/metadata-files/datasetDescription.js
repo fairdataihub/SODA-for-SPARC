@@ -161,12 +161,12 @@ function checkAirtableStatus(keyword) {
     if (airKeyInput !== "" && airKeyName !== "") {
       Airtable.configure({
         endpointUrl: "https://" + airtableHostname,
-        apiKey: airKeyInput
+        apiKey: airKeyInput,
       });
       var base = Airtable.base("appiYd1Tz9Sv857GZ");
       base("sparc_members")
         .select({
-          view: "All members (ungrouped)"
+          view: "All members (ungrouped)",
         })
         .eachPage(
           function page(records, fetchNextPage) {
@@ -326,13 +326,13 @@ function createConsRoleTagify(inputField) {
       "Sponsor",
       "Supervisor",
       "WorkPackageLeader",
-      "Other"
+      "Other",
     ],
     enforceWhitelist: true,
     dropdown: {
       enabled: 1,
-      closeOnSelect: true
-    }
+      closeOnSelect: true,
+    },
   });
   createDragSort(tagify);
 }
@@ -344,9 +344,9 @@ function createConsAffliationTagify(inputField) {
       classname: "color-blue",
       enabled: 0, // show the dropdown immediately on focus
       maxItems: 25,
-      closeOnSelect: true // keep the dropdown open after selecting a suggestion
+      closeOnSelect: true, // keep the dropdown open after selecting a suggestion
     },
-    duplicates: false
+    duplicates: false,
   });
   createDragSort(tagify);
 }
@@ -558,7 +558,7 @@ function showExistingDDFile() {
       confirmButtonColor: "#3085d6",
       confirmButtonText: "Yes",
       icon: "warning",
-      reverseButtons: reverseSwalButtons
+      reverseButtons: reverseSwalButtons,
     }).then((boolean) => {
       if (boolean.isConfirmed) {
         ipcRenderer.send("open-file-dialog-existing-DD");
@@ -585,11 +585,11 @@ function resetDD() {
     showCancelButton: true,
     text: "Are you sure you want to start over and reset your progress?",
     showClass: {
-      popup: "animate__animated animate__zoomIn animate__faster"
+      popup: "animate__animated animate__zoomIn animate__faster",
     },
     hideClass: {
-      popup: "animate__animated animate__zoomOut animate__faster"
-    }
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
   }).then((result) => {
     if (result.isConfirmed) {
       // 1. remove Prev and Show from all individual-question except for the first one
@@ -695,11 +695,11 @@ async function generateDatasetDescription() {
       cancelButtonText: "No",
       reverseButtons: reverseSwalButtons,
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster"
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster"
-      }
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     });
     if (continueProgressGenerateDD) {
       $("#dd-accordion").removeClass("active");
@@ -730,7 +730,7 @@ const generateDDFile = async (uploadBFBoolean) => {
       showConfirmButton: true,
       showCancelButton: true,
       cancelButtonText: "Cancel",
-      confirmButtonText: "Yes"
+      confirmButtonText: "Yes",
     });
     if (!continueProgress) {
       return;
@@ -747,7 +747,7 @@ const generateDDFile = async (uploadBFBoolean) => {
       showConfirmButton: true,
       showCancelButton: true,
       cancelButtonText: "Cancel",
-      confirmButtonText: "Yes"
+      confirmButtonText: "Yes",
     });
     if (!continueProgress) {
       return;
@@ -763,7 +763,7 @@ const generateDDFile = async (uploadBFBoolean) => {
     timerProgressBar: false,
     didOpen: () => {
       Swal.showLoading();
-    }
+    },
   }).then((result) => {});
   var datasetInfoValueObj = grabDSInfoEntries();
   var studyInfoValueObject = grabStudyInfoEntries();
@@ -820,12 +820,12 @@ const generateDDFile = async (uploadBFBoolean) => {
         dataset_str: datasetInfoValueObj,
         study_str: studyInfoValueObject,
         contributor_str: contributorObj,
-        related_info_str: relatedInfoArr
+        related_info_str: relatedInfoArr,
       },
       {
         params: {
-          upload_boolean: uploadBFBoolean
-        }
+          upload_boolean: uploadBFBoolean,
+        },
       }
     );
 
@@ -843,7 +843,7 @@ const generateDDFile = async (uploadBFBoolean) => {
       title: successMessage,
       icon: "success",
       heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)"
+      backdrop: "rgba(0,0,0, 0.4)",
     });
 
     // log the successful attempt to generate the description file in analytics at this step in the Generation process
@@ -871,7 +871,7 @@ const generateDDFile = async (uploadBFBoolean) => {
       html: emessage,
       icon: "warning",
       heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)"
+      backdrop: "rgba(0,0,0, 0.4)",
     });
 
     // log the failure to generate the description file to analytics at this step in the Generation process
@@ -921,7 +921,7 @@ function grabAdditionalLinkSection() {
       link: table.rows[i].cells[1].innerText,
       type: table.rows[i].cells[2].innerText,
       relation: table.rows[i].cells[3].innerText,
-      description: table.rows[i].cells[4].innerText
+      description: table.rows[i].cells[4].innerText,
     };
     additionalLinkInfo.push(additionalLink);
   }
@@ -937,7 +937,7 @@ function grabProtocolSection() {
       link: table.rows[i].cells[1].innerText,
       type: table.rows[i].cells[2].innerText,
       relation: table.rows[i].cells[3].innerText,
-      description: table.rows[i].cells[4].innerText
+      description: table.rows[i].cells[4].innerText,
     };
     protocolLinkInfo.push(protocol);
   }
@@ -1008,9 +1008,9 @@ async function addProtocol() {
         $("#DD-protocol-link").val(),
         protocolLink,
         "IsProtocolFor",
-        $("#DD-protocol-description").val()
+        $("#DD-protocol-description").val(),
       ];
-    }
+    },
   });
   if (values) {
     addProtocolLinktoTableDD(values[0], values[1], values[2], values[3]);
@@ -1108,25 +1108,34 @@ const guidedSetImportedSPARCAward = (awardString) => {
     "Edit award information from Airtable";
 };
 
-async function helpSPARCAward(filetype, curationMode) {
+const helpSPARCAward = async (filetype, curationMode) => {
   var award = "";
   if (filetype === "dd") {
     var res = airtableRes;
+    console.log(res);
     if (curationMode === "free-form") {
       $("#select-sparc-award-dd-spinner").css("display", "block");
     }
     if (res[0]) {
-      var keyname = res[1];
-      var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'dd\', '${curationMode}')" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4><div
+      let keyname = res[1];
+      let swalElement = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'dd\', '${curationMode}')" style="font-weight:500;text-decoration: underline"><svg class="svg-change-current-account bi bi-pencil-fill" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" viewBox="0 0 16 16">
+      <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"></path>
+    </svg></a></span></h4><h4 style="text-align:left">Select your award: </h4><div
         class="search-select-box"><select id="select-SPARC-award" class="w-100" data-live-search="true"style="width: 450px;border-radius: 7px;padding: 8px;"data-none-selected-text="Loading awards..."></select></div></div>`;
       const { value: awardVal } = await Swal.fire({
-        html: htmlEle,
+        html: swalElement,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         inputPlaceholder: "Select an award",
         showCancelButton: true,
         confirmButtonText: "Confirm",
         reverseButtons: reverseSwalButtons,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
         didOpen: () => {
           $("#select-sparc-award-dd-spinner").css("display", "none");
           populateSelectSPARCAward(awardObj, "select-SPARC-award");
@@ -1140,7 +1149,7 @@ async function helpSPARCAward(filetype, curationMode) {
             award = $("#select-SPARC-award").val();
             globalSPARCAward = $("#select-SPARC-award").val();
           }
-        }
+        },
       });
       if (awardVal) {
         if (curationMode === "free-form") {
@@ -1155,17 +1164,27 @@ async function helpSPARCAward(filetype, curationMode) {
               cancelButtonText: `No!`,
               cancelButtonColor: "#f44336",
               confirmButtonColor: "#3085d6",
-              confirmButtonText: "Yes"
+              confirmButtonText: "Yes",
+              showClass: {
+                popup: "animate__animated animate__zoomIn animate__faster",
+              },
+              hideClass: {
+                popup: "animate__animated animate__zoomOut animate__faster",
+              },
             }).then((boolean) => {
               if (boolean.isConfirmed) {
-                changeAward(award, "free-form");
+                changeAward(award);
               }
             });
           } else {
-            changeAward(award, "free-form");
+            changeAward(award);
           }
         }
         if (curationMode === "guided") {
+          changeAward(award, "guided");
+        }
+        if (curationMode === "guided--getting-started") {
+          //curationMode is getting-started page
           changeAward(award, "guided");
         }
       }
@@ -1181,7 +1200,13 @@ async function helpSPARCAward(filetype, curationMode) {
         cancelButtonText: `No!`,
         cancelButtonColor: "#f44336",
         confirmButtonColor: "#3085d6",
-        confirmButtonText: "Yes"
+        confirmButtonText: "Yes",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
       }).then((boolean) => {
         if (boolean.isConfirmed) {
           showAddAirtableAccountSweetalert("dd", curationMode);
@@ -1192,6 +1217,7 @@ async function helpSPARCAward(filetype, curationMode) {
   }
   if (filetype === "submission") {
     var res = airtableRes;
+    console.log(res);
     let currentMilestonesInTextArea = null;
     if (curationMode == "free-form") {
       $("#select-sparc-award-submission-spinner").css("display", "block");
@@ -1199,18 +1225,52 @@ async function helpSPARCAward(filetype, curationMode) {
     }
     currentMilestonesInTextArea = $("#selected-milestone-1");
 
-    if (res[0]) {
+    if (res[0] && curationMode != "guided--getting-started") {
       var keyname = res[1];
-      var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'submission\', '${curationMode}')" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4><div
+      var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'submission\', '${curationMode}')" style="font-weight:500;text-decoration: underline"><svg class="svg-change-current-account bi bi-pencil-fill" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" viewBox="0 0 16 16">
+      <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"></path>
+    </svg></a></span></h4><h4 style="text-align:left">Select your award: </h4><div
         class="search-select-box"><select id="select-SPARC-award-submission" class="w-100" data-live-search="true"style="width: 450px;border-radius: 7px;padding: 8px;"data-none-selected-text="Loading awards..."></select></div></div>`;
       const { value: awardVal } = await Swal.fire({
         html: htmlEle,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         inputPlaceholder: "Select an award",
+        focusConfirm: false,
+        focusCancel: false,
         showCancelButton: true,
         confirmButtonText: "Confirm",
+        footer: `
+        <div style="display: flex; width: 100%">
+        <div class="info-container" style="width: 100%">
+                <div class="demo-wrapper info-container-wrapper">
+                  <button id="airtable-information-footer" class="js-container-target demo-toggle-button info-summary">
+                    I don't see my SPARC award in the list
+                  </button>
+
+                  <div class="demo-box details-box" id="no-airtable">
+                  If you don't see your award in the list, you can add it yourself in the <a target="_blank" href="https://airtable.com/appiYd1Tz9Sv857GZ/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide">SPARC Airtable sheet</a> then open the popup again to refresh. Alternatively, you can just add the award number manually.
+                  </div>
+                </div>
+              </div>
+        </div>`,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
         didOpen: () => {
+          document
+            .getElementById("airtable-information-footer")
+            .addEventListener("click", () => {
+              let dropdown = document.getElementById("no-airtable");
+              if (dropdown.style.display === "none") {
+                dropdown.style.display = "block";
+              } else {
+                dropdown.style.display = "none";
+              }
+            });
           $("#select-sparc-award-submission-spinner").css("display", "none");
           populateSelectSPARCAward(awardObj, "select-SPARC-award-submission");
           $("#select-SPARC-award-submission").selectpicker();
@@ -1222,7 +1282,7 @@ async function helpSPARCAward(filetype, curationMode) {
           } else {
             award = $("#select-SPARC-award-submission").val();
           }
-        }
+        },
       });
       if (awardVal) {
         if (currentMilestonesInTextArea.val() !== "") {
@@ -1235,7 +1295,13 @@ async function helpSPARCAward(filetype, curationMode) {
             cancelButtonText: `No!`,
             cancelButtonColor: "#f44336",
             confirmButtonColor: "#3085d6",
-            confirmButtonText: "Yes"
+            confirmButtonText: "Yes",
+            showClass: {
+              popup: "animate__animated animate__zoomIn animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__zoomOut animate__faster",
+            },
           }).then((boolean) => {
             if (boolean.isConfirmed) {
               if (curationMode === "free-form") {
@@ -1244,12 +1310,10 @@ async function helpSPARCAward(filetype, curationMode) {
                 $("#ds-description-award-input").val(award);
                 document.getElementById("submission-completion-date").value =
                   "";
-                loadContributorInfofromAirtable(award, "free-form");
+                loadContributorInfofromAirtable(award);
               }
-
               if (curationMode === "guided") {
                 guidedSetImportedSPARCAward(award);
-                loadContributorInfofromAirtable(award, "guided");
               }
             }
           });
@@ -1262,8 +1326,95 @@ async function helpSPARCAward(filetype, curationMode) {
           }
 
           if (curationMode === "guided") {
+            const gettingStartedAirtable = document.getElementById(
+              "getting-started-button-import-sparc-award"
+            );
+            gettingStartedAirtable.children[1].style.display = "none";
+            gettingStartedAirtable.children[0].style.display = "flex";
+            guidedSetImportedSPARCAward(award);
+          }
+        }
+      }
+    } else if (res[0] && curationMode == "guided--getting-started") {
+      const airTableGettingStartedBtn = document.getElementById(
+        "getting-started-button-import-sparc-award"
+      );
+      airTableGettingStartedBtn.children[1].style.display = "none";
+      airTableGettingStartedBtn.children[0].style.display = "flex";
+      var keyname = res[1];
+      var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-around">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span></h4></div>`;
+      const { value: awardVal } = await Swal.fire({
+        html: htmlEle,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showCancelButton: true,
+        confirmButtonText: "Change",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+        didOpen: () => {
+          $("#select-sparc-award-submission-spinner").css("display", "none");
+        },
+      });
+      if (awardVal) {
+        if (currentMilestonesInTextArea.val() !== "") {
+          Swal.fire({
+            title:
+              "Are you sure you want to delete all of the previous milestone information?",
+            showCancelButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            cancelButtonText: `No!`,
+            cancelButtonColor: "#f44336",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "Yes",
+            showClass: {
+              popup: "animate__animated animate__zoomIn animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__zoomOut animate__faster",
+            },
+          }).then((boolean) => {
+            if (boolean.isConfirmed) {
+              if (curationMode === "free-form") {
+                milestoneTagify1.removeAllTags();
+                $("#submission-sparc-award").val(award);
+                $("#ds-description-award-input").val(award);
+                document.getElementById("submission-completion-date").value =
+                  "";
+                loadContributorInfofromAirtable(award, "free-form");
+              }
+              if (curationMode === "guided") {
+                guidedSetImportedSPARCAward(award);
+                loadContributorInfofromAirtable(award, "guided");
+              }
+            }
+          });
+        } else {
+          if (curationMode === "free-form") {
+            milestoneTagify1.removeAllTags();
+            $("#submission-sparc-award").val(award);
+            $("#ds-description-award-input").val(award);
+            document.getElementById("submission-completion-date").value = "";
+          } else if (curationMode === "guided") {
+            const gettingStartedAirtable = document.getElementById(
+              "getting-started-button-import-sparc-award"
+            );
+            gettingStartedAirtable.children[1].style.display = "none";
+            gettingStartedAirtable.children[0].style.display = "flex";
             guidedSetImportedSPARCAward(award);
             loadContributorInfofromAirtable(award, "guided");
+          } else {
+            //curationMode = guided--getting-started
+            const gettingStartedAirtable = document.getElementById(
+              "getting-started-button-import-sparc-award"
+            );
+            gettingStartedAirtable.children[1].style.display = "none";
+            gettingStartedAirtable.children[0].style.display = "flex";
+            showAddAirtableAccountSweetalert("submission", "guided");
           }
         }
       }
@@ -1278,7 +1429,13 @@ async function helpSPARCAward(filetype, curationMode) {
         cancelButtonText: `No!`,
         cancelButtonColor: "#f44336",
         confirmButtonColor: "#3085d6",
-        confirmButtonText: "Yes"
+        confirmButtonText: "Yes",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
       }).then((boolean) => {
         if (boolean.isConfirmed) {
           showAddAirtableAccountSweetalert("submission", curationMode);
@@ -1287,7 +1444,7 @@ async function helpSPARCAward(filetype, curationMode) {
       $("#select-sparc-award-submission-spinner").css("display", "none");
     }
   }
-}
+};
 
 function populateSelectSPARCAward(object, id) {
   removeOptions(document.getElementById(id));
@@ -1302,7 +1459,7 @@ function populateSelectSPARCAward(object, id) {
   }
 }
 
-function changeAward(award, curationMode) {
+function changeAward(award) {
   Swal.fire({
     title: "Loading your award and contributor information.",
     html: "Please wait...",
@@ -1314,11 +1471,11 @@ function changeAward(award, curationMode) {
     timerProgressBar: false,
     didOpen: () => {
       Swal.showLoading();
-    }
+    },
   }).then((result) => {});
   $("#ds-description-award-input").val(award);
   $("#submission-sparc-award").val(award);
-  loadContributorInfofromAirtable(award, curationMode);
+  loadContributorInfofromAirtable(award);
 }
 
 const generateContributorRowElement = (
@@ -1375,7 +1532,7 @@ const addContributorRowElement = () => {
   divAfter.insertAdjacentHTML("beforebegin", newContributorRowElement);
 };
 
-const loadContributorInfofromAirtable = async (award, curationMode) => {
+const loadContributorInfofromAirtable = async (award) => {
   globalContributorNameObject = {};
   currentContributorsLastNames = [];
   $("#contributor-table-dd tr:gt(0)").remove();
@@ -1386,12 +1543,12 @@ const loadContributorInfofromAirtable = async (award, curationMode) => {
     var airKeyInput = airKeyContent["api-key"];
     Airtable.configure({
       endpointUrl: "https://" + airtableHostname,
-      apiKey: airKeyInput
+      apiKey: airKeyInput,
     });
     var base = Airtable.base("appiYd1Tz9Sv857GZ");
     await base("sparc_members")
       .select({
-        filterByFormula: `({SPARC_Award_#} = "${award}")`
+        filterByFormula: `({SPARC_Award_#} = "${award}")`,
       })
       .eachPage(function page(records, fetchNextPage) {
         records.forEach(function (record) {
@@ -1414,40 +1571,6 @@ const loadContributorInfofromAirtable = async (award, curationMode) => {
         return;
       }
     }
-  }
-  if (curationMode === "guided") {
-    // render the contributors table on the contributors page
-    let contributorTableRows = Object.keys(globalContributorNameObject)
-      .map((contributor) => {
-        const contributorLast = contributor;
-        const contributorFirst = globalContributorNameObject[contributor];
-        return generateContributorRowElement(contributorLast, contributorFirst);
-      })
-      .join("\n");
-
-    //If the response is empty, hide the contributor selection table
-    //and allow the user to add contributors manually
-    if (contributorTableRows.length === 0) {
-      //create a notyf
-      notyf.error("No contributors found for this award.");
-      //hide AirTable contributor table and show contributor information fields
-      document
-        .getElementById("guided-div-contributors-imported-from-airtable")
-        .classList.add("hidden");
-      document
-        .getElementById("guided-div-contributor-field-set")
-        .classList.remove("hidden");
-
-      document.getElementById("contributors-container").innerHTML = "";
-      //add an empty contributor information fieldset
-      addContributorField();
-      return;
-    }
-
-    const contributorsTableContainer = document.getElementById(
-      "contributors-table-container"
-    );
-    contributorsTableContainer.innerHTML = contributorTableRows;
   }
 };
 
@@ -1521,7 +1644,7 @@ function showContributorSweetalert(key) {
         interactive: true,
         placement: "right",
         theme: "light",
-        interactiveBorder: 30
+        interactiveBorder: 30,
       });
       // first destroy old tagify
       $($("#input-con-affiliation").siblings()[0]).remove();
@@ -1549,16 +1672,16 @@ function showContributorSweetalert(key) {
             "Sponsor",
             "Supervisor",
             "WorkPackageLeader",
-            "Other"
+            "Other",
           ],
           dropdown: {
             classname: "color-blue",
             enabled: 0, // show the dropdown immediately on focus
             maxItems: 25,
-            closeOnSelect: true // keep the dropdown open after selecting a suggestion
+            closeOnSelect: true, // keep the dropdown open after selecting a suggestion
           },
           enforceWhitelist: true,
-          duplicates: false
+          duplicates: false,
         }
       );
       createDragSort(currentContributortagify);
@@ -1570,11 +1693,11 @@ function showContributorSweetalert(key) {
             classname: "color-blue",
             enabled: 0, // show the dropdown immediately on focus
             maxItems: 25,
-            closeOnSelect: true // keep the dropdown open after selecting a suggestion
+            closeOnSelect: true, // keep the dropdown open after selecting a suggestion
           },
           whitelist: affiliationSuggestions,
           delimiters: null,
-          duplicates: false
+          duplicates: false,
         }
       );
       createDragSort(currentAffliationtagify);
@@ -1587,10 +1710,10 @@ function showContributorSweetalert(key) {
       }
     },
     showClass: {
-      popup: "animate__animated animate__fadeInDown animate__faster"
+      popup: "animate__animated animate__fadeInDown animate__faster",
     },
     hideClass: {
-      popup: "animate__animated animate__fadeOutUp animate__faster"
+      popup: "animate__animated animate__fadeOutUp animate__faster",
     },
     preConfirm: () => {
       var affValues = grabCurrentTagifyContributor(currentAffliationtagify);
@@ -1633,7 +1756,7 @@ function showContributorSweetalert(key) {
                 conName: lastName + ", " + firstName,
                 conID: $("#input-con-ID").val().trim(),
                 conAffliation: affiliationVals,
-                conRole: roleVals + ", CorrespondingAuthor"
+                conRole: roleVals + ", CorrespondingAuthor",
               };
               contributorArray.push(myCurrentCon);
               return [myCurrentCon.conName, "Yes"];
@@ -1643,7 +1766,7 @@ function showContributorSweetalert(key) {
               conName: lastName + ", " + firstName,
               conID: $("#input-con-ID").val().trim(),
               conAffliation: affiliationVals,
-              conRole: roleVals
+              conRole: roleVals,
             };
             contributorArray.push(myCurrentCon);
             return [myCurrentCon.conName, "No"];
@@ -1654,7 +1777,7 @@ function showContributorSweetalert(key) {
           );
         }
       }
-    }
+    },
   }).then((result) => {
     if (result.isConfirmed) {
       addContributortoTableDD(result.value[0], result.value[1]);
@@ -1710,7 +1833,7 @@ function showContributorSweetalert(key) {
         interactive: true,
         placement: "right",
         theme: "light",
-        interactiveBorder: 30
+        interactiveBorder: 30,
       });
       // first destroy old tagify
       $($("#input-con-affiliation").siblings()[0]).remove();
@@ -1738,16 +1861,16 @@ function showContributorSweetalert(key) {
             "Sponsor",
             "Supervisor",
             "WorkPackageLeader",
-            "Other"
+            "Other",
           ],
           dropdown: {
             classname: "color-blue",
             enabled: 0, // show the dropdown immediately on focus
             maxItems: 25,
-            closeOnSelect: true // keep the dropdown open after selecting a suggestion
+            closeOnSelect: true, // keep the dropdown open after selecting a suggestion
           },
           enforceWhitelist: true,
-          duplicates: false
+          duplicates: false,
         }
       );
       createDragSort(currentContributortagify);
@@ -1759,11 +1882,11 @@ function showContributorSweetalert(key) {
             classname: "color-blue",
             enabled: 0, // show the dropdown immediately on focus
             maxItems: 25,
-            closeOnSelect: true // keep the dropdown open after selecting a suggestion
+            closeOnSelect: true, // keep the dropdown open after selecting a suggestion
           },
           whitelist: affiliationSuggestions,
           delimiters: null,
-          duplicates: false
+          duplicates: false,
         }
       );
       createDragSort(currentAffliationtagify);
@@ -1776,10 +1899,10 @@ function showContributorSweetalert(key) {
       }
     },
     showClass: {
-      popup: "animate__animated animate__fadeInDown animate__faster"
+      popup: "animate__animated animate__fadeInDown animate__faster",
     },
     hideClass: {
-      popup: "animate__animated animate__fadeOutUp animate__faster"
+      popup: "animate__animated animate__fadeOutUp animate__faster",
     },
     preConfirm: () => {
       var affValues = grabCurrentTagifyContributor(currentAffliationtagify);
@@ -1824,7 +1947,7 @@ function showContributorSweetalert(key) {
                 conName: lastName + ", " + firstName,
                 conID: $("#input-con-ID").val().trim(),
                 conAffliation: affiliationVals,
-                conRole: roleVals + ", CorrespondingAuthor"
+                conRole: roleVals + ", CorrespondingAuthor",
               };
               contributorArray.push(myCurrentCon);
               return [myCurrentCon.conName, "Yes"];
@@ -1834,7 +1957,7 @@ function showContributorSweetalert(key) {
               conName: lastName + ", " + firstName,
               conID: $("#input-con-ID").val().trim(),
               conAffliation: affiliationVals,
-              conRole: roleVals
+              conRole: roleVals,
             };
             contributorArray.push(myCurrentCon);
             return [myCurrentCon.conName, "No"];
@@ -1845,7 +1968,7 @@ function showContributorSweetalert(key) {
           );
         }
       }
-    }
+    },
   }).then((result) => {
     if (result.isConfirmed) {
       addContributortoTableDD(result.value[0], result.value[1], "free-form");
@@ -1865,7 +1988,7 @@ function delete_current_con_id(ev) {
     cancelButtonColor: "#f44336",
     confirmButtonColor: "#3085d6",
     confirmButtonText: "Yes",
-    reverseButtons: reverseSwalButtons
+    reverseButtons: reverseSwalButtons,
   }).then((boolean) => {
     if (boolean.isConfirmed) {
       // 1. Delete from table
@@ -1911,7 +2034,7 @@ function edit_current_con_id(ev) {
         interactive: true,
         placement: "right",
         theme: "light",
-        interactiveBorder: 30
+        interactiveBorder: 30,
       });
       // disable first and last names (cannot edit these fields)
       // first destroy old tagify
@@ -1940,16 +2063,16 @@ function edit_current_con_id(ev) {
             "Sponsor",
             "Supervisor",
             "WorkPackageLeader",
-            "Other"
+            "Other",
           ],
           dropdown: {
             classname: "color-blue",
             enabled: 0, // show the dropdown immediately on focus
             maxItems: 25,
-            closeOnSelect: true // keep the dropdown open after selecting a suggestion
+            closeOnSelect: true, // keep the dropdown open after selecting a suggestion
           },
           enforceWhitelist: true,
-          duplicates: false
+          duplicates: false,
         }
       );
       createDragSort(currentContributortagify);
@@ -1961,11 +2084,11 @@ function edit_current_con_id(ev) {
             classname: "color-blue",
             enabled: 0, // show the dropdown immediately on focus
             maxItems: 25,
-            closeOnSelect: true // keep the dropdown open after selecting a suggestion
+            closeOnSelect: true, // keep the dropdown open after selecting a suggestion
           },
           // delimiters: ",",
           whitelist: affiliationSuggestions,
-          duplicates: false
+          duplicates: false,
         }
       );
       createDragSort(currentAffliationtagify);
@@ -1995,10 +2118,10 @@ function edit_current_con_id(ev) {
       }
     },
     showClass: {
-      popup: "animate__animated animate__fadeInDown animate__faster"
+      popup: "animate__animated animate__fadeInDown animate__faster",
     },
     hideClass: {
-      popup: "animate__animated animate__fadeOutUp animate__faster"
+      popup: "animate__animated animate__fadeOutUp animate__faster",
     },
     preConfirm: () => {
       if (
@@ -2035,7 +2158,7 @@ function edit_current_con_id(ev) {
                 $("#dd-contributor-first-name").val().trim(),
               conID: $("#input-con-ID").val().trim(),
               conAffliation: affiliationVals,
-              conRole: roleVals + ", CorrespondingAuthor"
+              conRole: roleVals + ", CorrespondingAuthor",
               // conContact: "Yes",
             };
             for (var contributor of contributorArray) {
@@ -2056,7 +2179,7 @@ function edit_current_con_id(ev) {
               $("#dd-contributor-first-name").val().trim(),
             conID: $("#input-con-ID").val().trim(),
             conAffliation: affiliationVals,
-            conRole: roleVals
+            conRole: roleVals,
             // conContact: "No",
           };
           for (var contributor of contributorArray) {
@@ -2069,7 +2192,7 @@ function edit_current_con_id(ev) {
           return [myCurrentCon.conName, "No"];
         }
       }
-    }
+    },
   }).then((result) => {
     if (result.isConfirmed) {
       $(currentRow)[0].cells[2].innerText = result.value[1];
@@ -2194,7 +2317,7 @@ function grabDSInfoEntries() {
     type: type,
     keywords: keywordArray,
     "number of samples": samplesNo,
-    "number of subjects": subjectsNo
+    "number of subjects": subjectsNo,
   };
 }
 
@@ -2221,12 +2344,12 @@ function grabStudyInfoEntries() {
     "study purpose": studyPurpose,
     "study data collection": studyDataCollection,
     "study primary conclusion": studyPrimaryConclusion,
-    "study collection title": studyCollectionTitle
+    "study collection title": studyCollectionTitle,
   };
 }
 
 function showAddAirtableAccountSweetalert(keyword, curationMode) {
-  var htmlTitle = `<h4 style="text-align:center">Please enter your Airtable API key below: <i class="fas fa-info-circle swal-popover" data-tippy-content="Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
+  var htmlTitle = `<h4 style="text-align:center">Please enter your Airtable API key below: </h4>`;
 
   var bootb = Swal.fire({
     title: htmlTitle,
@@ -2242,10 +2365,10 @@ function showAddAirtableAccountSweetalert(keyword, curationMode) {
     footer:
       "<a href='https://docs.sodaforsparc.io/docs/prepare-metadata/connect-your-airtable-account-with-soda'  target='_blank' style='text-decoration:none'> Where do I find my Airtable API key?</a>",
     showClass: {
-      popup: "animate__animated animate__fadeInDown animate__faster"
+      popup: "animate__animated animate__fadeInDown animate__faster",
     },
     hideClass: {
-      popup: "animate__animated animate__fadeOutUp animate__faster"
+      popup: "animate__animated animate__fadeOutUp animate__faster",
     },
     didOpen: () => {
       // $(".swal-popover").popover();
@@ -2255,11 +2378,14 @@ function showAddAirtableAccountSweetalert(keyword, curationMode) {
         placement: "right",
         theme: "light",
         content:
-          "Note that the key will be stored locally on your computer and the SODA Team will not have access to it."
+          "Note that the key will be stored locally on your computer and the SODA Team will not have access to it.",
       });
-    }
+    },
   }).then((result) => {
     if (result.isConfirmed) {
+      if (curationMode === "guided--getting-started") {
+        //document.getElementById("guided-button-import-sparc-award").click();
+      }
       addAirtableAccountInsideSweetalert(keyword, curationMode);
     }
   });
@@ -2441,7 +2567,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
       icon: "error",
       html: errorMessage,
       heightAuto: false,
-      backdrop: "rgba(0,0,0,0.4)"
+      backdrop: "rgba(0,0,0,0.4)",
     }).then((result) => {
       if (result.isConfirmed) {
         showAddAirtableAccountSweetalert(keyword, curationMode);
@@ -2461,18 +2587,18 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
         reverseButtons: reverseSwalButtons,
         backdrop: "rgba(0,0,0,0.4)",
         showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster"
+          popup: "animate__animated animate__zoomIn animate__faster",
         },
         hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster"
-        }
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
       }).then((result) => {
         if (result.isConfirmed) {
           const optionsSparcTable = {
             hostname: airtableHostname,
             port: 443,
             path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
-            headers: { Authorization: `Bearer ${key}` }
+            headers: { Authorization: `Bearer ${key}` },
           };
           var sparcTableSuccess;
           https.get(optionsSparcTable, (res) => {
@@ -2505,7 +2631,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
                 showConfirmButton: false,
                 didOpen: () => {
                   Swal.showLoading();
-                }
+                },
               }).then((result) => {
                 helpSPARCAward("submission", curationMode);
               });
@@ -2522,7 +2648,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
                 icon: "error",
                 text: "Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!",
                 heightAuto: false,
-                backdrop: "rgba(0,0,0,0.4)"
+                backdrop: "rgba(0,0,0,0.4)",
               }).then((result) => {
                 if (result.isConfirmed) {
                   showAddAirtableAccountSweetalert(keyword, curationMode);
@@ -2542,7 +2668,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
                 icon: "error",
                 text: "Failed to connect to Airtable. Please check your API Key and try again!",
                 heightAuto: false,
-                backdrop: "rgba(0,0,0,0.4)"
+                backdrop: "rgba(0,0,0,0.4)",
               }).then((result) => {
                 if (result.isConfirmed) {
                   showAddAirtableAccountSweetalert(keyword, curationMode);
@@ -2563,7 +2689,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
                 icon: "error",
                 text: "Failed to connect to Airtable. Please check your API Key and try again!",
                 heightAuto: false,
-                backdrop: "rgba(0,0,0,0.4)"
+                backdrop: "rgba(0,0,0,0.4)",
               }).then((result) => {
                 if (result.isConfirmed) {
                   showAddAirtableAccountSweetalert(keyword, curationMode);
@@ -2575,12 +2701,15 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
       });
     }
 
-    if (curationMode === "guided") {
+    if (
+      curationMode === "guided" ||
+      curationMode === "guided--getting-started"
+    ) {
       const optionsSparcTable = {
         hostname: airtableHostname,
         port: 443,
         path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
-        headers: { Authorization: `Bearer ${key}` }
+        headers: { Authorization: `Bearer ${key}` },
       };
       let sparcTableSuccess;
       https.get(optionsSparcTable, (res) => {
@@ -2598,7 +2727,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
           loadAwardData();
           Swal.fire({
             title: "Successfully connected. Loading your Airtable account...",
-            timer: 10000,
+            timer: 3000,
             timerProgressBar: false,
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
@@ -2607,9 +2736,20 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
             showConfirmButton: false,
             didOpen: () => {
               Swal.showLoading();
-            }
+            },
           }).then((result) => {
-            helpSPARCAward("submission", curationMode);
+            if (curationMode === "guided") {
+              document
+                .getElementById("guided-button-import-sparc-award")
+                .click();
+            }
+            if (curationMode === "guided--getting-started") {
+              const airTableGettingStartedBtn = document.getElementById(
+                "getting-started-button-import-sparc-award"
+              );
+              airTableGettingStartedBtn.children[1].style.display = "none";
+              airTableGettingStartedBtn.children[0].style.display = "flex";
+            }
           });
           ipcRenderer.send(
             "track-event",
@@ -2624,7 +2764,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
             icon: "error",
             text: "Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!",
             heightAuto: false,
-            backdrop: "rgba(0,0,0,0.4)"
+            backdrop: "rgba(0,0,0,0.4)",
           }).then((result) => {
             if (result.isConfirmed) {
               showAddAirtableAccountSweetalert(keyword, curationMode);
@@ -2644,7 +2784,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
             icon: "error",
             text: "Failed to connect to Airtable. Please check your API Key and try again!",
             heightAuto: false,
-            backdrop: "rgba(0,0,0,0.4)"
+            backdrop: "rgba(0,0,0,0.4)",
           }).then((result) => {
             if (result.isConfirmed) {
               showAddAirtableAccountSweetalert(keyword, curationMode);
@@ -2665,7 +2805,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
             icon: "error",
             text: "Failed to connect to Airtable. Please check your API Key and try again!",
             heightAuto: false,
-            backdrop: "rgba(0,0,0,0.4)"
+            backdrop: "rgba(0,0,0,0.4)",
           }).then((result) => {
             if (result.isConfirmed) {
               showAddAirtableAccountSweetalert(keyword, curationMode);
@@ -2692,7 +2832,7 @@ function importExistingDDFile() {
         text: "Your file must be named 'dataset_description.xlsx' to be imported to SODA.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
-        icon: "error"
+        icon: "error",
       });
     } else {
       Swal.fire({
@@ -2706,7 +2846,7 @@ function importExistingDDFile() {
         timerProgressBar: false,
         didOpen: () => {
           Swal.showLoading();
-        }
+        },
       }).then((result) => {});
       setTimeout(loadDDfileDataframe(filePath), 1000);
     }
@@ -2726,7 +2866,7 @@ async function checkBFImportDD() {
     timerProgressBar: false,
     didOpen: () => {
       Swal.showLoading();
-    }
+    },
   });
 
   let bf_dataset = document.getElementById("bf_dataset_load_dd").innerText;
@@ -2740,8 +2880,8 @@ async function checkBFImportDD() {
         params: {
           selected_account: defaultBfAccount,
           selected_dataset: bf_dataset,
-          file_type: "dataset_description.xlsx"
-        }
+          file_type: "dataset_description.xlsx",
+        },
       }
     );
     let res = metadata_import.data;
@@ -2761,7 +2901,7 @@ async function checkBFImportDD() {
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       icon: "error",
-      text: error.response.data.message
+      text: error.response.data.message,
     });
 
     logMetadataForAnalytics(
@@ -2781,8 +2921,8 @@ async function loadDDfileDataframe(filePath) {
       {
         params: {
           filepath: filePath,
-          import_type: "local"
-        }
+          import_type: "local",
+        },
       }
     );
 
@@ -2805,7 +2945,7 @@ async function loadDDfileDataframe(filePath) {
       html: emessage,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-      icon: "error"
+      icon: "error",
     });
 
     // log the import action failure to analytics
@@ -2873,7 +3013,7 @@ function loadDDFileToUI(object, file_type) {
       // populate awards
       globalSPARCAward = arr[1];
       $("#ds-description-award-input").val(arr[1]);
-      changeAward(globalSPARCAward, "free-form");
+      changeAward(globalSPARCAward);
       populateTagifyDD(otherFundingTagify, arr.splice(2));
     }
   }
@@ -2892,7 +3032,7 @@ function loadDDFileToUI(object, file_type) {
     backdrop: "rgba(0,0,0, 0.4)",
     didOpen: () => {
       Swal.hideLoading();
-    }
+    },
   });
   $("#button-generate-dd").show();
   if (file_type === "local") {
@@ -2926,7 +3066,7 @@ function loadContributorsToTable(array) {
         conName: arr[0].trim(),
         conID: arr[1].trim(),
         conAffliation: arr[2].trim(),
-        conRole: arr[3].trim()
+        conRole: arr[3].trim(),
       };
       contributorArray.push(myCurrentCon);
       var contact = "";

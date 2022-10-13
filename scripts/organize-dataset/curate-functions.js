@@ -203,6 +203,11 @@ async function dropHandler(
   curationMode,
   dataDeliverables = false
 ) {
+  var gettingStartedSection = false;
+  if (curationMode === "guided-getting-started") {
+    curationMode = "guided";
+    var gettingStartedSection = true;
+  }
   // Prevent default behavior (Prevent file from being opened)
   ev.preventDefault();
   document.getElementById(paraElement).innerHTML = "";
@@ -305,6 +310,50 @@ async function dropHandler(
               loop: true,
               autoplay: true,
             });
+
+            if (gettingStartedSection === true) {
+              const DDLottie = document.getElementById("swal-data-deliverable");
+              DDLottie.innerHTML = "";
+              lottie.loadAnimation({
+                container: DDLottie,
+                animationData: successCheck,
+                renderer: "svg",
+                loop: true,
+                autoplay: true,
+              });
+              let swal_actions =
+                document.getElementsByClassName("swal2-actions")[0];
+              swal_actions.children[1].style.display = "flex";
+              let swal_content =
+                document.getElementsByClassName("swal2-content")[0];
+
+              let ddFilePath =
+                sodaJSONObj["dataset-metadata"]["submission-metadata"][
+                  "filepath"
+                ];
+              if (ddFilePath) {
+                //append file path
+                let firstItem = swal_content.children[0];
+                let paragraph = document.createElement("p");
+                let paragraph2 = document.createElement("p");
+                paragraph.id = "getting-started-filepath";
+                paragraph2.innerText =
+                  "To replace the current Data Deliverables just drop in or select a new one.";
+                paragraph2.style.marginBottom = "1rem";
+                paragraph.style.marginTop = "1rem";
+                paragraph.style.fontWeight = "700";
+                paragraph.innerText = "File Path: " + ddFilePath;
+                if (firstItem.children[0].id === "getting-started-filepath") {
+                  firstItem.children[0].remove();
+                  firstItem.children[firstItem.childElementCount - 1].remove();
+                }
+                firstItem.append(paragraph2);
+                firstItem.prepend(paragraph);
+                document
+                  .getElementById("guided-button-import-data-deliverables")
+                  .click();
+              }
+            }
           }
         } catch (error) {
           clientError(error);
@@ -1609,9 +1658,8 @@ const moveItems = async (ev, category) => {
               });
             }
           }
-          document.getElementById("input-global-path").value =
-            "My_dataset_folder/";
-          listItems(datasetStructureJSONObj, "#items", 500, (reset = true));
+          let pathAsArray = selectedPath.split("/");
+          listItems(datasetStructureJSONObj, "#items", 500);
           organizeLandingUIEffect();
           // reconstruct div with new elements
           getInFolder(
@@ -1620,6 +1668,23 @@ const moveItems = async (ev, category) => {
             organizeDSglobalPath,
             datasetStructureJSONObj
           );
+
+          // if moved into an empty folder we need to remove the class 'empty'
+          // from the folder destination
+          let folderDestinationName = pathAsArray[pathAsArray.length - 1];
+          if (
+            Object.keys(myPath?.["folders"]?.[folderDestinationName]).length > 0
+          ) {
+            //check if element has empty class
+            let listedItems = document.getElementsByClassName("folder_desc");
+            for (let i = 0; i < listedItems.length; i++) {
+              if (listedItems[i].innerText === folderDestinationName) {
+                listedItems[i].parentElement.children[0].classList.remove(
+                  "empty"
+                );
+              }
+            }
+          }
         });
       }
     });

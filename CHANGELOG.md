@@ -5,6 +5,20 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.9.3.0 - 2022-10-13
+
+## Feature additions:
+
+- Guided Mode: Added a new page to let users know what accounts and documents they will be needing to curate a dataset.
+- Guided Mode: Manifest files now automatically update when changes are made to a dataset's structure.
+- Guided Mode: Contributor addition flow upgraded to make AirTable contributor importation more intuitive.
+- Guided Mode: dataset upload error alerts now give a clearer reason as to why the dataset upload failed and what can be done to remedy the issue.
+- Guided Mode: simplified the UI for selecting a SPARC award.
+
+## Bug fixes:
+
+- Announcements should launch on auto-updates moving forward now!
+
 ## v.9.2.3 - 2022-09-29
 
 ## Bug fixes:
