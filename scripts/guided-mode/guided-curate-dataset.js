@@ -2839,7 +2839,6 @@ const traverseToTab = async (targetPageID) => {
           // });
         }
 
-        console.log("removing event listener then adding");
         // pennsieveCopy.removeEventListener("click", copyLink);
         $(pennsieveCopy).on("click", copyLink);
       }
@@ -6592,8 +6591,6 @@ const specifySample = (event, sampleNameInput) => {
           );
         } else {
           //Add the new sample to sodaJSONObj
-          // console.log(sampleNameInput[0])
-          console.log(addSampleButton);
           sodaJSONObj.addSampleToSubject(
             sampleName,
             subjectsPoolToAddSampleTo,
@@ -6729,11 +6726,8 @@ const updatePoolDropdown = (poolDropDown, poolName) => {
 
 //On edit button click, creates a new subject ID rename input box
 const openSubjectRenameInput = (subjectNameEditButton) => {
-  console.log(subjectNameEditButton);
   const subjectIdCellToRename = subjectNameEditButton.closest("td");
   const prevSubjectName = subjectIdCellToRename.find(".subject-id").text();
-  console.log(prevSubjectName);
-  console.log(prevSubjectName.search("-"));
   prevSubjectInput = prevSubjectName.substr(prevSubjectName.search("-") + 1);
   const subjectRenameElement = `
     <div class="space-between w-100" style="align-items: center">
@@ -7058,16 +7052,13 @@ const addSampleSpecificationTableRow = (clickedSubjectAddSampleButton) => {
   const sampleSpecificationTableInput = addSampleTableBody.querySelector(
     "input[name='guided-sample-id']"
   );
-  console.log("within add sample function");
   //check for any
 
   if (sampleSpecificationTableInput) {
-    // console.log("exists");
     //focus on the input that already exists
     //No need to create a new row
     sampleSpecificationTableInput.focus();
   } else {
-    // console.log("doesnt exist");
     //create a new table row Input element
     addSampleTableBody.innerHTML += generateSampleSpecificationRowElement();
     const newSamplerow = addSampleTableBody.querySelector("tr:last-child");
@@ -13243,8 +13234,6 @@ $(document).ready(async () => {
     currentParentPageID = CURRENT_PAGE.attr("id");
     //Get the id of the sub-page that's currently open
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
-    console.log(currentParentPageID);
-    console.log(openSubPageID);
 
     switch (currentParentPageID) {
       case "guided-subjects-folder-tab": {
@@ -13853,7 +13842,6 @@ const currentUserDropdown = async () => {
   });
 
   if (pennsieveDetails.isConfirmed) {
-    console.log("handle");
     await openDropdownPrompt(this, "bf");
   }
 };
@@ -13871,17 +13859,14 @@ const airTableButton = document.getElementById(
 );
 
 airTableButton.addEventListener("click", async () => {
-  console.log("Airtable");
   await helpSPARCAward("submission", "guided--getting-started");
 });
 
 dataDeliverableButton.addEventListener("click", async () => {
-  console.log("DD");
   await showDataDeliverableDropDown();
 });
 
 pennsieveButton.addEventListener("click", async () => {
-  console.log("here");
   if (!defaultBfAccount) {
     await openDropdownPrompt(this, "bf");
   } else {
