@@ -1056,7 +1056,7 @@ def update_existing_pennsieve_manifest_file_helper(folder, old_manifest_dict, ne
                         new_manifest_dict["Additional Metadata"].append(folder["files"][file].get("additional-metadata", ""))
                     else:
                         new_manifest_dict[key].append("")
-                    
+
 
             else:
                 # add the existing rows to the new manifest dictionary's arrays
@@ -1302,26 +1302,26 @@ def drop_manifest_empty_columns(manifest_file_location):
     # read the manifest files in the manifest files folder
     high_level_folders = os.listdir(manifest_file_location)
 
+    # get the custom columns from the data frame
+    SET_COLUMNS = ['filename', 'timestamp', 'description', 'file type', 'Additional Metadata']
     # go through each high level folder
     for high_level_folder in high_level_folders:
         # read the folder's excel file 
         manifest_df = pd.read_excel(
                         os.path.join(manifest_file_location, high_level_folder, "manifest.xlsx"), engine="openpyxl", usecols=column_check, header=0
                     )
-        custom_columns = []
-
-        # get the custom columns from the data frame
-        SET_COLUMNS = ['filename', 'timestamp', 'description', 'file type', 'Additional Metadata']
-        for column in manifest_df.columns: 
-            if column not in SET_COLUMNS:
-                custom_columns.append(column)
+        custom_columns = [
+            column
+            for column in manifest_df.columns
+            if column not in SET_COLUMNS
+        ]
 
 
         # for each custom column delete the column if all values are null/empty
         manifest_dict = {x:manifest_df[x].values.tolist() for x in manifest_df}
 
         for column in custom_columns:
-            if all([pd.isna(x) for x in manifest_dict[column]]):
+            if all(pd.isna(x) for x in manifest_dict[column]):
                 # remove the column from dict
                 del manifest_dict[column]
 
