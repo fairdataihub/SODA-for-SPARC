@@ -212,11 +212,11 @@ let user_restart_confirmed = false;
 let updatechecked = false;
 let window_reloaded = false;
 
-const checkForAnnouncements = () => {
-  mainWindow.webContents.send("checkForAnnouncements");
-};
-
 function initialize() {
+  const checkForAnnouncements = () => {
+    mainWindow.webContents.send("checkForAnnouncements");
+  };
+
   makeSingleInstance();
 
   loadDemos();
