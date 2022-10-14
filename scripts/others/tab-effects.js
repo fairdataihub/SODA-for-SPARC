@@ -2169,7 +2169,6 @@ const transitionFreeFormMode = async (
       continueProgressDD = await switchMetadataDDQuestion();
       break;
     case "Question-prepare-dd-1":
-      console.log("HUH");
       continueProgressDD = await switchMetadataDDQuestion();
       break;
     case "Question-prepare-submission-1":
@@ -2280,14 +2279,11 @@ const transitionFreeFormMode = async (
 
   // first, handle target or the next div to show
   var target = document.getElementById(ev.getAttribute("data-next"));
-  console.log(ev);
-  console.log(ev.getAttribute("data-next"));
   if (ev.getAttribute("data-next") === "Question-prepare-dd-2") {
     let newDatasetButtonSelected = document.getElementById(
       "newDatasetDescription-selection"
     );
     if (newDatasetButtonSelected.classList.contains("checked")) {
-      console.log("BRUH");
       document.getElementById("dd-select-pennsieve-dataset").style.display =
         "block";
     } else {
@@ -2363,7 +2359,6 @@ const transitionFreeFormMode = async (
   }
 
   if (ev.getAttribute("data-next") === "Question-prepare-dd-4-sections") {
-    console.log("HUH");
     setTimeout(function () {
       $(target).addClass("test2");
     }, 300);
@@ -2519,7 +2514,6 @@ async function switchMetadataSubSamQuestions(metadataSubSamFile) {
 //// 3. dataset_description
 async function switchMetadataDDQuestion() {
   if ($("#Question-prepare-dd-2").hasClass("show")) {
-    console.log("HUH");
     var { value: continueProgressDD } = await Swal.fire({
       title:
         "This will reset your progress so far with the dataset_description.xlsx file. Are you sure you want to continue?",
@@ -2538,7 +2532,6 @@ async function switchMetadataDDQuestion() {
     }
     return continueProgressDD;
   } else {
-    console.log("HUH");
     return true;
   }
 }

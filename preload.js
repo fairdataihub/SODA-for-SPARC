@@ -761,10 +761,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               });
             }
 
-            console.log(dropdownEventID);
             if (dropdownEventID === "dd-select-pennsieve-dataset") {
-              console.log("HUH");
-              console.log(document.getElementById("bf-dataset-subtitle").value);
               $("#ds-name").val(bfDataset);
               $("#ds-description").val = $("#bf-dataset-subtitle").val;
               $("body").removeClass("waiting");
@@ -799,10 +796,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         });
 
         if ($("#current-bf-dataset-generate").text() === "None") {
-          console.log("HUH");
           showHideDropdownButtons("dataset", "hide");
         } else {
-          console.log("HUH");
           showHideDropdownButtons("dataset", "show");
         }
         //currently changing it but not visually in the UI
@@ -816,7 +811,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         );
 
         if (newDatasetButtonSelected.classList.contains("checked")) {
-          console.log("HMM");
           document
             .getElementById("Question-prepare-dd-2")
             .classList.add("show");
@@ -837,7 +831,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             "none";
           let onPennsieveButton =
             onMyCompButton.parentElement.parentElement.children[1].children[0];
-          console.log(onPennsieveButton);
           if (onMyCompButton.classList.contains("checked")) {
             document
               .getElementById("Question-prepare-dd-3")

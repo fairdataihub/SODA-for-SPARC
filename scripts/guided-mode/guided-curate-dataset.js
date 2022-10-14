@@ -2849,7 +2849,6 @@ const traverseToTab = async (targetPageID) => {
           },
           true
         );
-        console.log(addListener);
         if (addListener) {
           pennsieveCopy.addEventListener("click", () => {
             copyLink(datasetLink);
