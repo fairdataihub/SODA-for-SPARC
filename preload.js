@@ -761,8 +761,10 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
               });
             }
 
+            console.log(dropdownEventID);
             if (dropdownEventID === "dd-select-pennsieve-dataset") {
               console.log("HUH");
+              console.log(bfDataset);
               $("#ds-name").val(bfDataset);
               $("body").removeClass("waiting");
               $(".svg-change-current-account.dataset").css("display", "block");
@@ -813,9 +815,13 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
         );
 
         if (newDatasetButtonSelected.classList.contains("checked")) {
+          console.log("HMM");
           document
             .getElementById("Question-prepare-dd-2")
             .classList.add("show");
+
+          document.getElementById("dd-select-pennsieve-dataset").style.display =
+            "block";
         } else {
           document
             .getElementById("Question-prepare-dd-4")
@@ -823,6 +829,8 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
           let onMyCompButton = document.getElementById(
             "Question-prepare-dd-4-new"
           );
+          document.getElementById("dd-select-pennsieve-dataset").style.display =
+            "none";
           let onPennsieveButton =
             onMyCompButton.parentElement.parentElement.children[1].children[0];
           console.log(onPennsieveButton);
