@@ -910,6 +910,7 @@ function edit_current_sample_id(ev) {
   loadSampleInformation(ev, subjectID, sampleID);
 }
 async function edit_current_protocol_id(ev) {
+  let oldProtocolLink = ""
   var currentRow = $(ev).parents()[2];
   var link = $(currentRow)[0].cells[1].innerText;
   var type = $(currentRow)[0].cells[2].innerText;
@@ -935,42 +936,51 @@ async function edit_current_protocol_id(ev) {
     didOpen: () => {
       $("#DD-protocol-link-select").val(type);
       $("#DD-protocol-link-relation").val(relation);
+      oldProtocolLink = $("#DD-protocol-link").val();
     },
     preConfirm: () => {
       let link = $("#DD-protocol-link").val();
+      let protocolEdited = oldProtocolLink !== link;
       if ($("#DD-protocol-link").val() === "") {
         Swal.showValidationMessage(`Please enter a link!`);
       } else {
-        if (doiRegex.declared({ exact: true }).test(link) === true) {
-          //format must begin with doi:
-          //example: doi:10.1000/xyz000
-          protocolLink = "DOI";
-        } else {
-          //check if link is a valid URL
-          if (validator.isURL(link) != true) {
-            Swal.showValidationMessage("Please enter a valid link");
+        if (protocolEdited) {
+          if (doiRegex.declared({ exact: true }).test(link) === true) {
+            //format must begin with doi:
+            //example: doi:10.1000/xyz000
+            protocolLink = "DOI";
           } else {
-            if (link.includes("doi")) {
-              //link is valid url and checks for 'doi' in link
-              protocolLink = "DOI";
+            //check if link is a valid URL
+            if (validator.isURL(link) != true) {
+              Swal.showValidationMessage("Please enter a valid link");
             } else {
-              protocolLink = "URL";
+              if (link.includes("doi")) {
+                //link is valid url and checks for 'doi' in link
+                protocolLink = "DOI";
+              } else {
+                protocolLink = "URL";
+              }
             }
           }
         }
       }
+
       if ($("#DD-protocol-description").val() === "") {
         Swal.showValidationMessage(`Please enter a short description!`);
       }
-      let duplicate = checkLinkDuplicate(
-        $("#DD-protocol-link").val(),
-        document.getElementById("protocol-link-table-dd")
-      );
-      if (duplicate) {
-        Swal.showValidationMessage(
-          "Duplicate protocol. The protocol you entered is already added."
+
+      if (protocolEdited) {
+        let duplicate = checkLinkDuplicate(
+          $("#DD-protocol-link").val(),
+          document.getElementById("protocol-link-table-dd")
         );
+        if (duplicate) {
+          Swal.showValidationMessage(
+            "Duplicate protocol. The protocol you entered is already added."
+          );
+        }
       }
+
       //need to check for duplicates here
       return [
         $("#DD-protocol-link").val(),

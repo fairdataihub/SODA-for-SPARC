@@ -1815,7 +1815,19 @@ const guidedResetUserTeamPermissionsDropdowns = () => {
   $("#select-permission-list-users-and-teams").val("Select role");
 };
 
-let createEventListenerforCopyLink = true;
+let addListener = true;
+function copyLink(link) {
+  const copyIcon = document.getElementById("guided-pennsieve-copy-icon");
+  Clipboard.writeText(link);
+  copyIcon.classList.remove("fa-copy");
+  copyIcon.classList.add("fa-check");
+
+  notyf.open({
+    duration: "2000",
+    type: "success",
+    message: "Link copied!",
+  });
+}
 
 //Main function that prepares individual pages based on the state of the sodaJSONObj
 //The general flow is to check if there is values for the keys relevant to the page
@@ -2819,6 +2831,8 @@ const traverseToTab = async (targetPageID) => {
         );
 
         const copyIcon = document.getElementById("guided-pennsieve-copy-icon");
+        copyIcon.classList.remove("fa-check");
+        copyIcon.classList.add("fa-copy");
 
         let datasetLink = `https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/datasets/${pennsieveDatasetID}/overview`;
         let linkIcon = `<i class="fas fa-link" style="margin-right: 0.4rem; margin-left: 0.4rem"></i>`;
@@ -2827,20 +2841,20 @@ const traverseToTab = async (targetPageID) => {
         pennsieveDatasetLink.href = datasetLink;
 
         // TODO: removed link copied notyf until we can get it to not fire twice.
-        function copyLink() {
-          Clipboard.writeText(datasetLink);
-          copyIcon.classList.remove("fa-copy");
-          copyIcon.classList.add("fa-check");
 
-          // notyf.open({
-          //   duration: "2000",
-          //   type: "success",
-          //   message: "Link copied!",
-          // });
+        pennsieveCopy.removeEventListener(
+          "click",
+          () => {
+            copyLink(datasetLink);
+          },
+          true
+        );
+        if (addListener) {
+          pennsieveCopy.addEventListener("click", () => {
+            copyLink(datasetLink);
+          });
+          addListener = false;
         }
-
-        // pennsieveCopy.removeEventListener("click", copyLink);
-        $(pennsieveCopy).on("click", copyLink);
       }
 
       /*

@@ -5,7 +5,6 @@ const demoBtns = document.querySelectorAll(".js-container-target");
 Array.prototype.forEach.call(demoBtns, (btn) => {
   btn.addEventListener("click", (event) => {
     const parent = event.target.parentElement;
-    console.log("huh");
 
     // Toggles the "is-open" class on the demo's parent element.
     parent.classList.toggle("is-open");
