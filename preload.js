@@ -185,7 +185,7 @@ function confirm_click_function() {
 }
 
 var dropdownEventID = "";
-async function openDropdownPrompt(ev, dropdown, show_timer = true) {
+const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
   // if users edit current account
   if (dropdown === "bf") {
     var resolveMessage = "";
@@ -764,8 +764,9 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             console.log(dropdownEventID);
             if (dropdownEventID === "dd-select-pennsieve-dataset") {
               console.log("HUH");
-              console.log(bfDataset);
+              console.log(document.getElementById("bf-dataset-subtitle").value);
               $("#ds-name").val(bfDataset);
+              $("#ds-description").val = $("#bf-dataset-subtitle").val;
               $("body").removeClass("waiting");
               $(".svg-change-current-account.dataset").css("display", "block");
               dropdownEventID = "";
@@ -822,6 +823,9 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
 
           document.getElementById("dd-select-pennsieve-dataset").style.display =
             "block";
+          document.getElementById("ds-name").value = document.getElementById(
+            "rename_dataset_name"
+          ).innerText;
         } else {
           document
             .getElementById("Question-prepare-dd-4")
@@ -900,4 +904,4 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       );
     }, 10);
   }
-}
+};
