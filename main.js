@@ -25,7 +25,6 @@ autoUpdater.logger = log;
 global.trackEvent = trackEvent;
 
 const nodeStorage = new JSONStorage(app.getPath("userData"));
-// console.log(nodeStorage);
 /*************************************************************
  * Python Process
  *************************************************************/

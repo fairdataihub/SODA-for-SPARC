@@ -396,7 +396,6 @@ const openDDDimport = async (curationMode) => {
       //append file path
       DDLottie.innerHTML = "";
       let firstItem = swal_content.children[0];
-      console.log(swal_content);
       let paragraph = document.createElement("p");
       let paragraph2 = document.createElement("p");
       paragraph.id = "getting-started-filepath";
@@ -406,7 +405,6 @@ const openDDDimport = async (curationMode) => {
       paragraph.style.marginTop = "1rem";
       paragraph.style.fontWeight = "700";
       paragraph.innerText = "File Path: " + filepath[0];
-      console.log(firstItem);
       if (firstItem.children[0].id === "getting-started-filepath") {
         firstItem.children[0].remove();
         firstItem.children[firstItem.childElementCount - 1].remove();

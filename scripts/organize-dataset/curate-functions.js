@@ -334,7 +334,6 @@ async function dropHandler(
               if (ddFilePath) {
                 //append file path
                 let firstItem = swal_content.children[0];
-                console.log(swal_content);
                 let paragraph = document.createElement("p");
                 let paragraph2 = document.createElement("p");
                 paragraph.id = "getting-started-filepath";
@@ -344,7 +343,6 @@ async function dropHandler(
                 paragraph.style.marginTop = "1rem";
                 paragraph.style.fontWeight = "700";
                 paragraph.innerText = "File Path: " + ddFilePath;
-                console.log(firstItem);
                 if (firstItem.children[0].id === "getting-started-filepath") {
                   firstItem.children[0].remove();
                   firstItem.children[firstItem.childElementCount - 1].remove();
@@ -367,7 +365,6 @@ async function dropHandler(
           });
         }
       } else {
-        console.log("DD???");
         //dataDelieravles is true for the name to be however it needs to be, just check extension is doc or docx
         if (metadataWithoutExtension === metadataFile) {
           if (metadataFileExtensionObject[metadataFile].includes(extension)) {
@@ -1421,11 +1418,8 @@ $(document).ready(function () {
 });
 
 const moveItems = async (ev, category) => {
-  console.log(organizeDSglobalPath);
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-  console.log(filtered);
-  console.log(myPath);
   var selectedOriginalLocation = filtered[filtered.length - 1];
   var selectedItem = ev.parentElement.innerText;
   let item_name = ev.nextSibling.innerText;
@@ -1668,7 +1662,6 @@ const moveItems = async (ev, category) => {
           listItems(datasetStructureJSONObj, "#items", 500);
           organizeLandingUIEffect();
           // reconstruct div with new elements
-          console.log(organizeDSglobalPath);
           getInFolder(
             ".single-item",
             "#items",
@@ -1682,13 +1675,10 @@ const moveItems = async (ev, category) => {
           if (
             Object.keys(myPath?.["folders"]?.[folderDestinationName]).length > 0
           ) {
-            console.log("NOt empty");
             //check if element has empty class
             let listedItems = document.getElementsByClassName("folder_desc");
-            console.log(listedItems);
             for (let i = 0; i < listedItems.length; i++) {
               if (listedItems[i].innerText === folderDestinationName) {
-                console.log(listedItems[i].parentElement);
                 listedItems[i].parentElement.children[0].classList.remove(
                   "empty"
                 );
