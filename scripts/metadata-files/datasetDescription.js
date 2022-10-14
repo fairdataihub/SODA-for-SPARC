@@ -7,7 +7,7 @@ document.querySelectorAll(".dd-change-current-account").forEach((element) => {
 
 document.querySelectorAll(".dd-change-current-ds").forEach((element) => {
   element.addEventListener("click", function () {
-    openDropdownPrompt(element, "dataset");
+    openDropdownPrompt(null, "dataset");
   });
 });
 
