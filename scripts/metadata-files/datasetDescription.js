@@ -2854,7 +2854,7 @@ function importExistingDDFile() {
   }
 }
 
-async function checkBFImportDD() {
+const checkBFImportDD = async () => {
   Swal.fire({
     title: "Importing the dataset_description.xlsx file",
     html: "Please wait...",
@@ -2913,7 +2913,7 @@ async function checkBFImportDD() {
       Destinations.PENNSIEVE
     );
   }
-}
+};
 
 async function loadDDfileDataframe(filePath) {
   try {
