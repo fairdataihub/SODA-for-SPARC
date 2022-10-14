@@ -4888,8 +4888,19 @@ const getContributorByOrcid = (orcid) => {
   return contributor;
 };
 
-const verifyOrcidID = () => {
-  console.log();
+const verifyOrcidID = (event) => {
+  // console.log(event.value);
+  let userInput = event.value;
+  //17 chars
+  if (userInput.length > 17) {
+    console.log(userInput);
+    if (userInput === "https://orcid.org/") {
+      console.log("correct format");
+      //verify every four characters forward if they are a number
+    }
+    // console.log(userInput.substr(17));
+    //char 18 will be after the forward slash
+  }
 };
 
 const updateContributorByOrcid = (
@@ -4966,7 +4977,7 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
           <input
             class="guided--input"
             id="guided-contributor-orcid"
-            onkeyup="verifyOrcidID()"
+            onkeyup="verifyOrcidID(this)"
             type="text"
             placeholder="https://orcid.org/0000-0000-0000-0000"
             value=""
@@ -5225,6 +5236,7 @@ const openGuidedAddContributorSwal = async () => {
           <input
             class="guided--input"
             id="guided-contributor-orcid"
+            onkeyup="verifyOrcidID(this)"
             type="text"
             placeholder="https://orcid.org/0000-0000-0000-0000"
             value=""
@@ -5378,6 +5390,15 @@ const openGuidedAddContributorSwal = async () => {
         } catch (error) {
           Swal.showValidationMessage(error);
         }
+      }
+
+      console.log(contributorOrcid.length);
+      if (contributorOrcid.length != 37) {
+        Swal.showValidationMessage(
+          "Please enter a valid Orcid ID in the format https://orcid.org/0000-0000-0000-0000"
+        );
+      } else {
+        console.log("looks good");
       }
 
       //rerender the table after adding a contributor
