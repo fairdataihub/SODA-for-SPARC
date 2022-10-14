@@ -638,6 +638,9 @@ async function addStrain(ev, type, curationMode) {
 
 // populate RRID
 function populateRRID(strain, type, curationMode) {
+  console.log(strain);
+  console.log(type);
+  console.log(curationMode);
   let curationModeSelectorPrefix = "";
   if (curationMode == "guided") {
     curationModeSelectorPrefix = "guided-";
@@ -3553,6 +3556,9 @@ function readXMLScicrunch(xml, type, curationMode) {
       $(`#${curationModeSelectorPrefix}bootbox-subject-strain-RRID`).val(
         rrid.trim()
       );
+      if (curationMode == "guided") {
+        $(`#guided-bootbox-subject-strain-RRID`).css("display", flex);
+      }
       res = true;
     } else {
       $(`#${curationModeSelectorPrefix}bootbox-subject-strain-RRID`).val("");
