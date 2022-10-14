@@ -7,7 +7,7 @@ document.querySelectorAll(".dd-change-current-account").forEach((element) => {
 
 document.querySelectorAll(".dd-change-current-ds").forEach((element) => {
   element.addEventListener("click", function () {
-    openDropdownPrompt(null, "dataset");
+    openDropdownPrompt(element, "dataset");
   });
 });
 
@@ -976,7 +976,6 @@ async function addProtocol() {
       if (link === "") {
         Swal.showValidationMessage(`Please enter a link!`);
       } else {
-
         if (doiRegex.declared({ exact: true }).test(link) === true) {
           protocolLink = "DOI";
         } else {

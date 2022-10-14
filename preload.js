@@ -185,7 +185,9 @@ function confirm_click_function() {
 }
 
 var dropdownEventID = "";
-async function openDropdownPrompt(ev, dropdown, show_timer = true) {
+const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
+  console.log(ev);
+  console.log(dropdown);
   // if users edit current account
   if (dropdown === "bf") {
     var resolveMessage = "";
@@ -760,8 +762,9 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
                 },
               });
             }
-
+            console.log(dropdownEventID);
             if (dropdownEventID === "dd-select-pennsieve-dataset") {
+              console.log("HUH");
               $("#ds-name").val(bfDataset);
               $("body").removeClass("waiting");
               $(".svg-change-current-account.dataset").css("display", "block");
@@ -857,4 +860,4 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       );
     }, 10);
   }
-}
+};
