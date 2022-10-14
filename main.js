@@ -212,6 +212,10 @@ let user_restart_confirmed = false;
 let updatechecked = false;
 let window_reloaded = false;
 
+const checkForAnnouncements = () => {
+  mainWindow.webContents.send("checkForAnnouncements");
+};
+
 function initialize() {
   makeSingleInstance();
 
@@ -229,10 +233,6 @@ function initialize() {
         autoUpdater.checkForUpdatesAndNotify();
       }
     });
-
-    const checkForAnnouncements = () => {
-      mainWindow.webContents.send("checkForAnnouncements");
-    };
 
     mainWindow.on("close", async (e) => {
       if (!user_restart_confirmed) {
