@@ -5,7 +5,6 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-<<<<<<< HEAD
 ## v.9.3.1 - 2022-10-14
 
 ## Feature additions:
@@ -16,8 +15,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Guided Mode: When Pennsieve link is copied a a notyf was created. Sometimes multiple notyfs were created at once and has been patched to only do so once.
 - Prepare Metadata -> Dataset description -> Edit protocols: Duplicate protocols will not be allowed and when editing a protocol the current name can accepted again.
 - Prepare Metadata -> Dataset description -> Click here to select my dataset from Pennsieve: would hide the page after selecting a dataset. Has been patched to behave accordingly.
-=======
->>>>>>> 90c77e1207eb40706edcc3aad327f86c9000048c
 
 ## v.9.3.0 - 2022-10-13
 
