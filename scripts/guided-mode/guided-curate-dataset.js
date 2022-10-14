@@ -4888,6 +4888,10 @@ const getContributorByOrcid = (orcid) => {
   return contributor;
 };
 
+const verifyOrcidID = () => {
+  console.log();
+};
+
 const updateContributorByOrcid = (
   contributorFirstName,
   contributorLastName,
@@ -4962,6 +4966,7 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
           <input
             class="guided--input"
             id="guided-contributor-orcid"
+            onkeyup="verifyOrcidID()"
             type="text"
             placeholder="https://orcid.org/0000-0000-0000-0000"
             value=""
