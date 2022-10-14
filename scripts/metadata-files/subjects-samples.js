@@ -557,6 +557,9 @@ async function addSpecies(ev, type, curationMode) {
 }
 
 function switchSpeciesStrainInput(type, mode, curationMode) {
+  console.log(type);
+  console.log(mode);
+  console.log(curationMode);
   let curationModeSelectorPrefix = "";
   if (curationMode == "guided") {
     curationModeSelectorPrefix = "guided-";
@@ -590,6 +593,8 @@ function switchSpeciesStrainInput(type, mode, curationMode) {
 }
 
 async function addStrain(ev, type, curationMode) {
+  console.log(type);
+  console.log(curationMode);
   let curationModeSelectorPrefix = "";
   if (curationMode == "guided") {
     curationModeSelectorPrefix = "guided-";
@@ -618,12 +623,15 @@ async function addStrain(ev, type, curationMode) {
       return document.getElementById("sweetalert-" + type + "-strain").value;
     },
   });
+  console.log(value);
   if (value) {
     if (value !== "") {
+      console.log(value);
       $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val(value);
       switchSpeciesStrainInput("strain", "edit", curationMode);
     }
   } else {
+    console.log("adding strain");
     switchSpeciesStrainInput("strain", "add", curationMode);
   }
 }
@@ -654,8 +662,7 @@ function populateRRID(strain, type, curationMode) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {
-  });
+  }).then((result) => {});
   https.get(rridInfo, (res) => {
     if (res.statusCode === 200) {
       let data = "";
@@ -764,9 +771,9 @@ function addSubjectMetadataEntriesIntoJSON(curationMode) {
     if (field.name === "Age") {
       if (
         $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val() !==
-        "Select" &&
+          "Select" &&
         $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val() !==
-        "N/A"
+          "N/A"
       ) {
         field.value =
           field.value +
@@ -844,9 +851,9 @@ function addSampleMetadataEntriesIntoJSON(curationMode) {
     if (field.name === "Age") {
       if (
         $(`#${curationModeSelectorPrefix}bootbox-sample-age-info`).val() !==
-        "Select" &&
+          "Select" &&
         $(`#${curationModeSelectorPrefix}bootbox-sample-age-info`).val() !==
-        "N/A"
+          "N/A"
       ) {
         field.value =
           field.value +
@@ -910,7 +917,7 @@ function edit_current_sample_id(ev) {
   loadSampleInformation(ev, subjectID, sampleID);
 }
 async function edit_current_protocol_id(ev) {
-  let oldProtocolLink = ""
+  let oldProtocolLink = "";
   var currentRow = $(ev).parents()[2];
   var link = $(currentRow)[0].cells[1].innerText;
   var type = $(currentRow)[0].cells[2].innerText;
@@ -1165,11 +1172,10 @@ function populateForms(subjectID, type, curationMode) {
 
             const protocols =
               sodaJSONObj["dataset-metadata"]["description-metadata"][
-              "protocols"
+                "protocols"
               ];
             for (const protocol of protocols) {
               if (protocol.link === previouslySavedProtocolURL) {
-
                 protocolTitleDropdown.value = protocol.description;
                 protocolURLDropdown.value = protocol.link;
               }
@@ -1282,7 +1288,7 @@ function populateFormsSamples(subjectID, sampleID, type, curationMode) {
 
             const protocols =
               sodaJSONObj["dataset-metadata"]["description-metadata"][
-              "protocols"
+                "protocols"
               ];
             for (const protocol of protocols) {
               if (protocol.link === previouslySavedProtocolURL) {
@@ -2749,7 +2755,7 @@ function importExistingSubjectsFile() {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       setTimeout(loadSubjectsFileToDataframe, 1000, filePath);
     }
   }
@@ -2803,7 +2809,7 @@ function importExistingSamplesFile() {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       setTimeout(loadSamplesFileToDataframe(filePath), 1000);
     }
   }
@@ -2823,7 +2829,7 @@ async function checkBFImportSubjects() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   var fieldEntries = [];
   for (var field of $("#form-add-a-subject")
     .children()
@@ -2893,7 +2899,7 @@ async function checkBFImportSamples() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   var fieldEntries = [];
   for (var field of $("#form-add-a-sample")
     .children()

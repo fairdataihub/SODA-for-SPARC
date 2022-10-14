@@ -863,7 +863,6 @@ const extractFilNamesFromManifestData = (manifestData) => {
   //return sorted allFileNamesinDsStructure
   return allFileNamesinDsStructure.sort();
 };
-
 const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
   const prevManifestFileNames =
     extractFilNamesFromManifestData(existingManifestData);
