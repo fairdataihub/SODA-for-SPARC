@@ -5250,7 +5250,7 @@ const openGuidedAddContributorSwal = async () => {
      
           </p>
           <label class="guided--form-label mt-md required">Affiliation(s): </label>
-          <input id="guided-contributor-affiliation-input"
+          <input id="guided-contributor-affiliation-input" style="text-align: left;"
             contenteditable="true"
           />
           <p class="guided--text-input-instructions mb-0 text-left">
@@ -5398,6 +5398,12 @@ const openGuidedAddContributorSwal = async () => {
           "Please enter a valid Orcid ID in the format https://orcid.org/0000-0000-0000-0000"
         );
       } else {
+        let orcidValues = contributorOrcid.substr(17);
+        console.log(orcidValues);
+        //verify first 17 chars are https://orcird.org/
+
+        //then verify the 16 numbers
+        //last number can be X (represents 10)
         console.log("looks good");
       }
 
