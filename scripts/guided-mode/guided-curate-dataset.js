@@ -5124,11 +5124,6 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
             const result = (12 - remainder) % 11;
             const checkDigit = result === 10 ? "X" : String(result);
 
-            console.log(remainder);
-            console.log(result);
-            console.log(checkDigit);
-            console.log(total);
-
             if (checkDigit !== contributorOrcid.substr(-1)) {
               Swal.showValidationMessage("ORCID is not valid");
             } else {
@@ -5424,8 +5419,6 @@ const openGuidedAddContributorSwal = async () => {
       ) {
         Swal.showValidationMessage("Please fill out all required fields");
       } else {
-        console.log(contributorOrcid);
-        console.log(contributorOrcid.length);
         if (contributorOrcid.length != 37) {
           Swal.showValidationMessage(
             "Please enter Orcid ID in the format: https://orcid.org/0000-0000-0000-0000"
@@ -5452,12 +5445,6 @@ const openGuidedAddContributorSwal = async () => {
             const result = (12 - remainder) % 11;
             const checkDigit = result === 10 ? "X" : String(result);
 
-            console.log(remainder);
-            console.log(result);
-            console.log(checkDigit);
-            console.log(total);
-            console.log(contributorOrcid.substr(-1));
-
             if (checkDigit !== contributorOrcid.substr(-1)) {
               Swal.showValidationMessage("ORCID is not valid");
             } else {
@@ -5473,6 +5460,10 @@ const openGuidedAddContributorSwal = async () => {
                 Swal.showValidationMessage(error);
               }
             }
+          } else {
+            Swal.showValidationMessage(
+              "Please enter your ORCID ID with https://orcid.org/ in the beginning"
+            );
           }
         }
       }
