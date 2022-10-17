@@ -327,7 +327,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           popup: "animate__animated animate__fadeOutUp animate__faster",
         },
 
-        footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-a-pennsieve-account" style="text-decoration: none;">I don't have a Pennsieve account and/or access to the SPARC Consortium Organization</a>`,
+        footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-a-pennsieve-account" style="text-decoration: none;">I don't have a Pennsieve account and/or access to the SPARC Organization</a>`,
 
         didOpen: () => {
           $(".swal-popover").popover();
@@ -373,7 +373,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
                 response[1]["message"] ===
                 "exceptions must derive from BaseException"
               ) {
-                error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">It seems that you do not have access to the SPARC Consortium organization on Pennsieve. See our <a target="_blank" href="https://docs.sodaforsparc.io/docs/next/how-to/how-to-get-a-pennsieve-account">[dedicated help page]</a> to learn how to get access</div>`;
+                error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">It seems that you do not have access to the SPARC Organization on Pennsieve. See our <a target="_blank" href="https://docs.sodaforsparc.io/docs/next/how-to/how-to-get-a-pennsieve-account">[dedicated help page]</a> to learn how to get access</div>`;
               }
               if (
                 response[1]["message"] ===
