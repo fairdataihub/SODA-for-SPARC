@@ -4894,9 +4894,12 @@ const verifyOrcidID = (event) => {
   //17 chars
   if (userInput.length > 17) {
     console.log(userInput);
-    if (userInput === "https://orcid.org/") {
+    console.log(userInput.substr(0, 18));
+    if (userInput.substr(0, 18) === "https://orcid.org/") {
       console.log("correct format");
       //verify every four characters forward if they are a number
+      let afterLink = userInput.substr(18);
+      console.log(afterLink);
     }
     // console.log(userInput.substr(17));
     //char 18 will be after the forward slash
@@ -5094,17 +5097,59 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
       ) {
         Swal.showValidationMessage("Please fill out all required fields");
       } else {
-        try {
-          editContributorByOrcid(
-            contibuttorOrcidToEdit,
-            contributorFirstName,
-            contributorLastName,
-            contributorOrcid,
-            contributorAffiliations,
-            contributorRoles
+        console.log(contributorOrcid);
+        console.log(contributorOrcid.length);
+        if (contributorOrcid.length != 37) {
+          Swal.showValidationMessage(
+            "Please enter Orcid ID in the format: https://orcid.org/0000-0000-0000-0000"
           );
-        } catch (error) {
-          Swal.showValidationMessage(error);
+        } else {
+          //verify first orcid link
+          let orcidSite = contributorOrcid.substr(0, 18);
+          console.log(orcidSite);
+          if (orcidSite === "https://orcid.org/") {
+            //verify digits after
+            let orcidDigits = contributorOrcid.substr(18);
+            console.log(orcidDigits);
+            let total = 0;
+            for (let i = 0; i < orcidDigits.length - 1; i++) {
+              const digit = parseInt(orcidDigits.substr(i, 1));
+              if (isNaN(digit)) {
+                continue;
+              }
+              total = (total + digit) * 2;
+            }
+
+            const remainder = total % 11;
+            const result = (12 - remainder) % 11;
+            const checkDigit = result === 10 ? "X" : String(result);
+
+            console.log(remainder);
+            console.log(result);
+            console.log(checkDigit);
+            console.log(total);
+
+            if (checkDigit !== contributorOrcid.substr(-1)) {
+              Swal.showValidationMessage("ORCID is not valid");
+            } else {
+              try {
+                editContributorByOrcid(
+                  contibuttorOrcidToEdit,
+                  contributorFirstName,
+                  contributorLastName,
+                  contributorOrcid,
+                  contributorAffiliations,
+                  contributorRoles
+                );
+              } catch (error) {
+                Swal.showValidationMessage(error);
+              }
+            }
+          } else {
+            Swal.showValidationMessage(
+              "Please enter your ORCID ID with https://orcid.org/ in the beginning"
+            );
+          }
         }
       }
 
@@ -5379,32 +5424,57 @@ const openGuidedAddContributorSwal = async () => {
       ) {
         Swal.showValidationMessage("Please fill out all required fields");
       } else {
-        try {
-          addContributor(
-            contributorFirstName,
-            contributorLastName,
-            contributorOrcid,
-            contributorAffiliations,
-            contributorRoles
+        console.log(contributorOrcid);
+        console.log(contributorOrcid.length);
+        if (contributorOrcid.length != 37) {
+          Swal.showValidationMessage(
+            "Please enter Orcid ID in the format: https://orcid.org/0000-0000-0000-0000"
           );
-        } catch (error) {
-          Swal.showValidationMessage(error);
+        } else {
+          //verify first orcid link
+          let orcidSite = contributorOrcid.substr(0, 18);
+          console.log(orcidSite);
+          if (orcidSite === "https://orcid.org/") {
+            //verify digits after
+            let orcidDigits = contributorOrcid.substr(18);
+            console.log(orcidDigits);
+            let total = 0;
+            for (let i = 0; i < orcidDigits.length - 1; i++) {
+              const digit = parseInt(orcidDigits.substr(i, 1));
+              if (isNaN(digit)) {
+                continue;
+              }
+              total = (total + digit) * 2;
+              console.log(total);
+            }
+
+            const remainder = total % 11;
+            const result = (12 - remainder) % 11;
+            const checkDigit = result === 10 ? "X" : String(result);
+
+            console.log(remainder);
+            console.log(result);
+            console.log(checkDigit);
+            console.log(total);
+            console.log(contributorOrcid.substr(-1));
+
+            if (checkDigit !== contributorOrcid.substr(-1)) {
+              Swal.showValidationMessage("ORCID is not valid");
+            } else {
+              try {
+                addContributor(
+                  contributorFirstName,
+                  contributorLastName,
+                  contributorOrcid,
+                  contributorAffiliations,
+                  contributorRoles
+                );
+              } catch (error) {
+                Swal.showValidationMessage(error);
+              }
+            }
+          }
         }
-      }
-
-      console.log(contributorOrcid.length);
-      if (contributorOrcid.length != 37) {
-        Swal.showValidationMessage(
-          "Please enter a valid Orcid ID in the format https://orcid.org/0000-0000-0000-0000"
-        );
-      } else {
-        let orcidValues = contributorOrcid.substr(17);
-        console.log(orcidValues);
-        //verify first 17 chars are https://orcird.org/
-
-        //then verify the 16 numbers
-        //last number can be X (represents 10)
-        console.log("looks good");
       }
 
       //rerender the table after adding a contributor
