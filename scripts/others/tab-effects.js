@@ -1315,7 +1315,6 @@ const create_json_object = (action, sodaJSONObj, root_folder_path) => {
     }
   });
 
-
   // go through each individual high level folder and create the structure
   // If a manifest file exists, read information from the manifest file into a json object
   for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
@@ -1585,7 +1584,6 @@ const recursive_structure_create = (
       }
     }
 
-    
     if (stats.isDirectory() && !/(^|\/)\.[^\/\.]/g.test(file)) {
       if (irregularFolderArray.includes(current_file_path)) {
         var renamedFolderName = "";
@@ -2122,13 +2120,13 @@ async function transitionSubQuestionsButton(
   }
 }
 
-async function transitionFreeFormMode(
+const transitionFreeFormMode = async (
   ev,
   currentDiv,
   parentDiv,
   button,
   category
-) {
+) => {
   let continueProgressRC = true;
   let continueProgressDD = true;
 
@@ -2262,7 +2260,7 @@ async function transitionFreeFormMode(
     .find(".option-card.radio-button")
     .addClass("non-selected");
 
-  // empty para elements (TODO: will convert these para elements to a swal2 alert so we dont have to clear them out)
+  // empty para elements (TODO: will convert these para elements to a swal2 alert so we don't have to clear them out)
   $("#para-submit_prepublishing_review-status").text("");
 
   if (ev.getAttribute("data-next") === "div_make_pi_owner_permissions") {
@@ -2281,6 +2279,18 @@ async function transitionFreeFormMode(
 
   // first, handle target or the next div to show
   var target = document.getElementById(ev.getAttribute("data-next"));
+  if (ev.getAttribute("data-next") === "Question-prepare-dd-2") {
+    let newDatasetButtonSelected = document.getElementById(
+      "newDatasetDescription-selection"
+    );
+    if (newDatasetButtonSelected.classList.contains("checked")) {
+      document.getElementById("dd-select-pennsieve-dataset").style.display =
+        "block";
+    } else {
+      document.getElementById("dd-select-pennsieve-dataset").style.display =
+        "none";
+    }
+  }
   // hide related previous divs
   hidePrevDivs(currentDiv, category);
   // display the target tab (data-next tab)
@@ -2375,7 +2385,7 @@ async function transitionFreeFormMode(
   if (ev.getAttribute("data-next") === "Question-prepare-samples-2") {
     $("#Question-prepare-samples-2 button").show();
   }
-}
+};
 
 // handles it when users switch options between Locally and on Pennsieve (Question 2 for each metadata file)
 // 1. Readme and Changes (MetadataRC)

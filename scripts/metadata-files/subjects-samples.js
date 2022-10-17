@@ -501,6 +501,10 @@ function clearAllSubjectFormFields(form) {
       "none"
     );
 
+    if (form === guidedSubjectsFormDiv) {
+      guidedSetStrainRRID("");
+    }
+
     $(`#${curationModeSelectorPrefix}button-add-species-${keyword}`).html(
       `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
     );
@@ -525,6 +529,9 @@ async function addSpecies(ev, type, curationMode) {
   }
 
   $(`#${curationModeSelectorPrefix}bootbox-${type}-species`).val("");
+  if (curationMode == "guided") {
+    guidedSetStrainRRID("");
+  }
   const { value: value } = await Swal.fire({
     title: "Add/Edit a species",
     html: `<input type="text" id="sweetalert-${type}-species" placeholder="Search for species..." style="font-size: 14px;"/>`,
@@ -589,12 +596,35 @@ function switchSpeciesStrainInput(type, mode, curationMode) {
   }
 }
 
+const guidedSetStrainRRID = (RRID) => {
+  const rridLabel = document.getElementById("guided-strain-rrid-label");
+  const rridInput = document.getElementById(
+    "guided-bootbox-subject-strain-RRID"
+  );
+
+  if (!RRID) {
+    rridLabel.classList.add("hidden");
+    rridInput.style.display = "none";
+    rridInput.value = "";
+    return;
+  }
+
+  rridLabel.classList.remove("hidden");
+  rridInput.style.display = "flex";
+  rridInput.value = RRID;
+};
+
 async function addStrain(ev, type, curationMode) {
   let curationModeSelectorPrefix = "";
   if (curationMode == "guided") {
     curationModeSelectorPrefix = "guided-";
   }
+
   $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
+  if (curationMode == "guided") {
+    guidedSetStrainRRID("");
+  }
+
   const { value: value } = await Swal.fire({
     title: "Add/Edit a strain",
     html: `<input type="text" id="sweetalert-${type}-strain" placeholder="Search for strain..." style="font-size: 14px;"/>`,
@@ -654,8 +684,7 @@ function populateRRID(strain, type, curationMode) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {
-  });
+  }).then((result) => {});
   https.get(rridInfo, (res) => {
     if (res.statusCode === 200) {
       let data = "";
@@ -764,9 +793,9 @@ function addSubjectMetadataEntriesIntoJSON(curationMode) {
     if (field.name === "Age") {
       if (
         $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val() !==
-        "Select" &&
+          "Select" &&
         $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val() !==
-        "N/A"
+          "N/A"
       ) {
         field.value =
           field.value +
@@ -844,9 +873,9 @@ function addSampleMetadataEntriesIntoJSON(curationMode) {
     if (field.name === "Age") {
       if (
         $(`#${curationModeSelectorPrefix}bootbox-sample-age-info`).val() !==
-        "Select" &&
+          "Select" &&
         $(`#${curationModeSelectorPrefix}bootbox-sample-age-info`).val() !==
-        "N/A"
+          "N/A"
       ) {
         field.value =
           field.value +
@@ -910,7 +939,7 @@ function edit_current_sample_id(ev) {
   loadSampleInformation(ev, subjectID, sampleID);
 }
 async function edit_current_protocol_id(ev) {
-  let oldProtocolLink = ""
+  let oldProtocolLink = "";
   var currentRow = $(ev).parents()[2];
   var link = $(currentRow)[0].cells[1].innerText;
   var type = $(currentRow)[0].cells[2].innerText;
@@ -1157,6 +1186,11 @@ function populateForms(subjectID, type, curationMode) {
             );
             switchSpeciesStrainInput("strain", "edit", curationMode);
           } else if (
+            curationMode === "guided" &&
+            field.name === "RRID for strain"
+          ) {
+            guidedSetStrainRRID(infoJson[i]);
+          } else if (
             curationMode == "guided" &&
             field.name === "protocol url or doi"
           ) {
@@ -1165,11 +1199,10 @@ function populateForms(subjectID, type, curationMode) {
 
             const protocols =
               sodaJSONObj["dataset-metadata"]["description-metadata"][
-              "protocols"
+                "protocols"
               ];
             for (const protocol of protocols) {
               if (protocol.link === previouslySavedProtocolURL) {
-
                 protocolTitleDropdown.value = protocol.description;
                 protocolURLDropdown.value = protocol.link;
               }
@@ -1282,7 +1315,7 @@ function populateFormsSamples(subjectID, sampleID, type, curationMode) {
 
             const protocols =
               sodaJSONObj["dataset-metadata"]["description-metadata"][
-              "protocols"
+                "protocols"
               ];
             for (const protocol of protocols) {
               if (protocol.link === previouslySavedProtocolURL) {
@@ -2749,7 +2782,7 @@ function importExistingSubjectsFile() {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       setTimeout(loadSubjectsFileToDataframe, 1000, filePath);
     }
   }
@@ -2803,7 +2836,7 @@ function importExistingSamplesFile() {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       setTimeout(loadSamplesFileToDataframe(filePath), 1000);
     }
   }
@@ -2823,7 +2856,7 @@ async function checkBFImportSubjects() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   var fieldEntries = [];
   for (var field of $("#form-add-a-subject")
     .children()
@@ -2893,7 +2926,7 @@ async function checkBFImportSamples() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   var fieldEntries = [];
   for (var field of $("#form-add-a-sample")
     .children()
@@ -3531,11 +3564,6 @@ function readXMLScicrunch(xml, type, curationMode) {
   var rrid = "";
   var res;
 
-  let curationModeSelectorPrefix = "";
-  if (curationMode == "guided") {
-    curationModeSelectorPrefix = "guided-";
-  }
-
   for (var i = 0; i < resultList.length; i++) {
     if (resultList[i].childNodes[0].nodeValue === "Proper Citation") {
       rrid = resultList[i].nextSibling.childNodes[0].nodeValue;
@@ -3544,12 +3572,22 @@ function readXMLScicrunch(xml, type, curationMode) {
   }
   if (type === "subject") {
     if (rrid.trim() !== "") {
-      $(`#${curationModeSelectorPrefix}bootbox-subject-strain-RRID`).val(
-        rrid.trim()
-      );
+      if (curationMode == "free-form") {
+        $("bootbox-subject-strain-RRID").val(rrid.trim());
+      }
+
+      if (curationMode == "guided") {
+        guidedSetStrainRRID(rrid.trim());
+      }
       res = true;
     } else {
-      $(`#${curationModeSelectorPrefix}bootbox-subject-strain-RRID`).val("");
+      if (curationMode == "free-form") {
+        $("bootbox-subject-strain-RRID").val("");
+      }
+
+      if (curationMode === "guided") {
+        guidedSetStrainRRID("");
+      }
       res = false;
     }
   } else {

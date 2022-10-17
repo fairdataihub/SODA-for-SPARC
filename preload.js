@@ -186,8 +186,6 @@ function confirm_click_function() {
 
 var dropdownEventID = "";
 const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
-  console.log(ev);
-  console.log(dropdown);
   // if users edit current account
   if (dropdown === "bf") {
     var resolveMessage = "";
@@ -766,6 +764,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             if (dropdownEventID === "dd-select-pennsieve-dataset") {
               console.log("HUH");
               $("#ds-name").val(bfDataset);
+              $("#ds-description").val = $("#bf-dataset-subtitle").val;
               $("body").removeClass("waiting");
               $(".svg-change-current-account.dataset").css("display", "block");
               dropdownEventID = "";
@@ -804,6 +803,45 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         }
         //currently changing it but not visually in the UI
         $("#bf_list_users_pi").val("Select PI");
+
+        let oldDatasetButtonSelected = document.getElementById(
+          "oldDatasetDescription-selection"
+        );
+        let newDatasetButtonSelected = document.getElementById(
+          "newDatasetDescription-selection"
+        );
+
+        if (newDatasetButtonSelected.classList.contains("checked")) {
+          document
+            .getElementById("Question-prepare-dd-2")
+            .classList.add("show");
+
+          document.getElementById("dd-select-pennsieve-dataset").style.display =
+            "block";
+          document.getElementById("ds-name").value = document.getElementById(
+            "rename_dataset_name"
+          ).innerText;
+        } else {
+          document
+            .getElementById("Question-prepare-dd-4")
+            .classList.add("show");
+          let onMyCompButton = document.getElementById(
+            "Question-prepare-dd-4-new"
+          );
+          document.getElementById("dd-select-pennsieve-dataset").style.display =
+            "none";
+          let onPennsieveButton =
+            onMyCompButton.parentElement.parentElement.children[1].children[0];
+          if (onMyCompButton.classList.contains("checked")) {
+            document
+              .getElementById("Question-prepare-dd-3")
+              .classList.add("show");
+          } else {
+            document
+              .getElementById("Question-prepare-dd-5")
+              .classList.add("show");
+          }
+        }
 
         // update the gloabl dataset id
         for (const item of datasetList) {

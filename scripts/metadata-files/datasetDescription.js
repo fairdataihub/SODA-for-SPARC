@@ -1112,7 +1112,6 @@ const helpSPARCAward = async (filetype, curationMode) => {
   var award = "";
   if (filetype === "dd") {
     var res = airtableRes;
-    console.log(res);
     if (curationMode === "free-form") {
       $("#select-sparc-award-dd-spinner").css("display", "block");
     }
@@ -1217,7 +1216,6 @@ const helpSPARCAward = async (filetype, curationMode) => {
   }
   if (filetype === "submission") {
     var res = airtableRes;
-    console.log(res);
     let currentMilestonesInTextArea = null;
     if (curationMode == "free-form") {
       $("#select-sparc-award-submission-spinner").css("display", "block");
@@ -2856,7 +2854,7 @@ function importExistingDDFile() {
   }
 }
 
-async function checkBFImportDD() {
+const checkBFImportDD = async () => {
   Swal.fire({
     title: "Importing the dataset_description.xlsx file",
     html: "Please wait...",
@@ -2915,7 +2913,7 @@ async function checkBFImportDD() {
       Destinations.PENNSIEVE
     );
   }
-}
+};
 
 async function loadDDfileDataframe(filePath) {
   try {
