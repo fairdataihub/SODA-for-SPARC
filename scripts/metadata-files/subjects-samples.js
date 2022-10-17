@@ -501,6 +501,10 @@ function clearAllSubjectFormFields(form) {
       "none"
     );
 
+    if (form === guidedSubjectsFormDiv) {
+      guidedSetStrainRRID("");
+    }
+
     $(`#${curationModeSelectorPrefix}button-add-species-${keyword}`).html(
       `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
     );
@@ -525,6 +529,9 @@ async function addSpecies(ev, type, curationMode) {
   }
 
   $(`#${curationModeSelectorPrefix}bootbox-${type}-species`).val("");
+  if (curationMode == "guided") {
+    guidedSetStrainRRID("");
+  }
   const { value: value } = await Swal.fire({
     title: "Add/Edit a species",
     html: `<input type="text" id="sweetalert-${type}-species" placeholder="Search for species..." style="font-size: 14px;"/>`,
@@ -557,9 +564,6 @@ async function addSpecies(ev, type, curationMode) {
 }
 
 function switchSpeciesStrainInput(type, mode, curationMode) {
-  console.log(type);
-  console.log(mode);
-  console.log(curationMode);
   let curationModeSelectorPrefix = "";
   if (curationMode == "guided") {
     curationModeSelectorPrefix = "guided-";
@@ -592,14 +596,35 @@ function switchSpeciesStrainInput(type, mode, curationMode) {
   }
 }
 
+const guidedSetStrainRRID = (RRID) => {
+  const rridLabel = document.getElementById("guided-strain-rrid-label");
+  const rridInput = document.getElementById(
+    "guided-bootbox-subject-strain-RRID"
+  );
+
+  if (!RRID) {
+    rridLabel.classList.add("hidden");
+    rridInput.style.display = "none";
+    rridInput.value = "";
+    return;
+  }
+
+  rridLabel.classList.remove("hidden");
+  rridInput.style.display = "flex";
+  rridInput.value = RRID;
+};
+
 async function addStrain(ev, type, curationMode) {
-  console.log(type);
-  console.log(curationMode);
   let curationModeSelectorPrefix = "";
   if (curationMode == "guided") {
     curationModeSelectorPrefix = "guided-";
   }
+
   $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
+  if (curationMode == "guided") {
+    guidedSetStrainRRID("");
+  }
+
   const { value: value } = await Swal.fire({
     title: "Add/Edit a strain",
     html: `<input type="text" id="sweetalert-${type}-strain" placeholder="Search for strain..." style="font-size: 14px;"/>`,
@@ -623,24 +648,18 @@ async function addStrain(ev, type, curationMode) {
       return document.getElementById("sweetalert-" + type + "-strain").value;
     },
   });
-  console.log(value);
   if (value) {
     if (value !== "") {
-      console.log(value);
       $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val(value);
       switchSpeciesStrainInput("strain", "edit", curationMode);
     }
   } else {
-    console.log("adding strain");
     switchSpeciesStrainInput("strain", "add", curationMode);
   }
 }
 
 // populate RRID
 function populateRRID(strain, type, curationMode) {
-  console.log(strain);
-  console.log(type);
-  console.log(curationMode);
   let curationModeSelectorPrefix = "";
   if (curationMode == "guided") {
     curationModeSelectorPrefix = "guided-";
@@ -1129,6 +1148,7 @@ function populateForms(subjectID, type, curationMode) {
     var emptyEntries = ["nan", "nat"];
     var c = fieldArr.map(function (i, field) {
       if (infoJson[i]) {
+        console.log(field.name, infoJson[i]);
         if (!emptyEntries.includes(infoJson[i].toLowerCase())) {
           if (field.name === "Age") {
             var fullAge = infoJson[i].split(" ");
@@ -1166,6 +1186,11 @@ function populateForms(subjectID, type, curationMode) {
               infoJson[i]
             );
             switchSpeciesStrainInput("strain", "edit", curationMode);
+          } else if (
+            curationMode === "guided" &&
+            field.name === "RRID for strain"
+          ) {
+            guidedSetStrainRRID(infoJson[i]);
           } else if (
             curationMode == "guided" &&
             field.name === "protocol url or doi"
@@ -3540,11 +3565,6 @@ function readXMLScicrunch(xml, type, curationMode) {
   var rrid = "";
   var res;
 
-  let curationModeSelectorPrefix = "";
-  if (curationMode == "guided") {
-    curationModeSelectorPrefix = "guided-";
-  }
-
   for (var i = 0; i < resultList.length; i++) {
     if (resultList[i].childNodes[0].nodeValue === "Proper Citation") {
       rrid = resultList[i].nextSibling.childNodes[0].nodeValue;
@@ -3553,15 +3573,22 @@ function readXMLScicrunch(xml, type, curationMode) {
   }
   if (type === "subject") {
     if (rrid.trim() !== "") {
-      $(`#${curationModeSelectorPrefix}bootbox-subject-strain-RRID`).val(
-        rrid.trim()
-      );
+      if (curationMode == "free-form") {
+        $("bootbox-subject-strain-RRID").val(rrid.trim());
+      }
+
       if (curationMode == "guided") {
-        $(`#guided-bootbox-subject-strain-RRID`).css("display", flex);
+        guidedSetStrainRRID(rrid.trim());
       }
       res = true;
     } else {
-      $(`#${curationModeSelectorPrefix}bootbox-subject-strain-RRID`).val("");
+      if (curationMode == "free-form") {
+        $("bootbox-subject-strain-RRID").val("");
+      }
+
+      if (curationMode === "guided") {
+        guidedSetStrainRRID("");
+      }
       res = false;
     }
   } else {

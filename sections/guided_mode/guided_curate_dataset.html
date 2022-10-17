@@ -3356,8 +3356,15 @@
                   <br />
                   <b>Example:</b> Rattus
                 </p>
-
-                <label class="guided--form-label mt-xl">Strain:</label>
+                <div style="display: flex; flex-wrap: nowrap; width: 100%">
+                  <label class="guided--form-label mt-xl">Strain:</label>
+                  <label
+                    class="guided--form-label mt-xl"
+                    id="guided-strain-rrid-label"
+                    style="margin-right: 90px"
+                    >Strain RRID:</label
+                  >
+                </div>
                 <div class="demo-controls-body w-100">
                   <div class="ui input modified">
                     <input
@@ -3371,8 +3378,8 @@
                       type="text"
                       id="guided-bootbox-subject-strain-RRID"
                       name="RRID for strain"
-                      class="subjects-form-entry"
-                      style="font-size: 13px; display: none"
+                      class="subjects-form-entry hidden"
+                      style="font-size: 13px; display: flex"
                       readonly
                     />
                     <button
