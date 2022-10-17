@@ -5317,7 +5317,7 @@ const openGuidedAddContributorSwal = async () => {
     showCancelButton: true,
     confirmButtonText: "Add contributor",
     confirmButtonColor: "#3085d6 !important",
-    willOpen: () => {
+    didOpen: () => {
       //Create Affiliation(s) tagify for each contributor
       const contributorAffiliationInput = document.getElementById(
         "guided-contributor-affiliation-input"
@@ -5356,7 +5356,7 @@ const openGuidedAddContributorSwal = async () => {
         dropdown: {
           enabled: 0,
           closeOnSelect: true,
-          position: "auto",
+          // position: "auto",
         },
       });
       createDragSort(contributorRolesTagify);
