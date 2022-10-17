@@ -726,7 +726,9 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
 #             "Agent not installed. Visit https://developer.pennsieve.io/agent for installation directions."
 #         ) from e
 
-
+completed_files = []
+files_uploaded = 0
+total_files_to_upload = 0
 def bf_submit_dataset(accountname, bfdataset, pathdataset):
     """
     Associated with 'Submit dataset' button in 'Submit new dataset' section
@@ -749,11 +751,16 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     global myds
     global start_submit
     global initial_bfdataset_size_submit
+    global completed_files
     global did_upload
     global did_fail
     global upload_folder_count
     global namespace_logger
+    global files_uploaded
+    global total_files_to_upload 
 
+    files_uploaded = 0
+    total_files_to_upload = 0
     submitdataprogress = " "
     submitdatastatus = " "
     uploaded_file_size = 0
@@ -765,8 +772,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     did_fail = False
     upload_folder_count = 0
 
-    namespace_logger.info("Yes we are here")
-
     # check if the local dataset folder exists
     if not isdir(pathdataset):
         submitdatastatus = "Done"
@@ -776,8 +781,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         did_fail = True
         did_upload = False
         abort(400, error_message)
-
-    namespace_logger.info("Dataset folder exists")
 
     total_file_size = 1
    
@@ -831,9 +834,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
 
     # get the dataset size before starting the upload
-    total_file_size, invalid_dataset_messages, total_files_atm = get_dataset_size(pathdataset)
-
-    namespace_logger.info("Total file size we calculated is: " + str(total_file_size))
+    total_file_size, invalid_dataset_messages, total_files_to_upload = get_dataset_size(pathdataset)
 
     if invalid_dataset_messages != "":
         submitdatastatus = "Done"
@@ -883,8 +884,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         ps.manifest.upload(manifest_id)
         subscription_rendezvous_object = ps.subscribe(10)
 
-        counter = 0
-
         # store the amount of bytes uploaded for each file_id
         bytes_uploaded_per_file = {}
 
@@ -920,11 +919,11 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
                 # if a file has finished uploading then update the files uploaded tracker - this can tell us when to unsubscribe
                 if current_bytes_uploaded == total_bytes_to_upload:
-                    counter += 1
+                    files_uploaded += 1
                 
                 # check if the upload is complete
-                if counter == total_files_atm:
-                    namespace_logger.info(f"Uploaded {counter} of {total_files_atm} files")
+                if files_uploaded == total_files_to_upload:
+                    namespace_logger.info(f"Uploaded {files_uploaded} of {total_files_to_upload} files")
                     namespace_logger.info(f"Uploaded {uploaded_file_size} in upload function")
                     namespace_logger.info("Upload complete unsubscribing from channel for id 10.")
                     ps.unsubscribe(10)
@@ -982,6 +981,9 @@ def submit_dataset_progress():
     global start_time_bf_upload
     global start_submit
     global initial_bfdataset_size_submit
+    global completed_files
+    global files_uploaded
+    global total_files_to_upload
 
     if start_submit == 1:
         elapsed_time = time.time() - start_time_bf_upload
@@ -1003,6 +1005,7 @@ def submit_dataset_progress():
         'total_file_size': total_file_size,
         'upload_file_size': uploaded_file_size,
         'elapsed_time_formatted': elapsed_time_formatted,
+        'files_uploaded_status': f"Uploaded {files_uploaded} of {total_files_to_upload} files",
     }
 
 

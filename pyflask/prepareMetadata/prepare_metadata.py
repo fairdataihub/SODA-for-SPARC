@@ -15,8 +15,8 @@ import pandas as pd
 import csv
 import shutil
 import numpy as np
-#from pennsieve2.pennsieve import Pennsieve
-from pennsieve import Pennsieve
+from pennsieve2.pennsieve import Pennsieve
+#from pennsieve import Pennsieve
 from manageDatasets import bf_dataset_account
 from utils import ( connect_pennsieve_client, authenticate_user_with_client, get_dataset_id, create_request_headers)
 from permissions import has_edit_permissions, bf_get_current_user_permission_agent_two

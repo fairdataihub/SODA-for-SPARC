@@ -883,6 +883,7 @@ model_upload_progress_response = api.model("UploadProgressResponse", {
   'total_file_size': fields.Integer(required=True, description="The total size of the file being uploaded."),
   'upload_file_size': fields.Integer(required=True, description="The size of the file being uploaded."),
   'elapsed_time_formatted': fields.String(required=True, description="The elapsed time of the upload."),
+  'files_uploaded_status': fields.String(required=True, description="The amount of files uploaded vs the amount to upload."),
 })
 
 @api.route('/datasets/upload_progress')

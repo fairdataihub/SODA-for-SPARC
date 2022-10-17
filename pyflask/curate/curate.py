@@ -22,7 +22,7 @@ import time
 import shutil
 import subprocess
 import gevent
-from pennsieve import Pennsieve
+from pennsieve2.pennsieve import Pennsieve
 import pathlib
 from flask import abort
 import requests

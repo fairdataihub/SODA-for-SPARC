@@ -2614,10 +2614,6 @@ $("#button-submit-dataset").click(async () => {
     document.getElementById("sidebarCollapse").click();
   }
 
-  // clear the queue before uploading
-  // clearQueue();
-
-  console.log("About to upload the dataset")
   client
     .put(
       `/manage_datasets/datasets`,
@@ -2796,19 +2792,15 @@ $("#button-submit-dataset").click(async () => {
       .get("/manage_datasets/datasets/upload_progress")
       .then((progressResponse) => {
         let progressData = progressResponse.data;
-
-        console.log(progressData)
-
         statusMessage = progressData["progress"];
         completionStatus = progressData["submit_dataset_status"];
         let submitprintstatus = progressData["submit_print_status"];
         totalFileSize = progressData["total_file_size"];
         let uploadedFileSize = progressData["upload_file_size"];
+        let fileUploadStatus = progressData["files_uploaded_status"];
 
         console.log("statusMessage: " + submitprintstatus);
         console.log("completionStatus: " + completionStatus);
-        console.log("totalFileSize: " + totalFileSize);
-        console.log("uploadedFileSize: " + uploadedFileSize);
 
         if (submitprintstatus === "Uploading") {
           $("#div-progress-submit").css("display", "block");
@@ -2855,6 +2847,7 @@ $("#button-submit-dataset").click(async () => {
               cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%" + timePhrase;
             }
             $("#para-progress-bar-status").html(
+              fileUploadStatus + 
               statusMessage +
               "Progress: " +
               value.toFixed(2) +
