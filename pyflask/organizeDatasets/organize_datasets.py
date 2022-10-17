@@ -23,6 +23,8 @@ import pathlib
 from datetime import datetime, timezone
 
 from permissions import bf_get_current_user_permission_agent_two
+from pyflask.permissions.permissions import has_edit_permissions
+from pyflask.utils.pennsieveClient import connect_pennsieve_client, get_dataset_id
 
 
 ### Global variables
@@ -988,27 +990,20 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     except Exception as e:
         raise e
 
-    try:
-        bf = Pennsieve(bf_account_name)
-    except Exception as e:
-        error.append("Please select a valid Pennsieve account")
-        raise Exception(error)
+    ps = connect_pennsieve_client(bf_account_name)
 
     # check that the Pennsieve dataset is valid
     try:
         bf_dataset_name = soda_json_structure["bf-dataset-selected"]["dataset-name"]
     except Exception as e:
         raise e
-    try:
-        myds = bf.get_dataset(bf_dataset_name)
-        dataset_id = myds.id
-    except Exception as e:
-        error.append("Please select a valid Pennsieve dataset")
-        raise Exception(error)
+
+    selected_dataset_id = get_dataset_id(ps, bf_dataset_name)
+
 
     # check that the user has permission to edit this dataset
     try:
-        role = bf_get_current_user_permission_agent_two(bf, myds)
+        role = bf_get_current_user_permission_agent_two(selected_dataset_id, ps)
         if role not in ["owner", "manager", "editor"]:
             curatestatus = "Done"
             error.append(
