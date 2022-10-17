@@ -1225,6 +1225,8 @@ const helpSPARCAward = async (filetype, curationMode) => {
     }
     currentMilestonesInTextArea = $("#selected-milestone-1");
 
+    console.log(res[0]);
+    console.log(curationMode);
     if (res[0] && curationMode != "guided--getting-started") {
       var keyname = res[1];
       var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'submission\', '${curationMode}')" style="font-weight:500;text-decoration: underline"><svg class="svg-change-current-account bi bi-pencil-fill" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" viewBox="0 0 16 16">
@@ -1419,28 +1421,29 @@ const helpSPARCAward = async (filetype, curationMode) => {
         }
       }
     } else {
-      Swal.fire({
-        title:
-          "At this moment, SODA is not connected with your Airtable account.",
-        text: "Would you like to connect your Airtable account with SODA?",
-        showCancelButton: true,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        cancelButtonText: `No!`,
-        cancelButtonColor: "#f44336",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "Yes",
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      }).then((boolean) => {
-        if (boolean.isConfirmed) {
-          showAddAirtableAccountSweetalert("submission", curationMode);
-        }
-      });
+      showAddAirtableAccountSweetalert("submission", curationMode);
+      // Swal.fire({
+      //   title:
+      //     "At this moment, SODA is not connected with your Airtable account.",
+      //   text: "Would you like to connect your Airtable account with SODA?",
+      //   showCancelButton: true,
+      //   heightAuto: false,
+      //   backdrop: "rgba(0,0,0, 0.4)",
+      //   cancelButtonText: `No!`,
+      //   cancelButtonColor: "#f44336",
+      //   confirmButtonColor: "#3085d6",
+      //   confirmButtonText: "Yes",
+      //   showClass: {
+      //     popup: "animate__animated animate__zoomIn animate__faster",
+      //   },
+      //   hideClass: {
+      //     popup: "animate__animated animate__zoomOut animate__faster",
+      //   },
+      // }).then((boolean) => {
+      //   if (boolean.isConfirmed) {
+      //     showAddAirtableAccountSweetalert("submission", curationMode);
+      //   }
+      // });
       $("#select-sparc-award-submission-spinner").css("display", "none");
     }
   }

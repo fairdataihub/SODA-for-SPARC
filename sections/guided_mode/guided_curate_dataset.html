@@ -2906,6 +2906,18 @@
               </tr>
               <tbody id="protocols-container"></tbody>
             </table>
+            <div style="display: flex; margin-top: 1rem; flex-direction: row">
+              <input
+                class="checkbox-design"
+                type="checkbox"
+                id="no-protocols"
+              />
+              <p style="font-size: initial">
+                I am still working on my protocol and will provide my protocol
+                information later
+              </p>
+            </div>
+
             <button
               class="ui primary basic button mt-lg"
               id="guided-button-add-protocol"
@@ -5728,9 +5740,7 @@
             </div>
             <div class="guided--card-dataset-info">
               <div class="guided--dataset-description-container">
-                <h5 class="guided--dataset-description">
-                  Designated PI owner:
-                </h5>
+                <h5 class="guided--dataset-description">Dataset PI:</h5>
               </div>
               <div class="guided--dataset-content-container">
                 <h5
@@ -5742,7 +5752,7 @@
             <div class="guided--card-dataset-info">
               <div class="guided--dataset-description-container">
                 <h5 class="guided--dataset-description">
-                  Designated user permissions:
+                  Permissions to Pennsieve dataset:
                 </h5>
               </div>
               <div class="guided--dataset-content-container">

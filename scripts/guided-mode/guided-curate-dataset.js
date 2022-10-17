@@ -1084,14 +1084,22 @@ document
       divToShowWhenConnected.classList.add("hidden");
       divToShowWhenNotConnected.classList.remove("hidden");
     } else {
-      const airTablePreviewText = document.getElementById(
-        "guided-current-sparc-award"
-      );
-      airTablePreviewText.innerHTML = airTableKeyObj["key-name"];
-      //If the airtable key object is not empty, show the div to select the SPARC award
-      divToShowWhenConnected.classList.remove("hidden");
-      divToShowWhenNotConnected.classList.add("hidden");
-      renderGuidedAwardSelectionDropdown();
+      //verify airtable api is valid
+      checkAirtableStatus("");
+      if (airtableRes[1] != "") {
+        const airTablePreviewText = document.getElementById(
+          "guided-current-sparc-award"
+        );
+        airTablePreviewText.innerHTML = airTableKeyObj["key-name"];
+        //If the airtable key object is not empty, show the div to select the SPARC award
+        divToShowWhenConnected.classList.remove("hidden");
+        divToShowWhenNotConnected.classList.add("hidden");
+        renderGuidedAwardSelectionDropdown();
+      } else {
+        //If the airtable key object is empty, show the div to connect to airtable
+        divToShowWhenConnected.classList.add("hidden");
+        divToShowWhenNotConnected.classList.remove("hidden");
+      }
     }
   });
 
@@ -1885,6 +1893,7 @@ const traverseToTab = async (targetPageID) => {
     if (targetPageID === "guided-prepare-helpers-tab") {
       //Hide the new dataset and existings local dataset capsule containers because
       //We do now know what the user wants to do yet
+      console.log("Hm");
       $("#guided-curate-new-dataset-branch-capsule-container").hide();
       $(
         "#guided-curate-existing-local-dataset-branch-capsule-container"
@@ -1909,15 +1918,29 @@ const traverseToTab = async (targetPageID) => {
       var airKeyContent = parseJson(airtableConfigPath);
       if (Object.keys(airKeyContent).length != 0) {
         //This is where we update the UI for the helper page
-        airTableGettingStartedBtn.children[1].style.display = "none";
-        airTableGettingStartedBtn.children[0].style.display = "flex";
+        checkAirtableStatus("");
+        if (airtableRes[0] != "") {
+          airTableGettingStartedBtn.children[1].style.display = "none";
+          airTableGettingStartedBtn.children[0].style.display = "flex";
+        } else {
+          //This is where we reset the UI for the helper page
+          airTableGettingStartedBtn.children[1].style.display = "flex";
+          airTableGettingStartedBtn.children[0].style.display = "none";
+        }
+
         // This auto selects the airtable button within
         // the SPARC Award number page
         // document.getElementById("guided-button-import-sparc-award").click();
       } else {
-        //This is where we reset the UI for the helper page
-        airTableGettingStartedBtn.children[1].style.display = "flex";
-        airTableGettingStartedBtn.children[0].style.display = "none";
+        checkAirtableStatus("");
+        if (airtableRes[0] != "") {
+          //This is where we reset the UI for the helper page
+          airTableGettingStartedBtn.children[1].style.display = "flex";
+          airTableGettingStartedBtn.children[0].style.display = "none";
+        } else {
+          airTableGettingStartedBtn.children[1].style.display = "none";
+          airTableGettingStartedBtn.children[0].style.display = "flex";
+        }
       }
     }
 
@@ -2564,7 +2587,10 @@ const traverseToTab = async (targetPageID) => {
 
       if (datasetUserPermissions.length > 0) {
         const datasetUserPermissionsString = datasetUserPermissions
-          .map((permission) => permission.userString)
+          .map(
+            (permission) =>
+              permission.userString + " (" + permission.permission + ")"
+          )
           .join("<br>");
         datasetUserPermissionsReviewText.innerHTML =
           datasetUserPermissionsString;
@@ -2575,7 +2601,10 @@ const traverseToTab = async (targetPageID) => {
 
       if (datasetTeamPermissions.length > 0) {
         const datasetTeamPermissionsString = datasetTeamPermissions
-          .map((permission) => permission.teamString)
+          .map(
+            (permission) =>
+              permission.teamString + " (" + permission.permission + ")"
+          )
           .join("<br>");
         datasetTeamPermissionsReviewText.innerHTML =
           datasetTeamPermissionsString;
@@ -12490,12 +12519,18 @@ $(document).ready(async () => {
           });
           throw errorArray;
         }
-        if (protocols.length === 0) {
+        let protocolSkip = document.getElementById("no-protocols");
+
+        if (protocols.length === 0 && protocolSkip.checked === false) {
+          //check if they decided to add protocols later
           errorArray.push({
             type: "notyf",
             message: "Please add at least one protocol",
           });
           throw errorArray;
+        }
+        if (protocolSkip.checked) {
+          protocols = [];
         }
         sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] =
           protocols;
