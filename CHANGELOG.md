@@ -7,8 +7,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## v.9.3.2 - 2022-10-14
 
-## Feature additions:
-
 ## Bug fixes:
 
 - Patched announcements to not cause error on auto update.
