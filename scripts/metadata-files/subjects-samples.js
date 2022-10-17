@@ -1148,7 +1148,6 @@ function populateForms(subjectID, type, curationMode) {
     var emptyEntries = ["nan", "nat"];
     var c = fieldArr.map(function (i, field) {
       if (infoJson[i]) {
-        console.log(field.name, infoJson[i]);
         if (!emptyEntries.includes(infoJson[i].toLowerCase())) {
           if (field.name === "Age") {
             var fullAge = infoJson[i].split(" ");
