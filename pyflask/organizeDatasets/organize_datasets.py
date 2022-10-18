@@ -905,12 +905,20 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     
 
     def createFolderStructure(subfolder_json, pennsieve_client, manifest):
+        """
+            Function for creating the Pennsieve folder structure for a given dataset as an object stored locally.
+            Arguments:
+                subfolder_json: The json object containing the folder structure of the dataset
+                pennsieve_client: The Pennsieve client object
+                manifest: The manifest object for the dataset
+        """
         # root level folder will pass subfolders into this function and will recursively check if there are subfolders while creating the json structure
         global create_soda_json_progress
         collection_id = subfolder_json["path"]
-        ps = pennsieve_client
 
-        r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=create_request_headers(ps))
+        headers = create_request_headers(pennsieve_client)
+
+        r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=headers)
         r.raise_for_status()
         subfolder = r.json()
 
@@ -988,7 +996,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         if len(subfolder_json["folders"].keys()) != 0:  # there are subfolders
             for folder in subfolder_json["folders"].keys():
                 subfolder = subfolder_json["folders"][folder]
-                createFolderStructure(subfolder, bf, manifest)
+                createFolderStructure(subfolder, pennsieve_client, manifest)
 
     # START
 
@@ -1121,6 +1129,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             subfolder_section = soda_json_structure["dataset-structure"]["folders"][
                 folder
             ]
+
+            namespace_logger.info(type(ps))
             createFolderStructure(
                 subfolder_section, ps, manifest_dict[folder]
             )  # passing item's json and the collection ID
