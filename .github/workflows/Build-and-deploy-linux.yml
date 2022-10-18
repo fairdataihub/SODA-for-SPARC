@@ -39,5 +39,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           npm run python-onefile-build
-          npm run build-linux
           npm run deploy-linux
