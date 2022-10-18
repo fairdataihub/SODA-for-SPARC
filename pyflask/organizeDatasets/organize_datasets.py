@@ -1006,12 +1006,9 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         role = bf_get_current_user_permission_agent_two(selected_dataset_id, ps)
         if role not in ["owner", "manager", "editor"]:
             curatestatus = "Done"
-            error.append(
-                "You don't have permissions for uploading to this Pennsieve dataset"
-            )
-            raise Exception(error)
+            raise Exception("You don't have permissions for uploading to this Pennsieve dataset")
     except Exception as e:
-        raise e
+        abort(401, "You do not have permissions to edit upload this Pennsieve dataset.")
 
     # surface layer of dataset is pulled. then go through through the children to get information on subfolders
     manifest_dict = {}
@@ -1021,9 +1018,14 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         "folders": {},
     }
 
+
+
+    headers = create_reqeust_headers(ps)
     # root of dataset is pulled here
     # root_children is the files and folders within root
-    root_folder = bf._api._get("/datasets/" + str(dataset_id))
+     r = requests.get(f"/datasets/{selected_dataset_id}", headers=headers)
+     r.raise_for_status()
+     root_folder = r.json()
     packages_list = bf._api._get("/datasets/" + str(dataset_id) + "/packageTypeCounts")
     for count in packages_list.values():
         create_soda_json_total_items += int(count)
