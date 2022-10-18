@@ -8469,11 +8469,8 @@ const curation_consortium_check = async (mode = "") => {
         },
       }
     );
-    let res = bf_account_details_req.data.account_details;
-
-    // remove html tags from response
-    acc_details = acc_details.replace(/<[^>]*>?/gm, "");
-
+    let res = bf_account_details_req.data;
+    console.log(res)
     let organization_id = res["organization_id"];
     if (
       organization_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"

@@ -565,7 +565,7 @@ def bf_account_details(accountname):
         update_config_account_name(accountname)
         
         ## return account details and datasets where such an account has some permission
-        return {"account_details": acc_details, "organization_id": bf.context.id}
+        return {"account_details": acc_details, "organization_id": ps.getUser()["organization_id"]}
 
     except Exception as e:
         raise e
