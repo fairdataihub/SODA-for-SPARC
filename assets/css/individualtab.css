@@ -1447,7 +1447,8 @@ body.swal2-shown > [aria-hidden="true"] {
 /* .swal2-content {
   text-align: left !important;
 } */
-.swal2-content .guided--form-label {
+.swal2-content .guided--form-label,
+.swal2-content .tagify__input {
   text-align: left;
 }
 
