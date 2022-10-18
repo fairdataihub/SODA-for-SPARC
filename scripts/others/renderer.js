@@ -504,6 +504,7 @@ ipcRenderer.on("checkForAnnouncements", (event, index) => {
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
   log.info("Running pre flight checks");
+  console.log("Preflight checks")
   return new Promise(async (resolve) => {
     let connection_response = "";
     let agent_installed_response = "";
@@ -539,183 +540,180 @@ const run_pre_flight_checks = async (check_update = true) => {
 
       // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
       account_present = await check_api_key();
-      if (account_present) {
-        // Check for an installed Pennsieve agent
-        await wait(500);
-        [agent_installed_response, agent_version_response] =
-          await check_agent_installed();
-        // If no agent is installed, download the latest agent from Github and link to their docs for installation instrucations if needed.
-        if (!agent_installed_response) {
-          Swal.fire({
-            icon: "error",
-            title: "Pennsieve Agent error!",
-            html: agent_version_response,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            showCancelButton: true,
-            reverseButtons: reverseSwalButtons,
-            confirmButtonText: "Download now",
-            cancelButtonText: "Skip for now",
-          }).then(async (result) => {
-            if (result.isConfirmed) {
-              try {
-                let [browser_download_url, latest_agent_version] =
-                  await get_latest_agent_version();
-                shell.openExternal(browser_download_url);
-                shell.openExternal(
-                  "https://docs.pennsieve.io/docs/the-pennsieve-agent"
-                );
-              } catch (e) {
-                await Swal.fire({
-                  icon: "error",
-                  text: "We are unable to get the latest version of the Pennsieve Agent. Please try again later. If this issue persists please contact the SODA team at help@fairdataihub.org",
-                  heightAuto: false,
-                  backdrop: "rgba(0,0,0, 0.4)",
-                  showCancelButton: true,
-                  confirmButtonText: "Ok",
-                  showClass: {
-                    popup: "animate__animated animate__zoomIn animate__faster",
-                  },
-                  hideClass: {
-                    popup: "animate__animated animate__zoomOut animate__faster",
-                  },
-                });
-              }
-            }
-          });
-          resolve(false);
-        } else {
-          await wait(500);
-          // Check the installed agent version. We aren't enforcing the min limit yet but is the python version starts enforcing it, we might have to.
-          let browser_download_url,
-            latest_agent_version = "";
-          try {
-            [browser_download_url, latest_agent_version] =
-              await check_agent_installed_version(agent_version_response);
-          } catch (e) {
-            notyf.dismiss(notification);
-            notyf.open({
-              type: "error",
-              message:
-                "Unable to verify that your Pennsieve Agent is up to date.",
-            });
-            log.error(
-              "Unable to verify that your Pennsieve Agent is up to date."
-            );
-            console.log(error);
-            log.error(error);
-            return resolve(false);
-          }
-          if (browser_download_url != "") {
-            Swal.fire({
-              icon: "warning",
-              text: "It appears that you are not running the latest version of the Pensieve Agent. We recommend that you update your software and restart SODA for the best experience.",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              showCancelButton: true,
-              confirmButtonText: "Download now",
-              cancelButtonText: "Skip for now",
-              reverseButtons: reverseSwalButtons,
-              showClass: {
-                popup: "animate__animated animate__zoomIn animate__faster",
-              },
-              hideClass: {
-                popup: "animate__animated animate__zoomOut animate__faster",
-              },
-            }).then(async (result) => {
-              if (result.isConfirmed) {
-                try {
-                  // If there is a newer agent version, download the latest agent from Github and link to their docs for installation instrucations if needed.
-                  [browser_download_url, latest_agent_version] =
-                    await get_latest_agent_version();
-                  shell.openExternal(browser_download_url);
-                  shell.openExternal(
-                    "https://docs.pennsieve.io/docs/the-pennsieve-agent"
-                  );
-                } catch (e) {
-                  console.log(e);
-                  log.error(e);
-                  await Swal.fire({
-                    icon: "error",
-                    text: "We are unable to get the latest version of the Pennsieve Agent. Please try again later. If this issue persists please contact the SODA team at help@fairdataihub.org",
-                    heightAuto: false,
-                    backdrop: "rgba(0,0,0, 0.4)",
-                    showCancelButton: true,
-                    confirmButtonText: "Ok",
-                    showClass: {
-                      popup:
-                        "animate__animated animate__zoomIn animate__faster",
-                    },
-                    hideClass: {
-                      popup:
-                        "animate__animated animate__zoomOut animate__faster",
-                    },
-                  });
-                }
-                resolve(false);
-              }
-              if (result.isDismissed) {
-                if (check_update) {
-                  checkNewAppVersion();
-                }
-                await wait(500);
-                notyf.open({
-                  type: "final",
-                  message: "You're all set!",
-                });
-                if (launchAnnouncement) {
-                  await checkForAnnouncements("announcements");
-                  launchAnnouncement = false;
-                }
-                resolve(true);
-              }
-            });
-          } else {
-            if (check_update) {
-              checkNewAppVersion();
-            }
-            await wait(500);
-            notyf.open({
-              type: "final",
-              message: "You're all set!",
-            });
-            if (launchAnnouncement) {
-              await checkForAnnouncements("announcements");
-              launchAnnouncement = false;
-            }
-            resolve(true);
-          }
-        }
-      } else {
-        if (check_update) {
-          checkNewAppVersion();
-        }
-        // If there is no API key pair, show the warning and let them add a key. Messages are dissmisable.
-        Swal.fire({
-          icon: "warning",
-          text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: "Yes",
-          showCancelButton: true,
-          reverseButtons: reverseSwalButtons,
-          cancelButtonText: "I'll do it later",
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
-        }).then(async (result) => {
-          if (result.isConfirmed) {
-            await openDropdownPrompt(null, "bf");
-            resolve(false);
-          } else {
-            resolve(true);
-          }
-        });
-        resolve(false);
-      }
+      // TODO: Reimplement this section to work with the new agent
+      // if (account_present) {
+      //   // Check for an installed Pennsieve agent
+      //   await wait(500);
+      //   [agent_installed_response, agent_version_response] =
+      //     await check_agent_installed();
+      //   // If no agent is installed, download the latest agent from Github and link to their docs for installation instrucations if needed.
+      //   if (!agent_installed_response) {
+      //     Swal.fire({
+      //       icon: "error",
+      //       title: "Pennsieve Agent error!",
+      //       html: agent_version_response,
+      //       heightAuto: false,
+      //       backdrop: "rgba(0,0,0, 0.4)",
+      //       showCancelButton: true,
+      //       reverseButtons: reverseSwalButtons,
+      //       confirmButtonText: "Download now",
+      //       cancelButtonText: "Skip for now",
+      //     }).then(async (result) => {
+      //       if (result.isConfirmed) {
+      //         try {
+      //           let [browser_download_url, latest_agent_version] =
+      //             await get_latest_agent_version();
+      //           shell.openExternal(browser_download_url);
+      //           shell.openExternal(
+      //             "https://docs.pennsieve.io/v1/docs/the-pennsieve-agent"
+      //           );
+      //         } catch (e) {
+      //           await Swal.fire({
+      //             icon: "error",
+      //             text: "We are unable to get the latest version of the Pennsieve Agent. Please try again later. If this issue persists please contact the SODA team at help@fairdataihub.org",
+      //             heightAuto: false,
+      //             backdrop: "rgba(0,0,0, 0.4)",
+      //             showCancelButton: true,
+      //             confirmButtonText: "Ok",
+      //             showClass: {
+      //               popup: "animate__animated animate__zoomIn animate__faster",
+      //             },
+      //             hideClass: {
+      //               popup: "animate__animated animate__zoomOut animate__faster",
+      //             },
+      //           });
+      //         }
+      //       }
+      //     });
+      //     resolve(false);
+      //   } else {
+      //     await wait(500);
+      //     // Check the installed agent version. We aren't enforcing the min limit yet but is the python version starts enforcing it, we might have to.
+      //     let browser_download_url,
+      //       latest_agent_version = "";
+      //     try {
+      //       [browser_download_url, latest_agent_version] =
+      //         await check_agent_installed_version(agent_version_response);
+      //     } catch (e) {
+      //       notyf.dismiss(notification);
+      //       notyf.open({
+      //         type: "error",
+      //         message:
+      //           "Unable to verify that your Pennsieve Agent is up to date.",
+      //       });
+      //       log.error(
+      //         "Unable to verify that your Pennsieve Agent is up to date."
+      //       );
+      //       console.log(error);
+      //       log.error(error);
+      //       return resolve(false);
+      //     }
+      //     if (browser_download_url != "") {
+      //       Swal.fire({
+      //         icon: "warning",
+      //         text: "It appears that you are not running the latest version of the Pensieve Agent. We recommend that you update your software and restart SODA for the best experience.",
+      //         heightAuto: false,
+      //         backdrop: "rgba(0,0,0, 0.4)",
+      //         showCancelButton: true,
+      //         confirmButtonText: "Download now",
+      //         cancelButtonText: "Skip for now",
+      //         reverseButtons: reverseSwalButtons,
+      //         showClass: {
+      //           popup: "animate__animated animate__zoomIn animate__faster",
+      //         },
+      //         hideClass: {
+      //           popup: "animate__animated animate__zoomOut animate__faster",
+      //         },
+      //       }).then(async (result) => {
+      //         if (result.isConfirmed) {
+      //           try {
+      //             // If there is a newer agent version, download the latest agent from Github and link to their docs for installation instrucations if needed.
+      //             [browser_download_url, latest_agent_version] =
+      //               await get_latest_agent_version();
+      //             shell.openExternal(browser_download_url);
+      //             shell.openExternal(
+      //               "https://docs.pennsieve.io/docs/the-pennsieve-agent"
+      //             );
+      //           } catch (e) {
+      //             console.log(e);
+      //             log.error(e);
+      //             await Swal.fire({
+      //               icon: "error",
+      //               text: "We are unable to get the latest version of the Pennsieve Agent. Please try again later. If this issue persists please contact the SODA team at help@fairdataihub.org",
+      //               heightAuto: false,
+      //               backdrop: "rgba(0,0,0, 0.4)",
+      //               showCancelButton: true,
+      //               confirmButtonText: "Ok",
+      //               showClass: {
+      //                 popup:
+      //                   "animate__animated animate__zoomIn animate__faster",
+      //               },
+      //               hideClass: {
+      //                 popup:
+      //                   "animate__animated animate__zoomOut animate__faster",
+      //               },
+      //             });
+      //           }
+      //           resolve(false);
+      //         }
+      //         if (result.isDismissed) {
+      //           if (check_update) {
+      //             checkNewAppVersion();
+      //           }
+      //           await wait(500);
+      //           notyf.open({
+      //             type: "final",
+      //             message: "You're all set!",
+      //           });
+      //           await checkForAnnouncements("announcements");
+      //           resolve(true);
+      //         }
+      //       });
+      //     } else {
+      //       if (check_update) {
+      //         checkNewAppVersion();
+      //       }
+      //       await wait(500);
+      //       notyf.open({
+      //         type: "final",
+      //         message: "You're all set!",
+      //       });
+      //       await checkForAnnouncements("announcements");
+      //       resolve(true);
+      //     }
+      //   }
+      // } else {
+      //   if (check_update) {
+      //     checkNewAppVersion();
+      //   }
+      //   // If there is no API key pair, show the warning and let them add a key. Messages are dissmisable.
+      //   Swal.fire({
+      //     icon: "warning",
+      //     text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
+      //     heightAuto: false,
+      //     backdrop: "rgba(0,0,0, 0.4)",
+      //     confirmButtonText: "Yes",
+      //     showCancelButton: true,
+      //     reverseButtons: reverseSwalButtons,
+      //     cancelButtonText: "I'll do it later",
+      //     showClass: {
+      //       popup: "animate__animated animate__zoomIn animate__faster",
+      //     },
+      //     hideClass: {
+      //       popup: "animate__animated animate__zoomOut animate__faster",
+      //     },
+      //   }).then(async (result) => {
+      //     if (result.isConfirmed) {
+      //       await openDropdownPrompt(null, "bf");
+      //       resolve(false);
+      //     } else {
+      //       resolve(true);
+      //     }
+      //   });
+      //   resolve(false);
+      // }
+      console.log("Returning from preflight checks")
+      resolve(true)
     }
   });
 };
@@ -905,6 +903,7 @@ const check_api_key = async () => {
   }
 };
 
+// TODO: Implement a new way to check if the agent is installed
 const check_agent_installed = async () => {
   let notification = null;
   notification = notyf.open({
@@ -915,20 +914,20 @@ const check_agent_installed = async () => {
 
   let responseObject;
 
-  try {
-    responseObject = await client.get("/manage_datasets/check_agent_install");
-  } catch (error) {
-    clientError(error);
-    notyf.dismiss(notification);
-    notyf.open({
-      type: "error",
-      message: "Pennsieve agent not found",
-    });
-    log.warn("Pennsieve agent not found");
-    return [false, userErrorMessage(error)];
-  }
+  // try {
+  //   responseObject = await client.get("/manage_datasets/check_agent_install");
+  // } catch (error) {
+  //   clientError(error);
+  //   notyf.dismiss(notification);
+  //   notyf.open({
+  //     type: "error",
+  //     message: "Pennsieve agent not found",
+  //   });
+  //   log.warn("Pennsieve agent not found");
+  //   return [false, userErrorMessage(error)];
+  // }
 
-  let { agent_version } = responseObject.data;
+  // let { agent_version } = responseObject.data;
 
   notyf.dismiss(notification);
   notyf.open({
@@ -936,40 +935,40 @@ const check_agent_installed = async () => {
     message: "Pennsieve agent found",
   });
   log.info("Pennsieve agent found");
-  return [true, agent_version];
+  return [true, "1.1.22"];
 };
 
-const check_agent_installed_version = async (agent_version) => {
-  let notification = null;
-  notification = notyf.open({
-    type: "ps_agent",
-    message: "Checking Pennsieve Agent version...",
-  });
-  await wait(800);
-  let latest_agent_version = "";
-  let browser_download_url = "";
-  [browser_download_url, latest_agent_version] =
-    await get_latest_agent_version();
+// const check_agent_installed_version = async (agent_version) => {
+//   let notification = null;
+//   notification = notyf.open({
+//     type: "ps_agent",
+//     message: "Checking Pennsieve Agent version...",
+//   });
+//   await wait(800);
+//   let latest_agent_version = "";
+//   let browser_download_url = "";
+//   [browser_download_url, latest_agent_version] =
+//     await get_latest_agent_version();
 
-  if (latest_agent_version != agent_version) {
-    notyf.dismiss(notification);
-    notyf.open({
-      type: "warning",
-      message: "A newer Pennsieve agent was found!",
-    });
-    log.warn(`Current agent version: ${agent_version}`);
-    log.warn(`Latest agent version: ${latest_agent_version}`);
-  } else {
-    notyf.dismiss(notification);
-    notyf.open({
-      type: "success",
-      message: "You have the latest Pennsieve agent!",
-    });
-    browser_download_url = "";
-    log.info("Up to date agent version found");
-  }
-  return [browser_download_url, latest_agent_version];
-};
+//   if (latest_agent_version != agent_version) {
+//     notyf.dismiss(notification);
+//     notyf.open({
+//       type: "warning",
+//       message: "A newer Pennsieve agent was found!",
+//     });
+//     log.warn(`Current agent version: ${agent_version}`);
+//     log.warn(`Latest agent version: ${latest_agent_version}`);
+//   } else {
+//     notyf.dismiss(notification);
+//     notyf.open({
+//       type: "success",
+//       message: "You have the latest Pennsieve agent!",
+//     });
+//     browser_download_url = "";
+//     log.info("Up to date agent version found");
+//   }
+//   return [browser_download_url, latest_agent_version];
+// };
 
 const get_latest_agent_version = () => {
   return new Promise((resolve, reject) => {
@@ -1478,8 +1477,8 @@ var datasetTagsInput = document.getElementById("tagify-dataset-tags"),
 createDragSort(datasetTagsTagify);
 
 var guidedDatasetTagsInput = document.getElementById(
-    "guided-tagify-dataset-tags"
-  ),
+  "guided-tagify-dataset-tags"
+),
   // initialize Tagify on the above input node reference
   guidedDatasetTagsTagify = new Tagify(guidedDatasetTagsInput);
 createDragSort(guidedDatasetTagsTagify);
@@ -1650,7 +1649,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => {});
+            }).then((result) => { });
             generateSubjectsFileHelper(false);
           }
         });
@@ -1666,7 +1665,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         generateSubjectsFileHelper(false);
       }
     }
@@ -1720,7 +1719,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   let bfdataset = document
     .getElementById("bf_dataset_load_subjects")
@@ -1823,7 +1822,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => {});
+            }).then((result) => { });
             generateSamplesFileHelper(uploadBFBoolean);
           }
         });
@@ -1839,7 +1838,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         generateSamplesFileHelper(uploadBFBoolean);
       }
     }
@@ -1893,7 +1892,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   try {
     let samplesFileResponse = await client.post(
@@ -2381,12 +2380,12 @@ function createStrain(id, type, curationMode) {
           info.setAttribute(
             "onclick",
             "populateRRID('" +
-              data.query +
-              "', '" +
-              type +
-              "', '" +
-              curationMode +
-              "')"
+            data.query +
+            "', '" +
+            type +
+            "', '" +
+            curationMode +
+            "')"
           );
           info.innerHTML = `Click here to check <strong>"${data.query}"</strong>`;
         }
@@ -2421,7 +2420,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   try {
     let load_taxonomy_species = await client.get(`/taxonomy/species`, {
       params: {
@@ -3143,9 +3142,9 @@ function detectEmptyRequiredFields(funding) {
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
   var emptyMessageArray = [
     "- Missing required fields under Dataset Info section: " +
-      dsEmptyField.join(", "),
+    dsEmptyField.join(", "),
     "- Missing required fields under Contributor Info section: " +
-      conEmptyField.join(", "),
+    conEmptyField.join(", "),
     "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
   ];
   var allFieldsSatisfied = true;
@@ -4688,7 +4687,9 @@ async function showDefaultBFAccount() {
     let bf_default_acc_req = await client.get(
       "manage_datasets/bf_default_account_load"
     );
+    console.log("Default account load called")
     let accounts = bf_default_acc_req.data.defaultAccounts;
+    console.log("Result is: ", bf_default_acc_req.data)
     if (accounts.length > 0) {
       var myitemselect = accounts[0];
       defaultBfAccount = myitemselect;
@@ -6762,9 +6763,8 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
           ${dragDropInstructionsText}
         </p>
         <p class="text-center">
-          You may also <b>add</b> or <b>import</b> ${
-            folderType === undefined ? "folders or files" : folderType + " data"
-          } using the buttons in the upper right corner
+          You may also <b>add</b> or <b>import</b> ${folderType === undefined ? "folders or files" : folderType + " data"
+      } using the buttons in the upper right corner
         </p>
       </div>`
     );
@@ -7095,16 +7095,14 @@ ipcRenderer.on(
 
                     numb.innerText = percentage_amount + "%";
                     if (percentage_amount <= 50) {
-                      progressBar_rightSide.style.transform = `rotate(${
-                        percentage_amount * 0.01 * 360
-                      }deg)`;
+                      progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
+                        }deg)`;
                     } else {
                       progressBar_rightSide.style.transition = "";
                       progressBar_rightSide.classList.add("notransition");
                       progressBar_rightSide.style.transform = `rotate(180deg)`;
-                      progressBar_leftSide.style.transform = `rotate(${
-                        percentage_amount * 0.01 * 180
-                      }deg)`;
+                      progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
+                        }deg)`;
                     }
 
                     if (finished === 1) {
@@ -7179,16 +7177,14 @@ ipcRenderer.on(
 
                   numb.innerText = percentage_amount + "%";
                   if (percentage_amount <= 50) {
-                    progressBar_rightSide.style.transform = `rotate(${
-                      percentage_amount * 0.01 * 360
-                    }deg)`;
+                    progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
+                      }deg)`;
                   } else {
                     progressBar_rightSide.style.transition = "";
                     progressBar_rightSide.classList.add("notransition");
                     progressBar_rightSide.style.transform = `rotate(180deg)`;
-                    progressBar_leftSide.style.transform = `rotate(${
-                      percentage_amount * 0.01 * 180
-                    }deg)`;
+                    progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
+                      }deg)`;
                   }
                   if (finished === 1) {
                     progressBar_leftSide.style.transform = `rotate(180deg)`;
@@ -7565,9 +7561,9 @@ document
     for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
       if (
         "manifest.xlsx" in
-          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
         sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-          "manifest.xlsx"
+        "manifest.xlsx"
         ]["forTreeview"]
       ) {
         delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
@@ -8171,7 +8167,7 @@ async function initiate_generate() {
           "track-event",
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE +
-            " - Step 7 - Generate - Dataset - Number of Files",
+          " - Step 7 - Generate - Dataset - Number of Files",
           `${datasetUploadSession.id}`,
           uploadedFiles
         );
@@ -8181,7 +8177,7 @@ async function initiate_generate() {
           "track-event",
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE +
-            " - Step 7 - Generate - Dataset - Size",
+          " - Step 7 - Generate - Dataset - Size",
           `${datasetUploadSession.id}`,
           increaseInFileSize
         );
@@ -8473,9 +8469,8 @@ const curation_consortium_check = async (mode = "") => {
         },
       }
     );
-    let res = bf_account_details_req.data;
+    let res = bf_account_details_req.data.account_details;
 
-    let acc_details = res["account_details"];
     // remove html tags from response
     acc_details = acc_details.replace(/<[^>]*>?/gm, "");
 

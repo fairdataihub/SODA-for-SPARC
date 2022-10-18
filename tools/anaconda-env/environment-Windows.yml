@@ -14,7 +14,7 @@ dependencies:
   - chardet == 4.0.0
   - pandas == 1.4.2
   - openpyxl == 3.0.9
-  - pennsieve == 6.1.2
+  - pennsieve2
   - configparser == 4.0.2
   - python-docx == 0.8.10
   - xlrd == 2.0.1

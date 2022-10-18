@@ -17,6 +17,8 @@ const hasConnectedAccountWithPennsieve = () => {
     return false;
   }
 
+  console.log("Config exists")
+
   // parse the config file
   let config = ini.parse(require("fs").readFileSync(configFilePath, "utf-8"));
 
@@ -24,16 +26,24 @@ const hasConnectedAccountWithPennsieve = () => {
   let globalProfile = config.global;
   if (!globalProfile) return false;
 
+  console.log("Global key exists")
+
   // check if default_profile has been set
   if (!globalProfile.default_profile) return false;
 
+  console.log("Default profile key has a value ( global )")
+
   let defaultProfileKey = globalProfile.default_profile;
   if (!config[defaultProfileKey]) return false;
+
+  console.log("The default profile key value has an entry")
 
   let defaultProfile = config[defaultProfileKey];
 
   // check if the default profile has a token key and secret key
   if (!defaultProfile.api_token || !defaultProfile.api_secret) return false;
+
+  console.log("The default profile key value has an and api and api_secret")
 
   return true;
 };

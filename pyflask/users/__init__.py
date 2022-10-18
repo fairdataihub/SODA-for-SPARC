@@ -1,1 +1,1 @@
-from .user import integrate_orcid_with_pennsieve, get_user
+from .user import get_user_information, update_config_account_name

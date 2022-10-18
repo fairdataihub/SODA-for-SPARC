@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ### Import required python modules
-from gevent import monkey
 import requests
-
-monkey.patch_all()
 import platform
 import os
 from os import listdir, makedirs, mkdir, walk, rename
@@ -25,7 +22,7 @@ import time
 import shutil
 import subprocess
 import gevent
-from pennsieve import Pennsieve
+from pennsieve2.pennsieve import Pennsieve
 import pathlib
 from flask import abort
 import requests
@@ -35,7 +32,6 @@ from pysodaUtils import (
     clear_queue,
     agent_running,
     check_forbidden_characters_bf,
-    bf_dataset_size,
 )
 
 from organizeDatasets import import_pennsieve_dataset

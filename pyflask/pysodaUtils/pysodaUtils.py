@@ -35,7 +35,7 @@ def agent_running():
             raise e
     else:
         raise AgentError(
-            "The Pennsieve agent is already running. Learn more about how to solve the issue <a href='https://github.com/bvhpatel/SODA/wiki/The-Pennsieve-agent-is-already-running' target='_blank'>here</a>."
+            "The Pennsieve agent is already running. Learn more about how to solve the issue <a href='https://docs.sodaforsparc.io/docs/common-errors/pennsieve-agent-is-already-running' target='_blank'>here</a>."
         )
 
 
@@ -68,17 +68,3 @@ def check_forbidden_characters_bf(my_string):
     regex = re.compile(f"[{forbidden_characters_bf}]")
     return regex.search(my_string) is not None or "\\" in r"%r" % my_string
 
-    
-def bf_dataset_size():
-    """
-    Function to get storage size of a dataset on Pennsieve
-    """
-    global bf
-    global myds
-
-    try:
-        selected_dataset_id = myds.id
-        bf_response = bf._api._get(f"/datasets/{str(selected_dataset_id)}")
-        return bf_response["storage"] if "storage" in bf_response.keys() else 0
-    except Exception as e:
-        raise e
