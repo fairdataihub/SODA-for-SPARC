@@ -8,8 +8,8 @@ from datasets import (
     # get_role, 
     # get_dataset_by_id, 
     get_current_collection_names, 
-    upload_collection_names, 
-    remove_collection_names
+    # upload_collection_names, 
+    # remove_collection_names
 )
 
 
@@ -67,25 +67,25 @@ get_current_collections_model = api.model("currCollections", {
     'id': fields.String(required=True, description="The id of collection name"),
     'name': fields.String(required=True, description="Collection name")
 })   
-@api.route('/<string:dataset_name>/collections')
-class datasetCollection(Resource):
-    curr_collections_parse = reqparse.RequestParser(bundle_errors=True)
-    curr_collections_parse.add_argument('selected_account', type=str, required=True, help="The target account to work with.", location="args")
+# @api.route('/<string:dataset_name>/collections')
+# class datasetCollection(Resource):
+#     curr_collections_parse = reqparse.RequestParser(bundle_errors=True)
+#     curr_collections_parse.add_argument('selected_account', type=str, required=True, help="The target account to work with.", location="args")
 
-    @api.marshal_with(get_current_collections_model, False, 200)
-    @api.doc(responses={500: 'There was an internal error', 400: 'Bad request'})
-    @api.expect(curr_collections_parse)
+#     @api.marshal_with(get_current_collections_model, False, 200)
+#     @api.doc(responses={500: 'There was an internal error', 400: 'Bad request'})
+#     @api.expect(curr_collections_parse)
 
-    def get(self, dataset_name):
-        data = self.curr_collections_parse.parse_args()
-        selected_account = data.get('selected_account')
+#     def get(self, dataset_name):
+#         data = self.curr_collections_parse.parse_args()
+#         selected_account = data.get('selected_account')
 
-        try:
-            return get_current_collection_names(selected_account, dataset_name)
-        except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+#         try:
+#             return get_current_collection_names(selected_account, dataset_name)
+#         except Exception as e:
+#             if notBadRequestException(e):
+#                 api.abort(500, str(e))
+#             raise e
 
         #remove selected dataset from add argument
     #change the urls to have dataset ids when being used
@@ -109,23 +109,23 @@ class datasetCollection(Resource):
     #             api.abort(500, str(e))
     #         raise e
 
-    parser_remove_collections = reqparse.RequestParser(bundle_errors=True)
-    parser_remove_collections.add_argument('selected_account', type=str, required=True, help="The target account to work with.", location="args")
-    parser_remove_collections.add_argument('collection', type=list, required=True, help='List of the collection tag ids', location="json")
+    # parser_remove_collections = reqparse.RequestParser(bundle_errors=True)
+    # parser_remove_collections.add_argument('selected_account', type=str, required=True, help="The target account to work with.", location="args")
+    # parser_remove_collections.add_argument('collection', type=list, required=True, help='List of the collection tag ids', location="json")
     
-    @api.doc(responses={500: 'There was an server error', 400: 'Bad request', 403: 'User is not owner or manager to dataset', 200: 'Success'})
-    @api.expect(parser_remove_collections)
-    def delete(self, dataset_name):
-        data = self.parser_remove_collections.parse_args()
-        selected_account = data.get('selected_account')
-        collection_ids = data.get('collection')
+    # @api.doc(responses={500: 'There was an server error', 400: 'Bad request', 403: 'User is not owner or manager to dataset', 200: 'Success'})
+    # @api.expect(parser_remove_collections)
+    # def delete(self, dataset_name):
+    #     data = self.parser_remove_collections.parse_args()
+    #     selected_account = data.get('selected_account')
+    #     collection_ids = data.get('collection')
 
-        try:
-            return remove_collection_names(selected_account, dataset_name, collection_ids)
-        except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+    #     try:
+    #         return remove_collection_names(selected_account, dataset_name, collection_ids)
+    #     except Exception as e:
+    #         if notBadRequestException(e):
+    #             api.abort(500, str(e))
+    #         raise e
 
 
 
