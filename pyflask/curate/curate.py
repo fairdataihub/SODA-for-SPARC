@@ -32,7 +32,6 @@ from pysodaUtils import (
     clear_queue,
     agent_running,
     check_forbidden_characters_bf,
-    bf_dataset_size,
 )
 
 from organizeDatasets import import_pennsieve_dataset

@@ -22,9 +22,8 @@ from pennsieve import Pennsieve
 import pathlib
 from datetime import datetime, timezone
 
-from permissions import bf_get_current_user_permission_agent_two
-from pyflask.permissions.permissions import has_edit_permissions
-from pyflask.utils.pennsieveClient import connect_pennsieve_client, get_dataset_id
+from permissions import bf_get_current_user_permission_agent_two, has_edit_permissions
+from utils import connect_pennsieve_client, get_dataset_id
 
 
 ### Global variables
