@@ -11432,6 +11432,12 @@ $(document).ready(async () => {
             }
             if (buttonNoSubjects.classList.contains("selected")) {
               $(".guided-subject-sample-data-addition-page").attr("data-skip-page", "true");
+              //If there's no subjects (and samples), delete the primary, source, and derivative folders
+              for (const folder of ["primary", "source", "derivative"]) {
+                if (datasetStructureJSONObj["folders"][folder]) {
+                  delete datasetStructureJSONObj["folders"][folder];
+                }
+              }
               hideSubNavAndShowMainNav("next");
             }
 
