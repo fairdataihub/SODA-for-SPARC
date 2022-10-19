@@ -1158,12 +1158,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
             if folder in manifest_dict:
                 createFolderStructure(
-                    subfolder_section, bf, manifest_dict[folder]
+                    subfolder_section, ps, manifest_dict[folder]
                 )  # passing item's json and the collection ID
-            namespace_logger.info(type(ps))
-            createFolderStructure(
-                subfolder_section, ps, manifest_dict[folder]
-            )  # passing item's json and the collection ID
 
     success_message = (
         "Data files under a valid high-level SPARC folders have been imported"
