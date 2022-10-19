@@ -38,10 +38,11 @@ def bf_get_doi(selected_bfaccount, selected_bfdataset):
     try:
         r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/doi", headers=create_request_headers(ps))
         r.raise_for_status()
+        result = r.json()
         print(r)
 
         # doi_status = bf._api._get(f"/datasets/{str(selected_dataset_id)}/doi")
-        return {"doi": r["doi"]}
+        return {"doi": result["doi"]}
     except Exception as e:
         if "404" in str(e):
             return {"doi": "None"}
@@ -82,50 +83,22 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
     except Exception as e:
         raise e
 
-    contributors_found = True
     try:
-        # contributors_list = bf._api._get(
-        #     f"/datasets/{str(selected_dataset_id)}/contributors"
-        # )
         print("before first")
         r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/contributors", headers=create_request_headers(ps))
         r.raise_for_status()
+        contributors = r.json()
+        creators_list = [
+            item["firstName"] + " " + item["lastName"]
+            for item in contributors
+        ]
         print("after first request")
+        print(creators_list)
     except Exception as e:
         print("error below")
         handle_http_error(e)
-
-    # ORIGINAL METHOD
-    # creators_list = [
-        #     item["firstName"] + " " + item["lastName"]
-        #     for item in r
-        # ]
     
     try:
-        my_json = ""
-        for item in r:
-            # item is a byte array when printed
-            print(item)
-            # decode and store into string
-            my_json += item.decode("utf-8").replace("'", '"')
-            print(type(my_json))
-            print(my_json)
-            # print(decoded_item[0])
-
-        # convert string into json 
-        data = json.loads(my_json)
-        s = json.dumps(data, indent=4, sort_keys=True)
-        print("below we print the json")
-        print(s)
-        print("-" * 20)
-
-        print(type(s));
-        print(s[0])
-    
-
-        print("below is creators list")
-        print(creators_list)
-
         jsonfile = {
             "title": selected_bfdataset,
             "creators": creators_list,
