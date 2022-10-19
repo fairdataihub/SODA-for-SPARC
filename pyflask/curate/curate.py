@@ -28,7 +28,7 @@ from flask import abort
 import requests
 from datetime import datetime, timezone
 from permissions import bf_get_current_user_permission_agent_two
-from utils import authenticate_user_with_client, connect_pennsieve_client, get_dataset_id
+from utils import authenticate_user_with_client, connect_pennsieve_client, get_dataset_id, create_request_headers
 
 from pysodaUtils import (
     clear_queue,
@@ -237,6 +237,9 @@ DEV_TEMPLATE_PATH = join(dirname(__file__), "..", "file_templates")
 # it becomes nested into the pysodadist/api directory
 PROD_TEMPLATE_PATH = join(dirname(__file__), "..", "..", "file_templates")
 TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLATE_PATH
+
+
+PENNSIEVE_URL = "https://api.pennsieve.io"
 
 ### Internal functions
 def TZLOCAL():
@@ -1213,7 +1216,7 @@ def mymovefile_with_metadata(src, dst):
     shutil.move(src, dst)
 
 
-def bf_create_new_dataset(datasetname, bf):
+def bf_create_new_dataset(datasetname, ps):
     """
 
     Args:
@@ -1247,14 +1250,26 @@ def bf_create_new_dataset(datasetname, bf):
             abort(400, error)
 
         dataset_list = []
-        for ds in bf.datasets():
-            dataset_list.append(ds.name)
+        try:
+            r = requests.get(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(ps))
+            r.raise_for_status()
+            dataset_dicts = r.json()
+        except Exception as e:
+            # TODO: Add errior handling function for http requests
+            abort(500, "Error: Could not connect to Pennsieve. Please try again later.")
+
+
+        for dataset_dict in dataset_dicts:
+            dataset_list.append(dataset_dict["content"]["name"])
+
         if datasetname in dataset_list:
             abort(400, "Error: Dataset name already exists")
         else:
-            ds = bf.create_dataset(datasetname)
+            # TODO: Add error handling
+            r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(ps), json={"name": datasetname})
+            r.raise_for_status()
 
-        return ds
+        return r.json()
 
     except Exception as e:
         raise e
@@ -2814,15 +2829,18 @@ def handle_duplicate_package_name_error(e, soda_json_structure):
 
     raise e
 
-def bf_check_dataset_files_validity(soda_json_structure, bf):
+def bf_check_dataset_files_validity(soda_json_structure, ps):
     """
     Function to check that the bf data files and folders specified in the dataset are valid
 
     Args:
         dataset_structure: soda dict with information about all specified files and folders
+        ps: pennsieve http object
     Output:
         error: error message with list of non valid local data files, if any
     """
+
+    global PENNSIEVE_URL
 
     def recursive_bf_dataset_check(my_folder, my_relative_path, error):
         if "folders" in my_folder.keys():
@@ -2832,7 +2850,8 @@ def bf_check_dataset_files_validity(soda_json_structure, bf):
                 if folder_type == "bf":
                     package_id = folder["path"]
                     try:
-                        details = bf._api._get(f"/packages/{str(package_id)}/view")
+                        r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=create_request_headers(ps))
+                        r.raise_for_status()
                     except Exception as e:
                         error_message = relative_path + " (id: " + package_id + ")"
                         error.append(error_message)
@@ -2843,7 +2862,8 @@ def bf_check_dataset_files_validity(soda_json_structure, bf):
                 if file_type == "bf":
                     package_id = file["path"]
                     try:
-                        details = bf._api._get(f"/packages/{str(package_id)}/view")
+                        r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=create_request_headers(ps))
+                        r.raise_for_status()
                     except Exception as e:
                         relative_path = my_relative_path + "/" + file_key
                         error_message = relative_path + " (id: " + package_id + ")"
@@ -2860,7 +2880,8 @@ def bf_check_dataset_files_validity(soda_json_structure, bf):
                 if folder_type == "bf":
                     package_id = folder["path"]
                     try:
-                        details = bf._api._get("/packages/" + str(package_id) + "/view")
+                        r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=create_request_headers(ps))
+                        r.raise_for_status()
                     except Exception as e:
                         error_message = relative_path + " (id: " + package_id + ")"
                         error.append(error_message)
@@ -2872,7 +2893,8 @@ def bf_check_dataset_files_validity(soda_json_structure, bf):
                 if file_type == "bf":
                     package_id = folder["path"]
                     try:
-                        details = bf._api._get("/packages/" + str(package_id) + "/view")
+                        r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=create_request_headers(ps))
+                        r.raise_for_status()
                     except Exception as e:
                         relative_path = file_key
                         error_message = relative_path + " (id: " + package_id + ")"
@@ -2886,7 +2908,8 @@ def bf_check_dataset_files_validity(soda_json_structure, bf):
             if file_type == "bf":
                 package_id = file["path"]
                 try:
-                    details = bf._api._get("/packages/" + str(package_id) + "/view")
+                    r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=create_request_headers(ps))
+                    r.raise_for_status()
                 except Exception as e:
                     error_message = file_key + " (id: " + package_id + ")"
                     error.append(error_message)
@@ -3045,7 +3068,7 @@ def main_curate_function(soda_json_structure):
                 )
                 if soda_json_structure["generate-dataset"]["destination"] == "bf":
                     # TODO: Convert to new agent
-                    if error := bf_check_dataset_files_validity(soda_json_structure, bf):
+                    if error := bf_check_dataset_files_validity(soda_json_structure, ps):
                         main_curate_status = "Done"
                         abort(400, error)
             except Exception as e:
@@ -3076,7 +3099,7 @@ def main_curate_function(soda_json_structure):
                         dataset_name = soda_json_structure["generate-dataset"][
                             "dataset-name"
                         ]
-                        myds = bf_create_new_dataset(dataset_name, bf)
+                        myds = bf_create_new_dataset(dataset_name, ps)
                         generated_dataset_id = myds.id
                     bf_generate_new_dataset(soda_json_structure, bf, myds)
                 if generate_option == "existing-bf":
