@@ -5,6 +5,7 @@ from flask import abort
 import requests
 from permissions import bf_get_current_user_permission_agent_two, has_edit_permissions
 from utils import connect_pennsieve_client, get_dataset_id, authenticate_user_with_client, create_request_headers
+from errorHandlers import handle_http_error
 
 
 
@@ -22,30 +23,28 @@ def bf_get_doi(selected_bfaccount, selected_bfdataset):
         Current doi or "None"
     """
 
-    try:
-        bf = Pennsieve(selected_bfaccount)
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve account")
+
+    ps = connect_pennsieve_client()
+
+    authenticate_user_with_client(ps, selected_bfaccount)
+
+    selected_dataset_id = get_dataset_id(ps, selected_bfdataset)
+
+    if not has_edit_permissions(ps, selected_dataset_id):
+        abort(401, "You do not have permission to edit this dataset.")
 
     try:
-        myds = bf.get_dataset(selected_bfdataset)
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/doi", headers=create_request_headers(ps))
+        r.raise_for_status()
+        print(r)
+
+        # doi_status = bf._api._get(f"/datasets/{str(selected_dataset_id)}/doi")
+        return {"doi": r["doi"]}
     except Exception as e:
-        abort(400, "Please select a valid Pennsieve dataset")
+        if "404" in str(e):
+            return {"doi": "none"}
+        handle_http_error(e)
 
-
-    role = bf_get_current_user_permission(bf, myds)
-    if role not in ["owner", "manager"]:
-        abort(403, "You don't have permissions to view/edit DOI for this Pennsieve dataset")
-
-    try:
-        selected_dataset_id = myds.id
-        doi_status = bf._api._get(f"/datasets/{str(selected_dataset_id)}/doi")
-        return {"doi": doi_status["doi"]}
-    except Exception as e:
-        if "doi" in str(e) and "not found" in str(e):
-            return {"doi": "None"}
-        else:
-            raise e
 
 
 
