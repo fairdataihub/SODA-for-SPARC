@@ -76,8 +76,6 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
 
     try:
         res = bf_get_doi(selected_bfaccount, selected_bfdataset)
-        print("this is res")
-        print(res)
         if res["doi"] != "None":
             abort(400, "A DOI has already been reserved for this dataset")
     except Exception as e:
@@ -153,7 +151,11 @@ def construct_publication_qs(publication_type, embargo_release_date):
     """
     Function to construct the publication query string. Used in bf_submit_review_dataset.
     """
-    return f"?publicationType={publication_type}&embargoReleaseDate={embargo_release_date}" if embargo_release_date else f"?publicationType={publication_type}"
+    if embargo_release_date:
+        return {"publicationType": publication_type, "embargoReleaseDate": embargo_release_date}
+    else:
+        return {"publicationType": publication_type}
+    # return f"publicationType={publication_type}&embargoReleaseDate={embargo_release_date}" if embargo_release_date else f"?publicationType={publication_type}"
 
 
 def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset, publication_type, embargo_release_date):
@@ -161,7 +163,7 @@ def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset, publication
         Function to publish for a selected dataset
 
         Args:
-            selected_bfaccount: name of selected Pennsieve acccount (string)
+            selected_bfaccount: name of selected Pennsieve account (string)
             selected_bfdataset: name of selected Pennsieve dataset (string)
             publication_type: type of publication (string)
             embargo_release_date: (optional) date at which embargo lifts from dataset after publication
@@ -178,9 +180,21 @@ def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset, publication
     if not has_edit_permissions(ps, selected_dataset_id):
         abort(401, "You do not have permission to edit this dataset.")
 
-    qs = construct_publication_qs(publication_type, embargo_release_date)
+    jsonfile = construct_publication_qs(publication_type, embargo_release_date)
 
-    return ps._api._post(f"/datasets/{selected_dataset_id}/publication/request{qs}", headers=create_request_headers(ps))
+    try:
+        r = requests.post(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/publication/request", headers=create_request_headers(ps), json=jsonfile)
+        r.raise_for_status()
+        result = r.json()
+        print(result)
+        return result
+    except Exception as e:
+        print(e)
+        if "400" in str(e):
+            abort(400, "Dataset cannot be published if owner does not have an ORCID ID")
+        handle_http_error(e)
+
+    # return ps._api._post(f"/datasets/{selected_dataset_id}/publication/request{qs}", headers=create_request_headers(ps))
 
 
 def get_publication_type(ps, myds):
@@ -202,16 +216,16 @@ def get_publication_type(ps, myds):
 
 def bf_withdraw_review_dataset(selected_bfaccount, selected_bfdataset):
 
-    ps = get_authenticated_ps(selected_bfaccount)
+    ps = connect_pennsieve_client()
 
-    myds = get_dataset(ps, selected_bfdataset)
+    authenticate_user_with_client(ps, selected_bfaccount)
 
-    role = bf_get_current_user_permission(ps, myds)
+    selected_dataset_id = get_dataset_id(ps, selected_bfdataset)
 
-    if role not in ["owner"]:
-        abort(403, "You must be dataset owner to cancel publication.")
+    if not has_edit_permissions(ps, selected_dataset_id):
+        abort(401, "You do not have permission to edit this dataset.")
 
-    publication_type = get_publication_type(ps, myds)
+    publication_type = get_publication_type(ps, selected_dataset_id)
    
     try:
         ps._api._post(f"/datasets/{myds.id}/publication/cancel?publicationType={publication_type}")
