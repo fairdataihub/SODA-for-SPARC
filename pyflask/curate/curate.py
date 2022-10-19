@@ -27,6 +27,8 @@ import pathlib
 from flask import abort
 import requests
 from datetime import datetime, timezone
+from permissions import bf_get_current_user_permission_agent_two
+from utils import authenticate_user_with_client, connect_pennsieve_client, get_dataset_id
 
 from pysodaUtils import (
     clear_queue,
@@ -2975,7 +2977,8 @@ def main_curate_function(soda_json_structure):
                 "Checking that the selected Pennsieve account is valid"
             )
             accountname = soda_json_structure["bf-account-selected"]["account-name"]
-            bf = Pennsieve(accountname)
+            ps = connect_pennsieve_client()
+            authenticate_user_with_client(ps, accountname)
         except Exception as e:
             main_curate_status = "Done"
             abort(400, "Error: Please select a valid Pennsieve account")
@@ -2988,14 +2991,14 @@ def main_curate_function(soda_json_structure):
                 "Checking that the selected Pennsieve dataset is valid"
             )
             bfdataset = soda_json_structure["bf-dataset-selected"]["dataset-name"]
-            myds = bf.get_dataset(bfdataset)
+            selected_dataset_id = get_dataset_id(ps, bfdataset)
         except Exception as e:
             main_curate_status = "Done"
             abort(400, "Error: Please select a valid Pennsieve dataset")
 
         # check that the user has permissions for uploading and modifying the dataset
         main_curate_progress_message = "Checking that you have required permissions for modifying the selected dataset"
-        role = bf_get_current_user_permission(bf, myds)
+        role = bf_get_current_user_permission_agent_two(selected_dataset_id, ps)["role"]
         if role not in ["owner", "manager", "editor"]:
             main_curate_status = "Done"
             abort(403, "Error: You don't have permissions for uploading to this Pennsieve dataset")
@@ -3041,6 +3044,7 @@ def main_curate_function(soda_json_structure):
                     "Checking that the Pennsieve files and folders are valid"
                 )
                 if soda_json_structure["generate-dataset"]["destination"] == "bf":
+                    # TODO: Convert to new agent
                     if error := bf_check_dataset_files_validity(soda_json_structure, bf):
                         main_curate_status = "Done"
                         abort(400, error)

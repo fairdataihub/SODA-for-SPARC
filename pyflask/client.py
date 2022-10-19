@@ -13,36 +13,36 @@ manifest = client.manifest.create(local_ds)
 
 
 
-client.manifest.upload(49)
-sub = client.subscribe(10)
+# client.manifest.upload(49)
+# sub = client.subscribe(10)
 
-counter = 0
-end_counter = 1000
-msgs = []
-for msg in sub:
-    print(msg)
-    # print(dir(msg))
-    # print("Upload status: ", msg.upload_status)
-    # print("Event info", msg.event_info)
-    # print("Event type", msg.type)
-    # print('Descriptor: ', dir(msg.DESCRIPTOR))
-    # print("Event Response: ", dir(msg.EventResponse))
-    # print("Event response details: ", dir(msg.EventResponse.details))
+# counter = 0
+# end_counter = 1000
+# msgs = []
+# for msg in sub:
+#     print(msg)
+#     # print(dir(msg))
+#     # print("Upload status: ", msg.upload_status)
+#     # print("Event info", msg.event_info)
+#     # print("Event type", msg.type)
+#     # print('Descriptor: ', dir(msg.DESCRIPTOR))
+#     # print("Event Response: ", dir(msg.EventResponse))
+#     # print("Event response details: ", dir(msg.EventResponse.details))
 
-    current_bytes_uploaded = msg.upload_status.current 
-    total_bytes_to_upload = msg.upload_status.total
+#     current_bytes_uploaded = msg.upload_status.current 
+#     total_bytes_to_upload = msg.upload_status.total
 
-    if total_bytes_to_upload != 0:
-        if msg.upload_status.total == msg.upload_status.current:
-            counter += 1
-            print(counter)
+#     if total_bytes_to_upload != 0:
+#         if msg.upload_status.total == msg.upload_status.current:
+#             counter += 1
+#             print(counter)
         
 
-        if counter == 4:
-            print("Unsubscribing")
-            client.unsubscribe(10)
+#         if counter == 4:
+#             print("Unsubscribing")
+#             client.unsubscribe(10)
 
-print("Done")
+# print("Done")
 
 
 
