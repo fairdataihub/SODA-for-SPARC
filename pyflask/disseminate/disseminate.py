@@ -6,6 +6,8 @@ import requests
 from permissions import bf_get_current_user_permission_agent_two, has_edit_permissions
 from utils import connect_pennsieve_client, get_dataset_id, authenticate_user_with_client, create_request_headers
 from errorHandlers import handle_http_error
+import json
+import io
 
 
 
@@ -42,7 +44,7 @@ def bf_get_doi(selected_bfaccount, selected_bfdataset):
         return {"doi": r["doi"]}
     except Exception as e:
         if "404" in str(e):
-            return {"doi": "none"}
+            return {"doi": "None"}
         handle_http_error(e)
 
 
@@ -61,47 +63,83 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
         Success or error message
     """
 
-    try:
-        bf = Pennsieve(selected_bfaccount)
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve account")
+    ps = connect_pennsieve_client()
 
-    try:
-        myds = bf.get_dataset(selected_bfdataset)
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve dataset")
+    authenticate_user_with_client(ps, selected_bfaccount)
 
-    role = bf_get_current_user_permission(bf, myds)
-    if role not in ["owner", "manager"]:
-        abort(403, "You don't have permissions to view/edit DOI for this Pennsieve dataset")
+    selected_dataset_id = get_dataset_id(ps, selected_bfdataset)
+
+    if not has_edit_permissions(ps, selected_dataset_id):
+        abort(401, "You do not have permission to edit this dataset.")
 
 
     try:
         res = bf_get_doi(selected_bfaccount, selected_bfdataset)
+        print("this is res")
+        print(res)
         if res["doi"] != "None":
             abort(400, "A DOI has already been reserved for this dataset")
     except Exception as e:
         raise e
 
+    contributors_found = True
     try:
-        selected_dataset_id = myds.id
-        contributors_list = bf._api._get(
-            f"/datasets/{str(selected_dataset_id)}/contributors"
-        )
+        # contributors_list = bf._api._get(
+        #     f"/datasets/{str(selected_dataset_id)}/contributors"
+        # )
+        print("before first")
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/contributors", headers=create_request_headers(ps))
+        r.raise_for_status()
+        print("after first request")
+    except Exception as e:
+        print("error below")
+        handle_http_error(e)
 
-        creators_list = [
-            item["firstName"] + " " + item["lastName"]
-            for item in contributors_list
-        ]
+    # ORIGINAL METHOD
+    # creators_list = [
+        #     item["firstName"] + " " + item["lastName"]
+        #     for item in r
+        # ]
+    
+    try:
+        my_json = ""
+        for item in r:
+            # item is a byte array when printed
+            print(item)
+            # decode and store into string
+            my_json += item.decode("utf-8").replace("'", '"')
+            print(type(my_json))
+            print(my_json)
+            # print(decoded_item[0])
+
+        # convert string into json 
+        data = json.loads(my_json)
+        s = json.dumps(data, indent=4, sort_keys=True)
+        print("below we print the json")
+        print(s)
+        print("-" * 20)
+
+        print(type(s));
+        print(s[0])
+    
+
+        print("below is creators list")
+        print(creators_list)
 
         jsonfile = {
             "title": selected_bfdataset,
             "creators": creators_list,
         }
-        bf._api.datasets._post(f"/{str(selected_dataset_id)}/doi", json=jsonfile)
+        print("below is json file")
+        print(jsonfile)
+        # bf._api.datasets._post(f"/{str(selected_dataset_id)}/doi", json=jsonfile)
+        
+        r = requests.post(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/doi", headers=create_request_headers(ps), json=jsonfile)
+        r.raise_for_status()
+
         return {"message": "Done!"}
     except Exception as e:
-        raise e
+        handle_http_error(e)
 
 
 
