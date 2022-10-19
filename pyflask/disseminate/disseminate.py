@@ -92,8 +92,6 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
             item["firstName"] + " " + item["lastName"]
             for item in contributors
         ]
-        print("after first request")
-        print(creators_list)
     except Exception as e:
         print("error below")
         handle_http_error(e)
@@ -103,8 +101,6 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
             "title": selected_bfdataset,
             "creators": creators_list,
         }
-        print("below is json file")
-        print(jsonfile)
         # bf._api.datasets._post(f"/{str(selected_dataset_id)}/doi", json=jsonfile)
         
         r = requests.post(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/doi", headers=create_request_headers(ps), json=jsonfile)
