@@ -1,5 +1,6 @@
 from pennsieve2.pennsieve import Pennsieve
 from os import path
+import requests
 
 client = Pennsieve()
 client.user.switch('soda')
@@ -8,8 +9,13 @@ client.useDataset("N:dataset:1cb4bf59-2b6d-48c9-8dae-88f722c6e328")
 
 
 
-local_ds = path.join(path.expanduser("~"), "Desktop", "DatasetTemplate")
-manifest = client.manifest.create(local_ds)
+#local_ds = path.join(path.expanduser("~"), "Desktop", "DatasetTemplate")
+#manifest = client.manifest.create(local_ds)
+
+PENNSIEVE_URL = "https://api.pennsieve.io"
+
+r = requests.post(f"{PENNSIEVE_URL}/packages", headers={"Content-Type": "application/json", "Authorization": f"Bearer {client.getUser()['session_token']}",}, json={"parent": "N:collection:f981f4df-b0cd-4a91-bcf0-8789b128b379", "name": "funsies", "dataset": "974-filesss", "packageType": "collection", "properties": {"key": "funsies", "value": "Ahhh"} })
+r.raise_for_status()
 
 
 

@@ -2305,6 +2305,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         if folder_key in my_bf_existing_folders_name:
                             continue
                         else:
+                            r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json={"parent": "N:collection:f981f4df-b0cd-4a91-bcf0-8789b128b379", "name": "funsies", "dataset": "974-filesss", "packageType": "collection", "properties": {"key": "funsies", "value": "Ahhh"} })
                             bf_folder = my_ps_folder.create_collection(folder_key)
 
                     elif existing_folder_option == "create-duplicate":
