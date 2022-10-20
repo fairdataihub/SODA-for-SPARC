@@ -563,7 +563,7 @@ const run_pre_flight_checks = async (check_update = true) => {
                   await get_latest_agent_version();
                 shell.openExternal(browser_download_url);
                 shell.openExternal(
-                  "https://docs.pennsieve.io/docs/the-pennsieve-agent"
+                  "https://docs.pennsieve.io/v1/docs/the-pennsieve-agent"
                 );
               } catch (e) {
                 await Swal.fire({
@@ -630,7 +630,7 @@ const run_pre_flight_checks = async (check_update = true) => {
                     await get_latest_agent_version();
                   shell.openExternal(browser_download_url);
                   shell.openExternal(
-                    "https://docs.pennsieve.io/docs/the-pennsieve-agent"
+                    "https://docs.pennsieve.io/v1/docs/the-pennsieve-agent"
                   );
                 } catch (e) {
                   console.log(e);
