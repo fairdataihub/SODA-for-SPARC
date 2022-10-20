@@ -40,7 +40,7 @@ def bf_get_doi(selected_bfaccount, selected_bfdataset):
         r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/doi", headers=create_request_headers(ps))
         r.raise_for_status()
         result = r.json()
-        print(r)
+        print(result)
 
         # doi_status = bf._api._get(f"/datasets/{str(selected_dataset_id)}/doi")
         return {"doi": result["doi"]}
@@ -231,8 +231,7 @@ def bf_withdraw_review_dataset(selected_bfaccount, selected_bfdataset):
     try:
         r = requests.post(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/publication/cancel", json=jsonfile, headers=create_request_headers(ps))
         r.raise_for_status()
-        r.json()
-        print(r)
+        print(r.json())
         return {"message": "Your dataset publication has been cancelled."}
     except Exception as e:
         print(e)
