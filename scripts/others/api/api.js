@@ -88,12 +88,13 @@ const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
 // tell Pennsieve to ignore a set of user selected files when publishing their dataset.
 // this keeps those files hidden from the public but visible to publishers and collaboraors.
 // I:
-//  datasetIdOrName: string - A dataset id or name
+//  datasetIdOrName: string - dataset name
 //  files: [{fileName: string}] - An array of file name objects
-const updateDatasetExcludedFiles = async (datasetId, files) => {
+const updateDatasetExcludedFiles = async (account, datasetName, files) => {
   // create the request options
-  await client.put(`/disseminate_datasets/datasets/${datasetId}/ignore-files`, {
+  await client.put(`/disseminate_datasets/datasets/${datasetName}/ignore-files`, {
     ignore_files: files,
+    selected_account: account
   });
 };
 

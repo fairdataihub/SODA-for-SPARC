@@ -257,6 +257,7 @@ def get_files_excluded_from_publishing(selected_dataset, pennsieve_account):
     authenticate_user_with_client(ps, pennsieve_account)
 
     selected_dataset_id = get_dataset_id(ps, selected_dataset)
+
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/ignore-files")
     r.raise_for_status()
     resp = r.json()
@@ -268,7 +269,7 @@ def get_files_excluded_from_publishing(selected_dataset, pennsieve_account):
 
 
 
-def update_files_excluded_from_publishing(selected_dataset_id, files_excluded_from_publishing):
+def update_files_excluded_from_publishing(selected_account, selected_dataset, files_excluded_from_publishing):
     """
     Function to update the files excluded from publishing
 
@@ -280,19 +281,18 @@ def update_files_excluded_from_publishing(selected_dataset_id, files_excluded_fr
         Success or error message
     """
 
-    token = get_access_token()
+    ps = connect_pennsieve_client()
 
-    headers = {
-        "Accept": "*/*",
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {token}"
-    }
+    authenticate_user_with_client(ps, selected_account)
+
+    selected_dataset_id = get_dataset_id(ps, selected_dataset)
 
     r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/ignore-files", json=files_excluded_from_publishing, headers=create_request_headers(ps))
 
     # TODO: log r.text and r.status_code
 
     r.raise_for_status()
+    print(r.json())
 
     return {"message": "Files excluded from publishing."}
 

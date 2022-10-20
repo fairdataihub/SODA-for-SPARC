@@ -3647,7 +3647,7 @@ async function submitReviewDataset(embargoReleaseDate) {
     try {
       // exclude the user's selected files from publication
       //check res
-      await api.updateDatasetExcludedFiles(defaultBfDatasetId, files);
+      await api.updateDatasetExcludedFiles(defaultBfAccount, selectedBfDataset, files);
     } catch (error) {
       clientError(error);
       // log the error
