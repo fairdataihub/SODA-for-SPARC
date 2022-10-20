@@ -33,7 +33,6 @@ const logCurationErrorsToAnalytics = async (
   increaseInFileSize,
   guidedMode
 ) => {
-
   if (!guidedMode) {
     logCurationForAnalytics(
       "Error",
@@ -52,13 +51,7 @@ const logCurationErrorsToAnalytics = async (
     );
   } else {
     // track that an Error in the upload has occurred
-    ipcRenderer.send(
-      "track-event",
-      "Error",
-      `Guided Mode - Generate - Dataset`,
-      "Generate",
-      1
-    );
+    ipcRenderer.send("track-event", "Error", `Guided Mode - Generate - Dataset`, "Generate", 1);
   }
 
   file_counter = 0;
@@ -84,7 +77,6 @@ const logCurationErrorsToAnalytics = async (
       "Size",
       mainTotalGenerateDatasetSize
     );
-
   } else {
     // when we fail we want to know the total amount of files we were trying to generate; whether not not we did a Pennsieve upload or Local, New, Saved
     ipcRenderer.send(
@@ -107,7 +99,6 @@ const logCurationErrorsToAnalytics = async (
   }
 
   if (!guidedMode) {
-
     let datasetLocation = determineDatasetLocation();
 
     // log failed Local, Saved, or New dataset generation to Google Analytics
@@ -170,8 +161,7 @@ const logCurationErrorsToAnalytics = async (
       ipcRenderer.send(
         "track-event",
         "Success",
-        PrepareDatasetsAnalyticsPrefix.CURATE +
-        " - Step 7 - Generate - Dataset - Number of Files",
+        PrepareDatasetsAnalyticsPrefix.CURATE + " - Step 7 - Generate - Dataset - Number of Files",
         `${datasetUploadSession.id}`,
         Math.floor(BUCKET_SIZE / 2)
       );
@@ -183,8 +173,7 @@ const logCurationErrorsToAnalytics = async (
       ipcRenderer.send(
         "track-event",
         "Error",
-        PrepareDatasetsAnalyticsPrefix.CURATE +
-        " - Step 7 - Generate - Dataset - Number of Files",
+        PrepareDatasetsAnalyticsPrefix.CURATE + " - Step 7 - Generate - Dataset - Number of Files",
         `${datasetUploadSession.id}`,
         file_counter
       );
@@ -353,13 +342,7 @@ const logCurationSuccessToAnalytics = async (
     );
   } else {
     // track that a successful upload has occurred
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      `Guided Mode - Generate - Dataset`,
-      "Generate",
-      1
-    );
+    ipcRenderer.send("track-event", "Success", `Guided Mode - Generate - Dataset`, "Generate", 1);
   }
 
   // log the dataset name if it was locally generated
@@ -394,35 +377,29 @@ const logCurationSuccessToAnalytics = async (
   }
   if (!guidedMode) {
     // log the preview card instructions for any files and folders being generated on Pennsieve
-    Array.from(document.querySelectorAll(".generate-preview")).forEach(
-      (card) => {
-        let header = card.querySelector("h5");
-        if (header.textContent.includes("folders")) {
-          let instruction = card.querySelector("p");
-          // log the folder instructions to analytics
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Pennsieve - ${instruction.textContent}`,
-            datasetLocation === "Pennsieve"
-              ? defaultBfDatasetId
-              : datasetLocation,
-            1
-          );
-        } else if (header.textContent.includes("existing files")) {
-          let instruction = card.querySelector("p");
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Pennsieve - ${instruction.textContent} `,
-            datasetLocation === "Pennsieve"
-              ? defaultBfDatasetId
-              : datasetLocation,
-            1
-          );
-        }
+    Array.from(document.querySelectorAll(".generate-preview")).forEach((card) => {
+      let header = card.querySelector("h5");
+      if (header.textContent.includes("folders")) {
+        let instruction = card.querySelector("p");
+        // log the folder instructions to analytics
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Pennsieve - ${instruction.textContent}`,
+          datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
+          1
+        );
+      } else if (header.textContent.includes("existing files")) {
+        let instruction = card.querySelector("p");
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Pennsieve - ${instruction.textContent} `,
+          datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
+          1
+        );
       }
-    );
+    });
   }
 };
 

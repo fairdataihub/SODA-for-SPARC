@@ -3,37 +3,29 @@ This file contains all of the functions related to the submission.xlsx file
 */
 
 // event listeners for opendropdown prompt
-document
-  .querySelectorAll(".submission-change-current-account")
-  .forEach((element) => {
-    element.addEventListener("click", function () {
-      openDropdownPrompt(null, "bf");
-    });
+document.querySelectorAll(".submission-change-current-account").forEach((element) => {
+  element.addEventListener("click", function () {
+    openDropdownPrompt(null, "bf");
   });
+});
 
-document
-  .querySelectorAll(".submission-change-current-ds")
-  .forEach((element) => {
-    element.addEventListener("click", function () {
-      openDropdownPrompt(null, "dataset");
-    });
+document.querySelectorAll(".submission-change-current-ds").forEach((element) => {
+  element.addEventListener("click", function () {
+    openDropdownPrompt(null, "dataset");
   });
+});
 
 /// save airtable api key
 const addAirtableKeyBtn = document.getElementById("button-add-airtable-key");
 
 // Save grant information
-const presavedAwardArray1 = document.getElementById(
-  "select-presaved-grant-info-list"
-);
+const presavedAwardArray1 = document.getElementById("select-presaved-grant-info-list");
 const addAwardBtn = document.getElementById("button-add-award");
 const deleteMilestoneBtn = document.getElementById("button-delete-milestone");
 const editMilestoneBtn = document.getElementById("button-edit-milestone");
 const addMilestoneBtn = document.getElementById("button-add-milestone");
 const deleteAwardBtn = document.getElementById("button-delete-award");
-const addNewMilestoneBtn = document.getElementById(
-  "button-default-save-milestone"
-);
+const addNewMilestoneBtn = document.getElementById("button-default-save-milestone");
 const saveInformationBtn = document.getElementById("button-save-milestone");
 var sparcAwardEditMessage = $("#div-SPARC-edit-awards");
 
@@ -69,10 +61,7 @@ function resetSubmission() {
         .removeClass("checked")
         .removeClass("disabled")
         .removeClass("non-selected");
-      $("#Question-prepare-submission-1 .option-card .folder-input-check").prop(
-        "checked",
-        false
-      );
+      $("#Question-prepare-submission-1 .option-card .folder-input-check").prop("checked", false);
       resetSubmissionFields();
     }
   });
@@ -87,8 +76,7 @@ const renderMilestoneSelectionTable = (milestoneData) => {
         (milestoneDescription) => {
           const descriptionString = milestoneDescription["Description of data"];
           const milestoneString = milestoneKey;
-          const completionDateString =
-            milestoneDescription["Expected date of completion"];
+          const completionDateString = milestoneDescription["Expected date of completion"];
           return generateMilestoneRowElement(
             descriptionString,
             milestoneString,
@@ -99,9 +87,7 @@ const renderMilestoneSelectionTable = (milestoneData) => {
       return milestoneDescriptionTableRows.join("");
     })
     .join("\n");
-  const milestonesTableContainer = document.getElementById(
-    "milestones-table-container"
-  );
+  const milestonesTableContainer = document.getElementById("milestones-table-container");
   milestonesTableContainer.innerHTML = milestoneTableRows;
 };
 
@@ -118,12 +104,8 @@ function resetSubmissionFields() {
   }
 
   var inputFields = $("#Question-prepare-submission-1").nextAll().find("input");
-  var textAreaFields = $("#Question-prepare-submission-1")
-    .nextAll()
-    .find("textarea");
-  var selectFields = $("#Question-prepare-submission-1")
-    .nextAll()
-    .find("select");
+  var textAreaFields = $("#Question-prepare-submission-1").nextAll().find("textarea");
+  var selectFields = $("#Question-prepare-submission-1").nextAll().find("select");
 
   for (var field of inputFields) {
     $(field).val("");
@@ -180,14 +162,11 @@ const helpMilestoneSubmission = async (curationMode) => {
     var award = $("#submission-sparc-award");
     log.info(`Importing Data Deliverables document: ${filepath}`);
     try {
-      let extract_milestone = await client.get(
-        `/prepare_metadata/import_milestone`,
-        {
-          params: {
-            path: filepath,
-          },
-        }
-      );
+      let extract_milestone = await client.get(`/prepare_metadata/import_milestone`, {
+        params: {
+          path: filepath,
+        },
+      });
       let res = extract_milestone.data;
       milestoneObj = res;
 
@@ -222,9 +201,7 @@ const helpMilestoneSubmission = async (curationMode) => {
             `;
         //add a custom milestone row for when the user wants to add a custom milestone
         //not included in the dataset deliverables document
-        guidedMilestoneData[
-          "Not included in the Dataset Deliverables document"
-        ] = [
+        guidedMilestoneData["Not included in the Dataset Deliverables document"] = [
           {
             "Description of data":
               "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
@@ -233,12 +210,10 @@ const helpMilestoneSubmission = async (curationMode) => {
         ];
 
         //save the unselected milestones into sodaJSONObj
-        sodaJSONObj["dataset-metadata"]["submission-metadata"][
-          "temp-imported-milestones"
-        ] = guidedMilestoneData;
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-imported-milestones"] =
+          guidedMilestoneData;
 
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] =
-          filepath;
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] = filepath;
 
         renderMilestoneSelectionTable(guidedMilestoneData);
 
@@ -296,9 +271,7 @@ const smoothScrollToElement = (idOrElement) => {
 
 const handleMilestoneClick = () => {
   //get all checked checkboxes with name "milestone" vanilla js
-  const checkedMilestones = document.querySelectorAll(
-    "input[name='milestone']:checked"
-  );
+  const checkedMilestones = document.querySelectorAll("input[name='milestone']:checked");
   //convert checkMilestones to array of checkMilestones values
   const checkedMilestonesArray = Array.from(checkedMilestones);
   //get the values of checkedMilestonesArray
@@ -312,13 +285,9 @@ const handleMilestoneClick = () => {
     }
   }
 
-  const completionDatesToCheckArray = Array.from(
-    new Set(completionDatesToCheck)
-  );
+  const completionDatesToCheckArray = Array.from(new Set(completionDatesToCheck));
   const completionDateRadioElements = completionDatesToCheckArray
-    .map((completionDate) =>
-      createCompletionDateRadioElement("completion-date", completionDate)
-    )
+    .map((completionDate) => createCompletionDateRadioElement("completion-date", completionDate))
     .join("\n");
   //replace the current completion-date-radio-elements with the new ones
   const completionDateRadioElementContainer = document.getElementById(
@@ -327,11 +296,7 @@ const handleMilestoneClick = () => {
   completionDateRadioElementContainer.innerHTML = completionDateRadioElements;
 };
 
-const generateMilestoneRowElement = (
-  dataDescription,
-  milestoneString,
-  dateString
-) => {
+const generateMilestoneRowElement = (dataDescription, milestoneString, dateString) => {
   return `
     <tr>
       <td class="middle aligned collapsing text-center">
@@ -355,9 +320,7 @@ const generateMilestoneRowElement = (
 
 //create an array of values for checked checkboxes with the name "milestone"
 const getCheckedMilestones = () => {
-  const checkedMilestones = document.querySelectorAll(
-    "input[name='milestone']:checked"
-  );
+  const checkedMilestones = document.querySelectorAll("input[name='milestone']:checked");
   const checkedMilestonesArray = Array.from(checkedMilestones);
   //get first tr parent for each checkedMilestonesArray element
   const checkedMilestoneData = checkedMilestonesArray.map((checkMilestone) => {
@@ -386,8 +349,7 @@ const openDDDimport = async (curationMode) => {
       1
     );
     if (curationMode === "guided") {
-      sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] =
-        filepath[0];
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] = filepath[0];
       let swal_container = document.getElementsByClassName("swal2-popup")[0];
       let swal_actions = document.getElementsByClassName("swal2-actions")[0];
       let swal_content = document.getElementsByClassName("swal2-content")[0];
@@ -419,11 +381,9 @@ const openDDDimport = async (curationMode) => {
         autoplay: true,
       });
       document.getElementById("guided-button-import-data-deliverables").click();
-      document.getElementsByClassName("swal2-confirm")[0].style.display =
-        "block";
+      document.getElementsByClassName("swal2-confirm")[0].style.display = "block";
     } else {
-      document.getElementById("input-milestone-select").placeholder =
-        filepath[0];
+      document.getElementById("input-milestone-select").placeholder = filepath[0];
       // log the successful attempt to import a data deliverables document from the user's computer
     }
   }
@@ -509,9 +469,7 @@ function changeAwardInput() {
     for (var i = 0; i < milestoneKey.length; i++) {
       milestoneValueArray.push(milestoneKey[i]);
       for (var j = 0; j < milestoneObj[milestoneKey[i]].length; j++) {
-        completionDateArray.push(
-          milestoneObj[milestoneKey[i]][j]["Expected date of completion"]
-        );
+        completionDateArray.push(milestoneObj[milestoneKey[i]][j]["Expected date of completion"]);
       }
     }
     milestoneValueArray.push("Not specified in the Data Deliverables document");
@@ -520,31 +478,23 @@ function changeAwardInput() {
   }
   milestoneTagify1.settings.whitelist = milestoneValueArray;
   for (var i = 0; i < completionDateArray.length; i++) {
-    addOption(
-      descriptionDateInput,
-      completionDateArray[i],
-      completionDateArray[i]
-    );
+    addOption(descriptionDateInput, completionDateArray[i], completionDateArray[i]);
   }
   return ddBolean;
 }
 
-const submissionDateInput = document.getElementById(
-  "submission-completion-date"
-);
+const submissionDateInput = document.getElementById("submission-completion-date");
 var submissionDestinationPath = "";
 
 $(document).ready(function () {
   ipcRenderer.on("selected-existing-submission", (event, filepath) => {
     if (filepath.length > 0) {
       if (filepath !== null) {
-        document.getElementById(
-          "existing-submission-file-destination"
-        ).placeholder = filepath[0];
+        document.getElementById("existing-submission-file-destination").placeholder = filepath[0];
 
         if (
-          document.getElementById("existing-submission-file-destination")
-            .placeholder !== "Browse here"
+          document.getElementById("existing-submission-file-destination").placeholder !==
+          "Browse here"
         ) {
           $("#div-confirm-existing-submission-import").show();
           $($("#div-confirm-existing-submission-import button")[0]).show();
@@ -553,41 +503,29 @@ $(document).ready(function () {
           $($("#div-confirm-existing-submission-import button")[0]).hide();
         }
       } else {
-        document.getElementById(
-          "existing-submission-file-destination"
-        ).placeholder = "Browse here";
+        document.getElementById("existing-submission-file-destination").placeholder = "Browse here";
         $("#div-confirm-existing-submission-import").hide();
       }
     } else {
-      document.getElementById(
-        "existing-submission-file-destination"
-      ).placeholder = "Browse here";
+      document.getElementById("existing-submission-file-destination").placeholder = "Browse here";
       $("#div-confirm-existing-submission-import").hide();
     }
   });
   // generate submission file
-  ipcRenderer.on(
-    "selected-destination-generate-submission-locally",
-    (event, dirpath) => {
-      if (dirpath.length > 0) {
-        document.getElementById(
-          "input-destination-generate-submission-locally"
-        ).placeholder = dirpath[0];
-        var destinationPath = path.join(dirpath[0], "submission.xlsx");
-        submissionDestinationPath = destinationPath;
-        $("#div-confirm-destination-submission-locally").css("display", "flex");
-        $($("#div-confirm-destination-submission-locally").children()[0]).css(
-          "display",
-          "flex"
-        );
-      } else {
-        document.getElementById(
-          "input-destination-generate-submission-locally"
-        ).placeholder = "Browse here";
-        $("#div-confirm-destination-submission-locally").css("display", "none");
-      }
+  ipcRenderer.on("selected-destination-generate-submission-locally", (event, dirpath) => {
+    if (dirpath.length > 0) {
+      document.getElementById("input-destination-generate-submission-locally").placeholder =
+        dirpath[0];
+      var destinationPath = path.join(dirpath[0], "submission.xlsx");
+      submissionDestinationPath = destinationPath;
+      $("#div-confirm-destination-submission-locally").css("display", "flex");
+      $($("#div-confirm-destination-submission-locally").children()[0]).css("display", "flex");
+    } else {
+      document.getElementById("input-destination-generate-submission-locally").placeholder =
+        "Browse here";
+      $("#div-confirm-destination-submission-locally").css("display", "none");
     }
-  );
+  });
 
   $("#bf_dataset_load_submission").on("DOMSubtreeModified", function () {
     if (
@@ -659,22 +597,12 @@ const checkStorage = (id) => {
     );
   });
 };
-const localSubmissionBtn = document.getElementById(
-  "btn-confirm-local-submission-destination"
-);
+const localSubmissionBtn = document.getElementById("btn-confirm-local-submission-destination");
 const localDDBtn = document.getElementById("btn-confirm-local-dd-destination");
-const localSubjectsBtn = document.getElementById(
-  "btn-confirm-local-subjects-destination"
-);
-const localSamplesBtn = document.getElementById(
-  "btn-confirm-local-samples-destination"
-);
-const localChangesBtn = document.getElementById(
-  "btn-confirm-local-changes-destination"
-);
-const localReadmeBtn = document.getElementById(
-  "btn-confirm-local-readme-destination"
-);
+const localSubjectsBtn = document.getElementById("btn-confirm-local-subjects-destination");
+const localSamplesBtn = document.getElementById("btn-confirm-local-samples-destination");
+const localChangesBtn = document.getElementById("btn-confirm-local-changes-destination");
+const localReadmeBtn = document.getElementById("btn-confirm-local-readme-destination");
 //event listeners for each button since each one uses a different ID
 localSubmissionBtn.addEventListener(
   "click",
@@ -691,9 +619,7 @@ localDDBtn.addEventListener(
   "click",
   function () {
     checkStorage(
-      document
-        .getElementById("input-destination-generate-dd-locally")
-        .getAttribute("placeholder")
+      document.getElementById("input-destination-generate-dd-locally").getAttribute("placeholder")
     );
   },
   false
@@ -763,8 +689,7 @@ async function generateSubmissionHelper(uploadBFBoolean) {
     }
   } else {
     var { value: continueProgress } = await Swal.fire({
-      title:
-        "Any existing submission.xlsx file in the specified location will be replaced.",
+      title: "Any existing submission.xlsx file in the specified location will be replaced.",
       text: "Are you sure you want to continue?",
       allowEscapeKey: false,
       allowOutsideClick: false,
@@ -906,13 +831,10 @@ $("#submission-completion-date").change(function () {
         popup: "animate__animated animate__fadeOutUp animate__faster",
       },
       didOpen: () => {
-        document.getElementById("milestone_date_picker").valueAsDate =
-          new Date();
+        document.getElementById("milestone_date_picker").valueAsDate = new Date();
       },
       preConfirm: async () => {
-        const input_date = document.getElementById(
-          "milestone_date_picker"
-        ).value;
+        const input_date = document.getElementById("milestone_date_picker").value;
         return {
           date: input_date,
         };
@@ -934,9 +856,7 @@ $("#submission-completion-date").change(function () {
 });
 
 $("#input-milestone-select-reupload").click(function () {
-  document.getElementById(
-    "para-milestone-document-info-long-reupload"
-  ).style.display = "none";
+  document.getElementById("para-milestone-document-info-long-reupload").style.display = "none";
   ipcRenderer.send("open-file-dialog-milestone-doc-reupload");
 });
 
@@ -960,8 +880,7 @@ function changeAirtableDiv(divHide, divShow, buttonHide, buttonShow) {
 // import existing Changes/README file
 function showExistingSubmissionFile(type) {
   if (
-    $(`#existing-submission-file-destination`).prop("placeholder") !==
-      "Browse here" &&
+    $(`#existing-submission-file-destination`).prop("placeholder") !== "Browse here" &&
     $(`#Question-prepare-submission-2`).hasClass("show")
   ) {
     Swal.fire({
@@ -979,9 +898,7 @@ function showExistingSubmissionFile(type) {
     }).then((boolean) => {
       if (boolean.isConfirmed) {
         ipcRenderer.send(`open-file-dialog-existing-submission`);
-        document.getElementById(
-          `existing-submission-file-destination`
-        ).placeholder = "Browse here";
+        document.getElementById(`existing-submission-file-destination`).placeholder = "Browse here";
         $(`#div-confirm-existing-submission-import`).hide();
         $($(`#div-confirm-existing-submission-import button`)[0]).hide();
         $(`#Question-prepare-submission-2`).removeClass("show");
@@ -999,11 +916,7 @@ function openFileBrowserDestination(metadataType) {
 function importExistingSubmissionFile(type) {
   var filePath = $(`#existing-submission-file-destination`).prop("placeholder");
   if (filePath === "Browse here") {
-    Swal.fire(
-      "No file chosen",
-      `Please select a path to your submission.xlsx file`,
-      "error"
-    );
+    Swal.fire("No file chosen", `Please select a path to your submission.xlsx file`, "error");
 
     logMetadataForAnalytics(
       "Error",
@@ -1051,14 +964,11 @@ function importExistingSubmissionFile(type) {
 async function loadExistingSubmissionFile(filepath) {
   log.info(`Loading existing submission file: ${filepath}`);
   try {
-    let load_submission_file = await client.get(
-      `/prepare_metadata/submission_file`,
-      {
-        params: {
-          filepath,
-        },
-      }
-    );
+    let load_submission_file = await client.get(`/prepare_metadata/submission_file`, {
+      params: {
+        filepath,
+      },
+    });
 
     let res = load_submission_file.data;
     loadSubmissionFileToUI(res, "local");
@@ -1160,16 +1070,13 @@ async function checkBFImportSubmission() {
   let bfDataset = $("#bf_dataset_load_submission").text().trim();
   log.info(`Loading submission file from Pennsieve dataset: ${bfDataset}`);
   try {
-    let import_metadata = await client.get(
-      `/prepare_metadata/import_metadata_file`,
-      {
-        params: {
-          file_type: "submission.xlsx",
-          selected_account: defaultBfAccount,
-          selected_dataset: bfDataset,
-        },
-      }
-    );
+    let import_metadata = await client.get(`/prepare_metadata/import_metadata_file`, {
+      params: {
+        file_type: "submission.xlsx",
+        selected_account: defaultBfAccount,
+        selected_dataset: bfDataset,
+      },
+    });
     let res = import_metadata.data;
 
     loadSubmissionFileToUI(res, "bf");
