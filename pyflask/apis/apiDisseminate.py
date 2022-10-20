@@ -25,7 +25,7 @@ model_get_doi_response = api.model('DOIResponse', {
 })
 
 
-@api.route("/datasets/<string:dataset_name_or_id>/doi")
+@api.route("/datasets/<string:dataset_name>/doi")
 class BfGetDoi(Resource):
     parser = api.parser()
     parser.add_argument("selected_account", type=str, help="Pennsieve account name", location="args", required=True)
@@ -33,13 +33,13 @@ class BfGetDoi(Resource):
     @api.doc(responses={200: "Success", 400: "Validation Error", 500: "Internal Server Error"})
     @api.expect(parser)
     @api.marshal_with(model_get_doi_response)
-    def get(self, dataset_name_or_id):
+    def get(self, dataset_name):
         # get the arguments
         data = self.parser.parse_args()
         selected_bfaccount = data.get("selected_account")
 
         try:
-            return bf_get_doi(selected_bfaccount, dataset_name_or_id)
+            return bf_get_doi(selected_bfaccount, dataset_name)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
@@ -49,13 +49,13 @@ class BfGetDoi(Resource):
     @api.expect(parser)
     @api.marshal_with(model_success_message_response, 200, False)
     @api.doc(responses={400: "Validation Error", 500: "Internal Server Error"}, description="Reserve a DOI for a dataset")
-    def post(self, dataset_name_or_id):
+    def post(self, dataset_name):
         # get the arguments
         data = self.parser.parse_args()
         selected_bfaccount = data.get("selected_account")
 
         try:
-            return bf_reserve_doi(selected_bfaccount, dataset_name_or_id)
+            return bf_reserve_doi(selected_bfaccount, dataset_name)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
@@ -77,7 +77,7 @@ model_ignore_files_response = api.model('IgnoreFilesResponse', {
 })
 
 
-@api.route('/datasets/<string:dataset_name_or_id>/ignore-files')
+@api.route('/datasets/<string:dataset_name>/ignore-files')
 class BfIgnoreFiles(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument("selected_account", type=str, help="Pennsieve account name", location="args", required=True)
@@ -85,13 +85,13 @@ class BfIgnoreFiles(Resource):
     @api.doc(responses={200: "Success", 400: "Validation Error", 500: "Internal Server Error"})
     @api.expect(parser)
     @api.marshal_with(model_ignore_files_response)
-    def get(self, dataset_name_or_id):
+    def get(self, dataset_name):
         # get the arguments
         data = self.parser.parse_args()
         selected_bfaccount = data.get("selected_account")
 
         try:
-            return get_files_excluded_from_publishing(dataset_name_or_id,  selected_bfaccount)
+            return get_files_excluded_from_publishing(dataset_name,  selected_bfaccount)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
@@ -100,18 +100,20 @@ class BfIgnoreFiles(Resource):
 
     parser_ignore_files_put = reqparse.RequestParser()
     parser_ignore_files_put.add_argument("ignore_files", type=list, help="Files excluded from publishing", location="json", required=True)
+    parser_ignore_files_put.add_argument("selected_account", type=str, help="Pennsieve account name", location="json", required=True)
 
     @api.expect(parser_ignore_files_put)
     @api.marshal_with(model_success_message_response, 200, False)
     @api.doc(responses={400: "Validation Error", 500: "Internal Server Error"}, description="Ignore files from publishing")
-    def put(self, dataset_name_or_id):
+    def put(self, dataset_name):
         # get the arguments
         data = self.parser_ignore_files_put.parse_args()
 
         ignore_files = data.get("ignore_files")
+        selected_account = data.get("selected_account")
 
         try:
-            return update_files_excluded_from_publishing(dataset_name_or_id, ignore_files)
+            return update_files_excluded_from_publishing(selected_account, dataset_name, ignore_files)
         except Exception as e:
             # if exception is an HTTPError then check if 400 or 500 
             if type(e).__name__ == "HTTPError":
@@ -130,7 +132,7 @@ model_metadata_files_response = api.model('MetadataFilesResponse', {
     "metadata_files": fields.List(fields.String, required=True, description="Metadata files")
 })
 
-@api.route('/datasets/<string:dataset_name_or_id>/metadata-files')
+@api.route('/datasets/<string:dataset_name>/metadata-files')
 class BfMetadataFiles(Resource):
     parser = api.parser()
     parser.add_argument("selected_account", type=str, help="Pennsieve account name", location="args", required=True)
@@ -138,13 +140,13 @@ class BfMetadataFiles(Resource):
     @api.doc(responses={200: "Success", 400: "Validation Error", 500: "Internal Server Error"})
     @api.expect(parser)
     @api.marshal_with(model_metadata_files_response)
-    def get(self, dataset_name_or_id):
+    def get(self, dataset_name):
         # get the arguments
         data = self.parser.parse_args()
         selected_bfaccount = data.get("selected_account")
 
         try:
-            return get_metadata_files(dataset_name_or_id,  selected_bfaccount)
+            return get_metadata_files(dataset_name,  selected_bfaccount)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
@@ -162,7 +164,7 @@ model_publishing_status_response = api.model('PublishingStatusResponse', {
 })
 
 
-@api.route("/datasets/<string:dataset_name_or_id>/publishing_status")
+@api.route("/datasets/<string:dataset_name>/publishing_status")
 class PublishingStatus(Resource):
     parser = api.parser()
     parser.add_argument("selected_account", type=str, help="Pennsieve account name", location="args", required=True)
@@ -170,14 +172,14 @@ class PublishingStatus(Resource):
     @api.doc(responses={400: "Validation Error", 500: "Internal Server Error"}, description="Get the publishing status of a dataset.")
     @api.expect(parser)
     @api.marshal_with(model_publishing_status_response, 200, False)
-    def get(self, dataset_name_or_id):
+    def get(self, dataset_name):
         # get the arguments
         data = self.parser.parse_args()
 
         selected_bfaccount = data.get("selected_account")
 
         try:
-            return bf_get_publishing_status(selected_bfaccount, dataset_name_or_id)
+            return bf_get_publishing_status(selected_bfaccount, dataset_name)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
@@ -189,7 +191,7 @@ class PublishingStatus(Resource):
 
 
 
-@api.route("/datasets/<string:dataset_name_or_id>/publication/request")
+@api.route("/datasets/<string:dataset_name>/publication/request")
 class PublicationRequest(Resource):
 
     publication_parser_post = reqparse.RequestParser()
@@ -200,7 +202,7 @@ class PublicationRequest(Resource):
 
     @api.expect(publication_parser_post)
     @api.doc(responses={200: "Success", 400: "Validation Error", 500: "Internal Server Error", 403: "Forbidden"}, description="Request publication of a dataset.")
-    def post(self, dataset_name_or_id):
+    def post(self, dataset_name):
         # get the arguments
         data = self.publication_parser_post.parse_args()
         selected_account = data.get("selected_account")
@@ -209,7 +211,7 @@ class PublicationRequest(Resource):
 
 
         try:
-            return bf_submit_review_dataset(selected_account, dataset_name_or_id, publication_type, embargo_release_date)
+            return bf_submit_review_dataset(selected_account, dataset_name, publication_type, embargo_release_date)
         except Exception as e:
             if type(e).__name__ == "HTTPError":
                 api.abort(400, "Ensure the publication type is valid and that the embargo release date is no more than a year out.")
@@ -223,20 +225,20 @@ class PublicationRequest(Resource):
 
 
 
-@api.route("/datasets/<string:dataset_name_or_id>/publication/cancel")
+@api.route("/datasets/<string:dataset_name>/publication/cancel")
 class PublicationCancel(Resource):
     
         publication_cancel_parser_post = reqparse.RequestParser()
         publication_cancel_parser_post.add_argument("selected_account", type=str, help="Pennsieve account name", location="json", required=True)
         @api.expect(publication_cancel_parser_post)
-        def post(self, dataset_name_or_id):
+        def post(self, dataset_name):
 
             # get the arguments
             data = self.publication_cancel_parser_post.parse_args()
             selected_account = data.get("selected_account")
 
             try:
-                return bf_withdraw_review_dataset(selected_account, dataset_name_or_id)
+                return bf_withdraw_review_dataset(selected_account, dataset_name)
             except Exception as e:
                 if notBadRequestException(e):
                     api.abort(500, str(e))

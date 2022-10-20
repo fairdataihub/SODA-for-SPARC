@@ -1861,12 +1861,12 @@ def generate_relative_path(x, y):
         relative_path = y
     return relative_path
 
+def bf_get_existing_folders_details(ps_folder):
+    namespace_logger.info(ps_folder)
+    ps_existing_folders = [x for x in ps_folder if x["content"]["type"] == "Collection"]
+    ps_existing_folders_name = [x["content"]["name"] for x in ps_existing_folders]
 
-def bf_get_existing_folders_details(bf_folder):
-    bf_existing_folders = [x for x in bf_folder.items if x.type == "Collection"]
-    bf_existing_folders_name = [x.name for x in bf_existing_folders]
-
-    return bf_existing_folders, bf_existing_folders_name
+    return ps_existing_folders, ps_existing_folders_name
 
 
 def bf_get_existing_files_details(bf_folder):
@@ -2284,17 +2284,18 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             """
             Creates a folder on Pennsieve for each folder in the dataset structure.
             Input:
-                my_folder: The dataset structure to be created on Pennsieve. This is a dictionary of files and folders.
-                my_tracking_folder: The folder to be created on Pennsieve.
-                existing_folder_option: The option to use if the folder already exists.
+                my_folder: The dataset structure to be created on Pennsieve. Pass in the soda json object to start. 
+                my_tracking_folder: Tracks what folders have been created on Pennsieve thus far. Starts as an empty dictionary.
+                existing_folder_option: TODO: Figure out what this does.
             """
 
+            my_ps_folder = my_tracking_folder["value"]
+
             # list of existing bf folders at this level
-            my_bf_folder = my_tracking_folder["value"]
             (
                 my_bf_existing_folders,
                 my_bf_existing_folders_name,
-            ) = bf_get_existing_folders_details(my_bf_folder)
+            ) = bf_get_existing_folders_details(my_ps_folder)
 
             # create/replace/skip folder
             if "folders" in my_folder.keys():
@@ -2304,25 +2305,25 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         if folder_key in my_bf_existing_folders_name:
                             continue
                         else:
-                            bf_folder = my_bf_folder.create_collection(folder_key)
+                            bf_folder = my_ps_folder.create_collection(folder_key)
 
                     elif existing_folder_option == "create-duplicate":
-                        bf_folder = my_bf_folder.create_collection(folder_key)
+                        bf_folder = my_ps_folder.create_collection(folder_key)
 
                     elif existing_folder_option == "replace":
                         if folder_key in my_bf_existing_folders_name:
                             index_folder = my_bf_existing_folders_name.index(folder_key)
                             bf_folder_delete = my_bf_existing_folders[index_folder]
                             bf_folder_delete.delete()
-                            my_bf_folder.update()
-                        bf_folder = my_bf_folder.create_collection(folder_key)
+                            my_ps_folder.update()
+                        bf_folder = my_ps_folder.create_collection(folder_key)
 
                     elif existing_folder_option == "merge":
                         if folder_key in my_bf_existing_folders_name:
                             index_folder = my_bf_existing_folders_name.index(folder_key)
                             bf_folder = my_bf_existing_folders[index_folder]
                         else:
-                            bf_folder = my_bf_folder.create_collection(folder_key)
+                            bf_folder = my_ps_folder.create_collection(folder_key)
                     bf_folder.update()
                     my_tracking_folder["folders"][folder_key] = {"value": bf_folder}
                     tracking_folder = my_tracking_folder["folders"][folder_key]
