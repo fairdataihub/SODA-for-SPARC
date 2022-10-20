@@ -199,11 +199,11 @@ def get_publication_type(ps, selected_dataset_id):
 
      # get the dataset using the id 
     # ds = ps._api._get(f"/datasets/{selected_dataset_id}")
-    ds = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}")
-    ds.raise_for_status()
-    ds
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps))
+    r.raise_for_status()
+    ds = r.json()
 
-    publication_type = ds.json()["publication"]["type"] if "publication" in ds.json() and "type" in ds["publication"] else None
+    publication_type = ds["publication"]["type"] if "publication" in ds and "type" in ds["publication"] else None
 
     if not publication_type:
         abort(400, "Cannot cancel publication of a dataset that is not published.")
@@ -223,10 +223,12 @@ def bf_withdraw_review_dataset(selected_bfaccount, selected_bfdataset):
         abort(401, "You do not have permission to edit this dataset.")
 
     publication_type = get_publication_type(ps, selected_dataset_id)
-   
+    
     jsonfile = {
         "publicationType": publication_type
     }
+    print("publication type below")
+    print(jsonfile)
     try:
         r = requests.post(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/publication/cancel", json=jsonfile, headers=create_request_headers(ps))
         r.raise_for_status()
