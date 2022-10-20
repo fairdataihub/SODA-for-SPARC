@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ### Import required python modules
+from venv import create
 from flask import abort 
 import requests
 from permissions import bf_get_current_user_permission_agent_two, has_edit_permissions
@@ -33,7 +34,7 @@ def bf_get_doi(selected_bfaccount, selected_bfdataset):
     selected_dataset_id = get_dataset_id(ps, selected_bfdataset)
 
     if not has_edit_permissions(ps, selected_dataset_id):
-        abort(401, "You do not have permission to edit this dataset.")
+        abort(403, "You do not have permission to edit this dataset.")
 
     try:
         r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/doi", headers=create_request_headers(ps))
@@ -71,8 +72,7 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
     selected_dataset_id = get_dataset_id(ps, selected_bfdataset)
 
     if not has_edit_permissions(ps, selected_dataset_id):
-        abort(401, "You do not have permission to edit this dataset.")
-
+        abort(403, "You do not have permission to edit this dataset.")
 
     try:
         res = bf_get_doi(selected_bfaccount, selected_bfdataset)
@@ -82,7 +82,6 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
         raise e
 
     try:
-        print("before first")
         r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/contributors", headers=create_request_headers(ps))
         r.raise_for_status()
         contributors = r.json()
@@ -91,7 +90,6 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
             for item in contributors
         ]
     except Exception as e:
-        print("error below")
         handle_http_error(e)
     
     try:
@@ -127,14 +125,12 @@ def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
 
     selected_dataset_id = get_dataset_id(ps, selected_bfdataset)
 
-    headers= create_request_headers(ps)
-
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps))
     r.raise_for_status()
     review_request_status = r.json()["publication"]["status"]
 
 
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/published", headers=headers)
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/published", headers=create_request_headers(ps))
     r.raise_for_status()
     publishing_status = r.json()["status"]
 
@@ -178,17 +174,15 @@ def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset, publication
     selected_dataset_id = get_dataset_id(ps, selected_bfdataset)
 
     if not has_edit_permissions(ps, selected_dataset_id):
-        abort(401, "You do not have permission to edit this dataset.")
+        abort(403, "You do not have permission to edit this dataset.")
 
     jsonfile = construct_publication_qs(publication_type, embargo_release_date)
 
     try:
         r = requests.post(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/publication/request", headers=create_request_headers(ps), json=jsonfile)
         r.raise_for_status()
-        result = r.json()
-        return result
+        return r.json()
     except Exception as e:
-        print(e)
         if "400" in str(e):
             abort(400, "Dataset cannot be published if owner does not have an ORCID ID")
         handle_http_error(e)
@@ -196,16 +190,20 @@ def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset, publication
     # return ps._api._post(f"/datasets/{selected_dataset_id}/publication/request{qs}", headers=create_request_headers(ps))
 
 
-def get_publication_type(ps, myds):
+def get_publication_type(ps, selected_dataset_id):
 
     """
     Function to get the publication type of a dataset
     """
+    # TODO:
 
      # get the dataset using the id 
-    ds = ps._api._get(f"/datasets/{myds.id}")
+    # ds = ps._api._get(f"/datasets/{selected_dataset_id}")
+    ds = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}")
+    ds.raise_for_status()
+    ds
 
-    publication_type = ds["publication"]["type"] if "publication" in ds and "type" in ds["publication"] else None
+    publication_type = ds.json()["publication"]["type"] if "publication" in ds.json() and "type" in ds["publication"] else None
 
     if not publication_type:
         abort(400, "Cannot cancel publication of a dataset that is not published.")
@@ -226,15 +224,20 @@ def bf_withdraw_review_dataset(selected_bfaccount, selected_bfdataset):
 
     publication_type = get_publication_type(ps, selected_dataset_id)
    
+    jsonfile = {
+        "publicationType": publication_type
+    }
     try:
-        ps._api._post(f"/datasets/{myds.id}/publication/cancel?publicationType={publication_type}")
+        r = requests.post(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/publication/cancel", json=jsonfile, headers=create_request_headers(ps))
+        r.raise_for_status()
+        r.json()
+        print(r)
+        return {"message": "Your dataset publication has been cancelled."}
     except Exception as e:
+        print(e)
         if type(e).__name__ == "HTTPError":
             abort(400, e.response.json()["message"])
         abort(500, "An internal server error prevented the request from being fulfilled. Please try again later.")
-
-    return {"message": "Your dataset publication has been cancelled."}
-
 
 
 
@@ -292,7 +295,6 @@ def update_files_excluded_from_publishing(selected_dataset_id, files_excluded_fr
     r.raise_for_status()
 
     return {"message": "Files excluded from publishing."}
-
 
 
 
