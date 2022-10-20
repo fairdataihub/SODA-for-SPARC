@@ -1269,7 +1269,7 @@ def bf_create_new_dataset(datasetname, ps):
             r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(ps), json={"name": datasetname})
             r.raise_for_status()
 
-        return r.json()
+        return r.json()["content"]
 
     except Exception as e:
         raise e
@@ -2259,7 +2259,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     return
 
 
-def bf_generate_new_dataset(soda_json_structure, bf, ds):
+def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
     global namespace_logger
 
@@ -2281,6 +2281,13 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
         def recursive_create_folder_for_bf(
             my_folder, my_tracking_folder, existing_folder_option
         ):
+            """
+            Creates a folder on Pennsieve for each folder in the dataset structure.
+            Input:
+                my_folder: The dataset structure to be created on Pennsieve. This is a dictionary of files and folders.
+                my_tracking_folder: The folder to be created on Pennsieve.
+                existing_folder_option: The option to use if the folder already exists.
+            """
 
             # list of existing bf folders at this level
             my_bf_folder = my_tracking_folder["value"]
@@ -3099,9 +3106,9 @@ def main_curate_function(soda_json_structure):
                         dataset_name = soda_json_structure["generate-dataset"][
                             "dataset-name"
                         ]
-                        myds = bf_create_new_dataset(dataset_name, ps)
-                        generated_dataset_id = myds.id
-                    bf_generate_new_dataset(soda_json_structure, bf, myds)
+                        ds = bf_create_new_dataset(dataset_name, ps)
+                        generated_dataset_id = ds.id
+                    bf_generate_new_dataset(soda_json_structure, ps, ds)
                 if generate_option == "existing-bf":
                     myds = bf.get_dataset(bfdataset)
                     bf_update_existing_dataset(soda_json_structure, bf, myds)
