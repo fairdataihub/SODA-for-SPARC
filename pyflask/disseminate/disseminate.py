@@ -227,8 +227,7 @@ def bf_withdraw_review_dataset(selected_bfaccount, selected_bfdataset):
     jsonfile = {
         "publicationType": publication_type
     }
-    print("publication type below")
-    print(jsonfile)
+
     try:
         r = requests.post(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/publication/cancel", json=jsonfile, headers=create_request_headers(ps))
         r.raise_for_status()
@@ -290,7 +289,7 @@ def update_files_excluded_from_publishing(selected_dataset_id, files_excluded_fr
         "Authorization": f"Bearer {token}"
     }
 
-    r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/ignore-files", json=files_excluded_from_publishing, headers=headers)
+    r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/ignore-files", json=files_excluded_from_publishing, headers=create_request_headers(ps))
 
     # TODO: log r.text and r.status_code
 
@@ -325,12 +324,15 @@ def get_metadata_files(selected_dataset, pennsieve_account):
         List of metadata files
     """
 
-    ps = get_authenticated_ps(pennsieve_account)
+    ps = connect_pennsieve_client()
 
-    myds = get_dataset(ps, selected_dataset)
+    authenticate_user_with_client(ps, pennsieve_account)
 
-    resp = ps._api._get(f"/datasets/{myds.id}")
+    selected_dataset_id = get_dataset_id(ps, selected_dataset)
 
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps))
+    r.raise_for_status()
+    resp = r.json()
     if "children" not in resp:
         return {"metadata_files": []}
 
