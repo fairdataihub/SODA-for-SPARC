@@ -9682,7 +9682,7 @@ $(document).ready(async () => {
         sodaJSONObj["previous-guided-upload-dataset-name"] =
           sodaJSONObj["digital-metadata"]["name"];
 
-        // Save the sodaJSONObj after a successfull upload
+        // Save the sodaJSONObj after a successful upload
         saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
         //Display the click next text
