@@ -69,10 +69,10 @@ const withdrawDatasetReviewSubmission = async (
   );
 };
 
-const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
+const getFilesExcludedFromPublishing = async (datasetName) => {
   // get the excluded files
   let excludedFilesRes = await client.get(
-    `/disseminate_datasets/datasets/${datasetIdOrName}/ignore-files`,
+    `/disseminate_datasets/datasets/${datasetName}/ignore-files`,
     {
       params: {
         selected_account: defaultBfAccount,
@@ -100,11 +100,11 @@ const updateDatasetExcludedFiles = async (account, datasetName, files) => {
 
 // retrieves the currently selected dataset's metadata files
 // I:
-//  datasetIdOrName: string - A dataset id or name
-const getDatasetMetadataFiles = async (datasetIdOrName) => {
+//  datasetName: string - Selected dataset name
+const getDatasetMetadataFiles = async (datasetName) => {
   // get the metadata files for the dataset
   let datasetwithChildrenResponse = await client.get(
-    `/disseminate_datasets/datasets/${datasetIdOrName}/metadata-files`,
+    `/disseminate_datasets/datasets/${datasetName}/metadata-files`,
     {
       params: {
         selected_account: defaultBfAccount,
@@ -182,13 +182,13 @@ const getDatasetReadme = async (selected_account, selected_dataset) => {
 // O: void
 const submitDatasetForPublication = async (
   pennsieveAccount,
-  datasetIdOrName,
+  datasetName,
   embargoReleaseDate,
   publicationType
 ) => {
   // request that the dataset be sent in for publication/publication review
   await client.post(
-    `/disseminate_datasets/datasets/${datasetIdOrName}/publication/request`,
+    `/disseminate_datasets/datasets/${datasetName}/publication/request`,
     {
       publication_type: publicationType,
       embargo_release_date: embargoReleaseDate,
