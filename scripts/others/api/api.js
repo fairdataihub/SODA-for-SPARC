@@ -58,11 +58,11 @@ const getDatasetRole = async (datasetNameOrId) => {
  * @returns {Promise<void>}
  */
 const withdrawDatasetReviewSubmission = async (
-  datasetIdOrName,
+  datasetName,
   selected_account
 ) => {
   await client.post(
-    `/disseminate_datasets/datasets/${datasetIdOrName}/publication/cancel`,
+    `/disseminate_datasets/datasets/${datasetName}/publication/cancel`,
     {
       selected_account,
     }
