@@ -186,7 +186,6 @@ def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset, publication
         r = requests.post(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/publication/request", headers=create_request_headers(ps), json=jsonfile)
         r.raise_for_status()
         result = r.json()
-        print(result)
         return result
     except Exception as e:
         print(e)
@@ -250,13 +249,14 @@ def get_files_excluded_from_publishing(selected_dataset, pennsieve_account):
         List of files excluded from publishing
     """
 
-    ps = get_authenticated_ps(pennsieve_account)
+    ps = connect_pennsieve_client()
 
-    myds = get_dataset(ps, selected_dataset)
+    authenticate_user_with_client(ps, pennsieve_account)
 
-    ds_id = myds.id
-
-    resp = ps._api._get(f"/datasets/{ds_id}/ignore-files")
+    selected_dataset_id = get_dataset_id(ps, selected_dataset)
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/ignore-files")
+    r.raise_for_status()
+    resp = r.json()
 
     if "ignoreFiles" in resp:
         return {"ignore_files": resp["ignoreFiles"]}
@@ -298,16 +298,16 @@ def update_files_excluded_from_publishing(selected_dataset_id, files_excluded_fr
 
 
 METADATA_FILES = [
-                  "submission.xlsx", 
-                  "code_description.xlsx", 
-                  "dataset_description.xlsx", 
-                  "outputs_metadata.xlsx", 
-                  "inputs_metadata.xlsx", 
-                  "CHANGES.txt", 
-                  "README.txt", 
-                  "samples.xlsx", 
-                  "subjects.xlsx"
-                  ]
+    "submission.xlsx", 
+    "code_description.xlsx", 
+    "dataset_description.xlsx", 
+    "outputs_metadata.xlsx", 
+    "inputs_metadata.xlsx", 
+    "CHANGES.txt", 
+    "README.txt", 
+    "samples.xlsx", 
+    "subjects.xlsx"
+]
 
 
 def get_metadata_files(selected_dataset, pennsieve_account):
