@@ -417,12 +417,14 @@
   margin: 6px;
 }
 
+.guided--main-tab,
 .guided--parent-tab {
   width: 100%;
   display: flex;
   flex-direction: column;
 }
 
+.guided--page,
 .guided--panel {
   width: 100%;
   display: flex;
@@ -430,6 +432,7 @@
   align-items: center;
   margin-bottom: 20px;
 }
+
 .grow {
   flex-grow: 1;
 }

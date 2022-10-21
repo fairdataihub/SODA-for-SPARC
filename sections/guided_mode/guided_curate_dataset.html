@@ -56,7 +56,7 @@
     </header>
 
     <div id="guided-body" class="guided--body">
-      <div id="guided-home" class="guided--parent-tab">
+      <div id="guided-home" class="guided--main-tab">
         <div class="guided--panel">
           <h1 class="guided--text-sub-step">Guided Mode</h1>
           <!-- <div class="title-border">
@@ -116,7 +116,7 @@
       </div>
       <div
         id="guided-mode-starting-container"
-        class="guided--parent-tab hidden"
+        class="guided--main-tab hidden"
         data-parent-tab-name="Dataset Structure"
       >
         <div class="guided--panel hidden" id="guided-intro-page" style="flex-grow: 1">
@@ -4400,7 +4400,11 @@
         </div>
       </div>
 
-      <div id="disseminate-dataset-parent-tab" class="guided--parent-tab hidden">
+      <div
+        id="disseminate-dataset-parent-tab"
+        class="guided--parent-tab hidden"
+        data-parent-tab-name="Generate dataset"
+      >
         <div class="guided--capsule-container">
           <div class="guided--capsule" id="guided-dataset-generate-location-capsule"></div>
           <div class="guided--capsule" id="guided-dataset-generate-destination-capsule"></div>
