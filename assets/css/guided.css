@@ -6,6 +6,51 @@
   font-family: "Poppins", sans-serif;
 }*/
 
+.guided--nav {
+  min-height: 100vh;
+  width: 220px;
+  margin: 0px !important;
+  position: fixed;
+  background-color: var(--color-border);
+  z-index: 10000;
+  padding: 7px;
+  flex-direction: column;
+  @@ -39,21 +39,36 @@
+  border-radius: 5px;
+  padding: 0px 10px;
+}
+.guided--nav-bar-dropdown:hover {
+  background-color: var(--color-transparent-soda-green);
+}
+
+.guided--nav-bar-section-page {
+  display: flex;
+  width: calc((100% - 20px));
+  justify-content: flex-start;
+  border-left: 1px solid var(--color-transparent-soda-green);
+  margin-left: 15px;
+  margin-top: 3px;
+  padding-left: 5px;
+}
+.guided--nav-bar-section-page:hover {
+  background-color: var(--color-transparent-soda-green);
+  border-left: 1px solid var(--color-light-green);
+}
+
+/* apply 5 margin top to all the elements except the first one */
+
+.guided--nav-bar-section:not(:first-child) {
+  margin-top: 15px;
+}
+
+.guided--container-nav-items {
+  width: 100%;
+  list-style: none;
+  padding-left: 0px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
 .container {
   max-width: 400px;
   margin: 0 auto;
