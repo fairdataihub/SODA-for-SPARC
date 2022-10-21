@@ -1215,10 +1215,6 @@ const guidedPrepareHomeScreen = async () => {
     fs.mkdirSync(guidedProgressFilePath, { recursive: true });
   }
 
-  //Refresh Home page UI
-  $("#guided-button-start-new-curate").css("display", "flex");
-  $("#continue-curating-existing").css("display", "flex");
-
   resetGuidedRadioButtons("guided-div-dataset-cards-radio-buttons");
 
   const datasetCardsRadioButtonsContainer = document.getElementById(
