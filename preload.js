@@ -418,7 +418,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
               // If the clicked button is the Guided Mode log in button, refresh the page to update UI
               if (ev.getAttribute("id") === "guided-button-pennsieve-log-in") {
-                traverseToTab("guided-pennsieve-intro-tab");
+                openPage("guided-pennsieve-intro-tab");
               }
             } catch (error) {
               clientError(error);

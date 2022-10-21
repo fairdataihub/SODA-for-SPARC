@@ -939,7 +939,6 @@ const renderSideBar = (activePage) => {
       const pageToNavigateTo = guidedNavBarSectionPage.getAttribute("data-target-page");
       const currentPageUserIsLeaving = CURRENT_PAGE.attr("id");
 
-      // TODO: add a check to see if the user has already completed the page they are leaving
       openPage(pageToNavigateTo);
     });
   }
@@ -1206,7 +1205,7 @@ const guidedSaveAndExit = async (exitPoint) => {
     if (returnToGuidedHomeScreen) {
       guidedUnLockSideBar();
       saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-      traverseToTab("guided-prepare-helpers-tab");
+      openPage("guided-prepare-helpers-tab");
       hideSubNavAndShowMainNav("back");
       $("#guided-button-dataset-intro-back").click();
       $("#guided-button-dataset-intro-back").click();
@@ -1375,7 +1374,7 @@ const guidedTransitionFromDatasetNameSubtitlePage = () => {
   //Set the current page to the guided curation page
   CURRENT_PAGE = $("#guided-prepare-helpers-tab");
 
-  traverseToTab("guided-prepare-helpers-tab");
+  openPage("guided-prepare-helpers-tab");
 
   //reset sub-page navigation (Set the first sub-page to be the active sub-page
   //for all pages with sub-pages)
@@ -2701,7 +2700,7 @@ function copyLink(link) {
 //The general flow is to check if there is values for the keys relevant to the page
 //If the keys exist, extract the data from the sodaJSONObj and populate the page
 //If the keys do not exist, reset the page (inputs, tables etc.) to the default state
-const traverseToTab = async (targetPageID) => {
+const openPage = async (targetPageID) => {
   let itemsContainer = document.getElementById("items-guided-container");
   if (itemsContainer.classList.contains("border-styling")) {
     itemsContainer.classList.remove("border-styling");
@@ -4388,13 +4387,13 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   if (pageToReturnTo) {
     //Hide the sub-page navigation and show the main page navigation footer
     //If the user traverses to a page that requires the sub-page navigation,
-    //the sub-page will be shown during traverseToTab() function
+    //the sub-page will be shown during openPage() function
     hideSubNavAndShowMainNav(false);
 
     //If the last page the exited was the upload page, take them to the review page
     pageToReturnTo === "guided-dataset-generation-tab"
-      ? traverseToTab("guided-dataset-generation-confirmation-tab")
-      : traverseToTab(pageToReturnTo);
+      ? openPage("guided-dataset-generation-confirmation-tab")
+      : openPage(pageToReturnTo);
   }
   guidedLockSideBar();
 };
@@ -6586,7 +6585,7 @@ const removeOtherLinkField = (otherLinkDeleteButton) => {
 //SUBJECT TABLE FUNCTIONS
 const returnToTableFromFolderStructure = (clickedBackButton) => {
   previousFolderStructurePage = clickedBackButton.attr("data-prev-page");
-  traverseToTab(previousFolderStructurePage);
+  openPage(previousFolderStructurePage);
   $("#guided-footer-div").css("display", "flex");
   clickedBackButton.remove();
 };
@@ -6598,7 +6597,7 @@ const returnToSubjectMetadataTableFromSubjectMetadataForm = () => {
 const returnToSampleMetadataTableFromSampleMetadataForm = () => {
   //Clear metadata form inputs
   clearAllSubjectFormFields(guidedSamplesFormDiv);
-  traverseToTab("guided-create-samples-metadata-tab");
+  openPage("guided-create-samples-metadata-tab");
   $("#guided-footer-div").css("display", "flex");
 };
 
@@ -11263,7 +11262,7 @@ $(document).ready(async () => {
       return;
     }
 
-    traverseToTab("guided-dataset-generation-tab");
+    openPage("guided-dataset-generation-tab");
     guidedPennsieveDatasetUpload();
   });
 
@@ -11440,7 +11439,7 @@ $(document).ready(async () => {
       let targetPage = getNextPageNotSkipped(CURRENT_PAGE);
       let targetPageID = targetPage.attr("id");
 
-      traverseToTab(targetPageID);
+      openPage(targetPageID);
     } catch (error) {
       log.error(error);
       errorArray.map((error) => {
@@ -11521,7 +11520,7 @@ $(document).ready(async () => {
     };
     let targetPage = getPrevPageNotSkipped(CURRENT_PAGE);
     let targetPageID = targetPage.attr("id");
-    traverseToTab(targetPageID);
+    openPage(targetPageID);
   });
 
   //sub page next button click handler
