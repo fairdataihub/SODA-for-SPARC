@@ -137,11 +137,23 @@ const updateDatasetUploadProgressTable = (progressObject) => {
 
 const guidedLockSideBar = () => {
   const sidebar = document.getElementById("sidebarCollapse");
+  const guidedModeSection = document.getElementById("guided_mode-section");
+  const guidedDatsetTab = document.getElementById("guided_curate_dataset-tab");
+  const guidedNav = document.getElementById("guided-nav");
+
   if (!sidebar.classList.contains("active")) {
     sidebar.click();
   }
-
   sidebar.disabled = true;
+  guidedModeSection.style.marginLeft = "-70px";
+  guidedDatsetTab.style.marginLeft = "215px";
+  guidedNav.style.display = "flex";
+
+  /* *************************************************** */
+  /* ************  Build the Nav Bar !!!  ************** */
+  /* *************************************************** */
+
+  // return data-parent-tab-name for each .guided--parent-tab element
 };
 
 guidedUnLockSideBar = () => {
