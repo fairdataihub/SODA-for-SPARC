@@ -8571,6 +8571,12 @@ $(document).ready(async () => {
         datasetNameUploadText.innerHTML = "Dataset already exists on Pennsieve";
         guidedUploadStatusIcon("guided-dataset-name-upload-status", "success");
         return sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+      } else {
+        // if the previously uploaded dataset does not exist, wipe out the previously uploaded metadata
+        // so new metadata can be uploaded to the newly created dataset
+        // (This would happen if the user deleted the dataset on Pennsieve)
+        sodaJSONObj["previously-uploaded-data"] = {};
+        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       }
     }
 
