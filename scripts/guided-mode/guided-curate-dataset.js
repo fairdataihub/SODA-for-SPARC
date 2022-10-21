@@ -3599,16 +3599,6 @@ const openPage = async (targetPageID) => {
         }
       }
 
-      /*
-      Celebration Lottie
-      const transparentFullWidthHeightElement = document.createElement("div");
-      transparentFullWidthHeightElement.style.height = "700px";
-      transparentFullWidthHeightElement.style.width = "800px";
-      document
-        .getElementById("guided-dataset-dissemination-tab")
-        .appendChild(transparentFullWidthHeightElement);
-      */
-
       document.getElementById("guided-pennsieve-dataset-name").innerHTML =
         sodaJSONObj["digital-metadata"]["name"];
       let bf_get_permissions = await client.get(`/manage_datasets/bf_dataset_permissions`, {
@@ -4314,6 +4304,13 @@ const patchPreviousGuidedModeVersions = () => {
 
   if (!sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"]) {
     sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] = [];
+  }
+
+  if (!sodaJSONObj["skipped-pages"]) {
+    sodaJSONObj["skipped-pages"] = [];
+    sodaJSONObj["completed-tabs"] = [];
+
+    forceUserToRestartFromFirstPage = true;
   }
 
   return forceUserToRestartFromFirstPage;
