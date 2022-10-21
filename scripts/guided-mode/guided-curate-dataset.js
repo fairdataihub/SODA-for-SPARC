@@ -1,3 +1,113 @@
+const renderSideBar = (activePage) => {
+  const guidedNavItemsContainer = document.getElementById("guided-nav-items");
+
+  const completedTabs = sodaJSONObj["completed-tabs"];
+  const skippedPages = sodaJSONObj["skipped-pages"];
+
+  const pageStructureObject = {};
+
+  const highLevelStepElements = Array.from(document.querySelectorAll(".guided--parent-tab"));
+
+  for (const element of highLevelStepElements) {
+    const highLevelStepName = element.getAttribute("data-parent-tab-name");
+    pageStructureObject[highLevelStepName] = {};
+    const pages = Array.from(element.querySelectorAll(".guided--page"));
+    const notSkippedPages = pages.filter((page) => {
+      //filter out pages with not null data-skipped-page attribute and data-skip-page attribute is not true
+      return !page.getAttribute("data-skip-page") || page.getAttribute("data-skip-page") != "true";
+    });
+    console.log(notSkippedPages);
+    for (const page of notSkippedPages) {
+      const pageName = page.getAttribute("data-page-name");
+      const pageID = page.getAttribute("id");
+      pageStructureObject[highLevelStepName][pageID] = {
+        pageName: pageName,
+        completed: completedTabs.includes(pageID),
+      };
+    }
+  }
+  console.log(pageStructureObject);
+  let navBarHTML = "";
+  for (const [highLevelStepName, highLevelStepObject] of Object.entries(pageStructureObject)) {
+    console.log(highLevelStepName);
+    console.log(highLevelStepObject);
+    // Add the high level drop down to the nav bar
+    const dropdDown = `
+    <div class="guided--nav-bar-dropdown">
+      <p class="guided--help-text mb-0">
+        ${highLevelStepName}
+      </p>
+      <i class="fas fa-chevron-right"></i>
+    </div>
+  `;
+
+    // Add the high level drop down's children links to the nav bar
+    let dropDownContent = ``;
+    for (const [pageID, pageObject] of Object.entries(highLevelStepObject)) {
+      console.log(pageID);
+      console.log(pageObject);
+
+      //add but keep hidden for now!!!!!!!!!!!!!!!!!!
+      dropDownContent += `
+      <div
+        class="guided--nav-bar-section-page hidden"
+        data-target-page="${pageID}")"
+        style="${pageObject.completed ? "" : "pointer-events: none; opacity: 0.5;"}"
+      >
+        <div class="guided--nav-bar-section-page-title">
+          ${pageObject.pageName}
+        </div>
+      </div>
+    `;
+    }
+
+    // Add each section to the nav bar element
+    const dropDownContainer = `
+    <div class="guided--nav-bar-section">
+      ${dropdDown}
+      ${dropDownContent}  
+    </div>
+  `;
+    navBarHTML += dropDownContainer;
+  }
+  guidedNavItemsContainer.innerHTML = navBarHTML;
+
+  const guidedNavBarDropdowns = Array.from(document.querySelectorAll(".guided--nav-bar-dropdown"));
+  for (const guidedNavBarDropdown of guidedNavBarDropdowns) {
+    guidedNavBarDropdown.addEventListener("click", (event) => {
+      //remove hidden from child elements with guided--nav-bar-section-page class
+      const guidedNavBarSectionPage = guidedNavBarDropdown.parentElement.querySelectorAll(
+        ".guided--nav-bar-section-page"
+      );
+      for (const guidedNavBarSectionPageElement of guidedNavBarSectionPage) {
+        guidedNavBarSectionPageElement.classList.toggle("hidden");
+      }
+      //toggle the chevron
+      const chevron = guidedNavBarDropdown.querySelector("i");
+      chevron.classList.toggle("fa-chevron-right");
+      chevron.classList.toggle("fa-chevron-down");
+    });
+
+    //click the dropdown if it has a child element with data-target-page that matches the active page
+    if (guidedNavBarDropdown.parentElement.querySelector(`[data-target-page="${activePage}"]`)) {
+      guidedNavBarDropdown.click();
+    }
+  }
+
+  const guidedNavBarSectionPages = Array.from(
+    document.querySelectorAll(".guided--nav-bar-section-page")
+  );
+  for (const guidedNavBarSectionPage of guidedNavBarSectionPages) {
+    guidedNavBarSectionPage.addEventListener("click", (event) => {
+      const pageToNavigateTo = guidedNavBarSectionPage.getAttribute("data-target-page");
+      const currentPageUserIsLeaving = CURRENT_PAGE.attr("id");
+
+      // TODO: add a check to see if the user has already completed the page they are leaving
+      openPage(pageToNavigateTo);
+    });
+  }
+};
+
 const updateDatasetUploadProgressTable = (progressObject) => {
   const datasetUploadTableBody = document.getElementById("guided-tbody-dataset-upload");
   //delete datasetUPloadTableBody children with class "upload-status-tr"
