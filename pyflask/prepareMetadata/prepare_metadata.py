@@ -43,6 +43,7 @@ namespace_logger = get_namespace_logger(NamespaceEnum.CURATE_DATASETS)
 userpath = expanduser("~")
 METADATA_UPLOAD_BF_PATH = join(userpath, "SODA", "METADATA")
 TEMPLATE_PATH = ""
+PENNSIEVE_URL = "https://api.pennsieve.io"
 
 ### Sets the TEMPLATE_PATH using SODA-for-SPARC's basepath so that the prepare_metadata section can find
 ### the templates stored in file_templates direcotory
@@ -900,15 +901,12 @@ def import_bf_RC(bfaccount, bfdataset, file_type):
 
     items = r.json()
 
-    for i in range(len(items)):
-
-        if items[i].name == file_type:
-
-            item_id = items[i].id
+    for item in items["children"]:
+        if item["content"]["name"] == file_type:
+            item_id = item["content"]["id"]
             url = returnFileURL(ps, item_id)
-
-            response = requests.get(url)
-            return {"text": response.text}
+            r = requests.get(url)
+            return {"text": r.text}
 
     abort (400, f"No {file_type} file was found at the root of the dataset provided.")
 
@@ -1122,7 +1120,6 @@ def copytree(src, dst, symlinks=False, ignore=None):
 
 # obtain Pennsieve S3 URL for an existing metadata file
 def returnFileURL(ps, item_id):
-
     r = requests.get(f"{PENNSIEVE_URL}/packages/{item_id}/view", headers=create_request_headers(ps))
     r.raise_for_status()
 
