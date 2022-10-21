@@ -465,8 +465,8 @@ const scrollToBottomOfGuidedBody = () => {
 
 const getOpenSubPageInPage = (pageID) => {
   const subPageContainer = document.getElementById(pageID);
-  const openPage = subPageContainer.querySelector(".sub-page:not(.hidden)");
-  return openPage.id;
+  const openSubPage = subPageContainer.querySelector(".sub-page:not(.hidden)");
+  return openSubPage.id;
 };
 
 const openSubPageNavigation = (pageBeingNavigatedTo) => {
