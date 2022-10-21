@@ -1862,9 +1862,9 @@ def generate_relative_path(x, y):
     return relative_path
 
 def bf_get_existing_folders_details(ps_folder):
-    namespace_logger.info(ps_folder)
-    ps_existing_folders = [x for x in ps_folder if x["content"]["type"] == "Collection"]
-    ps_existing_folders_name = [x["content"]["name"] for x in ps_existing_folders]
+    namespace_logger.info("Here is ps folder: ", ps_folder)
+    ps_existing_folders = [x for x in ps_folder if x["packageType"] == "Collection"]
+    ps_existing_folders_name = [x["name"] for x in ps_existing_folders]
 
     return ps_existing_folders, ps_existing_folders_name
 
@@ -2265,6 +2265,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
     namespace_logger.info("Starting bf_generate_new_dataset")
 
+    namespace_logger.info("Dataset is: ", ds)
+
     global main_curate_progress_message
     global main_total_generate_dataset_size
     global start_generate
@@ -2275,6 +2277,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
     uploaded_folder_counter = 0
     current_size_of_uploaded_files = 0
+
+    namespace_logger.info(soda_json_structure)
 
     try:
 
@@ -2292,10 +2296,16 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             my_ps_folder = my_tracking_folder["value"]
 
             # list of existing bf folders at this level
-            (
-                my_bf_existing_folders,
-                my_bf_existing_folders_name,
-            ) = bf_get_existing_folders_details(my_ps_folder)
+            # (
+            #     my_bf_existing_folders,
+            #     my_bf_existing_folders_name,
+            # ) = bf_get_existing_folders_details(my_ps_folder)
+
+            my_bf_existing_folders_name = []
+            my_bf_existing_folders = []
+
+            print("Dataset id: ", ds["id"])
+
 
             # create/replace/skip folder
             if "folders" in my_folder.keys():
@@ -2305,11 +2315,14 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         if folder_key in my_bf_existing_folders_name:
                             continue
                         else:
-                            r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json={"parent": "N:collection:f981f4df-b0cd-4a91-bcf0-8789b128b379", "name": "funsies", "dataset": "974-filesss", "packageType": "collection", "properties": {"key": "funsies", "value": "Ahhh"} })
+                            r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json={"parent": "N:collection:f981f4df-b0cd-4a91-bcf0-8789b128b379", "name": "funsies", "dataset": "N:dataset:1cb4bf59-2b6d-48c9-8dae-88f722c6e328", "packageType": "collection", "properties": {"key": "funsies", "value": "Ahhh"} })
                             bf_folder = my_ps_folder.create_collection(folder_key)
 
                     elif existing_folder_option == "create-duplicate":
-                        bf_folder = my_ps_folder.create_collection(folder_key)
+                        print("Creating a code folder")
+                        r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json={ "name": f"{folder_key}", "dataset": f"{ds['id']}", "packageType": "collection" })
+                        # bf_folder = my_ps_folder.create_collection(folder_key)
+                        # bf_folder = my_ps_folder.create_collection(folder_key)
 
                     elif existing_folder_option == "replace":
                         if folder_key in my_bf_existing_folders_name:
@@ -2317,20 +2330,23 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                             bf_folder_delete = my_bf_existing_folders[index_folder]
                             bf_folder_delete.delete()
                             my_ps_folder.update()
-                        bf_folder = my_ps_folder.create_collection(folder_key)
+                        r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json={"parent": "N:collection:f981f4df-b0cd-4a91-bcf0-8789b128b379", "name": "funsies", "dataset": "N:dataset:1cb4bf59-2b6d-48c9-8dae-88f722c6e328", "packageType": "collection", "properties": {"key": "funsies", "value": "Ahhh"} })
+                        # bf_folder = my_ps_folder.create_collection(folder_key)
 
                     elif existing_folder_option == "merge":
                         if folder_key in my_bf_existing_folders_name:
                             index_folder = my_bf_existing_folders_name.index(folder_key)
                             bf_folder = my_bf_existing_folders[index_folder]
                         else:
-                            bf_folder = my_ps_folder.create_collection(folder_key)
-                    bf_folder.update()
-                    my_tracking_folder["folders"][folder_key] = {"value": bf_folder}
-                    tracking_folder = my_tracking_folder["folders"][folder_key]
-                    recursive_create_folder_for_bf(
-                        folder, tracking_folder, existing_folder_option
-                    )
+                           # bf_folder = my_ps_folder.create_collection(folder_key)
+                            r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json={"parent": "N:collection:f981f4df-b0cd-4a91-bcf0-8789b128b379", "name": "funsies", "dataset": "N:dataset:1cb4bf59-2b6d-48c9-8dae-88f722c6e328", "packageType": "collection", "properties": {"key": "funsies", "value": "Ahhh"} })
+
+                    # bf_folder.update()
+                    # my_tracking_folder["folders"][folder_key] = {"value": bf_folder}
+                    # tracking_folder = my_tracking_folder["folders"][folder_key]
+                    # recursive_create_folder_for_bf(
+                    #     folder, tracking_folder, existing_folder_option
+                    # )
 
         def recursive_dataset_scan_for_bf(
             my_folder,
@@ -2530,10 +2546,13 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         dataset_structure = soda_json_structure["dataset-structure"]
         tracking_json_structure = {"value": ds}
 
+
         existing_folder_option = soda_json_structure["generate-dataset"]["if-existing"]
         recursive_create_folder_for_bf(
             dataset_structure, tracking_json_structure, existing_folder_option
         )
+
+        return 
 
         namespace_logger.info("bf_generate_new_dataset step 2 create list of files to be uploaded and handle renaming")
         # 2. Scan the dataset structure and compile a list of files to be uploaded along with desired renaming
@@ -3109,7 +3128,8 @@ def main_curate_function(soda_json_structure):
                             "dataset-name"
                         ]
                         ds = bf_create_new_dataset(dataset_name, ps)
-                        generated_dataset_id = ds.id
+                        print("Dataset result: ",  ds)
+                        generated_dataset_id = ds["id"]
                     bf_generate_new_dataset(soda_json_structure, ps, ds)
                 if generate_option == "existing-bf":
                     myds = bf.get_dataset(bfdataset)
@@ -3409,7 +3429,7 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
 
         # create an array to keep track of the path to the obj being recursed over
         relative_structure_path = []
-
+ 
         hlf_data_array.append([
         "filename",
         "file type",
