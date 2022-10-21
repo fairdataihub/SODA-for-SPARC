@@ -1749,7 +1749,9 @@ const traverseToTab = async (targetPageID) => {
     resetGuidedRadioButtons(targetPageID);
     //update the radio buttons using the button config from sodaJSONObj
     updateGuidedRadioButtonsFromJSON(targetPageID);
-    //refresh selectPickers if page has them
+    //Show the main nav bar
+    //Note: if other nav bar needs to be shown, it will be handled later in this function
+    hideSubNavAndShowMainNav(false);
 
     //Hide the high level progress steps and green pills if the user is on the before getting started page
     if (targetPageID === "guided-prepare-helpers-tab") {
@@ -3424,8 +3426,8 @@ const guidedResumeProgress = async (resumeProgressButton) => {
     //Hide the sub-page navigation and show the main page navigation footer
     //If the user traverses to a page that requires the sub-page navigation,
     //the sub-page will be shown during traverseToTab() function
-    $("#guided-sub-page-navigation-footer-div").hide();
-    $("#guided-footer-div").css("display", "flex");
+    hideSubNavAndShowMainNav(false);
+
     //If the last page the exited was the upload page, take them to the review page
     pageToReturnTo === "guided-dataset-generation-tab"
       ? traverseToTab("guided-dataset-generation-confirmation-tab")
