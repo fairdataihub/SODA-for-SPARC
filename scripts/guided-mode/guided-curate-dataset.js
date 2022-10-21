@@ -158,11 +158,18 @@ const guidedLockSideBar = () => {
 
 guidedUnLockSideBar = () => {
   const sidebar = document.getElementById("sidebarCollapse");
+  const guidedModeSection = document.getElementById("guided_mode-section");
+  const guidedDatsetTab = document.getElementById("guided_curate_dataset-tab");
+  const guidedNav = document.getElementById("guided-nav");
+
   if (sidebar.classList.contains("active")) {
     sidebar.click();
   }
-
   sidebar.disabled = false;
+  guidedModeSection.style.marginLeft = "-15px";
+  //remove the marginLeft style from guidedDatasetTab
+  guidedDatsetTab.style.marginLeft = "";
+  guidedNav.style.display = "none";
 };
 
 const guidedSetCurationTeamUI = (boolSharedWithCurationTeam) => {
