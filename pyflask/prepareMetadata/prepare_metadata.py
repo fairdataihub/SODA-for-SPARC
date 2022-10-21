@@ -196,23 +196,35 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
     # handle duplicates on Pennsieve: first, obtain the existing file ID
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps))
     r.raise_for_status()
-
-    items = r.json()["contents"]
-    for i in range(len(items)):
-
-        if items[i].name == file_type:
-
-            item_id = items[i].id
+    items = r.json()
+    for item in items["children"]:
+        if item["content"]["name"] == file_type:
+            print("this is the found file")
+            item_id = item["content"]["id"]
+            print(item_id)
+            jsonfile = {
+                "things": [item_id]
+            }
 
             # then, delete it using Pennsieve method delete(id)\vf = Pennsieve()
-            r = requests.delete(f"{PENNSIEVE_URL}/packages/{item_id}", headers=create_request_headers(ps))
+            r = requests.post(f"{PENNSIEVE_URL}/data/delete",json=jsonfile, headers=create_request_headers(ps))
             r.raise_for_status()
 
-    # create a new manifest for the metadata file
-    m_id = ps.manifest.create(file_path) 
+    try:
+        # create a new manifest for the metadata file
+        print("this is the file path")
+        print(file_path)
+        m_id = ps.manifest.create(file_path) 
+        print(m_id)
+    except Exception as e:
+        error_message = "Could not create manifest file for this dataset"
+        # abort(500, error_message)
+        raise e
 
     # upload the manifest file
-    ps.manifest.upload(m_id)
+    ps.manifest.upload(
+        print(m_id)
+    )
 
     # delete the local file that was created for the purpose of uploading to Pennsieve
     if delete_after_upload:
