@@ -12,7 +12,7 @@
     <header id="guided-header-div" class="guided--header hidden">
       <div class="guided--progression-tab-container">
         <div
-          class="guided--progression-tab guided--progression-tab-triangle selected-tab"
+          class="guided--progression-tab guided--progression-tab-triangle"
           id="prepare-dataset-progression-tab"
         >
           <div class="guided--progression-tab-content">
@@ -56,7 +56,7 @@
     </header>
 
     <div id="guided-body" class="guided--body">
-      <div id="guided-home" class="guided--parent-tab">
+      <div id="guided-home" class="guided--main-tab">
         <div class="guided--panel">
           <h1 class="guided--text-sub-step">Guided Mode</h1>
           <!-- <div class="title-border">
@@ -67,7 +67,7 @@
             of the Guided Mode are designed to logically guide users through the curation steps and
             include all necessary information such that no prior knowledge of the SPARC data
             standards is required. Contrary to the Free Form Mode, the Guided Mode interfaces are
-            interconnected and form a single workflow such that the curation process is streamlined
+            interconnected and form a single workflow such the curation process is streamlined
             further.
           </p>
           <div class="justify-center" id="curate-new-home" style="align-items: center">
@@ -134,19 +134,19 @@
             </div>
             <div class="guided--info-container">
               <p class="guided--help-text">
-                Although not required to use Guided Mode, you can learn more about the SPARC data
-                curation and sharing process in the
+                Although not required, you can learn more about the SPARC data curation and sharing
+                process in the
                 <a href="https://docs.sparc.science/docs/data-submission-overview" target="_blank"
                   >SPARC Data Submission Overview document page</a
                 >.
               </p>
             </div>
             <p class="guided--help-text" style="margin-top: 1em">
-              Guided Moded is divived in four high-level sections. During the first three sections,
-              you will be directed to specify the files to include in your dataset and provide
-              information about your dataset. On the final section, SODA will automatically generate
-              your dataset on Pennsieve with the proper folder structure and metadata files. Note
-              that none of your local data files will ever be modified or moved.
+              During the first three sections, you will be directed to specify your dataset's file
+              location and provide information about your dataset. On the final section, SODA will
+              automatically generate your dataset on Pennsieve with the proper folder structure and
+              metadata files. Note that none of your local data files will ever be modified or
+              moved.
             </p>
           </div>
         </div>
@@ -207,7 +207,7 @@
       </div>
       <div id="prepare-dataset-parent-tab" class="guided--parent-tab hidden">
         <div class="guided--capsule-container" id="structure-dataset-capsule-container">
-          <div class="guided--capsule hidden" id="guided-prepare-helpers-capsule"></div>
+          <div class="guided--capsule" id="guided-prepare-helpers-capsule"></div>
           <div class="guided--capsule active" id="guided-dataset-starting-point-capsule"></div>
 
           <div
@@ -274,20 +274,16 @@
               below.
             </p>
             <div class="guided--info-dropdown">
-              <p class="guided--dropdown-text" data-dropdown-type="warning">
-                I don't have a Pennsieve account
+              <p class="guided--dropdown-text" data-dropdown-type="info">
+                I don't have a Pennsieve account.
               </p>
               <i class="fas fa-chevron-right" style="transform: rotate(0deg)"></i>
             </div>
-            <div class="guided--info-container" style="width: 800px">
+            <div class="guided--info-container" style="margin-bottom: 1.5rem">
               <p class="guided--help-text">
                 Get access to Pennsieve as well as the SPARC Consortium organization on Pennsieve by
                 filling out this
-                <a
-                  target="_blank"
-                  href="https://www.wrike.com/frontend/requestforms/index.html?token=eyJhY2NvdW50SWQiOjMyMDM1ODgsInRhc2tGb3JtSWQiOjUwMzQzN30JNDgwNTg4NjU3MjA3Nwk0MTg5ZTY0ODEyZGYxNTU1ZDJkYmU5MzIxNWZiNTQyZWUwZTMzY2U4NDQ5ODI0ZWI0YzZiMWZhNjVhYzgyOTRm"
-                  >this form.</a
-                >
+                <a target="_blank">this form.</a>
               </p>
             </div>
             <div class="before-getting-started-btn">
@@ -296,15 +292,17 @@
                 class="metadata-button button-generate-dataset"
                 style="width: 150px; height: 150px; margin: 12px"
               >
-                <div>
-                  <img
-                    src="assets\img\pennsieveLogo.png"
-                    alt="PennsieveLogo"
-                    width="50px"
-                    height="50px"
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="50px"
+                  height="50px"
+                  viewBox="0 0 448 512"
+                >
+                  <!--! Font Awesome Pro 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+                  <path
+                    d="M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0S96 57.3 96 128s57.3 128 128 128zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"
                   />
-                </div>
-
+                </svg>
                 <svg
                   style="display: none"
                   width="40px"
@@ -323,15 +321,15 @@
               </button>
             </div>
             <label class="guided--welcome-section-label text-center"
-              >2. Data Deliverables document</label
+              >2. Data Deliverables Document</label
             >
             <p class="guided--help-text">
               The milestones and associated datasets as agreed between awardees and SPARC are
               summarized in a document called Data Deliverables document. Information contained in
-              this document is required in one of the metadata files to be included in your dataset.
-              You will therefore need access to the Data Deliverables document associated with your
-              SPARC award. Once you have this document you can optionally import it into SODA to
-              easily prepare your metadata file.
+              this document is required in the one of the metadata files to be included in your
+              dataset. You will therefore need access to the Data Deliverables document associated
+              with your SPARC award. Once you have this document you can optionally import into SODA
+              to easily prepare your metadata file.
             </p>
             <div class="guided--info-dropdown">
               <p class="guided--dropdown-text" data-dropdown-type="info">
@@ -343,12 +341,7 @@
               <p class="guided--help-text">
                 To obtain the Data Deliverables document associated with your award, simply ask your
                 PI or grant manager. Download a template of the Data Deliverables document
-                <a
-                  target="_blank"
-                  href="https://github.com/fairdataihub/SODA-for-SPARC/blob/main/file_templates/DataDeliverablesDocument-template.docx?raw=true"
-                  >here</a
-                >
-                to see the expected format.
+                <a target="_blank">here</a> to see the expected format.
               </p>
             </div>
             <div class="before-getting-started-btn" style="margin-top: 1rem">
@@ -394,12 +387,9 @@
             <label class="guided--welcome-section-label text-center">3. Protocols.io Account</label>
             <p class="guided--help-text">
               All SPARC datasets must have their associated protocols on
-              <a target="_blank" href="https://www.protocols.io/">protocols.io</a>, a platform for
-              creating shareable protocols. We recommend you prepare your protocols directly there
-              before continuing by following the
-              <a target="_blank" href="https://docs.sparc.science/docs/protocols"
-                >SPARC instructions for preparing protocols on protocols.io</a
-              >
+              <a>protocols.io</a>, a platform for creating shareable protocols. We recommend you
+              prepare your protocols directly there before continuing. By following the
+              <a>SPARC instructions for preparing protocols on protocols.io</a>
             </p>
             <p class="guided--help-text" style="display: none">
               The dataset_description metadata file must contain information about the protocols on
@@ -466,16 +456,11 @@
               </p>
               <i class="fas fa-chevron-right" style="transform: rotate(0deg)"></i>
             </div>
-            <div class="guided--info-container" style="width: 800px">
+            <div class="guided--info-container" style="margin-bottom: 1.5rem; margin-left: -6rem">
               <p class="guided--help-text">
                 To get access to the SPARC Airtable sheet first create an
-                <a target="_blank" href="https://www.airtable.com/">Airtable account</a>
-                then request access
-                <a
-                  target="_blank"
-                  href="https://www.wrike.com/frontend/requestforms/index.html?token=eyJhY2NvdW50SWQiOjMyMDM1ODgsInRhc2tGb3JtSWQiOjUwMzQzN30JNDgwNTg4NjU3MjA3Nwk0MTg5ZTY0ODEyZGYxNTU1ZDJkYmU5MzIxNWZiNTQyZWUwZTMzY2U4NDQ5ODI0ZWI0YzZiMWZhNjVhYzgyOTRm"
-                  >here</a
-                >.
+                <a>Airtable account</a> then request access
+                <a>here</a>
               </p>
             </div>
             <div class="before-getting-started-btn" style="margin-top: 1rem">
@@ -587,7 +572,8 @@
 
         <div
           id="guided-subjects-folder-tab"
-          class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+          class="guided--page hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+          data-page-name="Subject + Sample structuring"
           data-skip-page="true"
         >
           <div class="guided--section">
@@ -759,7 +745,8 @@
         </div>
         <div
           id="guided-primary-data-organization-tab"
-          class="guided--panel hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
+          class="guided--page hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
+          data-page-name="Primary data"
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Primary data for samples and subjects</h1>
@@ -1000,7 +987,8 @@
         </div>
         <div
           id="guided-source-data-organization-tab"
-          class="guided--panel hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
+          class="guided--page hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
+          data-page-name="Source data"
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Source data for subjects and samples</h1>
@@ -1215,7 +1203,8 @@
         </div>
         <div
           id="guided-derivative-data-organization-tab"
-          class="guided--panel hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
+          class="guided--page hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
+          data-page-name="Derivative data"
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Derivative data for subjects and samples</h1>
@@ -1416,7 +1405,8 @@
 
         <div
           id="guided-code-folder-tab"
-          class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+          class="guided--page hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+          data-page-name="Code data"
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Code data</h1>
@@ -1454,7 +1444,8 @@
         </div>
         <div
           id="guided-protocol-folder-tab"
-          class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+          class="guided--page hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+          data-page-name="Protocol data"
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Protocol data</h1>
@@ -1493,7 +1484,8 @@
         </div>
         <div
           id="guided-docs-folder-tab"
-          class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+          class="guided--page hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+          data-page-name="Docs data"
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Docs data</h1>
@@ -1533,7 +1525,8 @@
 
         <div
           id="guided-folder-importation-tab"
-          class="guided--panel hidden guided-curate-existing-local-dataset-branch-page"
+          class="guided--page hidden guided-curate-existing-local-dataset-branch-page"
+          data-page-name="Import dataset folder"
           data-skip-page="true"
         >
           <div class="guided--section" id="guided_dataset_name_div">
@@ -1571,114 +1564,6 @@
               id="guided-folder-structure-review"
               style="display: block; margin-left: 0px; margin-right: 0px"
             ></div>
-          </div>
-        </div>
-        <div id="guided-structure-folder-tab" class="guided--panel hidden" data-skip-page="true">
-          <div
-            class="guided--section"
-            id="guided-file-explorer-elements"
-            style="padding: 0; border-radius: 4px; height: 476px"
-          >
-            <h2 class="guided--text-sub-step mt-0" id="structure-folder-header"></h2>
-            <p class="guided--help-text" id="structure-folder-contents"></p>
-            <div
-              id="items-guided-container"
-              style="width: 100%; display: flex; flex-direction: column"
-            >
-              <div
-                class="guided--folder-organization-buttons-container"
-                style="margin-top: 0.44rem; width: 97% !important; align-self: center"
-              >
-                <div class="guided--folder-organization-buttons-container-sub" style="flex-grow: 1">
-                  <button
-                    class="ui secondary basic button small onHoverBlackBoxShadow"
-                    id="guided-button-back"
-                  >
-                    <i class="fas fa-arrow-up"></i>
-                  </button>
-                  <input
-                    style="
-                      margin: 0px 7px;
-                      display: flex;
-                      flex-grow: 1;
-                      border: none;
-                      font-size: 16px;
-                      font-weight: 600;
-                      cursor: default;
-                      color: #898989;
-                      display: none;
-                    "
-                    id="guided-input-global-path"
-                    value="My_dataset_folder/"
-                    readonly
-                  />
-                </div>
-                <div class="guided--folder-organization-buttons-container-sub">
-                  <button
-                    class="ui primary basic button small onHoverBlueBoxShadow"
-                    id="guided-new-folder"
-                    style="margin-right: 7px"
-                  >
-                    <i class="fas fa-folder-plus" style="margin-right: 7px"></i>New folder
-                  </button>
-                  <button
-                    class="ui primary basic button small remove-margin-right onHoverBlueBoxShadow"
-                    id="guided-import-folder"
-                    style="width: 165px; margin-right: 7px !important"
-                  >
-                    <svg
-                      style="margin-right: 7px"
-                      width="1em"
-                      height=".9em"
-                      viewbox="0 0 16 16"
-                      class="bi bi-upload"
-                      fill="currentColor"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"
-                      />
-                      <path
-                        fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"
-                      />
-                    </svg>
-                    Import folder
-                  </button>
-                  <button
-                    class="ui primary basic button small remove-margin-right onHoverBlueBoxShadow"
-                    id="guided-imoprt-file"
-                    style="width: 165px"
-                  >
-                    <svg
-                      style="margin-right: 7px"
-                      width="1em"
-                      height=".9em"
-                      viewbox="0 0 16 16"
-                      class="bi bi-upload"
-                      fill="currentColor"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"
-                      />
-                      <path
-                        fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"
-                      />
-                    </svg>
-                    Import file
-                  </button>
-                </div>
-              </div>
-              <div
-                id="guided-folder-structure-container"
-                class="w-100"
-                style="border-top: 2px solid lightgray; margin-top: 0"
-              ></div>
-            </div>
           </div>
         </div>
       </div>
@@ -1722,12 +1607,11 @@
                 data-button-config-value-state="yes"
               >
                 <div class="guided--tile-button-icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 640 512">
-                    <path
-                      fill="currentColor"
-                      d="M320 0c17.7 0 32 14.3 32 32V96H480c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H160c-35.3 0-64-28.7-64-64V160c0-35.3 28.7-64 64-64H288V32c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H208zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H304zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H400zM264 256c0-22.1-17.9-40-40-40s-40 17.9-40 40s17.9 40 40 40s40-17.9 40-40zm152 40c22.1 0 40-17.9 40-40s-17.9-40-40-40s-40 17.9-40 40s17.9 40 40 40zM48 224H64V416H48c-26.5 0-48-21.5-48-48V272c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48v96c0 26.5-21.5 48-48 48H576V224h16z"
-                    />
-                  </svg>
+                  <img
+                    src="assets/img/logo-new-green.png"
+                    alt="SODA logo"
+                    style="height: 50px; width: 40px"
+                  />
                 </div>
                 <div class="guided--tile-body">
                   <h2>Yes, auto-generate my manifest files</h2>
@@ -1860,7 +1744,11 @@
             <div class="guided--section" id="guided-container-manifest-file-cards"></div>
           </div>
         </div>
-        <div class="guided--panel hidden" id="guided-airtable-award-tab">
+        <div
+          class="guided--page hidden"
+          data-page-name="Select SPARC Award"
+          id="guided-airtable-award-tab"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">SPARC Award number</h1>
             <p class="guided--help-text">
@@ -1898,7 +1786,7 @@
                   />
                 </div>
                 <div class="guided--tile-body">
-                  <h2>Yes, import award metadata from Airtable</h2>
+                  <h2>Yes, import account from Airtable</h2>
                 </div>
               </button>
               <button
@@ -1929,93 +1817,31 @@
                   </svg>
                 </div>
                 <div class="guided--tile-body">
-                  <h2>No, I'll enter my award metadata manually</h2>
+                  <h2>No, I'll enter my SPARC award manually</h2>
                 </div>
               </button>
             </div>
           </div>
           <div class="guided--section hidden" id="guided-div-SPARC-award-import">
-            <div class="guided--panel" id="guided-div-connect-airtable">
-              <button
-                class="ui primary button"
-                id="guided-button-connect-airtable-account"
-                style="background-color: var(--color-light-green) !important"
-                onclick="showAddAirtableAccountSweetalert('submission', 'guided')"
+            <button
+              class="ui primary button"
+              id="guided-button-import-airtable-award"
+              style="background-color: var(--color-light-green) !important"
+              onclick="helpSPARCAward('submission', 'guided')"
+            >
+              Import award information from Airtable
+            </button>
+            <div class="guided--panel hidden mt-md" id="guided-div-imported-SPARC-award">
+              <label class="guided--label-accordion-field w-100 text-center"
+                >Imported SPARC Award number</label
               >
-                Connect Airtable account with SODA
-              </button>
-            </div>
-            <div class="guided--panel" id="guided-div-imported-SPARC-award">
-              <div class="guided--input-container">
-                <div class="guided--container-data-display mt-sm" style="width: 100%">
-                  <div class="guided--card-dataset-info">
-                    <div class="guided--dataset-description-container">
-                      <h5 class="guided--dataset-description">Airtable account:</h5>
-                    </div>
-                    <div
-                      class="guided--dataset-content-container"
-                      onclick="showAddAirtableAccountSweetalert('submission', 'guided')"
-                    >
-                      <h5 id="guided-current-sparc-award" class="guided--dataset-content"></h5>
-                      <i class="far fa-edit jump-back" style="color: #000"></i>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <label class="guided--form-label centered mb-sm mt-lg"
-                >Select a SPARC Award from the dropdown below
-              </label>
-              <div
-                id="guided_sparc_award_bootstrap_select_div"
-                style="
-                  display: flex;
-                  flex-direction: row;
-                  justify-content: space-around;
-                  width: 100%;
-                "
-              >
-                <select
-                  class="selectpicker"
-                  data-live-search="true"
-                  style="
-                    padding: 8px 12px;
-                    margin-right: 30px;
-                    height: 38px;
-                    border-radius: 5px;
-                    border: 1px solid black;
-                  "
-                  id="guided-sparc-award-dropdown"
-                ></select>
-              </div>
-              <div class="guided--info-dropdown mt-lg">
-                <p class="guided--dropdown-text" data-dropdown-type="warning">
-                  I don't see my SPARC Award in the dropdown
-                </p>
-                <i class="fas fa-chevron-right"></i>
-              </div>
-              <div class="guided--info-container">
-                <p class="guided--help-text mb-0">
-                  If you don't see your SPARC award in the dropdown above, you can add it yourself
-                  in the
-                  <a
-                    target="_blank"
-                    href="https://airtable.com/appiYd1Tz9Sv857GZ/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide"
-                    >SPARC Airtable sheet</a
-                  >, and click the button below to refresh the dropdown.
-                </p>
-                <div class="guided--flex-center w-100 my-md-3">
-                  <button
-                    class="ui primary button"
-                    id="guided-button-refresh-sparc-award-dropdown"
-                    style="background-color: var(--color-light-green) !important"
-                  >
-                    Refresh SPARC Award dropdown
-                  </button>
-                </div>
-                <p class="guided--help-text">
-                  Alternatively, you can select 'No, I'll enter my award metadata manually' to
-                  manually enter your award metadata.
-                </p>
+              <div class="ui input modified" style="width: 50%">
+                <input
+                  class="text-center"
+                  type="text"
+                  id="guided-input-submission-sparc-award-import"
+                  disabled
+                />
               </div>
             </div>
           </div>
@@ -2164,17 +1990,16 @@
                         class="code-metadata-lottie-container"
                         style="height: 100px"
                       ></div>
-                      <p class="guided--help-text text-center" style="max-width: 190px">
-                        Drag and Drop <br /><b>Data Deliverables document in docx format</b>
+                      <p class="guided--help-text text-center">
+                        Drag and Drop <br /><b>data_deliverable.docx</b>
                       </p>
                       <p class="guided--help-text text-center mt-sm mb-sm">OR</p>
                       <button
                         class="ui primary basic button mt-sm"
                         onclick="helpMilestoneSubmission('guided')"
-                        style="display: flex; align-items: center; justify-content: space-around"
                       >
-                        <i class="fas fa-file-import" style="margin-right: 7px"></i>Import Data
-                        Deliverables document in docx format
+                        <i class="fas fa-file-import" style="margin-right: 7px"></i>Import
+                        data_deliverable.docx
                       </button>
                       <p
                         class="guided--help-text small text-center mt-sm"
@@ -2318,7 +2143,11 @@
             </p>
           </div>
         </div>
-        <div id="guided-contributors-tab" class="guided--panel hidden">
+        <div
+          id="guided-contributors-tab"
+          class="guided--page hidden"
+          data-page-name="Contributor information"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Contributor information</h1>
             <p class="guided--help-text">
@@ -2357,7 +2186,11 @@
           </div>
         </div>
 
-        <div id="guided-protocols-tab" class="guided--panel hidden">
+        <div
+          id="guided-protocols-tab"
+          class="guided--page hidden"
+          data-page-name="Specify dataset protocols"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Dataset protocols</h1>
             <p class="guided--help-text">
@@ -2632,7 +2465,7 @@
             </p>
           </div>
           <div class="guided--section neumorphic mt-xl">
-            <h2 class="guided--text-sub-step mt-0">Related information</h2>
+            <h2 class="guided--text-sub-step mt-0">Related information:</h2>
             <label class="guided--form-label mt-xl">Additional links</label>
             <table class="ui celled striped table" style="margin-bottom: 25px; width: 800px">
               <thead>
@@ -2650,7 +2483,7 @@
             </button>
           </div>
           <div class="guided--section neumorphic mt-xl">
-            <h2 class="guided--text-sub-step mt-0">Additional information</h2>
+            <h2 class="guided--text-sub-step mt-0">Additional information:</h2>
             <label class="guided--form-label mt-xl">Study collection title:</label>
             <input
               class="guided--input"
@@ -2695,7 +2528,8 @@
         </div>
         <div
           id="guided-create-subjects-metadata-tab"
-          class="guided--panel hidden guided-subject-sample-data-addition-page"
+          class="guided--page hidden guided-subject-sample-data-addition-page"
+          data-page-name="Subjects"
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Subjects metadata</h1>
@@ -2859,15 +2693,8 @@
                   <br />
                   <b>Example:</b> Rattus
                 </p>
-                <div style="display: flex; flex-wrap: nowrap; width: 100%">
-                  <label class="guided--form-label mt-xl">Strain:</label>
-                  <label
-                    class="guided--form-label mt-xl"
-                    id="guided-strain-rrid-label"
-                    style="margin-right: 90px"
-                    >Strain RRID:</label
-                  >
-                </div>
+
+                <label class="guided--form-label mt-xl">Strain:</label>
                 <div class="demo-controls-body w-100">
                   <div class="ui input modified">
                     <input
@@ -2875,15 +2702,7 @@
                       id="guided-bootbox-subject-strain"
                       name="Strain"
                       class="subjects-form-entry"
-                      style="font-size: 13px; display: none; flex-grow: 1"
-                    />
-                    <input
-                      type="text"
-                      id="guided-bootbox-subject-strain-RRID"
-                      name="RRID for strain"
-                      class="subjects-form-entry hidden"
-                      style="font-size: 13px"
-                      readonly
+                      style="font-size: 13px; display: none"
                     />
                     <button
                       class="button-add-species ml-0"
@@ -2910,15 +2729,26 @@
                 <p class="guided--text-input-instructions mb-0">
                   Type to get suggestions from the most commonly used organism strain of the
                   subject.<br />
-                  To search for a standard strain name and learn more about RRIDs, please visit:
-                  <a
-                    target="_blank"
-                    href="https://scicrunch.org/resources/data/source/nlx_154697-1/search"
+                  To search for a standard strain name, please visit:
+                  <a target="_blank" href="https://scicrunch.org/resources/Organisms/search"
                     >Scicrunch.org</a
                   >
                   <br />
                   <b>Example:</b> Sprague-Dawley
                 </p>
+
+                <label class="guided--form-label mt-xl hidden">Strain RRID:</label>
+                <div class="demo-controls-body w-100 hidden">
+                  <div class="ui input modified">
+                    <input
+                      type="text"
+                      id="guided-bootbox-subject-strain-RRID"
+                      name="RRID for strain"
+                      class="subjects-form-entry"
+                      placeholder="Type here"
+                    />
+                  </div>
+                </div>
 
                 <label class="guided--form-label mt-xl"
                   >Exact age at the start of experiment:</label
@@ -3348,7 +3178,8 @@
         </div>
         <div
           id="guided-create-samples-metadata-tab"
-          class="guided--panel hidden guided-subject-sample-data-addition-page"
+          class="guided--page hidden guided-subject-sample-data-addition-page"
+          data-page-name="Samples"
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Samples metadata</h1>
@@ -3776,7 +3607,7 @@
             </div>
           </div>
         </div>
-        <div id="guided-add-code-metadata-tab" class="guided--panel hidden">
+        <div id="guided-add-code-metadata-tab" class="guided--page hidden" data-page-name="Code">
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Code-related metadata</h1>
             <p class="guided--help-text">
@@ -4041,7 +3872,7 @@
             </div>
           </div>
         </div>
-        <div id="guided-banner-image-tab" class="guided--panel hidden">
+        <div id="guided-banner-image-tab" class="guided--page hidden" data-page-name="Banner image">
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Banner image</h1>
             <p class="guided--help-text">
@@ -4183,7 +4014,11 @@
             </div>
           </div>
         </div>
-        <div id="guided-designate-pi-owner-tab" class="guided--panel hidden">
+        <div
+          id="guided-designate-pi-owner-tab"
+          class="guided--page hidden"
+          data-page-name="PI Owner"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Specify owner of dataset</h1>
             <p class="guided--help-text">
@@ -4285,56 +4120,46 @@
             </div>
           </div>
         </div>
-        <div id="guided-designate-permissions-tab" class="guided--panel hidden">
+        <div
+          id="guided-designate-permissions-tab"
+          class="guided--page hidden"
+          data-page-name="Pennsieve user permissions"
+        >
           <div class="guided--section" style="padding-left: 0">
             <h1 class="guided--text-sub-step">Dataset permissions</h1>
             <p class="guided--help-text text-left">
               Dataset permissions control which users or teams can view, edit, or manage your
-              dataset on Pennsieve. Current permissions are listed in the table below. If you need
-              anyone else to view or contribute to your dataset, you can grant them permissions
-              using the interface below.
+              dataset on Pennsieve. Read below for a breakdown of the different types of dataset
+              permissions:
             </p>
-            <div class="guided--info-dropdown">
-              <p class="guided--dropdown-text" data-dropdown-type="info">
-                Learn more about dataset Permissions on Pennsieve
-              </p>
-              <i class="fas fa-chevron-right" style="transform: rotate(0deg)"></i>
-            </div>
-            <div class="guided--info-container" style="margin-bottom: 1.5rem">
-              <p class="guided--help-text">Pennsieve has 3 levels of permissions for datasets:</p>
-              <ul class="guided--help-text">
-                <li class="guided--help-text text-left mb-2" style="color: hsl(0, 0%, 22%)">
-                  <b>Viewer:</b> Give this permission to collaborators who only need to view your
-                  dataset.
-                </li>
-
-                <li class="guided--help-text text-left mb-2" style="color: hsl(0, 0%, 22%)">
-                  <b>Editor:</b> Give this permission to collaborators who only need to view your
-                  dataset and upload files to it.
-                </li>
-                <li class="guided--help-text text-left mb-2" style="color: hsl(0, 0%, 22%)">
-                  <b>Manager:</b> Give this permission to collaborators who need full editing access
-                  to your dataset (except publish the dataset).
-                </li>
-                <li class="guided--help-text text-left mb-2" style="color: hsl(0, 0%, 22%)">
-                  <b>Owner:</b> This permission is typically given to the Principal Investigator of
-                  the award. The owner can do everything with the dataset, including publishing it.
-                </li>
-              </ul>
-            </div>
+            <ul class="guided--help-text">
+              <li class="guided--help-text text-left mb-2" style="color: hsl(0, 0%, 22%)">
+                <b>Managers</b> can invite people and teams to a dataset, edit and delete models,
+                records and files, but cannot publish a dataset.
+              </li>
+              <li class="guided--help-text text-left mb-2" style="color: hsl(0, 0%, 22%)">
+                <b>Editors</b> can create, edit, or delete records and files in a dataset.
+              </li>
+              <li class="guided--help-text text-left mb-2" style="color: hsl(0, 0%, 22%)">
+                <b>Viewers</b> can view and browse all information in a dataset, but have no other
+                permissions.
+              </li>
+            </ul>
           </div>
           <div class="guided--section">
-            <table class="ui celled striped table" style="margin-bottom: 10px; width: 800px">
+            <table class="ui celled striped table" style="margin-bottom: 25px; width: 800px">
               <thead>
                 <tr>
                   <th>Name</th>
-                  <th class="remove-left-border" style="width: 268px">Permission</th>
+                  <th class="remove-left-border" style="width: 300px">Permission</th>
                   <th class="center aligned remove-left-border" style="width: 30px">Delete</th>
                 </tr>
               </thead>
               <tbody id="permissions-table-body"></tbody>
             </table>
-
+            <h1 class="guided--text-sub-step">
+              Designate permissions for other users and teams below:
+            </h1>
             <div class="guided--container-permissions">
               <div style="flex-grow: 1">
                 <div
@@ -4368,7 +4193,7 @@
                       "
                       id="guided_bf_list_users_and_teams"
                     >
-                      <option>Select individuals or teams to grant permissions to</option>
+                      <option>Select individuals or teams</option>
                     </select>
                   </div>
                 </div>
@@ -4389,8 +4214,6 @@
                   height: 35px;
                   background-color: var(--color-light-green) !important;
                   padding: 0.7em 1.3em;
-                  width: 175px;
-                  margin-right: 0px;
                 "
               >
                 Designate permission
@@ -4398,7 +4221,11 @@
             </div>
           </div>
         </div>
-        <div id="guided-add-description-tab" class="guided--panel hidden">
+        <div
+          id="guided-add-description-tab"
+          class="guided--page hidden"
+          data-page-name="Pennsieve dataset description"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Dataset description</h1>
             <p class="guided--help-text text-left">
@@ -4454,7 +4281,11 @@
             </div>
           </div>
         </div>
-        <div id="guided-add-tags-tab" class="guided--panel hidden">
+        <div
+          id="guided-add-tags-tab"
+          class="guided--page hidden"
+          data-page-name="Pennsieve dataset tags"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Dataset tags</h1>
             <p class="guided--help-text mb-lg">
@@ -4470,7 +4301,11 @@
             </p>
           </div>
         </div>
-        <div id="guided-assign-license-tab" class="guided--panel hidden">
+        <div
+          id="guided-assign-license-tab"
+          class="guided--page hidden"
+          data-page-name="Sharing license"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Sharing license:</h1>
             <p class="guided--help-text">
@@ -4831,12 +4666,12 @@
                 max-width: 800px;
               "
             >
-              <label class="guided--form-label mt-md mb-sm text-center"
+              <label class="guided--form-label mt-md mb-sm" style="text-align: left"
                 >Current dataset structure:</label
               >
               <div
                 id="guided-folder-structure-review-generate"
-                style="display: block; margin-left: 35%"
+                style="display: block; margin-left: 0px; margin-right: 0px"
               ></div>
             </div>
             <div class="guided--card-dataset-info">
@@ -4933,7 +4768,11 @@
           </button>
         </div>
 
-        <div id="guided-dataset-generation-tab" class="guided--panel hidden">
+        <div
+          id="guided-dataset-generation-tab"
+          class="guided--page hidden"
+          data-page-name="Generate dataset"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Generating your dataset on Pennsieve</h1>
           </div>
@@ -5217,7 +5056,11 @@
           </div>
         </div>
 
-        <div id="guided-dataset-dissemination-tab" class="guided--panel hidden">
+        <div
+          id="guided-dataset-dissemination-tab"
+          class="guided--page hidden"
+          data-page-name="Share with SPARC Curation Team"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Share with the SPARC Curation Team</h1>
             <h2 class="guided--text-sub-step">View dataset on Pennsieve</h2>
@@ -5377,3 +5220,108 @@
     </footer>
   </div>
 </section>
+<div id="guided-structure-folder-tab" class="guided--panel hidden" data-skip-page="true">
+  <div
+    class="guided--section"
+    id="guided-file-explorer-elements"
+    style="padding: 0; border-radius: 4px; height: 476px"
+  >
+    <h2 class="guided--text-sub-step mt-0" id="structure-folder-header"></h2>
+    <p class="guided--help-text" id="structure-folder-contents"></p>
+    <div id="items-guided-container" style="width: 100%; display: flex; flex-direction: column">
+      <div
+        class="guided--folder-organization-buttons-container"
+        style="margin-top: 0.44rem; width: 97% !important; align-self: center"
+      >
+        <div class="guided--folder-organization-buttons-container-sub" style="flex-grow: 1">
+          <button
+            class="ui secondary basic button small onHoverBlackBoxShadow"
+            id="guided-button-back"
+          >
+            <i class="fas fa-arrow-up"></i>
+          </button>
+          <input
+            style="
+              margin: 0px 7px;
+              display: flex;
+              flex-grow: 1;
+              border: none;
+              font-size: 16px;
+              font-weight: 600;
+              cursor: default;
+              color: #898989;
+              display: none;
+            "
+            id="guided-input-global-path"
+            value="My_dataset_folder/"
+            readonly
+          />
+        </div>
+        <div class="guided--folder-organization-buttons-container-sub">
+          <button
+            class="ui primary basic button small onHoverBlueBoxShadow"
+            id="guided-new-folder"
+            style="margin-right: 7px"
+          >
+            <i class="fas fa-folder-plus" style="margin-right: 7px"></i>New folder
+          </button>
+          <button
+            class="ui primary basic button small remove-margin-right onHoverBlueBoxShadow"
+            id="guided-import-folder"
+            style="width: 165px; margin-right: 7px !important"
+          >
+            <svg
+              style="margin-right: 7px"
+              width="1em"
+              height=".9em"
+              viewbox="0 0 16 16"
+              class="bi bi-upload"
+              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"
+              />
+              <path
+                fill-rule="evenodd"
+                d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"
+              />
+            </svg>
+            Import folder
+          </button>
+          <button
+            class="ui primary basic button small remove-margin-right onHoverBlueBoxShadow"
+            id="guided-imoprt-file"
+            style="width: 165px"
+          >
+            <svg
+              style="margin-right: 7px"
+              width="1em"
+              height=".9em"
+              viewbox="0 0 16 16"
+              class="bi bi-upload"
+              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"
+              />
+              <path
+                fill-rule="evenodd"
+                d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"
+              />
+            </svg>
+            Import file
+          </button>
+        </div>
+      </div>
+      <div
+        id="guided-folder-structure-container"
+        class="w-100"
+        style="border-top: 2px solid lightgray; margin-top: 0"
+      ></div>
+    </div>
+  </div>
+</div>

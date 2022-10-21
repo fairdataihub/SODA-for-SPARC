@@ -2798,6 +2798,7 @@ const traverseToTab = async (targetPageID) => {
     //Set all capsules to grey and set capsule of page being traversed to green
     setActiveCapsule(targetPageID);
     setActiveProgressionTab(targetPageID);
+    renderSideBar(targetPageID);
 
     const guidedBody = document.getElementById("guided-body");
 
