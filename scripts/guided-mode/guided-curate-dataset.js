@@ -10721,7 +10721,7 @@ $(document).ready(async () => {
           ) {
             delete datasetStructureJSONObj["folders"]["protocol"];
           } else {
-            const { value: deleteCodeFolderWithData } = await Swal.fire({
+            const { value: deleteProtocolFolderWithData } = await Swal.fire({
               title: "Delete protocol folder?",
               text: "You indicated that your dataset does not contain protocol data, however, you previously added protocol data to your dataset. Do you want to delete the protocol folder?",
               icon: "warning",
@@ -10733,7 +10733,7 @@ $(document).ready(async () => {
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
             });
-            if (deleteCodeFolderWithData) {
+            if (deleteProtocolFolderWithData) {
               delete datasetStructureJSONObj["folders"]["protocol"];
             } else {
               guidedButtonUserHasProtocolData.click();
