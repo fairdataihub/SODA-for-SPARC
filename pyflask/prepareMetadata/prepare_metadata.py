@@ -214,7 +214,8 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
         abort(500, error_message)
 
     # upload the manifest file
-    ps.manifest.upload(m_id.manifest_id)
+    r = ps.manifest.upload(m_id.manifest_id)
+    print(r)
 
     # delete the local file that was created for the purpose of uploading to Pennsieve
     if delete_after_upload:
@@ -861,12 +862,9 @@ def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
     r.raise_for_status()
 
     items = r.json()["content"]
-    
 
     for i in range(list(items)):
-
         if items[i].name == file_type:
-
             item_id = items[i].id
             url = returnFileURL(ps, item_id)
 
@@ -904,6 +902,7 @@ def import_bf_RC(bfaccount, bfdataset, file_type):
     items = r.json()
 
     for item in items["children"]:
+        print(item["content"]["name"])
         if item["content"]["name"] == file_type:
             item_id = item["content"]["id"]
             url = returnFileURL(ps, item_id)
