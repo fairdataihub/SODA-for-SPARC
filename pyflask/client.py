@@ -14,9 +14,21 @@ client.useDataset("N:dataset:1cb4bf59-2b6d-48c9-8dae-88f722c6e328")
 
 PENNSIEVE_URL = "https://api.pennsieve.io"
 
-r = requests.post(f"{PENNSIEVE_URL}/packages", headers={"Content-Type": "application/json", "Authorization": f"Bearer {client.getUser()['session_token']}",}, json={"parent": "N:collection:f981f4df-b0cd-4a91-bcf0-8789b128b379", "name": "funsies", "dataset": "974-filesss", "packageType": "collection", "properties": {"key": "funsies", "value": "Ahhh"} })
-r.raise_for_status()
+try:
+  r = requests.post(f"{PENNSIEVE_URL}/packages", headers={"Content-Type": "application/json", "Authorization": f"Bearer {client.getUser()['session_token']}",}, 
+                    json={
+                          "name": "caged", 
+                          "dataset": "N:dataset:c38eb185-39ef-426a-b636-b1b9b7b4283a", 
+                          "packageType": "collection", 
+                          "properties": [ { "key": "aa", "value": "Aahhh" }] 
+                          })
+  r.raise_for_status()
+  res = r.json()
 
+  print(res)
+except Exception as e:
+  print(e)
+  print(e.response)
 
 
 # client.manifest.upload(49)
