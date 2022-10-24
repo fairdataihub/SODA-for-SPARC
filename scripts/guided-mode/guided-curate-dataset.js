@@ -10220,6 +10220,8 @@ $(document).ready(async () => {
       return;
     }
 
+    //pass in only CHANGES or README (the extension .txt is added in the backend)
+    console.log(readmeORchanges.toUpperCase())
     try {
       await client.post(
         "/prepare_metadata/readme_changes_file",
@@ -10228,7 +10230,7 @@ $(document).ready(async () => {
         },
         {
           params: {
-            file_type: `${readmeORchanges.toUpperCase()}.txt`,
+            file_type: `${readmeORchanges.toUpperCase()}`,
             selected_account: bfAccount,
             selected_dataset: datasetName,
           },

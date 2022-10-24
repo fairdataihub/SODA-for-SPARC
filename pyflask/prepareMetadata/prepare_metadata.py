@@ -214,8 +214,7 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
         abort(500, error_message)
 
     # upload the manifest file
-    r = ps.manifest.upload(m_id.manifest_id)
-    print(r)
+    ps.manifest.upload(m_id.manifest_id)
 
     # delete the local file that was created for the purpose of uploading to Pennsieve
     if delete_after_upload:
@@ -228,7 +227,6 @@ def excel_columns(start_index=0):
     single_letter = list(ascii_uppercase[start_index:])
     two_letter = [a + b for a, b in itertools.product(ascii_uppercase, ascii_uppercase)]
     return single_letter + two_letter
-  
 
 def rename_headers(workbook, max_len, start_index):
     """
@@ -237,9 +235,7 @@ def rename_headers(workbook, max_len, start_index):
 
     columns_list = excel_columns(start_index=start_index)
     if max_len >= start_index:
-
         workbook[columns_list[0] + "1"] = "Value"
-
         for i, column in zip(range(2, max_len + 1), columns_list[1:]):
 
             workbook[column + "1"] = f"Value {str(i)}"
@@ -254,7 +250,6 @@ def rename_headers(workbook, max_len, start_index):
             cell.font = font
 
     else:
-
         delete_range = len(columns_list) - max_len
         workbook.delete_cols(4 + max_len, delete_range)
 
@@ -352,7 +347,7 @@ def populate_contributor_info(workbook, val_array):
     ):
         workbook[column + "19"] = contributor["conName"]
         workbook[column + "20"] = contributor["conID"]
-        workbook[column + "21"] = contributor["conAffliation"]
+        workbook[column + "21"] = contributor["conAffiliation"]
         workbook[column + "22"] = contributor["conRole"]
 
     return [val_array["funding"], val_array["contributors"]]
@@ -1091,10 +1086,10 @@ def manifest_creation_progress():
     global manifest_progress
 
     return {
-            "manifest_files_uploaded": manifest_progress["manifest_files_uploaded"], 
-            "total_manifest_files": manifest_progress["total_manifest_files"],
-            "finished": manifest_progress["finished"]
-           }
+        "manifest_files_uploaded": manifest_progress["manifest_files_uploaded"], 
+        "total_manifest_files": manifest_progress["total_manifest_files"],
+        "finished": manifest_progress["finished"]
+    }
 
 
 def remove_high_level_folder_from_path(paths):
@@ -1322,8 +1317,8 @@ def drop_manifest_empty_columns(manifest_file_location):
     for high_level_folder in high_level_folders:
         # read the folder's excel file 
         manifest_df = pd.read_excel(
-                        os.path.join(manifest_file_location, high_level_folder, "manifest.xlsx"), engine="openpyxl", usecols=column_check, header=0
-                    )
+            os.path.join(manifest_file_location, high_level_folder, "manifest.xlsx"), engine="openpyxl", usecols=column_check, header=0
+        )
         custom_columns = []
 
         # get the custom columns from the data frame
