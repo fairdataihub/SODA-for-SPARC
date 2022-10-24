@@ -1013,29 +1013,27 @@ document.getElementById("guided-button-import-sparc-award").addEventListener("cl
   );
   const airTableKeyObj = parseJson(airtableConfigPath);
 
-    if (Object.keys(airTableKeyObj).length === 0) {
+  if (Object.keys(airTableKeyObj).length === 0) {
+    //If the airtable key object is empty, show the div to connect to airtable
+    divToShowWhenConnected.classList.add("hidden");
+    divToShowWhenNotConnected.classList.remove("hidden");
+  } else {
+    //verify airtable api is valid
+    checkAirtableStatus("");
+    if (airtableRes[1] != "") {
+      const airTablePreviewText = document.getElementById("guided-current-sparc-award");
+      airTablePreviewText.innerHTML = airTableKeyObj["key-name"];
+      //If the airtable key object is not empty, show the div to select the SPARC award
+      divToShowWhenConnected.classList.remove("hidden");
+      divToShowWhenNotConnected.classList.add("hidden");
+      renderGuidedAwardSelectionDropdown();
+    } else {
       //If the airtable key object is empty, show the div to connect to airtable
       divToShowWhenConnected.classList.add("hidden");
       divToShowWhenNotConnected.classList.remove("hidden");
-    } else {
-      //verify airtable api is valid
-      checkAirtableStatus("");
-      if (airtableRes[1] != "") {
-        const airTablePreviewText = document.getElementById(
-          "guided-current-sparc-award"
-        );
-        airTablePreviewText.innerHTML = airTableKeyObj["key-name"];
-        //If the airtable key object is not empty, show the div to select the SPARC award
-        divToShowWhenConnected.classList.remove("hidden");
-        divToShowWhenNotConnected.classList.add("hidden");
-        renderGuidedAwardSelectionDropdown();
-      } else {
-        //If the airtable key object is empty, show the div to connect to airtable
-        divToShowWhenConnected.classList.add("hidden");
-        divToShowWhenNotConnected.classList.remove("hidden");
-      }
     }
-  });
+  }
+});
 
 const setActiveCapsule = (targetPageID) => {
   $(".guided--capsule").removeClass("active");
@@ -2411,10 +2409,7 @@ const traverseToTab = async (targetPageID) => {
 
       if (datasetUserPermissions.length > 0) {
         const datasetUserPermissionsString = datasetUserPermissions
-          .map(
-            (permission) =>
-              permission.userString + " (" + permission.permission + ")"
-          )
+          .map((permission) => permission.userString + " (" + permission.permission + ")")
           .join("<br>");
         datasetUserPermissionsReviewText.innerHTML = datasetUserPermissionsString;
       } else {
@@ -2423,10 +2418,7 @@ const traverseToTab = async (targetPageID) => {
 
       if (datasetTeamPermissions.length > 0) {
         const datasetTeamPermissionsString = datasetTeamPermissions
-          .map(
-            (permission) =>
-              permission.teamString + " (" + permission.permission + ")"
-          )
+          .map((permission) => permission.teamString + " (" + permission.permission + ")")
           .join("<br>");
         datasetTeamPermissionsReviewText.innerHTML = datasetTeamPermissionsString;
       } else {
@@ -11360,8 +11352,7 @@ $(document).ready(async () => {
         if (protocolSkip.checked) {
           protocols = [];
         }
-        sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] =
-          protocols;
+        sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = protocols;
       }
 
       if (pageBeingLeftID === "guided-create-description-metadata-tab") {
