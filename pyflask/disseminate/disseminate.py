@@ -220,7 +220,7 @@ def bf_withdraw_review_dataset(selected_bfaccount, selected_bfdataset):
     selected_dataset_id = get_dataset_id(ps, selected_bfdataset)
 
     if not has_edit_permissions(ps, selected_dataset_id):
-        abort(401, "You do not have permission to edit this dataset.")
+        abort(403, "You do not have permission to edit this dataset.")
 
     publication_type = get_publication_type(ps, selected_dataset_id)
     

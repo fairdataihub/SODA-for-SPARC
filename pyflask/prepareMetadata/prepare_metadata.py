@@ -177,6 +177,7 @@ def upload_RC_file(text_string, file_type, bfaccount, bfdataset):
 
 def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_after_upload):
     ## check if agent is running in the background
+    # TODO: convert to new agent (agent_running is part of the old agent)
     agent_running()
 
     ps = connect_pennsieve_client()
@@ -188,7 +189,7 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
 
     # check that the user has permissions for uploading and modifying the dataset
     if not has_edit_permissions(ps, selected_dataset_id):
-        abort(401, "You do not have permissions to edit this dataset.")
+        abort(403, "You do not have permissions to edit this dataset.")
 
     # handle duplicates on Pennsieve: first, obtain the existing file ID
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps))
@@ -208,13 +209,15 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
     try:
         # create a new manifest for the metadata file
         ps.useDataset(selected_dataset_id)
-        m_id = ps.manifest.create(file_path)
+        manifest = ps.manifest.create(file_path)
+        m_id = manifest.manifest_id
     except Exception as e:
         error_message = "Could not create manifest file for this dataset"
         abort(500, error_message)
 
     # upload the manifest file
-    ps.manifest.upload(m_id.manifest_id)
+    # ps.manifest.upload(m_id)
+    ps.manifest.upload(int(m_id))
 
     # delete the local file that was created for the purpose of uploading to Pennsieve
     if delete_after_upload:
