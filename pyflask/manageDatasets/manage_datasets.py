@@ -647,7 +647,7 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
     selected_dataset_id = get_dataset_id(ps, current_dataset_name)
 
     if not has_edit_permissions(ps, selected_dataset_id):
-        abort(401, "You do not have permission to edit this dataset.")
+        abort(403, "You do not have permission to edit this dataset.")
 
     dataset_list = [ds.name for ds in ps.getDatasets()]
     if datasetname in dataset_list:
@@ -1457,7 +1457,7 @@ def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
     selected_dataset_id = get_dataset_id(ps, selected_bfdataset)
 
     if not has_edit_permissions(ps, selected_dataset_id):
-        abort(401, "You do not have permission to edit this dataset.")
+        abort(403, "You do not have permission to edit this dataset.")
 
     try:
         jsonfile = {"description": input_subtitle}
@@ -1519,7 +1519,7 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
     selected_dataset_id = get_dataset_id(ps, selected_bfdataset)
 
     if not has_edit_permissions(ps, selected_dataset_id):
-        abort(401, "You do not have permission to edit this dataset.")
+        abort(403, "You do not have permission to edit this dataset.")
 
     try:
         jsonfile = {"readme": markdown_input}
@@ -1586,7 +1586,7 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
     selected_dataset_id = get_dataset_id(ps, selected_bfdataset)
 
     if not has_edit_permissions(ps, selected_dataset_id):
-        abort(401, "You do not have permission to edit this dataset.")
+        abort(403, "You do not have permission to edit this dataset.")
 
     try:
         def upload_image():
@@ -1663,7 +1663,7 @@ def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
     selected_dataset_id = get_dataset_id(ps, selected_bfdataset)
 
     if not has_edit_permissions(ps, selected_dataset_id):
-        abort(401, "You do not have permission to edit this dataset.")
+        abort(403, "You do not have permission to edit this dataset.")
 
 
     allowed_licenses_list = [
@@ -1743,7 +1743,7 @@ def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_st
     selected_dataset_id = get_dataset_id(ps, selected_bfdataset)
 
     if not has_edit_permissions(ps, selected_dataset_id):
-        abort(401, "You do not have permission to edit this dataset.")
+        abort(403, "You do not have permission to edit this dataset.")
 
     try:
         headers = create_request_headers(ps)
@@ -1938,7 +1938,7 @@ def update_dataset_readme(selected_account, selected_dataset, updated_readme):
     selected_dataset_id = get_dataset_id(ps, selected_dataset)
 
     if not has_edit_permissions(ps, selected_dataset_id):
-        abort(401, "You do not have permission to edit this dataset.")
+        abort(403, "You do not have permission to edit this dataset.")
 
     try:
         r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", json={"readme": updated_readme}, headers=create_request_headers(ps))
@@ -1989,7 +1989,7 @@ def update_dataset_tags(selected_account, selected_dataset, updated_tags):
     selected_dataset_id = get_dataset_id(ps, selected_dataset)
 
     if not has_edit_permissions(ps, selected_dataset_id):
-        abort(401, "You do not have permission to edit this dataset.")
+        abort(403, "You do not have permission to edit this dataset.")
 
     try:
         jsonfile = {"tags": updated_tags}

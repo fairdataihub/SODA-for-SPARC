@@ -177,6 +177,7 @@ def upload_RC_file(text_string, file_type, bfaccount, bfdataset):
 
 def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_after_upload):
     ## check if agent is running in the background
+    # TODO: convert to new agent (agent_running is part of the old agent)
     agent_running()
 
     ps = connect_pennsieve_client()
@@ -188,7 +189,7 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
 
     # check that the user has permissions for uploading and modifying the dataset
     if not has_edit_permissions(ps, selected_dataset_id):
-        abort(401, "You do not have permissions to edit this dataset.")
+        abort(403, "You do not have permissions to edit this dataset.")
 
     # handle duplicates on Pennsieve: first, obtain the existing file ID
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps))
@@ -208,14 +209,15 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
     try:
         # create a new manifest for the metadata file
         ps.useDataset(selected_dataset_id)
-        m_id = ps.manifest.create(file_path)
+        manifest = ps.manifest.create(file_path)
+        m_id = manifest.manifest_id
     except Exception as e:
         error_message = "Could not create manifest file for this dataset"
         abort(500, error_message)
 
     # upload the manifest file
-    r = ps.manifest.upload(m_id.manifest_id)
-    print(r)
+    # ps.manifest.upload(m_id)
+    ps.manifest.upload(int(m_id))
 
     # delete the local file that was created for the purpose of uploading to Pennsieve
     if delete_after_upload:
@@ -228,7 +230,6 @@ def excel_columns(start_index=0):
     single_letter = list(ascii_uppercase[start_index:])
     two_letter = [a + b for a, b in itertools.product(ascii_uppercase, ascii_uppercase)]
     return single_letter + two_letter
-  
 
 def rename_headers(workbook, max_len, start_index):
     """
@@ -237,9 +238,7 @@ def rename_headers(workbook, max_len, start_index):
 
     columns_list = excel_columns(start_index=start_index)
     if max_len >= start_index:
-
         workbook[columns_list[0] + "1"] = "Value"
-
         for i, column in zip(range(2, max_len + 1), columns_list[1:]):
 
             workbook[column + "1"] = f"Value {str(i)}"
@@ -254,7 +253,6 @@ def rename_headers(workbook, max_len, start_index):
             cell.font = font
 
     else:
-
         delete_range = len(columns_list) - max_len
         workbook.delete_cols(4 + max_len, delete_range)
 
@@ -352,7 +350,7 @@ def populate_contributor_info(workbook, val_array):
     ):
         workbook[column + "19"] = contributor["conName"]
         workbook[column + "20"] = contributor["conID"]
-        workbook[column + "21"] = contributor["conAffliation"]
+        workbook[column + "21"] = contributor["conAffiliation"]
         workbook[column + "22"] = contributor["conRole"]
 
     return [val_array["funding"], val_array["contributors"]]
@@ -1091,10 +1089,10 @@ def manifest_creation_progress():
     global manifest_progress
 
     return {
-            "manifest_files_uploaded": manifest_progress["manifest_files_uploaded"], 
-            "total_manifest_files": manifest_progress["total_manifest_files"],
-            "finished": manifest_progress["finished"]
-           }
+        "manifest_files_uploaded": manifest_progress["manifest_files_uploaded"], 
+        "total_manifest_files": manifest_progress["total_manifest_files"],
+        "finished": manifest_progress["finished"]
+    }
 
 
 def remove_high_level_folder_from_path(paths):
@@ -1322,8 +1320,8 @@ def drop_manifest_empty_columns(manifest_file_location):
     for high_level_folder in high_level_folders:
         # read the folder's excel file 
         manifest_df = pd.read_excel(
-                        os.path.join(manifest_file_location, high_level_folder, "manifest.xlsx"), engine="openpyxl", usecols=column_check, header=0
-                    )
+            os.path.join(manifest_file_location, high_level_folder, "manifest.xlsx"), engine="openpyxl", usecols=column_check, header=0
+        )
         custom_columns = []
 
         # get the custom columns from the data frame
