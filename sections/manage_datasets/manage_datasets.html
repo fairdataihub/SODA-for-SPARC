@@ -41,12 +41,7 @@
       >
         <div class="ui form" style="width: 100%">
           <div class="grouped fields">
-            <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                text-align: center;
-              "
+            <label style="font-size: 17px; color: var(--color-bg-plum); text-align: center"
               >Is this your Pennsieve account?</label
             >
             <div class="field" style="margin: auto; width: 550px">
@@ -62,13 +57,7 @@
                   border-radius: 5px;
                 "
               >
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
                   <div class="card-container manage-dataset">
                     <div style="display: flex">
                       <h5
@@ -116,13 +105,7 @@
                     </div>
                   </div>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    margin-bottom: 15px;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
                   <div class="card-container manage-dataset">
                     <div>
                       <h5
@@ -138,12 +121,7 @@
                       </h5>
                       <h5
                         class="card-right bf-account-details-span"
-                        style="
-                          color: #000;
-                          font-weight: 600;
-                          margin-left: 15px;
-                          font-size: 15px;
-                        "
+                        style="color: #000; font-weight: 600; margin-left: 15px; font-size: 15px"
                         id="para_create_empty_dataset_BF_account"
                       >
                         None
@@ -185,18 +163,10 @@
         <div class="ui form" style="width: 550px !important">
           <div class="grouped fields">
             <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                width: 100%;
-                text-align: center;
-              "
+              style="font-size: 17px; color: var(--color-bg-plum); width: 100%; text-align: center"
               >What is the name of the new dataset?
             </label>
-            <div
-              class="field"
-              style="display: block; width: 100%; align-self: center"
-            >
+            <div class="field" style="display: block; width: 100%; align-self: center">
               <input
                 type="text"
                 class="form-control"
@@ -208,10 +178,9 @@
               />
               <div style="border-radius: 0.5rem; margin-top: 7px">
                 <p class="tip-content">
-                  This is the field that will be displayed in public as the
-                  title of the dataset. Ensure that your dataset name is
-                  different than your other dataset names and it is relatively
-                  informative.
+                  This is the field that will be displayed in public as the title of the dataset.
+                  Ensure that your dataset name is different than your other dataset names and it is
+                  relatively informative.
                 </p>
               </div>
             </div>
@@ -234,15 +203,9 @@
                 class="btn_animated"
                 style="width: 140px; display: none; border: none !important"
               >
-                <div class="btn_animated-inside" style="margin: 0; padding: 0">
-                  Create dataset
-                </div>
+                <div class="btn_animated-inside" style="margin: 0; padding: 0">Create dataset</div>
               </button>
-              <div
-                id="bf-create-new-dataset-spinner"
-                class="spinner"
-                style="visibility: hidden"
-              >
+              <div id="bf-create-new-dataset-spinner" class="spinner" style="visibility: hidden">
                 <div class="rect1"></div>
                 <div class="rect2"></div>
                 <div class="rect3"></div>
@@ -256,19 +219,8 @@
     </div>
 
     <div class="footer-div">
-      <div
-        style="
-          display: flex;
-          flex-direction: row;
-          width: 120px;
-          justify-content: space-between;
-        "
-      >
-        <button
-          type="button"
-          class="transition-btn prev"
-          data-section="main_tabs"
-        >
+      <div style="display: flex; flex-direction: row; width: 120px; justify-content: space-between">
+        <button type="button" class="transition-btn prev" data-section="main_tabs">
           <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
         </button>
       </div>
@@ -278,10 +230,7 @@
         data-section="pi_dataset_owner"
         style="width: auto"
       >
-        Set PI owner of dataset<i
-          class="fas fa-arrow-right"
-          style="margin-left: 10px"
-        ></i>
+        Set PI owner of dataset<i class="fas fa-arrow-right" style="margin-left: 10px"></i>
       </button>
     </div>
   </div>
@@ -308,19 +257,12 @@
           margin-bottom: 50px;
         "
       >
-        <div
-          style="
-            width: 100%;
-            border-bottom: 3px solid #b80d49;
-            margin-bottom: -5px;
-          "
-        >
+        <div style="width: 100%; border-bottom: 3px solid #b80d49; margin-bottom: -5px">
           <div class="need-help-div">
             <h2>Manage Datasets - Add dataset to a collection</h2>
             <a
               target="_blank"
               href="https://docs.sodaforsparc.io/docs/manage-dataset/add-dataset-to-collection"
-
               >Need help?</a
             >
           </div>
@@ -329,39 +271,30 @@
     </header>
 
     <div
-
       id="bf_collection-tab"
       style="overflow-y: auto; height: calc(100% - 150px); margin-left: -70px"
     >
       <div
         class="individual-question manage-dataset show"
-
         id="collection_BF_account_tab"
-
         style="height: auto"
       >
         <div class="ui form" style="width: 100%">
           <div class="grouped fields">
-
             <div class="about-container">
-              <label
-                class="about-title"
-                style="color: var(--color-bg-plum) !important"
+              <label class="about-title" style="color: var(--color-bg-plum) !important"
                 >About</label
               >
               <p class="about-text">
-                A collection allows you to associate and consolidate multiple
-                datasets into a single grouping. By doing so, you can catalog
-                your datasets in a myriad of ways, including by scientific
-                theme, by publication, and more. Ultimately, this can allow for
-                better organization of your datasets and provides the ability to
-                streamline collaboration by providing a link to a collection
-                instead of multiple, distinct datasets.
+                A collection allows you to associate and consolidate multiple datasets into a single
+                grouping. By doing so, you can catalog your datasets in a myriad of ways, including
+                by scientific theme, by publication, and more. Ultimately, this can allow for better
+                organization of your datasets and provides the ability to streamline collaboration
+                by providing a link to a collection instead of multiple, distinct datasets.
               </p>
             </div>
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >Which Pennsieve dataset would you like to work on
-
             </label>
             <div class="field" style="margin: auto; width: 550px">
               <div
@@ -376,29 +309,16 @@
                   border-radius: 5px;
                 "
               >
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
                   <div class="card-container manage-dataset">
                     <div style="display: flex">
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 5px"
-                      >
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
                         Current account:
                       </h5>
-                      <div
-
-                        class="change-current-account"
-                        onclick="openDropdownPrompt(this, 'bf')"
-                      >
+                      <div class="change-current-account" onclick="openDropdownPrompt(this, 'bf')">
                         <h5
                           class="card-right bf-account-span"
-                          style="width: fit-content; padding-left: 15px;"
+                          style="width: fit-content; padding-left: 15px"
                         >
                           None
                         </h5>
@@ -419,40 +339,20 @@
                     </div>
                   </div>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    margin-bottom: 15px;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
                   <div class="card-container manage-dataset">
                     <div>
-                      <h5
-                        class="card-left"
-
-                        style="text-align: right; padding-right: 1.5rem"
-
-                      >
+                      <h5 class="card-left" style="text-align: right; padding-right: 1.5rem">
                         Account details:
                       </h5>
                       <h5 class="card-right bf-account-details-span">None</h5>
                     </div>
                   </div>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
                   <div class="card-container manage-dataset">
                     <div style="display: flex">
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 5px"
-                      >
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
                         Current dataset:
                       </h5>
                       <div
@@ -461,9 +361,8 @@
                       >
                         <h5
                           id="collection_dataset_name"
-
                           class="card-right bf-dataset-span"
-                          style="width: fit-content; padding-left: 13px;"
+                          style="width: fit-content; padding-left: 13px"
                         >
                           None
                         </h5>
@@ -483,10 +382,7 @@
                       </div>
                     </div>
                   </div>
-                  <div
-                    class="ui active green inline loader small"
-                    style="display: none"
-                  ></div>
+                  <div class="ui active green inline loader small" style="display: none"></div>
                 </div>
               </div>
               <div
@@ -529,19 +425,10 @@
         id="div-collection-bf-dataset"
         style="height: auto"
       >
-        <div
-          class="ui form"
-          style="width: 550px !important; align-self: center"
-        >
+        <div class="ui form" style="width: 550px !important; align-self: center">
           <div class="grouped fields">
             <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                width: 100%;
-                text-align: center;
-              "
-
+              style="font-size: 17px; color: var(--color-bg-plum); width: 100%; text-align: center"
               >Add dataset to a new collection or remove from an existing one
             </label>
             <div
@@ -566,12 +453,11 @@
               />
               <div style="border-radius: 0.5rem; margin-top: 7px">
                 <p class="tip-content">
-                  Note that a dataset can be added to multiple collections.
-                  Collections that the dataset belongs to (if any) will appear.
-                  Click to see a list of existing collections in the SPARC
-                  consortium that you can select for your dataset.
-                  Alternatively, you can enter a new collection name (type and
-                  press enter on your keyboard to register).
+                  Note that a dataset can be added to multiple collections. Collections that the
+                  dataset belongs to (if any) will appear. Click to see a list of existing
+                  collections in the SPARC consortium that you can select for your dataset.
+                  Alternatively, you can enter a new collection name (type and press enter on your
+                  keyboard to register).
                 </p>
               </div>
             </div>
@@ -587,19 +473,11 @@
               <button
                 id="button-bf-collection"
                 class="btn_animated"
-                style="
-                  width: 140px;
-                  border: none !important;
-                  margin-left: -6px !important;
-                "
+                style="width: 140px; border: none !important; margin-left: -6px !important"
               >
                 <div>Update collections</div>
               </button>
-              <div
-                id="bf-collection-dataset-spinner"
-                class="spinner"
-                style="visibility: hidden"
-              >
+              <div id="bf-collection-dataset-spinner" class="spinner" style="visibility: hidden">
                 <div class="rect1"></div>
                 <div class="rect2"></div>
                 <div class="rect3"></div>
@@ -623,11 +501,7 @@
 
     <div class="footer-div">
       <div style="display: flex; flex-direction: row; width: 120px">
-        <button
-          type="button"
-          class="transition-btn prev"
-          data-section="main_tabs"
-        >
+        <button type="button" class="transition-btn prev" data-section="main_tabs">
           <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
         </button>
       </div>
@@ -656,13 +530,7 @@
           margin-bottom: 50px;
         "
       >
-        <div
-          style="
-            width: 100%;
-            border-bottom: 3px solid #b80d49;
-            margin-bottom: -5px;
-          "
-        >
+        <div style="width: 100%; border-bottom: 3px solid #b80d49; margin-bottom: -5px">
           <div class="need-help-div">
             <h2>Manage Datasets - Rename an existing dataset</h2>
             <a
@@ -702,27 +570,16 @@
                   border-radius: 5px;
                 "
               >
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
                   <div class="card-container manage-dataset">
                     <div style="display: flex">
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 5px"
-                      >
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
                         Current account:
                       </h5>
-                      <div
-                        class="change-current-account md-change-current-account"
-                      >
+                      <div class="change-current-account md-change-current-account">
                         <h5
                           class="card-right bf-account-span"
-                          style="width: fit-content; padding-left: 14px;"
+                          style="width: fit-content; padding-left: 14px"
                         >
                           None
                         </h5>
@@ -743,45 +600,27 @@
                     </div>
                   </div>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    margin-bottom: 15px;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
                   <div class="card-container manage-dataset">
                     <div>
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 20px"
-                      >
+                      <h5 class="card-left" style="text-align: right; padding-right: 20px">
                         Account details:
                       </h5>
                       <h5 class="card-right bf-account-details-span">None</h5>
                     </div>
                   </div>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
                   <div class="card-container manage-dataset">
                     <div style="display: flex">
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 5px"
-                      >
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
                         Current dataset:
                       </h5>
                       <div class="change-current-account ds-dd">
                         <h5
                           id="rename_dataset_name"
                           class="card-right bf-dataset-span"
-                          style="width: fit-content; padding-left: 15px;"
+                          style="width: fit-content; padding-left: 15px"
                         >
                           None
                         </h5>
@@ -801,10 +640,7 @@
                       </div>
                     </div>
                   </div>
-                  <div
-                    class="ui active green inline loader small"
-                    style="display: none"
-                  ></div>
+                  <div class="ui active green inline loader small" style="display: none"></div>
                 </div>
               </div>
             </div>
@@ -867,18 +703,10 @@
       id="div-rename-bf-dataset"
       style="height: auto"
     >
-      <div
-        class="ui form"
-        style="width: 550px !important; display: none; align-self: center"
-      >
+      <div class="ui form" style="width: 550px !important; display: none; align-self: center">
         <div class="grouped fields">
           <label
-            style="
-              font-size: 17px;
-              color: var(--color-bg-plum);
-              width: 100%;
-              text-align: center;
-            "
+            style="font-size: 17px; color: var(--color-bg-plum); width: 100%; text-align: center"
             >What is the new name of the dataset?
           </label>
           <div
@@ -903,9 +731,8 @@
             />
             <div style="border-radius: 0.5rem; margin-top: 7px">
               <p class="tip-content">
-                When renaming your dataset, ensure that the name is different
-                than your other dataset names and it is relatively
-                informative.
+                When renaming your dataset, ensure that the name is different than your other
+                dataset names and it is relatively informative.
               </p>
             </div>
           </div>
@@ -925,11 +752,7 @@
             >
               <div>Rename dataset</div>
             </button>
-            <div
-              id="bf-rename-dataset-spinner"
-              class="spinner"
-              style="visibility: hidden"
-            >
+            <div id="bf-rename-dataset-spinner" class="spinner" style="visibility: hidden">
               <div class="rect1"></div>
               <div class="rect2"></div>
               <div class="rect3"></div>
@@ -952,16 +775,11 @@
 
     <div class="footer-div">
       <div style="display: flex; flex-direction: row; width: 120px">
-        <button
-          type="button"
-          class="transition-btn prev"
-          data-section="main_tabs"
-        >
+        <button type="button" class="transition-btn prev" data-section="main_tabs">
           <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
         </button>
       </div>
     </div>
-    
   </div>
 </section>
 
@@ -1002,13 +820,7 @@
             fill="black"
           />
         </svg> -->
-        <div
-          style="
-            width: 100%;
-            border-bottom: 3px solid #b80d49;
-            margin-bottom: -5px;
-          "
-        >
+        <div style="width: 100%; border-bottom: 3px solid #b80d49; margin-bottom: -5px">
           <div class="need-help-div">
             <h2>Manage Datasets - Make PI owner of dataset</h2>
             <a
@@ -1038,16 +850,13 @@
         <div class="ui form" style="width: 100%">
           <div class="grouped fields">
             <div class="about-container">
-              <label
-                class="about-title"
-                style="color: var(--color-bg-plum) !important"
+              <label class="about-title" style="color: var(--color-bg-plum) !important"
                 >About</label
               >
               <p class="about-text">
-                As per SPARC rules, the PI on the SPARC award associated with
-                the dataset must be made owner of the dataset on Pennsieve. This
-                is because only the owner can submit a dataset for publishing
-                and SPARC requires the PI to do so. Use this feature to give
+                As per SPARC rules, the PI on the SPARC award associated with the dataset must be
+                made owner of the dataset on Pennsieve. This is because only the owner can submit a
+                dataset for publishing and SPARC requires the PI to do so. Use this feature to give
                 dataset ownership to your SPARC PI.
               </p>
             </div>
@@ -1067,34 +876,17 @@
                   border-radius: 5px;
                 "
               >
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
                   <div class="card-container manage-dataset">
                     <div style="display: flex">
                       <h5
                         class="card-left"
-                        style="
-                          text-align: right;
-                          padding-right: 5px;
-                          width: 140px;
-                        "
+                        style="text-align: right; padding-right: 5px; width: 140px"
                       >
                         Current account:
                       </h5>
-                      <div
-                        class="change-current-account md-change-current-account"
-                      >
-                        <h5
-                          class="card-right bf-account-span"
-                          style="width: fit-content"
-                        >
-                          None
-                        </h5>
+                      <div class="change-current-account md-change-current-account">
+                        <h5 class="card-right bf-account-span" style="width: fit-content">None</h5>
 
                         <svg
                           class="svg-change-current-account bi bi-pencil-fill"
@@ -1112,22 +904,12 @@
                     </div>
                   </div>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    margin-bottom: 15px;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
                   <div class="card-container manage-dataset">
                     <div>
                       <h5
                         class="card-left"
-                        style="
-                          text-align: right;
-                          padding-right: 11px;
-                          width: 140px;
-                        "
+                        style="text-align: right; padding-right: 11px; width: 140px"
                       >
                         Account details:
                       </h5>
@@ -1135,32 +917,17 @@
                     </div>
                   </div>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
                   <div class="card-container manage-dataset">
                     <div style="width: 100%; display: flex">
                       <h5
                         class="card-left"
-                        style="
-                          text-align: right;
-                          padding-right: 5px;
-                          width: 140px;
-                        "
+                        style="text-align: right; padding-right: 5px; width: 140px"
                       >
                         Current dataset:
                       </h5>
                       <div class="change-current-account ds-dd">
-                        <h5
-                          class="card-right bf-dataset-span"
-                          style="width: fit-content"
-                        >
-                          None
-                        </h5>
+                        <h5 class="card-right bf-dataset-span" style="width: fit-content">None</h5>
 
                         <svg
                           class="svg-change-current-account dataset bi bi-pencil-fill"
@@ -1177,24 +944,14 @@
                       </div>
                     </div>
                   </div>
-                  <div
-                    class="ui active green inline loader small"
-                    style="display: none"
-                  ></div>
+                  <div class="ui active green inline loader small" style="display: none"></div>
                 </div>
                 <div style="display: flex; flex-direction: row">
-                  <div
-                    class="card-container manage-dataset"
-                    style="overflow-x: hidden"
-                  >
+                  <div class="card-container manage-dataset" style="overflow-x: hidden">
                     <div>
                       <h5
                         class="card-left"
-                        style="
-                          text-align: right;
-                          padding-right: 10px;
-                          width: 140px;
-                        "
+                        style="text-align: right; padding-right: 10px; width: 140px"
                       >
                         Current owner:
                       </h5>
@@ -1249,10 +1006,7 @@
         style="height: auto"
       >
         <div class="ui form" style="width: 500px">
-          <div
-            class="grouped fields"
-            style="align-items: center; justify-content: center"
-          >
+          <div class="grouped fields" style="align-items: center; justify-content: center">
             <label
               style="
                 font-size: 17px;
@@ -1299,9 +1053,7 @@
               </div>
               <!-- <div class="info-container">
                 <div class="demo-wrapper info-container-wrapper">
-                  <button
-                    class="js-container-target demo-toggle-button info-summary"
-                  >
+                  <button class="js-container-target demo-toggle-button info-summary">
                     Can't find your PI in the list?
                   </button>
 
@@ -1349,11 +1101,7 @@
                 <button
                   id="button-add-permission-pi"
                   class="btn_animated"
-                  style="
-                    width: 140px;
-                    border: none !important;
-                    margin-top: 1rem;
-                  "
+                  style="width: 140px; border: none !important; margin-top: 1rem"
                 >
                   Make PI owner
                 </button>
@@ -1372,11 +1120,7 @@
                 </div>
               -->
 
-              <div
-                id="bf-add-permission-pi-spinner"
-                class="spinner"
-                style="visibility: hidden"
-              >
+              <div id="bf-add-permission-pi-spinner" class="spinner" style="visibility: hidden">
                 <div class="rect1"></div>
                 <div class="rect2"></div>
                 <div class="rect3"></div>
@@ -1391,11 +1135,7 @@
 
     <div class="footer-div">
       <div style="display: flex; flex-direction: row; width: 120px">
-        <button
-          type="button"
-          class="transition-btn prev"
-          data-section="main_tabs"
-        >
+        <button type="button" class="transition-btn prev" data-section="main_tabs">
           <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
         </button>
       </div>
@@ -1405,10 +1145,7 @@
         data-section="add_edit_permissions"
         style="width: auto"
       >
-        Set dataset permissions<i
-          class="fas fa-arrow-right"
-          style="margin-left: 10px"
-        ></i>
+        Set dataset permissions<i class="fas fa-arrow-right" style="margin-left: 10px"></i>
       </button>
     </div>
   </div>
@@ -1447,13 +1184,7 @@
             fill="black"
           />
         </svg> -->
-        <div
-          style="
-            width: 100%;
-            border-bottom: 3px solid #b80d49;
-            margin-bottom: -5px;
-          "
-        >
+        <div style="width: 100%; border-bottom: 3px solid #b80d49; margin-bottom: -5px">
           <div class="need-help-div">
             <h2>Manage Datasets - Add/edit dataset permissions</h2>
             <a
@@ -1499,13 +1230,7 @@
                   border-radius: 5px;
                 "
               >
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
                   <div class="card-container manage-dataset">
                     <div style="display: flex">
                       <h5
@@ -1523,12 +1248,7 @@
                         class="change-current-account md-change-current-account"
                         style="margin-left: -4px"
                       >
-                        <h5
-                          class="card-right bf-account-span"
-                          style="width: fit-content"
-                        >
-                          None
-                        </h5>
+                        <h5 class="card-right bf-account-span" style="width: fit-content">None</h5>
 
                         <svg
                           class="svg-change-current-account bi bi-pencil-fill"
@@ -1546,39 +1266,24 @@
                     </div>
                   </div>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    margin-bottom: 15px;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
                   <div class="card-container manage-dataset">
                     <div>
                       <h5
                         class="card-left"
-                        style="
-                          text-align: right;
-                          padding-right: 10px;
-                          width: 165px;
-                        "
+                        style="text-align: right; padding-right: 10px; width: 165px"
                       >
                         Account details:
                       </h5>
-                      <h5 class="card-right bf-account-details-span" style="padding-left: 6px;">None</h5>
+                      <h5 class="card-right bf-account-details-span" style="padding-left: 6px">
+                        None
+                      </h5>
                     </div>
                   </div>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
                   <div class="card-container manage-dataset">
                     <div style="width: 100%; display: flex">
-
                       <h5
                         class="card-left"
                         style="
@@ -1593,7 +1298,7 @@
                       <div class="change-current-account ds-dd">
                         <h5
                           class="card-right bf-dataset-span"
-                          style="width: fit-content; padding-left: 7px;"
+                          style="width: fit-content; padding-left: 7px"
                         >
                           None
                         </h5>
@@ -1613,31 +1318,21 @@
                       </div>
                     </div>
                   </div>
-                  <div
-                    class="ui active green inline loader small"
-                    style="display: none"
-                  ></div>
+                  <div class="ui active green inline loader small" style="display: none"></div>
                 </div>
                 <div style="display: flex; flex-direction: row">
-                  <div
-                    class="card-container manage-dataset"
-                    style="overflow-x: hidden"
-                  >
+                  <div class="card-container manage-dataset" style="overflow-x: hidden">
                     <div>
                       <h5
                         class="card-left"
-                        style="
-                          text-align: right;
-                          padding-right: 11px;
-                          width: 165px;
-                        "
+                        style="text-align: right; padding-right: 11px; width: 165px"
                       >
                         Current permissions:
                       </h5>
                       <h5
                         class="card-right current-permissions"
                         id="para-add-edit-dataset-permission-current"
-                        style="padding-left: 6px;"
+                        style="padding-left: 6px"
                       >
                         None
                       </h5>
@@ -1690,26 +1385,13 @@
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >Do you want to provide permissions to another user or team?
             </label>
-            <div
-              style="
-                border-radius: 0.5rem;
-                margin-top: 5px;
-                width: 550px;
-                align-self: center;
-              "
-            >
+            <div style="border-radius: 0.5rem; margin-top: 5px; width: 550px; align-self: center">
               <p class="tip-content">
-                Giving permissions to other members and/or team is only
-                necessary if you need them to contribute to the dataset.
+                Giving permissions to other members and/or team is only necessary if you need them
+                to contribute to the dataset.
               </p>
             </div>
-            <div
-              style="
-                display: flex;
-                flex-direction: row;
-                justify-content: center;
-              "
-            >
+            <div style="display: flex; flex-direction: row; justify-content: center">
               <div style="margin: 15px 0">
                 <div
                   class="option-card radio-button getting-started-1st-question"
@@ -1793,28 +1475,13 @@
         id="add_edit_user_permissions_div"
         style="height: auto"
       >
-        <div
-          class="ui form"
-          style="width: 550px; display: flex; justify-content: center"
-        >
+        <div class="ui form" style="width: 550px; display: flex; justify-content: center">
           <div class="grouped fields">
             <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                width: 100%;
-                text-align: center;
-              "
+              style="font-size: 17px; color: var(--color-bg-plum); width: 100%; text-align: center"
               >Please select the user for whom you want to modify permissions:
             </label>
-            <div
-              style="
-                border-radius: 0.5rem;
-                margin-top: 5px;
-                width: 550px;
-                align-self: center;
-              "
-            >
+            <div style="border-radius: 0.5rem; margin-top: 5px; width: 550px; align-self: center">
               <p class="tip-content">
                 See our associated
                 <a
@@ -1823,18 +1490,13 @@
                 >
                   documentation</a
                 >
-                to learn more about the meaning of the different roles and what
-                type of permissions they provide.
+                to learn more about the meaning of the different roles and what type of permissions
+                they provide.
               </p>
             </div>
             <div
               class="field"
-              style="
-                display: flex;
-                width: 550px;
-                flex-direction: column;
-                align-self: center;
-              "
+              style="display: flex; width: 550px; flex-direction: column; align-self: center"
             >
               <div
                 style="
@@ -1870,9 +1532,7 @@
                   <option value="manager">manager</option>
                   <option value="editor">editor</option>
                   <!-- <option>owner</option> -->
-                  <option value="remove current permissions">
-                    remove current permissions
-                  </option>
+                  <option value="remove current permissions">remove current permissions</option>
                 </select>
               </div>
 
@@ -1894,11 +1554,7 @@
                   >
                     Add permission for user
                   </button>
-                  <div
-                    id="bf-add-permission-user-spinner"
-                    class="spinner"
-                    style="display: none"
-                  >
+                  <div id="bf-add-permission-user-spinner" class="spinner" style="display: none">
                     <div class="rect1"></div>
                     <div class="rect2"></div>
                     <div class="rect3"></div>
@@ -1917,28 +1573,13 @@
         id="add_edit_team_permissions_div"
         style="height: auto"
       >
-        <div
-          class="ui form"
-          style="width: 550px; display: flex; justify-content: center"
-        >
+        <div class="ui form" style="width: 550px; display: flex; justify-content: center">
           <div class="grouped fields">
             <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                width: 100%;
-                text-align: center;
-              "
+              style="font-size: 17px; color: var(--color-bg-plum); width: 100%; text-align: center"
               >Please select the team for whom you want to modify permissions:
             </label>
-            <div
-              style="
-                border-radius: 0.5rem;
-                margin-top: 5px;
-                width: 550px;
-                align-self: center;
-              "
-            >
+            <div style="border-radius: 0.5rem; margin-top: 5px; width: 550px; align-self: center">
               <p style="color: dimgray">
                 See our associated
                 <a
@@ -1947,18 +1588,13 @@
                 >
                   documentation</a
                 >
-                to learn more about the meaning of the different roles and what
-                type of permissions they provide.
+                to learn more about the meaning of the different roles and what type of permissions
+                they provide.
               </p>
             </div>
             <div
               class="field"
-              style="
-                display: flex;
-                width: 550px;
-                flex-direction: column;
-                align-self: center;
-              "
+              style="display: flex; width: 550px; flex-direction: column; align-self: center"
             >
               <div
                 style="
@@ -1987,9 +1623,7 @@
                   <option value="viewer">viewer</option>
                   <option value="manager">manager</option>
                   <option value="editor">editor</option>
-                  <option value="remove current permissions">
-                    remove current permissions
-                  </option>
+                  <option value="remove current permissions">remove current permissions</option>
                 </select>
               </div>
 
@@ -2011,11 +1645,7 @@
                   >
                     Add permission for team
                   </button>
-                  <div
-                    id="bf-add-permission-team-spinner"
-                    class="spinner"
-                    style="display: none"
-                  >
+                  <div id="bf-add-permission-team-spinner" class="spinner" style="display: none">
                     <div class="rect1"></div>
                     <div class="rect2"></div>
                     <div class="rect3"></div>
@@ -2032,11 +1662,7 @@
 
     <div class="footer-div">
       <div style="display: flex; flex-direction: row; width: 120px">
-        <button
-          type="button"
-          class="transition-btn prev"
-          data-section="main_tabs"
-        >
+        <button type="button" class="transition-btn prev" data-section="main_tabs">
           <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
         </button>
       </div>
@@ -2046,10 +1672,7 @@
         data-section="add_edit_subtitle"
         style="width: auto"
       >
-        Add a dataset subtitle<i
-          class="fas fa-arrow-right"
-          style="margin-left: 10px"
-        ></i>
+        Add a dataset subtitle<i class="fas fa-arrow-right" style="margin-left: 10px"></i>
       </button>
     </div>
   </div>
@@ -2088,13 +1711,7 @@
             fill="black"
           />
         </svg> -->
-        <div
-          style="
-            width: 100%;
-            border-bottom: 3px solid #b80d49;
-            margin-bottom: -5px;
-          "
-        >
+        <div style="width: 100%; border-bottom: 3px solid #b80d49; margin-bottom: -5px">
           <div class="need-help-div">
             <h2>Manage Datasets - Add/edit subtitle</h2>
             <a
@@ -2124,27 +1741,17 @@
         <div class="ui form" style="width: 100%; margin-bottom: 35px">
           <div class="grouped fields">
             <div class="about-container">
-              <label
-                class="about-title"
-                style="color: var(--color-bg-plum) !important"
+              <label class="about-title" style="color: var(--color-bg-plum) !important"
                 >About</label
               >
               <p class="about-text">
-                Use this feature to add a subtitle to your dataset on Pennsieve.
-                This subtitle will become the short description visible
-                immediately under the title of your dataset once it is published
-                on the
-                <a target="_blank" href="https://sparc.science"
-                  >SPARC data portal</a
-                >.
+                Use this feature to add a subtitle to your dataset on Pennsieve. This subtitle will
+                become the short description visible immediately under the title of your dataset
+                once it is published on the
+                <a target="_blank" href="https://sparc.science">SPARC data portal</a>.
               </p>
             </div>
-            <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                margin-bottom: 0;
-              "
+            <label style="font-size: 17px; color: var(--color-bg-plum); margin-bottom: 0"
               >Which Pennsieve dataset would you like to work on?
             </label>
 
@@ -2161,31 +1768,17 @@
                   border-radius: 5px;
                 "
               >
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
                   <div class="card-container manage-dataset">
                     <div style="display: flex">
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 5px"
-                      >
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
                         Current account:
                       </h5>
                       <div
                         class="change-current-account md-change-current-account"
                         style="margin-left: 10px"
                       >
-                        <h5
-                          class="card-right bf-account-span"
-                          style="width: fit-content"
-                        >
-                          None
-                        </h5>
+                        <h5 class="card-right bf-account-span" style="width: fit-content">None</h5>
 
                         <svg
                           class="svg-change-current-account bi bi-pencil-fill"
@@ -2203,50 +1796,24 @@
                     </div>
                   </div>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    margin-bottom: 15px;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
                   <div class="card-container manage-dataset">
                     <div>
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 21px"
-                      >
+                      <h5 class="card-left" style="text-align: right; padding-right: 21px">
                         Account details:
                       </h5>
                       <h5 class="card-right bf-account-details-span">None</h5>
                     </div>
                   </div>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
                   <div class="card-container manage-dataset">
                     <div style="width: 100%; display: flex">
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 5px"
-                      >
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
                         Current dataset:
                       </h5>
-                      <div
-                        class="change-current-account ds-dd"
-                        style="margin-left: 10px"
-                      >
-                        <h5
-                          class="card-right bf-dataset-span"
-                          style="width: fit-content"
-                        >
-                          None
-                        </h5>
+                      <div class="change-current-account ds-dd" style="margin-left: 10px">
+                        <h5 class="card-right bf-dataset-span" style="width: fit-content">None</h5>
 
                         <svg
                           class="svg-change-current-account dataset bi bi-pencil-fill"
@@ -2262,10 +1829,7 @@
                         </svg>
                       </div>
                     </div>
-                    <div
-                      class="ui active green inline loader small"
-                      style="display: none"
-                    ></div>
+                    <div class="ui active green inline loader small" style="display: none"></div>
                   </div>
                 </div>
                 <div
@@ -2322,21 +1886,9 @@
               </label>
               <div
                 class="field"
-                style="
-                  display: flex;
-                  justify-content: center;
-                  width: 100%;
-                  flex-direction: column;
-                "
+                style="display: flex; justify-content: center; width: 100%; flex-direction: column"
               >
-                <div
-                  style="
-                    width: 550px;
-                    position: relative;
-                    display: flex;
-                    align-self: center;
-                  "
-                >
+                <div style="width: 550px; position: relative; display: flex; align-self: center">
                   <textarea
                     id="bf-dataset-subtitle"
                     class="demo-response"
@@ -2378,11 +1930,7 @@
                     >
                       Add subtitle
                     </button>
-                    <div
-                      id="bf-add-subtitle-dataset-spinner"
-                      class="spinner"
-                      style="display: none"
-                    >
+                    <div id="bf-add-subtitle-dataset-spinner" class="spinner" style="display: none">
                       <div class="rect1"></div>
                       <div class="rect2"></div>
                       <div class="rect3"></div>
@@ -2399,11 +1947,7 @@
 
       <div class="footer-div">
         <div style="display: flex; flex-direction: row; width: 120px">
-          <button
-            type="button"
-            class="transition-btn prev"
-            data-section="main_tabs"
-          >
+          <button type="button" class="transition-btn prev" data-section="main_tabs">
             <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
           </button>
         </div>
@@ -2413,10 +1957,7 @@
           data-section="add_edit_description"
           style="width: auto"
         >
-          Add a dataset description<i
-            class="fas fa-arrow-right"
-            style="margin-left: 10px"
-          ></i>
+          Add a dataset description<i class="fas fa-arrow-right" style="margin-left: 10px"></i>
         </button>
       </div>
     </div>
@@ -2444,18 +1985,10 @@
           margin-bottom: 50px;
         "
       >
-        <div
-          style="
-            width: 100%;
-            border-bottom: 3px solid #b80d49;
-            margin-bottom: -5px;
-          "
-        >
+        <div style="width: 100%; border-bottom: 3px solid #b80d49; margin-bottom: -5px">
           <div class="need-help-div">
             <h2>Manage Datasets - Add/edit tags</h2>
-            <a
-              target="_blank"
-              href="https://docs.sodaforsparc.io/docs/manage-dataset/add-edit-tags"
+            <a target="_blank" href="https://docs.sodaforsparc.io/docs/manage-dataset/add-edit-tags"
               >Need help?</a
             >
           </div>
@@ -2467,23 +2000,17 @@
       id="add_tags_parent-tab"
       style="overflow-y: auto; height: calc(100% - 150px); margin-left: -70px"
     >
-      <div
-        class="individual-question manage-dataset show"
-        id="add_tags_tab"
-        style="height: auto"
-      >
+      <div class="individual-question manage-dataset show" id="add_tags_tab" style="height: auto">
         <div class="ui form" style="width: 100%">
           <div class="grouped fields">
             <div class="about-container">
-              <label
-                class="about-title"
-                style="color: var(--color-bg-plum) !important"
+              <label class="about-title" style="color: var(--color-bg-plum) !important"
                 >About</label
               >
               <p class="about-text">
-                Use this feature to add, edit, or remove metadata tags on
-                Pennsieve that describe key elements of your dataset. This will
-                make your datasets more easily searchable once published.
+                Use this feature to add, edit, or remove metadata tags on Pennsieve that describe
+                key elements of your dataset. This will make your datasets more easily searchable
+                once published.
               </p>
             </div>
             <label style="font-size: 17px; color: var(--color-bg-plum)"
@@ -2502,31 +2029,17 @@
                   border-radius: 5px;
                 "
               >
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
                   <div class="card-container manage-dataset">
                     <div style="display: flex">
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 5px"
-                      >
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
                         Current account:
                       </h5>
                       <div
                         class="change-current-account md-change-current-account"
                         style="margin-left: 10px"
                       >
-                        <h5
-                          class="card-right bf-account-span"
-                          style="width: fit-content"
-                        >
-                          None
-                        </h5>
+                        <h5 class="card-right bf-account-span" style="width: fit-content">None</h5>
 
                         <svg
                           class="svg-change-current-account bi bi-pencil-fill"
@@ -2544,50 +2057,24 @@
                     </div>
                   </div>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    margin-bottom: 15px;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
                   <div class="card-container manage-dataset">
                     <div>
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 21px"
-                      >
+                      <h5 class="card-left" style="text-align: right; padding-right: 21px">
                         Account details:
                       </h5>
                       <h5 class="card-right bf-account-details-span">None</h5>
                     </div>
                   </div>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
                   <div class="card-container manage-dataset">
                     <div style="width: 100%; display: flex">
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 5px"
-                      >
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
                         Current dataset:
                       </h5>
-                      <div
-                        class="change-current-account ds-dd"
-                        style="margin-left: 10px"
-                      >
-                        <h5
-                          class="card-right bf-dataset-span"
-                          style="width: fit-content"
-                        >
-                          None
-                        </h5>
+                      <div class="change-current-account ds-dd" style="margin-left: 10px">
+                        <h5 class="card-right bf-dataset-span" style="width: fit-content">None</h5>
 
                         <svg
                           class="svg-change-current-account dataset bi bi-pencil-fill"
@@ -2604,10 +2091,7 @@
                       </div>
                     </div>
                   </div>
-                  <div
-                    class="ui active green inline loader small"
-                    style="display: none"
-                  ></div>
+                  <div class="ui active green inline loader small" style="display: none"></div>
                 </div>
               </div>
               <div
@@ -2645,20 +2129,11 @@
         </div>
       </div>
 
-      <div
-        class="individual-question manage-dataset"
-        id="div_add_tags"
-        style="height: auto"
-      >
+      <div class="individual-question manage-dataset" id="div_add_tags" style="height: auto">
         <div class="ui form" style="width: 550px">
           <div class="grouped fields" style="width: 500px; margin: auto">
             <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                width: 100%;
-                text-align: center;
-              "
+              style="font-size: 17px; color: var(--color-bg-plum); width: 100%; text-align: center"
               >Enter tags below:
               <br />
               <span style="color: #696969; font-size: 13px"
@@ -2667,20 +2142,10 @@
             </label>
             <div
               class="field"
-              style="
-                display: flex;
-                justify-content: center;
-                width: 100%;
-                flex-direction: column;
-              "
+              style="display: flex; justify-content: center; width: 100%; flex-direction: column"
             >
               <div style="width: 100%; position: relative">
-                <input
-                  id="tagify-dataset-tags"
-                  name="tags"
-                  value=""
-                  autofocus
-                />
+                <input id="tagify-dataset-tags" name="tags" value="" autofocus />
               </div>
 
               <div style="display: flex; flex-direction: column">
@@ -2697,8 +2162,8 @@
                 >
                   <div style="margin-bottom: 1rem">
                     <p class="tip-content">
-                      Press enter to register a tag. Double click an existing
-                      tag to edit its contents or click on the x to delete it.
+                      Press enter to register a tag. Double click an existing tag to edit its
+                      contents or click on the x to delete it.
                     </p>
                   </div>
                   <button
@@ -2708,11 +2173,7 @@
                   >
                     Add Tags
                   </button>
-                  <div
-                    id="bf-add-tags-dataset-spinner"
-                    class="spinner"
-                    style="display: none"
-                  >
+                  <div id="bf-add-tags-dataset-spinner" class="spinner" style="display: none">
                     <div class="rect1"></div>
                     <div class="rect2"></div>
                     <div class="rect3"></div>
@@ -2729,11 +2190,7 @@
 
     <div class="footer-div">
       <div style="display: flex; flex-direction: row; width: 120px">
-        <button
-          type="button"
-          class="transition-btn prev"
-          data-section="main_tabs"
-        >
+        <button type="button" class="transition-btn prev" data-section="main_tabs">
           <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
         </button>
       </div>
@@ -2743,10 +2200,7 @@
         data-section="create_submission"
         style="width: auto"
       >
-        Prepare submission<i
-          class="fas fa-arrow-right"
-          style="margin-left: 10px"
-        ></i>
+        Prepare submission<i class="fas fa-arrow-right" style="margin-left: 10px"></i>
       </button>
     </div>
   </div>
@@ -2773,13 +2227,7 @@
           margin-bottom: 50px;
         "
       >
-        <div
-          style="
-            width: 100%;
-            border-bottom: 3px solid #b80d49;
-            margin-bottom: -5px;
-          "
-        >
+        <div style="width: 100%; border-bottom: 3px solid #b80d49; margin-bottom: -5px">
           <div class="need-help-div">
             <h2>Manage Datasets - Add/edit description</h2>
             <a
@@ -2804,15 +2252,13 @@
         <div class="ui form" style="width: 100%">
           <div class="grouped fields">
             <div class="about-container">
-              <label
-                class="about-title"
-                style="color: var(--color-bg-plum) !important"
+              <label class="about-title" style="color: var(--color-bg-plum) !important"
                 >About</label
               >
               <p class="about-text">
-                Use this feature to provide a detailed description of your
-                dataset on Pennsieve. This description will be highly visible on
-                the SPARC data portal once your dataset is published.
+                Use this feature to provide a detailed description of your dataset on Pennsieve.
+                This description will be highly visible on the SPARC data portal once your dataset
+                is published.
               </p>
             </div>
             <label style="font-size: 17px; color: var(--color-bg-plum)"
@@ -2832,31 +2278,17 @@
                   border-radius: 5px;
                 "
               >
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
                   <div class="card-container manage-dataset">
                     <div style="display: flex">
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 5px"
-                      >
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
                         Current account:
                       </h5>
                       <div
                         class="change-current-account md-change-current-account"
                         style="margin-left: 10px"
                       >
-                        <h5
-                          class="card-right bf-account-span"
-                          style="width: fit-content"
-                        >
-                          None
-                        </h5>
+                        <h5 class="card-right bf-account-span" style="width: fit-content">None</h5>
 
                         <svg
                           class="svg-change-current-account bi bi-pencil-fill"
@@ -2874,50 +2306,24 @@
                     </div>
                   </div>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    margin-bottom: 15px;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
                   <div class="card-container manage-dataset">
                     <div>
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 21px"
-                      >
+                      <h5 class="card-left" style="text-align: right; padding-right: 21px">
                         Account details:
                       </h5>
                       <h5 class="card-right bf-account-details-span">None</h5>
                     </div>
                   </div>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
                   <div class="card-container manage-dataset">
                     <div style="display: flex">
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 5px"
-                      >
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
                         Current dataset:
                       </h5>
-                      <div
-                        class="change-current-account ds-dd"
-                        style="margin-left: 10px"
-                      >
-                        <h5
-                          class="card-right bf-dataset-span"
-                          style="width: fit-content"
-                        >
-                          None
-                        </h5>
+                      <div class="change-current-account ds-dd" style="margin-left: 10px">
+                        <h5 class="card-right bf-dataset-span" style="width: fit-content">None</h5>
 
                         <svg
                           class="svg-change-current-account dataset bi bi-pencil-fill"
@@ -2934,10 +2340,7 @@
                       </div>
                     </div>
                   </div>
-                  <div
-                    class="ui active green inline loader small"
-                    style="display: none"
-                  ></div>
+                  <div class="ui active green inline loader small" style="display: none"></div>
                 </div>
               </div>
               <div
@@ -2990,14 +2393,7 @@
           "
           >Enter your description in the sections below
         </label>
-        <div
-          style="
-            margin: 0.5rem;
-            display: flex;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-          "
-        >
+        <div style="margin: 0.5rem; display: flex; justify-content: center; margin-bottom: 1.5rem">
           <p>Only use plain text.</p>
         </div>
         <!--Adding the test section out-->
@@ -3012,10 +2408,7 @@
         >
           <div class="field" style="margin: auto; width: 550px">
             <div class="ui form" style="width: 550px !important">
-              <div
-                class="grouped fields"
-                style="/* width: 550px; */ margin: auto"
-              >
+              <div class="grouped fields" style="/* width: 550px; */ margin: auto">
                 <div
                   class="title"
                   style="
@@ -3028,17 +2421,11 @@
                 >
                   Study Purpose
                   <span
-                    style="
-                      font-style: italic;
-                      opacity: 0.8;
-                      color: rgba(0, 0, 0, 0.8) !important;
-                    "
+                    style="font-style: italic; opacity: 0.8; color: rgba(0, 0, 0, 0.8) !important"
                     >(Mandatory)</span
                   >
                   <div style="border-radius: 0.5rem; /* margin-top: 7px */">
-                    <p class="tip-content">
-                      Explains the purpose of your study below.
-                    </p>
+                    <p class="tip-content">Explains the purpose of your study below.</p>
                   </div>
                 </div>
                 <div
@@ -3050,24 +2437,12 @@
                     flex-direction: column;
                   "
                 >
-                  <div
-                    style="
-                      width: 500px;
-                      position: relative;
-                      display: flex;
-                      align-self: center;
-                    "
-                  >
+                  <div style="width: 500px; position: relative; display: flex; align-self: center">
                     <textarea
                       id="ds-description-study-purpose"
                       placeholder="Enter your study purpose here..."
                       class="demo-response"
-                      style="
-                        position: relative;
-                        margin-top: 0px;
-                        margin-bottom: 0px;
-                        height: 122px;
-                      "
+                      style="position: relative; margin-top: 0px; margin-bottom: 0px; height: 122px"
                       rows="6"
                       maxlength="256"
                     >
@@ -3076,10 +2451,7 @@
                   </div>
                 </div>
               </div>
-              <div
-                class="grouped fields"
-                style="/* width: 550px; */ margin: auto"
-              >
+              <div class="grouped fields" style="/* width: 550px; */ margin: auto">
                 <div
                   class="title"
                   style="
@@ -3092,17 +2464,11 @@
                 >
                   Data Collection
                   <span
-                    style="
-                      font-style: italic;
-                      opacity: 0.8;
-                      color: rgba(0, 0, 0, 0.8) !important;
-                    "
+                    style="font-style: italic; opacity: 0.8; color: rgba(0, 0, 0, 0.8) !important"
                     >(Mandatory)</span
                   >
                   <div style="border-radius: 0.5rem; /* margin-top: 7px */">
-                    <p class="tip-content">
-                      Explains the data collected of your study below.
-                    </p>
+                    <p class="tip-content">Explains the data collected of your study below.</p>
                   </div>
                 </div>
                 <div
@@ -3114,14 +2480,7 @@
                     flex-direction: column;
                   "
                 >
-                  <div
-                    style="
-                      width: 500px;
-                      position: relative;
-                      display: flex;
-                      align-self: center;
-                    "
-                  >
+                  <div style="width: 500px; position: relative; display: flex; align-self: center">
                     <textarea
                       id="ds-description-data-collection"
                       placeholder="Enter you data collection methods here..."
@@ -3135,10 +2494,7 @@
                   </div>
                 </div>
               </div>
-              <div
-                class="grouped fields"
-                style="/* width: 550px; */ margin: auto"
-              >
+              <div class="grouped fields" style="/* width: 550px; */ margin: auto">
                 <div
                   class="title"
                   style="
@@ -3151,17 +2507,11 @@
                 >
                   Primary Conclusion
                   <span
-                    style="
-                      font-style: italic;
-                      opacity: 0.8;
-                      color: rgba(0, 0, 0, 0.8) !important;
-                    "
+                    style="font-style: italic; opacity: 0.8; color: rgba(0, 0, 0, 0.8) !important"
                     >(Mandatory)</span
                   >
                   <div style="border-radius: 0.5rem; /* margin-top: 7px */">
-                    <p class="tip-content">
-                      Explains the primary conclusion of your study below.
-                    </p>
+                    <p class="tip-content">Explains the primary conclusion of your study below.</p>
                   </div>
                 </div>
                 <div
@@ -3174,14 +2524,7 @@
                     flex-direction: column;
                   "
                 >
-                  <div
-                    style="
-                      width: 500px;
-                      position: relative;
-                      display: flex;
-                      align-self: center;
-                    "
-                  >
+                  <div style="width: 500px; position: relative; display: flex; align-self: center">
                     <textarea
                       id="ds-description-primary-conclusion"
                       placeholder="Enter your primary conclusion here..."
@@ -3216,11 +2559,7 @@
           >
             <div>Edit description</div>
           </button>
-          <div
-            id="bf-add-description-dataset-spinner"
-            class="spinner"
-            style="display: none"
-          >
+          <div id="bf-add-description-dataset-spinner" class="spinner" style="display: none">
             <div class="rect1"></div>
             <div class="rect2"></div>
             <div class="rect3"></div>
@@ -3233,11 +2572,7 @@
 
     <div class="footer-div">
       <div style="display: flex; flex-direction: row; width: 120px">
-        <button
-          type="button"
-          class="transition-btn prev"
-          data-section="main_tabs"
-        >
+        <button type="button" class="transition-btn prev" data-section="main_tabs">
           <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
         </button>
       </div>
@@ -3297,13 +2632,7 @@
             fill="black"
           />
         </svg> -->
-        <div
-          style="
-            width: 100%;
-            border-bottom: 3px solid #b80d49;
-            margin-bottom: -5px;
-          "
-        >
+        <div style="width: 100%; border-bottom: 3px solid #b80d49; margin-bottom: -5px">
           <div class="need-help-div">
             <h2>Manage Datasets - Upload a banner image</h2>
             <a
@@ -3333,15 +2662,12 @@
         <div class="ui form" style="width: 100%">
           <div class="grouped fields">
             <div class="about-container">
-              <label
-                class="about-title"
-                style="color: var(--color-bg-plum) !important"
+              <label class="about-title" style="color: var(--color-bg-plum) !important"
                 >About</label
               >
               <p class="about-text">
-                Use this feature to add a banner image to your dataset on
-                Pennsieve. This image will be used as a thumbnail once the
-                dataset is published on the SPARC data portal.
+                Use this feature to add a banner image to your dataset on Pennsieve. This image will
+                be used as a thumbnail once the dataset is published on the SPARC data portal.
               </p>
             </div>
             <label style="font-size: 17px; color: var(--color-bg-plum)"
@@ -3360,31 +2686,17 @@
                   border-radius: 5px;
                 "
               >
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
                   <div class="card-container manage-dataset">
                     <div style="display: flex">
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 5px"
-                      >
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
                         Current account:
                       </h5>
                       <div
                         class="change-current-account md-change-current-account"
                         style="margin-left: 10px"
                       >
-                        <h5
-                          class="card-right bf-account-span"
-                          style="width: fit-content"
-                        >
-                          None
-                        </h5>
+                        <h5 class="card-right bf-account-span" style="width: fit-content">None</h5>
 
                         <svg
                           class="svg-change-current-account bi bi-pencil-fill"
@@ -3402,50 +2714,24 @@
                     </div>
                   </div>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    margin-bottom: 15px;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
                   <div class="card-container manage-dataset">
                     <div>
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 21px"
-                      >
+                      <h5 class="card-left" style="text-align: right; padding-right: 21px">
                         Account details:
                       </h5>
                       <h5 class="card-right bf-account-details-span">None</h5>
                     </div>
                   </div>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
                   <div class="card-container manage-dataset">
                     <div style="display: flex">
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 5px"
-                      >
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
                         Current dataset:
                       </h5>
-                      <div
-                        class="change-current-account ds-dd"
-                        style="margin-left: 10px"
-                      >
-                        <h5
-                          class="card-right bf-dataset-span"
-                          style="width: fit-content"
-                        >
-                          None
-                        </h5>
+                      <div class="change-current-account ds-dd" style="margin-left: 10px">
+                        <h5 class="card-right bf-dataset-span" style="width: fit-content">None</h5>
 
                         <svg
                           class="svg-change-current-account dataset bi bi-pencil-fill"
@@ -3462,10 +2748,7 @@
                       </div>
                     </div>
                   </div>
-                  <div
-                    class="ui active green inline loader small"
-                    style="display: none"
-                  ></div>
+                  <div class="ui active green inline loader small" style="display: none"></div>
                 </div>
                 <div
                   class="div-confirm-button"
@@ -3503,30 +2786,15 @@
         </div>
       </div>
 
-      <div
-        class="individual-question manage-dataset"
-        id="div_add_edit_banner"
-        style="height: auto"
-      >
+      <div class="individual-question manage-dataset" id="div_add_edit_banner" style="height: auto">
         <div class="ui form" style="min-width: 450px">
-          <div
-            class="grouped fields"
-            style="display: flex; justify-content: center"
-          >
+          <div class="grouped fields" style="display: flex; justify-content: center">
             <label
               id="add_edit_banner_label"
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                width: 100%;
-                text-align: center;
-              "
+              style="font-size: 17px; color: var(--color-bg-plum); width: 100%; text-align: center"
               >Current banner image of selected dataset:
             </label>
-            <div
-              class="field"
-              style="display: flex; justify-content: center; margin: auto"
-            >
+            <div class="field" style="display: flex; justify-content: center; margin: auto">
               <div
                 style="
                   margin-top: 15px;
@@ -3555,21 +2823,12 @@
             </div>
             <div
               id="div-button-edit-banner-image"
-              style="
-                flex-direction: row;
-                justify-content: center;
-                margin: 0 auto;
-              "
+              style="flex-direction: row; justify-content: center; margin: 0 auto"
             >
               <button
                 id="edit_banner_image_button"
                 class="btn_animated md"
-                style="
-                  margin: 20px 10px 30px 0;
-                  width: 150px;
-                  height: 40px;
-                  font-size: 15px;
-                "
+                style="margin: 20px 10px 30px 0; width: 150px; height: 40px; font-size: 15px"
               >
                 Edit banner image
               </button>
@@ -3581,11 +2840,7 @@
 
     <div class="footer-div">
       <div style="display: flex; flex-direction: row; width: 120px">
-        <button
-          type="button"
-          class="transition-btn prev"
-          data-section="main_tabs"
-        >
+        <button type="button" class="transition-btn prev" data-section="main_tabs">
           <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
         </button>
       </div>
@@ -3595,10 +2850,7 @@
         data-section="add_license"
         style="width: auto"
       >
-        Assign a license to the dataset<i
-          class="fas fa-arrow-right"
-          style="margin-left: 10px"
-        ></i>
+        Assign a license to the dataset<i class="fas fa-arrow-right" style="margin-left: 10px"></i>
       </button>
     </div>
 
@@ -3631,20 +2883,14 @@
               ></i>
             </h4>
             <button type="button" class="close" data-dismiss="modal">
-              <i
-                style="color: red; font-size: 25px"
-                class="far fa-window-close"
-              ></i>
+              <i style="color: red; font-size: 25px" class="far fa-window-close"></i>
             </button>
           </div>
           <div class="modal-body">
-            <div
-              id="div-editbanner-img"
-              style="display: flex; flex-direction: row"
-            >
+            <div id="div-editbanner-img" style="display: flex; flex-direction: row">
               <div id="div-img-container-holder" class="img-container">
-                Imported image will be shown here. <br />You will be able to
-                crop it before uploading.
+                Imported image will be shown here. <br />You will be able to crop it before
+                uploading.
               </div>
 
               <div
@@ -3669,17 +2915,8 @@
               "
             ></p>
           </div>
-          <div
-            class="modal-footer"
-            style="display: flex; justify-content: space-between"
-          >
-            <div
-              style="
-                display: flex;
-                flex-direction: row;
-                justify-content: center;
-              "
-            >
+          <div class="modal-footer" style="display: flex; justify-content: space-between">
+            <div style="display: flex; flex-direction: row; justify-content: center">
               <div
                 style="
                   display: flex;
@@ -3697,16 +2934,12 @@
                 >
                   Import image
                 </button>
-
               </div>
             </div>
 
             <div class="container-cropped-image">
-              <div
-                class="banner-image-size"
-                style="width: 380px; text-align: right"
-              >
-                <span class="crop-image-text" style="margin-right: 2rem;"
+              <div class="banner-image-size" style="width: 380px; text-align: right">
+                <span class="crop-image-text" style="margin-right: 2rem"
                   >Cropped dimensions (must be greater than 512px):
                 </span>
               </div>
@@ -3718,10 +2951,7 @@
                 readonly="readonly"
                 size="7"
               />
-              <div
-                class="banner-image-size"
-                style="width: 30px; text-align: center"
-              >
+              <div class="banner-image-size" style="width: 30px; text-align: center">
                 <span class="crop-image-text">px</span>
               </div>
             </div>
@@ -3762,13 +2992,7 @@
           margin-bottom: 50px;
         "
       >
-        <div
-          style="
-            width: 100%;
-            border-bottom: 3px solid #b80d49;
-            margin-bottom: -5px;
-          "
-        >
+        <div style="width: 100%; border-bottom: 3px solid #b80d49; margin-bottom: -5px">
           <div class="need-help-div">
             <h2>Manage Datasets - Assign a license</h2>
             <a
@@ -3783,7 +3007,12 @@
 
     <div
       id="add_license_parent-tab"
-      style="overflow-y: auto; height: calc(100% - 150px); margin-left: 0px; margin-bottom: 1rem !important;"
+      style="
+        overflow-y: auto;
+        height: calc(100% - 150px);
+        margin-left: 0px;
+        margin-bottom: 1rem !important;
+      "
     >
       <div
         class="individual-question manage-dataset show"
@@ -3793,16 +3022,12 @@
         <div class="ui form" style="width: 100%">
           <div class="grouped fields">
             <div class="about-container">
-              <label
-                class="about-title"
-                style="color: var(--color-bg-plum) !important"
+              <label class="about-title" style="color: var(--color-bg-plum) !important"
                 >About</label
               >
               <p class="about-text">
                 Use this feature to assign the
-                <a
-                  target="_blank"
-                  href="https://creativecommons.org/licenses/by/4.0/"
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/"
                   >Creative Commons Attribution (CC-BY 4.0) license</a
                 >
                 to your dataset, which is mandatory for all SPARC datasets.
@@ -3824,19 +3049,10 @@
                   border-radius: 5px;
                 "
               >
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
                   <div class="card-container manage-dataset">
                     <div style="display: flex">
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 9px"
-                      >
+                      <h5 class="card-left" style="text-align: right; padding-right: 9px">
                         Current account:
                       </h5>
                       <div
@@ -3845,7 +3061,7 @@
                       >
                         <h5
                           class="card-right bf-account-span"
-                          style="width: fit-content; padding-left: 4px;"
+                          style="width: fit-content; padding-left: 4px"
                         >
                           None
                         </h5>
@@ -3866,52 +3082,31 @@
                     </div>
                   </div>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    margin-bottom: 15px;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
                   <div class="card-container manage-dataset">
                     <div>
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 21px"
-                      >
+                      <h5 class="card-left" style="text-align: right; padding-right: 21px">
                         Account details:
                       </h5>
                       <h5
                         class="card-right bf-account-details-span"
-                        style="margin-left: 135px; padding-left: 7px;"
+                        style="margin-left: 135px; padding-left: 7px"
                       >
                         None
                       </h5>
                     </div>
                   </div>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
                   <div class="card-container manage-dataset">
                     <div style="display: flex">
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 5px"
-                      >
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
                         Current dataset:
                       </h5>
-                      <div
-                        class="change-current-account ds-dd"
-                        style="margin-left: 10px"
-                      >
+                      <div class="change-current-account ds-dd" style="margin-left: 10px">
                         <h5
                           class="card-right bf-dataset-span"
-                          style="width: fit-content; padding-left: 7px;"
+                          style="width: fit-content; padding-left: 7px"
                         >
                           None
                         </h5>
@@ -3931,33 +3126,18 @@
                       </div>
                     </div>
                   </div>
-                  <div
-                    class="ui active green inline loader small"
-                    style="display: none"
-                  ></div>
+                  <div class="ui active green inline loader small" style="display: none"></div>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    margin-bottom: 15px;
-                  "
-                >
-                  <div
-                    class="card-container manage-dataset"
-                    style="overflow-x: hidden"
-                  >
+                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
+                  <div class="card-container manage-dataset" style="overflow-x: hidden">
                     <div>
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 21px"
-                      >
+                      <h5 class="card-left" style="text-align: right; padding-right: 21px">
                         Current license:
                       </h5>
                       <h5
                         id="para-dataset-license-current"
                         class="card-right"
-                        style="margin-top: 0px; margin-left: 140px; padding-left: 6px;"
+                        style="margin-top: 0px; margin-left: 140px; padding-left: 6px"
                       >
                         None
                       </h5>
@@ -3999,21 +3179,12 @@
           </div>
         </div>
       </div>
-      <div
-        class="individual-question manage-dataset"
-        id="div_add_license"
-        style="height: auto"
-      >
+      <div class="individual-question manage-dataset" id="div_add_license" style="height: auto">
         <div class="ui form" style="width: 450px">
           <div class="grouped fields">
             <label
               id="assign-a-license-header"
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                width: 100%;
-                text-align: center;
-              "
+              style="font-size: 17px; color: var(--color-bg-plum); width: 100%; text-align: center"
               >Assign license using the button below:
             </label>
             <div
@@ -4029,17 +3200,11 @@
                 text-align: center;
                 display: none;
               "
-              >This dataset already has the CC-BY license assigned so you are
-              all set!
+              >This dataset already has the CC-BY license assigned so you are all set!
             </label>
             <div
               class="field"
-              style="
-                display: flex;
-                justify-content: center;
-                width: 100%;
-                flex-direction: column;
-              "
+              style="display: flex; justify-content: center; width: 100%; flex-direction: column"
             >
               <div
                 id="div-button-add-license"
@@ -4054,21 +3219,11 @@
                 <button
                   id="button-add-license"
                   class="btn_animated lg"
-                  style="
-                    margin: 0 10px;
-                    width: 290px;
-                    height: 50px;
-                    font-size: 15px;
-                    display: none;
-                  "
+                  style="margin: 0 10px; width: 290px; height: 50px; font-size: 15px; display: none"
                 >
                   Assign Creative Commons Attribution (CC-BY) license
                 </button>
-                <div
-                  id="bf-add-license-dataset-spinner"
-                  class="spinner"
-                  style="display: none"
-                >
+                <div id="bf-add-license-dataset-spinner" class="spinner" style="display: none">
                   <div class="rect1"></div>
                   <div class="rect2"></div>
                   <div class="rect3"></div>
@@ -4081,28 +3236,23 @@
         </div>
       </div>
     </div>
-    </div>
+  </div>
 
-    <div class="footer-div">
-      <div style="display: flex; flex-direction: row; width: 120px">
-        <button
-          type="button"
-          class="transition-btn prev"
-          data-section="main_tabs"
-        >
-          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
-        </button>
-      </div>
-      <button
-        type="button"
-        class="transition-btn prev"
-        id="shortcut-navigate-to-create_submission"
-        style="width: auto"
-        data-section="add_tags"
-      >
-        Add tags<i class="fas fa-arrow-right" style="margin-left: 10px"></i>
+  <div class="footer-div">
+    <div style="display: flex; flex-direction: row; width: 120px">
+      <button type="button" class="transition-btn prev" data-section="main_tabs">
+        <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
       </button>
     </div>
+    <button
+      type="button"
+      class="transition-btn prev"
+      id="shortcut-navigate-to-create_submission"
+      style="width: auto"
+      data-section="add_tags"
+    >
+      Add tags<i class="fas fa-arrow-right" style="margin-left: 10px"></i>
+    </button>
   </div>
 </section>
 
@@ -4143,13 +3293,7 @@
             fill="black"
           />
         </svg> -->
-        <div
-          style="
-            width: 100%;
-            border-bottom: 3px solid #b80d49;
-            margin-bottom: -5px;
-          "
-        >
+        <div style="width: 100%; border-bottom: 3px solid #b80d49; margin-bottom: -5px">
           <div class="need-help-div">
             <h2>Manage Datasets - Upload a local dataset</h2>
             <a
@@ -4179,14 +3323,12 @@
         <div class="ui form" style="width: 100%">
           <div class="grouped fields">
             <div class="about-container">
-              <label
-                class="about-title"
-                style="color: var(--color-bg-plum) !important"
+              <label class="about-title" style="color: var(--color-bg-plum) !important"
                 >About</label
               >
               <p class="about-text">
-                With this feature, you can upload data from your computer to a
-                Pennsieve dataset (with folder structure preserved).
+                With this feature, you can upload data from your computer to a Pennsieve dataset
+                (with folder structure preserved).
               </p>
             </div>
             <label style="font-size: 17px; color: var(--color-bg-plum)"
@@ -4205,24 +3347,13 @@
                   border-radius: 5px;
                 "
               >
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
                   <div class="card-container manage-dataset">
                     <div style="display: flex">
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 5px"
-                      >
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
                         Current account:
                       </h5>
-                      <div
-                        class="change-current-account md-change-current-account"
-                      >
+                      <div class="change-current-account md-change-current-account">
                         <h5
                           class="card-right bf-account-span"
                           style="width: fit-content; padding-left: 15px"
@@ -4246,44 +3377,26 @@
                     </div>
                   </div>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    margin-bottom: 15px;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
                   <div class="card-container manage-dataset">
                     <div>
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 19px"
-                      >
+                      <h5 class="card-left" style="text-align: right; padding-right: 19px">
                         Account details:
                       </h5>
                       <h5 class="card-right bf-account-details-span">None</h5>
                     </div>
                   </div>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
                   <div class="card-container manage-dataset">
                     <div style="display: flex">
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 5px"
-                      >
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
                         Current dataset:
                       </h5>
                       <div class="change-current-account ds-dd">
                         <h5
                           class="card-right bf-dataset-span"
-                          style="width: fit-content; padding-left: 14px;"
+                          style="width: fit-content; padding-left: 14px"
                         >
                           None
                         </h5>
@@ -4303,10 +3416,7 @@
                       </div>
                     </div>
                   </div>
-                  <div
-                    class="ui active green inline loader small"
-                    style="display: none"
-                  ></div>
+                  <div class="ui active green inline loader small" style="display: none"></div>
                 </div>
               </div>
               <div
@@ -4350,10 +3460,7 @@
         style="height: auto"
       >
         <div class="ui form" style="width: 100%">
-          <div
-            class="grouped fields"
-            style="display: flex; justify-content: center"
-          >
+          <div class="grouped fields" style="display: flex; justify-content: center">
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >What is the location of the dataset?</label
             >
@@ -4419,12 +3526,7 @@
           <div class="grouped fields">
             <div
               class="field"
-              style="
-                display: flex;
-                width: 550px;
-                margin: auto;
-                justify-content: center;
-              "
+              style="display: flex; width: 550px; margin: auto; justify-content: center"
             >
               <button
                 id="button-submit-dataset"
@@ -4455,12 +3557,7 @@
           <div class="grouped fields">
             <div
               class="field"
-              style="
-                display: flex;
-                width: 500px;
-                flex-direction: column;
-                margin: auto;
-              "
+              style="display: flex; width: 500px; flex-direction: column; margin: auto"
             >
               <p id="para-progress-bar-error-status"></p>
 
@@ -4484,11 +3581,7 @@
 
   <div class="footer-div">
     <div style="display: flex; flex-direction: row; width: 120px">
-      <button
-        type="button"
-        class="transition-btn prev"
-        data-section="main_tabs"
-      >
+      <button type="button" class="transition-btn prev" data-section="main_tabs">
         <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
       </button>
     </div>
@@ -4536,13 +3629,7 @@
             fill="black"
           />
         </svg> -->
-        <div
-          style="
-            width: 100%;
-            border-bottom: 3px solid #b80d49;
-            margin-bottom: -5px;
-          "
-        >
+        <div style="width: 100%; border-bottom: 3px solid #b80d49; margin-bottom: -5px">
           <div class="need-help-div">
             <h2>Manage Datasets - View/change dataset status</h2>
             <a
@@ -4588,13 +3675,7 @@
                   border-radius: 5px;
                 "
               >
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
                   <div class="card-container manage-dataset">
                     <div style="display: flex">
                       <h5 class="card-left">Current account:</h5>
@@ -4603,12 +3684,7 @@
                       class="change-current-account md-change-current-account"
                       style="margin-left: -210px"
                     >
-                      <h5
-                        class="card-right bf-account-span"
-                        style="width: fit-content"
-                      >
-                        None
-                      </h5>
+                      <h5 class="card-right bf-account-span" style="width: fit-content">None</h5>
 
                       <svg
                         class="svg-change-current-account bi bi-pencil-fill"
@@ -4625,43 +3701,21 @@
                     </div>
                   </div>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    margin-bottom: 15px;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
                   <div class="card-container manage-dataset">
                     <div>
-                      <h5 class="card-left" style="margin-right: -11px">
-                        Account details:
-                      </h5>
+                      <h5 class="card-left" style="margin-right: -11px">Account details:</h5>
                       <h5 class="card-right bf-account-details-span">None</h5>
                     </div>
                   </div>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                  "
-                >
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
                   <div class="card-container manage-dataset">
                     <div>
                       <h5 class="card-left">Current dataset:</h5>
                     </div>
-                    <div
-                      class="change-current-account ds-dd"
-                      style="margin-left: -212px"
-                    >
-                      <h5
-                        class="card-right bf-dataset-span"
-                        style="width: fit-content"
-                      >
-                        None
-                      </h5>
+                    <div class="change-current-account ds-dd" style="margin-left: -212px">
+                      <h5 class="card-right bf-dataset-span" style="width: fit-content">None</h5>
 
                       <svg
                         class="svg-change-current-account dataset bi bi-pencil-fill"
@@ -4677,10 +3731,7 @@
                       </svg>
                     </div>
                   </div>
-                  <div
-                    class="ui active green inline loader small"
-                    style="display: none"
-                  ></div>
+                  <div class="ui active green inline loader small" style="display: none"></div>
                 </div>
 
                 <div
@@ -4734,12 +3785,7 @@
         <div class="ui form" style="width: 450px">
           <div class="grouped fields">
             <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                width: 100%;
-                text-align: center;
-              "
+              style="font-size: 17px; color: var(--color-bg-plum); width: 100%; text-align: center"
               >View/change status</label
             >
             <div
@@ -4797,11 +3843,7 @@
 
     <div class="footer-div">
       <div style="display: flex; flex-direction: row; width: 120px">
-        <button
-          type="button"
-          class="transition-btn prev"
-          data-section="main_tabs"
-        >
+        <button type="button" class="transition-btn prev" data-section="main_tabs">
           <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
         </button>
       </div>

@@ -6,15 +6,12 @@
   font-family: "Poppins", sans-serif;
 }*/
 
-
 .container {
   max-width: 400px;
   margin: 0 auto;
   margin-top: 20px;
   padding: 40px;
 }
-
-
 
 .guided--info-dropdown {
   display: flex;
@@ -68,8 +65,7 @@
   visibility: hidden;
   opacity: 0;
   transform: translateX(-20px);
-  transition: visibility 0s 0.12s linear, opacity 0.12s ease-in,
-    transform 0.12s ease-in-out;
+  transition: visibility 0s 0.12s linear, opacity 0.12s ease-in, transform 0.12s ease-in-out;
 }
 .guided--container-file-import {
   display: flex;
@@ -699,8 +695,7 @@ h1.guided--text-sub-step {
   opacity: 1;
   z-index: 1000;
   transform: translateX(0);
-  transition: visibility 0s 0s linear, opacity 0.36s ease-out,
-    transform 0.36s ease-out;
+  transition: visibility 0s 0s linear, opacity 0.36s ease-out, transform 0.36s ease-out;
 }
 
 .guided-section {
@@ -1042,9 +1037,7 @@ h1.guided--text-sub-step {
   overflow: auto;
 }
 
-.select2-container--default
-  .select2-selection--multiple
-  .select2-selection__choice__remove {
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
   height: 100%;
 }
 .guided--hlf-selection-container {
@@ -1267,6 +1260,7 @@ h1.guided--text-sub-step {
 
 .before-getting-started-btn {
   margin-bottom: 1.5rem;
+}
 .lds-roller {
   display: inline-block;
   position: relative;

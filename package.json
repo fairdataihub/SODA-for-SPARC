@@ -13,7 +13,20 @@
     "deploy-mac": "electron-builder build --mac --publish always",
     "deploy-linux": "electron-builder build --linux --publish always",
     "python-onefile-build": "python -m PyInstaller --onefile --clean ./pyflask/app.py --distpath ./pyflaskdist",
-    "postinstall": "electron-builder install-app-deps"
+    "postinstall": "electron-builder install-app-deps",
+    "format": "prettier --ignore-path .gitignore --ignore-path .prettierignore \"./**/*.+(html|css|js|md|yml)\" --write",
+    "commit": "cz",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "./**/*.{html|css|js|md|yml}": [
+      "npm run format"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
   },
   "repository": {
     "type": "git",
@@ -148,10 +161,18 @@
     "validator": "^13.7.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^17.1.2",
+    "@commitlint/config-conventional": "^17.1.0",
+    "@fairdataihub/config": "^2.2.1",
+    "commitizen": "^4.2.5",
+    "cz-conventional-changelog": "^3.3.0",
     "electron": "19.0.0",
     "electron-builder": "22.10.5",
     "electron-packager": "^14.0.6",
     "electron-rebuild": "^1.11.0",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
+    "megasanjay-devmoji": "^1.1.0",
     "prettier": "^2.3.2"
   },
   "optionalDependencies": {

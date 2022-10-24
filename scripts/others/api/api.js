@@ -38,14 +38,11 @@ const getDatasetBannerImageURL = async (selected_account, selected_dataset) => {
 };
 
 const getDatasetRole = async (datasetNameOrId) => {
-  let datasetRoleResponse = await client.get(
-    `/datasets/${defaultBfDataset}/role`,
-    {
-      params: {
-        pennsieve_account: defaultBfAccount,
-      },
-    }
-  );
+  let datasetRoleResponse = await client.get(`/datasets/${defaultBfDataset}/role`, {
+    params: {
+      pennsieve_account: defaultBfAccount,
+    },
+  });
 
   let { role } = datasetRoleResponse.data;
 
@@ -57,16 +54,10 @@ const getDatasetRole = async (datasetNameOrId) => {
  * @param {string} datasetIdOrName
  * @returns {Promise<void>}
  */
-const withdrawDatasetReviewSubmission = async (
-  datasetIdOrName,
-  selected_account
-) => {
-  await client.post(
-    `/disseminate_datasets/datasets/${datasetIdOrName}/publication/cancel`,
-    {
-      selected_account,
-    }
-  );
+const withdrawDatasetReviewSubmission = async (datasetIdOrName, selected_account) => {
+  await client.post(`/disseminate_datasets/datasets/${datasetIdOrName}/publication/cancel`, {
+    selected_account,
+  });
 };
 
 const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
@@ -118,15 +109,12 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
 };
 
 const getDatasetPermissions = async (selected_account, selected_dataset) => {
-  let getDatasetPermissionsResponse = await client.get(
-    `/manage_datasets/bf_dataset_permissions`,
-    {
-      params: {
-        selected_account,
-        selected_dataset,
-      },
-    }
-  );
+  let getDatasetPermissionsResponse = await client.get(`/manage_datasets/bf_dataset_permissions`, {
+    params: {
+      selected_account,
+      selected_dataset,
+    },
+  });
 
   let { permissions } = getDatasetPermissionsResponse.data;
 
@@ -146,15 +134,12 @@ const getDatasetsForAccount = async (selected_account) => {
 };
 
 const getDatasetSubtitle = async (selected_account, selected_dataset) => {
-  let getSubtitleResponse = await client.get(
-    `/manage_datasets/bf_dataset_subtitle`,
-    {
-      params: {
-        selected_account,
-        selected_dataset,
-      },
-    }
-  );
+  let getSubtitleResponse = await client.get(`/manage_datasets/bf_dataset_subtitle`, {
+    params: {
+      selected_account,
+      selected_dataset,
+    },
+  });
 
   let { subtitle } = getSubtitleResponse.data;
 
@@ -162,10 +147,9 @@ const getDatasetSubtitle = async (selected_account, selected_dataset) => {
 };
 
 const getDatasetReadme = async (selected_account, selected_dataset) => {
-  let readmeResponse = await client.get(
-    `/manage_datasets/datasets/${selected_dataset}/readme`,
-    { params: { selected_account } }
-  );
+  let readmeResponse = await client.get(`/manage_datasets/datasets/${selected_dataset}/readme`, {
+    params: { selected_account },
+  });
 
   let { readme } = readmeResponse.data;
 
