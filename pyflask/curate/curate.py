@@ -2594,7 +2594,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         
         # main_curate_progress_message = "About to update after doing recursive dataset scan"
         # 3. Add high-level metadata files to a list
-        ds.update()
+        # ds.update()
         list_upload_metadata_files = []
         if "metadata-files" in soda_json_structure.keys():
             namespace_logger.info("bf_generate_new_dataset (optional) step 3 create high level metadata list")
@@ -2671,161 +2671,194 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
         # 5. Upload files, rename, and add to tracking list
         namespace_logger.info("bf_generate_new_dataset step 5 upload files, rename and add to tracking list")
-        main_initial_bfdataset_size = bf_dataset_size()
+        #main_initial_bfdataset_size = bf_dataset_size()
         start_generate = 1
-        clear_queue()
+        #clear_queue()
 
-        for item in list_upload_files:
+        # set the dataset 
+        ps.useDataset(ds["id"])
+
+        # create a manifest
+        first_file_local_path = list_upload_files[0][0][0]
+        manifest_data = ps.manifest.create(first_file_local_path)
+        manifest_id = manifest_data.manifest_id
+        
+        # add the list of upload files' local paths to the manifest
+        for item in list_upload_files[1: ]:
             # main_curate_progress_message = "In file one"
-            list_upload = item[0]
+            list_upload = item[0][0]
             bf_folder = item[1]
             list_projected_names = item[2]
             list_desired_names = item[3]
             list_final_names = item[4]
             tracking_folder = item[5]
             relative_path = item[6]
+            ps.manifest.add(manifest_id, list_upload, relative_path)
+
+
 
             ## check if agent is running in the background
-            agent_running()
-
-            BUCKET_SIZE = 500
-
+            # agent_running()
+            #  BUCKET_SIZE = 500
             # determine if the current folder's files exceeds 750 (past 750 is a breaking point atm)
             # if so proceed to batch uploading
-            if len(list_upload) > BUCKET_SIZE:
-                # store the aggregate of the amount of files in the folder
-                total_files = len(list_upload)
+            # if len(list_upload) > BUCKET_SIZE:
+            #     # store the aggregate of the amount of files in the folder
+            #     total_files = len(list_upload)
 
-                # create a start index and an end index
-                start_index = end_index = 0
+            #     # create a start index and an end index
+            #     start_index = end_index = 0
 
-                # while startIndex < files.length
-                while start_index < total_files:
-                    # set the endIndex to startIndex plus 750
-                    end_index = start_index + BUCKET_SIZE - 1
+            #     # while startIndex < files.length
+            #     while start_index < total_files:
+            #         # set the endIndex to startIndex plus 750
+            #         end_index = start_index + BUCKET_SIZE - 1
 
-                    # check if the endIndex is out of bounds
-                    if end_index >= total_files:
-                        # if so set end index to files.length - 1
-                        end_index = len(list_upload) - 1
+            #         # check if the endIndex is out of bounds
+            #         if end_index >= total_files:
+            #             # if so set end index to files.length - 1
+            #             end_index = len(list_upload) - 1
 
-                    # get the 750 files between startIndex and endIndex (inclusive of endIndex)
-                    upload_bucket = list_upload[start_index : end_index + 1]
+            #         # get the 750 files between startIndex and endIndex (inclusive of endIndex)
+            #         upload_bucket = list_upload[start_index : end_index + 1]
 
-                    # inform the user files are being uploaded
-                    main_curate_progress_message = "Uploading files in " + str(
-                        relative_path
-                    )
+            #         # inform the user files are being uploaded
+            #         main_curate_progress_message = "Uploading files in " + str(
+            #             relative_path
+            #         )
 
-                    namespace_logger.info(f"bf_generate_new_dataset step 5.1 uploading files to folder {bf_folder.name}")
+            #         namespace_logger.info(f"bf_generate_new_dataset step 5.1 uploading files to folder {bf_folder.name}")
 
 
-                    current_os = platform.system()
+            #         current_os = platform.system()
 
-                    # clear the pennsieve queue for successive batches
-                    # Mac builds not able to spawn subprocess from Python at the moment
-                    if not current_os == "Darwin":
-                        clear_queue()
+            #         # clear the pennsieve queue for successive batches
+            #         # Mac builds not able to spawn subprocess from Python at the moment
+            #         if not current_os == "Darwin":
+            #             clear_queue()
 
-                    # upload the file
-                    bf_folder.upload(*upload_bucket)
+            #         # upload the file
+            #         bf_folder.upload(*upload_bucket)
 
-                    # update the files
-                    bf_folder.update()
+            #         # update the files
+            #         bf_folder.update()
 
-                    for file in upload_bucket:
-                        current_size_of_uploaded_files += getsize(file)
+            #         for file in upload_bucket:
+            #             current_size_of_uploaded_files += getsize(file)
 
-                    # update the global that tracks the amount of files that have been successfully uploaded
-                    main_curation_uploaded_files = BUCKET_SIZE
-                    uploaded_folder_counter += 1
+            #         # update the global that tracks the amount of files that have been successfully uploaded
+            #         main_curation_uploaded_files = BUCKET_SIZE
+            #         uploaded_folder_counter += 1
 
-                    # handle renaming to final names
-                    for index, projected_name in enumerate(
-                        list_projected_names[start_index : end_index + 1]
-                    ):
-                        final_name = list_final_names[start_index : end_index + 1][
-                            index
-                        ]
-                        desired_name = list_desired_names[start_index : end_index + 1][
-                            index
-                        ]
-                        if final_name != projected_name:
-                            bf_item_list = bf_folder.items
-                            (
-                                my_bf_existing_files,
-                                my_bf_existing_files_name,
-                                my_bf_existing_files_name_with_extension,
-                            ) = bf_get_existing_files_details(bf_folder)
-                            for item in my_bf_existing_files[
-                                start_index : end_index + 1
-                            ]:
-                                if item.name == projected_name:
-                                    item.name = final_name
-                                    try: 
-                                        item.update()
-                                    except requests.exceptions.HTTPError as e:
-                                        handle_duplicate_package_name_error(e, soda_json_structure)
-                                    if "files" not in tracking_folder:
-                                        tracking_folder["files"] = {}
-                                        tracking_folder["files"][desired_name] = {
-                                            "value": item
-                                        }
+            #         # handle renaming to final names
+            #         for index, projected_name in enumerate(
+            #             list_projected_names[start_index : end_index + 1]
+            #         ):
+            #             final_name = list_final_names[start_index : end_index + 1][
+            #                 index
+            #             ]
+            #             desired_name = list_desired_names[start_index : end_index + 1][
+            #                 index
+            #             ]
+            #             if final_name != projected_name:
+            #                 bf_item_list = bf_folder.items
+            #                 (
+            #                     my_bf_existing_files,
+            #                     my_bf_existing_files_name,
+            #                     my_bf_existing_files_name_with_extension,
+            #                 ) = bf_get_existing_files_details(bf_folder)
+            #                 for item in my_bf_existing_files[
+            #                     start_index : end_index + 1
+            #                 ]:
+            #                     if item.name == projected_name:
+            #                         item.name = final_name
+            #                         try: 
+            #                             item.update()
+            #                         except requests.exceptions.HTTPError as e:
+            #                             handle_duplicate_package_name_error(e, soda_json_structure)
+            #                         if "files" not in tracking_folder:
+            #                             tracking_folder["files"] = {}
+            #                             tracking_folder["files"][desired_name] = {
+            #                                 "value": item
+            #                             }
 
-                    # update the start_index to end_index + 1
-                    start_index = end_index + 1
-            else:
+            #         # update the start_index to end_index + 1
+            #         start_index = end_index + 1
+            # else:
                 # get the current OS
-                current_os = platform.system()
+                # current_os = platform.system()
 
-                # clear the pennsieve queue
-                if not current_os == "Darwin":
-                    # clear the pennsieve queue
-                    clear_queue()
+                # # clear the pennsieve queue
+                # if not current_os == "Darwin":
+                #     # clear the pennsieve queue
+                #     clear_queue()
 
-                # upload all files at once for the folder
-                main_curate_progress_message = "Uploading files in " + str(
-                    relative_path
-                )
+                # # upload all files at once for the folder
+                # main_curate_progress_message = "Uploading files in " + str(
+                #     relative_path
+                # )
 
-                namespace_logger.info(f"bf_generate_new_dataset step 5.1 uploading files to folder {bf_folder.name}")
+                # namespace_logger.info(f"bf_generate_new_dataset step 5.1 uploading files to folder {bf_folder.name}")
 
-                # fails when a single folder has more than 750 files (at which point I'm not sure)
+                # # fails when a single folder has more than 750 files (at which point I'm not sure)
 
-                bf_folder.upload(*list_upload)
-                bf_folder.update()
+                # bf_folder.upload(*list_upload)
+                # bf_folder.update()
 
-                main_curation_uploaded_files = len(list_upload)
-                uploaded_folder_counter += 1
+                # main_curation_uploaded_files = len(list_upload)
+                # uploaded_folder_counter += 1
 
-                for file in list_upload:
-                    current_size_of_uploaded_files += getsize(file)
+                # for file in list_upload:
+                #     current_size_of_uploaded_files += getsize(file)
 
-                # rename to final name
-                for index, projected_name in enumerate(list_projected_names):
-                    final_name = list_final_names[index]
-                    desired_name = list_desired_names[index]
-                    if final_name != projected_name:
-                        bf_item_list = bf_folder.items
-                        (
-                            my_bf_existing_files,
-                            my_bf_existing_files_name,
-                            my_bf_existing_files_name_with_extension,
-                        ) = bf_get_existing_files_details(bf_folder)
-                        for item in my_bf_existing_files:
-                            if item.name == projected_name:
-                                item.name = final_name
-                                try: 
-                                    item.update()
-                                except requests.exceptions.HTTPError as e:
-                                    handle_duplicate_package_name_error(e, soda_json_structure)
+                # # rename to final name
+                # for index, projected_name in enumerate(list_projected_names):
+                #     final_name = list_final_names[index]
+                #     desired_name = list_desired_names[index]
+                #     if final_name != projected_name:
+                #         bf_item_list = bf_folder.items
+                #         (
+                #             my_bf_existing_files,
+                #             my_bf_existing_files_name,
+                #             my_bf_existing_files_name_with_extension,
+                #         ) = bf_get_existing_files_details(bf_folder)
+                #         for item in my_bf_existing_files:
+                #             if item.name == projected_name:
+                #                 item.name = final_name
+                #                 try: 
+                #                     item.update()
+                #                 except requests.exceptions.HTTPError as e:
+                #                     handle_duplicate_package_name_error(e, soda_json_structure)
                                    
-                                if "files" not in tracking_folder:
-                                    tracking_folder["files"] = {}
-                                    tracking_folder["files"][desired_name] = {
-                                        "value": item
-                                    }
+                #                 if "files" not in tracking_folder:
+                #                     tracking_folder["files"] = {}
+                #                     tracking_folder["files"][desired_name] = {
+                #                         "value": item
+                #                     }
 
+        # upload the manifest files
+        ps.manifest.upload(manifest_id)
+
+        subscription_rendezvous_object = ps.subscribe(10)
+
+        files_uploaded = 0
+        for msg in subscription_rendezvous_object:
+            current_bytes_uploaded = msg.upload_status.current 
+            total_bytes_to_upload = msg.upload_status.total
+            file_id = msg.upload_status.file_id
+
+            if total_bytes_to_upload != 0:
+
+                if current_bytes_uploaded == total_bytes_to_upload:
+                    files_uploaded += 1
+
+                # check if the upload is complete
+                if files_uploaded == 1:
+                    print("Finished uploading")
+                    ps.unsubscribe(10)
+
+
+        return 
 
         # 6. Upload metadata files
         if list_upload_metadata_files:
