@@ -11421,7 +11421,7 @@ $(document).ready(async () => {
         } else {
           //previous element was the last element in the container.
           //go to the next page-set and return the first page to be transitioned to.
-          nextPage = startingPage.parent().next().children(".guided--panel").first();
+          nextPage = startingPage.parent().next().children(".guided--page").first();
           if (nextPage.attr("data-skip-page") && nextPage.attr("data-skip-page") == "true") {
             return getNextPageNotSkipped(nextPage);
           } else {
@@ -11506,7 +11506,7 @@ $(document).ready(async () => {
       } else {
         //previous element was the last element in the container.
         //go to the next page-set and return the first page to be transitioned to.
-        prevPage = startingPage.parent().prev().children(".guided--panel").last();
+        prevPage = startingPage.parent().prev().children(".guided--page").last();
         if (prevPage.attr("data-skip-page") && prevPage.attr("data-skip-page") == "true") {
           return getPrevPageNotSkipped(prevPage);
         } else {
