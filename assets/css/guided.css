@@ -12,7 +12,7 @@
   margin: 0px !important;
   position: fixed;
   background-color: var(--color-border);
-  z-index: 10000;
+  z-index: 1001;
   padding: 7px;
   flex-direction: column;
   justify-content: center;
