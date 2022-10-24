@@ -1871,6 +1871,8 @@ def bf_get_existing_folders_details(ps_folder):
 
 def bf_get_existing_files_details(bf_folder, ps):
 
+    print("\n")
+    print("Getting file details for folder: ", bf_folder)
     double_extensions = [
         ".ome.tiff",
         ".ome.tif",
@@ -1914,17 +1916,18 @@ def bf_get_existing_files_details(bf_folder, ps):
         else:
             return file_name + ("." + extension)
 
-    bf_existing_files = [x for x in bf_folder if bf_folder[x]['content']["packageType"] != "Collection"]
+    bf_existing_files = [x for x in bf_folder["children"] if bf_folder["children"][x]['content']["packageType"] != "Collection"]
 
     bf_existing_files_name = [splitext(x.name)[0] for x in bf_existing_files]
     bf_existing_files_name_with_extension = []
 
-    print("\n")
-    print("Before crash: ", bf_folder)
-
     # determine if we are at the root of the dataset
-    if (str(bf_folder['content']['id'])[2:9]) == "dataset":
-        root_folder = bf._api._get("/datasets/" + str(bf_folder.id))
+    # TODO: Find out why value is in here sometimes
+    content = bf_folder.get("content", 0) if bf_folder.get("content", 0) != 0 else bf_folder.get("value", 0)
+    if (str(content['id'])[2:9]) == "dataset":
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{content['id']}", headers=create_request_headers(ps))
+        r.raise_for_status()
+        root_folder = r.json()
         root_children = root_folder["children"]
         for item in root_children:
             file_name_with_extension = ""
@@ -2258,6 +2261,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
     namespace_logger.info("Dataset is: ", ds)
 
+    print(create_request_headers(ps))
+
     global main_curate_progress_message
     global main_total_generate_dataset_size
     global start_generate
@@ -2347,12 +2352,15 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             list_upload_files,
             my_relative_path,
         ):
+            """
+                Delete files that will be replaced in the dataset. Create a list of files to upload to Pennsieve. 
+            """
 
             global main_total_generate_dataset_size
 
 
             print("\n")
-            print("Now in the method tracking folder value is: ", my_tracking_folder)
+            print("Tracking folder value in recursive_dataset_scan_for_bf: ", my_tracking_folder)
             my_ps_folder = my_tracking_folder["children"] #ds (dataset)
 
             
@@ -2369,9 +2377,12 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     if existing_folder_option == "skip" and folder_key not in my_tracking_folder["children"].keys():
                         continue
 
-                    print("My tracking folder in first folder is: ", my_tracking_folder)
+                    print("Going to scan the folder: ", folder_key)
+                    print("The folder key needs to exist in my_tracking_folder or else it will not be scanned.")
+                    print("\n")
 
                     tracking_folder = my_tracking_folder["children"][folder_key]
+                    #tracking_folder = my_tracking_folder["children"][0]
                     list_upload_files = recursive_dataset_scan_for_bf(
                         folder,
                         tracking_folder,
@@ -2387,7 +2398,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     my_bf_existing_files,
                     my_bf_existing_files_name,
                     my_bf_existing_files_name_with_extension,
-                ) = bf_get_existing_files_details(my_ps_folder, ps)
+                ) = bf_get_existing_files_details(my_tracking_folder, ps)
                 for file_key, file in my_folder["files"].items():
                     if file["type"] == "local":
                         file_path = file["path"]
@@ -2398,6 +2409,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                                 )
                             )
                             my_file = my_bf_existing_files[index_file]
+                            # TODO: Add back the delete functionality
                             #my_file.delete()
                             #my_bf_folder.update()
 
@@ -2406,7 +2418,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     my_bf_existing_files,
                     my_bf_existing_files_name,
                     my_bf_existing_files_name_with_extension,
-                ) = bf_get_existing_files_details(my_ps_folder, ps)
+                ) = bf_get_existing_files_details(my_tracking_folder, ps)
 
                 list_local_files = []
                 list_projected_names = []
@@ -2545,6 +2557,9 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         dataset_structure = soda_json_structure["dataset-structure"]
         tracking_json_structure = {"value": ds}
 
+        print("Tracking structure at the start: ", tracking_json_structure)
+        print("\n")
+
 
         existing_folder_option = soda_json_structure["generate-dataset"]["if-existing"]
         recursive_create_folder_for_bf(
@@ -2563,7 +2578,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
         print("\n")
         print("Relative path: ", relative_path)
-        print("The tracking json structure: ", tracking_json_structure)
+        print("The tracking json structure [ START ]: ", tracking_json_structure)
 
         list_upload_files = recursive_dataset_scan_for_bf(
             dataset_structure,
@@ -2573,7 +2588,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             relative_path,
         )
 
-        return 
+        print("[ END ]: ", list_upload_files)
+
 
         
         # main_curate_progress_message = "About to update after doing recursive dataset scan"
@@ -3036,7 +3052,7 @@ def main_curate_function(soda_json_structure):
             authenticate_user_with_client(ps, accountname)
         except Exception as e:
             main_curate_status = "Done"
-            abort(400, "Error: Please select a valid Pennsieve account")
+            abort(400, "Please select a valid Pennsieve account.")
 
     # if uploading on an existing bf dataset
     if "bf-dataset-selected" in soda_json_structure:
