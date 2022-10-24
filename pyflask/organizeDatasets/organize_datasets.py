@@ -74,7 +74,6 @@ def TZLOCAL():
 ## these subsequent CheckLeafValue and traverseForLeafNodes functions check for the validity of file paths,
 ## and folder and file size
 def checkLeafValue(leafName, leafNodeValue):
-
     error, c = "", 0
     total_dataset_size = 1
     curatestatus = ""
@@ -107,7 +106,6 @@ def checkLeafValue(leafName, leafNodeValue):
 
 
 def traverseForLeafNodes(jsonStructure):
-
     total_dataset_size = 1
 
     for key in jsonStructure:
