@@ -40,6 +40,7 @@
   padding: 0px 10px;
 }
 .guided--nav-bar-dropdown:hover {
+  cursor: pointer;
   background-color: var(--color-transparent-soda-green);
 }
 
@@ -47,14 +48,25 @@
   display: flex;
   width: calc((100% - 20px));
   justify-content: flex-start;
-  border-left: 1px solid var(--color-transparent-soda-green);
   margin-left: 15px;
   margin-top: 3px;
   padding-left: 5px;
 }
+.guided--nav-bar-section-page.completed {
+  border-left: 3px solid green;
+}
+.guided--nav-bar-section-page.not-completed {
+  border-left: 3px solid var(--color-transparent-soda-green);
+  pointer-events: none;
+  opacity: 0.5;
+}
+.guided--nav-bar-section-page.active {
+  background-color: var(--color-transparent-soda-green);
+}
 .guided--nav-bar-section-page:hover {
   background-color: var(--color-transparent-soda-green);
-  border-left: 1px solid var(--color-light-green);
+  border-left: 5px solid var(--color-light-green);
+  cursor: pointer;
 }
 
 .guided--nav-bar-section:not(:first-child) {

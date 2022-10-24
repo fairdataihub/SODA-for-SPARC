@@ -872,9 +872,12 @@ const renderSideBar = (activePage) => {
       //add but keep hidden for now!!!!!!!!!!!!!!!!!!
       dropDownContent += `
       <div
-        class="guided--nav-bar-section-page hidden"
-        data-target-page="${pageID}")"
-        style="${pageObject.completed ? "" : "pointer-events: none; opacity: 0.5;"}"
+        class="
+          guided--nav-bar-section-page
+          hidden
+          ${pageObject.completed ? " completed" : " not-completed"}
+          ${pageID === activePage ? "active" : ""}"
+        data-target-page="${pageID}"
       >
         <div class="guided--nav-bar-section-page-title">
           ${pageObject.pageName}
@@ -885,11 +888,11 @@ const renderSideBar = (activePage) => {
 
     // Add each section to the nav bar element
     const dropDownContainer = `
-    <div class="guided--nav-bar-section">
-      ${dropdDown}
-      ${dropDownContent}  
-    </div>
-  `;
+      <div class="guided--nav-bar-section">
+        ${dropdDown}
+        ${dropDownContent}  
+      </div>
+    `;
     navBarHTML += dropDownContainer;
   }
   guidedNavItemsContainer.innerHTML = navBarHTML;
@@ -929,8 +932,10 @@ const renderSideBar = (activePage) => {
       } catch (error) {
         const pageWithErrorName = CURRENT_PAGE.data("pageName");
         const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
-          title: "Error",
-          html: `The following errors occurred when attempting to save the ${pageWithErrorName} page:
+          title: "Error saving the current page",
+          html: `The following error${
+            error.length > 1 ? "s" : ""
+          } occurred when attempting to save the ${pageWithErrorName} page:
             <br />
             <br />
             <ul>
@@ -954,6 +959,16 @@ const renderSideBar = (activePage) => {
         }
       }
     });
+  }
+
+  const nextPagetoComplete = guidedNavItemsContainer.querySelector(
+    ".guided--nav-bar-section-page.not-completed"
+  );
+  if (nextPagetoComplete) {
+    nextPagetoComplete.classList.remove("not-completed");
+    //Add pulse blue animation for 3 seconds
+    nextPagetoComplete.style.borderLeft = "3px solid #007bff";
+    nextPagetoComplete.style.animation = "pulse-blue 3s infinite";
   }
 };
 
