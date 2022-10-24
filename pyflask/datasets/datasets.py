@@ -78,6 +78,8 @@ def upload_collection_names(account, dataset, tags):
 
     if not has_edit_permissions(ps, selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
+    
+    print(tags)
 
     store = []
     for tag in tags:
@@ -114,12 +116,16 @@ def remove_collection_names(account, dataset, tags):
     if not has_edit_permissions(ps, selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
 
+    print(selected_dataset_id)
     for tagid in tags:
         r = requests.delete(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/collections/{str(tagid)}", headers=create_request_headers(ps))
         r.raise_for_status()
-        result = r.json()
+        print("JSON RESULT")
+        print(r.text)
+        # print(r.json())
+        # result = r.text
         # result = ps._api._del(f"/datasets/{str(dataset_id)}/collections/{str(tagid)}")
-        statusResponses.append(result)
+        # statusResponses.append(result)
 
-    result = dict({"collection": statusResponses})
+    result = dict({"collection": "Collection removed"})
     return result
