@@ -48,6 +48,8 @@ from utils import (
 from authentication import get_access_token
 from users import get_user_information, update_config_account_name
 from permissions import has_edit_permissions, bf_get_current_user_permission_agent_two
+from configUtils import add_api_host_to_config
+from constants import PENNSIEVE_URL
 
 
 ### Global variables
@@ -93,7 +95,7 @@ PROD_TEMPLATE_PATH = join(dirname(__file__), "..", "..", "file_templates")
 TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLATE_PATH
 
 
-PENNSIEVE_URL = "https://api.pennsieve.io"
+
 
 def bf_dataset_size(ps, dataset_id):
     """
@@ -183,7 +185,7 @@ def bf_add_account_api_key(keyname, key, secret):
         config.add_section(keyname)
         config.set(keyname, "api_token", key)
         config.set(keyname, "api_secret", secret)
-        config.set(keyname, "api_host", "https://api.pennsieve.io")
+        config.set(keyname, "api_host", PENNSIEVE_URL)
 
         with open(configpath, "w") as configfile:
             config.write(configfile)
@@ -261,13 +263,19 @@ def bf_add_account_username(keyname, key, secret):
             config.set(agentkey, "upload_workers", "10")
             config.set(agentkey, "upload_chunk_size", "32")
 
+
+        # ensure that if the profile already exists it has an api_host entry 
+        if config.has_section(keyname):
+            config.set(keyname, "api_host", PENNSIEVE_URL)
+
         # Add new account
         if not config.has_section(keyname):
             config.add_section(keyname)
             config.set(keyname, "api_token", key)
             config.set(keyname, "api_secret", secret)
-            config.set(keyname, "api_host", "https://api.pennsieve.io")
+            config.set(keyname, "api_host", PENNSIEVE_URL)
 
+        
         with open(configpath, "w") as configfile:
             config.write(configfile)
 
@@ -388,26 +396,27 @@ def bf_get_accounts():
     """
     config = ConfigParser()
     config.read(configpath)
-    accountname = config.sections()
+    sections = config.sections()
 
-    if SODA_SPARC_API_KEY in accountname:
+    if SODA_SPARC_API_KEY in sections:
+        add_api_host_to_config(config, SODA_SPARC_API_KEY, configpath)
         with contextlib.suppress(Exception):
             ps = Pennsieve()
             ps.user.switch(SODA_SPARC_API_KEY)
             return SODA_SPARC_API_KEY
-    elif "global" in accountname:
+    elif "global" in sections:
         if "default_profile" in config["global"]:
             default_profile = config["global"]["default_profile"]
-            namespace_logger.info(f"Default profile: {default_profile}")
-            if default_profile in accountname:
-                namespace_logger.info(f"Default profile in account name")
+            if default_profile in sections:
+                add_api_host_to_config(config, default_profile, configpath)
                 with contextlib.suppress(Exception):
                     ps = Pennsieve()
                     ps.user.switch(default_profile)
                     return default_profile
     else:
-        for account in accountname:
+        for account in sections:
             if account != 'agent':
+                add_api_host_to_config(config, account, configpath)
                 with contextlib.suppress(Exception):
                     ps = Pennsieve()
                     ps.user.switch(account)
@@ -426,6 +435,9 @@ def bf_get_accounts():
                         return account
     namespace_logger.info("Returning empty string?")
     return ""
+
+
+
 
 
 

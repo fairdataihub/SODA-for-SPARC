@@ -3,32 +3,32 @@ from os import path
 import requests
 
 client = Pennsieve()
-client.user.switch('soda')
+client.user.switch('sodie')
 client.user.reauthenticate()
 client.useDataset("N:dataset:1cb4bf59-2b6d-48c9-8dae-88f722c6e328")
 
 
 
 #local_ds = path.join(path.expanduser("~"), "Desktop", "DatasetTemplate")
-#manifest = client.manifest.create(local_ds)
+manifest = client.manifest.create(local_ds)
 
 PENNSIEVE_URL = "https://api.pennsieve.io"
 
-try:
-  r = requests.post(f"{PENNSIEVE_URL}/packages", headers={"Content-Type": "application/json", "Authorization": f"Bearer {client.getUser()['session_token']}",}, 
-                    json={
-                          "name": "caged", 
-                          "dataset": "N:dataset:c38eb185-39ef-426a-b636-b1b9b7b4283a", 
-                          "packageType": "collection", 
-                          "properties": [ { "key": "aa", "value": "Aahhh" }] 
-                          })
-  r.raise_for_status()
-  res = r.json()
+# try:
+#   r = requests.post(f"{PENNSIEVE_URL}/packages", headers={"Content-Type": "application/json", "Authorization": f"Bearer {client.getUser()['session_token']}",}, 
+#                     json={
+#                           "name": "caged", 
+#                           "dataset": "N:dataset:c38eb185-39ef-426a-b636-b1b9b7b4283a", 
+#                           "packageType": "collection", 
+#                           "properties": [ { "key": "aa", "value": "Aahhh" }] 
+#                           })
+#   r.raise_for_status()
+#   res = r.json()
 
-  print(res)
-except Exception as e:
-  print(e)
-  print(e.response)
+#   print(res)
+# except Exception as e:
+#   print(e)
+#   print(e.response)
 
 
 # client.manifest.upload(49)
