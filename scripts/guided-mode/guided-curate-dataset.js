@@ -848,6 +848,7 @@ const getNonSkippedGuidedModePages = (parentElementToGetChildrenPagesFrom) => {
 };
 
 const renderSideBar = (activePage) => {
+  console.log(activePage);
   const guidedNavItemsContainer = document.getElementById("guided-nav-items");
 
   const completedTabs = sodaJSONObj["completed-tabs"];
