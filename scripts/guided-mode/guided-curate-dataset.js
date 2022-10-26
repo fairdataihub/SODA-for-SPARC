@@ -4446,6 +4446,10 @@ const guidedResumeProgress = async (resumeProgressButton) => {
     pageToReturnTo = "guided-dataset-dissemination-tab";
   }
 
+  // Delete the button status for the Pennsieve account confirmation section
+  // So the user has to confirm their Pennsieve account before uploading
+  delete sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
+
   guidedTransitionFromHome();
   //Set the dataset name and subtitle input values using the
   //previously saved dataset name and subtitle
