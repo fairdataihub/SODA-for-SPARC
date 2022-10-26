@@ -557,7 +557,7 @@ const run_pre_flight_checks = async (check_update = true) => {
       let { value: result } = await Swal.fire({
         icon: "error",
         title: "Pennsieve Agent error!",
-        text: "It seems you have not downloaded the new Pennsieve Agent. It is highly recommended that you download it in order to use all of SODA's features.",
+        text: "It seems you have not downloaded the Pennsieve Agent, or that you have the old Pennsieve Agent installed. It is highly recommended that you download the new Pennsieve Agent in order to use all of SODA's features.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showCancelButton: true,
