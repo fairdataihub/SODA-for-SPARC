@@ -946,8 +946,14 @@ const renderSideBar = (activePage) => {
   );
   for (const guidedNavBarSectionPage of guidedNavBarSectionPages) {
     guidedNavBarSectionPage.addEventListener("click", async (event) => {
-      const pageToNavigateTo = guidedNavBarSectionPage.getAttribute("data-target-page");
       const currentPageUserIsLeaving = CURRENT_PAGE.attr("id");
+      const pageToNavigateTo = guidedNavBarSectionPage.getAttribute("data-target-page");
+
+      // Do nothing if the user clicks the tab of the page they are currently on
+      if (currentPageUserIsLeaving === pageToNavigateTo) {
+        return;
+      }
+
       try {
         await savePageChanges(currentPageUserIsLeaving);
         const allNonSkippedPages = getNonSkippedGuidedModePages(document).map(
@@ -965,10 +971,15 @@ const renderSideBar = (activePage) => {
             await checkIfPageIsValid(page);
           } catch (error) {
             await openPage(page);
-            notyf.open({
-              duration: "5000",
-              type: "error",
-              message: "Error on intermediary page: " + error,
+            await Swal.fire({
+              title: "An error occurred on an intermediarmy page",
+              html: "You must resolve before continuing",
+              icon: "error",
+              confirmButtonText: "Fix this page up",
+              focusConfirm: true,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              width: 500,
             });
             return;
           }
