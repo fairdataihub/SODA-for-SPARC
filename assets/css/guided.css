@@ -1346,13 +1346,13 @@ h1.guided--text-sub-step {
   }
 }
 
-.tippy-box[data-theme~='soda'] {
+.tippy-box[data-theme~="soda"] {
   background-color: #13716d;
   color: white;
   /* white-space: nowrap; */
   /* overflow: hidden; */
 }
 
-.tippy-box[data-theme~='soda'][data-placement^='top'] > .tippy-arrow::before {
+.tippy-box[data-theme~="soda"][data-placement^="top"] > .tippy-arrow::before {
   border-top-color: #13716d;
 }
