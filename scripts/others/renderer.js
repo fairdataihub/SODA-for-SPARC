@@ -6045,55 +6045,67 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
         button.disabled = true;
         button.style.display = "none";
       }
-    }
+    };
     // let folderlvl = 0;
     let currentPageID = CURRENT_PAGE.attr("id");
-    let primarySampleCapsule = document.getElementById("guided-primary-samples-organization-page-capsule");
-    let primarySubjectCapsule = document.getElementById("guided-primary-subjects-organization-page-capsule");
-    let sourceSampleCapsule = document.getElementById("guided-source-samples-organization-page-capsule");
-    let sourceSubjectCapsule = document.getElementById("guided-source-subjects-organization-page-capsule");
-    let derivativeSampleCapsule = document.getElementById("guided-derivative-samples-organization-page-capsule");
-    let derivativeSubjectCapsule = document.getElementById("guided-derivative-subjects-organization-page-capsule");
+    let primarySampleCapsule = document.getElementById(
+      "guided-primary-samples-organization-page-capsule"
+    );
+    let primarySubjectCapsule = document.getElementById(
+      "guided-primary-subjects-organization-page-capsule"
+    );
+    let sourceSampleCapsule = document.getElementById(
+      "guided-source-samples-organization-page-capsule"
+    );
+    let sourceSubjectCapsule = document.getElementById(
+      "guided-source-subjects-organization-page-capsule"
+    );
+    let derivativeSampleCapsule = document.getElementById(
+      "guided-derivative-samples-organization-page-capsule"
+    );
+    let derivativeSubjectCapsule = document.getElementById(
+      "guided-derivative-subjects-organization-page-capsule"
+    );
     let datasetPath = document.getElementById("guided-input-global-path");
     let pathDisplay = document.getElementById("datasetPathDisplay");
     let fileExplorerBackButton = document.getElementById("guided-button-back");
     let splitPath = datasetPath.value.split("/");
     console.log(currentPageID);
 
-    //remove the last element in array is it is always '' as well as 'My_dataset_folder' in index 0
-    if(splitPath[0] === "My_dataset_folder") splitPath.shift();
+    //remove the last element in array is it is always ''
+    if (splitPath[0] === "My_dataset_folder") splitPath.shift();
     splitPath.pop();
     console.log(splitPath);
 
     //get 3 last lvls of the folder path
     let trimmedPath = "";
-    if(currentPageID.includes("primary")) {
-      if(primarySampleCapsule.classList.contains("active")) {
+    if (currentPageID.includes("primary")) {
+      if (primarySampleCapsule.classList.contains("active")) {
         console.log("3 paths");
         splitPathCheck(3, fileExplorerBackButton);
       }
-      if(primarySubjectCapsule.classList.contains("active")) {
+      if (primarySubjectCapsule.classList.contains("active")) {
         console.log("2 paths");
         splitPathCheck(2, fileExplorerBackButton);
       }
     }
-    if(currentPageID.includes("source")) {
-      if(sourceSubjectCapsule.classList.contains("active")) {
+    if (currentPageID.includes("source")) {
+      if (sourceSubjectCapsule.classList.contains("active")) {
         console.log("2 paths");
         splitPathCheck(2, fileExplorerBackButton);
       }
-      if(sourceSampleCapsule.classList.contains("active")) {
+      if (sourceSampleCapsule.classList.contains("active")) {
         console.log("3 paths");
         splitPathCheck(3, fileExplorerBackButton);
       }
     }
-    if(currentPageID.includes("derivative")) {
+    if (currentPageID.includes("derivative")) {
       //check the active capsule
-      if(derivativeSampleCapsule.classList.contains("active")) {
+      if (derivativeSampleCapsule.classList.contains("active")) {
         console.log("3 paths");
         splitPathCheck(3, fileExplorerBackButton);
       }
-      if(derivativeSubjectCapsule.classList.contains("active")) {
+      if (derivativeSubjectCapsule.classList.contains("active")) {
         console.log("2 paths");
         splitPathCheck(2, fileExplorerBackButton);
       }
@@ -6109,8 +6121,6 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     }
 
     pathDisplay.innerText = trimmedPath;
-
-
 
     //get the path of the dataset when rendering
     //with the path you can determine whether or not to disable the back button
