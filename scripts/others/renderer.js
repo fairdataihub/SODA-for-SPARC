@@ -6121,7 +6121,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     for (let i = splitPath.length - 3; i < splitPath.length; i++) {
       if (splitPath[i] === "My_dataset_folder" || splitPath[i] === undefined) continue;
       trimmedPath += splitPath[i] + "/";
-      folderlvl += 1;
+      // folderlvl += 1;
     }
 
     pathDisplay.innerText = trimmedPath;
