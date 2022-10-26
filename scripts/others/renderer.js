@@ -6034,6 +6034,8 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
   //break elements into sets of 100
   if (organizeDSglobalPath.id === "guided-input-global-path") {
     const splitPathCheck = (num, button) => {
+      // console.log(splitPath);
+      // console.log(num);
       if(splitPath.length > num) {
         //button should be enabled
         button.disabled = false;
@@ -6044,7 +6046,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
         button.style.display = "none";
       }
     }
-    let folderlvl = 0;
+    // let folderlvl = 0;
     let currentPageID = CURRENT_PAGE.attr("id");
     let primarySampleCapsule = document.getElementById("guided-primary-samples-organization-page-capsule");
     let primarySubjectCapsule = document.getElementById("guided-primary-subjects-organization-page-capsule");
@@ -6058,7 +6060,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     let splitPath = datasetPath.value.split("/");
     console.log(currentPageID);
 
-    //remove the last element in array is it is always ''
+    //remove the last element in array is it is always '' as well as 'My_dataset_folder' in index 0
     if(splitPath[0] === "My_dataset_folder") splitPath.shift();
     splitPath.pop();
     console.log(splitPath);
@@ -6069,56 +6071,20 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
       if(primarySampleCapsule.classList.contains("active")) {
         console.log("3 paths");
         splitPathCheck(3, fileExplorerBackButton);
-        // if(splitPath.length > 3) {
-        //   //button should be enabled
-        //   fileExplorerBackButton.disabled = false;
-        //   fileExplorerBackButton.style.display = "block";
-        // } else {
-        //   //button should be disabled
-        //   fileExplorerBackButton.disabled = true;
-        //   fileExplorerBackButton.style.display = "none";
-        // }
       }
       if(primarySubjectCapsule.classList.contains("active")) {
         console.log("2 paths");
         splitPathCheck(2, fileExplorerBackButton);
-        // if(splitPath.length > 2) {
-        //   //button should be enabled
-        //   fileExplorerBackButton.disabled = false;
-        //   fileExplorerBackButton.style.display = "block";
-        // } else {
-        //   //button should be disabled
-        //   fileExplorerBackButton.disabled = true;
-        //   fileExplorerBackButton.style.display = "none";
-        // }
       }
     }
     if(currentPageID.includes("source")) {
       if(sourceSubjectCapsule.classList.contains("active")) {
         console.log("2 paths");
         splitPathCheck(2, fileExplorerBackButton);
-        // if(splitPath.length > 2) {
-        //   //button should be enabled
-        //   fileExplorerBackButton.disabled = false;
-        //   fileExplorerBackButton.style.display = "block";
-        // } else {
-        //   //button should be disabled
-        //   fileExplorerBackButton.disabled = true;
-        //   fileExplorerBackButton.style.display = "none";
-        // }
       }
       if(sourceSampleCapsule.classList.contains("active")) {
         console.log("3 paths");
         splitPathCheck(3, fileExplorerBackButton);
-        // if(splitPath.length > 3) {
-        //   //button should be enabled
-        //   fileExplorerBackButton.disabled = false;
-        //   fileExplorerBackButton.style.display = "block";
-        // } else {
-        //   //button should be disabled
-        //   fileExplorerBackButton.disabled = true;
-        //   fileExplorerBackButton.style.display = "none";
-        // }
       }
     }
     if(currentPageID.includes("derivative")) {
@@ -6126,29 +6092,14 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
       if(derivativeSampleCapsule.classList.contains("active")) {
         console.log("3 paths");
         splitPathCheck(3, fileExplorerBackButton);
-        // if(splitPath.length > 3) {
-        //   //button should be enabled
-        //   fileExplorerBackButton.disabled = false;
-        //   fileExplorerBackButton.style.display = "block";
-        // } else {
-        //   //button should be disabled
-        //   fileExplorerBackButton.disabled = true;
-        //   fileExplorerBackButton.style.display = "none";
-        // }
       }
       if(derivativeSubjectCapsule.classList.contains("active")) {
         console.log("2 paths");
         splitPathCheck(2, fileExplorerBackButton);
-        // if(splitPath.length > 2) {
-        //   //button should be enabled
-        //   fileExplorerBackButton.disabled = false;
-        //   fileExplorerBackButton.style.display = "block";
-        // } else {
-        //   //button should be disabled
-        //   fileExplorerBackButton.disabled = true;
-        //   fileExplorerBackButton.style.display = "none";
-        // }
       }
+    }
+    if(currentPageID.includes("code") || currentPageID.includes("protocol") || currentPageID.includes("docs")) {
+      splitPathCheck(1, fileExplorerBackButton);
     }
 
     for (let i = splitPath.length - 3; i < splitPath.length; i++) {
