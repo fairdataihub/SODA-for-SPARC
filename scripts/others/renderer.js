@@ -6036,7 +6036,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     const splitPathCheck = (num, button) => {
       // console.log(splitPath);
       // console.log(num);
-      if(splitPath.length > num) {
+      if (splitPath.length > num) {
         //button should be enabled
         button.disabled = false;
         button.style.display = "block";
@@ -6110,7 +6110,11 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
         splitPathCheck(2, fileExplorerBackButton);
       }
     }
-    if(currentPageID.includes("code") || currentPageID.includes("protocol") || currentPageID.includes("docs")) {
+    if (
+      currentPageID.includes("code") ||
+      currentPageID.includes("protocol") ||
+      currentPageID.includes("docs")
+    ) {
       splitPathCheck(1, fileExplorerBackButton);
     }
 
