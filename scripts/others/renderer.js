@@ -6033,45 +6033,133 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
   //allow amount to choose how many elements to create
   //break elements into sets of 100
   if (organizeDSglobalPath.id === "guided-input-global-path") {
+    const splitPathCheck = (num, button) => {
+      if(splitPath.length > num) {
+        //button should be enabled
+        button.disabled = false;
+        button.style.display = "block";
+      } else {
+        //button should be disabled
+        button.disabled = true;
+        button.style.display = "none";
+      }
+    }
+    let folderlvl = 0;
     let currentPageID = CURRENT_PAGE.attr("id");
+    let primarySampleCapsule = document.getElementById("guided-primary-samples-organization-page-capsule");
+    let primarySubjectCapsule = document.getElementById("guided-primary-subjects-organization-page-capsule");
+    let sourceSampleCapsule = document.getElementById("guided-source-samples-organization-page-capsule");
+    let sourceSubjectCapsule = document.getElementById("guided-source-subjects-organization-page-capsule");
+    let derivativeSampleCapsule = document.getElementById("guided-derivative-samples-organization-page-capsule");
+    let derivativeSubjectCapsule = document.getElementById("guided-derivative-subjects-organization-page-capsule");
     let datasetPath = document.getElementById("guided-input-global-path");
     let pathDisplay = document.getElementById("datasetPathDisplay");
     let fileExplorerBackButton = document.getElementById("guided-button-back");
     let splitPath = datasetPath.value.split("/");
+    console.log(currentPageID);
 
     //remove the last element in array is it is always ''
+    if(splitPath[0] === "My_dataset_folder") splitPath.shift();
     splitPath.pop();
     console.log(splitPath);
 
     //get 3 last lvls of the folder path
     let trimmedPath = "";
-    let folderlvl = 0;
+    if(currentPageID.includes("primary")) {
+      if(primarySampleCapsule.classList.contains("active")) {
+        console.log("3 paths");
+        splitPathCheck(3, fileExplorerBackButton);
+        // if(splitPath.length > 3) {
+        //   //button should be enabled
+        //   fileExplorerBackButton.disabled = false;
+        //   fileExplorerBackButton.style.display = "block";
+        // } else {
+        //   //button should be disabled
+        //   fileExplorerBackButton.disabled = true;
+        //   fileExplorerBackButton.style.display = "none";
+        // }
+      }
+      if(primarySubjectCapsule.classList.contains("active")) {
+        console.log("2 paths");
+        splitPathCheck(2, fileExplorerBackButton);
+        // if(splitPath.length > 2) {
+        //   //button should be enabled
+        //   fileExplorerBackButton.disabled = false;
+        //   fileExplorerBackButton.style.display = "block";
+        // } else {
+        //   //button should be disabled
+        //   fileExplorerBackButton.disabled = true;
+        //   fileExplorerBackButton.style.display = "none";
+        // }
+      }
+    }
+    if(currentPageID.includes("source")) {
+      if(sourceSubjectCapsule.classList.contains("active")) {
+        console.log("2 paths");
+        splitPathCheck(2, fileExplorerBackButton);
+        // if(splitPath.length > 2) {
+        //   //button should be enabled
+        //   fileExplorerBackButton.disabled = false;
+        //   fileExplorerBackButton.style.display = "block";
+        // } else {
+        //   //button should be disabled
+        //   fileExplorerBackButton.disabled = true;
+        //   fileExplorerBackButton.style.display = "none";
+        // }
+      }
+      if(sourceSampleCapsule.classList.contains("active")) {
+        console.log("3 paths");
+        splitPathCheck(3, fileExplorerBackButton);
+        // if(splitPath.length > 3) {
+        //   //button should be enabled
+        //   fileExplorerBackButton.disabled = false;
+        //   fileExplorerBackButton.style.display = "block";
+        // } else {
+        //   //button should be disabled
+        //   fileExplorerBackButton.disabled = true;
+        //   fileExplorerBackButton.style.display = "none";
+        // }
+      }
+    }
+    if(currentPageID.includes("derivative")) {
+      //check the active capsule
+      if(derivativeSampleCapsule.classList.contains("active")) {
+        console.log("3 paths");
+        splitPathCheck(3, fileExplorerBackButton);
+        // if(splitPath.length > 3) {
+        //   //button should be enabled
+        //   fileExplorerBackButton.disabled = false;
+        //   fileExplorerBackButton.style.display = "block";
+        // } else {
+        //   //button should be disabled
+        //   fileExplorerBackButton.disabled = true;
+        //   fileExplorerBackButton.style.display = "none";
+        // }
+      }
+      if(derivativeSubjectCapsule.classList.contains("active")) {
+        console.log("2 paths");
+        splitPathCheck(2, fileExplorerBackButton);
+        // if(splitPath.length > 2) {
+        //   //button should be enabled
+        //   fileExplorerBackButton.disabled = false;
+        //   fileExplorerBackButton.style.display = "block";
+        // } else {
+        //   //button should be disabled
+        //   fileExplorerBackButton.disabled = true;
+        //   fileExplorerBackButton.style.display = "none";
+        // }
+      }
+    }
+
     for (let i = splitPath.length - 3; i < splitPath.length; i++) {
       if (splitPath[i] === "My_dataset_folder" || splitPath[i] === undefined) continue;
       trimmedPath += splitPath[i] + "/";
       folderlvl += 1;
     }
-    console.log(folderlvl);
-    //if the string includes: source, primary, code, etc (high lvl folders) disable the back button, other than that no
-    //check if string contains any of the high lvl folder names, if so disable the button
-    for (let i = 0; i < rootFolders.length; i++) {
-      if (trimmedPath.includes(rootFolders[i]) || folderlvl === 2) {
-        fileExplorerBackButton.disabled = true;
-        fileExplorerBackButton.style.display = "none";
-        console.log("button should be disabled");
-        console.log(trimmedPath);
-        break;
-      } else {
-        console.log("button is not disabled");
-        console.log(trimmedPath);
-        fileExplorerBackButton.disabled = false;
-        fileExplorerBackButton.style.display = "block";
-      }
-    }
-    // console.log(trimmedPath);
+
     pathDisplay.innerText = trimmedPath;
 
-    console.log(currentPageID);
+
 
     //get the path of the dataset when rendering
     //with the path you can determine whether or not to disable the back button
