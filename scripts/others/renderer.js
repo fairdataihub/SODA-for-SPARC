@@ -6029,14 +6029,14 @@ function sortObjByKeys(object) {
 }
 
 const listItems = async (jsonObj, uiItem, amount_req, reset) => {
-  const rootFolders = ['code', 'primary', 'docs', 'source', 'derivative', 'protocol'];
+  const rootFolders = ["code", "primary", "docs", "source", "derivative", "protocol"];
   //allow amount to choose how many elements to create
   //break elements into sets of 100
-  if(organizeDSglobalPath.id === "guided-input-global-path") {
-    let currentPageID = CURRENT_PAGE.attr('id')
-    let datasetPath = document.getElementById('guided-input-global-path');
-    let pathDisplay = document.getElementById('datasetPathDisplay');
-    let fileExplorerBackButton = document.getElementById('guided-button-back');
+  if (organizeDSglobalPath.id === "guided-input-global-path") {
+    let currentPageID = CURRENT_PAGE.attr("id");
+    let datasetPath = document.getElementById("guided-input-global-path");
+    let pathDisplay = document.getElementById("datasetPathDisplay");
+    let fileExplorerBackButton = document.getElementById("guided-button-back");
     let splitPath = datasetPath.value.split("/");
 
     //remove the last element in array is it is always ''
@@ -6075,10 +6075,9 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
 
     //get the path of the dataset when rendering
     //with the path you can determine whether or not to disable the back button
-
   } else {
     //this is where you will do nothing with the back button
-    console.log('do nothing here');
+    console.log("do nothing here");
   }
 
   var appendString = "";
