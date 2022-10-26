@@ -82,7 +82,10 @@ def get_agent_installation_location():
         return "/usr/local/bin/pennsieve"
 
     elif sys.platform in ["win32", "cygwin"]:
-        return "C:/Program Files/Pennsieve/pennsieve.exe"
+        if exists("C:/Program Files (x86)/Pennsieve/pennsieve.exe"): 
+            return "C:/Program Files (x86)/Pennsieve/pennsieve.exe"
+        else:
+            return "C:/Program Files/Pennsieve/pennsieve.exe"
 
 def check_agent_installation():
     """
@@ -111,10 +114,9 @@ def get_agent_version():
     if not check_agent_installation(): 
         raise FileNotFoundError("Pennsieve agent not installed. Please install the agent before running this function.")
     
-    try:
-        version = subprocess.run([get_agent_installation_location(), "version"], capture_output=True, check=True).stdout
-    except Exception as e:
-        raise e
+
+    version = subprocess.run([get_agent_installation_location(), "version"], capture_output=True, check=True).stdout
+
     
     
     # decode the response 
@@ -124,8 +126,9 @@ def get_agent_version():
 
 
 def agent_up_to_date():
+    
     v = get_agent_version()
-
+    
     # search string for 1.2.2
     # TODO: Improve agent version parsing to check for Agent Version and CLI Version separately. Both need to match.
     if "1.2.2" in v:
@@ -140,6 +143,7 @@ def agent_up_to_date():
 #     start_agent()
 
 
+
 #     if not agent_up_to_date():
 #         print("Please update the agent to the latest version.") # provide a link to the latest version of the agent
 #     else:
@@ -149,7 +153,8 @@ def agent_up_to_date():
 #     print("Agent not installed")
 
 try:
-    get_agent_version()
+    v = get_agent_version()
+    print(v)
 except Exception as e:
     print(e)
 
