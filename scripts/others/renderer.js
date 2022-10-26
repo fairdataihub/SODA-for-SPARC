@@ -6041,17 +6041,21 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
 
     //remove the last element in array is it is always ''
     splitPath.pop();
+    console.log(splitPath);
 
     //get 3 last lvls of the folder path
     let trimmedPath = "";
+    let folderlvl = 0;
     for(let i = splitPath.length - 3; i < splitPath.length; i++) {
+      if(splitPath[i] === "My_dataset_folder" || splitPath[i] === undefined) continue;
       trimmedPath += splitPath[i] + "/";
+      folderlvl += 1;
     }
-    
+    console.log(folderlvl);
     //if the string includes: source, primary, code, etc (high lvl folders) disable the back button, other than that no
     //check if string contains any of the high lvl folder names, if so disable the button
     for(let i = 0; i < rootFolders.length; i++) {
-      if(trimmedPath.includes(rootFolders[i])) {
+      if(trimmedPath.includes(rootFolders[i]) || folderlvl === 2) {
         fileExplorerBackButton.disabled = true;
         fileExplorerBackButton.style.display = "none";
         console.log("button should be disabled");
@@ -6076,6 +6080,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     //this is where you will do nothing with the back button
     console.log('do nothing here');
   }
+
   var appendString = "";
   var sortedObj = sortObjByKeys(jsonObj);
   let file_elements = [],
