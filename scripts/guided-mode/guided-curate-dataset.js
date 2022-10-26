@@ -278,10 +278,14 @@ const savePageChanges = async (pageBeingLeftID) => {
           heightAuto: false,
           allowOutsideClick: false,
         });
+        console.log("foo");
 
         if (!continueWithEmptyFolders) {
-          $(this).removeClass("loading");
-          return;
+          errorArray.push({
+            type: "notyf",
+            message: "Please remove the empty files before continuing",
+          });
+          throw errorArray;
         }
       }
     }
