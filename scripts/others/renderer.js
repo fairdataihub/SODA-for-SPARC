@@ -6029,7 +6029,7 @@ function sortObjByKeys(object) {
 }
 
 const listItems = async (jsonObj, uiItem, amount_req, reset) => {
-  const rootFolders = ["code", "primary", "docs", "source", "derivative", "protocol"];
+  const rootFolders = ["primary", "source", "derivative"];
   //allow amount to choose how many elements to create
   //break elements into sets of 100
   if (organizeDSglobalPath.id === "guided-input-global-path") {
@@ -6040,10 +6040,12 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
         //button should be enabled
         button.disabled = false;
         button.style.display = "block";
+        // document.getElementById("datasetPathDisplay").style.width = "96px";
       } else {
         //button should be disabled
         button.disabled = true;
         button.style.display = "none";
+        // document.getElementById("datasetPathDisplay").style.width = "145px";
       }
     };
     // let folderlvl = 0;
@@ -6070,10 +6072,12 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     let pathDisplay = document.getElementById("datasetPathDisplay");
     let fileExplorerBackButton = document.getElementById("guided-button-back");
     let splitPath = datasetPath.value.split("/");
+    let fullPath = datasetPath.value;
     console.log(currentPageID);
 
     //remove the last element in array is it is always ''
     if (splitPath[0] === "My_dataset_folder") splitPath.shift();
+    if(rootFolders.includes(splitPath[0])) splitPath.shift();
     splitPath.pop();
     console.log(splitPath);
 
@@ -6082,55 +6086,54 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     if (currentPageID.includes("primary")) {
       if (primarySampleCapsule.classList.contains("active")) {
         console.log("3 paths");
-        splitPathCheck(3, fileExplorerBackButton);
+        splitPathCheck(2, fileExplorerBackButton);
       }
       if (primarySubjectCapsule.classList.contains("active")) {
         console.log("2 paths");
-        splitPathCheck(2, fileExplorerBackButton);
+        splitPathCheck(1, fileExplorerBackButton);
       }
     }
     if (currentPageID.includes("source")) {
       if (sourceSubjectCapsule.classList.contains("active")) {
         console.log("2 paths");
-        splitPathCheck(2, fileExplorerBackButton);
+        splitPathCheck(1, fileExplorerBackButton);
       }
       if (sourceSampleCapsule.classList.contains("active")) {
         console.log("3 paths");
-        splitPathCheck(3, fileExplorerBackButton);
+        splitPathCheck(2, fileExplorerBackButton);
       }
     }
     if (currentPageID.includes("derivative")) {
       //check the active capsule
       if (derivativeSampleCapsule.classList.contains("active")) {
         console.log("3 paths");
-        splitPathCheck(3, fileExplorerBackButton);
+        splitPathCheck(2, fileExplorerBackButton);
       }
       if (derivativeSubjectCapsule.classList.contains("active")) {
         console.log("2 paths");
-        splitPathCheck(2, fileExplorerBackButton);
+        splitPathCheck(1, fileExplorerBackButton);
       }
     }
     if (
       currentPageID.includes("code") ||
       currentPageID.includes("protocol") ||
-      currentPageID.includes("docs")
+      currentPageID.includes("docs") ||
+      currentPageID.includes("helpers")
     ) {
+      console.log(splitPath);
       splitPathCheck(1, fileExplorerBackButton);
     }
 
-    for (let i = splitPath.length - 3; i < splitPath.length; i++) {
+    for (let i = 0; i < splitPath.length; i++) {
       if (splitPath[i] === "My_dataset_folder" || splitPath[i] === undefined) continue;
       trimmedPath += splitPath[i] + "/";
-      // folderlvl += 1;
     }
 
     pathDisplay.innerText = trimmedPath;
+    pathDisplay._tippy.setContent(fullPath)
 
     //get the path of the dataset when rendering
     //with the path you can determine whether or not to disable the back button
-  } else {
-    //this is where you will do nothing with the back button
-    console.log("do nothing here");
   }
 
   var appendString = "";
@@ -9205,4 +9208,10 @@ documentation_lottie_observer.observe(docu_lottie_section, {
 contact_us_lottie_observer.observe(contact_section, {
   attributes: true,
   attributeFilter: ["class"],
+});
+
+tippy("#datasetPathDisplay", {
+  placement: "top",
+  theme: "soda",
+  maxWidth: "100%"
 });
