@@ -541,11 +541,13 @@ const run_pre_flight_checks = async (check_update = true) => {
       // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
       account_present = await check_api_key();
       // TODO: Reimplement this section to work with the new agent
-      // if (account_present) {
-      //   // Check for an installed Pennsieve agent
-      //   await wait(500);
-      //   [agent_installed_response, agent_version_response] =
-      //     await check_agent_installed();
+      if (account_present) {
+        console.log("Checking for the Pennsieve agent")
+        // Check for an installed Pennsieve agent
+        await wait(500);
+        [agent_installed_response, agent_version_response] =
+          await check_agent_installed();
+      }
       //   // If no agent is installed, download the latest agent from Github and link to their docs for installation instrucations if needed.
       //   if (!agent_installed_response) {
       //     Swal.fire({
@@ -914,20 +916,20 @@ const check_agent_installed = async () => {
 
   let responseObject;
 
-  // try {
-  //   responseObject = await client.get("/manage_datasets/check_agent_install");
-  // } catch (error) {
-  //   clientError(error);
-  //   notyf.dismiss(notification);
-  //   notyf.open({
-  //     type: "error",
-  //     message: "Pennsieve agent not found",
-  //   });
-  //   log.warn("Pennsieve agent not found");
-  //   return [false, userErrorMessage(error)];
-  // }
+  try {
+    responseObject = await client.get("/manage_datasets/check_agent_install");
+  } catch (error) {
+    clientError(error);
+    notyf.dismiss(notification);
+    notyf.open({
+      type: "error",
+      message: "Pennsieve agent not found",
+    });
+    log.warn("Pennsieve agent not found");
+    return [false, userErrorMessage(error)];
+  }
 
-  // let { agent_version } = responseObject.data;
+  let { agent_version } = responseObject.data;
 
   notyf.dismiss(notification);
   notyf.open({

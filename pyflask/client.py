@@ -87,6 +87,7 @@ def get_agent_installation_location():
         else:
             return "C:/Program Files/Pennsieve/pennsieve.exe"
 
+
 def check_agent_installation():
     """
     Check if the Pennsieve agent is installed on the computer. 

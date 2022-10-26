@@ -702,27 +702,6 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
 #         )
 
 
-# def check_agent_install():
-#     """
-#     Associated with 'Submit dataset' button in 'Submit new dataset' section
-#     Uploads the specified folder to the specified dataset on Pennsieve account
-
-#     Input:
-#         accountname: account in which the dataset needs to be created (string)
-#         bfdataset: name of the dataset on Pennsieve (string)
-#         pathdataset: path of dataset on local machine (string)
-#     Action:
-#         Uploads dataset on Pennsieve account
-#     """
-#     ## check if agent is installed
-#     try:
-#         validate_agent_installation(Settings())
-#         return agent_version(Settings())
-#     except AgentError as e:
-#         raise AgentError(
-#             "We highly recommend installing the Pennsieve agent and restarting SODA before you upload any files."
-#         ) from e
-
 
 # def agent_version(settings):
 #     """

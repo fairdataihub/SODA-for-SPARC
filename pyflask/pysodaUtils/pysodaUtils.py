@@ -46,13 +46,17 @@ def get_agent_installation_location():
         Get the location of the Pennsieve agent installation for Darwin, Linux, and Windows. 
     """
     if sys.platform == "darwin":
-        return "/usr/local/opt/pennsieve/bin/pennsieve"
+        return "/usr/local/bin/pennsieve"
 
     elif sys.platform.startswith("linux"):
         return "/usr/local/bin/pennsieve"
 
     elif sys.platform in ["win32", "cygwin"]:
-        return "C:/Program Files/Pennsieve/pennsieve.exe"
+        if exists("C:/Program Files (x86)/Pennsieve/pennsieve.exe"): 
+            return "C:/Program Files (x86)/Pennsieve/pennsieve.exe"
+        else:
+            return "C:/Program Files/Pennsieve/pennsieve.exe"
+
 
 def check_agent_installation():
     """
@@ -69,7 +73,9 @@ def start_agent():
     if not check_agent_installation(): 
         raise FileNotFoundError("Pennsieve agent not installed. Please install the agent before running this function.")
     
-    return subprocess.run(get_agent_installation_location(), check=True)
+    command = [get_agent_installation_location(), "agent"]
+
+    return subprocess.run(command, check=True)
 
 
 def get_agent_version():
@@ -79,16 +85,29 @@ def get_agent_version():
     if not check_agent_installation(): 
         raise FileNotFoundError("Pennsieve agent not installed. Please install the agent before running this function.")
     
-    try:
-        version = subprocess.check_output([get_agent_installation_location(), "version"], check=True, stderr=STDOUT)
-    except Exception as e:
-        raise e
+
+    version = subprocess.run([get_agent_installation_location(), "version"], capture_output=True, check=True).stdout
+
     
     
     # decode the response 
     version = version.decode().strip()
 
     return version
+
+
+def agent_up_to_date():
+    
+    v = get_agent_version()
+    
+    # search string for 1.2.2
+    # TODO: Improve agent version parsing to check for Agent Version and CLI Version separately. Both need to match.
+    if "1.2.2" in v:
+        print("Agent is up to date")
+        return True
+    else:
+        print("Agent is not up to date")
+        return False
 
 
 
