@@ -76,7 +76,7 @@ def get_agent_installation_location():
         Get the location of the Pennsieve agent installation for Darwin, Linux, and Windows. 
     """
     if sys.platform == "darwin":
-        return "/usr/local/opt/pennsieve/bin/pennsieve"
+        return "/usr/local/bin/pennsieve"
 
     elif sys.platform.startswith("linux"):
         return "/usr/local/bin/pennsieve"
@@ -152,11 +152,11 @@ def agent_up_to_date():
 # else:
 #     print("Agent not installed")
 
-try:
-    v = get_agent_version()
-    print(v)
-except Exception as e:
-    print(e)
+# try:
+#     v = get_agent_version()
+#     print(v)
+# except Exception as e:
+#     print(e)
 
     
 
