@@ -965,17 +965,26 @@ const renderSideBar = (activePage) => {
           allNonSkippedPages.indexOf(currentPageUserIsLeaving),
           allNonSkippedPages.indexOf(pageToNavigateTo)
         );
-        console.log("pages between");
+
+        //If the user is skipping forward with the nav bar, pages between current page and target page
+        //Need to be validated. If they're going backwards, the for loop below will not be ran.
         for (const page of pagesBetweenCurrentAndTargetPage) {
           try {
             await checkIfPageIsValid(page);
           } catch (error) {
+            console.log(error);
             await openPage(page);
             await Swal.fire({
-              title: "An error occurred on an intermediarmy page",
-              html: "You must resolve before continuing",
+              title: "An error occurred on an intermediary page",
+              html: `You must fix the following errors before continuing:
+                <br />
+                <br />
+                <ul>
+                  ${error.map((error) => `<li class="text-left">${error.message}</li>`).join("")}
+                </ul>
+              `,
               icon: "error",
-              confirmButtonText: "Fix this page up",
+              confirmButtonText: "Fix the errors on this page",
               focusConfirm: true,
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
@@ -985,6 +994,7 @@ const renderSideBar = (activePage) => {
           }
         }
 
+        //All pages have been validated. Open the target page.
         await openPage(pageToNavigateTo);
       } catch (error) {
         const pageWithErrorName = CURRENT_PAGE.data("pageName");
@@ -11208,6 +11218,35 @@ $(document).ready(async () => {
         }
       });
       return;
+    }
+
+    const allNonSkippedPages = getNonSkippedGuidedModePages(document).map((element) => element.id);
+
+    //If the user is skipping forward with the nav bar, pages between current page and target page
+    //Need to be validated. If they're going backwards, the for loop below will not be ran.
+    for (const page of allNonSkippedPages) {
+      try {
+        await checkIfPageIsValid(page);
+      } catch (error) {
+        await openPage(page);
+        await Swal.fire({
+          title: "An error occurred while ensuring your dataset is ready to be uploaded",
+          html: `You must fix the following errors generating your:
+              <br />
+              <br />
+              <ul>
+                ${error.map((error) => `<li class="text-left">${error.message}</li>`).join("")}
+              </ul>
+            `,
+          icon: "error",
+          confirmButtonText: "Fix the errors on this page",
+          focusConfirm: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          width: 500,
+        });
+        return;
+      }
     }
 
     openPage("guided-dataset-generation-tab");
