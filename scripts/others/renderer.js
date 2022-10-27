@@ -6077,7 +6077,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
 
     //remove the last element in array is it is always ''
     if (splitPath[0] === "My_dataset_folder") splitPath.shift();
-    if(rootFolders.includes(splitPath[0])) splitPath.shift();
+    if (rootFolders.includes(splitPath[0])) splitPath.shift();
     splitPath.pop();
     console.log(splitPath);
 
@@ -6130,7 +6130,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     }
 
     pathDisplay.innerText = trimmedPath;
-    pathDisplay._tippy.setContent(fullPath)
+    pathDisplay._tippy.setContent(fullPath);
 
     //get the path of the dataset when rendering
     //with the path you can determine whether or not to disable the back button
@@ -9213,5 +9213,5 @@ contact_us_lottie_observer.observe(contact_section, {
 tippy("#datasetPathDisplay", {
   placement: "top",
   theme: "soda",
-  maxWidth: "100%"
+  maxWidth: "100%",
 });
