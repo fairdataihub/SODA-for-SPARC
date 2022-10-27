@@ -674,48 +674,6 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
         raise Exception(e) from e
 
 
-# def clear_queue():
-
-#     command = [agent_cmd(), "upload-status", "--cancel-all"]
-
-#     return subprocess.run(command, check=True)  # env=agent_env(?settings?)
-
-
-# def agent_running():
-#     listen_port = 11235
-
-#     try:
-#         # x = "ws://127.0.0.1:11235"
-#         # create_connection(x).close()
-#         # CHANGE BACK
-#         create_connection(socket_address(listen_port)).close()
-
-#     except socket.error as e:
-
-#         if e.errno == errno.ECONNREFUSED:  # ConnectionRefusedError for Python 3
-#             return True
-#         else:
-#             raise e
-#     else:
-#         raise AgentError(
-#             "The Pennsieve agent is already running. Learn more about how to solve the issue <a href='https://docs.sodaforsparc.io/docs/common-errors/pennsieve-agent-is-already-running' target='_blank'>here</a>."
-#         )
-
-
-
-# def agent_version(settings):
-#     """
-#     Check whether the agent is installed and at least the minimum version.
-#     """
-#     try:
-#         env = agent_env(settings)
-#         env["PENNSIEVE_LOG_LEVEL"] = "ERROR"  # Avoid spurious output with the version
-#         version = subprocess.check_output([agent_cmd(), "version"], env=env)
-#         return {"agent_version": version.decode().strip()}
-#     except (AgentError, subprocess.CalledProcessError, EnvironmentError) as e:
-#         raise AgentError(
-#             "Agent not installed. Visit https://developer.pennsieve.io/agent for installation directions."
-#         ) from e
 
 completed_files = []
 files_uploaded = 0

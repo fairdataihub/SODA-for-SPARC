@@ -10,6 +10,7 @@ import socket
 import errno
 import re
 import sys
+from os.path import exists 
 
 
 def clear_queue():
@@ -56,7 +57,6 @@ def get_agent_installation_location():
             return "C:/Program Files (x86)/Pennsieve/pennsieve.exe"
         else:
             return "C:/Program Files/Pennsieve/pennsieve.exe"
-
 
 def check_agent_installation():
     """

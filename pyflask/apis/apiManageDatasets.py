@@ -38,6 +38,8 @@ from manageDatasets import (
     scale_image
 )
 
+from pysodaUtils import get_agent_version
+
 from namespaces import get_namespace, NamespaceEnum
 from errorHandlers import notBadRequestException
 
@@ -348,13 +350,10 @@ class CheckAgentInstall(Resource):
   @api.marshal_with(model_pennsieve_agent_response, False, 200)
   @api.doc(responses={500: 'There was an internal server error', 400: "Pennsieve Agent is not installed"}, description="Returns the Pennsieve Agent version if it is installed.")
   def get(self):
-    from pennsieve.api.agent import AgentError
     try:
-      return check_agent_install()
+      return get_agent_version()
     except Exception as e:
       # if the exception is an AgentError, then return a 500 
-      if isinstance(e, AgentError):
-        api.abort(400, str(e))
       api.abort(500, str(e))
 
 

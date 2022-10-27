@@ -1,1 +1,1 @@
-from .pysodaUtils import clear_queue, agent_running, socket_address, agent_cmd, check_forbidden_characters, check_forbidden_characters_bf
+from .pysodaUtils import clear_queue, agent_running, socket_address, agent_cmd, check_forbidden_characters, check_forbidden_characters_bf, get_agent_version
