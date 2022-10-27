@@ -7296,7 +7296,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
       .map((subject) => {
         return `
         <div style="display: flex; flex-direction: column; width: 100%; border-radius: 4px; margin-bottom: 1rem">
-            <div class="justify-center" style="background: lightgray; padding: 5px 0 2px 0;">
+            <div class="justify-center" style="background: #ededed; padding: 5px 0 2px 0;">
               <label class="guided--form-label centered" style="color: black;">
                 ${subject.subjectName}
               </label>
@@ -7325,7 +7325,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
   for (const subject of subjectsWithSamplesOutsidePools) {
     asideElementTemplateLiteral += `
       <div style="display: flex; flex-direction: column; width: 100%; border-radius: 4px; margin-bottom: 1rem">
-      <div class="justify-center" style="background: lightgray; padding: 5px 0 2px 0;">
+      <div class="justify-center" style="background: #ededed; padding: 5px 0 2px 0;">
         <label class="guided--form-label centered" style="color: black;">
           ${subject.subjectName}
         </label>
