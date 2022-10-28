@@ -1147,8 +1147,6 @@ const helpSPARCAward = async (filetype, curationMode) => {
     }
     currentMilestonesInTextArea = $("#selected-milestone-1");
 
-    console.log(res[0]);
-    console.log(curationMode);
     if (res[0] && curationMode != "guided--getting-started") {
       var keyname = res[1];
       var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'submission\', '${curationMode}')" style="font-weight:500;text-decoration: underline"><svg class="svg-change-current-account bi bi-pencil-fill" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" viewBox="0 0 16 16">

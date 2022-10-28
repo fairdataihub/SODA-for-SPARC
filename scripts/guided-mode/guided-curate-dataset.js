@@ -855,7 +855,6 @@ const getNonSkippedGuidedModePages = (parentElementToGetChildrenPagesFrom) => {
 };
 
 const renderSideBar = (activePage) => {
-  console.log(activePage);
   const guidedNavItemsContainer = document.getElementById("guided-nav-items");
 
   const completedTabs = sodaJSONObj["completed-tabs"];
@@ -880,11 +879,8 @@ const renderSideBar = (activePage) => {
       };
     }
   }
-  console.log(pageStructureObject);
   let navBarHTML = "";
   for (const [highLevelStepName, highLevelStepObject] of Object.entries(pageStructureObject)) {
-    console.log(highLevelStepName);
-    console.log(highLevelStepObject);
     // Add the high level drop down to the nav bar
     const dropdDown = `
     <div class="guided--nav-bar-dropdown">
@@ -2925,7 +2921,6 @@ const openPage = async (targetPageID) => {
     if (targetPageID === "guided-prepare-helpers-tab") {
       //Hide the new dataset and existings local dataset capsule containers because
       //We do now know what the user wants to do yet
-      console.log("Hm");
       $("#guided-curate-new-dataset-branch-capsule-container").hide();
       $("#guided-curate-existing-local-dataset-branch-capsule-container").hide();
       const dataDeliverableButton = document.getElementById("getting-started-data-deliverable-btn");
@@ -5585,13 +5580,9 @@ const verifyOrcidID = (event) => {
   let userInput = event.value;
   //17 chars
   if (userInput.length > 17) {
-    console.log(userInput);
-    console.log(userInput.substr(0, 18));
     if (userInput.substr(0, 18) === "https://orcid.org/") {
-      console.log("correct format");
       //verify every four characters forward if they are a number
       let afterLink = userInput.substr(18);
-      console.log(afterLink);
     }
     // console.log(userInput.substr(17));
     //char 18 will be after the forward slash
@@ -5778,8 +5769,6 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
       ) {
         Swal.showValidationMessage("Please fill out all required fields");
       } else {
-        console.log(contributorOrcid);
-        console.log(contributorOrcid.length);
         if (contributorOrcid.length != 37) {
           Swal.showValidationMessage(
             "Please enter Orcid ID in the format: https://orcid.org/0000-0000-0000-0000"
@@ -5787,11 +5776,9 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
         } else {
           //verify first orcid link
           let orcidSite = contributorOrcid.substr(0, 18);
-          console.log(orcidSite);
           if (orcidSite === "https://orcid.org/") {
             //verify digits after
             let orcidDigits = contributorOrcid.substr(18);
-            console.log(orcidDigits);
             let total = 0;
             for (let i = 0; i < orcidDigits.length - 1; i++) {
               const digit = parseInt(orcidDigits.substr(i, 1));
@@ -6092,11 +6079,9 @@ const openGuidedAddContributorSwal = async () => {
         } else {
           //verify first orcid link
           let orcidSite = contributorOrcid.substr(0, 18);
-          console.log(orcidSite);
           if (orcidSite === "https://orcid.org/") {
             //verify digits after
             let orcidDigits = contributorOrcid.substr(18);
-            console.log(orcidDigits);
             let total = 0;
             for (let i = 0; i < orcidDigits.length - 1; i++) {
               const digit = parseInt(orcidDigits.substr(i, 1));
@@ -6104,7 +6089,6 @@ const openGuidedAddContributorSwal = async () => {
                 continue;
               }
               total = (total + digit) * 2;
-              console.log(total);
             }
 
             const remainder = total % 11;

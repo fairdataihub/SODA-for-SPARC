@@ -6031,27 +6031,27 @@ function sortObjByKeys(object) {
 }
 
 const listItems = async (jsonObj, uiItem, amount_req, reset) => {
-  const rootFolders = ["primary", "source", "derivative"];
   //allow amount to choose how many elements to create
   //break elements into sets of 100
+  const rootFolders = ["primary", "source", "derivative"];
   if (organizeDSglobalPath.id === "guided-input-global-path") {
     const splitPathCheck = (num, button) => {
-      // console.log(splitPath);
-      // console.log(num);
+      //based on the paths length we will determine if the back button should be disabled/hidden or not
       if (splitPath.length > num) {
         //button should be enabled
         button.disabled = false;
         button.style.display = "block";
-        // document.getElementById("datasetPathDisplay").style.width = "96px";
       } else {
         //button should be disabled
         button.disabled = true;
         button.style.display = "none";
-        // document.getElementById("datasetPathDisplay").style.width = "145px";
       }
     };
-    // let folderlvl = 0;
+
+
     let currentPageID = CURRENT_PAGE.attr("id");
+    //capsules need to determine if sample or subjects section
+    //subjects initially display two folder levels meanwhile samples will initially only show one folder level 
     let primarySampleCapsule = document.getElementById(
       "guided-primary-samples-organization-page-capsule"
     );
@@ -6070,49 +6070,43 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     let derivativeSubjectCapsule = document.getElementById(
       "guided-derivative-subjects-organization-page-capsule"
     );
+
     let datasetPath = document.getElementById("guided-input-global-path");
     let pathDisplay = document.getElementById("datasetPathDisplay");
     let fileExplorerBackButton = document.getElementById("guided-button-back");
     let splitPath = datasetPath.value.split("/");
     let fullPath = datasetPath.value;
-    console.log(currentPageID);
 
-    //remove the last element in array is it is always ''
+    //remove my_dataset_folder and if any of the ROOT FOLDER names is included 
     if (splitPath[0] === "My_dataset_folder") splitPath.shift();
     if (rootFolders.includes(splitPath[0])) splitPath.shift();
+    //remove the last element in array is it is always ''
     splitPath.pop();
-    console.log(splitPath);
 
-    //get 3 last lvls of the folder path
+    //get 2 last lvls of the folder path
     let trimmedPath = "";
     if (currentPageID.includes("primary")) {
       if (primarySampleCapsule.classList.contains("active")) {
-        console.log("3 paths");
         splitPathCheck(2, fileExplorerBackButton);
       }
       if (primarySubjectCapsule.classList.contains("active")) {
-        console.log("2 paths");
         splitPathCheck(1, fileExplorerBackButton);
       }
     }
     if (currentPageID.includes("source")) {
       if (sourceSubjectCapsule.classList.contains("active")) {
-        console.log("2 paths");
         splitPathCheck(1, fileExplorerBackButton);
       }
       if (sourceSampleCapsule.classList.contains("active")) {
-        console.log("3 paths");
         splitPathCheck(2, fileExplorerBackButton);
       }
     }
     if (currentPageID.includes("derivative")) {
       //check the active capsule
       if (derivativeSampleCapsule.classList.contains("active")) {
-        console.log("3 paths");
         splitPathCheck(2, fileExplorerBackButton);
       }
       if (derivativeSubjectCapsule.classList.contains("active")) {
-        console.log("2 paths");
         splitPathCheck(1, fileExplorerBackButton);
       }
     }
@@ -6122,7 +6116,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
       currentPageID.includes("docs") ||
       currentPageID.includes("helpers")
     ) {
-      console.log(splitPath);
+      //for code/protocols/docs we only initially display one folder lvl
       splitPathCheck(1, fileExplorerBackButton);
     }
 
