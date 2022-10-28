@@ -1018,12 +1018,20 @@ document.getElementById("guided-button-import-sparc-award").addEventListener("cl
     divToShowWhenConnected.classList.add("hidden");
     divToShowWhenNotConnected.classList.remove("hidden");
   } else {
-    const airTablePreviewText = document.getElementById("guided-current-sparc-award");
-    airTablePreviewText.innerHTML = airTableKeyObj["key-name"];
-    //If the airtable key object is not empty, show the div to select the SPARC award
-    divToShowWhenConnected.classList.remove("hidden");
-    divToShowWhenNotConnected.classList.add("hidden");
-    renderGuidedAwardSelectionDropdown();
+    //verify airtable api is valid
+    checkAirtableStatus("");
+    if (airtableRes[1] != "") {
+      const airTablePreviewText = document.getElementById("guided-current-sparc-award");
+      airTablePreviewText.innerHTML = airTableKeyObj["key-name"];
+      //If the airtable key object is not empty, show the div to select the SPARC award
+      divToShowWhenConnected.classList.remove("hidden");
+      divToShowWhenNotConnected.classList.add("hidden");
+      renderGuidedAwardSelectionDropdown();
+    } else {
+      //If the airtable key object is empty, show the div to connect to airtable
+      divToShowWhenConnected.classList.add("hidden");
+      divToShowWhenNotConnected.classList.remove("hidden");
+    }
   }
 });
 
@@ -1793,6 +1801,7 @@ const traverseToTab = async (targetPageID) => {
     if (targetPageID === "guided-prepare-helpers-tab") {
       //Hide the new dataset and existings local dataset capsule containers because
       //We do now know what the user wants to do yet
+      console.log("Hm");
       $("#guided-curate-new-dataset-branch-capsule-container").hide();
       $("#guided-curate-existing-local-dataset-branch-capsule-container").hide();
       const dataDeliverableButton = document.getElementById("getting-started-data-deliverable-btn");
@@ -1813,15 +1822,29 @@ const traverseToTab = async (targetPageID) => {
       var airKeyContent = parseJson(airtableConfigPath);
       if (Object.keys(airKeyContent).length != 0) {
         //This is where we update the UI for the helper page
-        airTableGettingStartedBtn.children[1].style.display = "none";
-        airTableGettingStartedBtn.children[0].style.display = "flex";
+        checkAirtableStatus("");
+        if (airtableRes[0] != "") {
+          airTableGettingStartedBtn.children[1].style.display = "none";
+          airTableGettingStartedBtn.children[0].style.display = "flex";
+        } else {
+          //This is where we reset the UI for the helper page
+          airTableGettingStartedBtn.children[1].style.display = "flex";
+          airTableGettingStartedBtn.children[0].style.display = "none";
+        }
+
         // This auto selects the airtable button within
         // the SPARC Award number page
         // document.getElementById("guided-button-import-sparc-award").click();
       } else {
-        //This is where we reset the UI for the helper page
-        airTableGettingStartedBtn.children[1].style.display = "flex";
-        airTableGettingStartedBtn.children[0].style.display = "none";
+        checkAirtableStatus("");
+        if (airtableRes[0] != "") {
+          //This is where we reset the UI for the helper page
+          airTableGettingStartedBtn.children[1].style.display = "flex";
+          airTableGettingStartedBtn.children[0].style.display = "none";
+        } else {
+          airTableGettingStartedBtn.children[1].style.display = "none";
+          airTableGettingStartedBtn.children[0].style.display = "flex";
+        }
       }
     }
 
@@ -2386,7 +2409,7 @@ const traverseToTab = async (targetPageID) => {
 
       if (datasetUserPermissions.length > 0) {
         const datasetUserPermissionsString = datasetUserPermissions
-          .map((permission) => permission.userString)
+          .map((permission) => permission.userString + " (" + permission.permission + ")")
           .join("<br>");
         datasetUserPermissionsReviewText.innerHTML = datasetUserPermissionsString;
       } else {
@@ -2395,7 +2418,7 @@ const traverseToTab = async (targetPageID) => {
 
       if (datasetTeamPermissions.length > 0) {
         const datasetTeamPermissionsString = datasetTeamPermissions
-          .map((permission) => permission.teamString)
+          .map((permission) => permission.teamString + " (" + permission.permission + ")")
           .join("<br>");
         datasetTeamPermissionsReviewText.innerHTML = datasetTeamPermissionsString;
       } else {
@@ -4458,6 +4481,24 @@ const getContributorByOrcid = (orcid) => {
   return contributor;
 };
 
+const verifyOrcidID = (event) => {
+  // console.log(event.value);
+  let userInput = event.value;
+  //17 chars
+  if (userInput.length > 17) {
+    console.log(userInput);
+    console.log(userInput.substr(0, 18));
+    if (userInput.substr(0, 18) === "https://orcid.org/") {
+      console.log("correct format");
+      //verify every four characters forward if they are a number
+      let afterLink = userInput.substr(18);
+      console.log(afterLink);
+    }
+    // console.log(userInput.substr(17));
+    //char 18 will be after the forward slash
+  }
+};
+
 const updateContributorByOrcid = (
   contributorFirstName,
   contributorLastName,
@@ -4532,6 +4573,7 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
           <input
             class="guided--input"
             id="guided-contributor-orcid"
+            onkeyup="verifyOrcidID(this)"
             type="text"
             placeholder="https://orcid.org/0000-0000-0000-0000"
             value=""
@@ -4637,17 +4679,54 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
       ) {
         Swal.showValidationMessage("Please fill out all required fields");
       } else {
-        try {
-          editContributorByOrcid(
-            contibuttorOrcidToEdit,
-            contributorFirstName,
-            contributorLastName,
-            contributorOrcid,
-            contributorAffiliations,
-            contributorRoles
+        console.log(contributorOrcid);
+        console.log(contributorOrcid.length);
+        if (contributorOrcid.length != 37) {
+          Swal.showValidationMessage(
+            "Please enter Orcid ID in the format: https://orcid.org/0000-0000-0000-0000"
           );
-        } catch (error) {
-          Swal.showValidationMessage(error);
+        } else {
+          //verify first orcid link
+          let orcidSite = contributorOrcid.substr(0, 18);
+          console.log(orcidSite);
+          if (orcidSite === "https://orcid.org/") {
+            //verify digits after
+            let orcidDigits = contributorOrcid.substr(18);
+            console.log(orcidDigits);
+            let total = 0;
+            for (let i = 0; i < orcidDigits.length - 1; i++) {
+              const digit = parseInt(orcidDigits.substr(i, 1));
+              if (isNaN(digit)) {
+                continue;
+              }
+              total = (total + digit) * 2;
+            }
+
+            const remainder = total % 11;
+            const result = (12 - remainder) % 11;
+            const checkDigit = result === 10 ? "X" : String(result);
+
+            if (checkDigit !== contributorOrcid.substr(-1)) {
+              Swal.showValidationMessage("ORCID is not valid");
+            } else {
+              try {
+                editContributorByOrcid(
+                  contibuttorOrcidToEdit,
+                  contributorFirstName,
+                  contributorLastName,
+                  contributorOrcid,
+                  contributorAffiliations,
+                  contributorRoles
+                );
+              } catch (error) {
+                Swal.showValidationMessage(error);
+              }
+            }
+          } else {
+            Swal.showValidationMessage(
+              "Please enter your ORCID ID with https://orcid.org/ in the beginning"
+            );
+          }
         }
       }
 
@@ -4779,6 +4858,7 @@ const openGuidedAddContributorSwal = async () => {
           <input
             class="guided--input"
             id="guided-contributor-orcid"
+            onkeyup="verifyOrcidID(this)"
             type="text"
             placeholder="https://orcid.org/0000-0000-0000-0000"
             value=""
@@ -4792,7 +4872,7 @@ const openGuidedAddContributorSwal = async () => {
      
           </p>
           <label class="guided--form-label mt-md required">Affiliation(s): </label>
-          <input id="guided-contributor-affiliation-input"
+          <input id="guided-contributor-affiliation-input" style="text-align: left;"
             contenteditable="true"
           />
           <p class="guided--text-input-instructions mb-0 text-left">
@@ -4819,7 +4899,7 @@ const openGuidedAddContributorSwal = async () => {
     showCancelButton: true,
     confirmButtonText: "Add contributor",
     confirmButtonColor: "#3085d6 !important",
-    willOpen: () => {
+    didOpen: () => {
       //Create Affiliation(s) tagify for each contributor
       const contributorAffiliationInput = document.getElementById(
         "guided-contributor-affiliation-input"
@@ -4856,7 +4936,7 @@ const openGuidedAddContributorSwal = async () => {
         dropdown: {
           enabled: 0,
           closeOnSelect: true,
-          position: "auto",
+          // position: "auto",
         },
       });
       createDragSort(contributorRolesTagify);
@@ -4906,16 +4986,52 @@ const openGuidedAddContributorSwal = async () => {
       ) {
         Swal.showValidationMessage("Please fill out all required fields");
       } else {
-        try {
-          addContributor(
-            contributorFirstName,
-            contributorLastName,
-            contributorOrcid,
-            contributorAffiliations,
-            contributorRoles
+        if (contributorOrcid.length != 37) {
+          Swal.showValidationMessage(
+            "Please enter Orcid ID in the format: https://orcid.org/0000-0000-0000-0000"
           );
-        } catch (error) {
-          Swal.showValidationMessage(error);
+        } else {
+          //verify first orcid link
+          let orcidSite = contributorOrcid.substr(0, 18);
+          console.log(orcidSite);
+          if (orcidSite === "https://orcid.org/") {
+            //verify digits after
+            let orcidDigits = contributorOrcid.substr(18);
+            console.log(orcidDigits);
+            let total = 0;
+            for (let i = 0; i < orcidDigits.length - 1; i++) {
+              const digit = parseInt(orcidDigits.substr(i, 1));
+              if (isNaN(digit)) {
+                continue;
+              }
+              total = (total + digit) * 2;
+              console.log(total);
+            }
+
+            const remainder = total % 11;
+            const result = (12 - remainder) % 11;
+            const checkDigit = result === 10 ? "X" : String(result);
+
+            if (checkDigit !== contributorOrcid.substr(-1)) {
+              Swal.showValidationMessage("ORCID is not valid");
+            } else {
+              try {
+                addContributor(
+                  contributorFirstName,
+                  contributorLastName,
+                  contributorOrcid,
+                  contributorAffiliations,
+                  contributorRoles
+                );
+              } catch (error) {
+                Swal.showValidationMessage(error);
+              }
+            }
+          } else {
+            Swal.showValidationMessage(
+              "Please enter your ORCID ID with https://orcid.org/ in the beginning"
+            );
+          }
         }
       }
 
@@ -11223,12 +11339,18 @@ $(document).ready(async () => {
           });
           throw errorArray;
         }
-        if (protocols.length === 0) {
+        let protocolSkip = document.getElementById("no-protocols");
+
+        if (protocols.length === 0 && protocolSkip.checked === false) {
+          //check if they decided to add protocols later
           errorArray.push({
             type: "notyf",
             message: "Please add at least one protocol",
           });
           throw errorArray;
+        }
+        if (protocolSkip.checked) {
+          protocols = [];
         }
         sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = protocols;
       }
