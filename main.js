@@ -206,8 +206,11 @@ let updatechecked = false;
 let window_reloaded = false;
 
 function initialize() {
-  makeSingleInstance();
+  const checkForAnnouncements = () => {
+    mainWindow.webContents.send("checkForAnnouncements");
+  };
 
+  makeSingleInstance();
   loadDemos();
   function createWindow() {
     // mainWindow.webContents.openDevTools();
@@ -222,10 +225,6 @@ function initialize() {
         autoUpdater.checkForUpdatesAndNotify();
       }
     });
-
-    const checkForAnnouncements = () => {
-      mainWindow.webContents.send("checkForAnnouncements");
-    };
 
     mainWindow.on("close", async (e) => {
       if (!user_restart_confirmed) {

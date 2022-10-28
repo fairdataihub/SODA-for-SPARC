@@ -6029,8 +6029,6 @@ function sortObjByKeys(object) {
 }
 
 const listItems = async (jsonObj, uiItem, amount_req, reset) => {
-  //allow amount to choose how many elements to create
-  //break elements into sets of 100
   var appendString = "";
   var sortedObj = sortObjByKeys(jsonObj);
   let file_elements = [],
