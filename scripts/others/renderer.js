@@ -995,6 +995,8 @@ ipcRenderer.on("app_version", (event, arg) => {
   const version = document.getElementById("version");
   ipcRenderer.removeAllListeners("app_version");
   version.innerText = arg.version;
+  // Display the version in the Guided Mode sidebar
+  document.getElementById("guided-version-display").innerText = `Version: ${arg.version}`;
 });
 
 // Check for update and show the pop up box

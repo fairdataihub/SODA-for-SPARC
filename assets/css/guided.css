@@ -15,7 +15,7 @@
   z-index: 1001;
   padding: 7px;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
 }
 
@@ -77,7 +77,7 @@
   width: 100%;
   list-style: none;
   padding-left: 0px;
-  max-height: 500px;
+  max-height: 600px;
   overflow-y: auto;
 }
 

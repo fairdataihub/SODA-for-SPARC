@@ -235,60 +235,8 @@ const savePageChanges = async (pageBeingLeftID) => {
           }
         }
       }
-
-      // Notify the user of empty pages since this is the last page they can structure their dataset
-      const emptyFilesFoldersResponse = await client.post(
-        `/curate_datasets/empty_files_and_folders`,
-        {
-          soda_json_structure: sodaJSONObj,
-        },
-        { timeout: 0 }
-      );
-
-      let { data } = emptyFilesFoldersResponse;
-
-      //bring duplicate outside
-      empty_files = data["empty_files"];
-      empty_folders = data["empty_folders"];
-
-      let errorMessage = "";
-
-      if (empty_files.length > 0) {
-        const error_message_files = backend_to_frontend_warning_message(empty_files);
-        errorMessage += error_message_files;
-      }
-
-      if (empty_folders.length > 0) {
-        const error_message_folders = backend_to_frontend_warning_message(empty_folders);
-        errorMessage += error_message_folders;
-      }
-
-      if (errorMessage) {
-        errorMessage += "Would you like to continue?";
-        errorMessage = "<div style='text-align: left'>" + errorMessage + "</div>";
-        const { value: continueWithEmptyFolders } = await Swal.fire({
-          icon: "warning",
-          html: errorMessage,
-          showCancelButton: true,
-          cancelButtonText: "No, I want to review my files",
-          focusCancel: true,
-          confirmButtonText: "Yes, Continue",
-          backdrop: "rgba(0,0,0, 0.4)",
-          reverseButtons: reverseSwalButtons,
-          heightAuto: false,
-          allowOutsideClick: false,
-        });
-        console.log("foo");
-
-        if (!continueWithEmptyFolders) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please remove the empty files before continuing",
-          });
-          throw errorArray;
-        }
-      }
     }
+
     if (pageBeingLeftID === "guided-folder-importation-tab") {
       if (
         !$("#guided-input-destination-getting-started-locally").val() ||
@@ -660,8 +608,63 @@ const savePageChanges = async (pageBeingLeftID) => {
           reverseSwalButtons: true,
         });
         if (!continueProgress) {
-          $(this).removeClass("loading");
-          return;
+          errorArray.push({
+            type: "notyf",
+            message: "Please go back and add folders and files to your dataset",
+          });
+          throw errorArray;
+        }
+      }
+
+      // Notify the user of empty pages since this is the last page they can structure their dataset
+      const emptyFilesFoldersResponse = await client.post(
+        `/curate_datasets/empty_files_and_folders`,
+        {
+          soda_json_structure: sodaJSONObj,
+        },
+        { timeout: 0 }
+      );
+
+      let { data } = emptyFilesFoldersResponse;
+
+      //bring duplicate outside
+      empty_files = data["empty_files"];
+      empty_folders = data["empty_folders"];
+
+      let errorMessage = "";
+
+      if (empty_files.length > 0) {
+        const error_message_files = backend_to_frontend_warning_message(empty_files);
+        errorMessage += error_message_files;
+      }
+
+      if (empty_folders.length > 0) {
+        const error_message_folders = backend_to_frontend_warning_message(empty_folders);
+        errorMessage += error_message_folders;
+      }
+
+      if (errorMessage) {
+        errorMessage += "Would you like to continue?";
+        errorMessage = "<div style='text-align: left'>" + errorMessage + "</div>";
+        const { value: continueWithEmptyFolders } = await Swal.fire({
+          icon: "warning",
+          html: errorMessage,
+          showCancelButton: true,
+          cancelButtonText: "No, I want to review my files",
+          focusCancel: true,
+          confirmButtonText: "Yes, Continue",
+          backdrop: "rgba(0,0,0, 0.4)",
+          reverseButtons: reverseSwalButtons,
+          heightAuto: false,
+          allowOutsideClick: false,
+        });
+
+        if (!continueWithEmptyFolders) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please remove the empty files before continuing",
+          });
+          throw errorArray;
         }
       }
     }
@@ -958,17 +961,18 @@ const renderSideBar = (activePage) => {
         return;
       }
 
+      const allNonSkippedPages = getNonSkippedGuidedModePages(document).map(
+        (element) => element.id
+      );
+      // Get the pages in the allNonSkippedPages array that cone after the page the user is leaving
+      // and before the page the user is going to
+      const pagesBetweenCurrentAndTargetPage = allNonSkippedPages.slice(
+        allNonSkippedPages.indexOf(currentPageUserIsLeaving),
+        allNonSkippedPages.indexOf(pageToNavigateTo)
+      );
+
       try {
         await savePageChanges(currentPageUserIsLeaving);
-        const allNonSkippedPages = getNonSkippedGuidedModePages(document).map(
-          (element) => element.id
-        );
-        // Get the pages in the allNonSkippedPages array that cone after the page the user is leaving
-        // and before the page the user is going to
-        const pagesBetweenCurrentAndTargetPage = allNonSkippedPages.slice(
-          allNonSkippedPages.indexOf(currentPageUserIsLeaving),
-          allNonSkippedPages.indexOf(pageToNavigateTo)
-        );
 
         //If the user is skipping forward with the nav bar, pages between current page and target page
         //Need to be validated. If they're going backwards, the for loop below will not be ran.
@@ -992,7 +996,7 @@ const renderSideBar = (activePage) => {
               focusConfirm: true,
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
-              width: 500,
+              width: 700,
             });
             return;
           }
@@ -1002,11 +1006,18 @@ const renderSideBar = (activePage) => {
         await openPage(pageToNavigateTo);
       } catch (error) {
         const pageWithErrorName = CURRENT_PAGE.data("pageName");
-        const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
-          title: "Error saving the current page",
-          html: `The following error${
-            error.length > 1 ? "s" : ""
-          } occurred when attempting to save the ${pageWithErrorName} page:
+        //Check if the target page is before or after the current page
+
+        const targetPageIsBeforeCurrentPage =
+          allNonSkippedPages.indexOf(pageToNavigateTo) <
+          allNonSkippedPages.indexOf(currentPageUserIsLeaving);
+
+        if (targetPageIsBeforeCurrentPage) {
+          const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
+            title: "Error saving the current page",
+            html: `The following error${
+              error.length > 1 ? "s" : ""
+            } occurred when attempting to save the ${pageWithErrorName} page:
             <br />
             <br />
             <ul>
@@ -1014,19 +1025,43 @@ const renderSideBar = (activePage) => {
             </ul>
             <br />
             Would you like to continue without saving the changes to the current page?`,
-          icon: "error",
-          showCancelButton: true,
-          confirmButtonText: "Yes, continue without saving",
-          cancelButtonText: "No, I would like to address the errors",
-          confirmButtonWidth: 255,
-          cancelButtonWidth: 255,
-          focusCancel: true,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          width: 700,
-        });
-        if (continueWithoutSavingCurrPageChanges) {
-          await openPage(pageToNavigateTo);
+            icon: "error",
+            showCancelButton: true,
+            confirmButtonText: "Yes, continue without saving",
+            cancelButtonText: "No, I would like to address the errors",
+            confirmButtonWidth: 255,
+            cancelButtonWidth: 255,
+            focusCancel: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            width: 700,
+          });
+          if (continueWithoutSavingCurrPageChanges) {
+            await openPage(pageToNavigateTo);
+          }
+        }
+        if (!targetPageIsBeforeCurrentPage) {
+          //If the user is going forward in the nav bar befor properly filling out their current page,
+          //Warn them that they must properly fill out the page before continuing
+          await Swal.fire({
+            title: "Error saving the current page",
+            html: `The following error${
+              error.length > 1 ? "s" : ""
+            } occurred when attempting to save the ${pageWithErrorName} page:
+            <br />
+            <br />
+            <ul>
+              ${error.map((error) => `<li class="text-left">${error.message}</li>`).join("")}
+            </ul>
+            <br />
+            You must address the errors before skipping past this page using the sidebar.`,
+            icon: "error",
+            confirmButtonText: "Fix the errors on this page",
+            focusConfirm: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            width: 700,
+          });
         }
       }
     });
@@ -4458,6 +4493,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   //If the dataset was successfully uploaded, send the user to the share with curation team
   if (datasetResumeJsonObj["previous-guided-upload-dataset-name"]) {
     pageToReturnTo = "guided-dataset-dissemination-tab";
+    sodaJSONObj["completed-tabs"].push("guided-dataset-dissemination-tab");
   }
 
   // Delete the button status for the Pennsieve account confirmation section
@@ -11223,7 +11259,8 @@ $(document).ready(async () => {
       });
       return;
     }
-
+    /*
+      TODO: implement validation of all non-skipped pages before dataset upload
     const allNonSkippedPages = getNonSkippedGuidedModePages(document).map((element) => element.id);
 
     //If the user is skipping forward with the nav bar, pages between current page and target page
@@ -11235,7 +11272,7 @@ $(document).ready(async () => {
         await openPage(page);
         await Swal.fire({
           title: "An error occurred while ensuring your dataset is ready to be uploaded",
-          html: `You must fix the following errors generating your:
+          html: `You must fix the following errors before generating your dataset:
               <br />
               <br />
               <ul>
@@ -11252,6 +11289,7 @@ $(document).ready(async () => {
         return;
       }
     }
+    */
 
     openPage("guided-dataset-generation-tab");
     guidedPennsieveDatasetUpload();
