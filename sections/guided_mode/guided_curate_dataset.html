@@ -40,7 +40,7 @@
           <div class="guided--progression-tab-content">
             <span class="dot">3</span>
             <div class="guided--progression-tab-labels">
-              <h1 class="guided--progression-tab-label-main">Add Pennsieve metadata</h1>
+              <h1 class="guided--progression-tab-label-main">Pennsieve metadata</h1>
             </div>
           </div>
         </div>
@@ -56,7 +56,7 @@
     </header>
 
     <div id="guided-body" class="guided--body">
-      <div id="guided-home" class="guided--parent-tab">
+      <div id="guided-home" class="guided--main-tab">
         <div class="guided--panel">
           <h1 class="guided--text-sub-step">Guided Mode</h1>
           <!-- <div class="title-border">
@@ -114,7 +114,11 @@
           <div class="guided--section hidden" id="guided-div-update-uploaded-cards"></div>
         </div>
       </div>
-      <div id="guided-mode-starting-container" class="guided--parent-tab hidden">
+      <div
+        id="guided-mode-starting-container"
+        class="guided--main-tab hidden"
+        data-parent-tab-name="Dataset Structure"
+      >
         <div class="guided--panel hidden" id="guided-intro-page" style="flex-grow: 1">
           <div class="title-border">
             <h1 class="guided--text-sub-step">Welcome to Guided Mode!</h1>
@@ -205,7 +209,11 @@
           </div>
         </div>
       </div>
-      <div id="prepare-dataset-parent-tab" class="guided--parent-tab hidden">
+      <div
+        id="prepare-dataset-parent-tab"
+        class="guided--parent-tab hidden"
+        data-parent-tab-name="Dataset Structure"
+      >
         <div class="guided--capsule-container" id="structure-dataset-capsule-container">
           <div class="guided--capsule hidden" id="guided-prepare-helpers-capsule"></div>
           <div class="guided--capsule active" id="guided-dataset-starting-point-capsule"></div>
@@ -247,7 +255,7 @@
           <div class="guided--capsule" id="guided-folder-structure-preview-capsule"></div>
         </div>
 
-        <div id="guided-prepare-helpers-tab" class="guided--panel" style="margin-top: -1rem">
+        <div id="guided-prepare-helpers-tab" class="guided--page" data-page-name="Prepare data">
           <div class="guided--section">
             <h1
               class="guided--text-sub-step"
@@ -510,7 +518,11 @@
           </div>
         </div>
 
-        <div id="guided-dataset-starting-point-tab" class="guided--panel hidden">
+        <div
+          id="guided-dataset-starting-point-tab"
+          class="guided--page hidden"
+          data-page-name="Select Starting Point"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">SPARC Data Structure</h1>
             <p class="guided--help-text">
@@ -586,7 +598,8 @@
 
         <div
           id="guided-subjects-folder-tab"
-          class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+          class="guided--page hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+          data-page-name="Subject + Sample structuring"
           data-skip-page="true"
         >
           <div class="guided--section">
@@ -758,7 +771,8 @@
         </div>
         <div
           id="guided-primary-data-organization-tab"
-          class="guided--panel hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
+          class="guided--page hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
+          data-page-name="Primary data"
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Primary data for samples and subjects</h1>
@@ -1005,7 +1019,8 @@
         </div>
         <div
           id="guided-source-data-organization-tab"
-          class="guided--panel hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
+          class="guided--page hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
+          data-page-name="Source data"
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Source data for subjects and samples</h1>
@@ -1225,7 +1240,8 @@
         </div>
         <div
           id="guided-derivative-data-organization-tab"
-          class="guided--panel hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
+          class="guided--page hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
+          data-page-name="Derivative data"
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Derivative data for subjects and samples</h1>
@@ -1426,7 +1442,8 @@
 
         <div
           id="guided-code-folder-tab"
-          class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+          class="guided--page hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+          data-page-name="Code data"
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Code data</h1>
@@ -1464,7 +1481,8 @@
         </div>
         <div
           id="guided-protocol-folder-tab"
-          class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+          class="guided--page hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+          data-page-name="Protocol data"
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Protocol data</h1>
@@ -1503,7 +1521,8 @@
         </div>
         <div
           id="guided-docs-folder-tab"
-          class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+          class="guided--page hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+          data-page-name="Docs data"
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Docs data</h1>
@@ -1543,7 +1562,8 @@
 
         <div
           id="guided-folder-importation-tab"
-          class="guided--panel hidden guided-curate-existing-local-dataset-branch-page"
+          class="guided--page hidden guided-curate-existing-local-dataset-branch-page"
+          data-page-name="Import dataset folder"
           data-skip-page="true"
         >
           <div class="guided--section" id="guided_dataset_name_div">
@@ -1565,7 +1585,11 @@
             ></p>
           </div>
         </div>
-        <div id="guided-folder-structure-preview-tab" class="guided--panel hidden">
+        <div
+          id="guided-folder-structure-preview-tab"
+          class="guided--page hidden"
+          data-page-name="Dataset structure preview"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Folder structure review</h1>
             <p class="guided--help-text">
@@ -1717,7 +1741,11 @@
         </div>
       </div>
 
-      <div id="prepare-dataset-metadata-parent-tab" class="guided--parent-tab hidden">
+      <div
+        id="prepare-dataset-metadata-parent-tab"
+        class="guided--parent-tab hidden"
+        data-parent-tab-name="Dataset metadata"
+      >
         <div class="guided--capsule-container">
           <div class="guided--capsule" id="guided-manifest-file-generation-capsule"></div>
           <div class="guided--capsule" id="guided-airtable-award-capsule"></div>
@@ -1730,7 +1758,11 @@
           <div class="guided--capsule" id="guided-add-code-metadata-capsule"></div>
           <div class="guided--capsule" id="guided-create-readme-metadata-capsule"></div>
         </div>
-        <div class="guided--panel hidden" id="guided-manifest-file-generation-tab">
+        <div
+          class="guided--page hidden"
+          id="guided-manifest-file-generation-tab"
+          data-page-name="Create manifest files"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Manifest files</h1>
             <p class="guided--help-text">
@@ -1894,7 +1926,11 @@
             <div class="guided--section" id="guided-container-manifest-file-cards"></div>
           </div>
         </div>
-        <div class="guided--panel hidden" id="guided-airtable-award-tab">
+        <div
+          class="guided--page hidden"
+          data-page-name="Select SPARC Award"
+          id="guided-airtable-award-tab"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">SPARC Award number</h1>
             <p class="guided--help-text">
@@ -2073,7 +2109,11 @@
             </div>
           </div>
         </div>
-        <div class="guided--panel hidden" id="guided-create-submission-metadata-tab">
+        <div
+          class="guided--page hidden"
+          id="guided-create-submission-metadata-tab"
+          data-page-name="Create submission metadata"
+        >
           <div class="guided--section" style="padding-left: 0; padding-right: 0">
             <h1 class="guided--text-sub-step">Submission metadata</h1>
             <p class="guided--help-text">
@@ -2352,7 +2392,11 @@
             </p>
           </div>
         </div>
-        <div id="guided-contributors-tab" class="guided--panel hidden">
+        <div
+          id="guided-contributors-tab"
+          class="guided--page hidden"
+          data-page-name="Contributor information"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Contributor information</h1>
             <p class="guided--help-text">
@@ -2391,7 +2435,11 @@
           </div>
         </div>
 
-        <div id="guided-protocols-tab" class="guided--panel hidden">
+        <div
+          id="guided-protocols-tab"
+          class="guided--page hidden"
+          data-page-name="Specify dataset protocols"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Dataset protocols</h1>
             <p class="guided--help-text">
@@ -2519,7 +2567,11 @@
             </button>
           </div>
         </div>
-        <div id="guided-create-description-metadata-tab" class="guided--panel hidden">
+        <div
+          id="guided-create-description-metadata-tab"
+          class="guided--page hidden"
+          data-page-name="Dataset description"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Dataset description</h1>
           </div>
@@ -2736,7 +2788,8 @@
         </div>
         <div
           id="guided-create-subjects-metadata-tab"
-          class="guided--panel hidden guided-subject-sample-data-addition-page"
+          class="guided--page hidden guided-subject-sample-data-addition-page"
+          data-page-name="Subjects"
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Subjects metadata</h1>
@@ -3393,7 +3446,8 @@
         </div>
         <div
           id="guided-create-samples-metadata-tab"
-          class="guided--panel hidden guided-subject-sample-data-addition-page"
+          class="guided--page hidden guided-subject-sample-data-addition-page"
+          data-page-name="Samples"
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Samples metadata</h1>
@@ -3821,7 +3875,7 @@
             </div>
           </div>
         </div>
-        <div id="guided-add-code-metadata-tab" class="guided--panel hidden">
+        <div id="guided-add-code-metadata-tab" class="guided--page hidden" data-page-name="Code">
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Code-related metadata</h1>
             <p class="guided--help-text">
@@ -3909,7 +3963,11 @@
             </p>
           </div>
         </div>
-        <div id="guided-create-readme-metadata-tab" class="guided--panel hidden">
+        <div
+          id="guided-create-readme-metadata-tab"
+          class="guided--page hidden"
+          data-page-name="README"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">README information</h1>
             <p class="guided--help-text">
@@ -3968,7 +4026,11 @@
         </div>
       </div>
 
-      <div id="prepare-pennsieve-metadata-parent-tab" class="guided--parent-tab hidden">
+      <div
+        id="prepare-pennsieve-metadata-parent-tab"
+        class="guided--parent-tab hidden"
+        data-parent-tab-name="Pennsieve metadata"
+      >
         <div class="guided--capsule-container">
           <div class="guided--capsule" id="guided-pennsieve-intro-capsule"></div>
           <div class="guided--capsule" id="guided-banner-image-capsule"></div>
@@ -3978,7 +4040,11 @@
           <div class="guided--capsule" id="guided-add-tags-capsule"></div>
           <div class="guided--capsule" id="guided-assign-license-capsule"></div>
         </div>
-        <div id="guided-pennsieve-intro-tab" class="guided--panel hidden">
+        <div
+          id="guided-pennsieve-intro-tab"
+          class="guided--page hidden"
+          data-page-name="Pennsieve log in"
+        >
           <div class="guided--section" style="padding-left: 0; padding-right: 0">
             <h1 class="guided--text-sub-step">Pennsieve metadata</h1>
             <p class="guided--help-text">
@@ -4057,6 +4123,8 @@
                   class="ui positive basic button guided--radio-button"
                   id="guided-confirm-pennsieve-account-button"
                   style="width: 220px"
+                  data-button-config-value="pennsieve-account-has-been-confirmed"
+                  data-button-config-value-state="yes"
                 >
                   Yes, this is the account
                 </button>
@@ -4086,7 +4154,7 @@
             </div>
           </div>
         </div>
-        <div id="guided-banner-image-tab" class="guided--panel hidden">
+        <div id="guided-banner-image-tab" class="guided--page hidden" data-page-name="Banner image">
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Banner image</h1>
             <p class="guided--help-text">
@@ -4228,7 +4296,11 @@
             </div>
           </div>
         </div>
-        <div id="guided-designate-pi-owner-tab" class="guided--panel hidden">
+        <div
+          id="guided-designate-pi-owner-tab"
+          class="guided--page hidden"
+          data-page-name="PI Owner"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Specify owner of dataset</h1>
             <p class="guided--help-text">
@@ -4330,7 +4402,11 @@
             </div>
           </div>
         </div>
-        <div id="guided-designate-permissions-tab" class="guided--panel hidden">
+        <div
+          id="guided-designate-permissions-tab"
+          class="guided--page hidden"
+          data-page-name="Pennsieve user permissions"
+        >
           <div class="guided--section" style="padding-left: 0">
             <h1 class="guided--text-sub-step">Dataset permissions</h1>
             <p class="guided--help-text text-left">
@@ -4443,7 +4519,11 @@
             </div>
           </div>
         </div>
-        <div id="guided-add-description-tab" class="guided--panel hidden">
+        <div
+          id="guided-add-description-tab"
+          class="guided--page hidden"
+          data-page-name="Pennsieve dataset description"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Dataset description</h1>
             <p class="guided--help-text text-left">
@@ -4499,7 +4579,11 @@
             </div>
           </div>
         </div>
-        <div id="guided-add-tags-tab" class="guided--panel hidden">
+        <div
+          id="guided-add-tags-tab"
+          class="guided--page hidden"
+          data-page-name="Pennsieve dataset tags"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Dataset tags</h1>
             <p class="guided--help-text mb-lg">
@@ -4515,7 +4599,11 @@
             </p>
           </div>
         </div>
-        <div id="guided-assign-license-tab" class="guided--panel hidden">
+        <div
+          id="guided-assign-license-tab"
+          class="guided--page hidden"
+          data-page-name="Sharing license"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Sharing license:</h1>
             <p class="guided--help-text">
@@ -4537,7 +4625,11 @@
         </div>
       </div>
 
-      <div id="disseminate-dataset-parent-tab" class="guided--parent-tab hidden">
+      <div
+        id="disseminate-dataset-parent-tab"
+        class="guided--parent-tab hidden"
+        data-parent-tab-name="Generate dataset"
+      >
         <div class="guided--capsule-container">
           <div class="guided--capsule" id="guided-dataset-generate-location-capsule"></div>
           <div class="guided--capsule" id="guided-dataset-generate-destination-capsule"></div>
@@ -4546,7 +4638,11 @@
           <div class="guided--capsule" id="guided-dataset-dissemination-capsule"></div>
         </div>
 
-        <div id="guided-dataset-generate-location-tab" class="guided--panel hidden">
+        <div
+          id="guided-dataset-generate-location-tab"
+          class="guided--page hidden"
+          data-page-name="Generation destination"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step mt-sm">
               Where would you like to generate your dataset?
@@ -4636,7 +4732,11 @@
           </div>
         </div>
 
-        <div id="guided-dataset-generate-destination-tab" class="guided--panel hidden">
+        <div
+          id="guided-dataset-generate-destination-tab"
+          class="guided--page hidden"
+          data-page-name="Pennsieve dataset selection"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step mt-sm">
               Which dataset would you like to genenerate on?
@@ -4854,7 +4954,11 @@
           </div>
         </div>
 
-        <div id="guided-dataset-generation-confirmation-tab" class="guided--panel hidden">
+        <div
+          id="guided-dataset-generation-confirmation-tab"
+          class="guided--page hidden"
+          data-page-name="Review and Generate"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Review your dataset structure and metadata</h1>
             <p class="guided--help-text">
@@ -4978,7 +5082,12 @@
           </button>
         </div>
 
-        <div id="guided-dataset-generation-tab" class="guided--panel hidden">
+        <div
+          id="guided-dataset-generation-tab"
+          class="guided--page hidden"
+          data-page-name="Generate dataset"
+          data-skip-page="true"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Generating your dataset on Pennsieve</h1>
           </div>
@@ -5262,7 +5371,11 @@
           </div>
         </div>
 
-        <div id="guided-dataset-dissemination-tab" class="guided--panel hidden">
+        <div
+          id="guided-dataset-dissemination-tab"
+          class="guided--page hidden"
+          data-page-name="Share with SPARC Curation Team"
+        >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Share with the SPARC Curation Team</h1>
             <h2 class="guided--text-sub-step">View dataset on Pennsieve</h2>
@@ -5422,3 +5535,109 @@
     </footer>
   </div>
 </section>
+
+<div id="guided-structure-folder-tab" class="guided--panel hidden" data-skip-page="true">
+  <div
+    class="guided--section"
+    id="guided-file-explorer-elements"
+    style="padding: 0; border-radius: 4px; height: 476px"
+  >
+    <h2 class="guided--text-sub-step mt-0" id="structure-folder-header"></h2>
+    <p class="guided--help-text" id="structure-folder-contents"></p>
+    <div id="items-guided-container" style="width: 100%; display: flex; flex-direction: column">
+      <div
+        class="guided--folder-organization-buttons-container"
+        style="margin-top: 0.44rem; width: 97% !important; align-self: center"
+      >
+        <div class="guided--folder-organization-buttons-container-sub" style="flex-grow: 1">
+          <button
+            class="ui secondary basic button small onHoverBlackBoxShadow"
+            id="guided-button-back"
+          >
+            <i class="fas fa-arrow-up"></i>
+          </button>
+          <input
+            style="
+              margin: 0px 7px;
+              display: flex;
+              flex-grow: 1;
+              border: none;
+              font-size: 16px;
+              font-weight: 600;
+              cursor: default;
+              color: #898989;
+              display: none;
+            "
+            id="guided-input-global-path"
+            value="My_dataset_folder/"
+            readonly
+          />
+        </div>
+        <div class="guided--folder-organization-buttons-container-sub">
+          <button
+            class="ui primary basic button small onHoverBlueBoxShadow"
+            id="guided-new-folder"
+            style="margin-right: 7px"
+          >
+            <i class="fas fa-folder-plus" style="margin-right: 7px"></i>New folder
+          </button>
+          <button
+            class="ui primary basic button small remove-margin-right onHoverBlueBoxShadow"
+            id="guided-import-folder"
+            style="width: 165px; margin-right: 7px !important"
+          >
+            <svg
+              style="margin-right: 7px"
+              width="1em"
+              height=".9em"
+              viewbox="0 0 16 16"
+              class="bi bi-upload"
+              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"
+              />
+              <path
+                fill-rule="evenodd"
+                d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"
+              />
+            </svg>
+            Import folder
+          </button>
+          <button
+            class="ui primary basic button small remove-margin-right onHoverBlueBoxShadow"
+            id="guided-imoprt-file"
+            style="width: 165px"
+          >
+            <svg
+              style="margin-right: 7px"
+              width="1em"
+              height=".9em"
+              viewbox="0 0 16 16"
+              class="bi bi-upload"
+              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"
+              />
+              <path
+                fill-rule="evenodd"
+                d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"
+              />
+            </svg>
+            Import file
+          </button>
+        </div>
+      </div>
+      <div
+        id="guided-folder-structure-container"
+        class="w-100"
+        style="border-top: 2px solid lightgray; margin-top: 0"
+      ></div>
+    </div>
+  </div>
+</div>
