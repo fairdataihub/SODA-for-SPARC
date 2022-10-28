@@ -5619,6 +5619,8 @@ function detectIrregularFolders(folderName, pathEle) {
 }
 
 function checkIrregularNameBoolean(folderName) {
+  console.log("this is the nonAllowedCharacters for folders");
+  console.log(nonAllowedCharacters);
   for (var char of nonAllowedCharacters) {
     if (folderName.includes(char)) {
       return true;
