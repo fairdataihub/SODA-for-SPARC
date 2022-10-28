@@ -82,13 +82,10 @@ def get_agent_version():
     """
         Get the version of the Pennsieve agent installed on the computer.
     """
-    if not check_agent_installation(): 
-        raise FileNotFoundError("Pennsieve agent not installed. Please install the agent before running this function.")
-    
+    # start the agent if it is not running
+    start_agent()
 
     version = subprocess.run([get_agent_installation_location(), "version"], capture_output=True, check=True).stdout
-
-    
     
     # decode the response 
     version = version.decode().strip()
