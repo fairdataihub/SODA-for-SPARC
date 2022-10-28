@@ -753,13 +753,13 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
     if (pageBeingLeftID === "guided-protocols-tab") {
-      const buttonYesImportProtocols = document.getElementById("guided-button-import-protocols-io");
-      const buttonNoEnterProtocolsManually = document.getElementById(
-        "guided-section-enter-protocols-manually"
+      const buttonYesImportProtocols = document.getElementById("guided-button-user-has-protocols");
+      const buttonNoWaitToImportProtocols = document.getElementById(
+        "guided-button-delay-protocol-entry"
       );
       if (
         !buttonYesImportProtocols.classList.contains("selected") &&
-        !buttonNoEnterProtocolsManually.classList.contains("selected")
+        !buttonNoWaitToImportProtocols.classList.contains("selected")
       ) {
         errorArray.push({
           type: "notyf",
@@ -768,45 +768,61 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
-      const protocolFields = document.querySelectorAll(".guided-protocol-field-container");
+      if (buttonYesImportProtocols.classList.contains("selected")) {
+        const protocolFields = document.querySelectorAll(".guided-protocol-field-container");
 
-      //Initializa allprotocolFieldsValid as true
-      //If any protocol fields are found invalid, allProtocolFieldsValid will be set to valid
-      //and an error will be thrown when next button is clicked.
-      let allProtocolFieldsValid = true;
-      let protocols = [];
+        //Initializa allprotocolFieldsValid as true
+        //If any protocol fields are found invalid, allProtocolFieldsValid will be set to valid
+        //and an error will be thrown when next button is clicked.
+        let allProtocolFieldsValid = true;
+        let protocols = [];
 
-      //loop through protocol fields and get protocol values
-      const protocolFieldsArray = Array.from(protocolFields);
-      protocolFieldsArray.forEach((protocolField) => {
-        const protocolUrlInput = protocolField.dataset.protocolUrl;
-        const protocolDescriptionInput = protocolField.dataset.protocolDescription;
-        const protocolType = protocolField.dataset.protocolType;
+        //loop through protocol fields and get protocol values
+        const protocolFieldsArray = Array.from(protocolFields);
+        protocolFieldsArray.forEach((protocolField) => {
+          const protocolUrlInput = protocolField.dataset.protocolUrl;
+          const protocolDescriptionInput = protocolField.dataset.protocolDescription;
+          const protocolType = protocolField.dataset.protocolType;
 
-        const protocolObj = {
-          link: protocolUrlInput,
-          type: protocolType,
-          relation: "isProtocolFor",
-          description: protocolDescriptionInput,
-        };
-        protocols.push(protocolObj);
-      });
-
-      if (!allProtocolFieldsValid) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please fill out all protocol information fields",
+          const protocolObj = {
+            link: protocolUrlInput,
+            type: protocolType,
+            relation: "isProtocolFor",
+            description: protocolDescriptionInput,
+          };
+          protocols.push(protocolObj);
         });
-        throw errorArray;
+
+        if (protocols.length === 0) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please add at least one protocol",
+          });
+          throw errorArray;
+        }
+        sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = protocols;
       }
-      if (protocols.length === 0) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please add at least one protocol",
-        });
-        throw errorArray;
+      if (buttonNoWaitToImportProtocols.classList.contains("selected")) {
+        const existingProtocols =
+          sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
+
+        // If the user already has contributors, warn them before deleting them
+        if (existingProtocols.length > 0) {
+          const { value: confirmProtocolsDelete } = await Swal.fire({
+            title: "Are you sure?",
+            text: "You already have protocols in your dataset. If you continue, they will be deleted.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete them!",
+          });
+
+          if (confirmProtocolsDelete) {
+            sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [];
+          }
+        }
       }
-      sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = protocols;
     }
 
     if (pageBeingLeftID === "guided-create-description-metadata-tab") {
@@ -1020,7 +1036,7 @@ const renderSideBar = (activePage) => {
 
         if (targetPageIsBeforeCurrentPage) {
           const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
-            title: "The current was not able to be saved",
+            title: "The current was page not able to be saved",
             html: `The following error${
               error.length > 1 ? "s" : ""
             } occurred when attempting to save the ${pageWithErrorName} page:
@@ -11593,8 +11609,8 @@ $(document).ready(async () => {
       openPage(targetPageID);
     } catch (error) {
       log.error(error);
+      console.log(error);
       error.map((error) => {
-        // get the total number of words in error.message
         if (error.type === "notyf") {
           notyf.open({
             duration: "5500",

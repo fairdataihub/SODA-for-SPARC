@@ -398,65 +398,10 @@
                 <p style="margin-top: 11px">Import Data Deliverables document</p>
               </button>
             </div>
-            <label class="guided--welcome-section-label text-center">3. Protocols.io Account</label>
-            <p class="guided--help-text">
-              All SPARC datasets must have their associated protocols on
-              <a target="_blank" href="https://www.protocols.io/">protocols.io</a>, a platform for
-              creating shareable protocols. We recommend you prepare your protocols directly there
-              before continuing by following the
-              <a target="_blank" href="https://docs.sparc.science/docs/protocols"
-                >SPARC instructions for preparing protocols on protocols.io</a
-              >
-            </p>
-            <p class="guided--help-text" style="display: none">
-              The dataset_description metadata file must contain information about the protocols on
-              protocols.io. You can provide information about the protocols on protocols.io You can
-              provide information about the protocols of your dataset below and SODA will
-              automatically include it in the dataset_description file when it is generated in the
-              last step of this guided workflow. Use the button below to connect your protocols.io
-              account with SODA if you would like to import your protocols information easily.
-            </p>
-            <div class="before-getting-started-btn" style="display: none">
-              <button
-                class="metadata-button button-generate-dataset"
-                id="guided-button-import-protocols-io"
-                style="
-                  opacity: 0.5;
-                  cursor: default !important;
-                  pointer-events: none;
-                  width: 150px;
-                  height: 150px;
-                  margin: 12px;
-                "
-              >
-                <div class="guided--tile-button-icon" style="margin-left: 2rem">
-                  <img
-                    src="assets/img/Protocols-io-icon.png"
-                    alt="Protocols.io icon"
-                    style="width: 50px; height: 50px; object-fit: contain"
-                  />
-                </div>
-                <svg
-                  style="display: none"
-                  width="50px"
-                  height="50px"
-                  viewBox="0 0 16 16"
-                  class="bi bi-check2"
-                  fill="var(--color-light-green)"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
-                  ></path>
-                </svg>
-                <p style="margin-top: 17px">Protocols.io Account</p>
-              </button>
-            </div>
-            <label class="guided--welcome-section-label text-center"
-              >4. Airtable Account (optional)</label
-            >
 
+            <label class="guided--welcome-section-label text-center"
+              >3. Airtable Account (optional)</label
+            >
             <p class="guided--help-text">
               The SPARC program maintains a spreadsheet on the Airtable platform with SPARC award
               numbers and contact information about the SPARC consortium members. SPARC members are
@@ -2438,7 +2383,7 @@
         <div
           id="guided-protocols-tab"
           class="guided--page hidden"
-          data-page-name="Specify dataset protocols"
+          data-page-name="Dataset protocols"
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Dataset protocols</h1>
@@ -2464,41 +2409,14 @@
             <label class="guided--form-label centered mb-0">
               Would you like to import your protocols information from protocols.io?
             </label>
-            <!-- <p class="guided--text-input-instructions m-0 text-center">
-                Importing protocols from Protocols.io is encouraged as it
-                ensures your protocol data is entered correctly.
-              </p> -->
+
             <div class="guided--radio-button-container">
-              <div
-                class="guided-tippy-wrapper"
-                data-tippy-content="Protocols.io protocol importing coming soon"
-                rel="popover"
-                placement="bottom"
-                data-trigger="hover"
-              >
-                <button
-                  class="guided--radio-button tile-button"
-                  id="guided-button-import-protocols-io"
-                  style="opacity: 0.5; cursor: default !important; pointer-events: none"
-                >
-                  <div class="guided--tile-button-icon">
-                    <img
-                      src="assets/img/Protocols-io-icon.png"
-                      alt="Protocols.io icon"
-                      style="width: 50px; height: 50px; object-fit: contain"
-                    />
-                  </div>
-                  <div class="guided--tile-body">
-                    <h2>Yes, import my protocols from Protocols.io</h2>
-                  </div>
-                </button>
-              </div>
               <button
                 class="guided--radio-button tile-button"
-                id="guided-section-enter-protocols-manually"
-                data-next-element="guided-div-protocol-container"
-                data-button-config-value="protocols-imported"
-                data-button-config-value-state="no"
+                id="guided-button-user-has-protocols"
+                data-next-element="guided-div-protocols-import"
+                data-button-config-value="user-has-protocols-to-enter"
+                data-button-config-value-state="yes"
               >
                 <div class="guided--tile-button-icon">
                   <svg
@@ -2521,22 +2439,30 @@
                   </svg>
                 </div>
                 <div class="guided--tile-body">
-                  <h2>No, I'll enter my protocol data manually</h2>
+                  <h2>Yes, I'll enter my protocol data manually</h2>
+                </div>
+              </button>
+              <button
+                class="guided--radio-button tile-button"
+                id="guided-button-delay-protocol-entry"
+                data-next-element="guided-div-wait-for-protocols"
+                data-button-config-value="user-has-protocols-to-enter"
+                data-button-config-value-state="no"
+              >
+                <div class="guided--tile-button-icon">
+                  <img
+                    src="assets/img/Protocols-io-icon.png"
+                    alt="Protocols.io icon"
+                    style="width: 50px; height: 50px; object-fit: contain"
+                  />
+                </div>
+                <div class="guided--tile-body">
+                  <h2>No, I don't have protocols ready to enter</h2>
                 </div>
               </button>
             </div>
           </div>
           <div class="guided--section hidden" id="guided-div-protocols-import">
-            <button
-              class="ui primary button"
-              id="guided-button-import-protocols"
-              onclick="addExistingProtocol()"
-              style="background-color: var(--color-light-green) !important"
-            >
-              Import protocols
-            </button>
-          </div>
-          <div class="guided--section hidden" id="guided-div-protocol-container">
             <h2 class="guided--text-sub-step mb-0">
               Add details about each protocol associated with this dataset
             </h2>
@@ -2551,12 +2477,6 @@
               </tr>
               <tbody id="protocols-container"></tbody>
             </table>
-            <div style="display: flex; margin-top: 1rem; flex-direction: row">
-              <input class="checkbox-design" type="checkbox" id="no-protocols" />
-              <p style="font-size: initial">
-                I am still working on my protocol and will provide my protocol information later
-              </p>
-            </div>
 
             <button
               class="ui primary basic button mt-lg"
@@ -2566,6 +2486,7 @@
               <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new protocol
             </button>
           </div>
+          <div class="guided--section hidden" id="guided-div-wait-for-protocols">a</div>
         </div>
         <div
           id="guided-create-description-metadata-tab"
