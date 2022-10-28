@@ -956,7 +956,7 @@ const check_agent_installed_version = async (agent_version) => {
     await get_latest_agent_version();
 
 
-  if (latest_agent_version != agent_version) {
+  if (agent_version.indexOf(latest_agent_version) === -1) {
     notyf.dismiss(notification);
     notyf.open({
       type: "warning",
@@ -965,7 +965,7 @@ const check_agent_installed_version = async (agent_version) => {
     log.warn(`Current agent version: ${agent_version}`);
     log.warn(`Latest agent version: ${latest_agent_version}`);
   } else {
-    console.log("We have the lastest")
+    console.log("We have the latest agent version")
     notyf.dismiss(notification);
     notyf.open({
       type: "success",
