@@ -6048,10 +6048,9 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
       }
     };
 
-
     let currentPageID = CURRENT_PAGE.attr("id");
     //capsules need to determine if sample or subjects section
-    //subjects initially display two folder levels meanwhile samples will initially only show one folder level 
+    //subjects initially display two folder levels meanwhile samples will initially only show one folder level
     let primarySampleCapsule = document.getElementById(
       "guided-primary-samples-organization-page-capsule"
     );
@@ -6077,7 +6076,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     let splitPath = datasetPath.value.split("/");
     let fullPath = datasetPath.value;
 
-    //remove my_dataset_folder and if any of the ROOT FOLDER names is included 
+    //remove my_dataset_folder and if any of the ROOT FOLDER names is included
     if (splitPath[0] === "My_dataset_folder") splitPath.shift();
     if (rootFolders.includes(splitPath[0])) splitPath.shift();
     //remove the last element in array is it is always ''
