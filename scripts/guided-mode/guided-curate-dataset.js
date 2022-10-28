@@ -644,15 +644,15 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
 
       if (errorMessage) {
-        errorMessage += "Would you like to continue?";
+        errorMessage += "Would you like to continue without adding data to your empty folders?";
         errorMessage = "<div style='text-align: left'>" + errorMessage + "</div>";
         const { value: continueWithEmptyFolders } = await Swal.fire({
           icon: "warning",
           html: errorMessage,
           showCancelButton: true,
-          cancelButtonText: "No, I want to review my files",
+          cancelButtonText: "No, I have data to add to my empty folders",
           focusCancel: true,
-          confirmButtonText: "Yes, Continue",
+          confirmButtonText: "Yes, Continue without adding data",
           backdrop: "rgba(0,0,0, 0.4)",
           reverseButtons: reverseSwalButtons,
           heightAuto: false,
