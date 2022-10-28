@@ -955,6 +955,9 @@ const renderSideBar = (activePage) => {
     guidedNavBarSectionPage.addEventListener("click", async (event) => {
       const currentPageUserIsLeaving = CURRENT_PAGE.attr("id");
       const pageToNavigateTo = guidedNavBarSectionPage.getAttribute("data-target-page");
+      const pageToNavigateToName = document
+        .getElementById(pageToNavigateTo)
+        .getAttribute("data-page-name");
 
       // Do nothing if the user clicks the tab of the page they are currently on
       if (currentPageUserIsLeaving === pageToNavigateTo) {
@@ -983,7 +986,10 @@ const renderSideBar = (activePage) => {
             console.log(error);
             await openPage(page);
             await Swal.fire({
-              title: "An error occurred on an intermediary page",
+              title:
+                "An error occurred on an intermediary page while navigating to the " +
+                pageToNavigateToName +
+                " page",
               html: `You must fix the following errors before continuing:
                 <br />
                 <br />
@@ -991,7 +997,7 @@ const renderSideBar = (activePage) => {
                   ${error.map((error) => `<li class="text-left">${error.message}</li>`).join("")}
                 </ul>
               `,
-              icon: "error",
+              icon: "info",
               confirmButtonText: "Fix the errors on this page",
               focusConfirm: true,
               heightAuto: false,
@@ -1014,7 +1020,7 @@ const renderSideBar = (activePage) => {
 
         if (targetPageIsBeforeCurrentPage) {
           const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
-            title: "Error saving the current page",
+            title: "The current was not able to be saved",
             html: `The following error${
               error.length > 1 ? "s" : ""
             } occurred when attempting to save the ${pageWithErrorName} page:
@@ -1025,7 +1031,7 @@ const renderSideBar = (activePage) => {
             </ul>
             <br />
             Would you like to continue without saving the changes to the current page?`,
-            icon: "error",
+            icon: "info",
             showCancelButton: true,
             confirmButtonText: "Yes, continue without saving",
             cancelButtonText: "No, I would like to address the errors",
