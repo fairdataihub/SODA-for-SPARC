@@ -5641,7 +5641,7 @@ function replaceIrregularFolders(pathElement) {
   return str;
 }
 
-function removeIrregularFolders(pathElement) {
+const removeIrregularFolders = (pathElement) => {
   var str = path.basename(pathElement);
   for (var char of nonAllowedCharacters) {
     if (str.includes(char)) {
