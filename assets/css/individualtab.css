@@ -211,6 +211,7 @@
   vertical-align: bottom;
   color: transparent;
   transition: 0.2s;
+  font-family: Segoe UI Symbol;
 }
 
 .folder-input-check + label:active:before {
