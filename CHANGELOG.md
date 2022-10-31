@@ -21,7 +21,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Free form tool tips normalized with guided mode tool tips
 - SPARC Consortium Organization modified to only say SPARC Organization
 
-
 ## v.9.3.2 - 2022-10-14
 
 ## Bug fixes:
