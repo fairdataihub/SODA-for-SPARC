@@ -5649,7 +5649,7 @@ const removeIrregularFolders = (pathElement) => {
     }
   }
   return str;
-}
+};
 
 // SAVE FILE ORG
 ipcRenderer.on("save-file-organization-dialog", (event) => {

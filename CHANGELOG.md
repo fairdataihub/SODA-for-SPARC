@@ -7,7 +7,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## v.9.3.0 - 2022-10-13
 
-
 ## Feature additions:
 
 - Guided Mode: Added a new page to let users know what accounts and documents they will be needing to curate a dataset.
