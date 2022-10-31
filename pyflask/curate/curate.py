@@ -2678,13 +2678,14 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         # set the dataset 
         ps.useDataset(ds["id"])
 
-        # create a manifest
+        # create a manifest - IMP: We use a single file to start with since creating a manifest requires a file path.  We need to remove this at the end. 
         first_file_local_path = list_upload_files[0][0][0]
+        first_relative_path = list_upload_files[0][6]
         manifest_data = ps.manifest.create(first_file_local_path)
         manifest_id = manifest_data.manifest_id
         
-        # add the list of upload files' local paths to the manifest
-        for item in list_upload_files[1: ]:
+        # add the list of upload files' local paths to the manifest [ skip the first element we already added]
+        for item in list_upload_files:
             # main_curate_progress_message = "In file one"
             list_upload = item[0][0]
             bf_folder = item[1]
@@ -2693,7 +2694,13 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             list_final_names = item[4]
             tracking_folder = item[5]
             relative_path = item[6]
-            ps.manifest.add(manifest_id, list_upload, relative_path)
+            print("The relative path in question is: ", relative_path)
+            # TODO: Reimpelement using the client once the Pensieve team updates the client's protocol buffers
+            # ps.manifest.add(manifest_id, list_upload, targetBasePath="/code")
+            
+            
+            # subprocess call to the pennsieve agent to add the files to the manifest
+            subprocess.run(["pennsieve", "manifest", "add", str(manifest_id), list_upload, "-t", "/code"])
 
 
 
