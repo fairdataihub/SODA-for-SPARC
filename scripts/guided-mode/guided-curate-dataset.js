@@ -985,7 +985,7 @@ const renderSideBar = (activePage) => {
       } catch (error) {
         const pageWithErrorName = CURRENT_PAGE.data("pageName");
         const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
-          title: "Error saving the current page",
+          title: "The current page was not able to be saved",
           html: `The following error${
             error.length > 1 ? "s" : ""
           } occurred when attempting to save the ${pageWithErrorName} page:
@@ -996,7 +996,7 @@ const renderSideBar = (activePage) => {
             </ul>
             <br />
             Would you like to continue without saving the changes to the current page?`,
-          icon: "error",
+          icon: "info",
           showCancelButton: true,
           confirmButtonText: "Yes, continue without saving",
           cancelButtonText: "No, I would like to address the errors",
@@ -4396,7 +4396,6 @@ const patchPreviousGuidedModeVersions = () => {
 
   if (!sodaJSONObj["skipped-pages"]) {
     sodaJSONObj["skipped-pages"] = [];
-    sodaJSONObj["completed-tabs"] = [];
 
     forceUserToRestartFromFirstPage = true;
   }
@@ -4554,6 +4553,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["digital-metadata"]["user-permissions"] = [];
   sodaJSONObj["digital-metadata"]["team-permissions"] = [];
   sodaJSONObj["completed-tabs"] = [];
+  sodaJSONObj["skipped-pages"] = [];
   sodaJSONObj["last-modified"] = "";
   sodaJSONObj["button-config"] = {};
   sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = false;
