@@ -217,14 +217,14 @@ def bf_add_account_api_key(keyname, key, secret):
             "Please check that key name, key, and secret are entered properly"
         )
 
-    # Check that the Pennsieve account is in the SPARC Consortium organization
+    # Check that the Pennsieve account is in the SPARC Organization
     try:
         org_id = bf.context.id
 
         # CHANGE BACK
         if org_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
             abort(403,
-                "Please check that your account is within the SPARC Consortium Organization"
+                "Please check that your account is within the SPARC Organization"
             )
 
         if not config.has_section("global"):
@@ -304,11 +304,11 @@ def bf_add_account_username(keyname, key, secret):
             "Please check that key name, key, and secret are entered properly"
         )
 
-    # Check that the Pennsieve account is in the SPARC Consortium organization
+    # Check that the Pennsieve account is in the SPARC organization
     if bf.context.id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
         bf_delete_account(temp_keyname)
         abort(403,
-            "Please check that your account is within the SPARC Consortium Organization"
+            "Please check that your account is within the SPARC Organization"
         )
 
     try:
@@ -1458,10 +1458,10 @@ def bf_add_permission_team(
 
     if selected_team == "SPARC Data Curation Team":
         if bf.context.id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-            abort(403, "Please login under the Pennsieve SPARC Consortium organization to share with the Curation Team")
+            abort(403, "Please login under the Pennsieve SPARC Organization to share with the Curation Team")
     if selected_team == "SPARC Embargoed Data Sharing Group":
         if bf.context.id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-            abort(403, "Please login under the Pennsieve SPARC Consortium organization to share with the SPARC consortium group")
+            abort(403, "Please login under the Pennsieve SPARC Organization to share with the SPARC consortium group")
 
 
     c = 0
@@ -2092,13 +2092,13 @@ def get_pennsieve_api_key_secret(email, password, keyname):
         response = response.json()
         if "preferredOrganization" in response:
             if response["preferredOrganization"] != sparc_org_id:
-                error = "Could not switch to the SPARC Consortium organization. Please log in and switch to the organization and try again."
+                error = "Could not switch to the SPARC Organization. Please log in and switch to the organization and try again."
                 raise Exception(error)
         else:
-            error = "Could not switch to the SPARC Consortium organization. Please log in and switch to the organization and try again."
+            error = "Could not switch to the SPARC Organization. Please log in and switch to the organization and try again."
             raise Exception(error)
     except Exception as error:
-        error = "Could not switch to the SPARC Consortium organization. Please log in and switch to the organization and try again."
+        error = "Could not switch to the SPARC Organization. Please log in and switch to the organization and try again."
         raise error
 
     try:

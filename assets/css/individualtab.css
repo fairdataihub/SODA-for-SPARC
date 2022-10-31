@@ -1351,10 +1351,7 @@ body.swal2-shown > [aria-hidden="true"] {
 }
 
 .swal2-deny:hover {
-  background-image: linear-gradient(
-    rgba(0, 0, 0, 0.1),
-    rgba(0, 0, 0, 0.1)
-  ) !important;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)) !important;
 }
 
 .swal2-validation-message {
@@ -1447,7 +1444,8 @@ body.swal2-shown > [aria-hidden="true"] {
 /* .swal2-content {
   text-align: left !important;
 } */
-.swal2-content .guided--form-label {
+.swal2-content .guided--form-label,
+.swal2-content .tagify__input {
   text-align: left;
 }
 

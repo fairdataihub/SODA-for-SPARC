@@ -742,7 +742,7 @@ def check_empty_files_folders(soda_json_structure):
 
         if len(error_folders) > 0:
             error_message = [
-                "The following folder(s) is/are empty or only contain(s) empty file(s), and will be ignored."
+                "The SPARC dataset structure does not allow empty folders. The following empty folders will be removed from your dataset:"
             ]
             error_folders = error_message + [] + error_folders
 
