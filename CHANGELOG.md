@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Feature additions:
 
-- Guided Mode: x
+- Guided Mode: Added a sidebar to allow users to easily navigate through pages that have already been completed.
+- Guided Mode: Added the ability to progress through the protocol page if the user does not have protocols prepared.
 
 ## Bug fixes:
 
