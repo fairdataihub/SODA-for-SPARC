@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Guided Mode -> Before getting started page: tool tips were fixed to normalize across the app
 - Free form tool tips normalized with guided mode tool tips
 - SPARC Consortium Organization modified to only say SPARC Organization
+- Guided Mode: Added a sidebar to allow users to easily navigate through pages that have already been completed.
+- Guided Mode: Added the ability to progress through the protocol page if the user does not have protocols prepared.
 ## v.9.3.2 - 2022-10-14
 
 ## Bug fixes:
@@ -23,8 +25,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Patched announcements to not cause error on auto update.
 
 ## v.9.3.1 - 2022-10-14
-
-## Feature additions:
 
 ## Bug fixes:
 
