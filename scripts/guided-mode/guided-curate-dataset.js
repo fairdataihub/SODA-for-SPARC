@@ -236,7 +236,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
       }
     }
-
     if (pageBeingLeftID === "guided-folder-importation-tab") {
       if (
         !$("#guided-input-destination-getting-started-locally").val() ||
@@ -608,11 +607,8 @@ const savePageChanges = async (pageBeingLeftID) => {
           reverseSwalButtons: true,
         });
         if (!continueProgress) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please go back and add folders and files to your dataset",
-          });
-          throw errorArray;
+          $(this).removeClass("loading");
+          return;
         }
       }
 
@@ -624,41 +620,34 @@ const savePageChanges = async (pageBeingLeftID) => {
         },
         { timeout: 0 }
       );
-
       let { data } = emptyFilesFoldersResponse;
-
       //bring duplicate outside
       empty_files = data["empty_files"];
       empty_folders = data["empty_folders"];
-
       let errorMessage = "";
-
       if (empty_files.length > 0) {
         const error_message_files = backend_to_frontend_warning_message(empty_files);
         errorMessage += error_message_files;
       }
-
       if (empty_folders.length > 0) {
         const error_message_folders = backend_to_frontend_warning_message(empty_folders);
         errorMessage += error_message_folders;
       }
-
       if (errorMessage) {
-        errorMessage += "Would you like to continue without adding data to your empty folders?";
+        errorMessage += "Would you like to continue?";
         errorMessage = "<div style='text-align: left'>" + errorMessage + "</div>";
         const { value: continueWithEmptyFolders } = await Swal.fire({
           icon: "warning",
           html: errorMessage,
           showCancelButton: true,
-          cancelButtonText: "No, I have data to add to my empty folders",
+          cancelButtonText: "No, I want to review my files",
           focusCancel: true,
-          confirmButtonText: "Yes, Continue without adding data",
+          confirmButtonText: "Yes, Continue",
           backdrop: "rgba(0,0,0, 0.4)",
           reverseButtons: reverseSwalButtons,
           heightAuto: false,
           allowOutsideClick: false,
         });
-
         if (!continueWithEmptyFolders) {
           errorArray.push({
             type: "notyf",
@@ -753,60 +742,54 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
     if (pageBeingLeftID === "guided-protocols-tab") {
-      const buttonYesImportProtocols = document.getElementById("guided-button-import-protocols-io");
-      const buttonNoEnterProtocolsManually = document.getElementById(
-        "guided-section-enter-protocols-manually"
+      const buttonYesUserHasProtocols = document.getElementById("guided-button-user-has-protocols");
+      const buttonNoDelayProtocolEntry = document.getElementById(
+        "guided-button-delay-protocol-entry"
       );
       if (
-        !buttonYesImportProtocols.classList.contains("selected") &&
-        !buttonNoEnterProtocolsManually.classList.contains("selected")
+        !buttonYesUserHasProtocols.classList.contains("selected") &&
+        !buttonNoDelayProtocolEntry.classList.contains("selected")
       ) {
         errorArray.push({
           type: "notyf",
-          message: "Please indicate if you would like to import protocols",
+          message: "Please indicate if protocols are ready to be added to your dataset",
         });
         throw errorArray;
       }
 
-      const protocolFields = document.querySelectorAll(".guided-protocol-field-container");
+      if (buttonYesUserHasProtocols.classList.contains("selected")) {
+        let protocols = [];
 
-      //Initializa allprotocolFieldsValid as true
-      //If any protocol fields are found invalid, allProtocolFieldsValid will be set to valid
-      //and an error will be thrown when next button is clicked.
-      let allProtocolFieldsValid = true;
-      let protocols = [];
+        const protocolFields = document.querySelectorAll(".guided-protocol-field-container");
+        //loop through protocol fields and get protocol values
+        const protocolFieldsArray = Array.from(protocolFields);
+        protocolFieldsArray.forEach((protocolField) => {
+          const protocolUrlInput = protocolField.dataset.protocolUrl;
+          const protocolDescriptionInput = protocolField.dataset.protocolDescription;
+          const protocolType = protocolField.dataset.protocolType;
 
-      //loop through protocol fields and get protocol values
-      const protocolFieldsArray = Array.from(protocolFields);
-      protocolFieldsArray.forEach((protocolField) => {
-        const protocolUrlInput = protocolField.dataset.protocolUrl;
-        const protocolDescriptionInput = protocolField.dataset.protocolDescription;
-        const protocolType = protocolField.dataset.protocolType;
-
-        const protocolObj = {
-          link: protocolUrlInput,
-          type: protocolType,
-          relation: "isProtocolFor",
-          description: protocolDescriptionInput,
-        };
-        protocols.push(protocolObj);
-      });
-
-      if (!allProtocolFieldsValid) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please fill out all protocol information fields",
+          const protocolObj = {
+            link: protocolUrlInput,
+            type: protocolType,
+            relation: "isProtocolFor",
+            description: protocolDescriptionInput,
+          };
+          protocols.push(protocolObj);
         });
-        throw errorArray;
+
+        if (protocols.length === 0) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please add at least one protocol",
+          });
+          throw errorArray;
+        }
+        sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = protocols;
       }
-      if (protocols.length === 0) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please add at least one protocol",
-        });
-        throw errorArray;
+
+      if (buttonNoDelayProtocolEntry.classList.contains("selected")) {
+        sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [];
       }
-      sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = protocols;
     }
 
     if (pageBeingLeftID === "guided-create-description-metadata-tab") {
@@ -951,27 +934,23 @@ const renderSideBar = (activePage) => {
     guidedNavBarSectionPage.addEventListener("click", async (event) => {
       const currentPageUserIsLeaving = CURRENT_PAGE.attr("id");
       const pageToNavigateTo = guidedNavBarSectionPage.getAttribute("data-target-page");
-      const pageToNavigateToName = document
-        .getElementById(pageToNavigateTo)
-        .getAttribute("data-page-name");
 
       // Do nothing if the user clicks the tab of the page they are currently on
       if (currentPageUserIsLeaving === pageToNavigateTo) {
         return;
       }
 
-      const allNonSkippedPages = getNonSkippedGuidedModePages(document).map(
-        (element) => element.id
-      );
-      // Get the pages in the allNonSkippedPages array that cone after the page the user is leaving
-      // and before the page the user is going to
-      const pagesBetweenCurrentAndTargetPage = allNonSkippedPages.slice(
-        allNonSkippedPages.indexOf(currentPageUserIsLeaving),
-        allNonSkippedPages.indexOf(pageToNavigateTo)
-      );
-
       try {
         await savePageChanges(currentPageUserIsLeaving);
+        const allNonSkippedPages = getNonSkippedGuidedModePages(document).map(
+          (element) => element.id
+        );
+        // Get the pages in the allNonSkippedPages array that cone after the page the user is leaving
+        // and before the page the user is going to
+        const pagesBetweenCurrentAndTargetPage = allNonSkippedPages.slice(
+          allNonSkippedPages.indexOf(currentPageUserIsLeaving),
+          allNonSkippedPages.indexOf(pageToNavigateTo)
+        );
 
         //If the user is skipping forward with the nav bar, pages between current page and target page
         //Need to be validated. If they're going backwards, the for loop below will not be ran.
@@ -982,10 +961,7 @@ const renderSideBar = (activePage) => {
             console.log(error);
             await openPage(page);
             await Swal.fire({
-              title:
-                "An error occurred on an intermediary page while navigating to the " +
-                pageToNavigateToName +
-                " page",
+              title: "An error occurred on an intermediary page",
               html: `You must fix the following errors before continuing:
                 <br />
                 <br />
@@ -993,12 +969,12 @@ const renderSideBar = (activePage) => {
                   ${error.map((error) => `<li class="text-left">${error.message}</li>`).join("")}
                 </ul>
               `,
-              icon: "info",
+              icon: "error",
               confirmButtonText: "Fix the errors on this page",
               focusConfirm: true,
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
-              width: 700,
+              width: 500,
             });
             return;
           }
@@ -1008,18 +984,11 @@ const renderSideBar = (activePage) => {
         await openPage(pageToNavigateTo);
       } catch (error) {
         const pageWithErrorName = CURRENT_PAGE.data("pageName");
-        //Check if the target page is before or after the current page
-
-        const targetPageIsBeforeCurrentPage =
-          allNonSkippedPages.indexOf(pageToNavigateTo) <
-          allNonSkippedPages.indexOf(currentPageUserIsLeaving);
-
-        if (targetPageIsBeforeCurrentPage) {
-          const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
-            title: "The current was not able to be saved",
-            html: `The following error${
-              error.length > 1 ? "s" : ""
-            } occurred when attempting to save the ${pageWithErrorName} page:
+        const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
+          title: "Error saving the current page",
+          html: `The following error${
+            error.length > 1 ? "s" : ""
+          } occurred when attempting to save the ${pageWithErrorName} page:
             <br />
             <br />
             <ul>
@@ -1027,43 +996,19 @@ const renderSideBar = (activePage) => {
             </ul>
             <br />
             Would you like to continue without saving the changes to the current page?`,
-            icon: "info",
-            showCancelButton: true,
-            confirmButtonText: "Yes, continue without saving",
-            cancelButtonText: "No, I would like to address the errors",
-            confirmButtonWidth: 255,
-            cancelButtonWidth: 255,
-            focusCancel: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            width: 700,
-          });
-          if (continueWithoutSavingCurrPageChanges) {
-            await openPage(pageToNavigateTo);
-          }
-        }
-        if (!targetPageIsBeforeCurrentPage) {
-          //If the user is going forward in the nav bar befor properly filling out their current page,
-          //Warn them that they must properly fill out the page before continuing
-          await Swal.fire({
-            title: "Error saving the current page",
-            html: `The following error${
-              error.length > 1 ? "s" : ""
-            } occurred when attempting to save the ${pageWithErrorName} page:
-            <br />
-            <br />
-            <ul>
-              ${error.map((error) => `<li class="text-left">${error.message}</li>`).join("")}
-            </ul>
-            <br />
-            You must address the errors before skipping past this page using the sidebar.`,
-            icon: "error",
-            confirmButtonText: "Fix the errors on this page",
-            focusConfirm: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            width: 700,
-          });
+          icon: "error",
+          showCancelButton: true,
+          confirmButtonText: "Yes, continue without saving",
+          cancelButtonText: "No, I would like to address the errors",
+          confirmButtonWidth: 255,
+          cancelButtonWidth: 255,
+          focusCancel: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          width: 700,
+        });
+        if (continueWithoutSavingCurrPageChanges) {
+          await openPage(pageToNavigateTo);
         }
       }
     });
@@ -2119,20 +2064,12 @@ document.getElementById("guided-button-import-sparc-award").addEventListener("cl
     divToShowWhenConnected.classList.add("hidden");
     divToShowWhenNotConnected.classList.remove("hidden");
   } else {
-    //verify airtable api is valid
-    checkAirtableStatus("");
-    if (airtableRes[1] != "") {
-      const airTablePreviewText = document.getElementById("guided-current-sparc-award");
-      airTablePreviewText.innerHTML = airTableKeyObj["key-name"];
-      //If the airtable key object is not empty, show the div to select the SPARC award
-      divToShowWhenConnected.classList.remove("hidden");
-      divToShowWhenNotConnected.classList.add("hidden");
-      renderGuidedAwardSelectionDropdown();
-    } else {
-      //If the airtable key object is empty, show the div to connect to airtable
-      divToShowWhenConnected.classList.add("hidden");
-      divToShowWhenNotConnected.classList.remove("hidden");
-    }
+    const airTablePreviewText = document.getElementById("guided-current-sparc-award");
+    airTablePreviewText.innerHTML = airTableKeyObj["key-name"];
+    //If the airtable key object is not empty, show the div to select the SPARC award
+    divToShowWhenConnected.classList.remove("hidden");
+    divToShowWhenNotConnected.classList.add("hidden");
+    renderGuidedAwardSelectionDropdown();
   }
 });
 
@@ -2941,29 +2878,15 @@ const openPage = async (targetPageID) => {
       var airKeyContent = parseJson(airtableConfigPath);
       if (Object.keys(airKeyContent).length != 0) {
         //This is where we update the UI for the helper page
-        checkAirtableStatus("");
-        if (airtableRes[0] != "") {
-          airTableGettingStartedBtn.children[1].style.display = "none";
-          airTableGettingStartedBtn.children[0].style.display = "flex";
-        } else {
-          //This is where we reset the UI for the helper page
-          airTableGettingStartedBtn.children[1].style.display = "flex";
-          airTableGettingStartedBtn.children[0].style.display = "none";
-        }
-
+        airTableGettingStartedBtn.children[1].style.display = "none";
+        airTableGettingStartedBtn.children[0].style.display = "flex";
         // This auto selects the airtable button within
         // the SPARC Award number page
         // document.getElementById("guided-button-import-sparc-award").click();
       } else {
-        checkAirtableStatus("");
-        if (airtableRes[0] != "") {
-          //This is where we reset the UI for the helper page
-          airTableGettingStartedBtn.children[1].style.display = "flex";
-          airTableGettingStartedBtn.children[0].style.display = "none";
-        } else {
-          airTableGettingStartedBtn.children[1].style.display = "none";
-          airTableGettingStartedBtn.children[0].style.display = "flex";
-        }
+        //This is where we reset the UI for the helper page
+        airTableGettingStartedBtn.children[1].style.display = "flex";
+        airTableGettingStartedBtn.children[0].style.display = "none";
       }
     }
 
@@ -3500,7 +3423,7 @@ const openPage = async (targetPageID) => {
 
       if (datasetUserPermissions.length > 0) {
         const datasetUserPermissionsString = datasetUserPermissions
-          .map((permission) => permission.userString + " (" + permission.permission + ")")
+          .map((permission) => permission.userString)
           .join("<br>");
         datasetUserPermissionsReviewText.innerHTML = datasetUserPermissionsString;
       } else {
@@ -3509,7 +3432,7 @@ const openPage = async (targetPageID) => {
 
       if (datasetTeamPermissions.length > 0) {
         const datasetTeamPermissionsString = datasetTeamPermissions
-          .map((permission) => permission.teamString + " (" + permission.permission + ")")
+          .map((permission) => permission.teamString)
           .join("<br>");
         datasetTeamPermissionsReviewText.innerHTML = datasetTeamPermissionsString;
       } else {
@@ -3602,6 +3525,14 @@ const openPage = async (targetPageID) => {
       //Add protocol titles to the protocol dropdown
       const protocols = sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
 
+      // Hide the subjects protocol section if no protocols have been attached to the dataset
+      const subjectsProtocolContainer = document.getElementById(
+        "guided-container-subjects-protocol"
+      );
+      protocols.length > 0
+        ? subjectsProtocolContainer.classList.remove("hidden")
+        : subjectsProtocolContainer.classList.add("hidden");
+
       document.getElementById("guided-bootbox-subject-protocol-title").innerHTML = `
         <option value="">No protocols associated with this sample</option>
         ${protocols
@@ -3666,6 +3597,12 @@ const openPage = async (targetPageID) => {
         autoplay: true,
       });
       switchElementVisibility("guided-form-add-a-sample", "guided-form-add-a-sample-intro");
+
+      // Hide the samples protocol section if no protocols have been attached to the dataset
+      const samplesProtocolContainer = document.getElementById("guided-container-samples-protocol");
+      sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"].length > 0
+        ? samplesProtocolContainer.classList.remove("hidden")
+        : samplesProtocolContainer.classList.add("hidden");
     }
     if (targetPageID === "guided-add-code-metadata-tab") {
       const codeDescriptionPath =
@@ -4517,7 +4454,6 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   //If the dataset was successfully uploaded, send the user to the share with curation team
   if (datasetResumeJsonObj["previous-guided-upload-dataset-name"]) {
     pageToReturnTo = "guided-dataset-dissemination-tab";
-    sodaJSONObj["completed-tabs"].push("guided-dataset-dissemination-tab");
   }
 
   // Delete the button status for the Pennsieve account confirmation section
@@ -5663,7 +5599,6 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
           <input
             class="guided--input"
             id="guided-contributor-orcid"
-            onkeyup="verifyOrcidID(this)"
             type="text"
             placeholder="https://orcid.org/0000-0000-0000-0000"
             value=""
@@ -5944,7 +5879,6 @@ const openGuidedAddContributorSwal = async () => {
           <input
             class="guided--input"
             id="guided-contributor-orcid"
-            onkeyup="verifyOrcidID(this)"
             type="text"
             placeholder="https://orcid.org/0000-0000-0000-0000"
             value=""
@@ -5958,7 +5892,7 @@ const openGuidedAddContributorSwal = async () => {
      
           </p>
           <label class="guided--form-label mt-md required">Affiliation(s): </label>
-          <input id="guided-contributor-affiliation-input" style="text-align: left;"
+          <input id="guided-contributor-affiliation-input"
             contenteditable="true"
           />
           <p class="guided--text-input-instructions mb-0 text-left">
@@ -5985,7 +5919,7 @@ const openGuidedAddContributorSwal = async () => {
     showCancelButton: true,
     confirmButtonText: "Add contributor",
     confirmButtonColor: "#3085d6 !important",
-    didOpen: () => {
+    willOpen: () => {
       //Create Affiliation(s) tagify for each contributor
       const contributorAffiliationInput = document.getElementById(
         "guided-contributor-affiliation-input"
@@ -6022,7 +5956,7 @@ const openGuidedAddContributorSwal = async () => {
         dropdown: {
           enabled: 0,
           closeOnSelect: true,
-          // position: "auto",
+          position: "auto",
         },
       });
       createDragSort(contributorRolesTagify);
@@ -8495,7 +8429,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
       .map((subject) => {
         return `
         <div style="display: flex; flex-direction: column; width: 100%; border-radius: 4px; margin-bottom: 1rem">
-            <div class="justify-center" style="background: #ededed; padding: 5px 0 2px 0;">
+            <div class="justify-center" style="background: lightgray; padding: 5px 0 2px 0;">
               <label class="guided--form-label centered" style="color: black;">
                 ${subject.subjectName}
               </label>
@@ -8524,7 +8458,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
   for (const subject of subjectsWithSamplesOutsidePools) {
     asideElementTemplateLiteral += `
       <div style="display: flex; flex-direction: column; width: 100%; border-radius: 4px; margin-bottom: 1rem">
-      <div class="justify-center" style="background: #ededed; padding: 5px 0 2px 0;">
+      <div class="justify-center" style="background: lightgray; padding: 5px 0 2px 0;">
         <label class="guided--form-label centered" style="color: black;">
           ${subject.subjectName}
         </label>
@@ -11366,8 +11300,6 @@ $(document).ready(async () => {
       return;
     }
 
-    /*
-      TODO: implement validation of all non-skipped pages before dataset upload
     const allNonSkippedPages = getNonSkippedGuidedModePages(document).map((element) => element.id);
 
     //If the user is skipping forward with the nav bar, pages between current page and target page
@@ -11379,7 +11311,7 @@ $(document).ready(async () => {
         await openPage(page);
         await Swal.fire({
           title: "An error occurred while ensuring your dataset is ready to be uploaded",
-          html: `You must fix the following errors before generating your dataset:
+          html: `You must fix the following errors generating your:
               <br />
               <br />
               <ul>
@@ -11396,9 +11328,9 @@ $(document).ready(async () => {
         return;
       }
     }
-    */
 
     openPage("guided-dataset-generation-tab");
+    guidedPennsieveDatasetUpload();
   });
 
   const guidedSaveBannerImage = async () => {
