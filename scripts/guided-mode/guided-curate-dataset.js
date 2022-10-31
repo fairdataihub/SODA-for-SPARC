@@ -2517,6 +2517,9 @@ const cleanUpEmptyGuidedStructureFolders = async (
                 subject.poolName
               ]["folders"][subject.subjectName];
             } else {
+              console.log(
+                datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.subjectName]
+              );
               delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                 subject.subjectName
               ];
@@ -2750,7 +2753,12 @@ const guidedLoadDescriptionContributorInformation = () => {
 
   if (contributorInformationMetadata) {
     acknowledgementsInput.value = contributorInformationMetadata["acknowledgment"];
-    guidedOtherFundingsourcesTagify.addTags(contributorInformationMetadata["funding"]);
+    //Add tags besides the sparc award
+    guidedOtherFundingsourcesTagify.addTags(
+      contributorInformationMetadata["funding"].filter((fudingSource) => {
+        return fudingSource !== sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+      })
+    );
   } else {
     acknowledgementsInput.value = "";
     guidedOtherFundingsourcesTagify.removeAllTags();
