@@ -11299,7 +11299,7 @@ $(document).ready(async () => {
       });
       return;
     }
-
+    /*
     const allNonSkippedPages = getNonSkippedGuidedModePages(document).map((element) => element.id);
 
     //If the user is skipping forward with the nav bar, pages between current page and target page
@@ -11327,7 +11327,7 @@ $(document).ready(async () => {
         });
         return;
       }
-    }
+    }*/
 
     openPage("guided-dataset-generation-tab");
     guidedPennsieveDatasetUpload();
