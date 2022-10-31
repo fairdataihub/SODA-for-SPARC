@@ -5632,23 +5632,30 @@ const checkIrregularNameBoolean = (folderName) => {
 */
 
 function replaceIrregularFolders(pathElement) {
-  var str = path.basename(pathElement);
-  for (var char of nonAllowedCharacters) {
-    if (str.includes(char)) {
-      str = str.replace(char, "-");
-    }
-  }
-  return str;
+  const reg = /[^a-zA-Z0-9-]/g;
+  const str = path.basename(pathElement);
+  const newFolderName = str.replace(reg, "-");
+  return newFolderName;
+  // for (var char of nonAllowedCharacters) {
+  //   if (str.includes(char)) {
+  //     str = str.replace(char, "-");
+  //   }
+  // }
+  // return str;
 }
 
 const removeIrregularFolders = (pathElement) => {
-  var str = path.basename(pathElement);
-  for (var char of nonAllowedCharacters) {
-    if (str.includes(char)) {
-      str = str.replace(char, "");
-    }
-  }
-  return str;
+  const reg = /[^a-zA-Z0-9-]/g;
+  const str = path.basename(pathElement);
+  const newFolderName = str.replace(reg, "");
+  return newFolderName;
+  // var str = path.basename(pathElement);
+  // for (var char of nonAllowedCharacters) {
+  //   if (str.includes(char)) {
+  //     str = str.replace(char, "");
+  //   }
+  // }
+  // return str;
 }
 
 // SAVE FILE ORG
