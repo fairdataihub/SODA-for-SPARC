@@ -2,7 +2,7 @@ const checkDiskSpace = require("check-disk-space").default;
 
 var metadataFile = "";
 var jstreePreview = document.getElementById("div-dataset-tree-preview");
-const nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
+const nonAllowedCharacters = '<>_:",;[]{}^`~@/|?*$=!%&+#\\';
 
 // per change event of current dataset span text
 function confirm_click_function() {

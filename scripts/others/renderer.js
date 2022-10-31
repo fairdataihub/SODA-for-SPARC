@@ -5618,15 +5618,11 @@ function detectIrregularFolders(folderName, pathEle) {
   }
 }
 
-function checkIrregularNameBoolean(folderName) {
+const checkIrregularNameBoolean = (folderName) => {
   console.log("this is the nonAllowedCharacters for folders");
-  console.log(nonAllowedCharacters);
-  for (var char of nonAllowedCharacters) {
-    if (folderName.includes(char)) {
-      return true;
-    }
-  }
-  return false;
+  //nonAllowedCharacters modified to only allow a-z A-z 0-9 and hyphen "-"
+  const nonAllowedFolderCharacters = /[^a-zA-Z0-9-]/;
+  return nonAllowedFolderCharacters.test(folderName);
 }
 
 /* The following functions aim at ignore folders with irregular characters, or replace the characters with (-),
