@@ -8,16 +8,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## v.9.3.3 - 2022-10-31
 
 ## Feature additions:
+
 - ORCID ID's are validated when adding contributors in guided mode
 - At the final step in guided mode permissions will be indicated next to the names chosen by the user along with minor text changes.
 
 ## Bug fixes:
+
 - Airtable keys are validated to ensure the API keys are still valid for use. If not they will be prompted again for an API key when necessary.
 - Guided Mode -> Before getting started page: tool tips were fixed to normalize across the app
 - Free form tool tips normalized with guided mode tool tips
 - SPARC Consortium Organization modified to only say SPARC Organization
 - Guided Mode: Added a sidebar to allow users to easily navigate through pages that have already been completed.
 - Guided Mode: Added the ability to progress through the protocol page if the user does not have protocols prepared.
+
 ## v.9.3.2 - 2022-10-14
 
 ## Bug fixes:
