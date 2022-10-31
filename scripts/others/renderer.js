@@ -5623,7 +5623,7 @@ const checkIrregularNameBoolean = (folderName) => {
   //nonAllowedCharacters modified to only allow a-z A-z 0-9 and hyphen "-"
   const nonAllowedFolderCharacters = /[^a-zA-Z0-9-]/;
   return nonAllowedFolderCharacters.test(folderName);
-}
+};
 
 /* The following functions aim at ignore folders with irregular characters, or replace the characters with (-),
    or remove the characters from the names.
