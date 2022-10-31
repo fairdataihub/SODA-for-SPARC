@@ -1591,6 +1591,8 @@ const addFilesfunction = async (
   for (var i = 0; i < fileArray.length; i++) {
     var fileName = fileArray[i];
 
+    //check for non allowed files
+    //.DS_Store and Thumbs.db files are strictly not allowed
     if (path.parse(fileName).name.substr(0, 1) === ".") {
       if (path.parse(fileName).name === ".DS_Store") {
         nonAllowedFiles.push(fileName);
