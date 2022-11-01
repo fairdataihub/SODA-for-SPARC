@@ -934,6 +934,9 @@ const renderSideBar = (activePage) => {
     guidedNavBarSectionPage.addEventListener("click", async (event) => {
       const currentPageUserIsLeaving = CURRENT_PAGE.attr("id");
       const pageToNavigateTo = guidedNavBarSectionPage.getAttribute("data-target-page");
+      const pageToNaviatetoName = document
+        .getElementById(pageToNavigateTo)
+        .getAttribute("data-page-name");
 
       // Do nothing if the user clicks the tab of the page they are currently on
       if (currentPageUserIsLeaving === pageToNavigateTo) {
@@ -958,23 +961,23 @@ const renderSideBar = (activePage) => {
           try {
             await checkIfPageIsValid(page);
           } catch (error) {
-            console.log(error);
+            const pageWithErrorName = document.getElementById(page).getAttribute("data-page-name");
             await openPage(page);
             await Swal.fire({
-              title: "An error occurred on an intermediary page",
-              html: `You must fix the following errors before continuing:
+              title: `An error occured on an intermediate page: ${pageWithErrorName}`,
+              html: `Please address the issues before continuing to ${pageToNaviatetoName}:
                 <br />
                 <br />
                 <ul>
                   ${error.map((error) => `<li class="text-left">${error.message}</li>`).join("")}
                 </ul>
               `,
-              icon: "error",
+              icon: "info",
               confirmButtonText: "Fix the errors on this page",
               focusConfirm: true,
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
-              width: 500,
+              width: 700,
             });
             return;
           }
