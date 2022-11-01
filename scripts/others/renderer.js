@@ -4968,13 +4968,13 @@ const addFoldersfunction = async (action, nonallowedFolderArray, folderArray, cu
 };
 
 //// Step 3. Organize dataset: Add files or folders with drag&drop
-function allowDrop(ev) {
+const allowDrop = (ev) => {
   ev.preventDefault();
 }
 
 var filesElement;
 var targetElement;
-async function drop(ev) {
+const drop = async (ev) => {
   irregularFolderArray = [];
   let renamedFolderName = "";
   let replaced = [];
