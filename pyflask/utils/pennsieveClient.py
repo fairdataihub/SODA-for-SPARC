@@ -8,6 +8,7 @@ def connect_pennsieve_client():
     try:
         return Pennsieve()
     except Exception as e:
+        print(e)
         abort(500, f"Could not connect to the Pennsieve agent: {e}")
 
 

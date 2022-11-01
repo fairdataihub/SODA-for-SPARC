@@ -2513,6 +2513,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                                     ]
                                 )
                             else:
+                                print("Adding to list_local_files")
                                 list_local_files.append(file_path)
                                 list_projected_names.append(projected_name)
                                 list_desired_names.append(desired_name_with_extension)
@@ -2533,6 +2534,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                             main_total_generate_dataset_size += getsize(file_path)
 
                 if list_local_files:
+                    print("Here thats why")
                     list_upload_files.append(
                         [
                             list_local_files,
@@ -2683,24 +2685,26 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         first_relative_path = list_upload_files[0][6]
         manifest_data = ps.manifest.create(first_file_local_path)
         manifest_id = manifest_data.manifest_id
+
+
         
         # add the list of upload files' local paths to the manifest [ skip the first element we already added]
         for item in list_upload_files:
-            # main_curate_progress_message = "In file one"
-            list_upload = item[0][0]
+        # main_curate_progress_message = "In file one"
+            list_file_paths = item[0]
             bf_folder = item[1]
             list_projected_names = item[2]
             list_desired_names = item[3]
             list_final_names = item[4]
             tracking_folder = item[5]
             relative_path = item[6]
-            print("The relative path in question is: ", relative_path)
+
             # TODO: Reimpelement using the client once the Pensieve team updates the client's protocol buffers
             # ps.manifest.add(manifest_id, list_upload, targetBasePath="/code")
             
-            
-            # subprocess call to the pennsieve agent to add the files to the manifest
-            subprocess.run(["pennsieve", "manifest", "add", str(manifest_id), list_upload, "-t", "/code"])
+            for file_path in list_file_paths:
+                # subprocess call to the pennsieve agent to add the files to the manifest
+                subprocess.run(["pennsieve", "manifest", "add", str(manifest_id), file_path, "-t", "/code"])
 
 
 
@@ -3088,7 +3092,9 @@ def main_curate_function(soda_json_structure):
                 "Checking that the selected Pennsieve account is valid"
             )
             accountname = soda_json_structure["bf-account-selected"]["account-name"]
+            print("Trying to connect")
             ps = connect_pennsieve_client()
+            print("Connected with ps")
             authenticate_user_with_client(ps, accountname)
         except Exception as e:
             main_curate_status = "Done"
