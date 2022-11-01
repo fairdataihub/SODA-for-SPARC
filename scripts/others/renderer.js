@@ -5170,6 +5170,9 @@ const dropHelper = async (
   var nonAllowedFiles = [];
   let tripleExtension = [];
   let doubleExtension = [];
+  let loadingIcon = document.getElementById("items_loading_container");
+  let loadingContainer = document.getElementById("loading-items-background-overlay");
+
 
   for (var i = 0; i < ev1.length; i++) {
     /// Get all the file information
@@ -5189,7 +5192,6 @@ const dropHelper = async (
       var nonAllowedDuplicate = false;
       var originalFileName = path.parse(itemPath).base;
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
-      const fileNameRegex = /[^-a-zA-z0-9]/g;
 
       if (path.parse(itemPath).name.substr(0, 1) === ".") {
         if (path.parse(itemPath).base === ".DS_Store") {
@@ -5205,19 +5207,18 @@ const dropHelper = async (
         continue;
       }
       let regex = /[\+&\%#]/i;
-      if (regex.test(path.parse(fileName).base) === true) {
-        console.log("nonallowed");
-        nonAllowedCharacterFiles.push(fileName);
+      if (regex.test(path.parse(itemPath).base) === true) {
+        nonAllowedCharacterFiles.push(itemPath);
         continue;
       }
 
-      if ((path.parse(fileName).base.match(/\./g) || []).length > 2) {
-        //multiple extensions, raise warning
-        tripleExtension.push(fileName);
+      if ((path.parse(itemPath).base.match(/\./g) || []).length > 2) {
+        //multiple extensions, raise warning (do not import)
+        tripleExtension.push(itemPath);
         continue;
-      } else if ((path.parse(fileName).base.match(/\./g) || []).length === 2) {
+      } else if ((path.parse(itemPath).base.match(/\./g) || []).length === 2) {
         //double extension ask if compressed file
-        doubleExtension.push(fileName);
+        doubleExtension.push(itemPath);
         continue;
       }
 
@@ -5331,11 +5332,7 @@ const dropHelper = async (
       loadingContainer.style.display = "none";
       loadingIcon.style.display = "none";
     }
-    newList = JSON.stringify(doubleExtension).replace(/"/g, "");
     let tempFile = [];
-    let temp = newList.substring(1, newList.length - 1);
-    temp = temp.split(",");
-    let list = temp;
     container = document.createElement("div");
     let selectAll = document.createElement("div");
     let selectText = document.createTextNode("Select All");
@@ -5484,8 +5481,8 @@ const dropHelper = async (
 
         for (let i = 0; i < checkboxes.length; i++) {
           if (
-            checkboxes[i].id in currentLocation["files"] ||
-            checkboxes[i].id in Object.keys(regularFiles)
+            checkboxes[i].id in myPath["files"] ||
+            checkboxes[i].id in Object.keys(importedFolders)
           ) {
             nonAllowedDuplicateFiles.push(fileName);
             // nonAllowedDuplicate = true;
@@ -5494,32 +5491,12 @@ const dropHelper = async (
             //not in there or regular files so store?
             console.log(checkboxes[i].id);
             console.log(fileStruct[checkboxes[i].id]);
-            regularFiles[checkboxes[i].id] = {
+            importedFiles[checkboxes[i].id] = {
               path: fileStruct[checkboxes[i].id]["filePath"],
               basename: checkboxes[i].id,
             };
           }
         }
-
-        // for (let i = 0; i < checkboxes.length; i++) {
-        //   console.log(checkboxes[i].id);
-        //   // console.log(checkboxes[i]);
-
-        //   if (checkboxes[i].id in currentLocation["files"] || checkboxes[i].id in Object.keys(regularFiles)) {
-        //     nonAllowedDuplicateFiles.push(fileName);
-        //     // nonAllowedDuplicate = true;
-        //     continue;
-        //   } else {
-        //     //not in there or regular files so store?
-        //     regularFiles[checkboxes[i].id] = {
-        //       path: filePath,
-        //       basename: checkboxes[i].id,
-        //     };
-        //   }
-        // // if()
-        // // fileName.push(list[i].substring(lastSlash, list[i].length));
-        // // console.log(fileName);
-        // }
       }
     });
   }
@@ -5580,22 +5557,29 @@ const dropHelper = async (
           let regex = /[\+&\%#]/g;
           let replaceFile = fileName.replace(regex, "-");
           console.log(replaceFile);
-          regularFiles[replaceFile] = {
-            path: nonAllowedCharacterFiles[i],
-            basename: replaceFile,
-          };
+          if(fileName in myPath["files"] || fileName in Object.keys(importedFolders)) {
+           nonAllowedDuplicateFiles.push(nonAllowedCharacterFiles[i]);
+           continue; 
+          } else {
+            importedFiles[replaceFile] = {
+              path: nonAllowedCharacterFiles[i],
+              basename: replaceFile,
+            };
+          }
         }
       }
       if (result.isDenied) {
         for (let i = 0; i < nonAllowedCharacterFiles.length; i++) {
           let fileName = nonAllowedCharacterFiles[i];
-          console.log(fileName);
-          // let regex = /[\+&\%#]/g;
-          // let replaceFile = fileName.replace(regex, "-")?
-          regularFiles[fileName] = {
-            path: fileName,
-            basename: path.parse(fileName).base,
-          };
+          if(fileName in myPath["files"] || fileName in Object.keys(importedFolders)) {
+           nonAllowedDuplicateFiles.push(nonAllowedCharacterFiles[i]);
+           continue; 
+          } else {
+            regularFiles[fileName] = {
+              path: fileName,
+              basename: path.parse(fileName).base,
+            };
+          }
         }
       }
     });
