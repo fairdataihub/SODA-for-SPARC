@@ -2701,10 +2701,14 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
             # TODO: Reimpelement using the client once the Pensieve team updates the client's protocol buffers
             # ps.manifest.add(manifest_id, list_upload, targetBasePath="/code")
+
+            # get the substring from the string relative_path that starts at the index of the / and contains the rest of the string
+            # this is the folder name
+            folder_name = relative_path[relative_path.index("/"):]
             
             for file_path in list_file_paths:
                 # subprocess call to the pennsieve agent to add the files to the manifest
-                subprocess.run(["pennsieve", "manifest", "add", str(manifest_id), file_path, "-t", "/code"])
+                subprocess.run(["pennsieve", "manifest", "add", str(manifest_id), file_path, "-t", folder_name])
 
 
 
