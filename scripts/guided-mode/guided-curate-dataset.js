@@ -538,6 +538,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
       }
 
+      /*
       // Notify the user of empty pages since this is the last page they can structure their dataset
       const emptyFilesFoldersResponse = await client.post(
         `/curate_datasets/empty_files_and_folders`,
@@ -581,7 +582,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           });
           throw errorArray;
         }
-      }
+      }*/
     }
     if (pageBeingLeftID === "guided-manifest-file-generation-tab") {
       const buttonYesAutoGenerateManifestFiles = document.getElementById(
