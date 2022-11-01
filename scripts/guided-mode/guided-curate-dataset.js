@@ -427,15 +427,15 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-assign-license-tab") {
-      if (isPageValid(pageBeingLeftID)) {
-        setGuidedLicense("Creative Commons Attribution (CC-BY)");
-      } else {
+      const licenseCheckbox = document.getElementById("guided-license-checkbox");
+      if (!licenseCheckbox.checked) {
         errorArray.push({
           type: "notyf",
           message: "Please accept the application of the CC-BY license to your dataset.",
         });
         throw errorArray;
       }
+      setGuidedLicense("Creative Commons Attribution (CC-BY)");
     }
     if (pageBeingLeftID === "guided-dataset-generate-location-tab") {
       const buttonGenerateLocally = document.getElementById(
@@ -4227,16 +4227,6 @@ const validateInput = (inputElementToValidate) => {
 /////////////////////////////////////////////////////////
 //////////       GUIDED FORM VALIDATORS       ///////////
 /////////////////////////////////////////////////////////
-
-const isPageValid = (pageID) => {
-  if (pageID === "guided-assign-license-tab") {
-    const licenseCheckbox = document.getElementById("guided-license-checkbox");
-    if (licenseCheckbox.checked) {
-      return true;
-    }
-    return false;
-  }
-};
 
 const openEditGuidedDatasetSwal = async (datasetName) => {
   swal.fire({
