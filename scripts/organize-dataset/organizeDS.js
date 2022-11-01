@@ -1580,6 +1580,8 @@ const addFilesfunction = async (
 
   // check for duplicate or files with the same name
   var nonAllowedDuplicateFiles = [];
+  let doubleExtension = [];
+  let tripleExtension = [];
   var nonAllowedFiles = [];
   var regularFiles = {};
   var hiddenFiles = [];
@@ -1591,8 +1593,6 @@ const addFilesfunction = async (
   for (var i = 0; i < fileArray.length; i++) {
     var fileName = fileArray[i];
 
-    console.log(path.parse(fileName).name);
-    console.log(path.parse(fileName).base);
     let regex = /#%&\+/i;
     if(regex.test(path.parse(fileName).base) === true) {
       console.log("nonallowed")
@@ -1602,9 +1602,12 @@ const addFilesfunction = async (
 
     if((path.parse(fileName).base.match(/\./g)||[]).length > 2) {
       //multiple extensions, raise warning
-
+      tripleExtension.push(fileName);
+      continue;
     } else if ((path.parse(fileName).base.match(/\./g)||[]).length === 2) {
       //double extension ask if compressed file
+      doubleExtension.push(fileName);
+      continue;
     }
 
     //check for non allowed files
@@ -1712,6 +1715,75 @@ const addFilesfunction = async (
         }
       }
     }
+  }
+
+  if(doubleExtension.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
+    await Swal.fire({
+      title:
+        "The following files have a double periods which is only allowed if they are compressed. Select the compressed files to import.",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" + doubleExtension.join("</br>") + "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Remove characters",
+      denyButtonText: "Continue as is",
+      cancelButtonText: "Cancel",
+      didOpen: () => {
+        $(".swal-popover").popover();
+      },
+    })
+  }
+
+  if(tripleExtension.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
+    await Swal.fire({
+      title:
+        "The following files will not be imported as they have three periods within the file name. Files should typically have one (two when they are compressed).",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" + tripleExtension.join("</br>") + "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Remove characters",
+      denyButtonText: "Continue as is",
+      cancelButtonText: "Cancel",
+      didOpen: () => {
+        $(".swal-popover").popover();
+      },
+    })
+  }
+
+  if(nonAllowedCharacterFiles.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
+    await Swal.fire({
+      title:
+        "The following files have characters that are typically not recommended. Although not forbidden to import as is, we recommend replacing those characters.",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" + nonAllowedCharacterFiles.join("</br>") + "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Remove characters",
+      denyButtonText: "Continue as is",
+      cancelButtonText: "Cancel",
+      didOpen: () => {
+        $(".swal-popover").popover();
+      },
+    })
   }
 
   if (hiddenFiles.length > 0) {
