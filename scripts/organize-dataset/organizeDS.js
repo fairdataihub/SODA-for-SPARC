@@ -1594,16 +1594,15 @@ const addFilesfunction = async (
     console.log(path.parse(fileName).name);
     console.log(path.parse(fileName).base);
     let regex = /#%&\+/i;
-    if(regex.test(path.parse(fileName).base) === true) {
-      console.log("nonallowed")
+    if (regex.test(path.parse(fileName).base) === true) {
+      console.log("nonallowed");
       nonAllowedCharacterFiles.push(fileName);
       continue;
     }
 
-    if((path.parse(fileName).base.match(/\./g)||[]).length > 2) {
+    if ((path.parse(fileName).base.match(/\./g) || []).length > 2) {
       //multiple extensions, raise warning
-
-    } else if ((path.parse(fileName).base.match(/\./g)||[]).length === 2) {
+    } else if ((path.parse(fileName).base.match(/\./g) || []).length === 2) {
       //double extension ask if compressed file
     }
 
