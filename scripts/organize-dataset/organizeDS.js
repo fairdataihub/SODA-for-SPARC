@@ -1604,7 +1604,7 @@ const addFilesfunction = async (
       //multiple extensions, raise warning
       tripleExtension.push(fileName);
       continue;
-    } else if ((path.parse(fileName).base.match(/\./g)||[]).length === 2) {
+    } else if ((path.parse(fileName).base.match(/\./g) || []).length === 2) {
       //double extension ask if compressed file
       doubleExtension.push(fileName);
       continue;
@@ -1717,7 +1717,7 @@ const addFilesfunction = async (
     }
   }
 
-  if(doubleExtension.length > 0) {
+  if (doubleExtension.length > 0) {
     if (loadingContainer != undefined) {
       loadingContainer.style.display = "none";
       loadingIcon.style.display = "none";
@@ -1726,7 +1726,9 @@ const addFilesfunction = async (
       title:
         "The following files have a double periods which is only allowed if they are compressed. Select the compressed files to import.",
       html:
-        "<div style='max-height:300px; overflow-y:auto'>" + doubleExtension.join("</br>") + "</div>",
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        doubleExtension.join("</br>") +
+        "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: true,
@@ -1737,10 +1739,10 @@ const addFilesfunction = async (
       didOpen: () => {
         $(".swal-popover").popover();
       },
-    })
+    });
   }
 
-  if(tripleExtension.length > 0) {
+  if (tripleExtension.length > 0) {
     if (loadingContainer != undefined) {
       loadingContainer.style.display = "none";
       loadingIcon.style.display = "none";
@@ -1749,7 +1751,9 @@ const addFilesfunction = async (
       title:
         "The following files will not be imported as they have three periods within the file name. Files should typically have one (two when they are compressed).",
       html:
-        "<div style='max-height:300px; overflow-y:auto'>" + tripleExtension.join("</br>") + "</div>",
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        tripleExtension.join("</br>") +
+        "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: true,
@@ -1760,10 +1764,10 @@ const addFilesfunction = async (
       didOpen: () => {
         $(".swal-popover").popover();
       },
-    })
+    });
   }
 
-  if(nonAllowedCharacterFiles.length > 0) {
+  if (nonAllowedCharacterFiles.length > 0) {
     if (loadingContainer != undefined) {
       loadingContainer.style.display = "none";
       loadingIcon.style.display = "none";
@@ -1772,7 +1776,9 @@ const addFilesfunction = async (
       title:
         "The following files have characters that are typically not recommended. Although not forbidden to import as is, we recommend replacing those characters.",
       html:
-        "<div style='max-height:300px; overflow-y:auto'>" + nonAllowedCharacterFiles.join("</br>") + "</div>",
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        nonAllowedCharacterFiles.join("</br>") +
+        "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: true,
@@ -1783,7 +1789,7 @@ const addFilesfunction = async (
       didOpen: () => {
         $(".swal-popover").popover();
       },
-    })
+    });
   }
 
   if (hiddenFiles.length > 0) {
