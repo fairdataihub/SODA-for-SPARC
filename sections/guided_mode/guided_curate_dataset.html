@@ -133,10 +133,14 @@
       >
         <div class="guided--capsule-container" id="structure-dataset-capsule-container">
           <div class="guided--capsule" id="guided-intro-page-capsule"></div>
-          <div class="guided--capsule" id="guided-new-dataset-info-capsule"></div>
+          <div class="guided--capsule" id="guided-name-subtitle-capsule"></div>
           <div class="guided--capsule" id="guided-prepare-helpers-capsule"></div>
         </div>
-        <div id="guided-intro-page-tab" class="guided--page" data-page-name="About Guided Mode">
+        <div
+          id="guided-intro-page-tab"
+          class="guided--page hidden"
+          data-page-name="About Guided Mode"
+        >
           <h1 class="guided--text-sub-step">Welcome to Guided Mode!</h1>
           <div class="guided--section">
             <p class="guided--help-text">
@@ -169,14 +173,8 @@
             </p>
           </div>
         </div>
-        <div
-          id="guided-new-dataset-info-tab"
-          class="guided--page"
-          data-page-name="Name and subtitle"
-        >
-          <div class="title-border">
-            <h1 class="guided--text-sub-step">Give your dataset a name and subtitle</h1>
-          </div>
+        <div id="guided-name-subtitle-tab" class="guided--page" data-page-name="Name and subtitle">
+          <h1 class="guided--text-sub-step">Give your dataset a name and subtitle</h1>
           <div class="guided--section">
             <label class="guided--form-label">Dataset name: </label>
             <input

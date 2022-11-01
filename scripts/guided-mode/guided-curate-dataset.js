@@ -29,6 +29,71 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
 
+    if (pageBeingLeftID === "guided-name-subtitle-tab") {
+      /*
+      let datasetNameInput = document.getElementById("guided-dataset-name-input").value.trim();
+      let datasetSubtitleInput = document
+        .getElementById("guided-dataset-subtitle-input")
+        .value.trim();
+      if (!datasetNameInput) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please enter a dataset name.",
+        });
+      }
+      if (!datasetSubtitleInput) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please enter a dataset subtitle.",
+        });
+      }
+      if (errorArray.length > 0) {
+        throw errorArray;
+      }
+
+      if (Object.keys(sodaJSONObj).length === 0) {
+        //get names of existing progress saves
+        const existingProgressNames = fs.readdirSync(guidedProgressFilePath);
+        //Remove '.json' from each element in existingProgressNames
+        existingProgressNames.forEach((element, index) => {
+          existingProgressNames[index] = element.replace(".json", "");
+        });
+        //check if dataset name is already in use
+        if (existingProgressNames.includes(datasetNameInput)) {
+          errorArray.push({
+            type: "notyf",
+            message:
+              "An existing progress file already exists with that name. Please choose a different name.",
+          });
+          throw errorArray;
+        }
+
+        guidedCreateSodaJSONObj();
+        attachGuidedMethodsToSodaJSONObj();
+
+        await setOrUpdateGuidedDatasetName(datasetNameInput);
+        setGuidedDatasetSubtitle(datasetSubtitleInput);
+        saveGuidedProgress(datasetNameInput);
+      } else {
+        //updating current progress file
+        try {
+          await setOrUpdateGuidedDatasetName(datasetNameInput);
+        } catch (error) {
+          errorArray.push({
+            type: "notyf",
+            message: error,
+          });
+          throw errorArray;
+        }
+        setGuidedDatasetSubtitle(datasetSubtitleInput);
+        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      }
+      $(this).removeClass("loading");
+
+      resetGuidedRadioButtons("guided-dataset-starting-point-tab");
+      guidedTransitionFromDatasetNameSubtitlePage();*/
+    }
+
     if (pageBeingLeftID === "guided-prepare-helpers-tab") {
       // This is where we save data to the sodaJSONObj
       // Take a look at logic around here to see how to save data to the sodaJSONObj
@@ -1380,6 +1445,21 @@ const guidedTransitionFromHome = async () => {
   //Hide the home screen
   document.getElementById("guided-home").classList.add("hidden");
   document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
+  document.getElementById("guided-header-div").classList.remove("hidden");
+
+  //Set the current page to the guided intro page
+  CURRENT_PAGE = $("#guided-intro-page-tab");
+  openPage("guided-intro-page-tab");
+
+  //reset sub-page navigation (Set the first sub-page to be the active sub-page
+  //for all pages with sub-pages)
+  const subPageCapsuleContainers = Array.from(
+    document.querySelectorAll(".guided--capsule-container-sub-page")
+  );
+  for (const pageCapsule of subPageCapsuleContainers) {
+    const firstSubPage = pageCapsule.querySelector(".guided--capsule-sub-page");
+    setActiveSubPage(firstSubPage.id.replace("-capsule", ""));
+  }
 
   guidedLockSideBar();
 };
@@ -1387,13 +1467,15 @@ const guidedTransitionFromHome = async () => {
 const guidedTransitionToHome = () => {
   guidedPrepareHomeScreen();
   document.getElementById("guided-home").classList.remove("hidden");
-  document.getElementById("curation-preparation-parent-tab").classList.add("hidden");
-
-  //get element with id "sidebarCollapse"
-  const sidebar = document.getElementById("sidebarCollapse");
-  if (sidebar.classList.contains("active")) {
-    sidebar.click();
+  const guidedParentTabs = Array.from(document.querySelectorAll(".guided--parent-tab"));
+  for (const guidedParentTab of guidedParentTabs) {
+    guidedParentTab.classList.add("hidden");
   }
+  CURRENT_PAGE = undefined;
+  document.getElementById("guided-header-div").classList.add("hidden");
+
+  $("#guided-footer-div").hide();
+  $("#guided-sub-page-navigation-footer-div").hide();
 };
 
 const guidedTransitionFromDatasetNameSubtitlePage = () => {
@@ -1406,21 +1488,6 @@ const guidedTransitionFromDatasetNameSubtitlePage = () => {
   $("#prepare-dataset-parent-tab").css("display", "flex");
   $("#guided-header-div").css("display", "flex");
   $("#guided-footer-div").css("display", "flex");
-
-  //Set the current page to the guided curation page
-  CURRENT_PAGE = $("#guided-prepare-helpers-tab");
-
-  openPage("guided-prepare-helpers-tab");
-
-  //reset sub-page navigation (Set the first sub-page to be the active sub-page
-  //for all pages with sub-pages)
-  const subPageCapsuleContainers = Array.from(
-    document.querySelectorAll(".guided--capsule-container-sub-page")
-  );
-  for (const pageCapsule of subPageCapsuleContainers) {
-    const firstSubPage = pageCapsule.querySelector(".guided--capsule-sub-page");
-    setActiveSubPage(firstSubPage.id.replace("-capsule", ""));
-  }
 };
 
 const saveGuidedProgress = (guidedProgressFileName) => {
@@ -2808,7 +2875,8 @@ const openPage = async (targetPageID) => {
     } else {
       $("#guided-back-button").css("visibility", "visible");
     }
-
+    if (targetPageID === "guided-name-subtitle-tab") {
+    }
     if (targetPageID === "guided-prepare-helpers-tab") {
       //Hide the new dataset and existings local dataset capsule containers because
       //We do now know what the user wants to do yet
@@ -4414,14 +4482,6 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   delete sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
 
   guidedTransitionFromHome();
-  //Set the dataset name and subtitle input values using the
-  //previously saved dataset name and subtitle
-  document.getElementById("guided-dataset-name-input").value =
-    datasetResumeJsonObj["digital-metadata"]["name"];
-  document.getElementById("guided-dataset-subtitle-input").value =
-    datasetResumeJsonObj["digital-metadata"]["subtitle"];
-
-  guidedTransitionFromDatasetNameSubtitlePage();
 
   //Hide the before getting started page so it doesn't flash when resuming progress
   $("#guided-prepare-helpers-tab").css("display", "none");
@@ -8906,7 +8966,7 @@ $(document).ready(async () => {
 
   $("#guided-button-dataset-intro-back").on("click", () => {
     const guidedIntroPage = document.getElementById("guided-intro-page");
-    const guidedDatasetNameSubtitlePage = document.getElementById("guided-new-dataset-info");
+    const guidedDatasetNameSubtitlePage = document.getElementById("guided-name-subtitle");
     if (!guidedIntroPage.classList.contains("hidden")) {
       //remove text from dataset name and subtitle inputs
       document.getElementById("guided-dataset-name-input").value = "";
@@ -8917,15 +8977,15 @@ $(document).ready(async () => {
       document.getElementById("guided-footer-intro").classList.add("hidden");
       guidedPrepareHomeScreen();
     } else if (!guidedDatasetNameSubtitlePage.classList.contains("hidden")) {
-      switchElementVisibility("guided-new-dataset-info", "guided-intro-page");
+      switchElementVisibility("guided-name-subtitle", "guided-intro-page");
     }
   });
   $("#guided-button-dataset-intro-next").on("click", async function () {
     const guidedIntroPage = document.getElementById("guided-intro-page");
-    const guidedDatasetNameSubtitlePage = document.getElementById("guided-new-dataset-info");
+    const guidedDatasetNameSubtitlePage = document.getElementById("guided-name-subtitle");
 
     if (!guidedIntroPage.classList.contains("hidden")) {
-      switchElementVisibility("guided-intro-page", "guided-new-dataset-info");
+      switchElementVisibility("guided-intro-page", "guided-name-subtitle");
     } else if (!guidedDatasetNameSubtitlePage.classList.contains("hidden")) {
       let errorArray = [];
 
@@ -10018,94 +10078,6 @@ $(document).ready(async () => {
     });
     const result = await Promise.allSettled(promises);
   };
-
-  $("#guided-button-preview-folder-structure").on("click", () => {
-    Swal.fire({
-      title: "Dataset folder structure preview",
-      width: 800,
-      html: `<div id="guided-folder-structure-preview" style="display: block; width: 100%;"></div>`,
-    });
-    var folderStructurePreview = document.getElementById("guided-folder-structure-preview");
-
-    $(folderStructurePreview).jstree({
-      core: {
-        check_callback: true,
-        data: {},
-      },
-      plugins: ["types"],
-      types: {
-        folder: {
-          icon: "fas fa-folder fa-fw",
-        },
-        "folder open": {
-          icon: "fas fa-folder-open fa-fw",
-        },
-        "folder closed": {
-          icon: "fas fa-folder fa-fw",
-        },
-        "file xlsx": {
-          icon: "./assets/img/excel-file.png",
-        },
-        "file xls": {
-          icon: "./assets/img/excel-file.png",
-        },
-        "file png": {
-          icon: "./assets/img/png-file.png",
-        },
-        "file PNG": {
-          icon: "./assets/img/png-file.png",
-        },
-        "file pdf": {
-          icon: "./assets/img/pdf-file.png",
-        },
-        "file txt": {
-          icon: "./assets/img/txt-file.png",
-        },
-        "file csv": {
-          icon: "./assets/img/csv-file.png",
-        },
-        "file CSV": {
-          icon: "./assets/img/csv-file.png",
-        },
-        "file DOC": {
-          icon: "./assets/img/doc-file.png",
-        },
-        "file DOCX": {
-          icon: "./assets/img/doc-file.png",
-        },
-        "file docx": {
-          icon: "./assets/img/doc-file.png",
-        },
-        "file doc": {
-          icon: "./assets/img/doc-file.png",
-        },
-        "file jpeg": {
-          icon: "./assets/img/jpeg-file.png",
-        },
-        "file JPEG": {
-          icon: "./assets/img/jpeg-file.png",
-        },
-        "file other": {
-          icon: "./assets/img/other-file.png",
-        },
-      },
-    });
-    $(folderStructurePreview).on("open_node.jstree", function (event, data) {
-      data.instance.set_type(data.node, "folder open");
-    });
-    $(folderStructurePreview).on("close_node.jstree", function (event, data) {
-      data.instance.set_type(data.node, "folder closed");
-    });
-    guidedShowTreePreview(sodaJSONObj["digital-metadata"]["name"], folderStructurePreview);
-
-    const folderPage = CURRENT_PAGE.attr("id");
-    if (folderPage === "guided-subjects-folder-tab") {
-      //open jsTree to correct folder
-      $(folderStructurePreview)
-        .jstree(true)
-        .open_node($(folderStructurePreview).jstree(true).get_node("#"));
-    }
-  });
 
   //const add_dataset_permission = async();
 
@@ -11485,7 +11457,7 @@ $(document).ready(async () => {
       //Hide dataset name and subtitle parent tab
       document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
 
-      switchElementVisibility("guided-intro-page", "guided-new-dataset-info");
+      switchElementVisibility("guided-intro-page", "guided-name-subtitle");
 
       //show the intro footer
       document.getElementById("guided-footer-intro").classList.remove("hidden");
