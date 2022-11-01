@@ -7873,8 +7873,7 @@ const removePermission = (clickedPermissionRemoveButton) => {
     notyf.open({
       duration: "6000",
       type: "error",
-      message:
-        "You can not modify the owner on this step. To do so, please return to the owner selection page",
+      message: "You can not remove yourself as the owner of this dataset",
     });
     return;
   }
@@ -7932,6 +7931,7 @@ const renderPermissionsTable = () => {
   const users = sodaJSONObj["digital-metadata"]["user-permissions"];
   const teams = sodaJSONObj["digital-metadata"]["team-permissions"];
   permissionsTableElements.push(createPermissionsTableRowElement("owner", owner, "owner"));
+
   for (user of users) {
     permissionsTableElements.push(
       createPermissionsTableRowElement(
