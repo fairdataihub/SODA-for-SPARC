@@ -1449,7 +1449,7 @@ const guidedTransitionFromHome = async () => {
 
   //Set the current page to the guided intro page
   CURRENT_PAGE = $("#guided-intro-page-tab");
-  openPage("guided-intro-page-tab");
+  await openPage("guided-intro-page-tab");
 
   //reset sub-page navigation (Set the first sub-page to be the active sub-page
   //for all pages with sub-pages)
@@ -1467,13 +1467,15 @@ const guidedTransitionFromHome = async () => {
 const guidedTransitionToHome = () => {
   guidedPrepareHomeScreen();
   document.getElementById("guided-home").classList.remove("hidden");
+  // Hide all of the parent tabs
   const guidedParentTabs = Array.from(document.querySelectorAll(".guided--parent-tab"));
   for (const guidedParentTab of guidedParentTabs) {
-    guidedParentTab.classList.add("hidden");
+    guidedParentTab.style.display = "none";
   }
   CURRENT_PAGE = undefined;
-  document.getElementById("guided-header-div").classList.add("hidden");
 
+  //Hide guided headers and footers
+  document.getElementById("guided-header-div").classList.add("hidden");
   $("#guided-footer-div").hide();
   $("#guided-sub-page-navigation-footer-div").hide();
 };
@@ -4484,7 +4486,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   guidedTransitionFromHome();
 
   //Hide the before getting started page so it doesn't flash when resuming progress
-  $("#guided-prepare-helpers-tab").css("display", "none");
+  $("#guided-intro-page-tab").css("display", "none");
 
   if (pageToReturnTo) {
     //Hide the sub-page navigation and show the main page navigation footer
