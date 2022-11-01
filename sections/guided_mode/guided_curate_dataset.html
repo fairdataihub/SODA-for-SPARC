@@ -13,6 +13,17 @@
       <div class="guided--progression-tab-container">
         <div
           class="guided--progression-tab guided--progression-tab-triangle selected-tab"
+          id="curation-preparation-progression-tab"
+        >
+          <div class="guided--progression-tab-content">
+            <span class="dot">0</span>
+            <div class="guided--progression-tab-labels">
+              <h1 class="guided--progression-tab-label-main">Intro</h1>
+            </div>
+          </div>
+        </div>
+        <div
+          class="guided--progression-tab guided--progression-tab-triangle"
           id="prepare-dataset-progression-tab"
         >
           <div class="guided--progression-tab-content">
@@ -114,15 +125,19 @@
           <div class="guided--section hidden" id="guided-div-update-uploaded-cards"></div>
         </div>
       </div>
+
       <div
-        id="guided-mode-starting-container"
-        class="guided--main-tab hidden"
-        data-parent-tab-name="Dataset Structure"
+        id="curation-preparation-parent-tab"
+        class="guided--parent-tab hidden"
+        data-parent-tab-name="Curation Preparation"
       >
-        <div class="guided--panel hidden" id="guided-intro-page" style="flex-grow: 1">
-          <div class="title-border">
-            <h1 class="guided--text-sub-step">Welcome to Guided Mode!</h1>
-          </div>
+        <div class="guided--capsule-container" id="structure-dataset-capsule-container">
+          <div class="guided--capsule" id="guided-intro-page-capsule"></div>
+          <div class="guided--capsule" id="guided-new-dataset-info-capsule"></div>
+          <div class="guided--capsule" id="guided-prepare-helpers-capsule"></div>
+        </div>
+        <div id="guided-intro-page-tab" class="guided--page" data-page-name="About Guided Mode">
+          <h1 class="guided--text-sub-step">Welcome to Guided Mode!</h1>
           <div class="guided--section">
             <p class="guided--help-text">
               Guided Mode is designed to be the simplest and most efficient method of curating and
@@ -154,7 +169,11 @@
             </p>
           </div>
         </div>
-        <div class="guided--panel hidden" id="guided-new-dataset-info" style="flex-grow: 1">
+        <div
+          id="guided-new-dataset-info-tab"
+          class="guided--page"
+          data-page-name="Name and subtitle"
+        >
           <div class="title-border">
             <h1 class="guided--text-sub-step">Give your dataset a name and subtitle</h1>
           </div>
@@ -208,66 +227,10 @@
             </p>
           </div>
         </div>
-      </div>
-      <div
-        id="prepare-dataset-parent-tab"
-        class="guided--parent-tab hidden"
-        data-parent-tab-name="Dataset Structure"
-      >
-        <div class="guided--capsule-container" id="structure-dataset-capsule-container">
-          <div class="guided--capsule hidden" id="guided-prepare-helpers-capsule"></div>
-          <div class="guided--capsule active" id="guided-dataset-starting-point-capsule"></div>
-
-          <div
-            class="guided--capsule-container-branch hidden"
-            id="guided-curate-new-dataset-branch-capsule-container"
-          >
-            <div class="guided--capsule" id="guided-subjects-folder-capsule"></div>
-
-            <div class="guided--capsule" id="guided-primary-data-organization-capsule"></div>
-            <div class="guided--capsule" id="guided-source-data-organization-capsule"></div>
-            <div class="guided--capsule" id="guided-derivative-data-organization-capsule"></div>
-            <div class="guided--capsule" id="guided-code-folder-capsule"></div>
-            <div class="guided--capsule" id="guided-protocol-folder-capsule"></div>
-            <div class="guided--capsule" id="guided-docs-folder-capsule"></div>
-
-            <button
-              class="ui yellow basic button"
-              id="guided-button-preview-folder-structure"
-              style="
-                z-index: 2001;
-                position: absolute;
-                top: 75px;
-                left: 0px;
-                background-color: white;
-                display: none;
-              "
-            >
-              Preview folder structure
-            </button>
-          </div>
-          <div
-            class="guided--capsule-container-branch hidden"
-            id="guided-curate-existing-local-dataset-branch-capsule-container"
-          >
-            <div class="guided--capsule" id="guided-folder-importation-capsule"></div>
-          </div>
-          <div class="guided--capsule" id="guided-folder-structure-preview-capsule"></div>
-        </div>
-
         <div id="guided-prepare-helpers-tab" class="guided--page" data-page-name="Prepare data">
           <div class="guided--section">
-            <h1
-              class="guided--text-sub-step"
-              style="
-                border-bottom: 5px solid var(--color-bg-plum);
-                width: 131%;
-                margin-bottom: 2rem;
-                padding-bottom: 1rem;
-              "
-            >
-              Before Getting Started
-            </h1>
+            <h1 class="guided--text-sub-step">Before getting started</h1>
+
             <p class="guided--help-text">
               Several resources are required to curate and share a SPARC dataset. They are listed
               below so you can make sure you can have access to them before getting started. You can
@@ -461,6 +424,52 @@
               </button>
             </div>
           </div>
+        </div>
+      </div>
+      <div
+        id="prepare-dataset-parent-tab"
+        class="guided--parent-tab hidden"
+        data-parent-tab-name="Dataset Structure"
+      >
+        <div class="guided--capsule-container">
+          <div class="guided--capsule hidden" id="guided-prepare-helpers-capsule"></div>
+          <div class="guided--capsule active" id="guided-dataset-starting-point-capsule"></div>
+
+          <div
+            class="guided--capsule-container-branch hidden"
+            id="guided-curate-new-dataset-branch-capsule-container"
+          >
+            <div class="guided--capsule" id="guided-subjects-folder-capsule"></div>
+
+            <div class="guided--capsule" id="guided-primary-data-organization-capsule"></div>
+            <div class="guided--capsule" id="guided-source-data-organization-capsule"></div>
+            <div class="guided--capsule" id="guided-derivative-data-organization-capsule"></div>
+            <div class="guided--capsule" id="guided-code-folder-capsule"></div>
+            <div class="guided--capsule" id="guided-protocol-folder-capsule"></div>
+            <div class="guided--capsule" id="guided-docs-folder-capsule"></div>
+
+            <button
+              class="ui yellow basic button"
+              id="guided-button-preview-folder-structure"
+              style="
+                z-index: 2001;
+                position: absolute;
+                top: 75px;
+                left: 0px;
+                background-color: white;
+                display: none;
+              "
+            >
+              Preview folder structure
+            </button>
+          </div>
+          <div
+            class="guided--capsule-container-branch hidden"
+            id="guided-curate-existing-local-dataset-branch-capsule-container"
+          >
+            <div class="guided--capsule" id="guided-folder-importation-capsule"></div>
+          </div>
+          <div class="guided--capsule" id="guided-folder-structure-preview-capsule"></div>
         </div>
 
         <div

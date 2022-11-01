@@ -1291,34 +1291,6 @@ const guidedSaveAndExit = async (exitPoint) => {
       $("#guided-button-dataset-intro-back").click();
       $("#guided-button-dataset-intro-back").click();
     }
-  } else if (exitPoint === "intro") {
-    const { value: returnToGuidedHomeScreen } = await Swal.fire({
-      title: "Are you sure?",
-      text: `Transitioning from guided mode to free form mode will cause you to lose
-        the progress you have made on the current page. You will still be able to continue
-        curating your current dataset by selecting its card on the guided mode homepage.`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Exit guided mode",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0,0.4)",
-    });
-    if (returnToGuidedHomeScreen) {
-      guidedUnLockSideBar();
-      const guidedIntroPage = document.getElementById("guided-intro-page");
-      const guidedDatasetNameSubtitlePage = document.getElementById("guided-new-dataset-info");
-
-      if (!guidedIntroPage.classList.contains("hidden")) {
-        //click past the intro page
-        $("#guided-button-dataset-intro-back").click();
-      } else if (!guidedDatasetNameSubtitlePage.classList.contains("hidden")) {
-        //click past the dataset name/subtitle page and intro page
-        $("#guided-button-dataset-intro-back").click();
-        $("#guided-button-dataset-intro-back").click();
-      }
-    }
   }
 };
 
@@ -1404,35 +1376,18 @@ const openSubPageNavigation = (pageBeingNavigatedTo) => {
   $("#guided-sub-page-navigation-footer-div").css("display", "flex");
 };
 
-const guidedTransitionFromHome = () => {
+const guidedTransitionFromHome = async () => {
   //Hide the home screen
   document.getElementById("guided-home").classList.add("hidden");
-  //Hide the header and footer for the dataset name/subtitle page
-  $("#guided-header-div").hide();
-  $("#guided-footer-div").hide();
-
-  //Show the guided mode starting container
-  document.getElementById("guided-mode-starting-container").classList.remove("hidden");
-
-  //hide the name+subtitle page and show the intro page
-  switchElementVisibility("guided-new-dataset-info", "guided-intro-page");
-  //Reset name, subtitle, and subtitle char count
-  document.getElementById("guided-dataset-name-input").value = "";
-  document.getElementById("guided-dataset-subtitle-input").value = "";
-  document.getElementById("guided-subtitle-char-count").innerHTML = `255 characters remaining`;
+  document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
 
   guidedLockSideBar();
-
-  //Show the intro footer
-  document.getElementById("guided-footer-intro").classList.remove("hidden");
 };
 
 const guidedTransitionToHome = () => {
   guidedPrepareHomeScreen();
   document.getElementById("guided-home").classList.remove("hidden");
-  $("#guided-header-div").hide();
-  $("#guided-footer-div").hide();
-  document.getElementById("guided-mode-starting-container").classList.add("hidden");
+  document.getElementById("curation-preparation-parent-tab").classList.add("hidden");
 
   //get element with id "sidebarCollapse"
   const sidebar = document.getElementById("sidebarCollapse");
@@ -1443,7 +1398,7 @@ const guidedTransitionToHome = () => {
 
 const guidedTransitionFromDatasetNameSubtitlePage = () => {
   //Hide dataset name and subtitle parent tab
-  document.getElementById("guided-mode-starting-container").classList.add("hidden");
+  document.getElementById("curation-preparation-parent-tab").classList.add("hidden");
   //hide the intro footer
   document.getElementById("guided-footer-intro").classList.add("hidden");
 
@@ -2823,15 +2778,6 @@ const openPage = async (targetPageID) => {
     //Show the main nav bar
     //Note: if other nav bar needs to be shown, it will be handled later in this function
     hideSubNavAndShowMainNav(false);
-
-    //Hide the high level progress steps and green pills if the user is on the before getting started page
-    if (targetPageID === "guided-prepare-helpers-tab") {
-      document.getElementById("structure-dataset-capsule-container").classList.add("hidden");
-      document.querySelector(".guided--progression-tab-container").classList.add("hidden");
-    } else {
-      document.getElementById("structure-dataset-capsule-container").classList.remove("hidden");
-      document.querySelector(".guided--progression-tab-container").classList.remove("hidden");
-    }
 
     if (targetPageID === "guided-designate-pi-owner-tab") {
       $("#guided_bf_list_users_pi").selectpicker("refresh");
@@ -8966,7 +8912,7 @@ $(document).ready(async () => {
       document.getElementById("guided-dataset-name-input").value = "";
       document.getElementById("guided-dataset-subtitle-input").value = "";
 
-      switchElementVisibility("guided-mode-starting-container", "guided-home");
+      switchElementVisibility("curation-preparation-parent-tab", "guided-home");
       //hide the intro footer
       document.getElementById("guided-footer-intro").classList.add("hidden");
       guidedPrepareHomeScreen();
@@ -11535,9 +11481,9 @@ $(document).ready(async () => {
   $("#guided-back-button").on("click", () => {
     pageBeingLeftID = CURRENT_PAGE.attr("id");
 
-    if (pageBeingLeftID === "guided-prepare-helpers-tab") {
+    /* if (pageBeingLeftID === "guided-prepare-helpers-tab") {
       //Hide dataset name and subtitle parent tab
-      document.getElementById("guided-mode-starting-container").classList.remove("hidden");
+      document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
 
       switchElementVisibility("guided-intro-page", "guided-new-dataset-info");
 
@@ -11566,7 +11512,7 @@ $(document).ready(async () => {
       CURRENT_PAGE = null;
 
       return;
-    }
+    }*/
 
     const getPrevPageNotSkipped = (startingPage) => {
       //Check if param element's following element is undefined
