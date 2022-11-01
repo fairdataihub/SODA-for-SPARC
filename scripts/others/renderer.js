@@ -5173,7 +5173,6 @@ const dropHelper = async (
   let loadingIcon = document.getElementById("items_loading_container");
   let loadingContainer = document.getElementById("loading-items-background-overlay");
 
-
   for (var i = 0; i < ev1.length; i++) {
     /// Get all the file information
     var itemPath = ev1[i].path;
@@ -5557,9 +5556,9 @@ const dropHelper = async (
           let regex = /[\+&\%#]/g;
           let replaceFile = fileName.replace(regex, "-");
           console.log(replaceFile);
-          if(fileName in myPath["files"] || fileName in Object.keys(importedFolders)) {
-           nonAllowedDuplicateFiles.push(nonAllowedCharacterFiles[i]);
-           continue; 
+          if (fileName in myPath["files"] || fileName in Object.keys(importedFolders)) {
+            nonAllowedDuplicateFiles.push(nonAllowedCharacterFiles[i]);
+            continue;
           } else {
             importedFiles[replaceFile] = {
               path: nonAllowedCharacterFiles[i],
@@ -5571,9 +5570,9 @@ const dropHelper = async (
       if (result.isDenied) {
         for (let i = 0; i < nonAllowedCharacterFiles.length; i++) {
           let fileName = nonAllowedCharacterFiles[i];
-          if(fileName in myPath["files"] || fileName in Object.keys(importedFolders)) {
-           nonAllowedDuplicateFiles.push(nonAllowedCharacterFiles[i]);
-           continue; 
+          if (fileName in myPath["files"] || fileName in Object.keys(importedFolders)) {
+            nonAllowedDuplicateFiles.push(nonAllowedCharacterFiles[i]);
+            continue;
           } else {
             regularFiles[fileName] = {
               path: fileName,
