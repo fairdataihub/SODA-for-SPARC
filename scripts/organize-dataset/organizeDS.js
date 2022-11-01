@@ -1594,13 +1594,13 @@ const addFilesfunction = async (
     var fileName = fileArray[i];
 
     let regex = /#%&\+/i;
-    if(regex.test(path.parse(fileName).base) === true) {
-      console.log("nonallowed")
+    if (regex.test(path.parse(fileName).base) === true) {
+      console.log("nonallowed");
       nonAllowedCharacterFiles.push(fileName);
       continue;
     }
 
-    if((path.parse(fileName).base.match(/\./g)||[]).length > 2) {
+    if ((path.parse(fileName).base.match(/\./g) || []).length > 2) {
       //multiple extensions, raise warning
       tripleExtension.push(fileName);
       continue;
