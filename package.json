@@ -127,7 +127,7 @@
     "electron-log": "^4.3.5",
     "electron-notarize": "^1.2.1",
     "electron-shortcut-normalizer": "^1.0.0",
-    "electron-updater": "4.3.9",
+    "electron-updater": "4.6.5",
     "excel4node": "^1.7.2",
     "exponential-backoff": "^3.1.0",
     "find-free-port": "^2.0.0",
