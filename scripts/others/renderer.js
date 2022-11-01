@@ -5484,7 +5484,7 @@ const dropHelper = async (
             checkboxes[i].id in myPath["files"] ||
             checkboxes[i].id in Object.keys(importedFolders)
           ) {
-            nonAllowedDuplicateFiles.push(fileName);
+            nonAllowedDuplicateFiles.push(fileStruct[checkboxes[i].id]["filePath"]);
             // nonAllowedDuplicate = true;
             continue;
           } else {
