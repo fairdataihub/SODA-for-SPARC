@@ -379,80 +379,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
     }
-    if (pageBeingLeftID === "guided-designate-pi-owner-tab") {
-      const designateSelfButton = document.getElementById("guided-button-designate-self-PI");
-      const designateOtherButton = document.getElementById("guided-button-designate-other-PI");
-      if (
-        !designateSelfButton.classList.contains("selected") &&
-        !designateOtherButton.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please designate a PI",
-        });
-        throw errorArray;
-      }
-
-      //Get the user information of the user that is currently curating
-      //If they designate themself as the PI, set them as the PI
-      //If they designate someone else as the PI, set them as a manager
-      const user = await api.getUserInformation();
-
-      const loggedInUserString = `${user["firstName"]} ${user["lastName"]} (${user["email"]})`;
-      const loggedInUserUUID = user["id"];
-      const loggedInUserName = `${user["firstName"]} ${user["lastName"]}`;
-
-      if (designateSelfButton.classList.contains("selected")) {
-        const loggedInUserPiObj = {
-          userString: loggedInUserString,
-          UUID: loggedInUserUUID,
-          name: loggedInUserName,
-        };
-        setGuidedDatasetPiOwner(loggedInUserPiObj);
-      }
-
-      if (designateOtherButton.classList.contains("selected")) {
-        let PiOwnerString = $("#guided_bf_list_users_pi option:selected").text().trim();
-
-        if (!$("#guided_bf_list_users_pi").val() || PiOwnerString === "Select PI") {
-          errorArray.push({
-            type: "notyf",
-            message: "Please select a PI from the dropdown",
-          });
-          throw errorArray;
-        }
-
-        // get the text before the email address from the selected dropdown
-        let PiName = PiOwnerString.split("(")[0];
-        if (PiName === "") {
-          PiName = PiOwnerString;
-        }
-        let PiUUID = $("#guided_bf_list_users_pi").val().trim();
-
-        const newPiOwner = {
-          userString: PiOwnerString,
-          UUID: PiUUID,
-          name: PiName,
-        };
-
-        if (PiUUID === loggedInUserUUID) {
-          setGuidedDatasetPiOwner(newPiOwner);
-        } else {
-          setGuidedDatasetPiOwner(newPiOwner);
-
-          //set the logged in user as a manager
-          const loggedInUserManagerObj = {
-            userString: loggedInUserString,
-            userName: loggedInUserName,
-            UUID: loggedInUserUUID,
-            permission: "manager",
-            loggedInUser: true,
-          };
-
-          guidedAddUserPermission(loggedInUserManagerObj);
-        }
-      }
-    }
 
     if (pageBeingLeftID === "guided-add-description-tab") {
       const studyPurposeInput = document.getElementById("guided-pennsieve-study-purpose");
@@ -2836,17 +2762,6 @@ const openPage = async (targetPageID) => {
       document.querySelector(".guided--progression-tab-container").classList.remove("hidden");
     }
 
-    if (targetPageID === "guided-designate-pi-owner-tab") {
-      $("#guided_bf_list_users_pi").selectpicker("refresh");
-
-      const PiOwnerUUID = sodaJSONObj["digital-metadata"]["pi-owner"]["UUID"];
-
-      if (PiOwnerUUID) {
-        $("#guided_bf_list_users_pi").val(sodaJSONObj["digital-metadata"]["pi-owner"]["UUID"]);
-        $("#guided_bf_list_users_pi").selectpicker("refresh");
-      }
-    }
-
     if (
       targetPageID === "guided-dataset-generation-confirmation-tab" ||
       targetPageID === "guided-dataset-generation-tab" ||
@@ -3238,6 +3153,20 @@ const openPage = async (targetPageID) => {
       }
     }
     if (targetPageID === "guided-designate-permissions-tab") {
+      //Get the user information of the user that is currently curating
+      const user = await api.getUserInformation();
+
+      const loggedInUserString = `${user["firstName"]} ${user["lastName"]} (${user["email"]})`;
+      const loggedInUserUUID = user["id"];
+      const loggedInUserName = `${user["firstName"]} ${user["lastName"]}`;
+
+      const loggedInUserPiObj = {
+        userString: loggedInUserString,
+        UUID: loggedInUserUUID,
+        name: loggedInUserName,
+      };
+      setGuidedDatasetPiOwner(loggedInUserPiObj);
+
       renderPermissionsTable();
       guidedResetUserTeamPermissionsDropdowns();
     }
@@ -4300,21 +4229,6 @@ const validateInput = (inputElementToValidate) => {
 /////////////////////////////////////////////////////////
 
 const isPageValid = (pageID) => {
-  if (pageID === "guided-designate-pi-owner-tab") {
-    const designateSelfButton = document.getElementById("guided-button-designate-self-PI");
-    const designateOtherButton = document.getElementById("guided-button-designate-other-PI");
-
-    if (designateSelfButton.classList.contains("selected")) {
-      return true;
-    }
-    if (designateOtherButton.classList.contains("selected")) {
-      if ($("#guided_bf_list_users_pi option:selected").text().trim() !== "Select PI") {
-        return true;
-      }
-    }
-    //return false if neither button is selected
-    return false;
-  }
   if (pageID === "guided-assign-license-tab") {
     const licenseCheckbox = document.getElementById("guided-license-checkbox");
     if (licenseCheckbox.checked) {
@@ -8359,13 +8273,6 @@ const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
   sodaJSONObj["digital-metadata"]["pi-owner"]["userString"] = newPiOwnerObj.userString;
   sodaJSONObj["digital-metadata"]["pi-owner"]["UUID"] = newPiOwnerObj.UUID;
   sodaJSONObj["digital-metadata"]["pi-owner"]["name"] = newPiOwnerObj.name;
-
-  //Remove any old permissions the owner may have had
-  const currentUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
-  const filteredUsers = currentUsers.filter((user) => {
-    return !(user.UUID == newPiOwnerObj.UUID);
-  });
-  sodaJSONObj["digital-metadata"]["user-permissions"] = filteredUsers;
 };
 
 const guidedAddUserPermission = (newUserPermissionObj) => {
