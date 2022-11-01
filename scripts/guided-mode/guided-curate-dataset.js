@@ -2878,6 +2878,22 @@ const openPage = async (targetPageID) => {
       $("#guided-back-button").css("visibility", "visible");
     }
     if (targetPageID === "guided-name-subtitle-tab") {
+      const datasetName = getGuidedDatasetName();
+      const datasetSubtitle = getGuidedDatasetSubtitle();
+      if (datasetName) {
+        const datasetNameInput = document.getElementById("guided-dataset-name-input");
+        datasetNameInput.value = datasetName;
+      }
+      if (datasetSubtitle) {
+        const datasetSubtitleInput = document.getElementById("guided-dataset-subtitle-input");
+        datasetSubtitleInput.value = datasetSubtitle;
+      }
+
+      //Set the characters remaining counter
+      countCharacters(
+        document.getElementById("guided-dataset-subtitle-input"),
+        document.getElementById("guided-subtitle-char-count")
+      );
     }
     if (targetPageID === "guided-prepare-helpers-tab") {
       //Hide the new dataset and existings local dataset capsule containers because
