@@ -1449,7 +1449,7 @@ const guidedTransitionFromHome = async () => {
 
   //Set the current page to the guided intro page
   CURRENT_PAGE = $("#guided-intro-page-tab");
-  await openPage("guided-intro-page-tab");
+  openPage("guided-intro-page-tab");
 
   //reset sub-page navigation (Set the first sub-page to be the active sub-page
   //for all pages with sub-pages)
@@ -1495,7 +1495,8 @@ const guidedTransitionFromDatasetNameSubtitlePage = () => {
 const saveGuidedProgress = (guidedProgressFileName) => {
   //return if guidedProgressFileName is not a strnig greater than 0
   if (typeof guidedProgressFileName !== "string" || guidedProgressFileName.length === 0) {
-    throw "saveGuidedProgress: guidedProgressFileName must be a string greater than 0";
+    console.log("Dataset does not have a name therefore not saveable");
+    return;
   }
   //Destination: HOMEDIR/SODA/Guided-Progress
   sodaJSONObj["last-modified"] = new Date();
@@ -8979,6 +8980,8 @@ const renderSamplesMetadataAsideItems = () => {
 
 $(document).ready(async () => {
   $("#guided-button-start-new-curate").on("click", () => {
+    guidedCreateSodaJSONObj();
+    attachGuidedMethodsToSodaJSONObj();
     guidedTransitionFromHome();
   });
 
@@ -9084,66 +9087,6 @@ $(document).ready(async () => {
         $(this).removeClass("loading");
       }
       $(this).removeClass("loading");
-    }
-  });
-  $("#guided-modify-dataset-name-subtitle").on("click", async () => {
-    let errorArray = [];
-    try {
-      const datasetName = getGuidedDatasetName();
-      const datasetSubtitle = getGuidedDatasetSubtitle();
-
-      if (datasetName === datasetNameInputValue && datasetSubtitle === datasetSubtitleInputValue) {
-        //If not changes were made to the name or subtitle, exit the page
-        guidedTransitionFromDatasetNameSubtitlePage();
-        return;
-      }
-
-      if (datasetName != datasetNameInputValue) {
-        //check if dataset name is already in use
-        const existingProgressFileNames = fs.readdirSync(guidedProgressFilePath);
-        //Get the name of the progress files without the file type
-        const existingProgressDatasetNames = existingProgressFileNames.map((fileName) => {
-          return fileName.split(".")[0];
-        });
-        if (existingProgressDatasetNames.includes(datasetNameInputValue)) {
-          const result = await Swal.fire({
-            title: "An existing progress file with this name already exists",
-            text: "Would you like to overwrite it? This will replace existing data saved under the old progress file with your current progress.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, overwrite existing file",
-            cancelButtonText: "No, cancel",
-          });
-          if (result.isConfirmed) {
-            setOrUpdateGuidedDatasetName(datasetNameInputValue);
-            setGuidedDatasetSubtitle(datasetSubtitleInputValue);
-            saveGuidedProgress(datasetNameInputValue);
-          }
-        } else {
-          setOrUpdateGuidedDatasetName(datasetNameInputValue);
-
-          setGuidedDatasetSubtitle(datasetSubtitleInputValue);
-          saveGuidedProgress(datasetNameInputValue);
-        }
-      } else {
-        setGuidedDatasetSubtitle(datasetSubtitleInputValue);
-        saveGuidedProgress(datasetNameInputValue);
-      }
-      //transition out of dataset name/subtitle page
-      guidedTransitionFromDatasetNameSubtitlePage();
-    } catch (error) {
-      errorArray.map((error) => {
-        if (error.type === "notyf") {
-          notyf.open({
-            duration: "4000",
-            type: "error",
-            message: error.message,
-          });
-        }
-        errorArray = [];
-      });
     }
   });
 
@@ -11409,15 +11352,14 @@ $(document).ready(async () => {
 
     try {
       await savePageChanges(pageBeingLeftID);
+      //Save progress onto local storage with the dataset name as the key
+      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
       //Mark page as completed in JSONObj so we know what pages to load when loading local saves
       //(if it hasn't already been marked complete)
       if (!sodaJSONObj["completed-tabs"].includes(pageBeingLeftID)) {
         sodaJSONObj["completed-tabs"].push(pageBeingLeftID);
       }
-
-      //Save progress onto local storage with the dataset name as the key
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
       const getNextPageNotSkipped = (startingPage) => {
         //Check if param element's following element is undefined
@@ -11453,6 +11395,7 @@ $(document).ready(async () => {
       openPage(targetPageID);
     } catch (error) {
       log.error(error);
+      console.log(error);
       error.map((error) => {
         // get the total number of words in error.message
         if (error.type === "notyf") {
