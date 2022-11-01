@@ -1863,8 +1863,8 @@ def generate_relative_path(x, y):
 
 def bf_get_existing_folders_details(ps_folder):
     print("Here is ps folder: ", ps_folder)
-    ps_existing_folders = [x for x in ps_folder if ps_folder[x]['content']["packageType"] == "Collection"]
-    ps_existing_folders_name = [ps_folder[x]['content']["name"] for x in ps_existing_folders]
+    ps_existing_folders = [x for x in ps_folder if ps_folder[x]['value']['content']["packageType"] == "Collection"]
+    ps_existing_folders_name = [ps_folder[x]['value']['content']["name"] for x in ps_existing_folders]
 
     return ps_existing_folders, ps_existing_folders_name
 
@@ -1916,14 +1916,14 @@ def bf_get_existing_files_details(bf_folder, ps):
         else:
             return file_name + ("." + extension)
 
-    bf_existing_files = [x for x in bf_folder["children"] if bf_folder["children"][x]['content']["packageType"] != "Collection"]
+    bf_existing_files = [x for x in bf_folder["children"] if bf_folder["children"][x]['value']['content']["packageType"] != "Collection"]
 
     bf_existing_files_name = [splitext(x.name)[0] for x in bf_existing_files]
     bf_existing_files_name_with_extension = []
 
     # determine if we are at the root of the dataset
     # TODO: Find out why value is in here sometimes
-    content = bf_folder.get("content", 0) if bf_folder.get("content", 0) != 0 else bf_folder.get("value", 0)
+    content = bf_folder.get("content", 0) if bf_folder.get("content", 0) != 0 else bf_folder["value"]["content"]
     if (str(content['id'])[2:9]) == "dataset":
         r = requests.get(f"{PENNSIEVE_URL}/datasets/{content['id']}", headers=create_request_headers(ps))
         r.raise_for_status()
@@ -1944,7 +1944,7 @@ def bf_get_existing_files_details(bf_folder, ps):
             bf_existing_files_name_with_extension.append(file_name_with_extension)
     else:
         #is collection - aka a folder in the dataset
-        r = requests.get(f"{PENNSIEVE_URL}/packages/{bf_folder['content']['id']}", headers=create_request_headers(ps)) 
+        r = requests.get(f"{PENNSIEVE_URL}/packages/{bf_folder['value']['content']['id']}", headers=create_request_headers(ps)) 
         r.raise_for_status()
         folder_details = r.json()
         # folder_details = bf._api._get("/packages/" + str(bf_folder.id))
@@ -2339,11 +2339,11 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                             r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json={"parent": "N:collection:f981f4df-b0cd-4a91-bcf0-8789b128b379", "name": "funsies", "dataset": "N:dataset:1cb4bf59-2b6d-48c9-8dae-88f722c6e328", "packageType": "collection", "properties": {"key": "funsies", "value": "Ahhh"} })
 
                     # bf_folder.update()
-                    my_tracking_folder["children"][folder_key] = ps_folder
-                    # tracking_folder = my_tracking_folder["folders"][folder_key]
-                    # recursive_create_folder_for_bf(
-                    #     folder, tracking_folder, existing_folder_option
-                    # )
+                    my_tracking_folder["children"][folder_key] = { "value": ps_folder}
+                    tracking_folder = my_tracking_folder["children"][folder_key]
+                    recursive_create_folder_for_bf(
+                        folder, tracking_folder, existing_folder_option
+                    )
 
         def recursive_dataset_scan_for_bf(
             my_folder,
@@ -2557,7 +2557,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         # create a tracking dict which would track the generation of the dataset on Pennsieve
         main_curate_progress_message = "Creating folder structure"
         dataset_structure = soda_json_structure["dataset-structure"]
-        tracking_json_structure = {"value": ds}
+        tracking_json_structure = {"value": { "content": ds } }
 
         print("Tracking structure at the start: ", tracking_json_structure)
         print("\n")
