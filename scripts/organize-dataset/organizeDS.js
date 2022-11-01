@@ -834,8 +834,7 @@ function showParentSwal(duplicateArray) {
   });
 }
 
-  //creates the html for sweet alert
-
+//creates the html for sweet alert
 
 const handleDuplicateImports = (btnId, duplicateArray, curationMode) => {
   Swal.close();
@@ -901,7 +900,7 @@ const handleDuplicateImports = (btnId, duplicateArray, curationMode) => {
     }
     return tempFile;
     //returns array of file names or folder names
-  }
+  };
 
   //toast alert created with Notyf
   var toastUpdate = new Notyf({
@@ -1551,7 +1550,7 @@ const handleDuplicateImports = (btnId, duplicateArray, curationMode) => {
     });
     //then handle the selected checkboxes
   }
-}
+};
 
 const addFilesfunction = async (
   fileArray,
@@ -1747,7 +1746,7 @@ const addFilesfunction = async (
     selectAll.appendChild(container);
 
     // tempFile = createSwalDuplicateContent("skip", temp);
-    let type = "checkbox"
+    let type = "checkbox";
     tempFile = [];
     for (let i = 0; i < doubleExtension.length; i++) {
       let lastSlash = doubleExtension[i].lastIndexOf("\\") + 1;
@@ -1868,15 +1867,18 @@ const addFilesfunction = async (
           if (lastSlash === 0) {
             lastSlash = list[i].lastIndexOf("/") + 1;
           }
-          let fileName = doubleExtension[i].substring(lastSlash, doubleExtension[i].length)
+          let fileName = doubleExtension[i].substring(lastSlash, doubleExtension[i].length);
           fileStruct[fileName] = {
-            "filePath": doubleExtension[i],
-          }
+            filePath: doubleExtension[i],
+          };
         }
         console.log(fileStruct);
 
         for (let i = 0; i < checkboxes.length; i++) {
-          if (checkboxes[i].id in currentLocation["files"] || checkboxes[i].id in Object.keys(regularFiles)) {
+          if (
+            checkboxes[i].id in currentLocation["files"] ||
+            checkboxes[i].id in Object.keys(regularFiles)
+          ) {
             nonAllowedDuplicateFiles.push(fileName);
             // nonAllowedDuplicate = true;
             continue;
@@ -1890,27 +1892,28 @@ const addFilesfunction = async (
             };
           }
         }
-      
-      // for (let i = 0; i < checkboxes.length; i++) {
-      //   console.log(checkboxes[i].id);
-      //   // console.log(checkboxes[i]);
 
-      //   if (checkboxes[i].id in currentLocation["files"] || checkboxes[i].id in Object.keys(regularFiles)) {
-      //     nonAllowedDuplicateFiles.push(fileName);
-      //     // nonAllowedDuplicate = true;
-      //     continue;
-      //   } else {
-      //     //not in there or regular files so store?
-      //     regularFiles[checkboxes[i].id] = {
-      //       path: filePath,
-      //       basename: checkboxes[i].id,
-      //     };
-      //   }
-      // // if()
-      // // fileName.push(list[i].substring(lastSlash, list[i].length));
-      // // console.log(fileName);
-      // }
-    }});
+        // for (let i = 0; i < checkboxes.length; i++) {
+        //   console.log(checkboxes[i].id);
+        //   // console.log(checkboxes[i]);
+
+        //   if (checkboxes[i].id in currentLocation["files"] || checkboxes[i].id in Object.keys(regularFiles)) {
+        //     nonAllowedDuplicateFiles.push(fileName);
+        //     // nonAllowedDuplicate = true;
+        //     continue;
+        //   } else {
+        //     //not in there or regular files so store?
+        //     regularFiles[checkboxes[i].id] = {
+        //       path: filePath,
+        //       basename: checkboxes[i].id,
+        //     };
+        //   }
+        // // if()
+        // // fileName.push(list[i].substring(lastSlash, list[i].length));
+        // // console.log(fileName);
+        // }
+      }
+    });
   }
 
   if (tripleExtension.length > 0) {
@@ -1961,13 +1964,13 @@ const addFilesfunction = async (
         $(".swal-popover").popover();
       },
     }).then((result) => {
-      if(result.isConfirmed) {
+      if (result.isConfirmed) {
         //replace characters
-        for(let i = 0; i < nonAllowedCharacterFiles.length; i++) {
+        for (let i = 0; i < nonAllowedCharacterFiles.length; i++) {
           let fileName = path.parse(nonAllowedCharacterFiles[i]).base;
           // console.log(fileName);
           let regex = /[\+&\%#]/g;
-          let replaceFile = fileName.replace(regex, "-")
+          let replaceFile = fileName.replace(regex, "-");
           console.log(replaceFile);
           regularFiles[replaceFile] = {
             path: nonAllowedCharacterFiles[i],
@@ -1975,8 +1978,8 @@ const addFilesfunction = async (
           };
         }
       }
-      if(result.isDenied) {
-        for(let i = 0; i < nonAllowedCharacterFiles.length; i++) {
+      if (result.isDenied) {
+        for (let i = 0; i < nonAllowedCharacterFiles.length; i++) {
           let fileName = nonAllowedCharacterFiles[i];
           console.log(fileName);
           // let regex = /[\+&\%#]/g;
