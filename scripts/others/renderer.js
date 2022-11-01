@@ -4970,7 +4970,7 @@ const addFoldersfunction = async (action, nonallowedFolderArray, folderArray, cu
 //// Step 3. Organize dataset: Add files or folders with drag&drop
 const allowDrop = (ev) => {
   ev.preventDefault();
-}
+};
 
 var filesElement;
 var targetElement;
@@ -5132,7 +5132,7 @@ const drop = async (ev) => {
       // background.remove();
     });
   }
-}
+};
 
 const dropHelper = async (
   ev1,
