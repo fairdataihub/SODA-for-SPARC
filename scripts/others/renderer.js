@@ -5168,6 +5168,8 @@ const dropHelper = async (
   var duplicateFolders = [];
   var hiddenFiles = [];
   var nonAllowedFiles = [];
+  let tripleExtension = [];
+  let doubleExtension = [];
 
   for (var i = 0; i < ev1.length; i++) {
     /// Get all the file information
@@ -5200,6 +5202,22 @@ const dropHelper = async (
       }
       if (path.parse(itemPath).base === "Thumbs.db") {
         nonAllowedFiles.push(itemPath);
+        continue;
+      }
+      let regex = /[\+&\%#]/i;
+      if (regex.test(path.parse(fileName).base) === true) {
+        console.log("nonallowed");
+        nonAllowedCharacterFiles.push(fileName);
+        continue;
+      }
+
+      if ((path.parse(fileName).base.match(/\./g) || []).length > 2) {
+        //multiple extensions, raise warning
+        tripleExtension.push(fileName);
+        continue;
+      } else if ((path.parse(fileName).base.match(/\./g) || []).length === 2) {
+        //double extension ask if compressed file
+        doubleExtension.push(fileName);
         continue;
       }
 
@@ -5306,6 +5324,281 @@ const dropHelper = async (
         }
       }
     }
+  }
+
+  if (doubleExtension.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
+    newList = JSON.stringify(doubleExtension).replace(/"/g, "");
+    let tempFile = [];
+    let temp = newList.substring(1, newList.length - 1);
+    temp = temp.split(",");
+    let list = temp;
+    container = document.createElement("div");
+    let selectAll = document.createElement("div");
+    let selectText = document.createTextNode("Select All");
+    let para2 = document.createElement("p");
+    let selectAllCheckbox = document.createElement("input");
+
+    para2.id = "selectAll";
+    para2.className = "selectAll-container";
+    selectAllCheckbox.setAttribute("onclick", "selectAll(this);");
+    selectAllCheckbox.type = "checkbox";
+    selectAllCheckbox.className = "checkbox-design selectAll-checkbox";
+
+    para2.appendChild(selectText);
+    para2.appendChild(selectAllCheckbox);
+    selectAll.appendChild(para2);
+    selectAll.appendChild(container);
+
+    // tempFile = createSwalDuplicateContent("skip", temp);
+    let type = "checkbox";
+    tempFile = [];
+    for (let i = 0; i < doubleExtension.length; i++) {
+      let lastSlash = doubleExtension[i].lastIndexOf("\\") + 1;
+      let fieldContainer = document.createElement("div");
+      if (lastSlash === 0) {
+        //in case it's on mac
+        lastSlash = doubleExtension[i].lastIndexOf("/") + 1;
+      }
+      //removes [ ] at end of string when passed through as JSON.stringify
+      tempFile[i] = doubleExtension[i].substring(lastSlash, doubleExtension[i].length);
+
+      let para = document.createElement("p");
+      var extIndex = tempFile[i].lastIndexOf(".");
+      var justFileName = tempFile[i].substring(0, extIndex);
+      let input = document.createElement("input");
+      let text = document.createTextNode(tempFile[i]);
+
+      input.type = type;
+      input.setAttribute("required", "");
+
+      input.id = tempFile[i];
+      if (extIndex != -1) {
+        input.placeholder = justFileName;
+      } else {
+        input.placeholder = input.id;
+      }
+      para.style = "margin: 0; margin: 10px;";
+      para.className = "input-name";
+      container.id = "container";
+
+      //design for checkbox
+      if (type === "checkbox") {
+        input.className = "checkbox-design";
+        input.name = "checkbox";
+        fieldContainer.className = "checkbox-container";
+
+        para.append(text);
+        fieldContainer.append(para);
+        fieldContainer.appendChild(input);
+        container.append(fieldContainer);
+        selectAll.appendChild(container);
+      }
+    }
+    await Swal.fire({
+      title:
+        "The following files have a double periods which is only allowed if they are compressed. Select the compressed files to import.",
+      html: selectAll,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: false,
+      showCancelButton: false,
+      confirmButtonText: "Import",
+      // denyButtonText: "Import",
+      // cancelButtonText: "Cancel",
+      didOpen: () => {
+        var confirm_button = document.getElementsByClassName("swal2-confirm");
+        confirm_button[0].disabled = true;
+        var select_all = document.getElementById("container").parentElement.children[0].children[0];
+        var container = document.getElementById("container");
+        var check_boxes = container.querySelectorAll("input[type=checkbox]");
+        let checkedCount = 0;
+        check_boxes.forEach(function (element) {
+          element.addEventListener("change", function () {
+            if (this.checked) {
+              checkedCount += 1;
+              if (checkedCount === check_boxes.length) {
+                select_all.checked = true;
+              } else {
+                select_all.checked = false;
+              }
+              confirm_button[0].disabled = false;
+            } else {
+              checkedCount -= 1;
+              if (checkedCount === check_boxes.length) {
+                select_all.checked = true;
+              } else {
+                select_all.checked = false;
+              }
+              let one_checked = false;
+              for (let i = 0; i < check_boxes.length; i++) {
+                if (check_boxes[i].checked) {
+                  one_checked = true;
+                  break;
+                }
+              }
+              if (one_checked === true) {
+                confirm_button[0].disabled = false;
+              } else {
+                confirm_button[0].disabled = true;
+                select_all.checked = false;
+              }
+            }
+          });
+        });
+        select_all.addEventListener("change", function () {
+          var check_boxes = container.querySelectorAll("input[type=checkbox]");
+          if (this.checked) {
+            confirm_button[0].disabled = false;
+          } else {
+            confirm_button[0].disabled = true;
+          }
+        });
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        let container = document.getElementById("container");
+        let checkboxes = container.querySelectorAll("input[type=checkbox]:checked");
+        // var fileName = [];?
+        var newList = [];
+        let fileStruct = {};
+
+        // console.log(checkboxes);
+        // console.log(list);?
+        //remove slashes and place just file name in new array
+        console.log(doubleExtension);
+        for (let i = 0; i < doubleExtension.length; i++) {
+          let lastSlash = doubleExtension[i].lastIndexOf("\\") + 1;
+          if (lastSlash === 0) {
+            lastSlash = list[i].lastIndexOf("/") + 1;
+          }
+          let fileName = doubleExtension[i].substring(lastSlash, doubleExtension[i].length);
+          fileStruct[fileName] = {
+            filePath: doubleExtension[i],
+          };
+        }
+        console.log(fileStruct);
+
+        for (let i = 0; i < checkboxes.length; i++) {
+          if (
+            checkboxes[i].id in currentLocation["files"] ||
+            checkboxes[i].id in Object.keys(regularFiles)
+          ) {
+            nonAllowedDuplicateFiles.push(fileName);
+            // nonAllowedDuplicate = true;
+            continue;
+          } else {
+            //not in there or regular files so store?
+            console.log(checkboxes[i].id);
+            console.log(fileStruct[checkboxes[i].id]);
+            regularFiles[checkboxes[i].id] = {
+              path: fileStruct[checkboxes[i].id]["filePath"],
+              basename: checkboxes[i].id,
+            };
+          }
+        }
+
+        // for (let i = 0; i < checkboxes.length; i++) {
+        //   console.log(checkboxes[i].id);
+        //   // console.log(checkboxes[i]);
+
+        //   if (checkboxes[i].id in currentLocation["files"] || checkboxes[i].id in Object.keys(regularFiles)) {
+        //     nonAllowedDuplicateFiles.push(fileName);
+        //     // nonAllowedDuplicate = true;
+        //     continue;
+        //   } else {
+        //     //not in there or regular files so store?
+        //     regularFiles[checkboxes[i].id] = {
+        //       path: filePath,
+        //       basename: checkboxes[i].id,
+        //     };
+        //   }
+        // // if()
+        // // fileName.push(list[i].substring(lastSlash, list[i].length));
+        // // console.log(fileName);
+        // }
+      }
+    });
+  }
+
+  if (tripleExtension.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
+    await Swal.fire({
+      title:
+        "The following files will not be imported as they have three periods within the file name. Files should typically have one (two when they are compressed).",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        tripleExtension.join("</br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: false,
+      showCancelButton: false,
+      confirmButtonText: "Okay",
+      // denyButtonText: "Continue as/ is",
+      // cancelButtonText: "Cancel",
+      didOpen: () => {
+        $(".swal-popover").popover();
+      },
+    });
+  }
+
+  if (nonAllowedCharacterFiles.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
+    await Swal.fire({
+      title:
+        "The following files have characters that are typically not recommended. Although not forbidden to import as is, we recommend replacing those characters.",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        nonAllowedCharacterFiles.join("</br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Replace characters with '-'",
+      denyButtonText: "Import as is",
+      cancelButtonText: "Cancel",
+      didOpen: () => {
+        $(".swal-popover").popover();
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //replace characters
+        for (let i = 0; i < nonAllowedCharacterFiles.length; i++) {
+          let fileName = path.parse(nonAllowedCharacterFiles[i]).base;
+          // console.log(fileName);
+          let regex = /[\+&\%#]/g;
+          let replaceFile = fileName.replace(regex, "-");
+          console.log(replaceFile);
+          regularFiles[replaceFile] = {
+            path: nonAllowedCharacterFiles[i],
+            basename: replaceFile,
+          };
+        }
+      }
+      if (result.isDenied) {
+        for (let i = 0; i < nonAllowedCharacterFiles.length; i++) {
+          let fileName = nonAllowedCharacterFiles[i];
+          console.log(fileName);
+          // let regex = /[\+&\%#]/g;
+          // let replaceFile = fileName.replace(regex, "-")?
+          regularFiles[fileName] = {
+            path: fileName,
+            basename: path.parse(fileName).base,
+          };
+        }
+      }
+    });
   }
 
   if (hiddenFiles.length > 0) {
