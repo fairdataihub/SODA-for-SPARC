@@ -380,6 +380,27 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
 
+    if (pageBeingLeftID === "guided-designate-permissions-tab") {
+      const buttonYesAddAdditionalPermissions = document.getElementById(
+        "guided-button-add-additional-permissions"
+      );
+      const buttonNoNoAdditionalPermissions = document.getElementById(
+        "guided-button-no-additional-permissions"
+      );
+
+      if (
+        !buttonYesAddAdditionalPermissions.classList.contains("selected") &&
+        !buttonNoNoAdditionalPermissions.classList.contains("selected")
+      ) {
+        errorArray.push({
+          type: "notyf",
+          message:
+            "Please indicate if you would like to add additional Pennsieve permissions to your dataset",
+        });
+        throw errorArray;
+      }
+    }
+
     if (pageBeingLeftID === "guided-add-description-tab") {
       const studyPurposeInput = document.getElementById("guided-pennsieve-study-purpose");
       const studyDataCollectionInput = document.getElementById(
@@ -419,6 +440,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         };
       }
     }
+
     if (pageBeingLeftID === "guided-add-tags-tab") {
       let datasetTags = getTagsFromTagifyElement(guidedDatasetTagsTagify);
       //remove duplicates from datasetTags
