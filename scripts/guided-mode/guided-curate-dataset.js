@@ -839,6 +839,16 @@ const getNonSkippedGuidedModePages = (parentElementToGetChildrenPagesFrom) => {
 
 const renderSideBar = (activePage) => {
   const guidedNavItemsContainer = document.getElementById("guided-nav-items");
+  const guidedPageNavigationHeader = document.getElementById("guided-page-navigation-header");
+
+  if (activePage === "guided-dataset-dissemination-tab") {
+    //Hide the side bar navigawtion and navigation header
+    guidedPageNavigationHeader.classList.add("hidden");
+    guidedNavItemsContainer.innerHTML = ``;
+    return;
+  }
+  //Show the page navigation header if it had been previously hidden
+  guidedPageNavigationHeader.classList.remove("hidden");
 
   const completedTabs = sodaJSONObj["completed-tabs"];
   const skippedPages = sodaJSONObj["skipped-pages"];
