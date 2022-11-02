@@ -399,6 +399,12 @@ const savePageChanges = async (pageBeingLeftID) => {
         });
         throw errorArray;
       }
+
+      if (buttonNoNoAdditionalPermissions.classList.contains("selected")) {
+        //If the user had added additional permissions, remove them
+        sodaJSONObj["digital-metadata"]["user-permissions"] = [];
+        sodaJSONObj["digital-metadata"]["team-permissions"] = [];
+      }
     }
 
     if (pageBeingLeftID === "guided-add-description-tab") {
