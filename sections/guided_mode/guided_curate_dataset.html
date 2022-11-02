@@ -4363,14 +4363,15 @@
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Dataset permissions</h1>
             <p class="guided--help-text text-left">
-              Dataset permissions control which users or teams can view, edit, or manage your
-              dataset on Pennsieve.
+              Dataset permissions control who can view, edit, or manage your dataset on Pennsieve
+              before it is published. You can give permissions to your team members if you expect
+              them to modify your dataset before publication.
             </p>
           </div>
 
           <div class="guided--section mb-0">
             <label class="guided--form-label centered mb-0"
-              >Would you like to grant permissions to other Pennsieve users or teams?
+              >Does anyone else on your team need to edit this dataset?
             </label>
 
             <div class="guided--radio-button-container">
@@ -4408,9 +4409,9 @@
           <div class="guided--section" id="guided-section-add-additional-permissions">
             <p class="guided--help-text text-left mb-md">
               Current permissions are listed in the table below. To add a permission, select the
-              user or team you would like to grant a permission to, select their role, and press
-              "Designate permission". To delete a permission, click the delete icon in the table
-              below.
+              Pennsieve user or team you would like to grant a permission to, select their role, and
+              press "Designate permission". To delete a permission, click the delete icon in the
+              table below.
             </p>
             <div class="guided--info-dropdown">
               <p class="guided--dropdown-text" data-dropdown-type="info">
@@ -4510,6 +4511,28 @@
               >
                 Designate permission
               </button>
+            </div>
+            <div class="guided--info-dropdown">
+              <p class="guided--dropdown-text" data-dropdown-type="warning">
+                I don't see my team or team members
+              </p>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="guided--info-container">
+              <p class="guided--help-text mb-0">
+                Users or teams must have a Pennsieve account and have access to the SPARC Consortium
+                organization before you can grant them dataset permissions. Instructions on how to
+                create a Pennsieve account and get access to the SPARC Consortium organization can
+                be found can be found
+                <a
+                  target="_blank"
+                  href="https://docs.sodaforsparc.io/docs/next/how-to/how-to-get-a-pennsieve-account"
+                  >here</a
+                >.
+                <br />
+                <b>Note:</b> You will have to restart SODA and return to this page to see the new
+                user or team.
+              </p>
             </div>
           </div>
           <div class="guided--section" id="guided-section-no-additional-permissions">
