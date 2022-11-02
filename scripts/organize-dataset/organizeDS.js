@@ -1727,9 +1727,10 @@ const addFilesfunction = async (
     await Swal.fire({
       title:
         "The following files have a double period, which is only allowed if they are compressed files as per SPARC Data Standards. Do you confirm that these are all compressed files?",
-      html: "<div style='max-height:300px; overflow-y:auto'>" +
-      doubleExtension.join("</br></br>") +
-      "</div>",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        doubleExtension.join("</br></br>") +
+        "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: false,
@@ -1740,7 +1741,7 @@ const addFilesfunction = async (
       didOpen: () => {
         $(".swal-popover").popover();
         let swalContainer = document.getElementsByClassName("swal2-popup")[0];
-        let swal_content = document.getElementsByClassName("swal2-content")[0]
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
         swalContainer.style.width = "600px";
         swal_content.style.textAlign = "justify";
       },
@@ -1788,7 +1789,7 @@ const addFilesfunction = async (
         let swalContainer = document.getElementsByClassName("swal2-popup")[0];
         let swal_content = document.getElementsByClassName("swal2-content")[0];
         swalContainer.style.width = "600px";
-        swal_content.style.textAlign = "justify";;
+        swal_content.style.textAlign = "justify";
       },
     });
   }
@@ -1817,7 +1818,7 @@ const addFilesfunction = async (
         let swalContainer = document.getElementsByClassName("swal2-popup")[0];
         let swal_content = document.getElementsByClassName("swal2-content")[0];
         let swalDenyButton = document.getElementsByClassName("swal2-deny")[0];
-        swalContainer.style.width = "600px"
+        swalContainer.style.width = "600px";
         swal_content.style.textAlign = "justify";
         swalDenyButton.style.backgroundColor = "#086dd3";
       },
@@ -1858,7 +1859,9 @@ const addFilesfunction = async (
       title:
         "The following files have an unexpected name starting with a period and are considered hidden files. As per SPARC Data Standards they are typically not recommended to be imported as hidden. How should we handle them?",
       html:
-        "<div style='max-height:300px; overflow-y:auto'>" + hiddenFiles.join("</br></br>") + "</div>",
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        hiddenFiles.join("</br></br>") +
+        "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: true,
@@ -1870,7 +1873,7 @@ const addFilesfunction = async (
         $(".swal-popover").popover();
         let swalContainer = document.getElementsByClassName("swal2-popup")[0];
         let swal_content = document.getElementsByClassName("swal2-content")[0];
-        swalContainer.style.width = "600px"
+        swalContainer.style.width = "600px";
         swal_content.style.textAlign = "justify";
       },
     }).then(async (result) => {
@@ -2054,7 +2057,8 @@ const addFilesfunction = async (
       loadingIcon.style.display = "none";
     }
     await Swal.fire({
-      title: "The following files are not allowed in datasets as per the SPARC Data Standards and will thus not be imported",
+      title:
+        "The following files are not allowed in datasets as per the SPARC Data Standards and will thus not be imported",
       html:
         "<div style='max-height:300px; overflow-y:auto'>" +
         nonAllowedFiles.join("</br></br>") +
@@ -2066,7 +2070,7 @@ const addFilesfunction = async (
       didOpen: () => {
         let swalContainer = document.getElementsByClassName("swal2-popup")[0];
         swalContainer.style.width = "600px";
-      }
+      },
     });
   }
   if (loadingContainer != undefined) {
