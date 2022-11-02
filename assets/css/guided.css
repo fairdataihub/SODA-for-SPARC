@@ -128,6 +128,7 @@
 
 .guided--info-container .guided--help-text {
   font-size: 14px;
+  color: hsl(0, 0%, 22%);
 }
 
 .container-open {

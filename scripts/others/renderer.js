@@ -1164,7 +1164,6 @@ const bfListTeams = document.querySelector("#bf_list_teams");
 const bfListRolesTeam = document.querySelector("#bf_list_roles_team");
 const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-team");
 // Guided mode dropdowns
-const guidedBfListUsersPi = document.querySelector("#guided_bf_list_users_pi");
 const guidedBfListUsersAndTeams = document.querySelector("#guided_bf_list_users_and_teams");
 
 //Pennsieve dataset status
@@ -3782,8 +3781,6 @@ function refreshBfUsersList() {
           bfListUsers.appendChild(optionUser);
           var optionUser2 = optionUser.cloneNode(true);
           bfListUsersPI.appendChild(optionUser2);
-          var optionUser3 = optionUser.cloneNode(true);
-          guidedBfListUsersPi.appendChild(optionUser3);
           var guidedOptionUser = optionUser.cloneNode(true);
           guidedOptionUser.setAttribute("permission-type", "user");
           guidedBfListUsersAndTeams.appendChild(guidedOptionUser);
