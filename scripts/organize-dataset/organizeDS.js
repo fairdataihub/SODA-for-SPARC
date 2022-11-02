@@ -1727,9 +1727,10 @@ const addFilesfunction = async (
     await Swal.fire({
       title:
         "The following files have a double periods which is only allowed if they are compressed. Select the compressed files to import.",
-      html: "<div style='max-height:300px; overflow-y:auto'>" +
-      doubleExtension.join("</br></br>") +
-      "</div>",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        doubleExtension.join("</br></br>") +
+        "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: false,
@@ -1739,8 +1740,8 @@ const addFilesfunction = async (
       cancelButtonText: "Skip All",
       didOpen: () => {
         $(".swal-popover").popover();
-        let swal_content = document.getElementsByClassName("swal2-content")[0]
-        swal_content.style.textAlign = "justify"
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        swal_content.style.textAlign = "justify";
       },
     }).then((result) => {
       if (result.isConfirmed) {
@@ -1783,8 +1784,8 @@ const addFilesfunction = async (
       confirmButtonText: "OK",
       didOpen: () => {
         $(".swal-popover").popover();
-        let swal_content = document.getElementsByClassName("swal2-content")[0]
-        swal_content.style.textAlign = "justify"
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        swal_content.style.textAlign = "justify";
       },
     });
   }
@@ -1862,8 +1863,8 @@ const addFilesfunction = async (
       cancelButtonText: "Cancel",
       didOpen: () => {
         $(".swal-popover").popover();
-        let swal_content = document.getElementsByClassName("swal2-content")[0]
-        swal_content.style.textAlign = "justify"
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        swal_content.style.textAlign = "justify";
       },
     }).then(async (result) => {
       if (result.isConfirmed) {
