@@ -4138,7 +4138,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
         $("#add-new-folder-input").keyup(function () {
           var val = $("#add-new-folder-input").val();
           let folderNameCheck = checkIrregularNameBoolean(val);
-          if(folderNameCheck === true) {
+          if (folderNameCheck === true) {
             Swal.showValidationMessage(
               `The folder name contains non-allowed characters. To follow the SPARC Data Standards, please create a folder name with only alphanumberic characters and hyphens '-'`
             );
@@ -5341,7 +5341,7 @@ const dropHelper = async (
       loadingContainer.style.display = "none";
       loadingIcon.style.display = "none";
     }
-    
+
     await Swal.fire({
       title:
         "The following files have a double period, which is only allowed if they are compressed files as per SPARC Data Standards. Do you confirm that these are all compressed files?",
