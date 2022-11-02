@@ -12140,18 +12140,20 @@ $(document).ready(async () => {
           popup: "animate__animated animate__fadeOutUp animate__faster",
         },
         didOpen: () => {
+          let swal_container = document.getElementsByClassName("swal2-popup")[0];
+          swal_container.style.width = "560px";
           $(".swal2-input").attr("id", "add-new-folder-input");
           $(".swal2-confirm").attr("id", "add-new-folder-button");
           $("#add-new-folder-input").keyup(function () {
             var val = $("#add-new-folder-input").val();
-            for (var char of nonAllowedCharacters) {
-              if (val.includes(char)) {
-                Swal.showValidationMessage(
-                  `The folder name cannot contains the following characters ${nonAllowedCharacters}, please enter a different name!`
-                );
-                $("#add-new-folder-button").attr("disabled", true);
-                return;
-              }
+            let folderNameCheck = checkIrregularNameBoolean(val);
+            if(folderNameCheck === true) {
+              Swal.showValidationMessage(
+                `The folder name contains non-allowed characters. Please create a folder name with only alphanumberic characters and hyphens '-'`
+              );
+              $("#add-new-folder-button").attr("disabled", true);
+              return;
+            } else {
               $("#add-new-folder-button").attr("disabled", false);
             }
           });

@@ -4130,18 +4130,20 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
         popup: "animate__animated animate__fadeOutUp animate__faster",
       },
       didOpen: () => {
+        let swal_container = document.getElementsByClassName("swal2-popup")[0];
+        swal_container.style.width = "560px";
         $(".swal2-input").attr("id", "add-new-folder-input");
         $(".swal2-confirm").attr("id", "add-new-folder-button");
         $("#add-new-folder-input").keyup(function () {
           var val = $("#add-new-folder-input").val();
-          for (var char of nonAllowedCharacters) {
-            if (val.includes(char)) {
-              Swal.showValidationMessage(
-                `The folder name cannot contains the following characters ${nonAllowedCharacters}, please enter a different name!`
-              );
-              $("#add-new-folder-button").attr("disabled", true);
-              return;
-            }
+          let folderNameCheck = checkIrregularNameBoolean(val);
+          if(folderNameCheck === true) {
+            Swal.showValidationMessage(
+              `The folder name contains non-allowed characters. Please create a folder name with only alphanumberic characters and hyphens '-'`
+            );
+            $("#add-new-folder-button").attr("disabled", true);
+            return;
+          } else {
             $("#add-new-folder-button").attr("disabled", false);
           }
         });
@@ -4662,7 +4664,7 @@ organizeDSaddFolders.addEventListener("click", function () {
 });
 
 ipcRenderer.on("selected-folders-organize-datasets", async (event, pathElement) => {
-  var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
+  // var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
   irregularFolderArray = [];
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
@@ -4672,7 +4674,7 @@ ipcRenderer.on("selected-folders-organize-datasets", async (event, pathElement) 
   if (irregularFolderArray.length > 0) {
     Swal.fire({
       title:
-        "The following folders contain non-allowed characters in their names. How should we handle them?",
+        "The following folders contain characters other than alphanumeric characters and hyphen '-'. How should we handle them?",
       html:
         "<div style='max-height:300px; overflow-y:auto'>" +
         irregularFolderArray.join("</br>") +
@@ -4686,8 +4688,12 @@ ipcRenderer.on("selected-folders-organize-datasets", async (event, pathElement) 
       cancelButtonText: "Cancel",
       didOpen: () => {
         $(".swal-popover").popover();
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        let swalDenyButton = document.getElementsByClassName("swal2-deny")[0];
+        swal_content.style.textAlign = "justify";
+        swalDenyButton.style.backgroundColor = "#086dd3";
       },
-      footer: footer,
+      // footer: footer,
     }).then(async (result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
@@ -5331,168 +5337,38 @@ const dropHelper = async (
       loadingContainer.style.display = "none";
       loadingIcon.style.display = "none";
     }
-    let tempFile = [];
-    container = document.createElement("div");
-    let selectAll = document.createElement("div");
-    let selectText = document.createTextNode("Select All");
-    let para2 = document.createElement("p");
-    let selectAllCheckbox = document.createElement("input");
-
-    para2.id = "selectAll";
-    para2.className = "selectAll-container";
-    selectAllCheckbox.setAttribute("onclick", "selectAll(this);");
-    selectAllCheckbox.type = "checkbox";
-    selectAllCheckbox.className = "checkbox-design selectAll-checkbox";
-
-    para2.appendChild(selectText);
-    para2.appendChild(selectAllCheckbox);
-    selectAll.appendChild(para2);
-    selectAll.appendChild(container);
-
-    // tempFile = createSwalDuplicateContent("skip", temp);
-    let type = "checkbox";
-    tempFile = [];
-    for (let i = 0; i < doubleExtension.length; i++) {
-      let lastSlash = doubleExtension[i].lastIndexOf("\\") + 1;
-      let fieldContainer = document.createElement("div");
-      if (lastSlash === 0) {
-        //in case it's on mac
-        lastSlash = doubleExtension[i].lastIndexOf("/") + 1;
-      }
-      //removes [ ] at end of string when passed through as JSON.stringify
-      tempFile[i] = doubleExtension[i].substring(lastSlash, doubleExtension[i].length);
-
-      let para = document.createElement("p");
-      var extIndex = tempFile[i].lastIndexOf(".");
-      var justFileName = tempFile[i].substring(0, extIndex);
-      let input = document.createElement("input");
-      let text = document.createTextNode(tempFile[i]);
-
-      input.type = type;
-      input.setAttribute("required", "");
-
-      input.id = tempFile[i];
-      if (extIndex != -1) {
-        input.placeholder = justFileName;
-      } else {
-        input.placeholder = input.id;
-      }
-      para.style = "margin: 0; margin: 10px;";
-      para.className = "input-name";
-      container.id = "container";
-
-      //design for checkbox
-      if (type === "checkbox") {
-        input.className = "checkbox-design";
-        input.name = "checkbox";
-        fieldContainer.className = "checkbox-container";
-
-        para.append(text);
-        fieldContainer.append(para);
-        fieldContainer.appendChild(input);
-        container.append(fieldContainer);
-        selectAll.appendChild(container);
-      }
-    }
+    
     await Swal.fire({
       title:
         "The following files have a double periods which is only allowed if they are compressed. Select the compressed files to import.",
-      html: selectAll,
+      html: "<div style='max-height:300px; overflow-y:auto'>" +
+      doubleExtension.join("</br>") +
+      "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: false,
       showCancelButton: false,
       confirmButtonText: "Import",
       // denyButtonText: "Import",
-      // cancelButtonText: "Cancel",
+      cancelButtonText: "Skip All",
       didOpen: () => {
-        var confirm_button = document.getElementsByClassName("swal2-confirm");
-        confirm_button[0].disabled = true;
-        var select_all = document.getElementById("container").parentElement.children[0].children[0];
-        var container = document.getElementById("container");
-        var check_boxes = container.querySelectorAll("input[type=checkbox]");
-        let checkedCount = 0;
-        check_boxes.forEach(function (element) {
-          element.addEventListener("change", function () {
-            if (this.checked) {
-              checkedCount += 1;
-              if (checkedCount === check_boxes.length) {
-                select_all.checked = true;
-              } else {
-                select_all.checked = false;
-              }
-              confirm_button[0].disabled = false;
-            } else {
-              checkedCount -= 1;
-              if (checkedCount === check_boxes.length) {
-                select_all.checked = true;
-              } else {
-                select_all.checked = false;
-              }
-              let one_checked = false;
-              for (let i = 0; i < check_boxes.length; i++) {
-                if (check_boxes[i].checked) {
-                  one_checked = true;
-                  break;
-                }
-              }
-              if (one_checked === true) {
-                confirm_button[0].disabled = false;
-              } else {
-                confirm_button[0].disabled = true;
-                select_all.checked = false;
-              }
-            }
-          });
-        });
-        select_all.addEventListener("change", function () {
-          var check_boxes = container.querySelectorAll("input[type=checkbox]");
-          if (this.checked) {
-            confirm_button[0].disabled = false;
-          } else {
-            confirm_button[0].disabled = true;
-          }
-        });
+        $(".swal-popover").popover();
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        let container = document.getElementById("container");
-        let checkboxes = container.querySelectorAll("input[type=checkbox]:checked");
-        // var fileName = [];?
-        var newList = [];
-        let fileStruct = {};
-
-        // console.log(checkboxes);
-        // console.log(list);?
         //remove slashes and place just file name in new array
-        console.log(doubleExtension);
         for (let i = 0; i < doubleExtension.length; i++) {
-          let lastSlash = doubleExtension[i].lastIndexOf("\\") + 1;
-          if (lastSlash === 0) {
-            lastSlash = list[i].lastIndexOf("/") + 1;
-          }
-          let fileName = doubleExtension[i].substring(lastSlash, doubleExtension[i].length);
-          fileStruct[fileName] = {
-            filePath: doubleExtension[i],
-          };
-        }
-        console.log(fileStruct);
-
-        for (let i = 0; i < checkboxes.length; i++) {
           if (
-            checkboxes[i].id in myPath["files"] ||
-            checkboxes[i].id in Object.keys(importedFolders)
+            doubleExtension[i] in myPath["files"] ||
+            path.parse(doubleExtension[i]).base in Object.keys(importedFiles)
           ) {
-            nonAllowedDuplicateFiles.push(fileStruct[checkboxes[i].id]["filePath"]);
-            // nonAllowedDuplicate = true;
+            nonAllowedDuplicateFiles.push(fileName);
             continue;
           } else {
             //not in there or regular files so store?
-            console.log(checkboxes[i].id);
-            console.log(fileStruct[checkboxes[i].id]);
-            importedFiles[checkboxes[i].id] = {
-              path: fileStruct[checkboxes[i].id]["filePath"],
-              basename: checkboxes[i].id,
+            importedFiles[path.parse(doubleExtension).base] = {
+              path: doubleExtension[i],
+              basename: path.parse(doubleExtension).base,
             };
           }
         }
@@ -5507,10 +5383,10 @@ const dropHelper = async (
     }
     await Swal.fire({
       title:
-        "The following files will not be imported as they have three periods within the file name. Files should typically have one (two when they are compressed).",
+        "Files should typically have one (two when they are compressed) periods according to the SPARC dataset structure. The following files will not be imported.",
       html:
         "<div style='max-height:300px; overflow-y:auto'>" +
-        tripleExtension.join("</br>") +
+        tripleExtension.join("</br style='margin-bottom: .5rem;'>") +
         "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
@@ -5532,10 +5408,10 @@ const dropHelper = async (
     }
     await Swal.fire({
       title:
-        "The following files have characters that are typically not recommended. Although not forbidden to import as is, we recommend replacing those characters.",
+        "The following files have characters (#&%+) that are typically not recommended. Although not forbidden to import as is, we recommend replacing those characters.",
       html:
         "<div style='max-height:300px; overflow-y:auto'>" +
-        nonAllowedCharacterFiles.join("</br>") +
+        nonAllowedCharacterFiles.join("</br style='margin-bottom: .5rem;'>") +
         "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
@@ -5556,29 +5432,20 @@ const dropHelper = async (
           let regex = /[\+&\%#]/g;
           let replaceFile = fileName.replace(regex, "-");
           console.log(replaceFile);
-          if (fileName in myPath["files"] || fileName in Object.keys(importedFolders)) {
-            nonAllowedDuplicateFiles.push(nonAllowedCharacterFiles[i]);
-            continue;
-          } else {
-            importedFiles[replaceFile] = {
-              path: nonAllowedCharacterFiles[i],
-              basename: replaceFile,
-            };
-          }
+          importedFiles[replaceFile] = {
+            path: nonAllowedCharacterFiles[i],
+            basename: replaceFile,
+          };
         }
       }
       if (result.isDenied) {
         for (let i = 0; i < nonAllowedCharacterFiles.length; i++) {
           let fileName = nonAllowedCharacterFiles[i];
-          if (fileName in myPath["files"] || fileName in Object.keys(importedFolders)) {
-            nonAllowedDuplicateFiles.push(nonAllowedCharacterFiles[i]);
-            continue;
-          } else {
-            regularFiles[fileName] = {
-              path: fileName,
-              basename: path.parse(fileName).base,
-            };
-          }
+          console.log(fileName);
+          importedFiles[fileName] = {
+            path: fileName,
+            basename: path.parse(fileName).base,
+          };
         }
       }
     });
@@ -5912,12 +5779,6 @@ function replaceIrregularFolders(pathElement) {
   const str = path.basename(pathElement);
   const newFolderName = str.replace(reg, "-");
   return newFolderName;
-  // for (var char of nonAllowedCharacters) {
-  //   if (str.includes(char)) {
-  //     str = str.replace(char, "-");
-  //   }
-  // }
-  // return str;
 }
 
 const removeIrregularFolders = (pathElement) => {
