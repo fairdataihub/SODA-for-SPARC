@@ -4131,7 +4131,8 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
       },
       didOpen: () => {
         let swal_container = document.getElementsByClassName("swal2-popup")[0];
-        swal_container.style.width = "560px";
+        swal_container.style.width = "600px";
+        swal_container.style.padding = "1.5rem";
         $(".swal2-input").attr("id", "add-new-folder-input");
         $(".swal2-confirm").attr("id", "add-new-folder-button");
         $("#add-new-folder-input").keyup(function () {
@@ -4139,7 +4140,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
           let folderNameCheck = checkIrregularNameBoolean(val);
           if(folderNameCheck === true) {
             Swal.showValidationMessage(
-              `The folder name contains non-allowed characters. Please create a folder name with only alphanumberic characters and hyphens '-'`
+              `The folder name contains non-allowed characters. To follow the SPARC Data Standards, please create a folder name with only alphanumberic characters and hyphens '-'`
             );
             $("#add-new-folder-button").attr("disabled", true);
             return;
@@ -4674,10 +4675,10 @@ ipcRenderer.on("selected-folders-organize-datasets", async (event, pathElement) 
   if (irregularFolderArray.length > 0) {
     Swal.fire({
       title:
-        "The following folders contain characters other than alphanumeric characters and hyphen '-'. How should we handle them?",
+        "The following folders contain non-allowed characters according to SPARC Data Standards. Folders should only have alphanumeric characters and hyphen '-'. How should we handle them?",
       html:
         "<div style='max-height:300px; overflow-y:auto'>" +
-        irregularFolderArray.join("</br>") +
+        irregularFolderArray.join("</br></br>") +
         "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
@@ -4685,11 +4686,14 @@ ipcRenderer.on("selected-folders-organize-datasets", async (event, pathElement) 
       showCancelButton: true,
       confirmButtonText: "Replace characters with (-)",
       denyButtonText: "Remove characters",
-      cancelButtonText: "Cancel",
+      cancelButtonText: "Skip All",
       didOpen: () => {
         $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
         let swal_content = document.getElementsByClassName("swal2-content")[0];
         let swalDenyButton = document.getElementsByClassName("swal2-deny")[0];
+        swalContainer.style.width = "600px";
+        // swalContainer.style.padding = "1.5rem";
         swal_content.style.textAlign = "justify";
         swalDenyButton.style.backgroundColor = "#086dd3";
       },
@@ -5340,19 +5344,23 @@ const dropHelper = async (
     
     await Swal.fire({
       title:
-        "The following files have a double periods which is only allowed if they are compressed. Select the compressed files to import.",
+        "The following files have a double period, which is only allowed if they are compressed files as per SPARC Data Standards. Do you confirm that these are all compressed files?",
       html: "<div style='max-height:300px; overflow-y:auto'>" +
-      doubleExtension.join("</br>") +
+      doubleExtension.join("</br></br>") +
       "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: false,
-      showCancelButton: false,
-      confirmButtonText: "Import",
+      showCancelButton: true,
+      confirmButtonText: "Yes, import them",
       // denyButtonText: "Import",
-      cancelButtonText: "Skip All",
+      cancelButtonText: "No, skip them",
       didOpen: () => {
         $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        let swal_content = document.getElementsByClassName("swal2-content")[0]
+        swalContainer.style.width = "600px";
+        swal_content.style.textAlign = "justify";
       },
     }).then((result) => {
       if (result.isConfirmed) {
@@ -5383,20 +5391,22 @@ const dropHelper = async (
     }
     await Swal.fire({
       title:
-        "Files should typically have one (two when they are compressed) periods according to the SPARC dataset structure. The following files will not be imported.",
+        "Files should typically have one (two when they are compressed) periods in their names according to the SPARC Data Standards. The following files have three of more periods in their name and will not be imported.",
       html:
         "<div style='max-height:300px; overflow-y:auto'>" +
-        tripleExtension.join("</br style='margin-bottom: .5rem;'>") +
+        tripleExtension.join("</br></br>") +
         "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: false,
       showCancelButton: false,
-      confirmButtonText: "Okay",
-      // denyButtonText: "Continue as/ is",
-      // cancelButtonText: "Cancel",
+      confirmButtonText: "OK",
       didOpen: () => {
         $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        let swal_content = document.getElementsByClassName("swal2-content")[0]
+        swalContainer.style.width = "600px";
+        swal_content.style.textAlign = "justify";
       },
     });
   }
@@ -5408,10 +5418,10 @@ const dropHelper = async (
     }
     await Swal.fire({
       title:
-        "The following files have characters (#&%+) that are typically not recommended. Although not forbidden to import as is, we recommend replacing those characters.",
+        "The following files have characters (#&%+) that are typically not recommendeda as per the SPARC Data Standards. Although not forbidden to import as is, we recommend replacing those characters.",
       html:
         "<div style='max-height:300px; overflow-y:auto'>" +
-        nonAllowedCharacterFiles.join("</br style='margin-bottom: .5rem;'>") +
+        nonAllowedCharacterFiles.join("</br></br>") +
         "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
@@ -5419,9 +5429,15 @@ const dropHelper = async (
       showCancelButton: true,
       confirmButtonText: "Replace characters with '-'",
       denyButtonText: "Import as is",
-      cancelButtonText: "Cancel",
+      cancelButtonText: "Skip All",
       didOpen: () => {
         $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        let swalDenyButton = document.getElementsByClassName("swal2-deny")[0];
+        swalContainer.style.width = "600px"
+        swal_content.style.textAlign = "justify";
+        swalDenyButton.style.backgroundColor = "#086dd3";
       },
     }).then((result) => {
       if (result.isConfirmed) {
@@ -5454,18 +5470,22 @@ const dropHelper = async (
   if (hiddenFiles.length > 0) {
     await Swal.fire({
       title:
-        "The following files have an unexpected name starting with a period. How should we handle them?",
+        "The following files have an unexpected name starting with a period and are considered hidden files. As per SPARC Data Standards they are typically not recommended to be imported as hidden. How should we handle them?",
       html:
-        "<div style='max-height:300px; overflow-y:auto'>" + hiddenFiles.join("</br>") + "</div>",
+        "<div style='max-height:300px; overflow-y:auto'>" + hiddenFiles.join("</br></br>") + "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: true,
       showCancelButton: true,
-      confirmButtonText: "Remove characters",
-      denyButtonText: "Continue as is",
-      cancelButtonText: "Cancel",
+      confirmButtonText: "Remove period",
+      denyButtonText: "Import as is",
+      cancelButtonText: "Skip All",
       didOpen: () => {
         $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        let swal_content = document.getElementsByClassName("swal2-content")[0]
+        swalContainer.style.width = "600px"
+        swal_content.style.textAlign = "justify"
       },
     }).then(async (result) => {
       if (result.isConfirmed) {
@@ -5562,15 +5582,19 @@ const dropHelper = async (
 
   if (nonAllowedFiles.length > 0) {
     await Swal.fire({
-      title: "The following files are banned as per SPARC guidelines and will not be imported",
+      title: "The following files are not allowed in datasets as per the SPARC Data Standards and will thus not be imported",
       html:
         "<div style='max-height:300px; overflow-y:auto'>" +
-        nonAllowedFiles.join("</br>") +
+        nonAllowedFiles.join("</br></br>") +
         "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showConfirmButton: true,
-      confirmButtonText: "Okay",
+      confirmButtonText: "OK",
+      didOpen: () => {
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        swalContainer.style.width = "600px";
+      }
     });
   }
 
@@ -5762,16 +5786,15 @@ function detectIrregularFolders(folderName, pathEle) {
 }
 
 const checkIrregularNameBoolean = (folderName) => {
-  console.log("this is the nonAllowedCharacters for folders");
   //nonAllowedCharacters modified to only allow a-z A-z 0-9 and hyphen "-"
   const nonAllowedFolderCharacters = /[^a-zA-Z0-9-]/;
   return nonAllowedFolderCharacters.test(folderName);
 };
 
 /* The following functions aim at ignore folders with irregular characters, or replace the characters with (-),
-   or remove the characters from the names.
-   All return an object in the form {"type": empty for now, will be confirmed once users click an option at the popup,
-                                     "paths": array of all the paths with special characters detected}
+  or remove the characters from the names.
+  All return an object in the form {"type": empty for now, will be confirmed once users click an option at the popup,
+  "paths": array of all the paths with special characters detected}
 */
 
 function replaceIrregularFolders(pathElement) {
@@ -5786,13 +5809,6 @@ const removeIrregularFolders = (pathElement) => {
   const str = path.basename(pathElement);
   const newFolderName = str.replace(reg, "");
   return newFolderName;
-  // var str = path.basename(pathElement);
-  // for (var char of nonAllowedCharacters) {
-  //   if (str.includes(char)) {
-  //     str = str.replace(char, "");
-  //   }
-  // }
-  // return str;
 };
 
 // SAVE FILE ORG

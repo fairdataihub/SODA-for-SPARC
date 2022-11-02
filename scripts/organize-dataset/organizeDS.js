@@ -1726,7 +1726,7 @@ const addFilesfunction = async (
 
     await Swal.fire({
       title:
-        "The following files have a double periods which is only allowed if they are compressed. Select the compressed files to import.",
+        "The following files have a double period, which is only allowed if they are compressed files as per SPARC Data Standards. Do you confirm that these are all compressed files?",
       html: "<div style='max-height:300px; overflow-y:auto'>" +
       doubleExtension.join("</br></br>") +
       "</div>",
@@ -1734,13 +1734,15 @@ const addFilesfunction = async (
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: false,
       showCancelButton: true,
-      confirmButtonText: "Import",
+      confirmButtonText: "Yes, import them",
       // denyButtonText: "Import",
-      cancelButtonText: "Skip All",
+      cancelButtonText: "No, skip them",
       didOpen: () => {
         $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
         let swal_content = document.getElementsByClassName("swal2-content")[0]
-        swal_content.style.textAlign = "justify"
+        swalContainer.style.width = "600px";
+        swal_content.style.textAlign = "justify";
       },
     }).then((result) => {
       if (result.isConfirmed) {
@@ -1771,7 +1773,7 @@ const addFilesfunction = async (
     }
     await Swal.fire({
       title:
-        "Files should typically have one (two when they are compressed) periods according to the SPARC dataset structure. The following files will not be imported.",
+        "Files should typically have one (two when they are compressed) periods in their names according to the SPARC Data Standards. The following files have three of more periods in their name and will not be imported.",
       html:
         "<div style='max-height:300px; overflow-y:auto'>" +
         tripleExtension.join("</br></br>") +
@@ -1783,8 +1785,10 @@ const addFilesfunction = async (
       confirmButtonText: "OK",
       didOpen: () => {
         $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
         let swal_content = document.getElementsByClassName("swal2-content")[0]
-        swal_content.style.textAlign = "justify"
+        swalContainer.style.width = "600px";
+        swal_content.style.textAlign = "justify";
       },
     });
   }
@@ -1796,7 +1800,7 @@ const addFilesfunction = async (
     }
     await Swal.fire({
       title:
-        "The following files have characters (#&%+) that are typically not recommended. Although not forbidden to import as is, we recommend replacing those characters.",
+        "The following files have characters (#&%+) that are typically not recommendeda as per the SPARC Data Standards. Although not forbidden to import as is, we recommend replacing those characters.",
       html:
         "<div style='max-height:300px; overflow-y:auto'>" +
         nonAllowedCharacterFiles.join("</br></br>") +
@@ -1807,11 +1811,13 @@ const addFilesfunction = async (
       showCancelButton: true,
       confirmButtonText: "Replace characters with '-'",
       denyButtonText: "Import as is",
-      cancelButtonText: "Cancel",
+      cancelButtonText: "Skip All",
       didOpen: () => {
         $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
         let swal_content = document.getElementsByClassName("swal2-content")[0];
         let swalDenyButton = document.getElementsByClassName("swal2-deny")[0];
+        swalContainer.style.width = "600px"
         swal_content.style.textAlign = "justify";
         swalDenyButton.style.backgroundColor = "#086dd3";
       },
@@ -1850,19 +1856,21 @@ const addFilesfunction = async (
     }
     await Swal.fire({
       title:
-        "The following files have an unexpected name starting with a period. How should we handle them?",
+        "The following files have an unexpected name starting with a period and are considered hidden files. As per SPARC Data Standards they are typically not recommended to be imported as hidden. How should we handle them?",
       html:
-        "<div style='max-height:300px; overflow-y:auto'>" + hiddenFiles.join("</br>") + "</div>",
+        "<div style='max-height:300px; overflow-y:auto'>" + hiddenFiles.join("</br></br>") + "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: true,
       showCancelButton: true,
-      confirmButtonText: "Remove characters",
-      denyButtonText: "Continue as is",
-      cancelButtonText: "Cancel",
+      confirmButtonText: "Remove period",
+      denyButtonText: "Import as is",
+      cancelButtonText: "Skip All",
       didOpen: () => {
         $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
         let swal_content = document.getElementsByClassName("swal2-content")[0]
+        swalContainer.style.width = "600px"
         swal_content.style.textAlign = "justify"
       },
     }).then(async (result) => {
@@ -2046,15 +2054,19 @@ const addFilesfunction = async (
       loadingIcon.style.display = "none";
     }
     await Swal.fire({
-      title: "The following files are banned as per SPARC guidelines and will not be imported",
+      title: "The following files are not allowed in datasets as per the SPARC Data Standards and will thus not be imported",
       html:
         "<div style='max-height:300px; overflow-y:auto'>" +
-        nonAllowedFiles.join("</br style='margin-bottom: .5rem'>") +
+        nonAllowedFiles.join("</br></br>") +
         "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showConfirmButton: true,
-      confirmButtonText: "Okay",
+      confirmButtonText: "OK",
+      didOpen: () => {
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        swalContainer.style.width = "600px";
+      }
     });
   }
   if (loadingContainer != undefined) {

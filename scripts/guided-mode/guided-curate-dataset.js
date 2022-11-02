@@ -12141,7 +12141,8 @@ $(document).ready(async () => {
         },
         didOpen: () => {
           let swal_container = document.getElementsByClassName("swal2-popup")[0];
-          swal_container.style.width = "560px";
+          swal_container.style.width = "600px";
+          swal_container.style.padding = "1.5rem";
           $(".swal2-input").attr("id", "add-new-folder-input");
           $(".swal2-confirm").attr("id", "add-new-folder-button");
           $("#add-new-folder-input").keyup(function () {
@@ -12149,7 +12150,7 @@ $(document).ready(async () => {
             let folderNameCheck = checkIrregularNameBoolean(val);
             if(folderNameCheck === true) {
               Swal.showValidationMessage(
-                `The folder name contains non-allowed characters. Please create a folder name with only alphanumberic characters and hyphens '-'`
+                `The folder name contains non-allowed characters. To follow SPARC Data Standards, please create a folder name with only alphanumberic characters and hyphens '-'`
               );
               $("#add-new-folder-button").attr("disabled", true);
               return;
@@ -12192,14 +12193,6 @@ $(document).ready(async () => {
                 determineDatasetLocation()
               );
             } else {
-              // var appendString = "";
-              // appendString =
-              //   appendString +
-              //   '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">' +
-              //   newFolderName +
-              //   "</div></div>";
-              // $(appendString).appendTo("#items");
-
               /// update datasetStructureJSONObj
               var currentPath = organizeDSglobalPath.value;
               var jsonPathArray = currentPath.split("/");
