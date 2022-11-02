@@ -316,7 +316,7 @@
                   style="display: none"
                   width="40px"
                   height="50px"
-                  viewBox="0 0 16 16"
+                  viewbox="0 0 16 16"
                   class="bi bi-check2"
                   fill="var(--color-light-green)"
                   xmlns="http://www.w3.org/2000/svg"
@@ -367,7 +367,7 @@
                 <svg
                   width="50px"
                   height="50px"
-                  viewBox="0 0 16 16"
+                  viewbox="0 0 16 16"
                   class="bi bi-file-earmark-plus"
                   fill="#13716D"
                   xmlns="http://www.w3.org/2000/svg"
@@ -385,7 +385,7 @@
                   style="display: none"
                   width="50px"
                   height="50px"
-                  viewBox="0 0 16 16"
+                  viewbox="0 0 16 16"
                   class="bi bi-check2"
                   fill="var(--color-light-green)"
                   xmlns="http://www.w3.org/2000/svg"
@@ -440,7 +440,7 @@
                   style="display: none"
                   width="50px"
                   height="50px"
-                  viewBox="0 0 16 16"
+                  viewbox="0 0 16 16"
                   class="bi bi-check2"
                   fill="var(--color-light-green)"
                   xmlns="http://www.w3.org/2000/svg"
@@ -2462,7 +2462,7 @@
                     width="50"
                     height="50"
                     xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
+                    viewbox="0 0 512 512"
                   >
                     <g>
                       <g>
@@ -4360,21 +4360,58 @@
           class="guided--page hidden"
           data-page-name="Pennsieve user permissions"
         >
-          <div class="guided--section" style="padding-left: 0">
+          <div class="guided--section">
             <h1 class="guided--text-sub-step">Dataset permissions</h1>
             <p class="guided--help-text text-left">
               Dataset permissions control which users or teams can view, edit, or manage your
-              dataset on Pennsieve. Current permissions are listed in the table below. If you need
-              anyone else to view or contribute to your dataset, you can grant them permissions
-              using the interface below.
+              dataset on Pennsieve.
             </p>
-            <div class="guided--info-container container-open" style="margin-bottom: 1rem">
-              <p class="guided--help-text text-left">
-                <b>Note:</b> The dataset curator (you) will retain Owner permissions until the final
-                step of the curation process. Once the dataset is ???????, ownership permissions
-                will be granted to the PI.
-              </p>
+          </div>
+
+          <div class="guided--section mb-0">
+            <label class="guided--form-label centered mb-0"
+              >Would you like to grant permissions to other Pennsieve users or teams?
+            </label>
+
+            <div class="guided--radio-button-container">
+              <button
+                class="guided--radio-button tile-button"
+                id="guided-button-add-additional-permissions"
+                data-next-element="guided-section-add-additional-permissions"
+                data-button-config-value="user-has-additional-permissions-to-add"
+                data-button-config-value-state="yes"
+              >
+                <div class="guided--tile-button-icon">
+                  <i class="fas fa-users fa-4x" color="black"></i>
+                </div>
+                <div class="guided--tile-body">
+                  <h2>Yes, grant other users/teams permissions</h2>
+                </div>
+              </button>
+              <button
+                class="guided--radio-button tile-button"
+                id="guided-button-no-additional-permissions"
+                data-next-element="guided-section-no-additional-permissions"
+                data-button-config-value="user-has-additional-permissions-to-add"
+                data-button-config-value-state="no"
+              >
+                <div class="guided--tile-button-icon">
+                  <i class="fas fa-user fa-4x" color="black"></i>
+                </div>
+                <div class="guided--tile-body">
+                  <h2>No, I am the only contributor to this dataset</h2>
+                </div>
+              </button>
             </div>
+          </div>
+
+          <div class="guided--section" id="guided-section-add-additional-permissions">
+            <p class="guided--help-text text-left mb-md">
+              Current permissions are listed in the table below. To add a permission, select the
+              user or team you would like to grant a permission to, select their role, and press
+              "Designate permission". To delete a permission, click the delete icon in the table
+              below.
+            </p>
             <div class="guided--info-dropdown">
               <p class="guided--dropdown-text" data-dropdown-type="info">
                 Learn more about dataset Permissions on Pennsieve
@@ -4403,8 +4440,6 @@
                 </li>
               </ul>
             </div>
-          </div>
-          <div class="guided--section">
             <table class="ui celled striped table" style="margin-bottom: 10px; width: 800px">
               <thead>
                 <tr>
@@ -4415,8 +4450,7 @@
               </thead>
               <tbody id="permissions-table-body"></tbody>
             </table>
-
-            <div class="guided--container-permissions">
+            <div class="guided--container-permissions mb-md">
               <div style="flex-grow: 1">
                 <div
                   class="field"
@@ -4478,7 +4512,14 @@
               </button>
             </div>
           </div>
+          <div class="guided--section" id="guided-section-no-additional-permissions">
+            <h2 class="guided--text-sub-step">
+              Click "Save and Continue" to designate yourself as owner and grant no other user/team
+              permissions
+            </h2>
+          </div>
         </div>
+
         <div
           id="guided-add-description-tab"
           class="guided--page hidden"
