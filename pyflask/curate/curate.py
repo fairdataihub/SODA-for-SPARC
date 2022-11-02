@@ -2000,7 +2000,7 @@ def get_base_file_name(file_name):
         return output
 
 
-def bf_update_existing_dataset(soda_json_structure, bf, ds):
+def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
 
     global namespace_logger
 
@@ -2171,7 +2171,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     namespace_logger.info("bf_update_existing_dataset step 1 remove existing files on Pennsieve the user delted")
     main_curate_progress_message = "Checking Pennsieve for deleted files"
     dataset_structure = soda_json_structure["dataset-structure"]
-    recursive_file_delete(dataset_structure)
+    # recursive_file_delete(dataset_structure)
     main_curate_progress_message = (
         "Files on Pennsieve marked for deletion have been deleted"
     )
@@ -2180,13 +2180,13 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     namespace_logger.info("bf_update_existing_dataset step 2 rename deleted folders on Pennsieve to allow for replacements")
     main_curate_progress_message = "Checking Pennsieve for deleted folders"
     dataset_structure = soda_json_structure["dataset-structure"]
-    recursive_folder_rename(dataset_structure, "deleted")
+    # recursive_folder_rename(dataset_structure, "deleted")
     main_curate_progress_message = "Folders on Pennsieve have been marked for deletion"
 
     # 2.5 Rename folders that need to be in the final destination.
     namespace_logger.info("bf_update_existing_dataset step 2.5 rename folders that need to be in the final destination")
     main_curate_progress_message = "Renaming any folders requested by the user"
-    recursive_folder_rename(dataset_structure, "renamed")
+    # recursive_folder_rename(dataset_structure, "renamed")
     main_curate_progress_message = "Renamed all folders requested by the user"
 
     # 3. Get the status of all files currently on Pennsieve and create
@@ -2202,17 +2202,21 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     recursive_item_path_create(bfsd, [])
     main_curate_progress_message = "File paths created"
 
+    print("bfsd: ", bfsd)
+    print("dataset_structure: ", dataset_structure)
+    print("My dataset information: ", ds)
+
     # 4. Move any files that are marked as moved on Pennsieve.
     # Create any additional folders if required
     namespace_logger.info("bf_update_existing_dataset step 4 move any files that are marked as moved on Pennsieve")
     main_curate_progress_message = "Moving any files requested by the user"
-    recursive_check_moved_files(dataset_structure)
+    # recursive_check_moved_files(dataset_structure)
     main_curate_progress_message = "Moved all files requested by the user"
 
     # 5. Rename any Pennsieve files that are marked as renamed.
     namespace_logger.info("bf_update_existing_dataset step 5 rename any Pennsieve files that are marked as renamed")
     main_curate_progress_message = "Renaming any files requested by the user"
-    recursive_file_rename(dataset_structure)
+    #recursive_file_rename(dataset_structure)
     main_curate_progress_message = "Renamed all files requested by the user"
 
     # 6. Delete any Pennsieve folders that are marked as deleted.
@@ -2220,19 +2224,19 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     main_curate_progress_message = (
         "Deleting any additional folders present on Pennsieve"
     )
-    recursive_folder_delete(dataset_structure)
+    # recursive_folder_delete(dataset_structure)
     main_curate_progress_message = "Deletion of additional folders complete"
 
     # 7. Rename any Pennsieve folders that are marked as renamed.
     namespace_logger.info("bf_update_existing_dataset step 7 rename any Pennsieve folders that are marked as renamed")
     main_curate_progress_message = "Renaming any folders requested by the user"
-    recursive_folder_rename(dataset_structure, "renamed")
+    # recursive_folder_rename(dataset_structure, "renamed")
     main_curate_progress_message = "Renamed all folders requested by the user"
 
     # 8. Delete any metadata files that are marked as deleted.
     namespace_logger.info("bf_update_existing_dataset step 8 delete any metadata files that are marked as deleted")
     main_curate_progress_message = "Removing any metadata files marked for deletion"
-    metadata_file_delete(soda_json_structure)
+    # metadata_file_delete(soda_json_structure)
     main_curate_progress_message = "Removed metadata files marked for deletion"
 
     # 9. Run the original code to upload any new files added to the dataset.
@@ -2246,9 +2250,11 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
         "if-existing-files": "replace",
     }
 
-    bfdataset = soda_json_structure["bf-dataset-selected"]["dataset-name"]
-    myds = bf.get_dataset(bfdataset)
-    bf_generate_new_dataset(soda_json_structure, bf, myds)
+    # bfdataset = soda_json_structure["bf-dataset-selected"]["dataset-name"]
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{ds['id']}", headers=create_request_headers(ps))
+    r.raise_for_status()
+    myds = r.json()
+    bf_generate_new_dataset(soda_json_structure, ps, myds["content"])
 
     return
 
@@ -2316,6 +2322,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
                     elif existing_folder_option == "create-duplicate":
                         print("Creating a code folder")
+                        # TODO: change this so that when dealing with nested folders, it creates the folders in the correct place not just the dataset root. 
                         r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json={ "name": f"{folder_key}", "dataset": f"{ds['id']}", "packageType": "collection" })
                         r.raise_for_status()
                         ps_folder = r.json()
@@ -2333,10 +2340,14 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     elif existing_folder_option == "merge":
                         if folder_key in my_bf_existing_folders_name:
                             index_folder = my_bf_existing_folders_name.index(folder_key)
-                            bf_folder = my_bf_existing_folders[index_folder]
+                            ps_folder = my_bf_existing_folders[index_folder]
                         else:
-                           # bf_folder = my_ps_folder.create_collection(folder_key)
-                            r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json={"parent": "N:collection:f981f4df-b0cd-4a91-bcf0-8789b128b379", "name": "funsies", "dataset": "N:dataset:1cb4bf59-2b6d-48c9-8dae-88f722c6e328", "packageType": "collection", "properties": {"key": "funsies", "value": "Ahhh"} })
+                            # bf_folder = my_ps_folder.create_collection(folder_key)
+                            # TODO: change this so that when dealing with nested folders, it creates the folders in the correct place not just the dataset root. 
+                            #       To make this happen we will need to add the parent key with the value being the Collection ID of its parent folder. 
+                            r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json={"name": f"{folder_key}", "dataset": f"{ds['id']}", "packageType": "collection"})
+                            r.raise_for_status()
+                            ps_folder = r.json()
 
                     # bf_folder.update()
                     my_tracking_folder["children"][folder_key] = { "value": ps_folder}
@@ -3202,8 +3213,11 @@ def main_curate_function(soda_json_structure):
                         generated_dataset_id = ds["id"]
                     bf_generate_new_dataset(soda_json_structure, ps, ds)
                 if generate_option == "existing-bf":
-                    myds = bf.get_dataset(bfdataset)
-                    bf_update_existing_dataset(soda_json_structure, bf, myds)
+                    # make an api request to pennsieve to get the dataset details
+                    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps))
+                    r.raise_for_status()
+                    myds = r.json()["content"]
+                    bf_update_existing_dataset(soda_json_structure, bf, myds, ps)
 
         except Exception as e:
             main_curate_status = "Done"
