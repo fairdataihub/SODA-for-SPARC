@@ -637,7 +637,7 @@ const run_pre_flight_checks = async (check_update = true) => {
     [browser_download_url, latest_agent_version] =
       await check_agent_installed_version(agent_version);
   } catch (e) {
-    notyf.dismiss(notification);
+    // notyf.dismiss(notification);
     notyf.open({
       type: "error",
       message:
@@ -654,7 +654,7 @@ const run_pre_flight_checks = async (check_update = true) => {
 
   // The agent is not up to date. Ask the user if they would like to update it.
   if (browser_download_url) {
-    let { value: result } = await Swal.fire({
+    let result  = await Swal.fire({
       icon: "warning",
       text: "It appears that you are not running the latest version of the Pensieve Agent. We recommend that you update your software and restart SODA for the best experience.",
       heightAuto: false,
@@ -671,6 +671,7 @@ const run_pre_flight_checks = async (check_update = true) => {
       },
     })
 
+    console.log("Result: ", result)
 
     if (result.isConfirmed) {
       try {
@@ -930,6 +931,8 @@ const check_agent_installed = async () => {
     return [false, userErrorMessage(error)];
   }
 
+  console.log(responseObject)
+
   let { agent_version } = responseObject.data;
 
   notyf.dismiss(notification);
@@ -986,6 +989,7 @@ const get_latest_agent_version = async () => {
 
   let releases = releasesResponse.data
   let release = releases[0];
+  console.log(release)
   let latest_agent_version = release.tag_name;
 
   if (process.platform == "darwin") {
@@ -1015,6 +1019,8 @@ const get_latest_agent_version = async () => {
     reverseSwalButtons = false;
     release.assets.forEach((asset, index) => {
       let file_name = asset.name;
+      console.log(file_name)
+      console.log(path.extname(file_name))
       if (path.extname(file_name) == ".deb") {
         browser_download_url = asset.browser_download_url;
       }
@@ -1024,6 +1030,9 @@ const get_latest_agent_version = async () => {
   if (browser_download_url == undefined || latest_agent_version == undefined) {
     throw new Error("Trouble getting the latest agent version.")
   }
+
+  console.log(browser_download_url)
+  console.log(latest_agent_version)
 
   return [browser_download_url, latest_agent_version];
 };
