@@ -4675,20 +4675,22 @@ ipcRenderer.on("selected-folders-organize-datasets", async (event, pathElement) 
   if (irregularFolderArray.length > 0) {
     Swal.fire({
       title:
-        "The following folders contain non-allowed characters according to SPARC Data Standards. Folders should only have alphanumeric characters and hyphen '-'. How should we handle them?",
+        "As per the SPARC Data Standards, folder names must contain only alphanumeric values 0-9, A-Z (no special characters, no empty spaces). The folders listed below don't comply with these guidlines. What would you like to do?",
       html:
         "<div style='max-height:300px; overflow-y:auto'>" +
-        irregularFolderArray.join("</br></br>") +
+        irregularFolderArray.join("</br>") +
         "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: true,
       showCancelButton: true,
-      confirmButtonText: "Replace characters with (-)",
-      denyButtonText: "Remove characters",
-      cancelButtonText: "Skip All",
+      confirmButtonText: "Replace forbidden characters with '-')",
+      denyButtonText: "Remove forbidden characters",
+      cancelButtonText: "Skip these folders",
       didOpen: () => {
         $(".swal-popover").popover();
+        let swalTitle = document.getElementById("swal-title");
+        swalTitle.style.textAlign = "justify";
         let swalContainer = document.getElementsByClassName("swal2-popup")[0];
         let swal_content = document.getElementsByClassName("swal2-content")[0];
         let swalDenyButton = document.getElementsByClassName("swal2-deny")[0];
