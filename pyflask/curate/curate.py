@@ -2411,6 +2411,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     my_bf_existing_files_name_with_extension,
                 ) = bf_get_existing_files_details(my_tracking_folder, ps)
                 for file_key, file in my_folder["files"].items():
+                    # if local then we are either adding a new file to an existing/new dataset or replacing a file in an existing dataset
+                    # TODO: Confirm accuracy of the above statement
                     if file["type"] == "local":
                         file_path = file["path"]
                         if isfile(file_path) and existing_file_option == "replace" and file_key in my_bf_existing_files_name_with_extension:
@@ -2420,6 +2422,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                                 )
                             )
                             my_file = my_bf_existing_files[index_file]
+                            print("MY_FILE:" , my_file)
                             # TODO: Add back the delete functionality
                             #my_file.delete()
                             #my_bf_folder.update()

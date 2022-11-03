@@ -824,6 +824,7 @@ def monitor_local_json_progress():
 
 
 def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
+    print("SODA JSON STRUCTURE", soda_json_structure)
     global namespace_logger
     high_level_sparc_folders = [
         "code",
@@ -1029,7 +1030,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     try:
         bf_account_name = soda_json_structure["bf-account-selected"]["account-name"]
     except Exception as e:
-        raise e
+        raise e 
 
     namespace_logger.info(f"bf_account_name: {bf_account_name}")
 
