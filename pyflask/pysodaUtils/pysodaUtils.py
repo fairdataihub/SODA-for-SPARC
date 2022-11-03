@@ -50,6 +50,7 @@ def get_agent_installation_location():
         return "/usr/local/bin/pennsieve"
 
     elif sys.platform.startswith("linux"):
+        print("Here at linux location")
         return "/usr/local/bin/pennsieve"
 
     elif sys.platform in ["win32", "cygwin"]:
@@ -86,11 +87,15 @@ def get_agent_version():
     start_agent()
 
     version = subprocess.run([get_agent_installation_location(), "version"], capture_output=True, check=True).stdout
+
+    print(version)
     
     # decode the response 
     version = version.decode().strip()
 
-    return version
+    print(version)
+
+    return { 'agent_version': version }
 
 
 def agent_up_to_date():
