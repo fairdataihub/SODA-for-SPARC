@@ -2370,7 +2370,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             my_relative_path,
         ):
             """
-                Delete files that will be replaced in the dataset. Create a list of files to upload to Pennsieve. 
+                Delete files that are marked to be replaced in the dataset. Create a list of files to upload to Pennsieve.
             """
 
             global main_total_generate_dataset_size
@@ -2378,7 +2378,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
             print("\n")
             print("Tracking folder value in recursive_dataset_scan_for_bf: ", my_tracking_folder)
-            my_ps_folder = my_tracking_folder["children"] #ds (dataset)
+            # folder children are packages such as collections and files stored on the Pennsieve dataset
+            ps_folder_children = my_tracking_folder["children"] #ds (dataset)
 
             
 
@@ -2386,7 +2387,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 (
                     my_bf_existing_folders,
                     my_bf_existing_folders_name,
-                ) = bf_get_existing_folders_details(my_ps_folder)
+                ) = bf_get_existing_folders_details(ps_folder_children)
 
                 for folder_key, folder in my_folder["folders"].items():
                     relative_path = generate_relative_path(my_relative_path, folder_key)
@@ -2394,12 +2395,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     if existing_folder_option == "skip" and folder_key not in my_tracking_folder["children"].keys():
                         continue
 
-                    print("Going to scan the folder: ", folder_key)
-                    print("The folder key needs to exist in my_tracking_folder or else it will not be scanned.")
-                    print("\n")
-
-                    tracking_folder = my_tracking_folder["children"][folder_key]
-                    #tracking_folder = my_tracking_folder["children"][0]
+                    tracking_folder = ps_folder_children[folder_key]
                     list_upload_files = recursive_dataset_scan_for_bf(
                         folder,
                         tracking_folder,
@@ -2415,7 +2411,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     my_bf_existing_files,
                     my_bf_existing_files_name,
                     my_bf_existing_files_name_with_extension,
-                ) = bf_get_existing_files_details(my_ps_folder, ps)
+                ) = bf_get_existing_files_details(ps_folder_children, ps)
 
                 print("my_bf_existing_files_name_with_extension: ", my_bf_existing_files_name_with_extension)
                 for file_key, file in my_folder["files"].items():
@@ -2532,7 +2528,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                                 additional_upload_lists.append(
                                     [
                                         [file_path],
-                                        my_ps_folder,
+                                        ps_folder_children,
                                         [projected_name],
                                         [desired_name],
                                         [final_name],
@@ -2566,7 +2562,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     list_upload_files.append(
                         [
                             list_local_files,
-                            my_ps_folder,
+                            ps_folder_children,
                             list_projected_names,
                             list_desired_names,
                             list_final_names,
@@ -2618,10 +2614,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         ]
         list_upload_files = []
         relative_path = ds["name"]
-
-        print("\n")
-        print("Relative path: ", relative_path)
-        print("The tracking json structure [ START ]: ", tracking_json_structure)
 
         list_upload_files = recursive_dataset_scan_for_bf(
             dataset_structure,
