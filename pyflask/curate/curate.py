@@ -2295,23 +2295,21 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 existing_folder_option: TODO: Figure out what this does.
             """
 
-            my_ps_folder = my_tracking_folder["value"]
-
             my_bf_existing_folders_name = []
             my_bf_existing_folders = []
 
             # TODO: Place in better spot - We need to populate the folder with their children as we go so we can tell if a folder exists for not. IMP for the existing flow when replacing or merging. 
-            if len(my_ps_folder["children"]) == 0:
+            if len(my_tracking_folder["children"]) == 0:
                 # get the folders children 
-                r = requests.get(f"{PENNSIEVE_URL}/packages/{my_ps_folder['content']['id']}", headers=create_request_headers(ps), json={"include": "files"})
+                r = requests.get(f"{PENNSIEVE_URL}/packages/{my_tracking_folder['content']['id']}", headers=create_request_headers(ps), json={"include": "files"})
                 r.raise_for_status()
-                my_ps_folder["children"] = r.json()["children"]
+                my_tracking_folder["children"] = r.json()["children"]
 
             # list of existing bf folders at this level
             (
                 my_bf_existing_folders,
                 my_bf_existing_folders_name,
-            ) = bf_get_existing_folders_details(my_ps_folder["children"])
+            ) = bf_get_existing_folders_details(my_tracking_folder["children"])
 
             print("EXISTING FOLDERS NAMES: ", my_bf_existing_folders_name)
 
@@ -2358,7 +2356,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                             ps_folder = r.json()
 
 
-                    my_tracking_folder["children"][folder_key] = { "value": ps_folder}
+                    my_tracking_folder["children"][folder_key] = ps_folder
                     tracking_folder = my_tracking_folder["children"][folder_key]
                     recursive_create_folder_for_bf(
                         folder, tracking_folder, existing_folder_option
@@ -2587,7 +2585,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         # create a tracking dict which would track the generation of the dataset on Pennsieve
         main_curate_progress_message = "Creating folder structure"
         dataset_structure = soda_json_structure["dataset-structure"]
-        tracking_json_structure = {"value": ds }
+        tracking_json_structure = ds
 
         print("\n")
         print("Tracking Structure [ CREATE FOLDER START ]: ", tracking_json_structure)
