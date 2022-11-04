@@ -5199,36 +5199,57 @@ const dropHelper = async (
     if (statsObj.isFile()) {
       var nonAllowedDuplicate = false;
       var originalFileName = path.parse(itemPath).base;
-      var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+      var slashCount = getPathSlashCount();
 
-      if (path.parse(itemPath).name.substr(0, 1) === ".") {
-        if (path.parse(itemPath).base === ".DS_Store") {
-          nonAllowedFiles.push(itemPath);
-          continue;
-        } else {
-          hiddenFiles.push(itemPath);
-          continue;
-        }
-      }
-      if (path.parse(itemPath).base === "Thumbs.db") {
+      let forbiddenCheck = forbiddenFileCheck(itemName);
+      if(forbiddenCheck === "forbidden") {
         nonAllowedFiles.push(itemPath);
         continue;
       }
-      let regex = /[\+&\%#]/i;
-      if (regex.test(path.parse(itemPath).base) === true) {
+      if(forbiddenCheck === "hidden") {
+        hiddenFiles.push(itemPath);
+        continue;
+      }
+
+      // if (path.parse(itemPath).name.substr(0, 1) === ".") {
+      //   if (path.parse(itemPath).base === ".DS_Store") {
+      //     nonAllowedFiles.push(itemPath);
+      //     continue;
+      //   } else {
+      //     hiddenFiles.push(itemPath);
+      //     continue;
+      //   }
+      // }
+      // if (path.parse(itemPath).base === "Thumbs.db") {
+      //   nonAllowedFiles.push(itemPath);
+      //   continue;
+      // }
+
+      let warningCharacterBool = warningCharacterCheck(itemName);
+      // let regex = /[\+&\%#]/i;
+      if (warningCharacterBool === true) {
         nonAllowedCharacterFiles.push(itemPath);
         continue;
       }
 
-      if ((path.parse(itemPath).base.match(/\./g) || []).length > 2) {
+      let extensionCount = checkForMultipleExtensions(itemName);
+      if(extensionCount > 2) {
         //multiple extensions, raise warning (do not import)
         tripleExtension.push(itemPath);
         continue;
-      } else if ((path.parse(itemPath).base.match(/\./g) || []).length === 2) {
+      }
+      if(extensionCount === 2) {
         //double extension ask if compressed file
         doubleExtension.push(itemPath);
         continue;
       }
+
+      // if ((path.parse(itemPath).base.match(/\./g) || []).length > 2) {
+      // } else if ((path.parse(itemPath).base.match(/\./g) || []).length === 2) {
+      //   //double extension ask if compressed file
+      //   doubleExtension.push(itemPath);
+      //   continue;
+      // }
 
       if (slashCount === 1) {
         await Swal.fire({
@@ -5370,13 +5391,13 @@ const dropHelper = async (
             doubleExtension[i] in myPath["files"] ||
             path.parse(doubleExtension[i]).base in Object.keys(importedFiles)
           ) {
-            nonAllowedDuplicateFiles.push(fileName);
+            nonAllowedDuplicateFiles.push(doubleExtension[i]);
             continue;
           } else {
             //not in there or regular files so store?
-            importedFiles[path.parse(doubleExtension).base] = {
+            importedFiles[path.parse(doubleExtension[i]).base] = {
               path: doubleExtension[i],
-              basename: path.parse(doubleExtension).base,
+              basename: path.parse(doubleExtension[i]).base,
             };
           }
         }
