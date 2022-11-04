@@ -2143,7 +2143,6 @@ const guidedPrepareHomeScreen = async () => {
 function guidedShowTreePreview(new_dataset_name, targetElement) {
   const dsJsonObjCopy = JSON.parse(JSON.stringify(datasetStructureJSONObj));
 
-
   //Add the code_description metadata file to the preview if the code_description path has been declared
   if (sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]) {
     dsJsonObjCopy["files"]["code_description.xlsx"] = {
@@ -2170,7 +2169,6 @@ function guidedShowTreePreview(new_dataset_name, targetElement) {
       type: "local",
     };
   }
-  
 
   //Add the Readme file to the preview if it exists in JSON
   if (sodaJSONObj["dataset-metadata"]["README"]) {
@@ -2198,7 +2196,6 @@ function guidedShowTreePreview(new_dataset_name, targetElement) {
       type: "local",
     };
   }
-
 
   //Add the submission metadata file to the preview if the submission metadata page has been completed
   if (sodaJSONObj["completed-tabs"].includes("guided-create-submission-metadata-tab")) {
@@ -2949,16 +2946,16 @@ const openPage = async (targetPageID) => {
           data: {},
         },
         plugins: ["types", "sort"],
-        'sort' : function(a, b) {
+        sort: function (a, b) {
           a1 = this.get_node(a);
           b1 = this.get_node(b);
 
-          if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))){
+          if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
             //if the word assets is included in the icon then we can assume it is a file
             //folder icons are under font awesome meanwhile files come from the assets folder
-              return (a1.text > b1.text) ? 1 : -1;
-          } else { 
-            return (a1.icon < b1.icon) ? 1 : -1;
+            return a1.text > b1.text ? 1 : -1;
+          } else {
+            return a1.icon < b1.icon ? 1 : -1;
           }
         },
         types: {
@@ -3445,16 +3442,16 @@ const openPage = async (targetPageID) => {
           data: {},
         },
         plugins: ["types", "sort"],
-        'sort' : function(a, b) {
+        sort: function (a, b) {
           a1 = this.get_node(a);
           b1 = this.get_node(b);
 
-          if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))){
+          if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
             //if the word assets is included in the icon then we can assume it is a file
             //folder icons are under font awesome meanwhile files come from the assets folder
-              return (a1.text > b1.text) ? 1 : -1;
-          } else { 
-            return (a1.icon < b1.icon) ? 1 : -1;
+            return a1.text > b1.text ? 1 : -1;
+          } else {
+            return a1.icon < b1.icon ? 1 : -1;
           }
         },
         types: {
@@ -9262,16 +9259,16 @@ $(document).ready(async () => {
       data: {},
     },
     plugins: ["types", "sort"],
-    'sort' : function(a, b) {
+    sort: function (a, b) {
       a1 = this.get_node(a);
       b1 = this.get_node(b);
 
-      if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))){
+      if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
         //if the word assets is included in the icon then we can assume it is a file
         //folder icons are under font awesome meanwhile files come from the assets folder
-          return (a1.text > b1.text) ? 1 : -1;
-      } else { 
-        return (a1.icon < b1.icon) ? 1 : -1;
+        return a1.text > b1.text ? 1 : -1;
+      } else {
+        return a1.icon < b1.icon ? 1 : -1;
       }
     },
     types: {
@@ -10065,16 +10062,16 @@ $(document).ready(async () => {
         data: {},
       },
       plugins: ["types", "sort"],
-      'sort' : function(a, b) {
+      sort: function (a, b) {
         a1 = this.get_node(a);
         b1 = this.get_node(b);
 
-        if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))){
+        if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
           //if the word assets is included in the icon then we can assume it is a file
           //folder icons are under font awesome meanwhile files come from the assets folder
-            return (a1.text > b1.text) ? 1 : -1;
-        } else { 
-          return (a1.icon < b1.icon) ? 1 : -1;
+          return a1.text > b1.text ? 1 : -1;
+        } else {
+          return a1.icon < b1.icon ? 1 : -1;
         }
       },
       types: {

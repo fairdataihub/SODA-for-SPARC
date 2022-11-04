@@ -1190,7 +1190,7 @@ const create_child_node = (
     }
   }
   return newFormatNode;
-}
+};
 
 function recursiveExpandNodes(object) {
   // var newFormatNode = {"text": nodeName,
@@ -1227,16 +1227,16 @@ $(document).ready(function () {
       expand_selected_onload: true,
     },
     plugins: ["types", "changed", "sort"],
-    'sort' : function(a, b) {
+    sort: function (a, b) {
       a1 = this.get_node(a);
       b1 = this.get_node(b);
 
-      if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))){
+      if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
         //if the word assets is included in the icon then we can assume it is a file
         //folder icons are under font awesome meanwhile files come from the assets folder
-          return (a1.text > b1.text) ? 1 : -1;
-      } else { 
-        return (a1.icon < b1.icon) ? 1 : -1;
+        return a1.text > b1.text ? 1 : -1;
+      } else {
+        return a1.icon < b1.icon ? 1 : -1;
       }
     },
     types: {
@@ -1719,16 +1719,16 @@ $(document).ready(function () {
       data: {},
     },
     plugins: ["types", "sort"],
-    'sort' : function(a, b) {
+    sort: function (a, b) {
       a1 = this.get_node(a);
       b1 = this.get_node(b);
-      
-      if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))){
+
+      if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
         //if the word assets is included in the icon then we can assume it is a file
         //folder icons are under font awesome meanwhile files come from the assets folder
-          return (a1.text > b1.text) ? 1 : -1;
-      } else { 
-        return (a1.icon < b1.icon) ? 1 : -1;
+        return a1.text > b1.text ? 1 : -1;
+      } else {
+        return a1.icon < b1.icon ? 1 : -1;
       }
     },
     types: {
