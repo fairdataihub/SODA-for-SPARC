@@ -29,12 +29,37 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
 
+    const updateGuidedDatasetName = (newDatasetName) => {
+      const previousDatasetName = sodaJSONObj["digital-metadata"]["name"];
+
+      //update old progress file with new dataset name
+      const oldProgressFilePath = `${guidedProgressFilePath}/${previousDatasetName}.json`;
+      const newProgressFilePath = `${guidedProgressFilePath}/${newDatasetName}.json`;
+      fs.renameSync(oldProgressFilePath, newProgressFilePath);
+
+      const bannerImagePathToUpdate = sodaJSONObj["digital-metadata"]["banner-image-path"];
+      if (bannerImagePathToUpdate) {
+        const newBannerImagePath = bannerImagePathToUpdate.replace(
+          previousDatasetName,
+          datasetName
+        );
+        //Rename the old banner image folder to the new dataset name
+        fs.renameSync(bannerImagePathToUpdate, newBannerImagePath);
+        //change the banner image path in the JSON obj
+        sodaJSONObj["digital-metadata"]["banner-image-path"] = newBannerImagePath;
+      }
+      sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
+    };
+
     if (pageBeingLeftID === "guided-name-subtitle-tab") {
-      /*
+      const currentDatasetName = sodaJSONObj["digital-metadata"]["name"];
+
       let datasetNameInput = document.getElementById("guided-dataset-name-input").value.trim();
       let datasetSubtitleInput = document
         .getElementById("guided-dataset-subtitle-input")
         .value.trim();
+
+      //Throw error if no dataset name or subtitle were added
       if (!datasetNameInput) {
         errorArray.push({
           type: "notyf",
@@ -51,47 +76,27 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
-      if (Object.keys(sodaJSONObj).length === 0) {
-        //get names of existing progress saves
-        const existingProgressNames = fs.readdirSync(guidedProgressFilePath);
-        //Remove '.json' from each element in existingProgressNames
-        existingProgressNames.forEach((element, index) => {
-          existingProgressNames[index] = element.replace(".json", "");
+      //check if dataset name is already in use
+      const existingProgressNames = fs
+        .readdirSync(guidedProgressFilePath)
+        .map((progressFileName) => progressFileName.remplate(".json", ""));
+
+      if (existingProgressNames.includes(datasetNameInput)) {
+        errorArray.push({
+          type: "notyf",
+          message:
+            "An existing progress file already exists with that name. Please choose a different name.",
         });
-        //check if dataset name is already in use
-        if (existingProgressNames.includes(datasetNameInput)) {
-          errorArray.push({
-            type: "notyf",
-            message:
-              "An existing progress file already exists with that name. Please choose a different name.",
-          });
-          throw errorArray;
-        }
-
-        guidedCreateSodaJSONObj();
-        attachGuidedMethodsToSodaJSONObj();
-
-        await setOrUpdateGuidedDatasetName(datasetNameInput);
-        setGuidedDatasetSubtitle(datasetSubtitleInput);
-        saveGuidedProgress(datasetNameInput);
-      } else {
-        //updating current progress file
-        try {
-          await setOrUpdateGuidedDatasetName(datasetNameInput);
-        } catch (error) {
-          errorArray.push({
-            type: "notyf",
-            message: error,
-          });
-          throw errorArray;
-        }
-        setGuidedDatasetSubtitle(datasetSubtitleInput);
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+        throw errorArray;
       }
-      $(this).removeClass("loading");
 
-      resetGuidedRadioButtons("guided-dataset-starting-point-tab");
-      guidedTransitionFromDatasetNameSubtitlePage();*/
+      // Update the progress file path name and banner image path if needed
+      if (currentDatasetName && datasetNameInput !== currentDatasetName) {
+        updateGuidedDatasetName(datasetNameInput);
+      }
+
+      sodaJSONObj["digital-metadata"]["name"] = datasetNameInput;
+      sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
     }
 
     if (pageBeingLeftID === "guided-prepare-helpers-tab") {
@@ -8219,55 +8224,6 @@ $("#guided-submission-completion-date-manual").change(function () {
 /////////////////////////////////////////////////////////
 //////////       GUIDED OBJECT ACCESSORS       //////////
 /////////////////////////////////////////////////////////
-const setOrUpdateGuidedDatasetName = (newDatasetName) => {
-  return new Promise((resolve, reject) => {
-    const previousDatasetName = sodaJSONObj["digital-metadata"]["name"];
-    //If updataing the dataset, update the old banner image path with a new one
-    if (previousDatasetName) {
-      //If previousDatasetName is equal to the newDatasetName, we don't need to update any progress files
-      if (previousDatasetName === newDatasetName) {
-        resolve("No changes made to dataset name");
-      }
-
-      //get names of existing progress saves
-      const existingProgressNames = fs.readdirSync(guidedProgressFilePath);
-      //Remove '.json' from each element in existingProgressNames
-      existingProgressNames.forEach((element, index) => {
-        existingProgressNames[index] = element.replace(".json", "");
-      });
-      //check if dataset name is already in use
-      if (existingProgressNames.includes(newDatasetName)) {
-        reject(
-          "An existing progress file already exists with that name. Please choose a different name."
-        );
-      }
-
-      //update old progress file with new dataset name
-      const oldProgressFilePath = `${guidedProgressFilePath}/${previousDatasetName}.json`;
-      const newProgressFilePath = `${guidedProgressFilePath}/${newDatasetName}.json`;
-      fs.renameSync(oldProgressFilePath, newProgressFilePath);
-
-      const bannerImagePathToUpdate = sodaJSONObj["digital-metadata"]["banner-image-path"];
-      if (bannerImagePathToUpdate) {
-        const newBannerImagePath = bannerImagePathToUpdate.replace(
-          previousDatasetName,
-          datasetName
-        );
-        //Rename the old banner image folder to the new dataset name
-        fs.renameSync(bannerImagePathToUpdate, newBannerImagePath);
-        //change the banner image path in the JSON obj
-        sodaJSONObj["digital-metadata"]["banner-image-path"] = newBannerImagePath;
-      }
-      sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
-      saveGuidedProgress(newDatasetName);
-      resolve("Dataset name updated");
-    } else {
-      sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
-      saveGuidedProgress(newDatasetName);
-      resolve("Dataset name updated");
-    }
-  });
-};
 
 const getExistingPennsieveDatasetNames = async () => {
   // get the access token so the user can access the Pennsieve api
@@ -8957,84 +8913,6 @@ $(document).ready(async () => {
       switchElementVisibility("guided-intro-page", "guided-name-subtitle");
     } else if (!guidedDatasetNameSubtitlePage.classList.contains("hidden")) {
       let errorArray = [];
-
-      try {
-        $(this).addClass("loading");
-
-        let datasetNameInput = document.getElementById("guided-dataset-name-input").value.trim();
-        let datasetSubtitleInput = document
-          .getElementById("guided-dataset-subtitle-input")
-          .value.trim();
-        if (!datasetNameInput) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please enter a dataset name.",
-          });
-        }
-        if (!datasetSubtitleInput) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please enter a dataset subtitle.",
-          });
-        }
-        if (errorArray.length > 0) {
-          throw errorArray;
-        }
-
-        if (Object.keys(sodaJSONObj).length === 0) {
-          //get names of existing progress saves
-          const existingProgressNames = fs.readdirSync(guidedProgressFilePath);
-          //Remove '.json' from each element in existingProgressNames
-          existingProgressNames.forEach((element, index) => {
-            existingProgressNames[index] = element.replace(".json", "");
-          });
-          //check if dataset name is already in use
-          if (existingProgressNames.includes(datasetNameInput)) {
-            errorArray.push({
-              type: "notyf",
-              message:
-                "An existing progress file already exists with that name. Please choose a different name.",
-            });
-            throw errorArray;
-          }
-
-          guidedCreateSodaJSONObj();
-          attachGuidedMethodsToSodaJSONObj();
-
-          await setOrUpdateGuidedDatasetName(datasetNameInput);
-          setGuidedDatasetSubtitle(datasetSubtitleInput);
-          saveGuidedProgress(datasetNameInput);
-        } else {
-          //updating current progress file
-          try {
-            await setOrUpdateGuidedDatasetName(datasetNameInput);
-          } catch (error) {
-            errorArray.push({
-              type: "notyf",
-              message: error,
-            });
-            throw errorArray;
-          }
-          setGuidedDatasetSubtitle(datasetSubtitleInput);
-          saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-        }
-        $(this).removeClass("loading");
-
-        resetGuidedRadioButtons("guided-dataset-starting-point-tab");
-        guidedTransitionFromDatasetNameSubtitlePage();
-      } catch (error) {
-        errorArray.map((error) => {
-          if (error.type === "notyf") {
-            notyf.open({
-              duration: "4000",
-              type: "error",
-              message: error.message,
-            });
-          }
-        });
-        $(this).removeClass("loading");
-      }
-      $(this).removeClass("loading");
     }
   });
 
