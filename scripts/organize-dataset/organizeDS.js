@@ -1553,29 +1553,29 @@ const handleDuplicateImports = (btnId, duplicateArray, curationMode) => {
 };
 
 const checkForMultipleExtensions = (filename) => {
-  console.log("extension count: " + filename.match(/\./g).length)
-  return filename.match(/\./g).length
-}
+  console.log("extension count: " + filename.match(/\./g).length);
+  return filename.match(/\./g).length;
+};
 
 const forbiddenFileCheck = (filename) => {
-  if(filename === ".DS_Store" || filename === "Thumbs.db") {
+  if (filename === ".DS_Store" || filename === "Thumbs.db") {
     return "forbidden";
   }
-  if(filename.substr(0, 1) === ".") {
+  if (filename.substr(0, 1) === ".") {
     return "hidden";
   } else {
     return "none";
   }
-}
+};
 
 const warningCharacterCheck = (filename) => {
   let regex = /[\+&\%#]/i;
-  return regex.test(filename) === true
-}
+  return regex.test(filename) === true;
+};
 
 const getPathSlashCount = () => {
   return organizeDSglobalPath.value.trim().split("/").length - 1;
-}
+};
 
 const addFilesfunction = async (
   fileArray,
@@ -1630,13 +1630,13 @@ const addFilesfunction = async (
     }
 
     //count amount of extensions
-    let extensionCount = checkForMultipleExtensions(fileName)
-    if(extensionCount == 2) {
+    let extensionCount = checkForMultipleExtensions(fileName);
+    if (extensionCount == 2) {
       //double extension ask if compressed file
       doubleExtension.push(filePath);
       continue;
-    } 
-    if(extensionCount > 2) {
+    }
+    if (extensionCount > 2) {
       //multiple extensions, raise warning
       tripleExtension.push(filePath);
       continue;
@@ -1645,11 +1645,11 @@ const addFilesfunction = async (
     //check for non allowed files
     //.DS_Store and Thumbs.db files are strictly not allowed
     let forbiddenCheck = forbiddenFileCheck(fileName);
-    if(forbiddenCheck === "forbidden") {
+    if (forbiddenCheck === "forbidden") {
       nonAllowedFiles.push(filePath);
       continue;
     }
-    if(forbiddenCheck === "hidden") {
+    if (forbiddenCheck === "hidden") {
       hiddenFiles.push(filePath);
       continue;
     }

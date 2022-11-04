@@ -5202,11 +5202,11 @@ const dropHelper = async (
       var slashCount = getPathSlashCount();
 
       let forbiddenCheck = forbiddenFileCheck(itemName);
-      if(forbiddenCheck === "forbidden") {
+      if (forbiddenCheck === "forbidden") {
         nonAllowedFiles.push(itemPath);
         continue;
       }
-      if(forbiddenCheck === "hidden") {
+      if (forbiddenCheck === "hidden") {
         hiddenFiles.push(itemPath);
         continue;
       }
@@ -5233,12 +5233,12 @@ const dropHelper = async (
       }
 
       let extensionCount = checkForMultipleExtensions(itemName);
-      if(extensionCount > 2) {
+      if (extensionCount > 2) {
         //multiple extensions, raise warning (do not import)
         tripleExtension.push(itemPath);
         continue;
       }
-      if(extensionCount === 2) {
+      if (extensionCount === 2) {
         //double extension ask if compressed file
         doubleExtension.push(itemPath);
         continue;
