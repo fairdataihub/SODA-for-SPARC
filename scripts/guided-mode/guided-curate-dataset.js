@@ -2143,18 +2143,38 @@ const guidedPrepareHomeScreen = async () => {
 function guidedShowTreePreview(new_dataset_name, targetElement) {
   const dsJsonObjCopy = JSON.parse(JSON.stringify(datasetStructureJSONObj));
 
-  //Add the Readme file to the preview if it exists in JSON
-  if (sodaJSONObj["dataset-metadata"]["README"]) {
-    dsJsonObjCopy["files"]["README.txt"] = {
+
+  //Add the code_description metadata file to the preview if the code_description path has been declared
+  if (sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]) {
+    dsJsonObjCopy["files"]["code_description.xlsx"] = {
       action: ["new"],
       path: "",
       type: "local",
     };
   }
 
-  //Add the Subjects metadata file to the preview if at least one subject has been added
-  if (subjectsTableData.length > 0) {
-    dsJsonObjCopy["files"]["subjects.xlsx"] = {
+  //Add the dataset_description metadata file to the preview if the dataset_description page has been completed
+  if (sodaJSONObj["completed-tabs"].includes("guided-create-description-metadata-tab")) {
+    dsJsonObjCopy["files"]["dataset_description.xlsx"] = {
+      action: ["new"],
+      path: "",
+      type: "local",
+    };
+  }
+
+  //Add the manifest files that have been created to the preview
+  for (const manifestFileKey of Object.keys(sodaJSONObj["guided-manifest-files"])) {
+    dsJsonObjCopy["folders"][manifestFileKey]["files"]["manifest.xlsx"] = {
+      action: ["new"],
+      path: "",
+      type: "local",
+    };
+  }
+  
+
+  //Add the Readme file to the preview if it exists in JSON
+  if (sodaJSONObj["dataset-metadata"]["README"]) {
+    dsJsonObjCopy["files"]["README.txt"] = {
       action: ["new"],
       path: "",
       type: "local",
@@ -2170,36 +2190,19 @@ function guidedShowTreePreview(new_dataset_name, targetElement) {
     };
   }
 
-  //Add the code_description metadata file to the preview if the code_description path has been declared
-  if (sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]) {
-    dsJsonObjCopy["files"]["code_description.xlsx"] = {
+  //Add the Subjects metadata file to the preview if at least one subject has been added
+  if (subjectsTableData.length > 0) {
+    dsJsonObjCopy["files"]["subjects.xlsx"] = {
       action: ["new"],
       path: "",
       type: "local",
     };
   }
 
-  //Add the manifest files that have been created to the preview
-  for (const manifestFileKey of Object.keys(sodaJSONObj["guided-manifest-files"])) {
-    dsJsonObjCopy["folders"][manifestFileKey]["files"]["manifest.xlsx"] = {
-      action: ["new"],
-      path: "",
-      type: "local",
-    };
-  }
 
   //Add the submission metadata file to the preview if the submission metadata page has been completed
   if (sodaJSONObj["completed-tabs"].includes("guided-create-submission-metadata-tab")) {
     dsJsonObjCopy["files"]["submission.xlsx"] = {
-      action: ["new"],
-      path: "",
-      type: "local",
-    };
-  }
-
-  //Add the dataset_description metadata file to the preview if the dataset_description page has been completed
-  if (sodaJSONObj["completed-tabs"].includes("guided-create-description-metadata-tab")) {
-    dsJsonObjCopy["files"]["dataset_description.xlsx"] = {
       action: ["new"],
       path: "",
       type: "local",
@@ -2945,7 +2948,19 @@ const openPage = async (targetPageID) => {
           check_callback: true,
           data: {},
         },
-        plugins: ["types"],
+        plugins: ["types", "sort"],
+        'sort' : function(a, b) {
+          a1 = this.get_node(a);
+          b1 = this.get_node(b);
+
+          if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))){
+            //if the word assets is included in the icon then we can assume it is a file
+            //folder icons are under font awesome meanwhile files come from the assets folder
+              return (a1.text > b1.text) ? 1 : -1;
+          } else { 
+            return (a1.icon < b1.icon) ? 1 : -1;
+          }
+        },
         types: {
           folder: {
             icon: "fas fa-folder fa-fw",
@@ -3429,7 +3444,19 @@ const openPage = async (targetPageID) => {
           check_callback: true,
           data: {},
         },
-        plugins: ["types"],
+        plugins: ["types", "sort"],
+        'sort' : function(a, b) {
+          a1 = this.get_node(a);
+          b1 = this.get_node(b);
+
+          if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))){
+            //if the word assets is included in the icon then we can assume it is a file
+            //folder icons are under font awesome meanwhile files come from the assets folder
+              return (a1.text > b1.text) ? 1 : -1;
+          } else { 
+            return (a1.icon < b1.icon) ? 1 : -1;
+          }
+        },
         types: {
           folder: {
             icon: "fas fa-folder fa-fw",
@@ -9234,7 +9261,19 @@ $(document).ready(async () => {
       check_callback: true,
       data: {},
     },
-    plugins: ["types"],
+    plugins: ["types", "sort"],
+    'sort' : function(a, b) {
+      a1 = this.get_node(a);
+      b1 = this.get_node(b);
+
+      if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))){
+        //if the word assets is included in the icon then we can assume it is a file
+        //folder icons are under font awesome meanwhile files come from the assets folder
+          return (a1.text > b1.text) ? 1 : -1;
+      } else { 
+        return (a1.icon < b1.icon) ? 1 : -1;
+      }
+    },
     types: {
       folder: {
         icon: "fas fa-folder fa-fw",
@@ -10025,7 +10064,19 @@ $(document).ready(async () => {
         check_callback: true,
         data: {},
       },
-      plugins: ["types"],
+      plugins: ["types", "sort"],
+      'sort' : function(a, b) {
+        a1 = this.get_node(a);
+        b1 = this.get_node(b);
+
+        if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))){
+          //if the word assets is included in the icon then we can assume it is a file
+          //folder icons are under font awesome meanwhile files come from the assets folder
+            return (a1.text > b1.text) ? 1 : -1;
+        } else { 
+          return (a1.icon < b1.icon) ? 1 : -1;
+        }
+      },
       types: {
         folder: {
           icon: "fas fa-folder fa-fw",
