@@ -1863,16 +1863,20 @@ def generate_relative_path(x, y):
 
 def bf_get_existing_folders_details(ps_folders):
     print("Here is ps folder: ", ps_folders)
-    ps_existing_folders = [folder for folder in ps_folders if folder['content']["packageType"] == "Collection"]
+    for folder in ps_folders:
+        print(folder)
+    ps_existing_folders = [folder for folder in ps_folders if folder["content"]["packageType"] == "Collection"]
     ps_existing_folders_name = [folder['content']["name"] for folder in ps_existing_folders]
 
     return ps_existing_folders, ps_existing_folders_name
 
 
-def bf_get_existing_files_details(bf_folder, ps):
+def bf_get_existing_files_details(ps_folder, ps):
+
+    children = ps_folder["children"]
 
     print("\n")
-    print("Getting file details for folder: ", bf_folder)
+    print("Getting file details for folder: ", children)
     double_extensions = [
         ".ome.tiff",
         ".ome.tif",
@@ -1916,14 +1920,14 @@ def bf_get_existing_files_details(bf_folder, ps):
         else:
             return file_name + ("." + extension)
 
-    bf_existing_files = [x for x in bf_folder["children"] if bf_folder["children"][x]['value']['content']["packageType"] != "Collection"]
+    bf_existing_files = [file_or_folder for file_or_folder in children if children[file_or_folder]['content']["packageType"] != "Collection"]
 
-    bf_existing_files_name = [splitext(x.name)[0] for x in bf_existing_files]
+    bf_existing_files_name = [splitext(file.name)[0] for file in bf_existing_files]
     bf_existing_files_name_with_extension = []
 
     # determine if we are at the root of the dataset
     # TODO: Find out why value is in here sometimes
-    content = bf_folder.get("content", 0) if bf_folder.get("content", 0) != 0 else bf_folder["value"]["content"]
+    content = children.get("content", 0) if children.get("content", 0) != 0 else children["value"]["content"]
     if (str(content['id'])[2:9]) == "dataset":
         r = requests.get(f"{PENNSIEVE_URL}/datasets/{content['id']}", headers=create_request_headers(ps))
         r.raise_for_status()
@@ -1944,10 +1948,9 @@ def bf_get_existing_files_details(bf_folder, ps):
             bf_existing_files_name_with_extension.append(file_name_with_extension)
     else:
         #is collection - aka a folder in the dataset
-        r = requests.get(f"{PENNSIEVE_URL}/packages/{bf_folder['value']['content']['id']}", headers=create_request_headers(ps)) 
+        r = requests.get(f"{PENNSIEVE_URL}/packages/{ps_folder['content']['id']}", headers=create_request_headers(ps), json={"include": "files"}) 
         r.raise_for_status()
         folder_details = r.json()
-        # folder_details = bf._api._get("/packages/" + str(bf_folder.id))
         folder_content = folder_details["children"]
         for item in folder_content:
             file_name_with_extension = ""
@@ -2259,6 +2262,28 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
     return
 
 
+def normalize_tracking_folder(tracking_folder):
+    """
+    Normalize the tracking folder path to be a dictonary with the shape: {files: {}, folders: {}}. 
+    This shape matches our dataset structure object.
+    """
+    if tracking_folder == "":
+        return []
+    else:
+        temp_children = {"folders": {}, "files": {}}
+
+        # add the files and folders to the temp_children structure 
+        for child in tracking_folder["children"]:
+            if child["content"]["packageType"] == "Collection":
+                # add the folders ( designated collection on Pennsieve ) to the temp_children structure under folders
+                temp_children["folders"][child["content"]["name"]] = child
+            else:
+                # add the files (anything not designated a collection) to the temp_children structure under files
+                temp_children["files"][child["content"]["name"]] = child
+
+        # replace the non-normalized children structure with the normalized children structure
+        tracking_folder["children"] = temp_children
+
 def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
     global namespace_logger
@@ -2298,24 +2323,33 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             my_bf_existing_folders_name = []
             my_bf_existing_folders = []
 
+            print("IN RECURSIVE CREATE FOLDER FOR BF")
+            print(my_folder)
+            print("\n")
+            print(my_tracking_folder)
+            print("\n")
+
             # TODO: Place in better spot - We need to populate the folder with their children as we go so we can tell if a folder exists for not. IMP for the existing flow when replacing or merging. 
-            if len(my_tracking_folder["children"]) == 0:
+            if len(my_tracking_folder["children"]["folders"]) == 0:
                 # get the folders children 
                 r = requests.get(f"{PENNSIEVE_URL}/packages/{my_tracking_folder['content']['id']}", headers=create_request_headers(ps), json={"include": "files"})
                 r.raise_for_status()
-                my_tracking_folder["children"] = r.json()["children"]
+                print(r.json())
+                ps_folder = r.json()
+                normalize_tracking_folder(ps_folder)
+                my_tracking_folder["children"] = ps_folder["children"]
+
 
             # list of existing bf folders at this level
-            (
-                my_bf_existing_folders,
-                my_bf_existing_folders_name,
-            ) = bf_get_existing_folders_details(my_tracking_folder["children"])
+            # (
+            #     my_bf_existing_folders,
+            #     my_bf_existing_folders_name,
+            # ) = bf_get_existing_folders_details(my_tracking_folder["children"])
 
-            print("EXISTING FOLDERS NAMES: ", my_bf_existing_folders_name)
+
 
             # create/replace/skip folder
             if "folders" in my_folder.keys():
-                my_tracking_folder["children"] = {}
                 for folder_key, folder in my_folder["folders"].items():
                     if existing_folder_option == "skip":
                         if folder_key in my_bf_existing_folders_name:
@@ -2342,11 +2376,9 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                        # bf_folder = my_ps_folder.create_collection(folder_key)
 
                     elif existing_folder_option == "merge":
-                        if folder_key in my_bf_existing_folders_name:
-                            print("YES EXISTING FOLDER THIS FLOW IS ALMOST THERE")
-                            index_folder = my_bf_existing_folders_name.index(folder_key)
-                            ps_folder = my_bf_existing_folders[index_folder]
-                            print(ps_folder)
+                        if folder_key in my_tracking_folder["children"]["folders"]:
+                            ps_folder = my_tracking_folder["children"]["folders"][folder_key]
+                            normalize_tracking_folder(ps_folder)
                         else:
                             # We are merging but this is a new folder - not one that already exists in teh current dataset - so we create it.
                             # TODO: change this so that when dealing with nested folders, it creates the folders in the correct place not just the dataset root. 
@@ -2354,10 +2386,11 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                             r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json={"name": f"{folder_key}", "dataset": f"{ds['id']}", "packageType": "collection"})
                             r.raise_for_status()
                             ps_folder = r.json()
+                            normalize_tracking_folder(ps_folder)
 
 
-                    my_tracking_folder["children"][folder_key] = ps_folder
-                    tracking_folder = my_tracking_folder["children"][folder_key]
+                    my_tracking_folder["children"]["folders"][folder_key] = ps_folder
+                    tracking_folder = my_tracking_folder["children"]["folders"][folder_key] # get the folder we just added to the tracking folder
                     recursive_create_folder_for_bf(
                         folder, tracking_folder, existing_folder_option
                     )
@@ -2411,7 +2444,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     my_bf_existing_files,
                     my_bf_existing_files_name,
                     my_bf_existing_files_name_with_extension,
-                ) = bf_get_existing_files_details(ps_folder_children, ps)
+                ) = bf_get_existing_files_details(my_tracking_folder, ps)
 
                 print("my_bf_existing_files_name_with_extension: ", my_bf_existing_files_name_with_extension)
                 for file_key, file in my_folder["files"].items():
@@ -2583,6 +2616,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         dataset_structure = soda_json_structure["dataset-structure"]
         tracking_json_structure = ds
 
+        normalize_tracking_folder(tracking_json_structure)
+
         print("\n")
         print("Tracking Structure [ CREATE FOLDER START ]: ", tracking_json_structure)
         print("\n")
@@ -2606,6 +2641,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         print("\n")
 
 
+        return 
         namespace_logger.info("bf_generate_new_dataset step 2 create list of files to be uploaded and handle renaming")
         # 2. Scan the dataset structure and compile a list of files to be uploaded along with desired renaming
         main_curate_progress_message = "Preparing a list of files to upload"
@@ -2613,7 +2649,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             "if-existing-files"
         ]
         list_upload_files = []
-        relative_path = ds["name"]
+        relative_path = ds["content"]["name"]
 
         list_upload_files = recursive_dataset_scan_for_bf(
             dataset_structure,
