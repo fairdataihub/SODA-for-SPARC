@@ -295,7 +295,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           popup: "animate__animated animate__fadeOutUp animate__faster",
         },
 
-        footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-a-pennsieve-account" style="text-decoration: none;">I don't have a Pennsieve account and/or access to the SPARC Consortium Organization</a>`,
+        footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-a-pennsieve-account" style="text-decoration: none;">I don't have a Pennsieve account and/or access to the SPARC Organization</a>`,
 
         didOpen: () => {
           $(".swal-popover").popover();
@@ -336,7 +336,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             if (response[0] == "failed") {
               let error_message = response[1];
               if (response[1]["message"] === "exceptions must derive from BaseException") {
-                error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">It seems that you do not have access to the SPARC Consortium organization on Pennsieve. See our <a target="_blank" href="https://docs.sodaforsparc.io/docs/next/how-to/how-to-get-a-pennsieve-account">[dedicated help page]</a> to learn how to get access</div>`;
+                error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">It seems that you do not have access to the SPARC Organization on Pennsieve. See our <a target="_blank" href="https://docs.sodaforsparc.io/docs/next/how-to/how-to-get-a-pennsieve-account">[dedicated help page]</a> to learn how to get access</div>`;
               }
               if (response[1]["message"] === "Error: Username or password was incorrect.") {
                 error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">Error: Username or password was incorrect</div>`;
@@ -418,7 +418,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
               // If the clicked button is the Guided Mode log in button, refresh the page to update UI
               if (ev.getAttribute("id") === "guided-button-pennsieve-log-in") {
-                traverseToTab("guided-pennsieve-intro-tab");
+                openPage("guided-pennsieve-intro-tab");
               }
             } catch (error) {
               clientError(error);
@@ -699,7 +699,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
                 },
               });
             }
-
             if (dropdownEventID === "dd-select-pennsieve-dataset") {
               $("#ds-name").val(bfDataset);
               $("#ds-description").val = $("#bf-dataset-subtitle").val;

@@ -1164,7 +1164,6 @@ const bfListTeams = document.querySelector("#bf_list_teams");
 const bfListRolesTeam = document.querySelector("#bf_list_roles_team");
 const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-team");
 // Guided mode dropdowns
-const guidedBfListUsersPi = document.querySelector("#guided_bf_list_users_pi");
 const guidedBfListUsersAndTeams = document.querySelector("#guided_bf_list_users_and_teams");
 
 //Pennsieve dataset status
@@ -3782,8 +3781,6 @@ function refreshBfUsersList() {
           bfListUsers.appendChild(optionUser);
           var optionUser2 = optionUser.cloneNode(true);
           bfListUsersPI.appendChild(optionUser2);
-          var optionUser3 = optionUser.cloneNode(true);
-          guidedBfListUsersPi.appendChild(optionUser3);
           var guidedOptionUser = optionUser.cloneNode(true);
           guidedOptionUser.setAttribute("permission-type", "user");
           guidedBfListUsersAndTeams.appendChild(guidedOptionUser);
@@ -6193,6 +6190,106 @@ function sortObjByKeys(object) {
 }
 
 const listItems = async (jsonObj, uiItem, amount_req, reset) => {
+  //allow amount to choose how many elements to create
+  //break elements into sets of 100
+  const rootFolders = ["primary", "source", "derivative"];
+  if (organizeDSglobalPath.id === "guided-input-global-path") {
+    const splitPathCheck = (num, button) => {
+      //based on the paths length we will determine if the back button should be disabled/hidden or not
+      if (splitPath.length > num) {
+        //button should be enabled
+        button.disabled = false;
+        button.style.display = "block";
+      } else {
+        //button should be disabled
+        button.disabled = true;
+        button.style.display = "none";
+      }
+    };
+
+    let currentPageID = CURRENT_PAGE.attr("id");
+    //capsules need to determine if sample or subjects section
+    //subjects initially display two folder levels meanwhile samples will initially only show one folder level
+    let primarySampleCapsule = document.getElementById(
+      "guided-primary-samples-organization-page-capsule"
+    );
+    let primarySubjectCapsule = document.getElementById(
+      "guided-primary-subjects-organization-page-capsule"
+    );
+    let sourceSampleCapsule = document.getElementById(
+      "guided-source-samples-organization-page-capsule"
+    );
+    let sourceSubjectCapsule = document.getElementById(
+      "guided-source-subjects-organization-page-capsule"
+    );
+    let derivativeSampleCapsule = document.getElementById(
+      "guided-derivative-samples-organization-page-capsule"
+    );
+    let derivativeSubjectCapsule = document.getElementById(
+      "guided-derivative-subjects-organization-page-capsule"
+    );
+
+    let datasetPath = document.getElementById("guided-input-global-path");
+    let pathDisplay = document.getElementById("datasetPathDisplay");
+    let fileExplorerBackButton = document.getElementById("guided-button-back");
+    let splitPath = datasetPath.value.split("/");
+    let fullPath = datasetPath.value;
+
+    //remove my_dataset_folder and if any of the ROOT FOLDER names is included
+    if (splitPath[0] === "My_dataset_folder") splitPath.shift();
+    if (rootFolders.includes(splitPath[0])) splitPath.shift();
+    //remove the last element in array is it is always ''
+    splitPath.pop();
+
+    //get 2 last lvls of the folder path
+    let trimmedPath = "";
+    if (currentPageID.includes("primary")) {
+      if (primarySampleCapsule.classList.contains("active")) {
+        splitPathCheck(2, fileExplorerBackButton);
+      }
+      if (primarySubjectCapsule.classList.contains("active")) {
+        splitPathCheck(1, fileExplorerBackButton);
+      }
+    }
+    if (currentPageID.includes("source")) {
+      if (sourceSubjectCapsule.classList.contains("active")) {
+        splitPathCheck(1, fileExplorerBackButton);
+      }
+      if (sourceSampleCapsule.classList.contains("active")) {
+        splitPathCheck(2, fileExplorerBackButton);
+      }
+    }
+    if (currentPageID.includes("derivative")) {
+      //check the active capsule
+      if (derivativeSampleCapsule.classList.contains("active")) {
+        splitPathCheck(2, fileExplorerBackButton);
+      }
+      if (derivativeSubjectCapsule.classList.contains("active")) {
+        splitPathCheck(1, fileExplorerBackButton);
+      }
+    }
+    if (
+      currentPageID.includes("code") ||
+      currentPageID.includes("protocol") ||
+      currentPageID.includes("docs") ||
+      currentPageID.includes("helpers")
+    ) {
+      //for code/protocols/docs we only initially display one folder lvl
+      splitPathCheck(1, fileExplorerBackButton);
+    }
+
+    for (let i = 0; i < splitPath.length; i++) {
+      if (splitPath[i] === "My_dataset_folder" || splitPath[i] === undefined) continue;
+      trimmedPath += splitPath[i] + "/";
+    }
+
+    pathDisplay.innerText = trimmedPath;
+    pathDisplay._tippy.setContent(fullPath);
+
+    //get the path of the dataset when rendering
+    //with the path you can determine whether or not to disable the back button
+  }
+
   var appendString = "";
   var sortedObj = sortObjByKeys(jsonObj);
   let file_elements = [],
@@ -9265,4 +9362,10 @@ documentation_lottie_observer.observe(docu_lottie_section, {
 contact_us_lottie_observer.observe(contact_section, {
   attributes: true,
   attributeFilter: ["class"],
+});
+
+tippy("#datasetPathDisplay", {
+  placement: "top",
+  theme: "soda",
+  maxWidth: "100%",
 });

@@ -1335,27 +1335,29 @@ const helpSPARCAward = async (filetype, curationMode) => {
         }
       }
     } else {
-      Swal.fire({
-        title: "At this moment, SODA is not connected with your Airtable account.",
-        text: "Would you like to connect your Airtable account with SODA?",
-        showCancelButton: true,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        cancelButtonText: `No!`,
-        cancelButtonColor: "#f44336",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "Yes",
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      }).then((boolean) => {
-        if (boolean.isConfirmed) {
-          showAddAirtableAccountSweetalert("submission", curationMode);
-        }
-      });
+      showAddAirtableAccountSweetalert("submission", curationMode);
+      // Swal.fire({
+      //   title:
+      //     "At this moment, SODA is not connected with your Airtable account.",
+      //   text: "Would you like to connect your Airtable account with SODA?",
+      //   showCancelButton: true,
+      //   heightAuto: false,
+      //   backdrop: "rgba(0,0,0, 0.4)",
+      //   cancelButtonText: `No!`,
+      //   cancelButtonColor: "#f44336",
+      //   confirmButtonColor: "#3085d6",
+      //   confirmButtonText: "Yes",
+      //   showClass: {
+      //     popup: "animate__animated animate__zoomIn animate__faster",
+      //   },
+      //   hideClass: {
+      //     popup: "animate__animated animate__zoomOut animate__faster",
+      //   },
+      // }).then((boolean) => {
+      //   if (boolean.isConfirmed) {
+      //     showAddAirtableAccountSweetalert("submission", curationMode);
+      //   }
+      // });
       $("#select-sparc-award-submission-spinner").css("display", "none");
     }
   }

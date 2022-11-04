@@ -5,7 +5,40 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.9.4.0 - 2022-11-02
+
+## Feature additions:
+
+- ORCID ID's are validated when adding contributors in guided mode
+- At the final step in guided mode permissions will be indicated next to the names chosen by the user along with minor text changes.
+- Guided Mode: Added a sidebar to allow users to easily navigate through pages that have already been completed.
+- Guided Mode: Added the ability to progress through the protocol page if the user does not have protocols prepared.
+- Guided Mode: Condensed PI owner selection + dataset permissions into one page to simplify the process for users.
+
+## Bug fixes:
+
+- Airtable keys are validated to ensure the API keys are still valid for use. If not they will be prompted again for an API key when necessary.
+- Guided Mode -> Before getting started page: tool tips were fixed to normalize across the app
+- Free form tool tips normalized with guided mode tool tips
+- SPARC Consortium Organization modified to only say SPARC Organization
+
+## v.9.3.2 - 2022-10-14
+
+## Bug fixes:
+
+- Patched announcements to not cause error on auto update.
+
+## v.9.3.1 - 2022-10-14
+
+## Bug fixes:
+
+- Accounts failing to pass consortium check has been patched.
+- Guided Mode: When Pennsieve link is copied a a notyf was created. Sometimes multiple notyfs were created at once and has been patched to only do so once.
+- Prepare Metadata -> Dataset description -> Edit protocols: Duplicate protocols will not be allowed and when editing a protocol the current name can accepted again.
+- Prepare Metadata -> Dataset description -> Click here to select my dataset from Pennsieve: would hide the page after selecting a dataset. Has been patched to behave accordingly.
+
 ## v.9.3.0 - 2022-10-13
+
 
 ## Feature additions:
 
