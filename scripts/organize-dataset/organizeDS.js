@@ -1716,7 +1716,9 @@ const addFilesfunction = async (
             var nonAllowedDuplicate = false;
             //if there is a filename already imported, we check the path to see if they are the same as well
             if (filePath === currentLocation["files"][importedFileName]["path"]) {
-              if (currentLocation["files"][importedFileName]["action"].includes("renamed") === false) {
+              if (
+                currentLocation["files"][importedFileName]["action"].includes("renamed") === false
+              ) {
                 //they have the same path and the already imported one has not been renamed so ask to rename this one
                 nonAllowedDuplicateFiles.push(filePath);
                 nonAllowedDuplicate = true;
