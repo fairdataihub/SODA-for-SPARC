@@ -1873,10 +1873,10 @@ def bf_get_existing_folders_details(ps_folders):
 
 def bf_get_existing_files_details(ps_folder, ps):
 
-    children = ps_folder["children"]
+    files = ps_folder["children"]["files"]
 
     print("\n")
-    print("Getting file details for folder: ", children)
+    print("Getting file details for folder: ", files)
     double_extensions = [
         ".ome.tiff",
         ".ome.tif",
@@ -1920,16 +1920,17 @@ def bf_get_existing_files_details(ps_folder, ps):
         else:
             return file_name + ("." + extension)
 
-    bf_existing_files = [file_or_folder for file_or_folder in children if children[file_or_folder]['content']["packageType"] != "Collection"]
+    # bf_existing_files = [file_or_folder for file_or_folder in children if children[file_or_folder]['content']["packageType"] != "Collection"]
 
-    bf_existing_files_name = [splitext(file.name)[0] for file in bf_existing_files]
+    bf_existing_files_name = [splitext(files[file]['content']["name"])[0] for file in files]
     bf_existing_files_name_with_extension = []
 
     # determine if we are at the root of the dataset
     # TODO: Find out why value is in here sometimes
-    content = children.get("content", 0) if children.get("content", 0) != 0 else children["value"]["content"]
+    content = ps_folder["content"]
     if (str(content['id'])[2:9]) == "dataset":
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{content['id']}", headers=create_request_headers(ps))
+        # TODO: Update this call. Does not fetch files at the root of the dataset. Moreover maybe just do it at the start of creating the tracking folder.
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{content['id']}", headers=create_request_headers(ps)) 
         r.raise_for_status()
         root_folder = r.json()
         root_children = root_folder["children"]
@@ -1948,26 +1949,26 @@ def bf_get_existing_files_details(ps_folder, ps):
             bf_existing_files_name_with_extension.append(file_name_with_extension)
     else:
         #is collection - aka a folder in the dataset
-        r = requests.get(f"{PENNSIEVE_URL}/packages/{ps_folder['content']['id']}", headers=create_request_headers(ps), json={"include": "files"}) 
-        r.raise_for_status()
-        folder_details = r.json()
-        folder_content = folder_details["children"]
-        for item in folder_content:
+        # r = requests.get(f"{PENNSIEVE_URL}/packages/{ps_folder['content']['id']}", headers=create_request_headers(ps), json={"include": "files"}) 
+        # r.raise_for_status()
+        # folder_details = r.json()
+        # folder_content = folder_details["children"]
+        for file_key, file in files.items():
             file_name_with_extension = ""
-            item_name = item["content"]["name"]
-            item_id = item["content"]["id"]
-            if item_id[2:9] == "package":
-                if "extension" not in folder_content:
-                    file_name_with_extension = verify_file_name(item_name,"")
+            file_name = file["content"]["name"]
+            file_id = file["content"]["id"]
+            if file_id[2:9] == "package":
+                if "extension" not in file:
+                    file_name_with_extension = verify_file_name(file_name,"")
                 else:
-                    file_name_with_extension = verify_file_name(item_name, folder_content["extension"])
+                    file_name_with_extension = verify_file_name(file_name, file["extension"])
             if file_name_with_extension == "":
                 continue
             bf_existing_files_name_with_extension.append(file_name_with_extension)
 
 
     return (
-        bf_existing_files,
+        #bf_existing_files,
         bf_existing_files_name,
         bf_existing_files_name_with_extension,
     )
@@ -2417,18 +2418,18 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             
 
             if "folders" in my_folder.keys():
-                (
-                    my_bf_existing_folders,
-                    my_bf_existing_folders_name,
-                ) = bf_get_existing_folders_details(ps_folder_children)
+                # (
+                #     my_bf_existing_folders,
+                #     my_bf_existing_folders_name,
+                # ) = bf_get_existing_folders_details(ps_folder_children)
 
                 for folder_key, folder in my_folder["folders"].items():
                     relative_path = generate_relative_path(my_relative_path, folder_key)
 
-                    if existing_folder_option == "skip" and folder_key not in my_tracking_folder["children"].keys():
+                    if existing_folder_option == "skip" and folder_key not in my_tracking_folder["children"]["folders"]:
                         continue
 
-                    tracking_folder = ps_folder_children[folder_key]
+                    tracking_folder = ps_folder_children["folders"][folder_key]
                     list_upload_files = recursive_dataset_scan_for_bf(
                         folder,
                         tracking_folder,
@@ -2441,7 +2442,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
                 # delete files to be deleted
                 (
-                    my_bf_existing_files,
+                   # my_bf_existing_files,
                     my_bf_existing_files_name,
                     my_bf_existing_files_name_with_extension,
                 ) = bf_get_existing_files_details(my_tracking_folder, ps)
@@ -2455,157 +2456,154 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         print("\n")
                         print("THIS PLACE HERE:", my_bf_existing_files_name_with_extension)
                         print("\n")
-                        if isfile(file_path) and existing_file_option == "replace" and file_key in my_bf_existing_files_name_with_extension:
-                            index_file = (
-                                my_bf_existing_files_name_with_extension.index(
-                                    file_key
-                                )
-                            )
-                            my_file = my_bf_existing_files[index_file]
+                        if isfile(file_path) and existing_file_option == "replace" and file_key in ps_folder_children["files"]:
+                            print("WILL REPLACE THE SUBJECTS FILE HOPEFULLY")
+                            my_file = ps_folder_children["files"][file_key]
                             print("\n")
                             print("MY_FILE:" , my_file)
                             print("\n")
                             # delete the package ( aka file ) from the dataset 
-                            r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": f"{[my_file['id']]}"})
+                            r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": f"{[my_file['content']['id']]}"})
                             r.raise_for_status()
+                            print("REMOVED THE EXISTING SUBJECTS FILE FROM NESTED")
 
 
-                # create list of files to be uploaded with projected and desired names saved
-                (
-                    my_bf_existing_files,
-                    my_bf_existing_files_name,
-                    my_bf_existing_files_name_with_extension,
-                ) = bf_get_existing_files_details(my_tracking_folder, ps)
+                # # create list of files to be uploaded with projected and desired names saved
+                # (
+                #     my_bf_existing_files,
+                #     my_bf_existing_files_name,
+                #     my_bf_existing_files_name_with_extension,
+                # ) = bf_get_existing_files_details(my_tracking_folder, ps)
 
-                list_local_files = []
-                list_projected_names = []
-                list_desired_names = []
-                list_final_names = []
-                additional_upload_lists = []
-                additional_list_count = 0
-                list_upload_schedule_projected_names = []
-                list_initial_names = []
-                for file_key, file in my_folder["files"].items():
-                    if file["type"] == "local":
-                        file_path = file["path"]
-                        if isfile(file_path):
-                            initial_name = splitext(basename(file_path))[0]
-                            initial_extension = splitext(basename(file_path))[1]
-                            initial_name_with_extension = basename(file_path)
-                            desired_name = splitext(file_key)[0]
-                            desired_name_extension = splitext(file_key)[1]
-                            desired_name_with_extension = file_key
-                            if existing_file_option == "skip" and desired_name_with_extension in my_bf_existing_files_name_with_extension:
-                                continue
+                # list_local_files = []
+                # list_projected_names = []
+                # list_desired_names = []
+                # list_final_names = []
+                # additional_upload_lists = []
+                # additional_list_count = 0
+                # list_upload_schedule_projected_names = []
+                # list_initial_names = []
+                # for file_key, file in my_folder["files"].items():
+                #     if file["type"] == "local":
+                #         file_path = file["path"]
+                #         if isfile(file_path):
+                #             initial_name = splitext(basename(file_path))[0]
+                #             initial_extension = splitext(basename(file_path))[1]
+                #             initial_name_with_extension = basename(file_path)
+                #             desired_name = splitext(file_key)[0]
+                #             desired_name_extension = splitext(file_key)[1]
+                #             desired_name_with_extension = file_key
+                #             if existing_file_option == "skip" and desired_name_with_extension in my_bf_existing_files_name_with_extension:
+                #                 continue
 
-                            # check if initial filename exists on Pennsieve dataset and get the projected name of the file after upload
-                            count_done = 0
-                            count_exist = 0
-                            projected_name = initial_name_with_extension
-                            while count_done == 0:
-                                if (
-                                    projected_name
-                                    in my_bf_existing_files_name_with_extension
-                                ):
-                                    count_exist += 1
-                                    projected_name = (
-                                        initial_name
-                                        + " ("
-                                        + str(count_exist)
-                                        + ")"
-                                        + initial_extension
-                                    )
-                                else:
-                                    count_done = 1
+                #             # check if initial filename exists on Pennsieve dataset and get the projected name of the file after upload
+                #             count_done = 0
+                #             count_exist = 0
+                #             projected_name = initial_name_with_extension
+                #             while count_done == 0:
+                #                 if (
+                #                     projected_name
+                #                     in my_bf_existing_files_name_with_extension
+                #                 ):
+                #                     count_exist += 1
+                #                     projected_name = (
+                #                         initial_name
+                #                         + " ("
+                #                         + str(count_exist)
+                #                         + ")"
+                #                         + initial_extension
+                #                     )
+                #                 else:
+                #                     count_done = 1
 
-                            # expected final name
-                            count_done = 0
-                            final_name = desired_name_with_extension
-                            if output := get_base_file_name(desired_name):
-                                base_name = output[0]
-                                count_exist = output[1]
-                                while count_done == 0:
-                                    if final_name in my_bf_existing_files_name:
-                                        count_exist += 1
-                                        final_name = (
-                                            base_name
-                                            + "("
-                                            + str(count_exist)
-                                            + ")"
-                                            + desired_name_extension
-                                        )
-                                    else:
-                                        count_done = 1
-                            else:
-                                count_exist = 0
-                                while count_done == 0:
-                                    if final_name in my_bf_existing_files_name:
-                                        count_exist += 1
-                                        final_name = (
-                                            desired_name
-                                            + " ("
-                                            + str(count_exist)
-                                            + ")"
-                                            + desired_name_extension
-                                        )
-                                    else:
-                                        count_done = 1
+                #             # expected final name
+                #             count_done = 0
+                #             final_name = desired_name_with_extension
+                #             if output := get_base_file_name(desired_name):
+                #                 base_name = output[0]
+                #                 count_exist = output[1]
+                #                 while count_done == 0:
+                #                     if final_name in my_bf_existing_files_name:
+                #                         count_exist += 1
+                #                         final_name = (
+                #                             base_name
+                #                             + "("
+                #                             + str(count_exist)
+                #                             + ")"
+                #                             + desired_name_extension
+                #                         )
+                #                     else:
+                #                         count_done = 1
+                #             else:
+                #                 count_exist = 0
+                #                 while count_done == 0:
+                #                     if final_name in my_bf_existing_files_name:
+                #                         count_exist += 1
+                #                         final_name = (
+                #                             desired_name
+                #                             + " ("
+                #                             + str(count_exist)
+                #                             + ")"
+                #                             + desired_name_extension
+                #                         )
+                #                     else:
+                #                         count_done = 1
 
-                            # save in list accordingly
-                            if (
-                                initial_name in list_initial_names
-                                or initial_name in list_final_names
-                                or projected_name in list_final_names
-                                or final_name in list_projected_names
-                            ):
-                                additional_upload_lists.append(
-                                    [
-                                        [file_path],
-                                        ps_folder_children,
-                                        [projected_name],
-                                        [desired_name],
-                                        [final_name],
-                                        my_tracking_folder,
-                                        my_relative_path,
-                                    ]
-                                )
-                            else:
-                                print("Adding to list_local_files")
-                                list_local_files.append(file_path)
-                                list_projected_names.append(projected_name)
-                                list_desired_names.append(desired_name_with_extension)
-                                list_final_names.append(final_name)
-                                list_initial_names.append(initial_name)
+                #             # save in list accordingly
+                #             if (
+                #                 initial_name in list_initial_names
+                #                 or initial_name in list_final_names
+                #                 or projected_name in list_final_names
+                #                 or final_name in list_projected_names
+                #             ):
+                #                 additional_upload_lists.append(
+                #                     [
+                #                         [file_path],
+                #                         ps_folder_children,
+                #                         [projected_name],
+                #                         [desired_name],
+                #                         [final_name],
+                #                         my_tracking_folder,
+                #                         my_relative_path,
+                #                     ]
+                #                 )
+                #             else:
+                #                 print("Adding to list_local_files")
+                #                 list_local_files.append(file_path)
+                #                 list_projected_names.append(projected_name)
+                #                 list_desired_names.append(desired_name_with_extension)
+                #                 list_final_names.append(final_name)
+                #                 list_initial_names.append(initial_name)
 
-                            my_bf_existing_files_name.append(final_name)
-                            if initial_extension in bf_recognized_file_extensions:
-                                my_bf_existing_files_name_with_extension.append(
-                                    final_name
-                                )
-                            else:
-                                my_bf_existing_files_name_with_extension.append(
-                                    final_name + initial_extension
-                                )
+                #             my_bf_existing_files_name.append(final_name)
+                #             if initial_extension in bf_recognized_file_extensions:
+                #                 my_bf_existing_files_name_with_extension.append(
+                #                     final_name
+                #                 )
+                #             else:
+                #                 my_bf_existing_files_name_with_extension.append(
+                #                     final_name + initial_extension
+                #                 )
 
-                            # add to projected dataset size to be generated
-                            main_total_generate_dataset_size += getsize(file_path)
+                #             # add to projected dataset size to be generated
+                #             main_total_generate_dataset_size += getsize(file_path)
 
-                if list_local_files:
-                    print("Here thats why")
-                    list_upload_files.append(
-                        [
-                            list_local_files,
-                            ps_folder_children,
-                            list_projected_names,
-                            list_desired_names,
-                            list_final_names,
-                            my_tracking_folder,
-                            my_relative_path,
-                        ]
-                    )
+                # if list_local_files:
+                #     print("Here thats why")
+                #     list_upload_files.append(
+                #         [
+                #             list_local_files,
+                #             ps_folder_children,
+                #             list_projected_names,
+                #             list_desired_names,
+                #             list_final_names,
+                #             my_tracking_folder,
+                #             my_relative_path,
+                #         ]
+                #     )
 
-                for item in additional_upload_lists:
-                    list_upload_files.append(item)
+                # for item in additional_upload_lists:
+                #     list_upload_files.append(item)
 
             return list_upload_files
 
@@ -2641,7 +2639,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         print("\n")
 
 
-        return 
         namespace_logger.info("bf_generate_new_dataset step 2 create list of files to be uploaded and handle renaming")
         # 2. Scan the dataset structure and compile a list of files to be uploaded along with desired renaming
         main_curate_progress_message = "Preparing a list of files to upload"
@@ -2658,6 +2655,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             list_upload_files,
             relative_path,
         )
+
+        return 
 
         print("[ END ]: ", list_upload_files)
 
