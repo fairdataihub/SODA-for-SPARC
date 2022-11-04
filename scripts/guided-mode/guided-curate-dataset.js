@@ -444,78 +444,31 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
     }
-    if (pageBeingLeftID === "guided-designate-pi-owner-tab") {
-      const designateSelfButton = document.getElementById("guided-button-designate-self-PI");
-      const designateOtherButton = document.getElementById("guided-button-designate-other-PI");
+
+    if (pageBeingLeftID === "guided-designate-permissions-tab") {
+      const buttonYesAddAdditionalPermissions = document.getElementById(
+        "guided-button-add-additional-permissions"
+      );
+      const buttonNoNoAdditionalPermissions = document.getElementById(
+        "guided-button-no-additional-permissions"
+      );
+
       if (
-        !designateSelfButton.classList.contains("selected") &&
-        !designateOtherButton.classList.contains("selected")
+        !buttonYesAddAdditionalPermissions.classList.contains("selected") &&
+        !buttonNoNoAdditionalPermissions.classList.contains("selected")
       ) {
         errorArray.push({
           type: "notyf",
-          message: "Please designate a PI",
+          message:
+            "Please indicate if you would like to add additional Pennsieve permissions to your dataset",
         });
         throw errorArray;
       }
 
-      //Get the user information of the user that is currently curating
-      //If they designate themself as the PI, set them as the PI
-      //If they designate someone else as the PI, set them as a manager
-      const user = await api.getUserInformation();
-
-      const loggedInUserString = `${user["firstName"]} ${user["lastName"]} (${user["email"]})`;
-      const loggedInUserUUID = user["id"];
-      const loggedInUserName = `${user["firstName"]} ${user["lastName"]}`;
-
-      if (designateSelfButton.classList.contains("selected")) {
-        const loggedInUserPiObj = {
-          userString: loggedInUserString,
-          UUID: loggedInUserUUID,
-          name: loggedInUserName,
-        };
-        setGuidedDatasetPiOwner(loggedInUserPiObj);
-      }
-
-      if (designateOtherButton.classList.contains("selected")) {
-        let PiOwnerString = $("#guided_bf_list_users_pi option:selected").text().trim();
-
-        if (!$("#guided_bf_list_users_pi").val() || PiOwnerString === "Select PI") {
-          errorArray.push({
-            type: "notyf",
-            message: "Please select a PI from the dropdown",
-          });
-          throw errorArray;
-        }
-
-        // get the text before the email address from the selected dropdown
-        let PiName = PiOwnerString.split("(")[0];
-        if (PiName === "") {
-          PiName = PiOwnerString;
-        }
-        let PiUUID = $("#guided_bf_list_users_pi").val().trim();
-
-        const newPiOwner = {
-          userString: PiOwnerString,
-          UUID: PiUUID,
-          name: PiName,
-        };
-
-        if (PiUUID === loggedInUserUUID) {
-          setGuidedDatasetPiOwner(newPiOwner);
-        } else {
-          setGuidedDatasetPiOwner(newPiOwner);
-
-          //set the logged in user as a manager
-          const loggedInUserManagerObj = {
-            userString: loggedInUserString,
-            userName: loggedInUserName,
-            UUID: loggedInUserUUID,
-            permission: "manager",
-            loggedInUser: true,
-          };
-
-          guidedAddUserPermission(loggedInUserManagerObj);
-        }
+      if (buttonNoNoAdditionalPermissions.classList.contains("selected")) {
+        //If the user had added additional permissions, remove them
+        sodaJSONObj["digital-metadata"]["user-permissions"] = [];
+        sodaJSONObj["digital-metadata"]["team-permissions"] = [];
       }
     }
 
@@ -558,6 +511,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         };
       }
     }
+
     if (pageBeingLeftID === "guided-add-tags-tab") {
       let datasetTags = getTagsFromTagifyElement(guidedDatasetTagsTagify);
       //remove duplicates from datasetTags
@@ -566,15 +520,15 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-assign-license-tab") {
-      if (isPageValid(pageBeingLeftID)) {
-        setGuidedLicense("Creative Commons Attribution (CC-BY)");
-      } else {
+      const licenseCheckbox = document.getElementById("guided-license-checkbox");
+      if (!licenseCheckbox.checked) {
         errorArray.push({
           type: "notyf",
           message: "Please accept the application of the CC-BY license to your dataset.",
         });
         throw errorArray;
       }
+      setGuidedLicense("Creative Commons Attribution (CC-BY)");
     }
     if (pageBeingLeftID === "guided-dataset-generate-location-tab") {
       const buttonGenerateLocally = document.getElementById(
@@ -677,6 +631,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
       }
 
+      /*
       // Notify the user of empty pages since this is the last page they can structure their dataset
       const emptyFilesFoldersResponse = await client.post(
         `/curate_datasets/empty_files_and_folders`,
@@ -720,7 +675,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           });
           throw errorArray;
         }
-      }
+      }*/
     }
     if (pageBeingLeftID === "guided-manifest-file-generation-tab") {
       const buttonYesAutoGenerateManifestFiles = document.getElementById(
@@ -904,6 +859,16 @@ const getNonSkippedGuidedModePages = (parentElementToGetChildrenPagesFrom) => {
 
 const renderSideBar = (activePage) => {
   const guidedNavItemsContainer = document.getElementById("guided-nav-items");
+  const guidedPageNavigationHeader = document.getElementById("guided-page-navigation-header");
+
+  if (activePage === "guided-dataset-dissemination-tab") {
+    //Hide the side bar navigawtion and navigation header
+    guidedPageNavigationHeader.classList.add("hidden");
+    guidedNavItemsContainer.innerHTML = ``;
+    return;
+  }
+  //Show the page navigation header if it had been previously hidden
+  guidedPageNavigationHeader.classList.remove("hidden");
 
   const completedTabs = sodaJSONObj["completed-tabs"];
   const skippedPages = sodaJSONObj["skipped-pages"];
@@ -999,6 +964,9 @@ const renderSideBar = (activePage) => {
     guidedNavBarSectionPage.addEventListener("click", async (event) => {
       const currentPageUserIsLeaving = CURRENT_PAGE.attr("id");
       const pageToNavigateTo = guidedNavBarSectionPage.getAttribute("data-target-page");
+      const pageToNaviatetoName = document
+        .getElementById(pageToNavigateTo)
+        .getAttribute("data-page-name");
 
       // Do nothing if the user clicks the tab of the page they are currently on
       if (currentPageUserIsLeaving === pageToNavigateTo) {
@@ -1023,23 +991,23 @@ const renderSideBar = (activePage) => {
           try {
             await checkIfPageIsValid(page);
           } catch (error) {
-            console.log(error);
+            const pageWithErrorName = document.getElementById(page).getAttribute("data-page-name");
             await openPage(page);
             await Swal.fire({
-              title: "An error occurred on an intermediary page",
-              html: `You must fix the following errors before continuing:
+              title: `An error occured on an intermediate page: ${pageWithErrorName}`,
+              html: `Please address the issues before continuing to ${pageToNaviatetoName}:
                 <br />
                 <br />
                 <ul>
                   ${error.map((error) => `<li class="text-left">${error.message}</li>`).join("")}
                 </ul>
               `,
-              icon: "error",
+              icon: "info",
               confirmButtonText: "Fix the errors on this page",
               focusConfirm: true,
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
-              width: 500,
+              width: 700,
             });
             return;
           }
@@ -2849,15 +2817,13 @@ const openPage = async (targetPageID) => {
     //Note: if other nav bar needs to be shown, it will be handled later in this function
     hideSubNavAndShowMainNav(false);
 
-    if (targetPageID === "guided-designate-pi-owner-tab") {
-      $("#guided_bf_list_users_pi").selectpicker("refresh");
-
-      const PiOwnerUUID = sodaJSONObj["digital-metadata"]["pi-owner"]["UUID"];
-
-      if (PiOwnerUUID) {
-        $("#guided_bf_list_users_pi").val(sodaJSONObj["digital-metadata"]["pi-owner"]["UUID"]);
-        $("#guided_bf_list_users_pi").selectpicker("refresh");
-      }
+    //Hide the high level progress steps and green pills if the user is on the before getting started page
+    if (targetPageID === "guided-prepare-helpers-tab") {
+      document.getElementById("structure-dataset-capsule-container").classList.add("hidden");
+      document.querySelector(".guided--progression-tab-container").classList.add("hidden");
+    } else {
+      document.getElementById("structure-dataset-capsule-container").classList.remove("hidden");
+      document.querySelector(".guided--progression-tab-container").classList.remove("hidden");
     }
 
     if (
@@ -3268,6 +3234,20 @@ const openPage = async (targetPageID) => {
       }
     }
     if (targetPageID === "guided-designate-permissions-tab") {
+      //Get the user information of the user that is currently curating
+      const user = await api.getUserInformation();
+
+      const loggedInUserString = `${user["firstName"]} ${user["lastName"]} (${user["email"]})`;
+      const loggedInUserUUID = user["id"];
+      const loggedInUserName = `${user["firstName"]} ${user["lastName"]}`;
+
+      const loggedInUserPiObj = {
+        userString: loggedInUserString,
+        UUID: loggedInUserUUID,
+        name: loggedInUserName,
+      };
+      setGuidedDatasetPiOwner(loggedInUserPiObj);
+
       renderPermissionsTable();
       guidedResetUserTeamPermissionsDropdowns();
     }
@@ -4328,31 +4308,6 @@ const validateInput = (inputElementToValidate) => {
 /////////////////////////////////////////////////////////
 //////////       GUIDED FORM VALIDATORS       ///////////
 /////////////////////////////////////////////////////////
-
-const isPageValid = (pageID) => {
-  if (pageID === "guided-designate-pi-owner-tab") {
-    const designateSelfButton = document.getElementById("guided-button-designate-self-PI");
-    const designateOtherButton = document.getElementById("guided-button-designate-other-PI");
-
-    if (designateSelfButton.classList.contains("selected")) {
-      return true;
-    }
-    if (designateOtherButton.classList.contains("selected")) {
-      if ($("#guided_bf_list_users_pi option:selected").text().trim() !== "Select PI") {
-        return true;
-      }
-    }
-    //return false if neither button is selected
-    return false;
-  }
-  if (pageID === "guided-assign-license-tab") {
-    const licenseCheckbox = document.getElementById("guided-license-checkbox");
-    if (licenseCheckbox.checked) {
-      return true;
-    }
-    return false;
-  }
-};
 
 const openEditGuidedDatasetSwal = async (datasetName) => {
   swal.fire({
@@ -7991,8 +7946,7 @@ const removePermission = (clickedPermissionRemoveButton) => {
     notyf.open({
       duration: "6000",
       type: "error",
-      message:
-        "You can not modify the owner on this step. To do so, please return to the owner selection page",
+      message: "You can not remove yourself as the owner of this dataset",
     });
     return;
   }
@@ -8050,6 +8004,7 @@ const renderPermissionsTable = () => {
   const users = sodaJSONObj["digital-metadata"]["user-permissions"];
   const teams = sodaJSONObj["digital-metadata"]["team-permissions"];
   permissionsTableElements.push(createPermissionsTableRowElement("owner", owner, "owner"));
+
   for (user of users) {
     permissionsTableElements.push(
       createPermissionsTableRowElement(
@@ -8381,13 +8336,6 @@ const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
   sodaJSONObj["digital-metadata"]["pi-owner"]["userString"] = newPiOwnerObj.userString;
   sodaJSONObj["digital-metadata"]["pi-owner"]["UUID"] = newPiOwnerObj.UUID;
   sodaJSONObj["digital-metadata"]["pi-owner"]["name"] = newPiOwnerObj.name;
-
-  //Remove any old permissions the owner may have had
-  const currentUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
-  const filteredUsers = currentUsers.filter((user) => {
-    return !(user.UUID == newPiOwnerObj.UUID);
-  });
-  sodaJSONObj["digital-metadata"]["user-permissions"] = filteredUsers;
 };
 
 const guidedAddUserPermission = (newUserPermissionObj) => {
