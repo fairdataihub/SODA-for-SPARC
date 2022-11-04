@@ -29,6 +29,12 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
 
+    const getGuidedProgressFileNames = () => {
+      return fs
+        .readdirSync(guidedProgressFilePath)
+        .map((progressFileName) => progressFileName.replace(".json", ""));
+    };
+
     const updateGuidedDatasetName = (newDatasetName) => {
       const previousDatasetName = sodaJSONObj["digital-metadata"]["name"];
 
@@ -52,8 +58,6 @@ const savePageChanges = async (pageBeingLeftID) => {
     };
 
     if (pageBeingLeftID === "guided-name-subtitle-tab") {
-      const currentDatasetName = sodaJSONObj["digital-metadata"]["name"];
-
       let datasetNameInput = document.getElementById("guided-dataset-name-input").value.trim();
       let datasetSubtitleInput = document
         .getElementById("guided-dataset-subtitle-input")
@@ -75,28 +79,36 @@ const savePageChanges = async (pageBeingLeftID) => {
       if (errorArray.length > 0) {
         throw errorArray;
       }
+      const currentDatasetName = sodaJSONObj["digital-metadata"]["name"];
 
-      //check if dataset name is already in use
-      const existingProgressNames = fs
-        .readdirSync(guidedProgressFilePath)
-        .map((progressFileName) => progressFileName.remplate(".json", ""));
-
-      if (existingProgressNames.includes(datasetNameInput)) {
-        errorArray.push({
-          type: "notyf",
-          message:
-            "An existing progress file already exists with that name. Please choose a different name.",
-        });
-        throw errorArray;
+      if (currentDatasetName) {
+        // Update the progress file path name and banner image path if needed
+        if (datasetNameInput !== currentDatasetName) {
+          const currentProgressFileNames = getGuidedProgressFileNames();
+          if (currentProgressFileNames.includes(datasetNameInput)) {
+            errorArray.push({
+              type: "notyf",
+              message: `Unable to change dataset name to: ${datasetNameInput}. A dataset with that name already exists.`,
+            });
+            throw errorArray;
+          }
+          updateGuidedDatasetName(datasetNameInput);
+          sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
+        } else {
+          sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
+        }
+      } else {
+        const currentProgressFileNames = getGuidedProgressFileNames();
+        if (currentProgressFileNames.includes(datasetNameInput)) {
+          errorArray.push({
+            type: "notyf",
+            message: `A progress file already exists for the dataset: ${datasetNameInput}. Please enter a different dataset name.`,
+          });
+          throw errorArray;
+        }
+        sodaJSONObj["digital-metadata"]["name"] = datasetNameInput;
+        sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
       }
-
-      // Update the progress file path name and banner image path if needed
-      if (currentDatasetName && datasetNameInput !== currentDatasetName) {
-        updateGuidedDatasetName(datasetNameInput);
-      }
-
-      sodaJSONObj["digital-metadata"]["name"] = datasetNameInput;
-      sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
     }
 
     if (pageBeingLeftID === "guided-prepare-helpers-tab") {
