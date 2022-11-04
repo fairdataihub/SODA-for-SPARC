@@ -1623,7 +1623,6 @@ const addFilesfunction = async (
 
     //Check for nonallowed characters
     let warningCharacterBool = warningCharacterCheck(fileName);
-    // let regex = /[\+&\%#]/i;
     if (warningCharacterBool === true) {
       nonAllowedCharacterFiles.push(filePath);
       continue;
@@ -1685,48 +1684,49 @@ const addFilesfunction = async (
         JSON.stringify(currentLocation["files"]) === "{}" &&
         JSON.stringify(filesToImport) === "{}"
       ) {
-        //regular files object key with path, and basename
+        //if importing into a empty folder that json structure will be {}, thus import
         filesToImport[fileName] = {
           path: filePath,
           basename: fileName,
         };
       } else {
-        //check file name in key of regular files (search for duplicate)
+        //check if file name in key of filesToImport (search for duplicate)
         if (fileName in filesToImport) {
           nonAllowedDuplicateFiles.push(filePath);
           nonAllowedDuplicate = true;
           continue;
         } else {
-          //search for duplicate in currentlocation[files]
+          //search for duplicate already imported files within current folder location
           if (fileName in currentLocation["files"]) {
             nonAllowedDuplicateFiles.push(filePath);
             nonAllowedDuplicate = true;
             continue;
           } else {
-            //not in there or regular files so store?
+            //no duplicates and no problems with filename, thus import
             filesToImport[fileName] = {
               path: filePath,
               basename: fileName,
             };
           }
         }
-        for (const objectKey in currentLocation["files"]) {
+        for (const importedFileName in currentLocation["files"]) {
           //tries finding duplicates with the same path
-          if (objectKey != undefined) {
+          //filename will be undefined when no files have been imported to the current folder location
+          if (importedFileName != undefined) {
             var nonAllowedDuplicate = false;
-            //if file already exist in json
-            if (filePath === currentLocation["files"][objectKey]["path"]) {
-              if (currentLocation["files"][objectKey]["action"].includes("renamed") === false) {
-                //same path and has not been renamed
+            //if there is a filename already imported, we check the path to see if they are the same as well
+            if (filePath === currentLocation["files"][importedFileName]["path"]) {
+              if (currentLocation["files"][importedFileName]["action"].includes("renamed") === false) {
+                //they have the same path and the already imported one has not been renamed so ask to rename this one
                 nonAllowedDuplicateFiles.push(filePath);
                 nonAllowedDuplicate = true;
                 continue;
               }
             } else {
-              //file path and object key path arent the same
+              //file path and already imported filename path arent the same
               //check if the file name are the same
               //if so consider it as a duplicate
-              if (fileName === objectKey) {
+              if (fileName === importedFileName) {
                 nonAllowedDuplicateFiles.push(filePath);
                 nonAllowedDuplicate = true;
                 continue;
@@ -1744,6 +1744,7 @@ const addFilesfunction = async (
     }
   }
 
+  //after iterating through all the files handle problem files through alerts
   if (doubleExtension.length > 0) {
     if (loadingContainer != undefined) {
       loadingContainer.style.display = "none";
