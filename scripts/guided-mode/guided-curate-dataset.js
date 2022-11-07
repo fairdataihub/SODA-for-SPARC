@@ -12048,7 +12048,9 @@ $(document).ready(async () => {
   const guidedDatasetKeyWordsInput = document.getElementById("guided-ds-dataset-keywords");
   guidedDatasetKeywordsTagify = new Tagify(guidedDatasetKeyWordsInput, {
     duplicates: false,
+    maxTags: 5,
   });
+
   createDragSort(guidedDatasetKeywordsTagify);
 
   const guidedStudyApproachInput = document.getElementById("guided-ds-study-approach");
