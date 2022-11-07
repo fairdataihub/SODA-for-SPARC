@@ -11380,7 +11380,7 @@ $(document).ready(async () => {
   /**************************************/
   $("#guided-save-banner-image").click(async (event) => {
     $("#guided-para-dataset-banner-image-status").html("");
-    
+
     if (guidedBfViewImportedImage.src.length > 0) {
       if (guidedFormBannerHeight.value > 511) {
         Swal.fire({

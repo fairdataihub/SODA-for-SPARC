@@ -169,10 +169,16 @@ const metadataFileExtensionObject = {
   code_description: [".xlsx"],
   code_parameters: [".xlsx", ".csv", ".tsv", ".json"],
   data_deliverable: [".docx", ".doc"],
-  bannerImage: [".png", ".PNG", ".jpeg", ".JPEG", ".tiff"]
+  bannerImage: [".png", ".PNG", ".jpeg", ".JPEG", ".tiff"],
 };
 
-const dropHandler = async (ev, paraElement, metadataFile, curationMode, dataDeliverables = false) => {
+const dropHandler = async (
+  ev,
+  paraElement,
+  metadataFile,
+  curationMode,
+  dataDeliverables = false
+) => {
   var gettingStartedSection = false;
   if (curationMode === "guided-getting-started") {
     curationMode = "guided";
@@ -191,7 +197,7 @@ const dropHandler = async (ev, paraElement, metadataFile, curationMode, dataDeli
       var file = ev.dataTransfer.items[0].getAsFile();
       var metadataWithoutExtension = file.name.slice(0, file.name.indexOf("."));
       var extension = file.name.slice(file.name.indexOf("."));
-      if(ev.dataTransfer.items[0].type.includes("image")) {
+      if (ev.dataTransfer.items[0].type.includes("image")) {
         //banner image here
         let path = [file.path];
         if (path.length > 0) {
@@ -202,10 +208,13 @@ const dropHandler = async (ev, paraElement, metadataFile, curationMode, dataDeli
             "SODA",
             "banner-image-conversion"
           );
-          let converted_image_file = require("path").join(destination_image_path, "converted-tiff.jpg");
+          let converted_image_file = require("path").join(
+            destination_image_path,
+            "converted-tiff.jpg"
+          );
           let conversion_success = true;
           imageExtension = path[0].split(".").pop();
-    
+
           if (imageExtension.toLowerCase() == "tiff") {
             Swal.fire({
               title: "Image conversion in progress!",
@@ -222,13 +231,13 @@ const dropHandler = async (ev, paraElement, metadataFile, curationMode, dataDeli
                 Swal.showLoading();
               },
             });
-    
+
             await Jimp.read(original_image_path)
               .then(async (file) => {
                 if (!fs.existsSync(destination_image_path)) {
                   fs.mkdirSync(destination_image_path, { recursive: true });
                 }
-    
+
                 try {
                   if (fs.existsSync(converted_image_file)) {
                     fs.unlinkSync(converted_image_file);
@@ -237,22 +246,23 @@ const dropHandler = async (ev, paraElement, metadataFile, curationMode, dataDeli
                   conversion_success = false;
                   console.error(err);
                 }
-    
+
                 return file.write(converted_image_file, async () => {
                   if (fs.existsSync(converted_image_file)) {
                     let stats = fs.statSync(converted_image_file);
                     let fileSizeInBytes = stats.size;
                     let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
-    
+
                     if (fileSizeInMegabytes > 5) {
                       fs.unlinkSync(converted_image_file);
-    
+
                       await Jimp.read(original_image_path)
                         .then((file) => {
                           return file.resize(1024, 1024).write(converted_image_file, () => {
-                            document.getElementById("div-img-container-holder").style.display = "none";
+                            document.getElementById("div-img-container-holder").style.display =
+                              "none";
                             document.getElementById("div-img-container").style.display = "block";
-    
+
                             $("#para-path-image").html(image_path);
                             guidedBfViewImportedImage.src = converted_image_file;
                             myCropper.destroy();
@@ -269,7 +279,7 @@ const dropHandler = async (ev, paraElement, metadataFile, curationMode, dataDeli
                         let stats = fs.statSync(converted_image_file);
                         let fileSizeInBytes = stats.size;
                         let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
-    
+
                         if (fileSizeInMegabytes > 5) {
                           conversion_success = false;
                           // SHOW ERROR
@@ -306,12 +316,12 @@ const dropHandler = async (ev, paraElement, metadataFile, curationMode, dataDeli
           } else {
             document.getElementById("guided-div-img-container-holder").style.display = "none";
             document.getElementById("guided-div-img-container").style.display = "block";
-    
+
             $("#guided-para-path-image").html(image_path);
             guidedBfViewImportedImage.src = image_path;
             myCropper.destroy();
             myCropper = new Cropper(guidedBfViewImportedImage, guidedCropOptions);
-    
+
             $("#guided-save-banner-image").css("visibility", "visible");
           }
         }
@@ -505,7 +515,7 @@ const dropHandler = async (ev, paraElement, metadataFile, curationMode, dataDeli
         "<span style='color:red'>Please only drag and drop a file!</span>";
     }
   }
-}
+};
 
 const checkAvailableSpace = () => {
   const roundToHundredth = (value) => {
