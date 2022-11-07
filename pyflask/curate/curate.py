@@ -2463,7 +2463,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                             print("MY_FILE:" , my_file)
                             print("\n")
                             # delete the package ( aka file ) from the dataset 
-                            r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": f"{[my_file['content']['id']]}"})
+                            r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [f"{my_file['content']['id']}"]})
                             r.raise_for_status()
                             print("REMOVED THE EXISTING SUBJECTS FILE FROM NESTED")
 
