@@ -1317,30 +1317,62 @@ for (const infoDropdown of Array.from(infoDropdowns)) {
   });
 }
 
-const guidedSaveAndExit = async (exitPoint) => {
-  if (exitPoint === "main-nav" || exitPoint === "sub-nav") {
-    const { value: returnToGuidedHomeScreen } = await Swal.fire({
-      title: "Are you sure?",
-      text: `Exiting Guided Mode will discard any changes you have made on the
+const guidedSaveAndExit = async () => {
+  if (!sodaJSONObj["digital-metadata"]["name"]) {
+    // If a progress file has not been created, then we don't need to save anything
+    guidedTransitionToHome();
+    return;
+  }
+  const { value: returnToGuidedHomeScreen } = await Swal.fire({
+    title: "Are you sure?",
+    text: `Exiting Guided Mode will discard any changes you have made on the
       current page. You will be taken back to the homescreen, where you will be able
       to continue the current dataset you are curating which will be located under datasets
       in progress.`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Exit guided mode",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0,0.4)",
-    });
-    if (returnToGuidedHomeScreen) {
-      guidedUnLockSideBar();
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-      openPage("guided-prepare-helpers-tab");
-      hideSubNavAndShowMainNav("back");
-      $("#guided-button-dataset-intro-back").click();
-      $("#guided-button-dataset-intro-back").click();
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Exit guided mode",
+    heightAuto: false,
+    backdrop: "rgba(0,0,0,0.4)",
+  });
+  if (returnToGuidedHomeScreen) {
+    const currentPageID = CURRENT_PAGE.attr("id");
+
+    try {
+      await savePageChanges(currentPageID);
+    } catch (error) {
+      const pageWithErrorName = CURRENT_PAGE.data("pageName");
+
+      const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
+        title: "The current page was not able to be saved before exiting",
+        html: `The following error${
+          error.length > 1 ? "s" : ""
+        } occurred when attempting to save the ${pageWithErrorName} page:
+            <br />
+            <br />
+            <ul>
+              ${error.map((error) => `<li class="text-left">${error.message}</li>`).join("")}
+            </ul>
+            <br />
+            Would you like to exit without saving the changes to the current page?`,
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonText: "Yes, exit without saving",
+        cancelButtonText: "No, address errors before saving",
+        focusCancel: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        width: 700,
+      });
+      if (continueWithoutSavingCurrPageChanges) {
+        guidedTransitionToHome();
+      } else {
+        return;
+      }
     }
+    guidedTransitionToHome();
   }
 };
 
@@ -1450,12 +1482,13 @@ const guidedTransitionFromHome = async () => {
 };
 
 const guidedTransitionToHome = () => {
+  guidedUnLockSideBar();
   guidedPrepareHomeScreen();
   document.getElementById("guided-home").classList.remove("hidden");
   // Hide all of the parent tabs
   const guidedParentTabs = Array.from(document.querySelectorAll(".guided--parent-tab"));
   for (const guidedParentTab of guidedParentTabs) {
-    guidedParentTab.style.display = "none";
+    guidedParentTab.classList.add("hidden");
   }
   CURRENT_PAGE = undefined;
 
@@ -11248,70 +11281,44 @@ $(document).ready(async () => {
     $(this).removeClass("loading");
   });
 
+  const getPrevPageNotSkipped = (startingPage) => {
+    //Check if param element's following element is undefined
+    //(usually the case when the element is the last element in it's container)
+    if (!startingPage.prev().hasClass("guided--capsule-container")) {
+      //if not, check if it has the data-attribute skip-page
+      //if so, recurse back until a page without the skip-page attribute is found
+      let prevPage = startingPage.prev();
+      if (prevPage.attr("data-skip-page") && prevPage.attr("data-skip-page") == "true") {
+        return getPrevPageNotSkipped(prevPage);
+      } else {
+        //element is valid and not to be skipped
+        return prevPage;
+      }
+    } else {
+      //previous element was the last element in the container.
+      //go to the next page-set and return the first page to be transitioned to.
+      prevPage = startingPage.parent().prev().children(".guided--page").last();
+      if (prevPage.attr("data-skip-page") && prevPage.attr("data-skip-page") == "true") {
+        return getPrevPageNotSkipped(prevPage);
+      } else {
+        //element is valid and not to be skipped
+        return prevPage;
+      }
+    }
+  };
+
   //back button click handler
   $("#guided-back-button").on("click", () => {
     pageBeingLeftID = CURRENT_PAGE.attr("id");
-
-    /* if (pageBeingLeftID === "guided-prepare-helpers-tab") {
-      //Hide dataset name and subtitle parent tab
-      document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
-
-      switchElementVisibility("guided-intro-page", "guided-name-subtitle");
-
-      //show the intro footer
-      document.getElementById("guided-footer-intro").classList.remove("hidden");
-
-      //Show the dataset structure page
-      $("#prepare-dataset-parent-tab").hide();
-      $("#guided-header-div").hide();
-      $("#guided-footer-div").hide();
-
-      //Set the dataset name and subtitle with the values from jsonObj
-      const datasetName = getGuidedDatasetName();
-      const datasetSubtitle = getGuidedDatasetSubtitle();
-      const datasetNameInputElement = document.getElementById("guided-dataset-name-input");
-      const datasetSubtitleInputElement = document.getElementById("guided-dataset-subtitle-input");
-      const datasetSubtitleCharacterCountText = document.getElementById(
-        "guided-subtitle-char-count"
-      );
-      datasetNameInputElement.value = datasetName;
-      datasetSubtitleInputElement.value = datasetSubtitle;
-      datasetSubtitleCharacterCountText.innerHTML = `${
-        255 - datasetSubtitle.length
-      } characters remaining`;
-
-      CURRENT_PAGE = null;
-
+    // If the user is on the first page, progress will be saved if they have a progress file.
+    // If not, they will simply be taken back to the home page.
+    if (pageBeingLeftID === "guided-intro-page-tab") {
+      guidedSaveAndExit();
       return;
-    }*/
+    }
 
-    const getPrevPageNotSkipped = (startingPage) => {
-      //Check if param element's following element is undefined
-      //(usually the case when the element is the last element in it's container)
-      if (!startingPage.prev().hasClass("guided--capsule-container")) {
-        //if not, check if it has the data-attribute skip-page
-        //if so, recurse back until a page without the skip-page attribute is found
-        let prevPage = startingPage.prev();
-        if (prevPage.attr("data-skip-page") && prevPage.attr("data-skip-page") == "true") {
-          return getPrevPageNotSkipped(prevPage);
-        } else {
-          //element is valid and not to be skipped
-          return prevPage;
-        }
-      } else {
-        //previous element was the last element in the container.
-        //go to the next page-set and return the first page to be transitioned to.
-        prevPage = startingPage.parent().prev().children(".guided--page").last();
-        if (prevPage.attr("data-skip-page") && prevPage.attr("data-skip-page") == "true") {
-          return getPrevPageNotSkipped(prevPage);
-        } else {
-          //element is valid and not to be skipped
-          return prevPage;
-        }
-      }
-    };
-    let targetPage = getPrevPageNotSkipped(CURRENT_PAGE);
-    let targetPageID = targetPage.attr("id");
+    const targetPage = getPrevPageNotSkipped(CURRENT_PAGE);
+    const targetPageID = targetPage.attr("id");
     openPage(targetPageID);
   });
 
