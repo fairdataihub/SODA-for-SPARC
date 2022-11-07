@@ -3792,20 +3792,20 @@ const openPage = async (targetPageID) => {
 
     //Check to see if target element has the same parent as current sub step
     if (currentParentTab.attr("id") === targetPageParentTab.attr("id")) {
-      CURRENT_PAGE.hide();
+      CURRENT_PAGE.addClass("hidden");
       CURRENT_PAGE = targetPage;
-      CURRENT_PAGE.css("display", "flex");
+      CURRENT_PAGE.removeClass("hidden");
       //smooth scroll to top of guidedBody
       guidedBody.scrollTo({
         top: 0,
         behavior: "smooth",
       });
     } else {
-      CURRENT_PAGE.hide();
-      currentParentTab.hide();
-      targetPageParentTab.show();
+      CURRENT_PAGE.addClass("hidden");
+      currentParentTab.addClass("hidden");
+      targetPageParentTab.removeClass("hidden");
       CURRENT_PAGE = targetPage;
-      CURRENT_PAGE.css("display", "flex");
+      CURRENT_PAGE.removeClass("hidden");
       //smooth scroll to top of guidedBody
       guidedBody.scrollTo({
         top: 0,
