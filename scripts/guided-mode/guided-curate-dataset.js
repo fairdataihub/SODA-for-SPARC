@@ -4508,7 +4508,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   guidedTransitionFromHome();
 
   //Hide the before getting started page so it doesn't flash when resuming progress
-  $("#guided-intro-page-tab").css("display", "none");
+  document.getElementById("guided-intro-page-tab").classList.add("hidden");
 
   if (pageToReturnTo) {
     //Hide the sub-page navigation and show the main page navigation footer
@@ -8928,10 +8928,44 @@ const renderSamplesMetadataAsideItems = () => {
 };
 
 $(document).ready(async () => {
-  $("#guided-button-start-new-curate").on("click", () => {
+  $("#guided-button-start-new-curate").on("click", async () => {
     guidedCreateSodaJSONObj();
     attachGuidedMethodsToSodaJSONObj();
     guidedTransitionFromHome();
+    await openPage("guided-intro-page-tab");
+    introJs()
+      .setOptions({
+        steps: [
+          {
+            title: "Welcome to Guided Mode!",
+            intro: "This is a quick tutorial to get you comfortable with Guided Mode's navigation.",
+          },
+          {
+            element: document.querySelector(".guided--nav-bar-section"),
+            intro: `Navigating between individual pages is easy with the navigation bar. To navigate to a page, click on the page's name.
+            <br />
+            <br />
+            <b>Note:</b> The navigation bar only allows you to navigate to pages that have already been completed.`,
+          },
+          {
+            element: document.getElementById("guided-footer-div"),
+            intro: `The bottom navigation row allows you to navigate between pages.
+            <br />
+            <br />
+            <b>Note:</b> Your dataset's progress is saved automatically when clicking "Save and Continue" or "Save and Exit", and can be
+            resumed on the Guided Mode home page (even if you close out of the SODA application).`,
+          },
+          {
+            element: document.querySelector(".guided--progression-tab-container"),
+            intro: "Your current step in the curation process is displayed here.",
+          },
+        ],
+        tooltipClass: "guided--tooltip-intro-js",
+        exitOnEsc: false,
+        exitOnOverlayClick: false,
+        disableInteraction: false,
+      })
+      .start();
   });
 
   $("#guided-button-dataset-intro-back").on("click", () => {
