@@ -2254,10 +2254,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
         "if-existing-files": "replace",
     }
 
-    # bfdataset = soda_json_structure["bf-dataset-selected"]["dataset-name"]
-    # r = requests.get(f"{PENNSIEVE_URL}/datasets/{ds['id']}", headers=create_request_headers(ps))
-    # r.raise_for_status()
-    # myds = r.json()
+
     bf_generate_new_dataset(soda_json_structure, ps, ds)
 
     return
@@ -2362,17 +2359,14 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     elif existing_folder_option == "create-duplicate":
                         print("Creating a code folder")
                         # TODO: change this so that when dealing with nested folders, it creates the folders in the correct place not just the dataset root. 
-                        r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json={ "name": f"{folder_key}", "dataset": f"{ds['id']}", "packageType": "collection" })
+                        r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json={ "name": f"{folder_key}", "dataset": f"{ds['content']['id']}", "packageType": "collection" })
                         r.raise_for_status()
                         ps_folder = r.json()
 
                     elif existing_folder_option == "replace":
-                        if folder_key in my_bf_existing_folders_name:
-                            index_folder = my_bf_existing_folders_name.index(folder_key)
-                            bf_folder_delete = my_bf_existing_folders[index_folder]
-                            bf_folder_delete.delete()
-                            my_ps_folder.update()
-                        r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json={"parent": "N:collection:f981f4df-b0cd-4a91-bcf0-8789b128b379", "name": "funsies", "dataset": "N:dataset:1cb4bf59-2b6d-48c9-8dae-88f722c6e328", "packageType": "collection", "properties": {"key": "funsies", "value": "Ahhh"} })
+                        if folder_key in my_tracking_folder["children"]["folders"]:
+                            ps_folder = my_tracking_folder["children"]["folders"]
+                        r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json={"parent": f"{my_tracking_folder['content']['id']}", "name": f"{ps_folder['content']['name']}", "dataset": f"{ds['content']['id']}", "packageType": "collection" })
                         r.raise_for_status()
                        # bf_folder = my_ps_folder.create_collection(folder_key)
 
@@ -2778,6 +2772,10 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 subprocess.run(["pennsieve", "manifest", "add", str(manifest_id), file_path, "-t", folder_name])
 
 
+        # remove the first item from the manifest - it needed to be added in order for the manifest to be created.
+        # ps.manifest.remove()
+
+
         # upload the manifest files
         ps.manifest.upload(manifest_id)
 
@@ -2800,7 +2798,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     ps.unsubscribe(10)
 
 
-        return 
 
         # 6. Upload metadata files
         if list_upload_metadata_files:
