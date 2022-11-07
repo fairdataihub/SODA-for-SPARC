@@ -169,9 +169,10 @@ const metadataFileExtensionObject = {
   code_description: [".xlsx"],
   code_parameters: [".xlsx", ".csv", ".tsv", ".json"],
   data_deliverable: [".docx", ".doc"],
+  bannerImage: [".png", ".PNG", ".jpeg", ".JPEG", ".tiff"]
 };
 
-async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeliverables = false) {
+const dropHandler = async (ev, paraElement, metadataFile, curationMode, dataDeliverables = false) => {
   var gettingStartedSection = false;
   if (curationMode === "guided-getting-started") {
     curationMode = "guided";
@@ -184,12 +185,151 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
   if (ev.dataTransfer.items) {
     /// if users drag multiple files, only show first file
     var file = ev.dataTransfer.items[0];
+    console.log(file);
     // If dropped items aren't files, reject them
     if (ev.dataTransfer.items[0].kind === "file") {
       var file = ev.dataTransfer.items[0].getAsFile();
       var metadataWithoutExtension = file.name.slice(0, file.name.indexOf("."));
       var extension = file.name.slice(file.name.indexOf("."));
-
+      if(ev.dataTransfer.items[0].type.includes("image")) {
+        //banner image here
+        let path = [file.path];
+        if (path.length > 0) {
+          let original_image_path = path[0];
+          let image_path = original_image_path;
+          let destination_image_path = require("path").join(
+            homeDirectory,
+            "SODA",
+            "banner-image-conversion"
+          );
+          let converted_image_file = require("path").join(destination_image_path, "converted-tiff.jpg");
+          let conversion_success = true;
+          imageExtension = path[0].split(".").pop();
+    
+          if (imageExtension.toLowerCase() == "tiff") {
+            Swal.fire({
+              title: "Image conversion in progress!",
+              html: "Pennsieve does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              showClass: {
+                popup: "animate__animated animate__fadeInDown animate__faster",
+              },
+              hideClass: {
+                popup: "animate__animated animate__fadeOutUp animate__faster",
+              },
+              didOpen: () => {
+                Swal.showLoading();
+              },
+            });
+    
+            await Jimp.read(original_image_path)
+              .then(async (file) => {
+                if (!fs.existsSync(destination_image_path)) {
+                  fs.mkdirSync(destination_image_path, { recursive: true });
+                }
+    
+                try {
+                  if (fs.existsSync(converted_image_file)) {
+                    fs.unlinkSync(converted_image_file);
+                  }
+                } catch (err) {
+                  conversion_success = false;
+                  console.error(err);
+                }
+    
+                return file.write(converted_image_file, async () => {
+                  if (fs.existsSync(converted_image_file)) {
+                    let stats = fs.statSync(converted_image_file);
+                    let fileSizeInBytes = stats.size;
+                    let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
+    
+                    if (fileSizeInMegabytes > 5) {
+                      fs.unlinkSync(converted_image_file);
+    
+                      await Jimp.read(original_image_path)
+                        .then((file) => {
+                          return file.resize(1024, 1024).write(converted_image_file, () => {
+                            document.getElementById("div-img-container-holder").style.display = "none";
+                            document.getElementById("div-img-container").style.display = "block";
+    
+                            $("#para-path-image").html(image_path);
+                            guidedBfViewImportedImage.src = converted_image_file;
+                            myCropper.destroy();
+                            myCropper = new Cropper(guidedBfViewImportedImage, guidedCropOptions);
+                            $("#save-banner-image").css("visibility", "visible");
+                            $("body").removeClass("waiting");
+                          });
+                        })
+                        .catch((err) => {
+                          conversion_success = false;
+                          console.error(err);
+                        });
+                      if (fs.existsSync(converted_image_file)) {
+                        let stats = fs.statSync(converted_image_file);
+                        let fileSizeInBytes = stats.size;
+                        let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
+    
+                        if (fileSizeInMegabytes > 5) {
+                          conversion_success = false;
+                          // SHOW ERROR
+                        }
+                      }
+                    }
+                    image_path = converted_image_file;
+                    imageExtension = "jpg";
+                    $("#para-path-image").html(image_path);
+                    guidedBfViewImportedImage.src = image_path;
+                    myCropper.destroy();
+                    myCropper = new Cropper(guidedBfViewImportedImage, guidedCropOptions);
+                    $("#save-banner-image").css("visibility", "visible");
+                  }
+                });
+              })
+              .catch((err) => {
+                conversion_success = false;
+                console.error(err);
+                Swal.fire({
+                  icon: "error",
+                  text: "Something went wrong",
+                  confirmButtonText: "OK",
+                  heightAuto: false,
+                  backdrop: "rgba(0,0,0, 0.4)",
+                });
+              });
+            if (conversion_success == false) {
+              $("body").removeClass("waiting");
+              return;
+            } else {
+              Swal.close();
+            }
+          } else {
+            document.getElementById("guided-div-img-container-holder").style.display = "none";
+            document.getElementById("guided-div-img-container").style.display = "block";
+    
+            $("#guided-para-path-image").html(image_path);
+            guidedBfViewImportedImage.src = image_path;
+            myCropper.destroy();
+            myCropper = new Cropper(guidedBfViewImportedImage, guidedCropOptions);
+    
+            $("#guided-save-banner-image").css("visibility", "visible");
+          }
+        }
+        $("#guided-banner-image-modal").modal("show");
+        // let bannerLottie = document.getElementById("guided-image-lottie");
+        // if(document.getElementById("guided-div-img-container").style.display = "none") {
+        //   //no image so create lottie
+        //   lottie.loadAnimation({
+        //     container: bannerLottie,
+        //     animationData: dragDrop,
+        //     renderer: "svg",
+        //     loop: true,
+        //     autoplay: true,
+        //   });
+        // } else {
+        //   bannerLottie.innerHTML = "";
+        // }
+      }
       if (dataDeliverables === true) {
         let filepath = file.path;
         var award = $("#submission-sparc-award");
@@ -315,6 +455,8 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
           });
         }
       } else {
+        console.log(metadataWithoutExtension);
+        console.log(metadataFile);
         //dataDelieravles is true for the name to be however it needs to be, just check extension is doc or docx
         if (metadataWithoutExtension === metadataFile) {
           if (metadataFileExtensionObject[metadataFile].includes(extension)) {

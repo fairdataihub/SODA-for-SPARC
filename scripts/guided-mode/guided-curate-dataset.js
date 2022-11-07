@@ -9391,6 +9391,19 @@ $(document).ready(async () => {
   // function for importing a banner image if one already exists
   $("#guided-button-add-banner-image").click(async () => {
     $("#guided-banner-image-modal").modal("show");
+    // let bannerLottie = document.getElementById("guided-image-lottie");
+    // if(document.getElementById("guided-div-img-container").style.display = "none") {
+    //   //no image so create lottie
+    //   lottie.loadAnimation({
+    //     container: bannerLottie,
+    //     animationData: dragDrop,
+    //     renderer: "svg",
+    //     loop: true,
+    //     autoplay: true,
+    //   });
+    // } else {
+    //   bannerLottie.innerHTML = "";
+    // }
   });
 
   // Action when user click on "Import image" button for banner image
@@ -11367,6 +11380,7 @@ $(document).ready(async () => {
   /**************************************/
   $("#guided-save-banner-image").click(async (event) => {
     $("#guided-para-dataset-banner-image-status").html("");
+    
     if (guidedBfViewImportedImage.src.length > 0) {
       if (guidedFormBannerHeight.value > 511) {
         Swal.fire({
