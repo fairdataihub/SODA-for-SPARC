@@ -2021,8 +2021,11 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
         if "files" in folder.keys():
             for item in list(folder["files"]):
                 if "deleted" in folder["files"][item]["action"]:
-                    file = bf.get(folder["files"][item]["path"])
-                    file.delete()
+                    file_path = folder["files"][item]["path"]
+                    # remove the file from the dataset
+                    r = requests.post(f"{PENNSIEVE_URL}/data", headers=create_request_headers(ps), json={"things": [file_path]})
+                    r.raise_for_status()
+                    # remove the file from the soda json structure
                     del folder["files"][item]
 
         for item in list(folder["folders"]):
