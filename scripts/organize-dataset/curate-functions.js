@@ -248,7 +248,7 @@ const dropHandler = async (
 
                 console.log("before we start writing i believe");
                 return file.write(converted_image_file, async () => {
-                  console.log("checking if file exists?")
+                  console.log("checking if file exists?");
                   console.log(converted_image_file);
                   if (fs.existsSync(converted_image_file)) {
                     let stats = fs.statSync(converted_image_file);
@@ -257,7 +257,7 @@ const dropHandler = async (
 
                     //if the tiff image is greater than 5mb then we convert
                     if (fileSizeInMegabytes > 5) {
-                      fs.unlinkSync(converted_image_file);  //delete the file
+                      fs.unlinkSync(converted_image_file); //delete the file
 
                       await Jimp.read(original_image_path)
                         .then((file) => {

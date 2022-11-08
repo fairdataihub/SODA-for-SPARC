@@ -6140,9 +6140,12 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
   //start creating folder elements to be rendered
   if (Object.keys(sortedObj["folders"]).length > 0) {
     for (var item in sortedObj["folders"]) {
-      if(hideSampleFolders) {
+      if (hideSampleFolders) {
         let currentSubjectFolder = splitPath[0];
-        const currentSubjects = sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]['subjects'][currentSubjectFolder];
+        const currentSubjects =
+          sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+            currentSubjectFolder
+          ];
         if (item in currentSubjects) {
           continue;
         }
