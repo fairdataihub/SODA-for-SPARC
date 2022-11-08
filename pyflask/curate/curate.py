@@ -2161,21 +2161,21 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
     # Rename any folders that still exist.
     def recursive_folder_rename(folder, mode):
         for item in list(folder["folders"]):
+            print(item)
             if (
                 folder["folders"][item]["type"] == "bf"
                 and "action" in folder["folders"][item].keys()
             ):
                 if mode in folder["folders"][item]["action"]:
-                    file = bf.get(folder["folders"][item]["path"])
-                    if file is not None:
-                        file.name = item
-                        file.update()
+                    folder_id = folder["folders"][item]["path"]
+                    r = requests.put(f"{PENNSIEVE_URL}/packages/{folder_id}?updateStorage=true", headers=create_request_headers(ps), json={"name": item})
+                    r.raise_for_status()
             recursive_folder_rename(folder["folders"][item], mode)
 
         return
 
     # 1. Remove all existing files on Pennsieve, that the user deleted.
-    namespace_logger.info("bf_update_existing_dataset step 1 remove existing files on Pennsieve the user delted")
+    namespace_logger.info("bf_update_existing_dataset step 1 remove existing files on Pennsieve the user deleted")
     main_curate_progress_message = "Checking Pennsieve for deleted files"
     dataset_structure = soda_json_structure["dataset-structure"]
     recursive_file_delete(dataset_structure)
@@ -2187,7 +2187,8 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
     namespace_logger.info("bf_update_existing_dataset step 2 rename deleted folders on Pennsieve to allow for replacements")
     main_curate_progress_message = "Checking Pennsieve for deleted folders"
     dataset_structure = soda_json_structure["dataset-structure"]
-    # recursive_folder_rename(dataset_structure, "deleted")
+    print("RENAMING")
+    recursive_folder_rename(dataset_structure, "deleted")
     main_curate_progress_message = "Folders on Pennsieve have been marked for deletion"
 
     # 2.5 Rename folders that need to be in the final destination.
