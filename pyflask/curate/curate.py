@@ -2023,7 +2023,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
                 if "deleted" in folder["files"][item]["action"]:
                     file_path = folder["files"][item]["path"]
                     # remove the file from the dataset
-                    r = requests.post(f"{PENNSIEVE_URL}/data", headers=create_request_headers(ps), json={"things": [file_path]})
+                    r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [file_path]})
                     r.raise_for_status()
                     # remove the file from the soda json structure
                     del folder["files"][item]
@@ -2178,7 +2178,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
     namespace_logger.info("bf_update_existing_dataset step 1 remove existing files on Pennsieve the user delted")
     main_curate_progress_message = "Checking Pennsieve for deleted files"
     dataset_structure = soda_json_structure["dataset-structure"]
-    # recursive_file_delete(dataset_structure)
+    recursive_file_delete(dataset_structure)
     main_curate_progress_message = (
         "Files on Pennsieve marked for deletion have been deleted"
     )
@@ -2371,10 +2371,10 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                             ps_folder = my_tracking_folder["children"]["folders"][folder_key]
                             normalize_tracking_folder(ps_folder)
                         else:
-                            # We are merging but this is a new folder - not one that already exists in teh current dataset - so we create it.
+                            # We are merging but this is a new folder - not one that already exists in the current dataset - so we create it.
                             # TODO: change this so that when dealing with nested folders, it creates the folders in the correct place not just the dataset root. 
                             #       To make this happen we will need to add the parent key with the value being the Collection ID of its parent folder. 
-                            r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json={"name": f"{folder_key}", "dataset": f"{ds['id']}", "packageType": "collection"})
+                            r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json={"name": f"{folder_key}", "dataset": f"{ds['content']['id']}", "packageType": "collection"})
                             r.raise_for_status()
                             ps_folder = r.json()
                             normalize_tracking_folder(ps_folder)
