@@ -5706,7 +5706,7 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
             const checkDigit = result === 10 ? "X" : String(result);
 
             if (checkDigit !== contributorOrcid.substr(-1)) {
-              Swal.showValidationMessage("ORCID is not valid");
+              Swal.showValidationMessage("ORCID iD does not exist");
             } else {
               try {
                 editContributorByOrcid(
@@ -6008,7 +6008,7 @@ const openGuidedAddContributorSwal = async () => {
             const checkDigit = result === 10 ? "X" : String(result);
 
             if (checkDigit !== contributorOrcid.substr(-1)) {
-              Swal.showValidationMessage("ORCID is not valid");
+              Swal.showValidationMessage("ORCID iD does not exist");
             } else {
               try {
                 addContributor(

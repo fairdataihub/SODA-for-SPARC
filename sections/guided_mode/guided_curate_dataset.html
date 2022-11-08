@@ -4299,8 +4299,38 @@
                     <i style="color: red; font-size: 25px" class="far fa-window-close"></i>
                   </button>
                 </div>
-                <div style="align-self: center; font-size: large; font-weight: 700">
-                  <p>Drag and Drop image</p>
+                <div
+                  style="
+                    align-self: center;
+                    display: flex;
+                    flex-direction: row;
+                    font-size: large;
+                    font-weight: 700;
+                  "
+                >
+                  <p style="line-height: 15px; margin-top: 1rem; margin-right: 1rem">
+                    Drag and Drop image or click
+                  </p>
+                  <div style="display: flex; flex-direction: row; justify-content: center">
+                    <div
+                      style="
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        width: 100%;
+                      "
+                    >
+                      <button
+                        id="guided-button-import-banner-image"
+                        type="button"
+                        class="btn btn-primary"
+                        style="border-radius: 4px"
+                      >
+                        Import image
+                      </button>
+                    </div>
+                  </div>
                 </div>
                 <div class="modal-body">
                   <div id="guided-div-editbanner-img" style="display: flex; flex-direction: row">
@@ -4333,27 +4363,6 @@
                   ></p>
                 </div>
                 <div class="modal-footer" style="display: flex; justify-content: space-between">
-                  <div style="display: flex; flex-direction: row; justify-content: center">
-                    <div
-                      style="
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                        align-items: center;
-                        width: 100%;
-                      "
-                    >
-                      <button
-                        id="guided-button-import-banner-image"
-                        type="button"
-                        class="btn btn-primary"
-                        style="border-radius: 4px"
-                      >
-                        Import image
-                      </button>
-                    </div>
-                  </div>
-
                   <div class="container-cropped-image">
                     <div class="banner-image-size" style="width: 380px; text-align: center">
                       <span class="crop-image-text"

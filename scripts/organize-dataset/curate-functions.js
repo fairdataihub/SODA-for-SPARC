@@ -191,14 +191,13 @@ const dropHandler = async (
   if (ev.dataTransfer.items) {
     /// if users drag multiple files, only show first file
     var file = ev.dataTransfer.items[0];
-    console.log(file);
     // If dropped items aren't files, reject them
     if (ev.dataTransfer.items[0].kind === "file") {
       var file = ev.dataTransfer.items[0].getAsFile();
       var metadataWithoutExtension = file.name.slice(0, file.name.indexOf("."));
       var extension = file.name.slice(file.name.indexOf("."));
       if (ev.dataTransfer.items[0].type.includes("image")) {
-        //banner image here
+        //handle dropped images for banner images
         let path = [file.path];
         if (path.length > 0) {
           let original_image_path = path[0];
@@ -231,7 +230,7 @@ const dropHandler = async (
                 Swal.showLoading();
               },
             });
-
+            //tiff images will be converted to a 1024 x 1024 jpg image
             await Jimp.read(original_image_path)
               .then(async (file) => {
                 if (!fs.existsSync(destination_image_path)) {
@@ -247,17 +246,23 @@ const dropHandler = async (
                   console.error(err);
                 }
 
+                console.log("before we start writing i believe");
                 return file.write(converted_image_file, async () => {
+                  console.log("checking if file exists?")
+                  console.log(converted_image_file);
                   if (fs.existsSync(converted_image_file)) {
                     let stats = fs.statSync(converted_image_file);
                     let fileSizeInBytes = stats.size;
                     let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
 
+                    //if the tiff image is greater than 5mb then we convert
                     if (fileSizeInMegabytes > 5) {
-                      fs.unlinkSync(converted_image_file);
+                      fs.unlinkSync(converted_image_file);  //delete the file
 
                       await Jimp.read(original_image_path)
                         .then((file) => {
+                          //return file size then save converted image
+                          //destroy cropper and create new one along w other side things
                           return file.resize(1024, 1024).write(converted_image_file, () => {
                             document.getElementById("div-img-container-holder").style.display =
                               "none";
@@ -279,7 +284,6 @@ const dropHandler = async (
                         let stats = fs.statSync(converted_image_file);
                         let fileSizeInBytes = stats.size;
                         let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
-
                         if (fileSizeInMegabytes > 5) {
                           conversion_success = false;
                           // SHOW ERROR
@@ -314,6 +318,7 @@ const dropHandler = async (
               Swal.close();
             }
           } else {
+            //when image extensions aren't .tiff
             document.getElementById("guided-div-img-container-holder").style.display = "none";
             document.getElementById("guided-div-img-container").style.display = "block";
 
@@ -326,19 +331,6 @@ const dropHandler = async (
           }
         }
         $("#guided-banner-image-modal").modal("show");
-        // let bannerLottie = document.getElementById("guided-image-lottie");
-        // if(document.getElementById("guided-div-img-container").style.display = "none") {
-        //   //no image so create lottie
-        //   lottie.loadAnimation({
-        //     container: bannerLottie,
-        //     animationData: dragDrop,
-        //     renderer: "svg",
-        //     loop: true,
-        //     autoplay: true,
-        //   });
-        // } else {
-        //   bannerLottie.innerHTML = "";
-        // }
       }
       if (dataDeliverables === true) {
         let filepath = file.path;
@@ -465,9 +457,7 @@ const dropHandler = async (
           });
         }
       } else {
-        console.log(metadataWithoutExtension);
-        console.log(metadataFile);
-        //dataDelieravles is true for the name to be however it needs to be, just check extension is doc or docx
+        //data deliverables is true for the name to be however it needs to be, just check extension is doc or docx
         if (metadataWithoutExtension === metadataFile) {
           if (metadataFileExtensionObject[metadataFile].includes(extension)) {
             document.getElementById(paraElement).innerHTML = file.path;
@@ -480,7 +470,7 @@ const dropHandler = async (
                 .css("display", "none");
             }
             if (curationMode === "guided") {
-              //Add success checkmark lottie animation inside metadata card
+              //Add success check mark lottie animation inside metadata card
               const dragDropContainer = document.getElementById(paraElement).parentElement;
               //get the value of data-code-metadata-file-type from dragDropContainer
               const metadataFileType = dragDropContainer.dataset.codeMetadataFileType;
