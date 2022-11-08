@@ -11356,11 +11356,342 @@ $(document).ready(async () => {
     openPage(targetPageID);
   });
 
+  const openSubPage = (subPageID) => {};
+  const saveSubPageChanges = async (subPageID) => {
+    let errorArray = [];
+
+    if (openSubPageID === "guided-specify-subjects-page") {
+      const buttonYesSubjects = document.getElementById("guided-button-add-subjects-table");
+      const buttonNoSubjects = document.getElementById("guided-button-no-subjects");
+      if (
+        !buttonYesSubjects.classList.contains("selected") &&
+        !buttonNoSubjects.classList.contains("selected")
+      ) {
+        errorArray.push({
+          type: "error",
+          message: "Please indicate if your dataset contains subjects.",
+        });
+        throw errorArray;
+      }
+      if (buttonYesSubjects.classList.contains("selected")) {
+        //Get the count of all subjects in and outside of pools
+        const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+        const subjectsCount = [...subjectsInPools, ...subjectsOutsidePools].length;
+
+        //Check to see if any subjects were added, and if not, disallow the user
+        //from progressing until they add at least one subject or select that they do not
+        if (subjectsCount === 0) {
+          errorArray.push({
+            type: "error",
+            message:
+              "Please add at least one subject or indicate that your dataset does not contain subjects.",
+          });
+          throw errorArray;
+        }
+
+        $(".guided-subject-sample-data-addition-page").attr("data-skip-page", "false");
+      }
+    }
+
+    if (openSubPageID === "guided-organize-subjects-into-pools-page") {
+      const buttonYesPools = document.getElementById("guided-button-organize-subjects-into-pools");
+      const buttonNoPools = document.getElementById("guided-button-no-pools");
+      if (
+        !buttonYesPools.classList.contains("selected") &&
+        !buttonNoPools.classList.contains("selected")
+      ) {
+        errorArray.push({
+          type: "error",
+          message: "Please indicate if you would like to organize your subjects into pools.",
+        });
+        throw errorArray;
+      }
+
+      if (buttonYesPools.classList.contains("selected")) {
+        const pools = sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
+
+        //Check to see if any pools were added, and if not, disallow the user
+        //from progressing until they add at least one pool or select that they do not
+        //have any pools
+        if (Object.keys(pools).length === 0) {
+          errorArray.push({
+            type: "error",
+            message:
+              "Please add at least one pool or indicate that your dataset does not contain pools.",
+          });
+          throw errorarray;
+        }
+        //delete empty pools
+        for (const pool of Object.keys(pools)) {
+          if (
+            Object.keys(
+              sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"][pool]
+            ).length === 0
+          ) {
+            delete sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"][pool];
+          }
+        }
+      }
+    }
+
+    if (openSubPageID === "guided-specify-samples-page") {
+      const buttonYesSamples = document.getElementById("guided-button-add-samples-tables");
+      const buttonNoSamples = document.getElementById("guided-button-no-samples");
+      if (
+        !buttonYesSamples.classList.contains("selected") &&
+        !buttonNoSamples.classList.contains("selected")
+      ) {
+        errorArray.push({
+          type: "error",
+          message: "Please indicate if your dataset's subjects have samples.",
+        });
+        throw errorArray;
+      }
+      if (buttonYesSamples.classList.contains("selected")) {
+        const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
+        //Combine sample data from samples in and out of pools
+        const samplesCount = [...samplesInPools, ...samplesOutsidePools].length;
+        //Check to see if any samples were added, and if not, disallow the user
+        //from progressing until they add at least one sample or select that they do not
+        //have any samples
+        if (samplesCount === 0) {
+          errorArray.push({
+            type: "error",
+            message:
+              "Please add at least one sample or indicate that your dataset does not contain samples.",
+          });
+          throw errorArray;
+        }
+
+        document
+          .getElementById("guided-primary-samples-organization-page")
+          .setAttribute("data-skip-sub-page", "false");
+        document
+          .getElementById("guided-source-samples-organization-page")
+          .setAttribute("data-skip-sub-page", "false");
+        document
+          .getElementById("guided-derivative-samples-organization-page")
+          .setAttribute("data-skip-sub-page", "false");
+      }
+    }
+
+    if (openSubPageID === "guided-primary-samples-organization-page") {
+      const buttonYesPrimarySampleData = document.getElementById(
+        "guided-button-add-sample-primary-data"
+      );
+      const buttonNoPrimarySampleData = document.getElementById(
+        "guided-button-no-sample-primary-data"
+      );
+      if (
+        !buttonYesPrimarySampleData.classList.contains("selected") &&
+        !buttonNoPrimarySampleData.classList.contains("selected")
+      ) {
+        errorArray.push({
+          type: "error",
+          message: "Please indicate if you have primary data to add to your samples.",
+        });
+        throw errorArray;
+      }
+      if (buttonYesPrimarySampleData.classList.contains("selected")) {
+        const continueWithoutAddingPrimaryDataToAllSamples =
+          await cleanUpEmptyGuidedStructureFolders("primary", "samples", false);
+        if (continueWithoutAddingPrimaryDataToAllSamples) {
+          setActiveSubPage("guided-primary-subjects-organization-page");
+        }
+      }
+      if (buttonNoPrimarySampleData.classList.contains("selected")) {
+        const continueAfterDeletingAllPrimarySampleFolders =
+          await cleanUpEmptyGuidedStructureFolders("primary", "samples", true);
+        if (continueAfterDeletingAllPrimarySampleFolders) {
+          setActiveSubPage("guided-primary-subjects-organization-page");
+        }
+      }
+    }
+
+    if (openSubPageID === "guided-primary-subjects-organization-page") {
+      const buttonYesPrimarySubjectData = document.getElementById(
+        "guided-button-add-subject-primary-data"
+      );
+      const buttonNoPrimarySubjectData = document.getElementById(
+        "guided-button-no-subject-primary-data"
+      );
+      if (
+        !buttonYesPrimarySubjectData.classList.contains("selected") &&
+        !buttonNoPrimarySubjectData.classList.contains("selected")
+      ) {
+        errorArray.push({
+          type: "error",
+          message: "Please indicate if you have primary data to add to your subjects.",
+        });
+        throw errorArray;
+      }
+      if (buttonYesPrimarySubjectData.classList.contains("selected")) {
+        const continueWithoutAddingPrimaryDataToAllSubjects =
+          await cleanUpEmptyGuidedStructureFolders("primary", "subjects", false);
+        if (continueWithoutAddingPrimaryDataToAllSubjects) {
+          hideSubNavAndShowMainNav("next");
+        }
+      }
+      if (buttonNoPrimarySubjectData.classList.contains("selected")) {
+        const continueAfterDeletingAllPrimaryPoolsAndSubjects =
+          await cleanUpEmptyGuidedStructureFolders("primary", "subjects", true);
+        if (continueAfterDeletingAllPrimaryPoolsAndSubjects) {
+          hideSubNavAndShowMainNav("next");
+        }
+      }
+    }
+
+    if (openSubPageID === "guided-source-samples-organization-page") {
+      const buttonYesSourceSampleData = document.getElementById(
+        "guided-button-add-sample-source-data"
+      );
+      const buttonNoSourceSampleData = document.getElementById(
+        "guided-button-no-sample-source-data"
+      );
+      if (
+        !buttonYesSourceSampleData.classList.contains("selected") &&
+        !buttonNoSourceSampleData.classList.contains("selected")
+      ) {
+        errorArray.push({
+          type: "error",
+          message: "Please indicate if you have source data to add to your samples.",
+        });
+        throw errorArray;
+      }
+      if (buttonYesSourceSampleData.classList.contains("selected")) {
+        const continueWithoutAddingSourceDataToAllSamples =
+          await cleanUpEmptyGuidedStructureFolders("source", "samples", false);
+        if (continueWithoutAddingSourceDataToAllSamples) {
+          setActiveSubPage("guided-source-subjects-organization-page");
+        }
+      }
+      if (buttonNoSourceSampleData.classList.contains("selected")) {
+        const continueAfterDeletingAllSourceSampleFolders =
+          await cleanUpEmptyGuidedStructureFolders("source", "samples", true);
+        if (continueAfterDeletingAllSourceSampleFolders) {
+          setActiveSubPage("guided-source-subjects-organization-page");
+        }
+      }
+    }
+
+    if (openSubPageID === "guided-source-subjects-organization-page") {
+      const buttonYesSourceSubjectData = document.getElementById(
+        "guided-button-add-subject-source-data"
+      );
+      const buttonNoSourceSubjectData = document.getElementById(
+        "guided-button-no-subject-source-data"
+      );
+      if (
+        !buttonYesSourceSubjectData.classList.contains("selected") &&
+        !buttonNoSourceSubjectData.classList.contains("selected")
+      ) {
+        errorArray.push({
+          type: "error",
+          message: "Please indicate if you have source data to add to your subjects.",
+        });
+        throw errorArray;
+      }
+      if (buttonYesSourceSubjectData.classList.contains("selected")) {
+        const continueWithoutAddingSourceDataToAllSubjects =
+          await cleanUpEmptyGuidedStructureFolders("source", "subjects", false);
+        if (continueWithoutAddingSourceDataToAllSubjects) {
+          hideSubNavAndShowMainNav("next");
+        }
+      }
+      if (buttonNoSourceSubjectData.classList.contains("selected")) {
+        const continueAfterDeletingAllSourcePoolsAndSubjects =
+          await cleanUpEmptyGuidedStructureFolders("source", "subjects", true);
+        if (continueAfterDeletingAllSourcePoolsAndSubjects) {
+          hideSubNavAndShowMainNav("next");
+        }
+      }
+    }
+
+    if (openSubPageID === "guided-derivative-samples-organization-page") {
+      const buttonYesDerivativeSampleData = document.getElementById(
+        "guided-button-add-sample-derivative-data"
+      );
+      const buttonNoDerivativeSampleData = document.getElementById(
+        "guided-button-no-sample-derivative-data"
+      );
+      if (
+        !buttonYesDerivativeSampleData.classList.contains("selected") &&
+        !buttonNoDerivativeSampleData.classList.contains("selected")
+      ) {
+        errorArray.push({
+          type: "error",
+          message: "Please indicate if you have derivative data to add to your samples.",
+        });
+        throw errorArray;
+      }
+      if (buttonYesDerivativeSampleData.classList.contains("selected")) {
+        const continueWithoutAddingDerivativeDataToAllSamples =
+          await cleanUpEmptyGuidedStructureFolders("derivative", "samples", false);
+        if (continueWithoutAddingDerivativeDataToAllSamples) {
+          setActiveSubPage("guided-derivative-subjects-organization-page");
+        }
+      }
+      if (buttonNoDerivativeSampleData.classList.contains("selected")) {
+        const continueAfterDeletingAllDerivativeSampleFolders =
+          await cleanUpEmptyGuidedStructureFolders("derivative", "samples", true);
+        if (continueAfterDeletingAllDerivativeSampleFolders) {
+          setActiveSubPage("guided-derivative-subjects-organization-page");
+        }
+      }
+    }
+
+    if (openSubPageID === "guided-derivative-subjects-organization-page") {
+      const buttonYesDerivativeSubjectData = document.getElementById(
+        "guided-button-add-subject-derivative-data"
+      );
+      const buttonNoDerivativeSubjectData = document.getElementById(
+        "guided-button-no-subject-derivative-data"
+      );
+      if (
+        !buttonYesDerivativeSubjectData.classList.contains("selected") &&
+        !buttonNoDerivativeSubjectData.classList.contains("selected")
+      ) {
+        errorArray.push({
+          type: "error",
+          message: "Please indicate if you have derivative data to add to your subjects.",
+        });
+        throw errorArray;
+      }
+      if (buttonYesDerivativeSubjectData.classList.contains("selected")) {
+        const continueWithoutAddingDerivativeDataToAllSubjects =
+          await cleanUpEmptyGuidedStructureFolders("derivative", "subjects", false);
+        if (continueWithoutAddingDerivativeDataToAllSubjects) {
+          hideSubNavAndShowMainNav("next");
+        }
+      }
+      if (buttonNoDerivativeSubjectData.classList.contains("selected")) {
+        const continueAfterDeletingAllDerivativePoolsAndSubjects =
+          await cleanUpEmptyGuidedStructureFolders("derivative", "subjects", true);
+        if (continueAfterDeletingAllDerivativePoolsAndSubjects) {
+          hideSubNavAndShowMainNav("next");
+        }
+      }
+    }
+
+    if (openSubPageID === "guided-data-derivative-import-page") {
+    }
+
+    if (openSubPageID === "guided-completion-date-selection-page") {
+    }
+
+    if (openSubPageID === "guided-submission-metadata-page") {
+    }
+  };
+
   //sub page next button click handler
   $("#guided-button-sub-page-continue").on("click", async () => {
     //Get the id of the parent page that's currently open
     const currentParentPageID = CURRENT_PAGE.attr("id");
-    //Get the id of the sub-page that's currently open
+    //Get an array of all the sub pages that are children of the parent page
+    const parentPageSubPages = Array.from(
+      document.getElementById(currentParentPageID).querySelectorAll(".sub-page")
+    );
+    console.log(parentPageSubPages); //Get the id of the sub-page that's currently open
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
 
     switch (currentParentPageID) {
