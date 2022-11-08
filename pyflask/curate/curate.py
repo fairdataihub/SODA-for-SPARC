@@ -2350,11 +2350,10 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             if "folders" in my_folder.keys():
                 for folder_key, folder in my_folder["folders"].items():
                     if existing_folder_option == "skip":
-                        if folder_key in my_bf_existing_folders_name:
-                            continue
-                        else:
-                            r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json={"parent": "N:collection:f981f4df-b0cd-4a91-bcf0-8789b128b379", "name": "funsies", "dataset": "N:dataset:1cb4bf59-2b6d-48c9-8dae-88f722c6e328", "packageType": "collection", "properties": {"key": "funsies", "value": "Ahhh"} })
-                            bf_folder = my_ps_folder.create_collection(folder_key)
+                        if folder_key not in my_tracking_folder["children"]["folders"]:
+                            r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json={"parent": f"{my_tracking_folder['content']['id']}", "name": f"{folder_key}", "dataset": f"{ds['content']['id]']}", "packageType": "collection" })
+                            r.raise_for_status()
+                            ps_folder = r.json()
 
                     elif existing_folder_option == "create-duplicate":
                         print("Creating a code folder")
@@ -2368,7 +2367,9 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                             ps_folder = my_tracking_folder["children"]["folders"]
                         r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json={"parent": f"{my_tracking_folder['content']['id']}", "name": f"{ps_folder['content']['name']}", "dataset": f"{ds['content']['id']}", "packageType": "collection" })
                         r.raise_for_status()
-                       # bf_folder = my_ps_folder.create_collection(folder_key)
+
+                        # TODO:  api call to add the folder
+                        # bf_folder = my_ps_folder.create_collection(folder_key)
 
                     elif existing_folder_option == "merge":
                         if folder_key in my_tracking_folder["children"]["folders"]:
