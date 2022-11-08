@@ -11356,7 +11356,6 @@ $(document).ready(async () => {
     openPage(targetPageID);
   });
 
-  const openSubPage = (subPageID) => {};
   const saveSubPageChanges = async (openSubPageID) => {
     const errorArray = [];
     try {
@@ -11476,6 +11475,18 @@ $(document).ready(async () => {
           document
             .getElementById("guided-derivative-samples-organization-page")
             .setAttribute("data-skip-sub-page", "false");
+        }
+        if (buttonNoSamples.classList.contains("selected")) {
+          //add skip-sub-page attribute to element
+          document
+            .getElementById("guided-primary-samples-organization-page")
+            .setAttribute("data-skip-sub-page", "true");
+          document
+            .getElementById("guided-source-samples-organization-page")
+            .setAttribute("data-skip-sub-page", "true");
+          document
+            .getElementById("guided-derivative-samples-organization-page")
+            .setAttribute("data-skip-sub-page", "true");
         }
       }
 
@@ -11802,6 +11813,8 @@ $(document).ready(async () => {
           hideSubNavAndShowMainNav("next");
         }
       }
+
+      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       console.log(error);
       throw error;
@@ -11812,176 +11825,104 @@ $(document).ready(async () => {
   $("#guided-button-sub-page-continue").on("click", async () => {
     //Get the id of the parent page that's currently open
     const currentParentPageID = CURRENT_PAGE.attr("id");
-
+    //Get the id of the sub-page that's currently open
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
-
-    console.log(openSubPageID); //Get the index of the sub-page that's currently open
 
     try {
       await saveSubPageChanges(openSubPageID);
+      console.log(currentParentPageID);
 
-      //Get an array of all the sub pages that are children of the parent page
-      const parentPageSubPages = Array.from(
-        document.getElementById(currentParentPageID).querySelectorAll(".sub-page")
-      ).map((subPage) => subPage.id);
+      if (currentParentPageID != "guided-create-submission-metadata-tab") {
+        //Get an array of all the sub pages that are children of the parent page
+        const nonSkippedSiblingPages = getNonSkippedSubPages(currentParentPageID);
 
-      // Get the index of the sub-page that's currently open
-      const openSubPageIndex = parentPageSubPages.indexOf(openSubPageID);
-
-      if (openSubPageIndex < parentPageSubPages.length - 1) {
-        //If the sub-page that's currently open is not the last sub-page in the parent page
-        //Get the id of the next sub-page
-        const nextSubPageID = parentPageSubPages[openSubPageIndex + 1];
-        setActiveSubPage(nextSubPageID);
-      } else {
-        hideSubNavAndShowMainNav("next");
+        // Get the index of the sub-page that's currently open
+        const openSubPageIndex = nonSkippedSiblingPages.indexOf(openSubPageID);
+        console.log(openSubPageIndex);
+        if (openSubPageIndex < nonSkippedSiblingPages.length - 1) {
+          //If the sub-page that's currently open is not the last sub-page in the parent page
+          //Get the id of the next sub-page and open it
+          const nextSubPageID = nonSkippedSiblingPages[openSubPageIndex + 1];
+          setActiveSubPage(nextSubPageID);
+        } else {
+          hideSubNavAndShowMainNav("next");
+        }
       }
-
-      console.log(parentPageSubPages); //Get the id of the sub-page that's currently open
     } catch (error) {
       console.log(error);
       log.error(error);
       error.map((error) => {
         notyf.open({
-          duration: "55500",
+          duration: "5500",
           type: "error",
           message: error.message,
         });
       });
     }
-
-    //Save progress onto local storage with the dataset name as the key
-    saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   });
+
+  const getNonSkippedSubPages = (parentPageID) => {
+    return Array.from(document.getElementById(parentPageID).querySelectorAll(".sub-page"))
+      .filter((subPage) => subPage.dataset.skipSubPage !== "true")
+      .map((subPage) => subPage.id);
+  };
 
   //sub page back button click handler
   $("#guided-button-sub-page-back").on("click", () => {
     //Get the id of the parent page that's currently open
-    currentParentPageID = CURRENT_PAGE.attr("id");
+    const currentParentPageID = CURRENT_PAGE.attr("id");
     //Get the id of the sub-page that's currently open
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
 
-    switch (currentParentPageID) {
-      case "guided-subjects-folder-tab": {
+    console.log(currentParentPageID);
+
+    if (currentParentPageID != "guided-create-submission-metadata-tab") {
+      const nonSkippedSiblingPages = getNonSkippedSubPages(currentParentPageID);
+      console.log(nonSkippedSiblingPages);
+
+      // Get the index of the sub-page that's currently open
+      const openSubPageIndex = nonSkippedSiblingPages.indexOf(openSubPageID);
+      console.log(openSubPageIndex);
+
+      if (openSubPageIndex > 0) {
+        //If the sub-page that's currently open is not the first sub-page in the parent page
+        //Get the id of the previous sub-page and open it
+        const previousSubPageID = nonSkippedSiblingPages[openSubPageIndex - 1];
+        setActiveSubPage(previousSubPageID);
+      } else {
+        hideSubNavAndShowMainNav("back");
+      }
+    } else {
+      const buttonYesImportDataDerivatives = document.getElementById(
+        "guided-button-import-data-deliverables"
+      );
+      const buttonNoEnterSubmissionDataManually = document.getElementById(
+        "guided-button-enter-submission-metadata-manually"
+      );
+      if (
+        !buttonYesImportDataDerivatives.classList.contains("selected") &&
+        !buttonNoEnterSubmissionDataManually.classList.contains("selected")
+      ) {
+        hideSubNavAndShowMainNav("back");
+      }
+      if (buttonYesImportDataDerivatives.classList.contains("selected")) {
         switch (openSubPageID) {
-          case "guided-specify-subjects-page": {
+          case "guided-data-derivative-import-page": {
             hideSubNavAndShowMainNav("back");
             break;
           }
-
-          case "guided-organize-subjects-into-pools-page": {
-            setActiveSubPage("guided-specify-subjects-page");
+          case "guided-completion-date-selection-page": {
+            setActiveSubPage("guided-data-derivative-import-page");
             break;
           }
-
-          case "guided-specify-samples-page": {
-            setActiveSubPage("guided-organize-subjects-into-pools-page");
+          case "guided-submission-metadata-page": {
+            setActiveSubPage("guided-completion-date-selection-page");
             break;
           }
         }
-        break;
       }
-
-      case "guided-primary-data-organization-tab": {
-        switch (openSubPageID) {
-          case "guided-primary-samples-organization-page": {
-            hideSubNavAndShowMainNav("back");
-            break;
-          }
-
-          case "guided-primary-subjects-organization-page": {
-            if (
-              document.getElementById("guided-primary-samples-organization-page").dataset
-                .skipSubPage === "true"
-            ) {
-              hideSubNavAndShowMainNav("back");
-              break;
-            }
-            setActiveSubPage("guided-primary-samples-organization-page");
-            break;
-          }
-        }
-        break;
-      }
-
-      case "guided-source-data-organization-tab": {
-        switch (openSubPageID) {
-          case "guided-source-samples-organization-page": {
-            hideSubNavAndShowMainNav("back");
-            break;
-          }
-
-          case "guided-source-subjects-organization-page": {
-            setActiveSubPage("guided-source-samples-organization-page");
-            break;
-          }
-        }
-        break;
-      }
-
-      case "guided-derivative-data-organization-tab": {
-        switch (openSubPageID) {
-          case "guided-derivative-samples-organization-page": {
-            hideSubNavAndShowMainNav("back");
-            break;
-          }
-
-          case "guided-derivative-subjects-organization-page": {
-            setActiveSubPage("guided-derivative-samples-organization-page");
-            break;
-          }
-        }
-        break;
-      }
-
-      case "guided-create-submission-metadata-tab": {
-        const buttonYesImportDataDerivatives = document.getElementById(
-          "guided-button-import-data-deliverables"
-        );
-        const buttonNoEnterSubmissionDataManually = document.getElementById(
-          "guided-button-enter-submission-metadata-manually"
-        );
-        if (
-          !buttonYesImportDataDerivatives.classList.contains("selected") &&
-          !buttonNoEnterSubmissionDataManually.classList.contains("selected")
-        ) {
-          hideSubNavAndShowMainNav("back");
-          break;
-        }
-        if (buttonYesImportDataDerivatives.classList.contains("selected")) {
-          switch (openSubPageID) {
-            case "guided-data-derivative-import-page": {
-              hideSubNavAndShowMainNav("back");
-              break;
-            }
-            case "guided-completion-date-selection-page": {
-              setActiveSubPage("guided-data-derivative-import-page");
-              break;
-            }
-            case "guided-submission-metadata-page": {
-              if (
-                document
-                  .getElementById("guided-button-import-data-deliverables")
-                  .classList.contains("selected")
-              ) {
-                setActiveSubPage("guided-completion-date-selection-page");
-              }
-
-              if (
-                document
-                  .getElementById("guided-button-enter-submission-metadata-manually")
-                  .classList.contains("selected")
-              ) {
-                setActiveSubPage("guided-data-derivative-import-page");
-              }
-              break;
-            }
-          }
-        }
-        if (buttonNoEnterSubmissionDataManually.classList.contains("selected")) {
-          hideSubNavAndShowMainNav("back");
-        }
-        break;
+      if (buttonNoEnterSubmissionDataManually.classList.contains("selected")) {
+        hideSubNavAndShowMainNav("back");
       }
     }
   });
