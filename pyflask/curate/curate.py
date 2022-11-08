@@ -2262,8 +2262,9 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
 
 def normalize_tracking_folder(tracking_folder):
     """
-    Normalize the tracking folder path to be a dictonary with the shape: {files: {}, folders: {}}. 
-    This shape matches our dataset structure object.
+    Normalize the tracking folder object to be a dictonary with the shape: {files: {}, folders: {}}. 
+    This shape matches our dataset structure object. Recall, the tracking folder receives information about what folders and 
+    files are stored on Pennsieve. We update this as we update Pennsieve's state. 
     """
     if tracking_folder == "":
         return []
@@ -2337,15 +2338,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 normalize_tracking_folder(ps_folder)
                 my_tracking_folder["children"] = ps_folder["children"]
 
-
-            # list of existing bf folders at this level
-            # (
-            #     my_bf_existing_folders,
-            #     my_bf_existing_folders_name,
-            # ) = bf_get_existing_folders_details(my_tracking_folder["children"])
-
-
-
             # create/replace/skip folder
             if "folders" in my_folder.keys():
                 for folder_key, folder in my_folder["folders"].items():
@@ -2413,11 +2405,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             
 
             if "folders" in my_folder.keys():
-                # (
-                #     my_bf_existing_folders,
-                #     my_bf_existing_folders_name,
-                # ) = bf_get_existing_folders_details(ps_folder_children)
-
                 for folder_key, folder in my_folder["folders"].items():
                     relative_path = generate_relative_path(my_relative_path, folder_key)
 
