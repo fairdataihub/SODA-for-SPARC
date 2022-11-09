@@ -2448,6 +2448,99 @@ const cleanUpEmptyGuidedStructureFolders = async (
   subjectsOrSamples,
   boolCleanUpAllGuidedStructureFolders
 ) => {
+  if (subjectsOrSamples === "samples") {
+    //Get samples to check if their folders are
+    const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
+
+    if (boolCleanUpAllGuidedStructureFolders === true) {
+      //delete all folders for samples in pools
+      for (const sample of samplesInPools) {
+        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
+          "folders"
+        ][sample.subjectName]["folders"][sample.sampleName];
+      }
+      //delete all folders for samples outside of pools
+      for (const sample of samplesOutsidePools) {
+        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
+          "folders"
+        ][sample.sampleName];
+      }
+
+      return true;
+    } else {
+      const samplesWithEmptyFolders = [];
+
+      //loop through samplesInPools and add samples with empty folders to samplesWithEmptyFolders
+      for (const sample of samplesInPools) {
+        const sampleFolderContents =
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
+            "folders"
+          ][sample.subjectName]["folders"][sample.sampleName];
+        if (
+          Object.keys(sampleFolderContents.folders).length === 0 &&
+          Object.keys(sampleFolderContents.files).length === 0
+        ) {
+          samplesWithEmptyFolders.push(sample);
+        }
+      }
+      //loop through samplesOutsidePools and add samples with empty folders to samplesWithEmptyFolders
+      for (const sample of samplesOutsidePools) {
+        const sampleFolderContents =
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
+            "folders"
+          ][sample.sampleName];
+        if (
+          Object.keys(sampleFolderContents.folders).length === 0 &&
+          Object.keys(sampleFolderContents.files).length === 0
+        ) {
+          samplesWithEmptyFolders.push(sample);
+        }
+      }
+
+      if (samplesWithEmptyFolders.length > 0) {
+        let result = await Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          title: "Missing data",
+          html: `${highLevelFolder} data was not added to the following samples:<br /><br />
+            <ul>
+              ${samplesWithEmptyFolders
+                .map(
+                  (sample) =>
+                    `<li class="text-left">${sample.subjectName}/${sample.sampleName}</li>`
+                )
+                .join("")}
+            </ul>`,
+          icon: "warning",
+          reverseButtons: true,
+          showCancelButton: true,
+          cancelButtonColor: "#6e7881",
+          cancelButtonText: `Finish adding ${highLevelFolder} data to samples`,
+          confirmButtonText: `Continue without adding ${highLevelFolder} data to all samples`,
+          allowOutsideClick: false,
+        });
+        //If the user indicates they do not have any subjects, skip to source folder
+        if (result.isConfirmed) {
+          //delete empty samples from the datasetStructureJSONObj
+          for (sample of samplesWithEmptyFolders) {
+            if (sample.poolName) {
+              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                sample.poolName
+              ]["folders"][sample.subjectName]["folders"][sample.sampleName];
+            } else {
+              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                sample.subjectName
+              ]["folders"][sample.sampleName];
+            }
+          }
+          return true;
+        }
+      } else {
+        return true;
+      }
+    }
+  }
+
   if (subjectsOrSamples === "subjects") {
     //Remove subjects from datsetStructuresJSONObj if they don't exist
     const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
@@ -2552,6 +2645,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
           cancelButtonColor: "#6e7881",
           cancelButtonText: `Finish adding ${highLevelFolder} data to subjects`,
           confirmButtonText: `Continue without adding ${highLevelFolder} data to all subjects`,
+          allowOutsideClick: false,
         });
         if (result.isConfirmed) {
           for (subject of subjectsWithEmptyFolders) {
@@ -2592,98 +2686,6 @@ const cleanUpEmptyGuidedStructureFolders = async (
             delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
           }
         }
-        return true;
-      }
-    }
-  }
-
-  if (subjectsOrSamples === "samples") {
-    //Get samples to check if their folders are
-    const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
-
-    if (boolCleanUpAllGuidedStructureFolders === true) {
-      //delete all folders for samples in pools
-      for (const sample of samplesInPools) {
-        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
-          "folders"
-        ][sample.subjectName]["folders"][sample.sampleName];
-      }
-      //delete all folders for samples outside of pools
-      for (const sample of samplesOutsidePools) {
-        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
-          "folders"
-        ][sample.sampleName];
-      }
-
-      return true;
-    } else {
-      const samplesWithEmptyFolders = [];
-
-      //loop through samplesInPools and add samples with empty folders to samplesWithEmptyFolders
-      for (const sample of samplesInPools) {
-        const sampleFolderContents =
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
-            "folders"
-          ][sample.subjectName]["folders"][sample.sampleName];
-        if (
-          Object.keys(sampleFolderContents.folders).length === 0 &&
-          Object.keys(sampleFolderContents.files).length === 0
-        ) {
-          samplesWithEmptyFolders.push(sample);
-        }
-      }
-      //loop through samplesOutsidePools and add samples with empty folders to samplesWithEmptyFolders
-      for (const sample of samplesOutsidePools) {
-        const sampleFolderContents =
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
-            "folders"
-          ][sample.sampleName];
-        if (
-          Object.keys(sampleFolderContents.folders).length === 0 &&
-          Object.keys(sampleFolderContents.files).length === 0
-        ) {
-          samplesWithEmptyFolders.push(sample);
-        }
-      }
-
-      if (samplesWithEmptyFolders.length > 0) {
-        let result = await Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          title: "Missing data",
-          html: `${highLevelFolder} data was not added to the following samples:<br /><br />
-            <ul>
-              ${samplesWithEmptyFolders
-                .map(
-                  (sample) =>
-                    `<li class="text-left">${sample.subjectName}/${sample.sampleName}</li>`
-                )
-                .join("")}
-            </ul>`,
-          icon: "warning",
-          reverseButtons: true,
-          showCancelButton: true,
-          cancelButtonColor: "#6e7881",
-          cancelButtonText: `Finish adding ${highLevelFolder} data to samples`,
-          confirmButtonText: `Continue without adding ${highLevelFolder} data to all samples`,
-        });
-        //If the user indicates they do not have any subjects, skip to source folder
-        if (result.isConfirmed) {
-          //delete empty samples from the datasetStructureJSONObj
-          for (sample of samplesWithEmptyFolders) {
-            if (sample.poolName) {
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                sample.poolName
-              ]["folders"][sample.subjectName]["folders"][sample.sampleName];
-            } else {
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                sample.subjectName
-              ]["folders"][sample.sampleName];
-            }
-          }
-          return true;
-        }
-      } else {
         return true;
       }
     }
@@ -11536,19 +11538,21 @@ $(document).ready(async () => {
           });
           throw errorArray;
         }
+
         if (buttonYesPrimarySampleData.classList.contains("selected")) {
           const continueWithoutAddingPrimaryDataToAllSamples =
             await cleanUpEmptyGuidedStructureFolders("primary", "samples", false);
-          if (continueWithoutAddingPrimaryDataToAllSamples) {
-            setActiveSubPage("guided-primary-subjects-organization-page");
+          if (!continueWithoutAddingPrimaryDataToAllSamples) {
+            errorArray.push({
+              type: "info",
+              message: "Please add primary data to all samples before continuing.",
+            });
+            throw errorArray;
           }
         }
+
         if (buttonNoPrimarySampleData.classList.contains("selected")) {
-          const continueAfterDeletingAllPrimarySampleFolders =
-            await cleanUpEmptyGuidedStructureFolders("primary", "samples", true);
-          if (continueAfterDeletingAllPrimarySampleFolders) {
-            setActiveSubPage("guided-primary-subjects-organization-page");
-          }
+          await cleanUpEmptyGuidedStructureFolders("primary", "samples", true);
         }
       }
 
@@ -11565,23 +11569,56 @@ $(document).ready(async () => {
         ) {
           errorArray.push({
             type: "error",
-            message: "Please indicate if you have primary data to add to your subjects.",
+            message: "Please indicate if you have primary data to add to your pools.",
           });
           throw errorArray;
         }
         if (buttonYesPrimarySubjectData.classList.contains("selected")) {
           const continueWithoutAddingPrimaryDataToAllSubjects =
             await cleanUpEmptyGuidedStructureFolders("primary", "subjects", false);
-          if (continueWithoutAddingPrimaryDataToAllSubjects) {
-            hideSubNavAndShowMainNav("next");
+          if (!continueWithoutAddingPrimaryDataToAllSubjects) {
+            errorArray.push({
+              type: "info",
+              message: "Please add primary data to all subjects before continuing.",
+            });
+            throw errorArray;
           }
         }
         if (buttonNoPrimarySubjectData.classList.contains("selected")) {
-          const continueAfterDeletingAllPrimaryPoolsAndSubjects =
-            await cleanUpEmptyGuidedStructureFolders("primary", "subjects", true);
-          if (continueAfterDeletingAllPrimaryPoolsAndSubjects) {
-            hideSubNavAndShowMainNav("next");
+          await cleanUpEmptyGuidedStructureFolders("primary", "subjects", true);
+        }
+      }
+
+      if (openSubPageID === "guided-primary-pools-organization-page") {
+        const buttonYesPrimaryPoolData = document.getElementById(
+          "guided-button-add-pool-primary-data"
+        );
+        const buttonNoPrimaryPoolData = document.getElementById(
+          "guided-button-no-pool-primary-data"
+        );
+        if (
+          !buttonYesPrimaryPoolData.classList.contains("selected") &&
+          !buttonNoPrimaryPoolData.classList.contains("selected")
+        ) {
+          errorArray.push({
+            type: "error",
+            message: "Please indicate if you have primary data to add to your pools.",
+          });
+          throw errorArray;
+        }
+        if (buttonYesPrimaryPoolData.classList.contains("selected")) {
+          const continueWithoutAddingPrimaryDataToAllPools =
+            await cleanUpEmptyGuidedStructureFolders("primary", "pools", false);
+          if (!continueWithoutAddingPrimaryDataToAllPools) {
+            errorArray.push({
+              type: "info",
+              message: "Please add primary data to all pools before continuing.",
+            });
+            throw errorArray;
           }
+        }
+        if (buttonNoPrimaryPoolData.classList.contains("selected")) {
+          await cleanUpEmptyGuidedStructureFolders("primary", "pools", true);
         }
       }
 
@@ -11883,7 +11920,7 @@ $(document).ready(async () => {
       error.map((error) => {
         notyf.open({
           duration: "5500",
-          type: "error",
+          type: error.type,
           message: error.message,
         });
       });

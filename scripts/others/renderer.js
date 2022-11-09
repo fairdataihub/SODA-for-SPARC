@@ -321,6 +321,17 @@ const notyf = new Notyf({
       duration: 3000,
     },
     {
+      type: "info",
+      background: "#13716D",
+      icon: {
+        className: "fas fa-info-circle",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 3000,
+    },
+
+    {
       type: "app_update_warning",
       background: "#fa8c16",
       icon: {

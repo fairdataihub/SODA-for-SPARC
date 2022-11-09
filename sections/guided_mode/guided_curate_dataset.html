@@ -971,7 +971,40 @@
             <div
               class="guided--panel mt-md sub-page hidden"
               id="guided-primary-pools-organization-page"
-            ></div>
+            >
+              <div class="guided--section">
+                <label class="guided--form-label centered">
+                  Do you have primary data for your pools?
+                </label>
+                <div class="guided--radio-button-container" style="margin-bottom: 7px">
+                  <button
+                    class="ui positive basic button guided--radio-button"
+                    id="guided-button-add-pool-primary-data"
+                    data-next-element="guided-primary-pools-container"
+                    data-button-config-value="dataset-contains-primary-pool-data"
+                    data-button-config-value-state="yes"
+                  >
+                    Yes
+                  </button>
+                  <button
+                    class="ui negative basic button guided--radio-button"
+                    id="guided-button-no-pool-primary-data"
+                    data-next-element="guided-warning-before-deleting-primary-pools-data-container"
+                    data-button-config-value="dataset-contains-primary-pool-data"
+                    data-button-config-value-state="no"
+                  >
+                    No
+                  </button>
+                </div>
+              </div>
+              <div class="guided--panel" id="guided-primary-pools-container">a</div>
+              <div
+                class="guided--panel"
+                id="guided-warning-before-deleting-primary-pools-data-container"
+              >
+                b
+              </div>
+            </div>
           </div>
         </div>
         <div
