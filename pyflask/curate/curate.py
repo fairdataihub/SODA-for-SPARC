@@ -2117,11 +2117,13 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
                     and folder["files"][item]["type"] == "bf"
                 ):
                     new_folder_id = ""
+                    # create the folders if they do not exist
                     new_folder_id = recursive_check_and_create_bf_file_path(
                         folder["files"][item]["folderpath"].copy(), 0, bfsd
                     )
-                    destination_folder = bf.get(new_folder_id)
-                    bf.move(destination_folder, folder["files"][item]["path"])
+                    # move the file into the target folder on Pennsieve
+                    r = requests.post(f"{PENNSIEVE_URL}/data/move",  json={"things": [folder["files"][item]["path"]], "destination": new_folder_id}, headers=create_request_headers(ps),)
+                    r.raise_for_status()
 
         for item in list(folder["folders"]):
             recursive_check_moved_files(folder["folders"][item])
