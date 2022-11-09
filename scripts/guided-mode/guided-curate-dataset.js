@@ -1410,7 +1410,7 @@ const enableElementById = (id) => {
   elementToEnable.style.opacity = "1";
   elementToEnable.style.pointerEvents = "auto";
 };
-const switchElementVisibility = (elementIdToHide, elementIdToShow) => {
+const hideEleShowEle = (elementIdToHide, elementIdToShow) => {
   elementToHide = document.getElementById(elementIdToHide);
   elementToShow = document.getElementById(elementIdToShow);
   elementToHide.classList.add("hidden");
@@ -2443,6 +2443,14 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
   }
 };
 
+const folderIsEmpty = (folder) => {
+  return Object.keys(folder.folders).length === 0 && Object.keys(folder.files).length === 0;
+};
+
+const folderHasNoFiles = (folder) => {
+  return Object.keys(folder.files).length === 0;
+};
+
 const cleanUpEmptyGuidedStructureFolders = async (
   highLevelFolder,
   subjectsOrSamples,
@@ -2688,6 +2696,18 @@ const cleanUpEmptyGuidedStructureFolders = async (
         }
         return true;
       }
+    }
+  }
+  if (subjectsOrSamples === "pools") {
+    //Get pools to check if their folders are
+    const pools = sodaJSONObj.getPools();
+    const poolsWithNoDataFiles = [];
+
+    for (const pool of Object.keys(pools)) {
+      console.log(pool);
+      const poolFolderContents =
+        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+      console.log(poolFolderContents);
     }
   }
 };
@@ -3646,7 +3666,7 @@ const openPage = async (targetPageID) => {
         loop: true,
         autoplay: true,
       });
-      switchElementVisibility("guided-form-add-a-subject", "guided-form-add-a-subject-intro");
+      hideEleShowEle("guided-form-add-a-subject", "guided-form-add-a-subject-intro");
     }
 
     if (targetPageID === "guided-create-samples-metadata-tab") {
@@ -3666,7 +3686,7 @@ const openPage = async (targetPageID) => {
         loop: true,
         autoplay: true,
       });
-      switchElementVisibility("guided-form-add-a-sample", "guided-form-add-a-sample-intro");
+      hideEleShowEle("guided-form-add-a-sample", "guided-form-add-a-sample-intro");
 
       // Hide the samples protocol section if no protocols have been attached to the dataset
       const samplesProtocolContainer = document.getElementById("guided-container-samples-protocol");
@@ -3957,6 +3977,30 @@ const setActiveSubPage = (pageIdToActivate) => {
       primarySubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
       lottie.loadAnimation({
         container: primarySubjectsFileExplorerBlackArrowLottieContainer,
+        animationData: blackArrow,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+      break;
+    }
+
+    case "guided-primary-pools-organization-page": {
+      renderPoolsHighLevelFolderAsideItems("primary");
+      //guidedUpdateFolderStructure("primary", "pools"); Don't need because pools already generated
+      $("#guided-file-explorer-elements").appendTo(
+        $("#guided-primary-pools-file-explorer-container")
+      );
+      //Hide the file explorer and show the intro
+      hideEleShowEle("guided-file-explorer-elements", "guided-primary-pools-file-explorer-intro");
+
+      const primaryPoolsFileExplorerBlackArrowLottieContainer = document.getElementById(
+        "primary-pools-file-explorer-black-arrow-lottie-container"
+      );
+      primaryPoolsFileExplorerBlackArrowLottieContainer.innerHTML = "";
+      //Load the black arrow lottie animation
+      lottie.loadAnimation({
+        container: primaryPoolsFileExplorerBlackArrowLottieContainer,
         animationData: blackArrow,
         renderer: "svg",
         loop: true,
@@ -5161,21 +5205,18 @@ const highLevelFolderPageData = {
     contentsText:
       "Your primary should contain lorem ipsum foo bar random instructional text will go here",
     pathSuffix: "primary/",
-    backPageId: "guided-primary-folder-tab",
   },
   source: {
     headerText: "Virtually structure your source folder in the interface below.",
     contentsText:
       "Your source folder should contain lorem ipsum foo bar random instructional text will go here",
     pathSuffix: "source/",
-    backPageId: "guided-source-folder-tab",
   },
   derivative: {
     headerText: "Virtually structure your derivative folder in the interface below.",
     contentsText:
       "Your derivative folder should contain lorem ipsum foo bar random instructional text will go here",
     pathSuffix: "derivative/",
-    backPageId: "guided-derivative-folder-tab",
   },
   code: {
     headerText: "Provide the code data associated with your dataset in the interface below",
@@ -5183,7 +5224,6 @@ const highLevelFolderPageData = {
     as you would like to have them in your dataset when it is generated (note that none of
     your original data will be modified).<br />`,
     pathSuffix: "code/",
-    backPageId: "guided-code-folder-tab",
   },
   protocol: {
     headerText: "Provide the protocol data associated with your dataset in the interface below",
@@ -5191,7 +5231,6 @@ const highLevelFolderPageData = {
     as you would like to have them in your dataset when it is generated (note that none of
     your original data will be modified).`,
     pathSuffix: "protocol/",
-    backPageId: "guided-protocol-folder-tab",
   },
   docs: {
     headerText: "Provide docs data associated with your dataset in the interface below",
@@ -5199,7 +5238,6 @@ const highLevelFolderPageData = {
     as you would like to have them in your dataset when it is generated (note that none of
     your original data will be modified).`,
     pathSuffix: "docs/",
-    backPageId: "guided-docs-folder-tab",
   },
 };
 const generateHighLevelFolderSubFolderPageData = (
@@ -5209,7 +5247,6 @@ const generateHighLevelFolderSubFolderPageData = (
 ) => {
   const customPageData = {
     pathSuffix: `${highLevelFolderName}/${pathSuffix}`,
-    backPageId: `guided-${sampleOrSubject}-folder-tab`,
   };
   return customPageData;
 };
@@ -8473,7 +8510,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
         `guided-${highLevelFolderName}-samples-file-explorer-intro`
       );
       if (!introElement.classList.contains("hidden")) {
-        switchElementVisibility(
+        hideEleShowEle(
           `guided-${highLevelFolderName}-samples-file-explorer-intro`,
           "guided-file-explorer-elements"
         );
@@ -8624,7 +8661,7 @@ const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
         `guided-${highLevelFolderName}-subjects-file-explorer-intro`
       );
       if (!introElement.classList.contains("hidden")) {
-        switchElementVisibility(
+        hideEleShowEle(
           `guided-${highLevelFolderName}-subjects-file-explorer-intro`,
           "guided-file-explorer-elements"
         );
@@ -8647,6 +8684,66 @@ const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
         pathSuffix
       );
       updateFolderStructureUI(samplePageData);
+    });
+    //add hover event that changes the background color to black
+    item.addEventListener("mouseover", (e) => {
+      e.target.style.backgroundColor = "whitesmoke";
+    });
+    item.addEventListener("mouseout", (e) => {
+      e.target.style.backgroundColor = "";
+    });
+  });
+};
+
+const renderPoolsHighLevelFolderAsideItems = (highLevelFolderName) => {
+  const asideElement = document.getElementById(`guided-${highLevelFolderName}-pools-aside`);
+  asideElement.innerHTML = "";
+  const pools = Object.keys(sodaJSONObj.getPools());
+
+  const poolItems = pools
+    .map((pool) => {
+      return `
+          <a 
+            class="${highLevelFolderName}-selection-aside-item selection-aside-item"
+            style="align-self: center; width: 97%; direction: ltr;"
+            data-path-suffix="${pool}"
+          >${pool}</a>
+        `;
+    })
+    .join("\n");
+
+  //Add the subjects to the DOM
+  asideElement.innerHTML = poolItems;
+
+  //add click event to each sample item
+  const selectionAsideItems = document.querySelectorAll(
+    `a.${highLevelFolderName}-selection-aside-item`
+  );
+  selectionAsideItems.forEach((item) => {
+    item.addEventListener("click", (e) => {
+      //Hide intro and show subject folder explorer if intro is open
+      hideEleShowEle(
+        `guided-${highLevelFolderName}-pools-file-explorer-intro`,
+        "guided-file-explorer-elements"
+      );
+
+      //add selected class to clicked element
+      e.target.classList.add("is-selected");
+      //remove selected class from all other elements
+      selectionAsideItems.forEach((item) => {
+        if (item != e.target) {
+          item.classList.remove("is-selected");
+        }
+      });
+      //get the path prefix from the clicked item
+      const pathSuffix = e.target.dataset.pathSuffix;
+
+      const poolPageData = generateHighLevelFolderSubFolderPageData(
+        "pool",
+        highLevelFolderName,
+        pathSuffix
+      );
+      updateFolderStructureUI(poolPageData);
     });
     //add hover event that changes the background color to black
     item.addEventListener("mouseover", (e) => {
@@ -8745,7 +8842,7 @@ const renderSubjectsMetadataAsideItems = () => {
       //Hide intro and show metadata fields if intro is open
       const introElement = document.getElementById("guided-form-add-a-subject-intro");
       if (!introElement.classList.contains("hidden")) {
-        switchElementVisibility("guided-form-add-a-subject-intro", "guided-form-add-a-subject");
+        hideEleShowEle("guided-form-add-a-subject-intro", "guided-form-add-a-subject");
       }
       //Save the subject metadata from the previous subject being worked on
       previousSubject = document.getElementById("guided-bootbox-subject-id").value;
@@ -8880,7 +8977,7 @@ const renderSamplesMetadataAsideItems = () => {
       //Hide intro and show metadata fields if intro is open
       const introElement = document.getElementById("guided-form-add-a-sample-intro");
       if (!introElement.classList.contains("hidden")) {
-        switchElementVisibility("guided-form-add-a-sample-intro", "guided-form-add-a-sample");
+        hideEleShowEle("guided-form-add-a-sample-intro", "guided-form-add-a-sample");
       }
 
       previousSample = document.getElementById("guided-bootbox-sample-id").value;
@@ -8975,12 +9072,12 @@ $(document).ready(async () => {
       document.getElementById("guided-dataset-name-input").value = "";
       document.getElementById("guided-dataset-subtitle-input").value = "";
 
-      switchElementVisibility("curation-preparation-parent-tab", "guided-home");
+      hideEleShowEle("curation-preparation-parent-tab", "guided-home");
       //hide the intro footer
       document.getElementById("guided-footer-intro").classList.add("hidden");
       guidedPrepareHomeScreen();
     } else if (!guidedDatasetNameSubtitlePage.classList.contains("hidden")) {
-      switchElementVisibility("guided-name-subtitle", "guided-intro-page");
+      hideEleShowEle("guided-name-subtitle", "guided-intro-page");
     }
   });
   $("#guided-button-dataset-intro-next").on("click", async function () {
@@ -8988,7 +9085,7 @@ $(document).ready(async () => {
     const guidedDatasetNameSubtitlePage = document.getElementById("guided-name-subtitle");
 
     if (!guidedIntroPage.classList.contains("hidden")) {
-      switchElementVisibility("guided-intro-page", "guided-name-subtitle");
+      hideEleShowEle("guided-intro-page", "guided-name-subtitle");
     } else if (!guidedDatasetNameSubtitlePage.classList.contains("hidden")) {
       let errorArray = [];
     }
