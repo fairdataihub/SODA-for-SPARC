@@ -6184,7 +6184,13 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
   //allow amount to choose how many elements to create
   //break elements into sets of 100
   const rootFolders = ["primary", "source", "derivative"];
+  const datasetPath = document.getElementById("guided-input-global-path");
+  const pathDisplay = document.getElementById("datasetPathDisplay");
+  const fileExplorerBackButton = document.getElementById("guided-button-back");
   let hideSampleFolders = false;
+  let splitPath = datasetPath.value.split("/");
+  let fullPath = datasetPath.value;
+
   if (organizeDSglobalPath.id === "guided-input-global-path") {
     const splitPathCheck = (num, button) => {
       //based on the paths length we will determine if the back button should be disabled/hidden or not
@@ -6200,6 +6206,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     };
 
     let currentPageID = CURRENT_PAGE.attr("id");
+    console.log(currentPageID);
     //capsules need to determine if sample or subjects section
     //subjects initially display two folder levels meanwhile samples will initially only show one folder level
     let primarySampleCapsule = document.getElementById(
@@ -6220,12 +6227,6 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     let derivativeSubjectCapsule = document.getElementById(
       "guided-derivative-subjects-organization-page-capsule"
     );
-
-    let datasetPath = document.getElementById("guided-input-global-path");
-    let pathDisplay = document.getElementById("datasetPathDisplay");
-    let fileExplorerBackButton = document.getElementById("guided-button-back");
-    let splitPath = datasetPath.value.split("/");
-    let fullPath = datasetPath.value;
 
     //remove my_dataset_folder and if any of the ROOT FOLDER names is included
     if (splitPath[0] === "My_dataset_folder") splitPath.shift();
@@ -6325,10 +6326,17 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
   let file_elements = [],
     folder_elements = [];
   let count = 0;
+
+  //start creating folder elements to be rendered
   if (Object.keys(sortedObj["folders"]).length > 0) {
     for (var item in sortedObj["folders"]) {
-      if(hideSampleFolders) {
-        if(item.substr(0,4) === "sam-") {
+      if (hideSampleFolders) {
+        let currentSubjectFolder = splitPath[0];
+        const currentSubjects =
+          sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+            currentSubjectFolder
+          ];
+        if (item in currentSubjects) {
           continue;
         }
       }
