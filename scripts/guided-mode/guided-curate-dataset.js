@@ -2560,9 +2560,6 @@ const cleanUpEmptyGuidedStructureFolders = async (
                 subject.poolName
               ]["folders"][subject.subjectName];
             } else {
-              console.log(
-                datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.subjectName]
-              );
               delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                 subject.subjectName
               ];
@@ -11420,7 +11417,7 @@ $(document).ready(async () => {
               message:
                 "Please add at least one pool or indicate that your dataset does not contain pools.",
             });
-            throw errorarray;
+            throw errorArray;
           }
           //delete empty pools
           for (const pool of Object.keys(pools)) {
@@ -11429,11 +11426,43 @@ $(document).ready(async () => {
                 sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"][pool]
               ).length === 0
             ) {
-              delete sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-                pool
-              ];
+              errorArray.push({
+                type: "error",
+                message:
+                  "Empty data pools are not allowed. Please add at least one subject to each pool or delete the empty pool.",
+              });
+              throw errorArray;
             }
           }
+
+          document
+            .getElementById("guided-primary-pools-organization-page")
+            .setAttribute("data-skip-sub-page", "false");
+          document
+            .getElementById("guided-source-pools-organization-page")
+            .setAttribute("data-skip-sub-page", "false");
+          document
+            .getElementById("guided-derivative-pools-organization-page")
+            .setAttribute("data-skip-sub-page", "false");
+        }
+
+        if (buttonNoPools.classList.contains("selected")) {
+          const pools = sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
+
+          //If any pools exist, delete them
+          for (const pool of Object.keys(pools)) {
+            sodaJSONObj.deletePool(pool);
+          }
+
+          document
+            .getElementById("guided-primary-pools-organization-page")
+            .setAttribute("data-skip-sub-page", "true");
+          document
+            .getElementById("guided-source-pools-organization-page")
+            .setAttribute("data-skip-sub-page", "true");
+          document
+            .getElementById("guided-derivative-pools-organization-page")
+            .setAttribute("data-skip-sub-page", "true");
         }
       }
 
