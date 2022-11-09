@@ -2665,7 +2665,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 # my_bf_existing_files,
                 my_bf_existing_files_name,
                 my_bf_existing_files_name_with_extension,
-            ) = bf_get_existing_files_details(ds)
+            ) = bf_get_existing_files_details(ds, ps)
             metadata_files = soda_json_structure["metadata-files"]
             for file_key, file in metadata_files.items():
                 if file["type"] == "local":
@@ -2806,9 +2806,23 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         if list_upload_metadata_files:
             namespace_logger.info("bf_generate_new_dataset (optional) step 6 upload metadata files")
             main_curate_progress_message = (
-                "Uploading metadata files in high-level dataset folder " + str(ds.name)
+                "Uploading metadata files in high-level dataset folder " + str(ds['content']['name'])
             )
-            ds.upload(*list_upload_metadata_files)
+
+            # create the manifest 
+            manifest_data = ps.manifest.create(list_upload_metadata_files[0])
+            manifest_id = manifest_data.manifest_id
+            
+            # add the files to the manifest
+            for manifest_path in list_upload_metadata_files[1:]:
+                # subprocess call to the pennsieve agent to add the files to the manifest
+                subprocess.run(["pennsieve", "manifest", "add", str(manifest_id), manifest_path])
+
+            # upload the manifest 
+            ps.manifest.upload(manifest_id)
+
+            # subscribe to the manifest upload so we wait until it has finished uploading before moving on
+            # subscription_rendezvous_object = ps.subscribe(10)
 
 
         # 7. Upload manifest files
