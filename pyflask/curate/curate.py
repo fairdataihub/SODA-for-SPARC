@@ -2833,14 +2833,27 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         # 7. Upload manifest files
         if list_upload_manifest_files:
             namespace_logger.info("bf_generate_new_dataset (optional) step 7 upload manifest files")
+
+            # create the manifest 
+            manifest_data = ps.manifest.create(list_upload_manifest_files[0][0][0])
+            manifest_id = manifest_data.manifest_id
+
+
             for item in list_upload_manifest_files:
-                manifest_file = item[0]
-                bf_folder = item[1]
-                main_curate_progress_message = (
-                    "Uploading manifest file in " + str(bf_folder.name) + " folder"
-                )
-                bf_folder.upload(*manifest_file)
-                bf_folder.update()
+                manifest_file = item[0][0]
+                ps_folder = item[1]
+                main_curate_progress_message = ( f"Uploading manifest file in {ps_folder['content']['name']} folder" )
+                
+                # add the files to the manifest
+                # subprocess call to the pennsieve agent to add the files to the manifest
+                subprocess.run(["pennsieve", "manifest", "add", str(manifest_id), manifest_file])
+
+                
+            # upload the manifest 
+            ps.manifest.upload(manifest_id)
+
+            time.sleep(5)
+
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
 
 
