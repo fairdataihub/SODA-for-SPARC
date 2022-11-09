@@ -6,17 +6,41 @@ import subprocess
 from subprocess import STDOUT
 from os.path import exists 
 
-# client = Pennsieve()
-# client.user.switch('sodie')
-# client.user.reauthenticate()
-# client.useDataset("N:dataset:1cb4bf59-2b6d-48c9-8dae-88f722c6e328")
+client = Pennsieve()
+client.user.switch('soda')
+client.user.reauthenticate()
+client.useDataset("N:dataset:8a2d765f-fa97-4e76-b534-deedb6757571")
+
+
+PENNSIEVE_URL = "https://api.pennsieve.io"
+
+def create_request_headers(ps):
+    """
+    Creates necessary HTTP headers for making Pennsieve API requests.
+    Input: 
+        ps: Pennsieve object for a user that has been authenticated
+    """
+    return {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {ps.getUser()['session_token']}",
+    }
+
+# r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(client), json={"things": ["N:package:eaf433a5-ec64-456e-acd3-881ef2784ec3"]})
+# r.raise_for_status()
+
+
+file_info = client.manifest.listFiles(6, 0, 1)
+print(file_info)
+print(type(file_info))
+# print(file_info['file']['id'])
+
 
 
 
 #local_ds = path.join(path.expanduser("~"), "Desktop", "DatasetTemplate")
 # manifest = client.manifest.create(local_ds)
 
-# PENNSIEVE_URL = "https://api.pennsieve.io"
+
 
 # try:
 #   r = requests.post(f"{PENNSIEVE_URL}/packages", headers={"Content-Type": "application/json", "Authorization": f"Bearer {client.getUser()['session_token']}",}, 
