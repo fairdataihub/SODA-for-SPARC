@@ -2692,6 +2692,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
             # prepare manifest files
             if soda_json_structure["starting-point"]["type"] == "bf":
+                print("Manifest first option is executing")
                 manifest_files_structure = (
                     create_high_level_manifest_files_existing_bf_starting_point(
                         soda_json_structure
@@ -2703,6 +2704,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     and "dataset-name" not in soda_json_structure["generate-dataset"]
                 ):
                     # generating dataset on an existing bf dataset - account for existing files and manifest files
+                    # TODO: implement with new agent
                     manifest_files_structure = (
                         create_high_level_manifest_files_existing_bf(
                             soda_json_structure, bf, ds, tracking_json_structure
@@ -2710,6 +2712,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     )
                 else:
                     # generating on new bf
+                    # TODO: implement with new agent
                     manifest_files_structure = create_high_level_manifest_files(
                         soda_json_structure
                     )
@@ -2718,16 +2721,18 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             list_upload_manifest_files = []
             for key in manifest_files_structure.keys():
                 manifestpath = manifest_files_structure[key]
-                item = tracking_json_structure["folders"][key]["value"]
-                destination_folder_id = item.id
+                folder = tracking_json_structure["children"]["folders"][key]
+                destination_folder_id = folder["content"]["id"]
                 # delete existing manifest files
-                for subitem in item:
-                    file_name_no_ext = os.path.splitext(subitem.name)[0]
+                for child_key in folder["children"]["files"]:
+                    file_name_no_ext = os.path.splitext(folder['children']['files'][child_key]['content']['name'])[0]
                     if file_name_no_ext.lower() == "manifest":
-                        subitem.delete()
-                        item.update()
+                        # delete the manifest file from the given folder 
+                        r = requests.post(f"{PENNSIEVE_URL}/data/delete", json={"things": [folder['children']['files'][child_key]['content']['id']]}, headers=create_request_headers(ps))
+                        r.raise_for_status()
+
                 # upload new manifest files
-                list_upload_manifest_files.append([[manifestpath], item])
+                list_upload_manifest_files.append([[manifestpath], folder['children']['files'][child_key]])
                 main_total_generate_dataset_size += getsize(manifestpath)
 
         # 5. Upload files, rename, and add to tracking list
