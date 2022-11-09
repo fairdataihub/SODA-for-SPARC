@@ -3093,8 +3093,10 @@ const guidedCropOptions = {
   viewMode: 1,
   responsive: true,
   crop: function (event) {
+    console.log(event)
     var data = event.detail;
     let image_height = Math.round(data.height);
+    console.log(image_height);
 
     guidedFormBannerHeight.value = image_height;
 
@@ -4322,14 +4324,6 @@ function hoverForFullName(ev) {
   showFullName(event, ev.children[1], fullPath);
 }
 
-// // If the document is clicked somewhere
-// document.addEventListener('onmouseover', function(e){
-//   if (e.target.classList.value !== "myFile") {
-//     hideFullPath()
-//   } else {
-//     hoverForPath(e)
-//   }
-// });
 
 document.addEventListener("onmouseover", function (e) {
   if (e.target.classList.value === "fas fa-folder") {
@@ -5661,6 +5655,165 @@ ipcRenderer.on("save-file-organization-dialog", (event) => {
   });
 });
 
+// displays the user selected banner image using Jimp in the edit banner image modal
+//path: array 
+//curationMode: string (guided-moded) (freeform)
+const handleSelectedBannerImage = async (path, curationMode) => {
+  let imgContainer = "";
+  let imgHolder = "";
+  let paraImagePath = "";
+  let viewImportedImage = "";
+  let saveBannerImage = "";
+  let cropperOptions = "";
+  console.log(curationMode);
+  if(curationMode === "guided-mode") {
+    imgHolder = document.getElementById("guided-div-img-container-holder");
+    imgContainer = document.getElementById("guided-div-img-container");
+    viewImportedImage = guidedBfViewImportedImage;
+    paraImagePath = "#guided-para-path-image";
+    saveBannerImage = "#guided-save-banner-image"
+    cropperOptions = guidedCropOptions;
+  }
+  if(curationMode === "freeform") {
+    cropperOptions = cropOptions;
+    paraImagePath = "#para-path-image";
+    saveBannerImage = "#save-banner-image";
+    viewImportedImage = bfViewImportedImage;       
+    imgHolder = document.getElementById("div-img-container-holder");
+    imgContainer = document.getElementById("div-img-container");
+  }
+
+  if (path.length > 0) {
+    let original_image_path = path[0];
+    let image_path = original_image_path;
+    let destination_image_path = require("path").join(
+      homeDirectory,
+      "SODA",
+      "banner-image-conversion"
+    );
+    let converted_image_file = require("path").join(destination_image_path, "converted-tiff.jpg");
+    let conversion_success = true;
+    imageExtension = path[0].split(".").pop();
+
+    if (imageExtension.toLowerCase() == "tiff") {
+      Swal.fire({
+        title: "Image conversion in progress!",
+        html: "Pennsieve does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: "animate__animated animate__fadeInDown animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp animate__faster",
+        },
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      await Jimp.read(original_image_path)
+        .then(async (file) => {
+          if (!fs.existsSync(destination_image_path)) {
+            fs.mkdirSync(destination_image_path, { recursive: true });
+          }
+
+          try {
+            if (fs.existsSync(converted_image_file)) {
+              fs.unlinkSync(converted_image_file);
+            }
+          } catch (err) {
+            conversion_success = false;
+            console.error(err);
+          }
+
+          return file.write(converted_image_file, async () => {
+            if (fs.existsSync(converted_image_file)) {
+              let stats = fs.statSync(converted_image_file);
+              let fileSizeInBytes = stats.size;
+              let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
+
+              if (fileSizeInMegabytes > 5) {
+                fs.unlinkSync(converted_image_file);
+
+                await Jimp.read(original_image_path)
+                  .then((file) => {
+                    return file.resize(1024, 1024).write(converted_image_file, () => {
+                      imgHolder.style.display = "none";
+                      imgContainer.style.display = "block";
+
+                      $(paraImagePath).html(image_path);
+                      viewImportedImage.src = converted_image_file;
+                      myCropper.destroy();
+                      myCropper = new Cropper(viewImportedImage, cropperOptions);
+                      $(saveBannerImage).css("visibility", "visible");
+                      $("body").removeClass("waiting");
+                    });
+                  })
+                  .catch((err) => {
+                    conversion_success = false;
+                    console.error(err);
+                  });
+                if (fs.existsSync(converted_image_file)) {
+                  let stats = fs.statSync(converted_image_file);
+                  let fileSizeInBytes = stats.size;
+                  let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
+
+                  if (fileSizeInMegabytes > 5) {
+                    conversion_success = false;
+                    // SHOW ERROR
+                  }
+                }
+              }
+              image_path = converted_image_file;
+              imageExtension = "jpg";
+              $(paraImagePath).html(image_path);
+              viewImportedImage.src = image_path;
+              myCropper.destroy();
+              myCropper = new Cropper(viewImportedImage, cropperOptions);
+              $(paraImagePath).css("visibility", "visible");
+            }
+          });
+        })
+        .catch((err) => {
+          conversion_success = false;
+          console.error(err);
+          Swal.fire({
+            icon: "error",
+            text: "Something went wrong",
+            confirmButtonText: "OK",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+        });
+      if (conversion_success == false) {
+        $("body").removeClass("waiting");
+        return;
+      } else {
+        Swal.close();
+      }
+    } else {
+      imgHolder.style.display = "none";
+      imgContainer.style.display = "block";
+
+      $(paraImagePath).html(image_path);
+      viewImportedImage.src = image_path;
+      myCropper.destroy();
+      myCropper = new Cropper(viewImportedImage, cropperOptions);
+
+      $(saveBannerImage).css("visibility", "visible");
+    }
+  } else {
+    if(curationMode == "freeform") {
+      if($("#para-current-banner-img").text() === "None") {
+        $(saveBannerImage).css("visibility", "hidden");
+      } else {
+        $(saveBannerImage).css("visibility", "visible");
+      }
+    }
+  }
+}
+
 //////////////////////////////////////////////////////////////////////////////
 /////////////////// CONTEXT MENU OPTIONS FOR FOLDERS AND FILES ///////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -6026,9 +6179,12 @@ function sortObjByKeys(object) {
 }
 
 const listItems = async (jsonObj, uiItem, amount_req, reset) => {
+  console.log(jsonObj);
+  console.log("listing items")
   //allow amount to choose how many elements to create
   //break elements into sets of 100
   const rootFolders = ["primary", "source", "derivative"];
+  let hideSampleFolders = false;
   if (organizeDSglobalPath.id === "guided-input-global-path") {
     const splitPathCheck = (num, button) => {
       //based on the paths length we will determine if the back button should be disabled/hidden or not
@@ -6078,30 +6234,63 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     splitPath.pop();
 
     //get 2 last lvls of the folder path
+    console.log(currentPageID);
+    console.log(splitPath);
     let trimmedPath = "";
     if (currentPageID.includes("primary")) {
       if (primarySampleCapsule.classList.contains("active")) {
-        splitPathCheck(2, fileExplorerBackButton);
+        if(splitPath[0].includes("pool-")) {
+          splitPathCheck(3, fileExplorerBackButton);
+        } else {
+          splitPathCheck(2, fileExplorerBackButton);
+        }
       }
       if (primarySubjectCapsule.classList.contains("active")) {
-        splitPathCheck(1, fileExplorerBackButton);
+        // splitPathCheck(1, fileExplorerBackButton);
+        if(splitPath[0].includes("pool-")) {
+          splitPathCheck(2, fileExplorerBackButton);
+        } else {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        console.log("hide prim sample folders");
+        hideSampleFolders = true;
       }
     }
     if (currentPageID.includes("source")) {
       if (sourceSubjectCapsule.classList.contains("active")) {
-        splitPathCheck(1, fileExplorerBackButton);
+        if(splitPath[0].includes("pool-")) {
+          splitPathCheck(2, fileExplorerBackButton);
+        } else {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        console.log("hide source sample folders");
+        hideSampleFolders = true;
       }
       if (sourceSampleCapsule.classList.contains("active")) {
-        splitPathCheck(2, fileExplorerBackButton);
+        if(splitPath[0].includes("pool-")) {
+          splitPathCheck(3, fileExplorerBackButton);
+        } else {
+          splitPathCheck(2, fileExplorerBackButton);
+        }
       }
     }
     if (currentPageID.includes("derivative")) {
       //check the active capsule
-      if (derivativeSampleCapsule.classList.contains("active")) {
-        splitPathCheck(2, fileExplorerBackButton);
-      }
       if (derivativeSubjectCapsule.classList.contains("active")) {
-        splitPathCheck(1, fileExplorerBackButton);
+        if(splitPath[0].includes("pool-")) {
+          splitPathCheck(2, fileExplorerBackButton);
+        } else {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        console.log("hide deriv sample folders");
+        hideSampleFolders = true;
+      }
+      if (derivativeSampleCapsule.classList.contains("active")) {
+        if(splitPath[0].includes("pool-")) {
+          splitPathCheck(3, fileExplorerBackButton);
+        } else {
+          splitPathCheck(2, fileExplorerBackButton);
+        }
       }
     }
     if (
@@ -6126,6 +6315,11 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     //with the path you can determine whether or not to disable the back button
   }
 
+  //while listing folders we could check for sam- and not render those
+  //another good method is to see what sample folders have been made
+  //and if the name comes up during render, don't render
+  //problem: how to do know which sample files have been made
+
   var appendString = "";
   var sortedObj = sortObjByKeys(jsonObj);
   let file_elements = [],
@@ -6133,6 +6327,11 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
   let count = 0;
   if (Object.keys(sortedObj["folders"]).length > 0) {
     for (var item in sortedObj["folders"]) {
+      if(hideSampleFolders) {
+        if(item.substr(0,4) === "sam-") {
+          continue;
+        }
+      }
       count += 1;
       var emptyFolder = "";
       if (!highLevelFolders.includes(item)) {
