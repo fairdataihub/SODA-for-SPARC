@@ -3986,6 +3986,7 @@ const setActiveSubPage = (pageIdToActivate) => {
     }
 
     case "guided-primary-pools-organization-page": {
+      guidedUpdateFolderStructure("primary", "pools");
       renderPoolsHighLevelFolderAsideItems("primary");
       //guidedUpdateFolderStructure("primary", "pools"); Don't need because pools already generated
       $("#guided-file-explorer-elements").appendTo(
