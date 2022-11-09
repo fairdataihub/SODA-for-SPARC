@@ -2075,16 +2075,26 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
     ):
         folder = folderpath[index]
 
+        print("IN RECURSIVE CHECK AND CREATE BF FILE PATH")
+        print(current_folder_structure)
+        print(folderpath)
+        print(ds)
+
         if folder not in current_folder_structure["folders"]:
             if index == 0:
-                new_folder = ds.create_collection(folder)
+                # TODO: Make sure we are using the correct parent id - maybe should be using the root here? Not sure. 
+                r = requests.post(f"{PENNSIEVE_URL}/packages", json={"name": folder, "parent": f"{current_folder_structure['path']}", "packageType": "collection", "dataset": ds['content']['id']},  headers=create_request_headers(ps))
+                r.raise_for_status()
+                new_folder = r.json()
             else:
-                current_folder = bf.get(current_folder_structure["path"])
-                new_folder = current_folder.create_collection(folder)
+                r = requests.post(f"{PENNSIEVE_URL}/packages", json={"name": folder, "parent": f"{current_folder_structure['path']}", "packageType": "collection", "dataset": ds['content']['id']},  headers=create_request_headers(ps))
+                r.raise_for_status()
+                new_folder = r.json()
+            
             current_folder_structure["folders"][folder] = {
                 "type": "bf",
                 "action": ["existing"],
-                "path": new_folder.id,
+                "path": new_folder['content']['id'],
                 "folders": {},
                 "files": {},
             }
@@ -2194,7 +2204,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
     # 2.5 Rename folders that need to be in the final destination.
     namespace_logger.info("bf_update_existing_dataset step 2.5 rename folders that need to be in the final destination")
     main_curate_progress_message = "Renaming any folders requested by the user"
-    # recursive_folder_rename(dataset_structure, "renamed")
+    recursive_folder_rename(dataset_structure, "renamed")
     main_curate_progress_message = "Renamed all folders requested by the user"
 
     # 3. Get the status of all files currently on Pennsieve and create
@@ -2210,15 +2220,11 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
     recursive_item_path_create(bfsd, [])
     main_curate_progress_message = "File paths created"
 
-    print("bfsd: ", bfsd)
-    print("dataset_structure: ", dataset_structure)
-    print("My dataset information: ", ds)
-
     # 4. Move any files that are marked as moved on Pennsieve.
     # Create any additional folders if required
     namespace_logger.info("bf_update_existing_dataset step 4 move any files that are marked as moved on Pennsieve")
     main_curate_progress_message = "Moving any files requested by the user"
-    # recursive_check_moved_files(dataset_structure)
+    recursive_check_moved_files(dataset_structure)
     main_curate_progress_message = "Moved all files requested by the user"
 
     # 5. Rename any Pennsieve files that are marked as renamed.
