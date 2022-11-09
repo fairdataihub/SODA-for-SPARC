@@ -2173,7 +2173,6 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
     # Rename any folders that still exist.
     def recursive_folder_rename(folder, mode):
         for item in list(folder["folders"]):
-            print(item)
             if (
                 folder["folders"][item]["type"] == "bf"
                 and "action" in folder["folders"][item].keys()
@@ -2246,7 +2245,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
     # 7. Rename any Pennsieve folders that are marked as renamed.
     namespace_logger.info("bf_update_existing_dataset step 7 rename any Pennsieve folders that are marked as renamed")
     main_curate_progress_message = "Renaming any folders requested by the user"
-    # recursive_folder_rename(dataset_structure, "renamed")
+    recursive_folder_rename(dataset_structure, "renamed")
     main_curate_progress_message = "Renamed all folders requested by the user"
 
     # 8. Delete any metadata files that are marked as deleted.
