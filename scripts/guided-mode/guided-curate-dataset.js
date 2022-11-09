@@ -2704,10 +2704,53 @@ const cleanUpEmptyGuidedStructureFolders = async (
     const poolsWithNoDataFiles = [];
 
     for (const pool of Object.keys(pools)) {
-      console.log(pool);
       const poolFolderContents =
         datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-      console.log(poolFolderContents);
+      if (folderIsEmpty(poolFolderContents)) {
+        poolsWithNoDataFiles.push(pool);
+      }
+    }
+
+    // If metadata files have been added to every pool, no action needed
+    if (poolsWithNoDataFiles.length === 0) {
+      return true;
+    }
+
+    if (poolsWithNoDataFiles.length > 0) {
+      let result = await Swal.fire({
+        heightAuto: false,
+        backdrop: "rgba(0,0,0,0.4)",
+        icon: "warning",
+        title: "Missing data",
+        html: `
+          ${highLevelFolder} data was not added to the following pools:
+          <br />
+          <br />
+          <ul>
+            ${poolsWithNoDataFiles.map((pool) => `<li class="text-left">${pool}</li>`).join("")}
+          </ul>
+        `,
+        reverseButtons: true,
+        showCancelButton: true,
+        cancelButtonColor: "#6e7881",
+        cancelButtonText: `Finish adding ${highLevelFolder} data to pools`,
+        confirmButtonText: `Continue without adding ${highLevelFolder} data to all pools`,
+        allowOutsideClick: false,
+      });
+      if (result.isConfirmed) {
+        for (const pool of poolsWithNoDataFiles) {
+          const poolFolderContents =
+            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+          if (folderIsEmpty(poolFolderContents)) {
+            delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+          }
+        }
+        //Empty pool folders have been deleted, return true
+        return true;
+      } else {
+        //User has chosen to finish adding data to pools, return false
+        return false;
+      }
     }
   }
 };
@@ -5274,13 +5317,6 @@ const updateFolderStructureUI = (pageDataObj) => {
   } else {
     structureFolderContentsElement.classList.add("hidden");
   }
-
-  // if (fileExplorer.classList.contains("file-explorer-transition")) {
-  // }
-  // fileExplorer.style.webkitAnimation = "";
-  setTimeout(function () {
-    fileExplorer.classList.add("file-explorer-transition");
-  }, 200);
 
   $("#guided-input-global-path").val(`My_dataset_folder/${pageDataObj.pathSuffix}`);
   var filtered = getGlobalPath(organizeDSglobalPath);
