@@ -2201,7 +2201,6 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
     namespace_logger.info("bf_update_existing_dataset step 2 rename deleted folders on Pennsieve to allow for replacements")
     main_curate_progress_message = "Checking Pennsieve for deleted folders"
     dataset_structure = soda_json_structure["dataset-structure"]
-    print("RENAMING")
     recursive_folder_rename(dataset_structure, "deleted")
     main_curate_progress_message = "Folders on Pennsieve have been marked for deletion"
 
@@ -2659,12 +2658,11 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         
         # main_curate_progress_message = "About to update after doing recursive dataset scan"
         # 3. Add high-level metadata files to a list
-        # ds.update()
         list_upload_metadata_files = []
         if "metadata-files" in soda_json_structure.keys():
             namespace_logger.info("bf_generate_new_dataset (optional) step 3 create high level metadata list")
             (
-                my_bf_existing_files,
+                # my_bf_existing_files,
                 my_bf_existing_files_name,
                 my_bf_existing_files_name_with_extension,
             ) = bf_get_existing_files_details(ds)
@@ -2676,12 +2674,10 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         initial_name = splitext(basename(metadata_path))[0]
                         if existing_file_option == "replace":
                             if initial_name in my_bf_existing_files_name:
-                                index_file = my_bf_existing_files_name.index(
-                                    initial_name
-                                )
-                                my_file = my_bf_existing_files[index_file]
-                                my_file.delete()
-
+                                my_file = ds['children'][file_key]
+                                # delete the file from Pennsieve
+                                r = requests.post(f"{PENNSIEVE_URL}/data/delete", json={"things": [my_file['content']['id']]}, headers=create_request_headers(ps))
+                                r.raise_for_status()
                         if existing_file_option == "skip":
                             if initial_name in my_bf_existing_files_name:
                                 continue
@@ -2738,7 +2734,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         namespace_logger.info("bf_generate_new_dataset step 5 upload files, rename and add to tracking list")
         #main_initial_bfdataset_size = bf_dataset_size()
         start_generate = 1
-        #clear_queue()
 
         # set the dataset 
         ps.useDataset(ds["content"]["id"])
@@ -2752,6 +2747,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
         
         # add the list of upload files' local paths to the manifest [ skip the first element we already added]
+        namespace_logger.info("Uploading files now")
+        namespace_logger.info("\n")
         for item in list_upload_files:
             # main_curate_progress_message = "In file one"
             list_file_paths = item[0]
@@ -2761,6 +2758,10 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             list_final_names = item[4]
             tracking_folder = item[5]
             relative_path = item[6]
+
+            namespace_logger.info(list_projected_names)
+            namespace_logger.info(list_desired_names)
+            namespace_logger.info(list_final_names)
 
             # TODO: Reimpelement using the client once the Pensieve team updates the client's protocol buffers
             # ps.manifest.add(manifest_id, list_upload, targetBasePath="/code")
