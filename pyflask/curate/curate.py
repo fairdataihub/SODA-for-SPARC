@@ -2732,7 +2732,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         r.raise_for_status()
 
                 # upload new manifest files
-                list_upload_manifest_files.append([[manifestpath], folder['children']['files'][child_key]])
+                list_upload_manifest_files.append([[manifestpath], folder])
                 main_total_generate_dataset_size += getsize(manifestpath)
 
         # 5. Upload files, rename, and add to tracking list
@@ -2846,7 +2846,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 
                 # add the files to the manifest
                 # subprocess call to the pennsieve agent to add the files to the manifest
-                subprocess.run(["pennsieve", "manifest", "add", str(manifest_id), manifest_file])
+                subprocess.run(["pennsieve", "manifest", "add", str(manifest_id), manifest_file, "-t", f"/{ps_folder['content']['name']}"])
 
                 
             # upload the manifest 
