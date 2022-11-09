@@ -7815,12 +7815,7 @@ async function initiate_generate() {
     // create a dataset upload session
     datasetUploadSession.startSession();
   }
-
-  // clear the Pennsieve Queue (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
-  clearQueue();
-
-  console.log(sodajsonobject)
-
+  
   client
     .post(
       `/curate_datasets/curation`,
