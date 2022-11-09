@@ -2138,30 +2138,33 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
                     "renamed" in folder["files"][item]["action"]
                     and folder["files"][item]["type"] == "bf"
                 ):
-                    file = bf.get(folder["files"][item]["path"])
-                    if file is not None:
-                        file.name = item
-                        file.update()
+                    r = requests.put(f"{PENNSIEVE_URL}/packages/{folder['files'][item]['path']}?updateStorage=true", json={"name": item}, headers=create_request_headers(ps))
+                    r.raise_for_status()
 
         for item in list(folder["folders"]):
             recursive_file_rename(folder["folders"][item])
 
         return
 
-    # Delete any stray folders that exist on Pennsieve
-    # Only top level files are deleted since the api deletes any
-    # files and folders that exist inside.
+
     def recursive_folder_delete(folder):
+        """
+        Delete any stray folders that exist on Pennsieve
+        Only top level files are deleted since the api deletes any
+        files and folders that exist inside.
+        """
         for item in list(folder["folders"]):
             if folder["folders"][item]["type"] == "bf":
                 if "moved" in folder["folders"][item]["action"]:
-                    file = bf.get(folder["folders"][item]["path"])
-                    if file is not None:
-                        file.delete()
+                    file_path = folder["files"][item]["path"]
+                    # remove the file from the dataset
+                    r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [file_path]})
+                    r.raise_for_status()
                 if "deleted" in folder["folders"][item]["action"]:
-                    file = bf.get(folder["folders"][item]["path"])
-                    if file is not None:
-                        file.delete()
+                    file_path = folder["files"][item]["path"]
+                    # remove the file from the dataset
+                    r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [file_path]})
+                    r.raise_for_status()
                     del folder["folders"][item]
                 else:
                     recursive_folder_delete(folder["folders"][item])
@@ -2231,7 +2234,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
     # 5. Rename any Pennsieve files that are marked as renamed.
     namespace_logger.info("bf_update_existing_dataset step 5 rename any Pennsieve files that are marked as renamed")
     main_curate_progress_message = "Renaming any files requested by the user"
-    #recursive_file_rename(dataset_structure)
+    recursive_file_rename(dataset_structure)
     main_curate_progress_message = "Renamed all files requested by the user"
 
     # 6. Delete any Pennsieve folders that are marked as deleted.
@@ -2239,7 +2242,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
     main_curate_progress_message = (
         "Deleting any additional folders present on Pennsieve"
     )
-    # recursive_folder_delete(dataset_structure)
+    recursive_folder_delete(dataset_structure)
     main_curate_progress_message = "Deletion of additional folders complete"
 
     # 7. Rename any Pennsieve folders that are marked as renamed.
