@@ -625,13 +625,6 @@ h1.guided--text-sub-step {
   align-items: center;
 }
 
-.guided--card-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-
 .guided--datasets-container {
   margin-top: 5px;
   display: flex;

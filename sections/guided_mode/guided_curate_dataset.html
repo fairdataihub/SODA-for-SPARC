@@ -440,25 +440,17 @@
         <div class="guided--capsule-container">
           <div class="guided--capsule active" id="guided-dataset-starting-point-capsule"></div>
 
-          <div
-            class="guided--capsule-container-branch hidden"
-            id="guided-curate-new-dataset-branch-capsule-container"
-          >
-            <div class="guided--capsule" id="guided-subjects-folder-capsule"></div>
+          <!-- Guided structure dataset capsule branch-->
+          <div class="guided--capsule" id="guided-subjects-folder-capsule"></div>
+          <div class="guided--capsule" id="guided-primary-data-organization-capsule"></div>
+          <div class="guided--capsule" id="guided-source-data-organization-capsule"></div>
+          <div class="guided--capsule" id="guided-derivative-data-organization-capsule"></div>
+          <div class="guided--capsule" id="guided-code-folder-capsule"></div>
+          <div class="guided--capsule" id="guided-protocol-folder-capsule"></div>
+          <div class="guided--capsule" id="guided-docs-folder-capsule"></div>
 
-            <div class="guided--capsule" id="guided-primary-data-organization-capsule"></div>
-            <div class="guided--capsule" id="guided-source-data-organization-capsule"></div>
-            <div class="guided--capsule" id="guided-derivative-data-organization-capsule"></div>
-            <div class="guided--capsule" id="guided-code-folder-capsule"></div>
-            <div class="guided--capsule" id="guided-protocol-folder-capsule"></div>
-            <div class="guided--capsule" id="guided-docs-folder-capsule"></div>
-          </div>
-          <div
-            class="guided--capsule-container-branch hidden"
-            id="guided-curate-existing-local-dataset-branch-capsule-container"
-          >
-            <div class="guided--capsule" id="guided-folder-importation-capsule"></div>
-          </div>
+          <!-- import dataset capsule branch-->
+          <div class="guided--capsule" id="guided-folder-importation-capsule"></div>
           <div class="guided--capsule" id="guided-folder-structure-preview-capsule"></div>
         </div>
 
@@ -542,7 +534,7 @@
 
         <div
           id="guided-subjects-folder-tab"
-          class="guided--page hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+          class="guided--page hidden"
           data-page-name="Subject + Sample structuring"
         >
           <div class="guided--section">
@@ -714,7 +706,7 @@
         </div>
         <div
           id="guided-primary-data-organization-tab"
-          class="guided--page hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
+          class="guided--page hidden"
           data-page-name="Primary data"
         >
           <div class="guided--section">
@@ -1069,7 +1061,7 @@
         </div>
         <div
           id="guided-source-data-organization-tab"
-          class="guided--page hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
+          class="guided--page hidden"
           data-page-name="Source data"
         >
           <div class="guided--section">
@@ -1392,7 +1384,7 @@
         </div>
         <div
           id="guided-derivative-data-organization-tab"
-          class="guided--page hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
+          class="guided--page hidden"
           data-page-name="Derivative data"
         >
           <div class="guided--section">
@@ -1701,11 +1693,7 @@
           </div>
         </div>
 
-        <div
-          id="guided-code-folder-tab"
-          class="guided--page hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
-          data-page-name="Code data"
-        >
+        <div id="guided-code-folder-tab" class="guided--page hidden" data-page-name="Code data">
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Code data</h1>
             <p class="guided--help-text">
@@ -1742,7 +1730,7 @@
         </div>
         <div
           id="guided-protocol-folder-tab"
-          class="guided--page hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+          class="guided--page hidden"
           data-page-name="Protocol data"
         >
           <div class="guided--section">
@@ -1780,11 +1768,7 @@
           </div>
           <div class="guided--panel hidden" id="guided-user-has-protocol-data"></div>
         </div>
-        <div
-          id="guided-docs-folder-tab"
-          class="guided--page hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
-          data-page-name="Docs data"
-        >
+        <div id="guided-docs-folder-tab" class="guided--page hidden" data-page-name="Docs data">
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Docs data</h1>
             <p class="guided--help-text">
@@ -1823,7 +1807,7 @@
 
         <div
           id="guided-folder-importation-tab"
-          class="guided--page hidden guided-curate-existing-local-dataset-branch-page"
+          class="guided--page hidden"
           data-page-name="Import dataset folder"
         >
           <div class="guided--section" id="guided_dataset_name_div">

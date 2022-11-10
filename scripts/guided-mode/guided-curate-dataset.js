@@ -21,11 +21,19 @@ const savePageChanges = async (pageBeingLeftID) => {
       if (buttonNoGuidedCurateSelected) {
         sodaJSONObj["guided-options"]["dataset-start-location"] = "guided-curate";
         sodaJSONObj["starting-point"]["type"] = "new";
+        guidedUnSkipPage("guided-subjects-folder-tab");
+        guidedUnSkipPage("guided-primary-data-organization-tab");
+        guidedUnSkipPage("guided-source-data-organization-tab");
+        guidedUnSkipPage("guided-derivative-data-organization-tab");
+        guidedUnSkipPage("guided-code-folder-tab");
+        guidedUnSkipPage("guided-protocol-folder-tab");
+        guidedUnSkipPage("guided-docs-folder-tab");
       }
 
       if (buttonYesImportExistingSelected) {
         sodaJSONObj["guided-options"]["dataset-start-location"] = "import-existing";
         sodaJSONObj["starting-point"]["type"] = "local";
+        guidedUnSkipPage("guided-folder-importation-tab");
       }
     }
 
@@ -1478,6 +1486,13 @@ const guidedTransitionFromHome = async () => {
     setActiveSubPage(firstSubPage.id.replace("-capsule", ""));
   }
 
+  guidedResetSkippedPages();
+
+  //Skip any pages that have been saved as skipped in a previous session (array empty when new)
+  for (const pageID of sodaJSONObj["skipped-pages"]) {
+    guidedSkipPage(pageID);
+  }
+
   guidedLockSideBar();
 };
 
@@ -2120,11 +2135,6 @@ const setActiveCapsule = (targetPageID) => {
   $(".guided--capsule").removeClass("active");
   let targetCapsuleID = targetPageID.replace("-tab", "-capsule");
   let targetCapsule = $(`#${targetCapsuleID}`);
-  //check if targetCapsule parent has the class guided--capsule-container-branch
-  if (targetCapsule.parent().hasClass("guided--capsule-container-branch")) {
-    $(".guided--capsule-container-branch").hide();
-    targetCapsule.parent().css("display", "flex");
-  }
   targetCapsule.addClass("active");
 };
 setActiveProgressionTab = (targetPageID) => {
@@ -2133,38 +2143,6 @@ setActiveProgressionTab = (targetPageID) => {
   let targetProgressionTabID = targetPageParentID.replace("parent-tab", "progression-tab");
   let targetProgressionTab = $(`#${targetProgressionTabID}`);
   targetProgressionTab.addClass("selected-tab");
-};
-const handlePageBranching = (selectedCardElement) => {
-  //hide capsule containers for page branches that are not selected
-  const capsuleContainerID = selectedCardElement
-    .attr("id")
-    .replace("card", "branch-capsule-container");
-  $(".guided--capsule-container-branch").hide();
-  $(`#${capsuleContainerID}`).css("display", "flex");
-
-  //handle skip pages following card
-  if (selectedCardElement.data("branch-pages-group-class")) {
-    const branchPagesGroupClass = selectedCardElement.attr("data-branch-pages-group-class");
-    $(`.${branchPagesGroupClass}`).attr("data-skip-page", "true");
-    const pageBranchToRemoveSkip = selectedCardElement.attr("id").replace("card", "branch-page");
-    $(`.${pageBranchToRemoveSkip}`).attr("data-skip-page", "false");
-  }
-
-  selectedCardElement.siblings().removeClass("checked");
-  selectedCardElement.siblings().addClass("non-selected");
-  selectedCardElement.removeClass("non-selected");
-  selectedCardElement.addClass("checked");
-
-  const tabPanelId = selectedCardElement.attr("id").replace("card", "panel");
-  const tabPanel = $(`#${tabPanelId}`);
-  //checks to see if clicked card has a panel, if so, hides siblings and smooth scrolls to it
-  if (tabPanel.length != 0) {
-    tabPanel.siblings().hide();
-    tabPanel.css("display", "flex");
-    tabPanel[0].scrollIntoView({
-      behavior: "smooth",
-    });
-  }
 };
 
 const guidedResetProgressVariables = () => {
@@ -2449,35 +2427,63 @@ const guidedResetSkippedPages = () => {
     "guided-structure-folder-tab",
   ];
   // Reset parent pages
-  const parentPagesToResetSkip = Array.from(document.querySelectorAll(".guided--page")).filter(
-    (page) => !pagesThatShouldAlwaysBeskipped.includes(page.id)
-  );
-  for (const page of pagesToResetSkip) {
-    page.dataset.skipPage = "false";
+  const parentPagesToResetSkip = Array.from(document.querySelectorAll(".guided--page"))
+    .map((page) => page.id)
+    .filter((pageID) => !pagesThatShouldAlwaysBeskipped.includes(pageID));
+
+  for (const pageID of parentPagesToResetSkip) {
+    guidedUnSkipPage(pageID);
   }
   // Reset sub pages
-  const subPagesToResetSkip = Array.from(document.querySelectorAll(".sub-page"));
-  for (const subPage of subPagesToResetSkip) {
-    subPage.dataset.skipPage = "false";
+  const subPagesToResetSkip = Array.from(document.querySelectorAll(".sub-page")).map(
+    (page) => page.id
+  );
+  for (const subPageID of subPagesToResetSkip) {
+    guidedUnSkipPage(subPageID);
   }
 };
 
 const guidedSkipPage = (pageId) => {
   const page = document.getElementById(pageId);
   page.dataset.skipPage = "true";
+
+  //Hide the parent page or sub page capsule
+  if (page.classList.contains("guided--page")) {
+    // replace -tab with -capsule  in pageId string
+    const pagesCapsule = pageId.replace("-tab", "-capsule");
+    document.getElementById(pagesCapsule).classList.add("hidden");
+  }
+  if (page.classList.contains("sub-page")) {
+    const subPagesCapsule = `${pageId}-capsule`;
+    document.getElementById(subPagesCapsule).classList.add("hidden");
+  }
+
   // add the page to sodaJSONObj array if it isn't there already
   if (!sodaJSONObj["skipped-pages"].includes(pageId)) {
     sodaJSONObj["skipped-pages"].push(pageId);
   }
+  console.log(sodaJSONObj["skipped-pages"]);
 };
 
 guidedUnSkipPage = (pageId) => {
   const page = document.getElementById(pageId);
   page.dataset.skipPage = "false";
+
+  //Show the parent page or sub page capsule
+  if (page.classList.contains("guided--page")) {
+    // replace -tab with -capsule  in pageId string
+    const pagesCapsule = pageId.replace("-tab", "-capsule");
+    document.getElementById(pagesCapsule).classList.remove("hidden");
+  }
+  if (page.classList.contains("sub-page")) {
+    const subPagesCapsule = `${pageId}-capsule`;
+    document.getElementById(subPagesCapsule).classList.remove("hidden");
+  }
   // remove the page from sodaJSONObj array if it is there
   if (sodaJSONObj["skipped-pages"].includes(pageId)) {
     sodaJSONObj["skipped-pages"].splice(sodaJSONObj["skipped-pages"].indexOf(pageId), 1);
   }
+  console.log(sodaJSONObj["skipped-pages"]);
 };
 
 const loadGuidedSkippedPages = () => {};
@@ -3011,7 +3017,6 @@ const openPage = async (targetPageID) => {
     if (targetPageID === "guided-prepare-helpers-tab") {
       //Hide the new dataset and existings local dataset capsule containers because
       //We do now know what the user wants to do yet
-      $("#guided-curate-new-dataset-branch-capsule-container").hide();
       $("#guided-curate-existing-local-dataset-branch-capsule-container").hide();
       const dataDeliverableButton = document.getElementById("getting-started-data-deliverable-btn");
       const airTableGettingStartedBtn = document.getElementById(
@@ -3041,6 +3046,17 @@ const openPage = async (targetPageID) => {
         airTableGettingStartedBtn.children[1].style.display = "flex";
         airTableGettingStartedBtn.children[0].style.display = "none";
       }
+    }
+
+    if (targetPageID === "guided-dataset-starting-point-tab") {
+      guidedSkipPage("guided-subjects-folder-tab");
+      guidedSkipPage("guided-primary-data-organization-tab");
+      guidedSkipPage("guided-source-data-organization-tab");
+      guidedSkipPage("guided-derivative-data-organization-tab");
+      guidedSkipPage("guided-code-folder-tab");
+      guidedSkipPage("guided-protocol-folder-tab");
+      guidedSkipPage("guided-docs-folder-tab");
+      guidedSkipPage("guided-folder-importation-tab");
     }
 
     if (targetPageID === "guided-subjects-folder-tab") {
@@ -9186,50 +9202,6 @@ $(document).ready(async () => {
       .start();
   });
 
-  $("#guided-button-dataset-intro-back").on("click", () => {
-    const guidedIntroPage = document.getElementById("guided-intro-page");
-    const guidedDatasetNameSubtitlePage = document.getElementById("guided-name-subtitle");
-    if (!guidedIntroPage.classList.contains("hidden")) {
-      //remove text from dataset name and subtitle inputs
-      document.getElementById("guided-dataset-name-input").value = "";
-      document.getElementById("guided-dataset-subtitle-input").value = "";
-
-      hideEleShowEle("curation-preparation-parent-tab", "guided-home");
-      //hide the intro footer
-      document.getElementById("guided-footer-intro").classList.add("hidden");
-      guidedPrepareHomeScreen();
-    } else if (!guidedDatasetNameSubtitlePage.classList.contains("hidden")) {
-      hideEleShowEle("guided-name-subtitle", "guided-intro-page");
-    }
-  });
-  $("#guided-button-dataset-intro-next").on("click", async function () {
-    const guidedIntroPage = document.getElementById("guided-intro-page");
-    const guidedDatasetNameSubtitlePage = document.getElementById("guided-name-subtitle");
-
-    if (!guidedIntroPage.classList.contains("hidden")) {
-      hideEleShowEle("guided-intro-page", "guided-name-subtitle");
-    } else if (!guidedDatasetNameSubtitlePage.classList.contains("hidden")) {
-      let errorArray = [];
-    }
-  });
-
-  //WHEN STRUCTURING FOLDER GUIDED
-  $("#guided-button-import-existing-dataset-structure").on("click", () => {
-    //Hide proper capsules and apply proper skip pages
-    $("#guided-curate-new-dataset-branch-capsule-container").hide();
-    $("#guided-curate-existing-local-dataset-branch-capsule-container").css("display", "flex");
-    $(".guided-curate-existing-local-dataset-branch-page").attr("data-skip-page", "false");
-    $(".guided-curate-new-dataset-branch-page").attr("data-skip-page", "true");
-  });
-  //WHEN IMPORTING LOCAL STRUCTURE
-  $("#guided-button-guided-dataset-structuring").on("click", () => {
-    //Hide proper capsules and apply proper skip pages
-    $("#guided-curate-existing-local-dataset-branch-capsule-container").hide();
-    $("#guided-curate-new-dataset-branch-capsule-container").css("display", "flex");
-
-    $(".guided-curate-new-dataset-branch-page").attr("data-skip-page", "false");
-    $(".guided-curate-existing-local-dataset-branch-page").attr("data-skip-page", "true");
-  });
   $("#guided-structure-new-dataset").on("click", () => {
     $("#guided-next-button").click();
   });
@@ -9461,12 +9433,6 @@ $(document).ready(async () => {
       document.getElementById("guided-dataset-subtitle-input"),
       guidedDatasetSubtitleCharCount
     );
-  });
-
-  //card click hanndler that displays the card's panel using the card's id prefix
-  //e.g. clicking a card with id "foo-bar-card" will display the panel with the id "foo-bar-panel"
-  $(".guided--card-container > div").on("click", function () {
-    handlePageBranching($(this));
   });
 
   document
