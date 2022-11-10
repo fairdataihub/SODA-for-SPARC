@@ -1296,7 +1296,103 @@
             <div
               class="guided--panel mt-md sub-page hidden"
               id="guided-source-pools-organization-page"
-            ></div>
+            >
+              <div class="guided--section">
+                <label class="guided--form-label centered">
+                  Do you have source data for your pools?
+                </label>
+                <div class="guided--radio-button-container" style="margin-bottom: 7px">
+                  <button
+                    class="ui positive basic button guided--radio-button"
+                    id="guided-button-add-pool-source-data"
+                    data-next-element="guided-source-pools-container"
+                    data-button-config-value="dataset-contains-source-pool-data"
+                    data-button-config-value-state="yes"
+                  >
+                    Yes
+                  </button>
+                  <button
+                    class="ui negative basic button guided--radio-button"
+                    id="guided-button-no-pool-source-data"
+                    data-next-element="guided-warning-before-deleting-source-pools-data-container"
+                    data-button-config-value="dataset-contains-source-pool-data"
+                    data-button-config-value-state="no"
+                  >
+                    No
+                  </button>
+                </div>
+              </div>
+              <div class="guided--panel" id="guided-source-pools-container">
+                <div class="guided--section">
+                  <h2 class="guided--text-sub-step mt-0">
+                    Specify the source data for your pools through the interface below
+                  </h2>
+                  <p class="guided--help-text">
+                    You can also virtually structure the data and rename files/folders as you would
+                    like to have them in your dataset when it is generated (note that none of your
+                    original data will be modified).
+                  </p>
+                </div>
+                <div
+                  class="guided--container-subject-samples mt-md"
+                  id="guided-source-pools-file-explorer-container"
+                  style="border: 2px solid lightgray"
+                >
+                  <div
+                    class="guided--hlf-selection-container"
+                    style="
+                      padding-top: 0;
+                      border-right: 2px solid lightgray;
+                      width: 350px;
+                      border-radius: 0;
+                      height: 476px;
+                      margin: 0 !important;
+                      border-top: 2px solid lightgray;
+                      border-left: 2px;
+                    "
+                  >
+                    <label
+                      class="guided--form-label centered"
+                      style="
+                        padding: 31px 0 12px 0;
+                        border-bottom: 2px solid lightgray;
+                        height: 48px;
+                        color: black;
+                        background: lightgray;
+                        height: 84px;
+                      "
+                      >Dataset pools:
+                    </label>
+                    <aside
+                      class="guided--hlf-selection-aside"
+                      id="guided-source-pools-aside"
+                      style="font-weight: 600; direction: rtl"
+                    ></aside>
+                  </div>
+                  <div
+                    id="guided-source-pools-file-explorer-intro"
+                    class="guided--panel mb-0"
+                    style="height: 475px; padding: 25px; border: black solid 2px"
+                  >
+                    <div class="guided--section" style="justify-content: flex-start">
+                      <h1 class="guided--text-sub-step">
+                        Select a pool on the left to add its source data.
+                      </h1>
+                      <div
+                        id="source-pools-file-explorer-black-arrow-lottie-container"
+                        class="black-arrow-lottie-container"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="guided--panel"
+                id="guided-warning-before-deleting-source-pools-data-container"
+              >
+                b
+              </div>
+            </div>
           </div>
         </div>
         <div
@@ -1509,7 +1605,103 @@
             <div
               class="guided--panel mt-md sub-page hidden"
               id="guided-derivative-pools-organization-page"
-            ></div>
+            >
+              <div class="guided--section">
+                <label class="guided--form-label centered">
+                  Do you have derivative data for your pools?
+                </label>
+                <div class="guided--radio-button-container" style="margin-bottom: 7px">
+                  <button
+                    class="ui positive basic button guided--radio-button"
+                    id="guided-button-add-pool-derivative-data"
+                    data-next-element="guided-derivative-pools-container"
+                    data-button-config-value="dataset-contains-derivative-pool-data"
+                    data-button-config-value-state="yes"
+                  >
+                    Yes
+                  </button>
+                  <button
+                    class="ui negative basic button guided--radio-button"
+                    id="guided-button-no-pool-derivative-data"
+                    data-next-element="guided-warning-before-deleting-derivative-pools-data-container"
+                    data-button-config-value="dataset-contains-derivative-pool-data"
+                    data-button-config-value-state="no"
+                  >
+                    No
+                  </button>
+                </div>
+              </div>
+              <div class="guided--panel" id="guided-derivative-pools-container">
+                <div class="guided--section">
+                  <h2 class="guided--text-sub-step mt-0">
+                    Specify the derivative data for your pools through the interface below
+                  </h2>
+                  <p class="guided--help-text">
+                    You can also virtually structure the data and rename files/folders as you would
+                    like to have them in your dataset when it is generated (note that none of your
+                    original data will be modified).
+                  </p>
+                </div>
+                <div
+                  class="guided--container-subject-samples mt-md"
+                  id="guided-derivative-pools-file-explorer-container"
+                  style="border: 2px solid lightgray"
+                >
+                  <div
+                    class="guided--hlf-selection-container"
+                    style="
+                      padding-top: 0;
+                      border-right: 2px solid lightgray;
+                      width: 350px;
+                      border-radius: 0;
+                      height: 476px;
+                      margin: 0 !important;
+                      border-top: 2px solid lightgray;
+                      border-left: 2px;
+                    "
+                  >
+                    <label
+                      class="guided--form-label centered"
+                      style="
+                        padding: 31px 0 12px 0;
+                        border-bottom: 2px solid lightgray;
+                        height: 48px;
+                        color: black;
+                        background: lightgray;
+                        height: 84px;
+                      "
+                      >Dataset pools:
+                    </label>
+                    <aside
+                      class="guided--hlf-selection-aside"
+                      id="guided-derivative-pools-aside"
+                      style="font-weight: 600; direction: rtl"
+                    ></aside>
+                  </div>
+                  <div
+                    id="guided-derivative-pools-file-explorer-intro"
+                    class="guided--panel mb-0"
+                    style="height: 475px; padding: 25px; border: black solid 2px"
+                  >
+                    <div class="guided--section" style="justify-content: flex-start">
+                      <h1 class="guided--text-sub-step">
+                        Select a pool on the left to add its derivative data.
+                      </h1>
+                      <div
+                        id="derivative-pools-file-explorer-black-arrow-lottie-container"
+                        class="black-arrow-lottie-container"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="guided--panel"
+                id="guided-warning-before-deleting-derivative-pools-data-container"
+              >
+                b
+              </div>
+            </div>
           </div>
         </div>
 

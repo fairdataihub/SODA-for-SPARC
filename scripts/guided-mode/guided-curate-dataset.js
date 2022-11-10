@@ -2739,11 +2739,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
       });
       if (result.isConfirmed) {
         for (const pool of poolsWithNoDataFiles) {
-          const poolFolderContents =
-            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-          if (folderIsEmpty(poolFolderContents)) {
-            delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-          }
+          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
         }
         //Empty pool folders have been deleted, return true
         return true;
@@ -4118,6 +4114,30 @@ const setActiveSubPage = (pageIdToActivate) => {
       break;
     }
 
+    case "guided-source-pools-organization-page": {
+      guidedUpdateFolderStructure("source", "pools");
+      renderPoolsHighLevelFolderAsideItems("source");
+      $("#guided-file-explorer-elements").appendTo(
+        $("#guided-source-pools-file-explorer-container")
+      );
+      //Hide the file explorer and show the intro
+      hideEleShowEle("guided-file-explorer-elements", "guided-source-pools-file-explorer-intro");
+
+      const sourcePoolsFileExplorerBlackArrowLottieContainer = document.getElementById(
+        "source-pools-file-explorer-black-arrow-lottie-container"
+      );
+      sourcePoolsFileExplorerBlackArrowLottieContainer.innerHTML = "";
+      //Load the black arrow lottie animation
+      lottie.loadAnimation({
+        container: sourcePoolsFileExplorerBlackArrowLottieContainer,
+        animationData: blackArrow,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+      break;
+    }
+
     case "guided-derivative-samples-organization-page": {
       //If the user indicated they have no samples, skip this page
       //and go to derivative subject data organization page
@@ -4175,6 +4195,33 @@ const setActiveSubPage = (pageIdToActivate) => {
       derivativeSubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
       lottie.loadAnimation({
         container: derivativeSubjectsFileExplorerBlackArrowLottieContainer,
+        animationData: blackArrow,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+      break;
+    }
+
+    case "guided-derivative-pools-organization-page": {
+      guidedUpdateFolderStructure("derivative", "pools");
+      renderPoolsHighLevelFolderAsideItems("derivative");
+      $("#guided-file-explorer-elements").appendTo(
+        $("#guided-derivative-pools-file-explorer-container")
+      );
+      //Hide the file explorer and show the intro
+      hideEleShowEle(
+        "guided-file-explorer-elements",
+        "guided-derivative-pools-file-explorer-intro"
+      );
+
+      const derivativePoolsFileExplorerBlackArrowLottieContainer = document.getElementById(
+        "derivative-pools-file-explorer-black-arrow-lottie-container"
+      );
+      derivativePoolsFileExplorerBlackArrowLottieContainer.innerHTML = "";
+      //Load the black arrow lottie animation
+      lottie.loadAnimation({
+        container: derivativePoolsFileExplorerBlackArrowLottieContainer,
         animationData: blackArrow,
         renderer: "svg",
         loop: true,
@@ -11703,7 +11750,7 @@ $(document).ready(async () => {
         ) {
           errorArray.push({
             type: "error",
-            message: "Please indicate if you have primary data to add to your pools.",
+            message: "Please indicate if you have primary data to add to your subjects.",
           });
           throw errorArray;
         }
@@ -11809,16 +11856,47 @@ $(document).ready(async () => {
         if (buttonYesSourceSubjectData.classList.contains("selected")) {
           const continueWithoutAddingSourceDataToAllSubjects =
             await cleanUpEmptyGuidedStructureFolders("source", "subjects", false);
-          if (continueWithoutAddingSourceDataToAllSubjects) {
-            hideSubNavAndShowMainNav("next");
+          if (!continueWithoutAddingSourceDataToAllSubjects) {
+            errorArray.push({
+              type: "info",
+              message: "Please add source data to all subjects before continuing.",
+            });
+            throw errorArray;
           }
         }
         if (buttonNoSourceSubjectData.classList.contains("selected")) {
-          const continueAfterDeletingAllSourcePoolsAndSubjects =
-            await cleanUpEmptyGuidedStructureFolders("source", "subjects", true);
-          if (continueAfterDeletingAllSourcePoolsAndSubjects) {
-            hideSubNavAndShowMainNav("next");
+          await cleanUpEmptyGuidedStructureFolders("source", "subjects", true);
+        }
+      }
+
+      if (openSubPageID === "guided-source-pools-organization-page") {
+        const buttonYesSourcePoolData = document.getElementById(
+          "guided-button-add-pool-source-data"
+        );
+        const buttonNoSourcePoolData = document.getElementById("guided-button-no-pool-source-data");
+        if (
+          !buttonYesSourcePoolData.classList.contains("selected") &&
+          !buttonNoSourcePoolData.classList.contains("selected")
+        ) {
+          errorArray.push({
+            type: "error",
+            message: "Please indicate if you have source data to add to your pools.",
+          });
+          throw errorArray;
+        }
+        if (buttonYesSourcePoolData.classList.contains("selected")) {
+          const continueWithoutAddingPrimaryDataToAllPools =
+            await cleanUpEmptyGuidedStructureFolders("source", "pools", false);
+          if (!continueWithoutAddingPrimaryDataToAllPools) {
+            errorArray.push({
+              type: "info",
+              message: "Please add source data to all pools before continuing.",
+            });
+            throw errorArray;
           }
+        }
+        if (buttonNoSourcePoolData.classList.contains("selected")) {
+          await cleanUpEmptyGuidedStructureFolders("source", "pools", true);
         }
       }
 
@@ -11875,16 +11953,49 @@ $(document).ready(async () => {
         if (buttonYesDerivativeSubjectData.classList.contains("selected")) {
           const continueWithoutAddingDerivativeDataToAllSubjects =
             await cleanUpEmptyGuidedStructureFolders("derivative", "subjects", false);
-          if (continueWithoutAddingDerivativeDataToAllSubjects) {
-            hideSubNavAndShowMainNav("next");
+          if (!continueWithoutAddingDerivativeDataToAllSubjects) {
+            errorArray.push({
+              type: "info",
+              message: "Please add derivative data to all subjects before continuing.",
+            });
+            throw errorArray;
           }
         }
         if (buttonNoDerivativeSubjectData.classList.contains("selected")) {
-          const continueAfterDeletingAllDerivativePoolsAndSubjects =
-            await cleanUpEmptyGuidedStructureFolders("derivative", "subjects", true);
-          if (continueAfterDeletingAllDerivativePoolsAndSubjects) {
-            hideSubNavAndShowMainNav("next");
+          await cleanUpEmptyGuidedStructureFolders("derivative", "subjects", true);
+        }
+      }
+
+      if (openSubPageID === "guided-derivative-pools-organization-page") {
+        const buttonYesDerivativePoolData = document.getElementById(
+          "guided-button-add-pool-derivative-data"
+        );
+        const buttonNoDerivativePoolData = document.getElementById(
+          "guided-button-no-pool-derivative-data"
+        );
+        if (
+          !buttonYesDerivativePoolData.classList.contains("selected") &&
+          !buttonNoDerivativePoolData.classList.contains("selected")
+        ) {
+          errorArray.push({
+            type: "error",
+            message: "Please indicate if you have derivative data to add to your pools.",
+          });
+          throw errorArray;
+        }
+        if (buttonYesDerivativePoolData.classList.contains("selected")) {
+          const continueWithoutAddingPrimaryDataToAllPools =
+            await cleanUpEmptyGuidedStructureFolders("derivative", "pools", false);
+          if (!continueWithoutAddingPrimaryDataToAllPools) {
+            errorArray.push({
+              type: "info",
+              message: "Please add derivative data to all pools before continuing.",
+            });
+            throw errorArray;
           }
+        }
+        if (buttonNoDerivativePoolData.classList.contains("selected")) {
+          await cleanUpEmptyGuidedStructureFolders("derivative", "pools", true);
         }
       }
 
