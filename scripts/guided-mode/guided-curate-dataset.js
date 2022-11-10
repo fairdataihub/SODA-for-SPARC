@@ -9416,7 +9416,6 @@ $(document).ready(async () => {
   //////////    GUIDED IPC RENDERER LISTENERS    //////////
   /////////////////////////////////////////////////////////
 
-
   $("#guided-input-destination-getting-started-locally").on("click", () => {
     ipcRenderer.send("guided-open-file-dialog-local-destination-curate");
   });
