@@ -1551,6 +1551,21 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
   }
 }
 
+const forbiddenFileCheck = (filename) => {
+  if(filename === ".DS_Store" || filename === "Thumbs.db") {
+    return "forbidden";
+  }
+  if(filename.substr(0, 1) === ".") {
+    return "hidden";
+  } else {
+    return "none";
+  }
+}
+
+const getPathSlashCount = () => {
+  return organizeDSglobalPath.value.trim().split("/").length - 1;
+}
+
 const addFilesfunction = async (
   fileArray,
   currentLocation,
@@ -1581,33 +1596,32 @@ const addFilesfunction = async (
   // check for duplicate or files with the same name
   var nonAllowedDuplicateFiles = [];
   var nonAllowedFiles = [];
-  var regularFiles = {};
+  var filesToImport = {};
   var hiddenFiles = [];
   var nonAllowedCharacterFiles = [];
   const fileNameRegex = /[^-a-zA-z0-9]/g;
   let loadingIcon = document.getElementById("items_loading_container");
   let loadingContainer = document.getElementById("loading-items-background-overlay");
 
+  //loop through the files that are trying to be imported
   for (var i = 0; i < fileArray.length; i++) {
-    var fileName = fileArray[i];
+    let filePath = fileArray[i];
+    var fileName = path.parse(filePath).base; //fileName includes extension
 
-    if (path.parse(fileName).name.substr(0, 1) === ".") {
-      if (path.parse(fileName).name === ".DS_Store") {
-        nonAllowedFiles.push(fileName);
-        continue;
-      } else {
-        hiddenFiles.push(fileName);
-        continue;
-      }
+    //Check for hidden files and forbidden files
+    //.DS_Store and Thumbs.db are forbidden
+    let forbiddenCheck = forbiddenFileCheck(fileName);
+    if(forbiddenCheck === "forbidden") {
+      nonAllowedFiles.push(filePath);
+      continue;
     }
-
-    if (path.parse(fileName).base === "Thumbs.db") {
-      nonAllowedFiles.push(fileName);
+    if(forbiddenCheck === "hidden") {
+      hiddenFiles.push(filePath);
       continue;
     }
 
     // check if dataset structure level is at high level folder
-    var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+    var slashCount = getPathSlashCount();
     if (slashCount === 1) {
       if (loadingContainer != undefined) {
         loadingContainer.style.display = "none";
@@ -1635,42 +1649,43 @@ const addFilesfunction = async (
     } else {
       if (
         JSON.stringify(currentLocation["files"]) === "{}" &&
-        JSON.stringify(regularFiles) === "{}"
+        JSON.stringify(filesToImport) === "{}"
       ) {
-        //regular files object key with path, and basename
-        regularFiles[path.parse(fileName).base] = {
-          path: fileName,
-          basename: path.parse(fileName).base,
+        //if importing into an empty folder and no file has been imported yet then automatically
+        //import the file
+        filesToImport[fileName] = {
+          path: filePath,
+          basename: fileName,
         };
       } else {
-        //check file name in key of regular files (search for duplicate)
-        if (path.parse(fileName).base in regularFiles) {
-          nonAllowedDuplicateFiles.push(fileName);
+        //check if file name is in key of filesToImport (search for duplicate)
+        if (fileName in filesToImport) {
+          nonAllowedDuplicateFiles.push(filePath);
           nonAllowedDuplicate = true;
           continue;
         } else {
-          //search for duplicate in currentlocation[files]
-          if (path.parse(fileName).base in currentLocation["files"]) {
-            nonAllowedDuplicateFiles.push(fileName);
+          //search for duplicate within already imported files (within current folder location)
+          if (fileName in currentLocation["files"]) {
+            nonAllowedDuplicateFiles.push(filePath);
             nonAllowedDuplicate = true;
             continue;
           } else {
             //not in there or regular files so store?
-            regularFiles[path.parse(fileName).base] = {
-              path: fileName,
-              basename: path.parse(fileName).base,
+            filesToImport[fileName] = {
+              path: filePath,
+              basename: fileName,
             };
           }
         }
-        for (const objectKey in currentLocation["files"]) {
+        for (const importedFileName in currentLocation["files"]) {
           //tries finding duplicates with the same path
-          if (objectKey != undefined) {
+          if (importedFileName != undefined) {
             var nonAllowedDuplicate = false;
             //if file already exist in json
-            if (fileName === currentLocation["files"][objectKey]["path"]) {
-              if (currentLocation["files"][objectKey]["action"].includes("renamed") === false) {
+            if (filePath === currentLocation["files"][importedFileName]["path"]) {
+              if (currentLocation["files"][importedFileName]["action"].includes("renamed") === false) {
                 //same path and has not been renamed
-                nonAllowedDuplicateFiles.push(fileName);
+                nonAllowedDuplicateFiles.push(filePath);
                 nonAllowedDuplicate = true;
                 continue;
               }
@@ -1678,15 +1693,15 @@ const addFilesfunction = async (
               //file path and object key path arent the same
               //check if the file name are the same
               //if so consider it as a duplicate
-              if (path.parse(fileName).base === objectKey) {
-                nonAllowedDuplicateFiles.push(fileName);
+              if (fileName === importedFileName) {
+                nonAllowedDuplicateFiles.push(filePath);
                 nonAllowedDuplicate = true;
                 continue;
               } else {
-                //store in regular files
-                regularFiles[path.parse(fileName).base] = {
-                  path: fileName,
-                  basename: path.parse(fileName).base,
+                //no duplicates and no problems with file, thus we import
+                filesToImport[fileName] = {
+                  path: filePath,
+                  basename: fileName,
                 };
               }
             }
@@ -1729,13 +1744,13 @@ const addFilesfunction = async (
           let path_name = hiddenFiles[i];
 
           if (Object.keys(currentLocation["files"]).length > 0) {
-            for (const objectKey in currentLocation["files"]) {
+            for (const alreadyImportedFile in currentLocation["files"]) {
               //tries finding duplicates with the same path
-              if (objectKey != undefined) {
+              if (alreadyImportedFile != undefined) {
                 nonAllowedDuplicate = false;
-                if (file_name.substr(1, file_name.length) === objectKey) {
+                if (file_name.substr(1, file_name.length) === alreadyImportedFile) {
                   //if file already exist in json
-                  if (path_name === currentLocation["files"][objectKey]["path"]) {
+                  if (path_name === currentLocation["files"][alreadyImportedFile]["path"]) {
                     //same path and has not been renamed
                     nonAllowedDuplicateFiles.push(path_name);
                     nonAllowedDuplicate = true;
@@ -1745,14 +1760,14 @@ const addFilesfunction = async (
                     //check if the file name are the same
                     //if so consider it as a duplicate
                     //store in regular files
-                    regularFiles[file_name.substr(1, file_name.length)] = {
+                    filesToImport[file_name.substr(1, file_name.length)] = {
                       path: path_name,
                       basename: file_name.substr(1, file_name.length),
                     };
                   }
                 } else {
                   //store in regular files
-                  regularFiles[file_name.substr(1, file_name.length)] = {
+                  filesToImport[file_name.substr(1, file_name.length)] = {
                     path: path_name,
                     basename: file_name.substr(1, file_name.length),
                   };
@@ -1761,7 +1776,7 @@ const addFilesfunction = async (
             }
           } else {
             //store in regular files
-            regularFiles[file_name.substr(1, file_name.length)] = {
+            filesToImport[file_name.substr(1, file_name.length)] = {
               path: path_name,
               basename: file_name.substr(1, file_name.length),
             };
@@ -1779,20 +1794,20 @@ const addFilesfunction = async (
           let path_name = hiddenFiles[i];
 
           if (Object.keys(currentLocation["files"]).length > 0) {
-            for (const objectKey in currentLocation["files"]) {
+            for (const alreadyImportedFile in currentLocation["files"]) {
               //tries finding duplicates with the same path
-              if (objectKey != undefined) {
+              if (alreadyImportedFile != undefined) {
                 nonAllowedDuplicate = false;
                 //if file already exist in json
-                if (file_name === objectKey) {
-                  if (path_name === currentLocation["files"][objectKey]["path"]) {
+                if (file_name === alreadyImportedFile) {
+                  if (path_name === currentLocation["files"][alreadyImportedFile]["path"]) {
                     //same path and has not been renamed
                     nonAllowedDuplicateFiles.push(path_name);
                     nonAllowedDuplicate = true;
                     continue;
                   } else {
                     //store in regular files
-                    regularFiles[file_name] = {
+                    filesToImport[file_name] = {
                       path: path_name,
                       basename: file_name,
                     };
@@ -1805,7 +1820,7 @@ const addFilesfunction = async (
             }
           } else {
             //store in regular files
-            regularFiles[file_name] = {
+            filesToImport[file_name] = {
               path: path_name,
               basename: file_name,
             };
@@ -1908,19 +1923,20 @@ const addFilesfunction = async (
       confirmButtonText: "Okay",
     });
   }
+  
   if (loadingContainer != undefined) {
     loadingContainer.style.display = "flex";
     loadingIcon.style.display = "block";
   }
   // now handle non-allowed duplicates (show message), allowed duplicates (number duplicates & append to UI),
   // and regular files (append to UI)
-  if (Object.keys(regularFiles).length > 0) {
+  if (Object.keys(filesToImport).length > 0) {
     start = 0;
     listed_count = 0;
     $("#items").empty();
-    for (var element in regularFiles) {
-      currentLocation["files"][regularFiles[element]["basename"]] = {
-        path: regularFiles[element]["path"],
+    for (var element in filesToImport) {
+      currentLocation["files"][filesToImport[element]["basename"]] = {
+        path: filesToImport[element]["path"],
         type: "local",
         description: "",
         "additional-metadata": "",
@@ -1928,16 +1944,16 @@ const addFilesfunction = async (
       };
       // append "renamed" to "action" key if file is auto-renamed by UI
       var originalName = path.parse(
-        currentLocation["files"][regularFiles[element]["basename"]]["path"]
+        currentLocation["files"][filesToImport[element]["basename"]]["path"]
       ).base;
       if (element !== originalName) {
-        currentLocation["files"][regularFiles[element]["basename"]]["action"].push("renamed");
+        currentLocation["files"][filesToImport[element]["basename"]]["action"].push("renamed");
       }
     }
     await listItems(currentLocation, uiItem, 500);
     getInFolder(singleUIItem, uiItem, organizeCurrentLocation, globalPathValue);
     beginScrollListen();
-    if (Object.keys(regularFiles).length > 1) {
+    if (Object.keys(filesToImport).length > 1) {
       importToast.open({
         type: "success",
         message: "Successfully Imported Files",

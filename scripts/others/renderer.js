@@ -5158,6 +5158,8 @@ const dropHelper = async (
   var duplicateFolders = [];
   var hiddenFiles = [];
   var nonAllowedFiles = [];
+  let loadingIcon = document.getElementById("items_loading_container");
+  let loadingContainer = document.getElementById("loading-items-background-overlay");
 
   for (var i = 0; i < ev1.length; i++) {
     /// Get all the file information
@@ -5172,28 +5174,29 @@ const dropHelper = async (
         break;
       }
     }
+    let slashCount = getPathSlashCount();
     /// check for File duplicate
     if (statsObj.isFile()) {
       var nonAllowedDuplicate = false;
       var originalFileName = path.parse(itemPath).base;
-      var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+      let filePath = itemPath;
       const fileNameRegex = /[^-a-zA-z0-9]/g;
 
-      if (path.parse(itemPath).name.substr(0, 1) === ".") {
-        if (path.parse(itemPath).base === ".DS_Store") {
-          nonAllowedFiles.push(itemPath);
-          continue;
-        } else {
-          hiddenFiles.push(itemPath);
-          continue;
-        }
+      let forbiddenCheck = forbiddenFileCheck(originalFileName);
+      if(forbiddenCheck === "forbidden") {
+        nonAllowedFiles.push(filePath);
+        continue;
       }
-      if (path.parse(itemPath).base === "Thumbs.db") {
-        nonAllowedFiles.push(itemPath);
+      if(forbiddenCheck === "hidden") {
+        hiddenFiles.push(filePath);
         continue;
       }
 
       if (slashCount === 1) {
+        if (loadingContainer != undefined) {
+          loadingContainer.style.display = "none";
+          loadingIcon.style.display = "none";
+        }
         await Swal.fire({
           icon: "error",
           html: "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
@@ -5203,26 +5206,26 @@ const dropHelper = async (
         break;
       } else {
         if (JSON.stringify(myPath["files"]) === "{}" && JSON.stringify(importedFiles) === "{}") {
-          importedFiles[path.parse(itemPath).base] = {
-            path: itemPath,
-            basename: path.parse(itemPath).base,
+          importedFiles[originalFileName] = {
+            path: filePath,
+            basename: originalFileName,
           };
         } else {
           //check if fileName is in to-be-imported object keys
           if (importedFiles.hasOwnProperty(originalFileName)) {
             nonAllowedDuplicate = true;
-            nonAllowedDuplicateFiles.push(itemPath);
+            nonAllowedDuplicateFiles.push(filePath);
             continue;
           } else {
             //check if filename is in already-imported object keys
             if (myPath["files"].hasOwnProperty(originalFileName)) {
               nonAllowedDuplicate = true;
-              nonAllowedDuplicateFiles.push(itemPath);
+              nonAllowedDuplicateFiles.push(filePath);
               continue;
             } else {
               if (Object.keys(myPath["files"]).length === 0) {
                 importedFiles[originalFileName] = {
-                  path: itemPath,
+                  path: filePath,
                   basename: originalFileName,
                 };
               }
@@ -5230,14 +5233,14 @@ const dropHelper = async (
                 if (objectKey !== undefined) {
                   nonAllowedDuplicate = false;
                   //just checking if paths are the same
-                  if (itemPath === myPath["files"][objectKey]["path"]) {
-                    nonAllowedDuplicateFiles.push(itemPath);
+                  if (filePath === myPath["files"][objectKey]["path"]) {
+                    nonAllowedDuplicateFiles.push(filePath);
                     nonAllowedDuplicate = true;
                     continue;
                   } else {
                     //in neither so write
                     importedFiles[originalFileName] = {
-                      path: itemPath,
+                      path: filePath,
                       basename: originalFileName,
                     };
                   }
@@ -5249,7 +5252,12 @@ const dropHelper = async (
       }
     } else if (statsObj.isDirectory()) {
       /// drop a folder
+      let folderPath = itemPath;
       if (slashCount === 1) {
+        if (loadingContainer != undefined) {
+          loadingContainer.style.display = "none";
+          loadingIcon.style.display = "none";
+        }
         await Swal.fire({
           icon: "error",
           text: "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
@@ -5261,7 +5269,7 @@ const dropHelper = async (
         var originalFolderName = itemName;
         var renamedFolderName = originalFolderName;
 
-        if (irregularFolderArray.includes(itemPath)) {
+        if (irregularFolderArray.includes(folderPath)) {
           if (action !== "ignore" && action !== "") {
             if (action === "remove") {
               renamedFolderName = removeIrregularFolders(itemName);
@@ -5269,7 +5277,7 @@ const dropHelper = async (
               renamedFolderName = replaceIrregularFolders(itemName);
             }
             importedFolders[renamedFolderName] = {
-              path: itemPath,
+              path: folderPath,
               "original-basename": originalFolderName,
             };
           }
@@ -5277,13 +5285,13 @@ const dropHelper = async (
           if (myPath["folders"].hasOwnProperty(originalFolderName) === true) {
             //folder is already imported
             duplicateFolders.push(itemName);
-            folderPath.push(itemPath);
+            folderPath.push(folderPath);
             continue;
           } else {
             if (importedFolders.hasOwnProperty(originalFolderName) === true) {
               //folder is already in to-be-imported list
               duplicateFolders.push(itemName);
-              folderPath.push(itemPath);
+              folderPath.push(folderPath);
               continue;
             } else {
               //folder is in neither so write
@@ -5299,6 +5307,10 @@ const dropHelper = async (
   }
 
   if (hiddenFiles.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
     await Swal.fire({
       title:
         "The following files have an unexpected name starting with a period. How should we handle them?",
@@ -5408,6 +5420,10 @@ const dropHelper = async (
   }
 
   if (nonAllowedFiles.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
     await Swal.fire({
       title: "The following files are banned as per SPARC guidelines and will not be imported",
       html:
@@ -5424,6 +5440,10 @@ const dropHelper = async (
   var listElements = showItemsAsListBootbox(duplicateFolders);
   var list = JSON.stringify(folderPath).replace(/"/g, "");
   if (duplicateFolders.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
     await Swal.fire({
       title: "Duplicate folder(s) detected",
       icon: "warning",
@@ -5469,6 +5489,10 @@ const dropHelper = async (
     }
     var listElements = showItemsAsListBootbox(baseName);
     var list = JSON.stringify(nonAllowedDuplicateFiles).replace(/"/g, "");
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
     await Swal.fire({
       title: "Duplicate file(s) detected",
       icon: "warning",
