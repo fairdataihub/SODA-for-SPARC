@@ -79,6 +79,8 @@
   padding-left: 0px;
   max-height: 400px;
   overflow-y: auto;
+  /* Make the scroll bar align with the right side of the container */
+  margin-right: -12px;
 }
 
 .container {
@@ -150,6 +152,10 @@
   justify-content: center;
   flex-grow: 1;
   margin-top: 10px;
+}
+
+.guided--tooltip-intro-js {
+  min-width: 500px !important;
 }
 
 .black-arrow-lottie-container {
@@ -410,7 +416,7 @@
   justify-content: flex-start;
   margin-left: 30px;
 }
-
+.guided--sub-page,
 .guided--section {
   padding: 12px;
   padding-left: 0;

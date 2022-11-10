@@ -321,6 +321,17 @@ const notyf = new Notyf({
       duration: 3000,
     },
     {
+      type: "info",
+      background: "#13716D",
+      icon: {
+        className: "fas fa-info-circle",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 3000,
+    },
+
+    {
       type: "app_update_warning",
       background: "#fa8c16",
       icon: {
@@ -6176,6 +6187,7 @@ $(document).bind("click", (event) => {
 
 // sort JSON objects by keys alphabetically (folder by folder, file by file)
 function sortObjByKeys(object) {
+  console.log(object);
   const orderedFolders = {};
   const orderedFiles = {};
   /// sort the files in objects
@@ -6653,15 +6665,23 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
       if (currentFolder.startsWith("sam-")) {
         folderType = "sample";
       }
+      if (currentFolder.startsWith("pool-")) {
+        folderType = "pool";
+      }
     }
 
     let dragDropInstructionsText;
     if (folderType === undefined) {
       dragDropInstructionsText = `Drag and Drop folders and files to be included in the <b>${currentFolder}</b> folder.`;
-    } else if (folderType == "subject") {
+    }
+    if (folderType == "subject") {
       dragDropInstructionsText = `Drag and drop folders and files associated with the subject ${currentFolder}`;
-    } else if (folderType === "sample") {
+    }
+    if (folderType === "sample") {
       dragDropInstructionsText = `Drag and drop folders and files associated with the sample ${currentFolder}`;
+    }
+    if (folderType === "pool") {
+      dragDropInstructionsText = `Drag and drop folders and files associated with the pool ${currentFolder}`;
     }
 
     $("#items").html(

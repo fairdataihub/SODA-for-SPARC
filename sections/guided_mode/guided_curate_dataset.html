@@ -13,6 +13,17 @@
       <div class="guided--progression-tab-container">
         <div
           class="guided--progression-tab guided--progression-tab-triangle selected-tab"
+          id="curation-preparation-progression-tab"
+        >
+          <div class="guided--progression-tab-content">
+            <span class="dot">0</span>
+            <div class="guided--progression-tab-labels">
+              <h1 class="guided--progression-tab-label-main">Curation preparation</h1>
+            </div>
+          </div>
+        </div>
+        <div
+          class="guided--progression-tab guided--progression-tab-triangle"
           id="prepare-dataset-progression-tab"
         >
           <div class="guided--progression-tab-content">
@@ -114,15 +125,23 @@
           <div class="guided--section hidden" id="guided-div-update-uploaded-cards"></div>
         </div>
       </div>
+
       <div
-        id="guided-mode-starting-container"
-        class="guided--main-tab hidden"
-        data-parent-tab-name="Dataset Structure"
+        id="curation-preparation-parent-tab"
+        class="guided--parent-tab hidden"
+        data-parent-tab-name="Curation Preparation"
       >
-        <div class="guided--panel hidden" id="guided-intro-page" style="flex-grow: 1">
-          <div class="title-border">
-            <h1 class="guided--text-sub-step">Welcome to Guided Mode!</h1>
-          </div>
+        <div class="guided--capsule-container" id="structure-dataset-capsule-container">
+          <div class="guided--capsule" id="guided-intro-page-capsule"></div>
+          <div class="guided--capsule" id="guided-name-subtitle-capsule"></div>
+          <div class="guided--capsule" id="guided-prepare-helpers-capsule"></div>
+        </div>
+        <div
+          id="guided-intro-page-tab"
+          class="guided--page hidden"
+          data-page-name="About Guided Mode"
+        >
+          <h1 class="guided--text-sub-step">Welcome to Guided Mode!</h1>
           <div class="guided--section">
             <p class="guided--help-text">
               Guided Mode is designed to be the simplest and most efficient method of curating and
@@ -154,10 +173,12 @@
             </p>
           </div>
         </div>
-        <div class="guided--panel hidden" id="guided-new-dataset-info" style="flex-grow: 1">
-          <div class="title-border">
-            <h1 class="guided--text-sub-step">Give your dataset a name and subtitle</h1>
-          </div>
+        <div
+          id="guided-name-subtitle-tab"
+          class="guided--page hidden"
+          data-page-name="Name and subtitle"
+        >
+          <h1 class="guided--text-sub-step">Give your dataset a name and subtitle</h1>
           <div class="guided--section">
             <label class="guided--form-label">Dataset name: </label>
             <input
@@ -208,66 +229,14 @@
             </p>
           </div>
         </div>
-      </div>
-      <div
-        id="prepare-dataset-parent-tab"
-        class="guided--parent-tab hidden"
-        data-parent-tab-name="Dataset Structure"
-      >
-        <div class="guided--capsule-container" id="structure-dataset-capsule-container">
-          <div class="guided--capsule hidden" id="guided-prepare-helpers-capsule"></div>
-          <div class="guided--capsule active" id="guided-dataset-starting-point-capsule"></div>
-
-          <div
-            class="guided--capsule-container-branch hidden"
-            id="guided-curate-new-dataset-branch-capsule-container"
-          >
-            <div class="guided--capsule" id="guided-subjects-folder-capsule"></div>
-
-            <div class="guided--capsule" id="guided-primary-data-organization-capsule"></div>
-            <div class="guided--capsule" id="guided-source-data-organization-capsule"></div>
-            <div class="guided--capsule" id="guided-derivative-data-organization-capsule"></div>
-            <div class="guided--capsule" id="guided-code-folder-capsule"></div>
-            <div class="guided--capsule" id="guided-protocol-folder-capsule"></div>
-            <div class="guided--capsule" id="guided-docs-folder-capsule"></div>
-
-            <button
-              class="ui yellow basic button"
-              id="guided-button-preview-folder-structure"
-              style="
-                z-index: 2001;
-                position: absolute;
-                top: 75px;
-                left: 0px;
-                background-color: white;
-                display: none;
-              "
-            >
-              Preview folder structure
-            </button>
-          </div>
-          <div
-            class="guided--capsule-container-branch hidden"
-            id="guided-curate-existing-local-dataset-branch-capsule-container"
-          >
-            <div class="guided--capsule" id="guided-folder-importation-capsule"></div>
-          </div>
-          <div class="guided--capsule" id="guided-folder-structure-preview-capsule"></div>
-        </div>
-
-        <div id="guided-prepare-helpers-tab" class="guided--page" data-page-name="Prepare data">
+        <div
+          id="guided-prepare-helpers-tab"
+          class="guided--page hidden"
+          data-page-name="Prepare data"
+        >
           <div class="guided--section">
-            <h1
-              class="guided--text-sub-step"
-              style="
-                border-bottom: 5px solid var(--color-bg-plum);
-                width: 131%;
-                margin-bottom: 2rem;
-                padding-bottom: 1rem;
-              "
-            >
-              Before Getting Started
-            </h1>
+            <h1 class="guided--text-sub-step">Before getting started</h1>
+
             <p class="guided--help-text">
               Several resources are required to curate and share a SPARC dataset. They are listed
               below so you can make sure you can have access to them before getting started. You can
@@ -461,6 +430,36 @@
               </button>
             </div>
           </div>
+        </div>
+      </div>
+      <div
+        id="prepare-dataset-parent-tab"
+        class="guided--parent-tab hidden"
+        data-parent-tab-name="Dataset Structure"
+      >
+        <div class="guided--capsule-container">
+          <div class="guided--capsule active" id="guided-dataset-starting-point-capsule"></div>
+
+          <div
+            class="guided--capsule-container-branch hidden"
+            id="guided-curate-new-dataset-branch-capsule-container"
+          >
+            <div class="guided--capsule" id="guided-subjects-folder-capsule"></div>
+
+            <div class="guided--capsule" id="guided-primary-data-organization-capsule"></div>
+            <div class="guided--capsule" id="guided-source-data-organization-capsule"></div>
+            <div class="guided--capsule" id="guided-derivative-data-organization-capsule"></div>
+            <div class="guided--capsule" id="guided-code-folder-capsule"></div>
+            <div class="guided--capsule" id="guided-protocol-folder-capsule"></div>
+            <div class="guided--capsule" id="guided-docs-folder-capsule"></div>
+          </div>
+          <div
+            class="guided--capsule-container-branch hidden"
+            id="guided-curate-existing-local-dataset-branch-capsule-container"
+          >
+            <div class="guided--capsule" id="guided-folder-importation-capsule"></div>
+          </div>
+          <div class="guided--capsule" id="guided-folder-structure-preview-capsule"></div>
         </div>
 
         <div
@@ -740,6 +739,10 @@
                   class="guided--capsule-sub-page"
                   id="guided-primary-subjects-organization-page-capsule"
                 ></div>
+                <div
+                  class="guided--capsule-sub-page"
+                  id="guided-primary-pools-organization-page-capsule"
+                ></div>
               </div>
             </div>
             <div
@@ -965,6 +968,108 @@
                 </div>
               </div>
             </div>
+            <div
+              class="guided--panel mt-md sub-page hidden"
+              id="guided-primary-pools-organization-page"
+            >
+              <div class="guided--section">
+                <label class="guided--form-label centered">
+                  Do you have primary data for your pools?
+                </label>
+                <div class="guided--radio-button-container" style="margin-bottom: 7px">
+                  <button
+                    class="ui positive basic button guided--radio-button"
+                    id="guided-button-add-pool-primary-data"
+                    data-next-element="guided-primary-pools-container"
+                    data-button-config-value="dataset-contains-primary-pool-data"
+                    data-button-config-value-state="yes"
+                  >
+                    Yes
+                  </button>
+                  <button
+                    class="ui negative basic button guided--radio-button"
+                    id="guided-button-no-pool-primary-data"
+                    data-next-element="guided-warning-before-deleting-primary-pools-data-container"
+                    data-button-config-value="dataset-contains-primary-pool-data"
+                    data-button-config-value-state="no"
+                  >
+                    No
+                  </button>
+                </div>
+              </div>
+              <div class="guided--panel" id="guided-primary-pools-container">
+                <div class="guided--section">
+                  <h2 class="guided--text-sub-step mt-0">
+                    Specify the primary data for your pools through the interface below
+                  </h2>
+                  <p class="guided--help-text">
+                    You can also virtually structure the data and rename files/folders as you would
+                    like to have them in your dataset when it is generated (note that none of your
+                    original data will be modified).
+                  </p>
+                </div>
+                <div
+                  class="guided--container-subject-samples mt-md"
+                  id="guided-primary-pools-file-explorer-container"
+                  style="border: 2px solid lightgray"
+                >
+                  <div
+                    class="guided--hlf-selection-container"
+                    style="
+                      padding-top: 0;
+                      border-right: 2px solid lightgray;
+                      width: 350px;
+                      border-radius: 0;
+                      height: 476px;
+                      margin: 0 !important;
+                      border-top: 2px solid lightgray;
+                      border-left: 2px;
+                    "
+                  >
+                    <label
+                      class="guided--form-label centered"
+                      style="
+                        padding: 31px 0 12px 0;
+                        border-bottom: 2px solid lightgray;
+                        height: 48px;
+                        color: black;
+                        background: lightgray;
+                        height: 84px;
+                      "
+                      >Dataset pools:
+                    </label>
+                    <aside
+                      class="guided--hlf-selection-aside"
+                      id="guided-primary-pools-aside"
+                      style="font-weight: 600; direction: rtl"
+                    ></aside>
+                  </div>
+                  <div
+                    id="guided-primary-pools-file-explorer-intro"
+                    class="guided--panel mb-0"
+                    style="height: 475px; padding: 25px; border: black solid 2px"
+                  >
+                    <div class="guided--section" style="justify-content: flex-start">
+                      <h1 class="guided--text-sub-step">
+                        Select a pool on the left to add its primary data.
+                      </h1>
+                      <div
+                        id="primary-pools-file-explorer-black-arrow-lottie-container"
+                        class="black-arrow-lottie-container"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="guided--panel"
+                id="guided-warning-before-deleting-primary-pools-data-container"
+              >
+                <p class="guided--help-text">
+                  Click Next to confirm you have no primary data for your pools.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
         <div
@@ -992,6 +1097,10 @@
                 <div
                   class="guided--capsule-sub-page"
                   id="guided-source-subjects-organization-page-capsule"
+                ></div>
+                <div
+                  class="guided--capsule-sub-page"
+                  id="guided-source-pools-organization-page-capsule"
                 ></div>
               </div>
             </div>
@@ -1186,6 +1295,108 @@
                 </div>
               </div>
             </div>
+            <div
+              class="guided--panel mt-md sub-page hidden"
+              id="guided-source-pools-organization-page"
+            >
+              <div class="guided--section">
+                <label class="guided--form-label centered">
+                  Do you have source data for your pools?
+                </label>
+                <div class="guided--radio-button-container" style="margin-bottom: 7px">
+                  <button
+                    class="ui positive basic button guided--radio-button"
+                    id="guided-button-add-pool-source-data"
+                    data-next-element="guided-source-pools-container"
+                    data-button-config-value="dataset-contains-source-pool-data"
+                    data-button-config-value-state="yes"
+                  >
+                    Yes
+                  </button>
+                  <button
+                    class="ui negative basic button guided--radio-button"
+                    id="guided-button-no-pool-source-data"
+                    data-next-element="guided-warning-before-deleting-source-pools-data-container"
+                    data-button-config-value="dataset-contains-source-pool-data"
+                    data-button-config-value-state="no"
+                  >
+                    No
+                  </button>
+                </div>
+              </div>
+              <div class="guided--panel" id="guided-source-pools-container">
+                <div class="guided--section">
+                  <h2 class="guided--text-sub-step mt-0">
+                    Specify the source data for your pools through the interface below
+                  </h2>
+                  <p class="guided--help-text">
+                    You can also virtually structure the data and rename files/folders as you would
+                    like to have them in your dataset when it is generated (note that none of your
+                    original data will be modified).
+                  </p>
+                </div>
+                <div
+                  class="guided--container-subject-samples mt-md"
+                  id="guided-source-pools-file-explorer-container"
+                  style="border: 2px solid lightgray"
+                >
+                  <div
+                    class="guided--hlf-selection-container"
+                    style="
+                      padding-top: 0;
+                      border-right: 2px solid lightgray;
+                      width: 350px;
+                      border-radius: 0;
+                      height: 476px;
+                      margin: 0 !important;
+                      border-top: 2px solid lightgray;
+                      border-left: 2px;
+                    "
+                  >
+                    <label
+                      class="guided--form-label centered"
+                      style="
+                        padding: 31px 0 12px 0;
+                        border-bottom: 2px solid lightgray;
+                        height: 48px;
+                        color: black;
+                        background: lightgray;
+                        height: 84px;
+                      "
+                      >Dataset pools:
+                    </label>
+                    <aside
+                      class="guided--hlf-selection-aside"
+                      id="guided-source-pools-aside"
+                      style="font-weight: 600; direction: rtl"
+                    ></aside>
+                  </div>
+                  <div
+                    id="guided-source-pools-file-explorer-intro"
+                    class="guided--panel mb-0"
+                    style="height: 475px; padding: 25px; border: black solid 2px"
+                  >
+                    <div class="guided--section" style="justify-content: flex-start">
+                      <h1 class="guided--text-sub-step">
+                        Select a pool on the left to add its source data.
+                      </h1>
+                      <div
+                        id="source-pools-file-explorer-black-arrow-lottie-container"
+                        class="black-arrow-lottie-container"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="guided--panel"
+                id="guided-warning-before-deleting-source-pools-data-container"
+              >
+                <p class="guided--help-text">
+                  Click Next to confirm you have no source data for your pools.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
         <div
@@ -1212,6 +1423,10 @@
               <div
                 class="guided--capsule-sub-page"
                 id="guided-derivative-subjects-organization-page-capsule"
+              ></div>
+              <div
+                class="guided--capsule-sub-page"
+                id="guided-derivative-pools-organization-page-capsule"
               ></div>
             </div>
             <div
@@ -1391,6 +1606,108 @@
                 </div>
               </div>
             </div>
+            <div
+              class="guided--panel mt-md sub-page hidden"
+              id="guided-derivative-pools-organization-page"
+            >
+              <div class="guided--section">
+                <label class="guided--form-label centered">
+                  Do you have derivative data for your pools?
+                </label>
+                <div class="guided--radio-button-container" style="margin-bottom: 7px">
+                  <button
+                    class="ui positive basic button guided--radio-button"
+                    id="guided-button-add-pool-derivative-data"
+                    data-next-element="guided-derivative-pools-container"
+                    data-button-config-value="dataset-contains-derivative-pool-data"
+                    data-button-config-value-state="yes"
+                  >
+                    Yes
+                  </button>
+                  <button
+                    class="ui negative basic button guided--radio-button"
+                    id="guided-button-no-pool-derivative-data"
+                    data-next-element="guided-warning-before-deleting-derivative-pools-data-container"
+                    data-button-config-value="dataset-contains-derivative-pool-data"
+                    data-button-config-value-state="no"
+                  >
+                    No
+                  </button>
+                </div>
+              </div>
+              <div class="guided--panel" id="guided-derivative-pools-container">
+                <div class="guided--section">
+                  <h2 class="guided--text-sub-step mt-0">
+                    Specify the derivative data for your pools through the interface below
+                  </h2>
+                  <p class="guided--help-text">
+                    You can also virtually structure the data and rename files/folders as you would
+                    like to have them in your dataset when it is generated (note that none of your
+                    original data will be modified).
+                  </p>
+                </div>
+                <div
+                  class="guided--container-subject-samples mt-md"
+                  id="guided-derivative-pools-file-explorer-container"
+                  style="border: 2px solid lightgray"
+                >
+                  <div
+                    class="guided--hlf-selection-container"
+                    style="
+                      padding-top: 0;
+                      border-right: 2px solid lightgray;
+                      width: 350px;
+                      border-radius: 0;
+                      height: 476px;
+                      margin: 0 !important;
+                      border-top: 2px solid lightgray;
+                      border-left: 2px;
+                    "
+                  >
+                    <label
+                      class="guided--form-label centered"
+                      style="
+                        padding: 31px 0 12px 0;
+                        border-bottom: 2px solid lightgray;
+                        height: 48px;
+                        color: black;
+                        background: lightgray;
+                        height: 84px;
+                      "
+                      >Dataset pools:
+                    </label>
+                    <aside
+                      class="guided--hlf-selection-aside"
+                      id="guided-derivative-pools-aside"
+                      style="font-weight: 600; direction: rtl"
+                    ></aside>
+                  </div>
+                  <div
+                    id="guided-derivative-pools-file-explorer-intro"
+                    class="guided--panel mb-0"
+                    style="height: 475px; padding: 25px; border: black solid 2px"
+                  >
+                    <div class="guided--section" style="justify-content: flex-start">
+                      <h1 class="guided--text-sub-step">
+                        Select a pool on the left to add its derivative data.
+                      </h1>
+                      <div
+                        id="derivative-pools-file-explorer-black-arrow-lottie-container"
+                        class="black-arrow-lottie-container"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="guided--panel"
+                id="guided-warning-before-deleting-derivative-pools-data-container"
+              >
+                <p class="guided--help-text">
+                  Click Next to confirm you have no derivative data for your pools.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1559,138 +1876,6 @@
               id="guided-folder-structure-review"
               style="display: block; margin-left: 0px; margin-right: 0px"
             ></div>
-          </div>
-        </div>
-        <div id="guided-structure-folder-tab" class="guided--panel hidden" data-skip-page="true">
-          <div
-            class="guided--section"
-            id="guided-file-explorer-elements"
-            style="padding: 0; border-radius: 4px; height: 476px"
-          >
-            <h2 class="guided--text-sub-step mt-0" id="structure-folder-header"></h2>
-            <p class="guided--help-text" id="structure-folder-contents"></p>
-            <div
-              id="items-guided-container"
-              style="width: 100%; display: flex; flex-direction: column"
-            >
-              <div
-                class="guided--folder-organization-buttons-container"
-                style="margin-top: 0.44rem; width: 97% !important; align-self: center"
-              >
-                <div class="guided--folder-organization-buttons-container-sub" style="flex-grow: 1">
-                  <button
-                    class="ui secondary basic button small onHoverBlackBoxShadow"
-                    id="guided-button-back"
-                  >
-                    <i class="fas fa-arrow-up"></i>
-                  </button>
-                  <input
-                    style="
-                      margin: 0px 7px;
-                      display: flex;
-                      flex-grow: 1;
-                      border: none;
-                      font-size: 16px;
-                      font-weight: 600;
-                      cursor: default;
-                      color: #898989;
-                      display: none;
-                    "
-                    id="guided-input-global-path"
-                    value="My_dataset_folder/"
-                    readonly
-                  />
-                </div>
-                <div class="guided--folder-organization-buttons-container-sub">
-                  <button
-                    class="ui primary basic button small onHoverBlueBoxShadow"
-                    id="guided-new-folder"
-                    style="margin-right: 7px"
-                  >
-                    <i class="fas fa-folder-plus" style="margin-right: 7px"></i>New folder
-                  </button>
-                  <button
-                    class="ui primary basic button small remove-margin-right onHoverBlueBoxShadow"
-                    id="guided-import-folder"
-                    style="width: 140px; margin-right: 7px !important"
-                  >
-                    <svg
-                      style="margin-right: 7px"
-                      width="1em"
-                      height=".9em"
-                      viewbox="0 0 16 16"
-                      class="bi bi-upload"
-                      fill="currentColor"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"
-                      />
-                      <path
-                        fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"
-                      />
-                    </svg>
-                    Import folder
-                  </button>
-                  <button
-                    class="ui primary basic button small remove-margin-right onHoverBlueBoxShadow"
-                    id="guided-imoprt-file"
-                    style="width: 140x"
-                  >
-                    <svg
-                      style="margin-right: 7px"
-                      width="1em"
-                      height=".9em"
-                      viewbox="0 0 16 16"
-                      class="bi bi-upload"
-                      fill="currentColor"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"
-                      />
-                      <path
-                        fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"
-                      />
-                    </svg>
-                    Import file
-                  </button>
-                </div>
-              </div>
-              <div
-                id="guided-folder-structure-container"
-                class="w-100"
-                style="border-top: 2px solid lightgray; margin-top: 0"
-              >
-                <div
-                  style="
-                    display: flex;
-                    justify-content: center;
-                    font-weight: 600;
-                    padding-top: 0.5rem;
-                    padding-bottom: 0.5rem;
-                    font-weight: 600;
-                    border-bottom: 2px solid lightgray;
-                  "
-                >
-                  <p
-                    id="datasetPathDisplay"
-                    style="
-                      vertical-align: bottom;
-                      text-overflow: ellipsis;
-                      max-width: 600px;
-                      overflow: hidden;
-                      white-space: nowrap;
-                      margin-right: 2px;
-                    "
-                  ></p>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -2679,8 +2864,8 @@
               </div>
             </div>
             <p class="guided--text-input-instructions mb-0">
-              Provide a set of 3-5 keywords that will aid in the search of your dataset when
-              published on the SPARC portal.<br />
+              Provide of 3-5 keywords that will aid in the search of your dataset when published on
+              the SPARC portal.<br />
               <b>Hit enter after typing a keyword to add the text as a keyword.</b>
             </p>
           </div>
@@ -5544,7 +5729,7 @@
         <button
           class="ui secondary basic button guided--button-footer guided--button-basic"
           style="width: 150px !important"
-          onclick="guidedSaveAndExit('main-nav')"
+          onclick="guidedSaveAndExit()"
         >
           <i class="far fa-save" style="margin-right: 10px"></i>
           Save and Exit
@@ -5570,31 +5755,12 @@
           Next</button
         ><button
           class="ui secondary basic button guided--button-footer guided--button-basic"
+          id="guided-button-save-and-exit"
           style="width: 150px !important"
-          onclick="guidedSaveAndExit('sub-nav')"
+          onclick="guidedSaveAndExit()"
         >
           <i class="far fa-save" style="margin-right: 10px"></i>
           Save and Exit
-        </button>
-      </div>
-    </footer>
-    <footer class="guided--footer hidden" id="guided-footer-intro">
-      <div class="guided--container-footer-buttons flex-end">
-        <button
-          class="ui secondary basic button guided--button-footer"
-          id="guided-button-dataset-intro-back"
-          style="width: 130px !important"
-        >
-          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
-        </button>
-      </div>
-      <div class="guided--container-footer-buttons flex-start">
-        <button
-          class="ui positive button guided--button-footer"
-          id="guided-button-dataset-intro-next"
-          style="background-color: var(--color-light-green) !important; width: 130px !important"
-        >
-          Next
         </button>
       </div>
     </footer>
@@ -5649,7 +5815,7 @@
           <button
             class="ui primary basic button small remove-margin-right onHoverBlueBoxShadow"
             id="guided-import-folder"
-            style="width: 165px; margin-right: 7px !important"
+            style="width: 140px; margin-right: 7px !important"
           >
             <svg
               style="margin-right: 7px"
@@ -5674,7 +5840,7 @@
           <button
             class="ui primary basic button small remove-margin-right onHoverBlueBoxShadow"
             id="guided-imoprt-file"
-            style="width: 165px"
+            style="width: 140x"
           >
             <svg
               style="margin-right: 7px"
@@ -5702,7 +5868,31 @@
         id="guided-folder-structure-container"
         class="w-100"
         style="border-top: 2px solid lightgray; margin-top: 0"
-      ></div>
+      >
+        <div
+          style="
+            display: flex;
+            justify-content: center;
+            font-weight: 600;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            font-weight: 600;
+            border-bottom: 2px solid lightgray;
+          "
+        >
+          <p
+            id="datasetPathDisplay"
+            style="
+              vertical-align: bottom;
+              text-overflow: ellipsis;
+              max-width: 600px;
+              overflow: hidden;
+              white-space: nowrap;
+              margin-right: 2px;
+            "
+          ></p>
+        </div>
+      </div>
     </div>
   </div>
 </div>
