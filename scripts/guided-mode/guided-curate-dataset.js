@@ -11831,7 +11831,7 @@ $(document).ready(async () => {
             throw errorArray;
           }
         }
-        if (buttonNoPrimarySampleData.classList.contains("selected")) {
+        if (buttonNoSourceSampleData.classList.contains("selected")) {
           await cleanUpEmptyGuidedStructureFolders("source", "samples", true);
         }
       }
