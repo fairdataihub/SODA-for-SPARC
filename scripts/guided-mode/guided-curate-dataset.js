@@ -171,7 +171,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           });
           throw errorArray;
         }
-        $("#guided-add-code-metadata-tab").attr("data-skip-page", "false");
+        guidedUnSkipPage("guided-add-code-metadata-tab");
       }
       if (guidedButtonUserNoCodeData.classList.contains("selected")) {
         if (
@@ -179,7 +179,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           Object.keys(codeFolder.files).length === 0
         ) {
           delete datasetStructureJSONObj["folders"]["code"];
-          $("#guided-add-code-metadata-tab").attr("data-skip-page", "true");
+          guidedSkipPage("guided-add-code-metadata-tab");
         } else {
           const { value: deleteCodeFolderWithData } = await Swal.fire({
             title: "Delete code folder?",
@@ -195,7 +195,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           });
           if (deleteCodeFolderWithData) {
             delete datasetStructureJSONObj["folders"]["code"];
-            $("#guided-add-code-metadata-tab").attr("data-skip-page", "true");
+            guidedSkipPage("guided-add-code-metadata-tab");
           } else {
             guidedButtonUserHasCodeData.click();
           }
@@ -2443,6 +2443,44 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
   }
 };
 
+const guidedResetSkippedPages = () => {
+  const pagesThatShouldAlwaysBeskipped = [
+    "guided-dataset-generation-tab",
+    "guided-structure-folder-tab",
+  ];
+  // Reset parent pages
+  const parentPagesToResetSkip = Array.from(document.querySelectorAll(".guided--page")).filter(
+    (page) => !pagesThatShouldAlwaysBeskipped.includes(page.id)
+  );
+  for (const page of pagesToResetSkip) {
+    page.dataset.skipPage = "false";
+  }
+  // Reset sub pages
+  const subPagesToResetSkip = Array.from(document.querySelectorAll(".sub-page"));
+  for (const subPage of subPagesToResetSkip) {
+    subPage.dataset.skipPage = "false";
+  }
+};
+
+const guidedSkipPage = (pageId) => {
+  const page = document.getElementById(pageId);
+  page.dataset.skipPage = "true";
+  // add the page to sodaJSONObj array if it isn't there already
+  if (!sodaJSONObj["skipped-pages"].includes(pageId)) {
+    sodaJSONObj["skipped-pages"].push(pageId);
+  }
+};
+
+guidedUnSkipPage = (pageId) => {
+  const page = document.getElementById(pageId);
+  page.dataset.skipPage = "false";
+  // remove the page from sodaJSONObj array if it is there
+  if (sodaJSONObj["skipped-pages"].includes(pageId)) {
+    sodaJSONObj["skipped-pages"].splice(sodaJSONObj["skipped-pages"].indexOf(pageId), 1);
+  }
+};
+
+const loadGuidedSkippedPages = () => {};
 const folderIsEmpty = (folder) => {
   return Object.keys(folder.folders).length === 0 && Object.keys(folder.files).length === 0;
 };
@@ -3962,7 +4000,7 @@ const setActiveSubPage = (pageIdToActivate) => {
       //If the user indicated they have no samples, skip this page
       //and go to primary subject data organization page
       if (
-        document.getElementById("guided-primary-samples-organization-page").dataset.skipSubPage ===
+        document.getElementById("guided-primary-samples-organization-page").dataset.skipPage ===
         "true"
       ) {
         setActiveSubPage("guided-primary-subjects-organization-page");
@@ -4053,7 +4091,7 @@ const setActiveSubPage = (pageIdToActivate) => {
       //If the user indicated they have no samples, skip this page
       //and go to source subject data organization page
       if (
-        document.getElementById("guided-source-samples-organization-page").dataset.skipSubPage ===
+        document.getElementById("guided-source-samples-organization-page").dataset.skipPage ===
         "true"
       ) {
         setActiveSubPage("guided-source-subjects-organization-page");
@@ -4142,8 +4180,8 @@ const setActiveSubPage = (pageIdToActivate) => {
       //If the user indicated they have no samples, skip this page
       //and go to derivative subject data organization page
       if (
-        document.getElementById("guided-derivative-samples-organization-page").dataset
-          .skipSubPage === "true"
+        document.getElementById("guided-derivative-samples-organization-page").dataset.skipPage ===
+        "true"
       ) {
         setActiveSubPage("guided-derivative-subjects-organization-page");
         return;
@@ -11620,13 +11658,13 @@ $(document).ready(async () => {
 
           document
             .getElementById("guided-primary-pools-organization-page")
-            .setAttribute("data-skip-sub-page", "false");
+            .setAttribute("skip-page", "false");
           document
             .getElementById("guided-source-pools-organization-page")
-            .setAttribute("data-skip-sub-page", "false");
+            .setAttribute("skip-page", "false");
           document
             .getElementById("guided-derivative-pools-organization-page")
-            .setAttribute("data-skip-sub-page", "false");
+            .setAttribute("skip-page", "false");
         }
 
         if (buttonNoPools.classList.contains("selected")) {
@@ -11639,13 +11677,13 @@ $(document).ready(async () => {
 
           document
             .getElementById("guided-primary-pools-organization-page")
-            .setAttribute("data-skip-sub-page", "true");
+            .setAttribute("skip-page", "true");
           document
             .getElementById("guided-source-pools-organization-page")
-            .setAttribute("data-skip-sub-page", "true");
+            .setAttribute("skip-page", "true");
           document
             .getElementById("guided-derivative-pools-organization-page")
-            .setAttribute("data-skip-sub-page", "true");
+            .setAttribute("skip-page", "true");
         }
       }
 
@@ -11680,25 +11718,24 @@ $(document).ready(async () => {
 
           document
             .getElementById("guided-primary-samples-organization-page")
-            .setAttribute("data-skip-sub-page", "false");
+            .setAttribute("skip-page", "false");
           document
             .getElementById("guided-source-samples-organization-page")
-            .setAttribute("data-skip-sub-page", "false");
+            .setAttribute("skip-page", "false");
           document
             .getElementById("guided-derivative-samples-organization-page")
-            .setAttribute("data-skip-sub-page", "false");
+            .setAttribute("skip-page", "false");
         }
         if (buttonNoSamples.classList.contains("selected")) {
-          //add skip-sub-page attribute to element
           document
             .getElementById("guided-primary-samples-organization-page")
-            .setAttribute("data-skip-sub-page", "true");
+            .setAttribute("skip-page", "true");
           document
             .getElementById("guided-source-samples-organization-page")
-            .setAttribute("data-skip-sub-page", "true");
+            .setAttribute("skip-page", "true");
           document
             .getElementById("guided-derivative-samples-organization-page")
-            .setAttribute("data-skip-sub-page", "true");
+            .setAttribute("skip-page", "true");
         }
       }
 
@@ -12175,7 +12212,7 @@ $(document).ready(async () => {
 
   const getNonSkippedSubPages = (parentPageID) => {
     return Array.from(document.getElementById(parentPageID).querySelectorAll(".sub-page"))
-      .filter((subPage) => subPage.dataset.skipSubPage !== "true")
+      .filter((subPage) => subPage.dataset.skipPage !== "true")
       .map((subPage) => subPage.id);
   };
 
