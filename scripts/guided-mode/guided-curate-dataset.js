@@ -11731,7 +11731,6 @@ $(document).ready(async () => {
             throw errorArray;
           }
         }
-
         if (buttonNoPrimarySampleData.classList.contains("selected")) {
           await cleanUpEmptyGuidedStructureFolders("primary", "samples", true);
         }
@@ -11820,19 +11819,20 @@ $(document).ready(async () => {
           });
           throw errorArray;
         }
+
         if (buttonYesSourceSampleData.classList.contains("selected")) {
           const continueWithoutAddingSourceDataToAllSamples =
             await cleanUpEmptyGuidedStructureFolders("source", "samples", false);
-          if (continueWithoutAddingSourceDataToAllSamples) {
-            setActiveSubPage("guided-source-subjects-organization-page");
+          if (!continueWithoutAddingSourceDataToAllSamples) {
+            errorArray.push({
+              type: "info",
+              message: "Please add source data to all samples before continuing.",
+            });
+            throw errorArray;
           }
         }
-        if (buttonNoSourceSampleData.classList.contains("selected")) {
-          const continueAfterDeletingAllSourceSampleFolders =
-            await cleanUpEmptyGuidedStructureFolders("source", "samples", true);
-          if (continueAfterDeletingAllSourceSampleFolders) {
-            setActiveSubPage("guided-source-subjects-organization-page");
-          }
+        if (buttonNoPrimarySampleData.classList.contains("selected")) {
+          await cleanUpEmptyGuidedStructureFolders("source", "samples", true);
         }
       }
 
@@ -11853,6 +11853,7 @@ $(document).ready(async () => {
           });
           throw errorArray;
         }
+
         if (buttonYesSourceSubjectData.classList.contains("selected")) {
           const continueWithoutAddingSourceDataToAllSubjects =
             await cleanUpEmptyGuidedStructureFolders("source", "subjects", false);
@@ -11885,9 +11886,9 @@ $(document).ready(async () => {
           throw errorArray;
         }
         if (buttonYesSourcePoolData.classList.contains("selected")) {
-          const continueWithoutAddingPrimaryDataToAllPools =
+          const continueWithoutAddingSourceDataToAllPools =
             await cleanUpEmptyGuidedStructureFolders("source", "pools", false);
-          if (!continueWithoutAddingPrimaryDataToAllPools) {
+          if (!continueWithoutAddingSourceDataToAllPools) {
             errorArray.push({
               type: "info",
               message: "Please add source data to all pools before continuing.",
@@ -11920,16 +11921,16 @@ $(document).ready(async () => {
         if (buttonYesDerivativeSampleData.classList.contains("selected")) {
           const continueWithoutAddingDerivativeDataToAllSamples =
             await cleanUpEmptyGuidedStructureFolders("derivative", "samples", false);
-          if (continueWithoutAddingDerivativeDataToAllSamples) {
-            setActiveSubPage("guided-derivative-subjects-organization-page");
+          if (!continueWithoutAddingDerivativeDataToAllSamples) {
+            errorArray.push({
+              type: "info",
+              message: "Please add derivative data to all samples before continuing.",
+            });
+            throw errorArray;
           }
         }
         if (buttonNoDerivativeSampleData.classList.contains("selected")) {
-          const continueAfterDeletingAllDerivativeSampleFolders =
-            await cleanUpEmptyGuidedStructureFolders("derivative", "samples", true);
-          if (continueAfterDeletingAllDerivativeSampleFolders) {
-            setActiveSubPage("guided-derivative-subjects-organization-page");
-          }
+          await cleanUpEmptyGuidedStructureFolders("derivative", "samples", true);
         }
       }
 
