@@ -1552,19 +1552,19 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
 }
 
 const forbiddenFileCheck = (filename) => {
-  if(filename === ".DS_Store" || filename === "Thumbs.db") {
+  if (filename === ".DS_Store" || filename === "Thumbs.db") {
     return "forbidden";
   }
-  if(filename.substr(0, 1) === ".") {
+  if (filename.substr(0, 1) === ".") {
     return "hidden";
   } else {
     return "none";
   }
-}
+};
 
 const getPathSlashCount = () => {
   return organizeDSglobalPath.value.trim().split("/").length - 1;
-}
+};
 
 const addFilesfunction = async (
   fileArray,
@@ -1611,11 +1611,11 @@ const addFilesfunction = async (
     //Check for hidden files and forbidden files
     //.DS_Store and Thumbs.db are forbidden
     let forbiddenCheck = forbiddenFileCheck(fileName);
-    if(forbiddenCheck === "forbidden") {
+    if (forbiddenCheck === "forbidden") {
       nonAllowedFiles.push(filePath);
       continue;
     }
-    if(forbiddenCheck === "hidden") {
+    if (forbiddenCheck === "hidden") {
       hiddenFiles.push(filePath);
       continue;
     }
@@ -1683,7 +1683,9 @@ const addFilesfunction = async (
             var nonAllowedDuplicate = false;
             //if file already exist in json
             if (filePath === currentLocation["files"][importedFileName]["path"]) {
-              if (currentLocation["files"][importedFileName]["action"].includes("renamed") === false) {
+              if (
+                currentLocation["files"][importedFileName]["action"].includes("renamed") === false
+              ) {
                 //same path and has not been renamed
                 nonAllowedDuplicateFiles.push(filePath);
                 nonAllowedDuplicate = true;
@@ -1923,7 +1925,7 @@ const addFilesfunction = async (
       confirmButtonText: "Okay",
     });
   }
-  
+
   if (loadingContainer != undefined) {
     loadingContainer.style.display = "flex";
     loadingIcon.style.display = "block";

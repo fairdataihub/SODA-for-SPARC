@@ -5183,11 +5183,11 @@ const dropHelper = async (
       const fileNameRegex = /[^-a-zA-z0-9]/g;
 
       let forbiddenCheck = forbiddenFileCheck(originalFileName);
-      if(forbiddenCheck === "forbidden") {
+      if (forbiddenCheck === "forbidden") {
         nonAllowedFiles.push(filePath);
         continue;
       }
-      if(forbiddenCheck === "hidden") {
+      if (forbiddenCheck === "hidden") {
         hiddenFiles.push(filePath);
         continue;
       }
