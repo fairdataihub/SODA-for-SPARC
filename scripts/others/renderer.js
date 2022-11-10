@@ -3093,7 +3093,7 @@ const guidedCropOptions = {
   viewMode: 1,
   responsive: true,
   crop: function (event) {
-    console.log(event)
+    console.log(event);
     var data = event.detail;
     let image_height = Math.round(data.height);
     console.log(image_height);
@@ -4323,7 +4323,6 @@ function hoverForFullName(ev) {
   // which we will put through the overflowing check in showFullName function
   showFullName(event, ev.children[1], fullPath);
 }
-
 
 document.addEventListener("onmouseover", function (e) {
   if (e.target.classList.value === "fas fa-folder") {
@@ -5656,7 +5655,7 @@ ipcRenderer.on("save-file-organization-dialog", (event) => {
 });
 
 // displays the user selected banner image using Jimp in the edit banner image modal
-//path: array 
+//path: array
 //curationMode: string (guided-moded) (freeform)
 const handleSelectedBannerImage = async (path, curationMode) => {
   let imgContainer = "";
@@ -5666,19 +5665,19 @@ const handleSelectedBannerImage = async (path, curationMode) => {
   let saveBannerImage = "";
   let cropperOptions = "";
   console.log(curationMode);
-  if(curationMode === "guided-mode") {
+  if (curationMode === "guided-mode") {
     imgHolder = document.getElementById("guided-div-img-container-holder");
     imgContainer = document.getElementById("guided-div-img-container");
     viewImportedImage = guidedBfViewImportedImage;
     paraImagePath = "#guided-para-path-image";
-    saveBannerImage = "#guided-save-banner-image"
+    saveBannerImage = "#guided-save-banner-image";
     cropperOptions = guidedCropOptions;
   }
-  if(curationMode === "freeform") {
+  if (curationMode === "freeform") {
     cropperOptions = cropOptions;
     paraImagePath = "#para-path-image";
     saveBannerImage = "#save-banner-image";
-    viewImportedImage = bfViewImportedImage;       
+    viewImportedImage = bfViewImportedImage;
     imgHolder = document.getElementById("div-img-container-holder");
     imgContainer = document.getElementById("div-img-container");
   }
@@ -5804,15 +5803,15 @@ const handleSelectedBannerImage = async (path, curationMode) => {
       $(saveBannerImage).css("visibility", "visible");
     }
   } else {
-    if(curationMode == "freeform") {
-      if($("#para-current-banner-img").text() === "None") {
+    if (curationMode == "freeform") {
+      if ($("#para-current-banner-img").text() === "None") {
         $(saveBannerImage).css("visibility", "hidden");
       } else {
         $(saveBannerImage).css("visibility", "visible");
       }
     }
   }
-}
+};
 
 //////////////////////////////////////////////////////////////////////////////
 /////////////////// CONTEXT MENU OPTIONS FOR FOLDERS AND FILES ///////////////
@@ -6180,7 +6179,7 @@ function sortObjByKeys(object) {
 
 const listItems = async (jsonObj, uiItem, amount_req, reset) => {
   console.log(jsonObj);
-  console.log("listing items")
+  console.log("listing items");
   //allow amount to choose how many elements to create
   //break elements into sets of 100
   const rootFolders = ["primary", "source", "derivative"];
@@ -6240,7 +6239,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     let trimmedPath = "";
     if (currentPageID.includes("primary")) {
       if (primarySampleCapsule.classList.contains("active")) {
-        if(splitPath[0].includes("pool-")) {
+        if (splitPath[0].includes("pool-")) {
           splitPathCheck(3, fileExplorerBackButton);
         } else {
           splitPathCheck(2, fileExplorerBackButton);
@@ -6248,7 +6247,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
       }
       if (primarySubjectCapsule.classList.contains("active")) {
         // splitPathCheck(1, fileExplorerBackButton);
-        if(splitPath[0].includes("pool-")) {
+        if (splitPath[0].includes("pool-")) {
           splitPathCheck(2, fileExplorerBackButton);
         } else {
           splitPathCheck(1, fileExplorerBackButton);
@@ -6259,7 +6258,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     }
     if (currentPageID.includes("source")) {
       if (sourceSubjectCapsule.classList.contains("active")) {
-        if(splitPath[0].includes("pool-")) {
+        if (splitPath[0].includes("pool-")) {
           splitPathCheck(2, fileExplorerBackButton);
         } else {
           splitPathCheck(1, fileExplorerBackButton);
@@ -6268,7 +6267,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
         hideSampleFolders = true;
       }
       if (sourceSampleCapsule.classList.contains("active")) {
-        if(splitPath[0].includes("pool-")) {
+        if (splitPath[0].includes("pool-")) {
           splitPathCheck(3, fileExplorerBackButton);
         } else {
           splitPathCheck(2, fileExplorerBackButton);
@@ -6278,7 +6277,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     if (currentPageID.includes("derivative")) {
       //check the active capsule
       if (derivativeSubjectCapsule.classList.contains("active")) {
-        if(splitPath[0].includes("pool-")) {
+        if (splitPath[0].includes("pool-")) {
           splitPathCheck(2, fileExplorerBackButton);
         } else {
           splitPathCheck(1, fileExplorerBackButton);
@@ -6287,7 +6286,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
         hideSampleFolders = true;
       }
       if (derivativeSampleCapsule.classList.contains("active")) {
-        if(splitPath[0].includes("pool-")) {
+        if (splitPath[0].includes("pool-")) {
           splitPathCheck(3, fileExplorerBackButton);
         } else {
           splitPathCheck(2, fileExplorerBackButton);

@@ -199,7 +199,7 @@ const dropHandler = async (
       if (ev.dataTransfer.items[0].type.includes("image")) {
         //handle dropped images for banner images
         let path = [file.path];
-        handleSelectedBannerImage(path, "guided-mode")
+        handleSelectedBannerImage(path, "guided-mode");
         $("#guided-banner-image-modal").modal("show");
       }
       if (dataDeliverables === true) {
