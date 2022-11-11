@@ -223,7 +223,10 @@ myds = ""
 initial_bfdataset_size = 0
 upload_directly_to_bf = 0
 initial_bfdataset_size_submit = 0
+
 total_files = 0 # the total number of files in a given dataset that need to be uploaded to Pennsieve
+total_bytes_uploaded = 0 # current number of bytes uploaded to Pennsieve in the upload session
+total_upload_size = 0 # total number of bytes to upload to Pennsieve in the upload session
 
 forbidden_characters = '<>:"/\|?*'
 forbidden_characters_bf = '\/:*?"<>'
@@ -2817,7 +2820,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     files_uploaded += 1
 
                 # check if the upload is complete
-                if files_uploaded == 1:
+                if files_uploaded == total_files:
                     print("Finished uploading")
                     ps.unsubscribe(10)
 
@@ -3212,23 +3215,22 @@ def main_curate_function_progress():
     global generate_start_time
     global main_generate_destination
     global main_initial_bfdataset_size
-    # global progress_percentage
-    # global progress_percentage_array
+
+    global total_bytes_uploaded # current number of bytes uploaded to Pennsieve in the upload session
+    global total_upload_size # total number of bytes to upload to Pennsieve in the upload session
 
     elapsed_time = time.time() - generate_start_time
     elapsed_time_formatted = time_format(elapsed_time)
 
-    if start_generate == 1 and main_generate_destination == "bf":
-        main_generated_dataset_size = (
-            bf_dataset_size() - main_initial_bfdataset_size
-        )
+    # if start_generate == 1 and main_generate_destination == "bf":
+    #     main_generated_dataset_size 
 
     return {
         "main_curate_status": main_curate_status,
         "start_generate": start_generate,
         "main_curate_progress_message": main_curate_progress_message,
         "main_total_generate_dataset_size": main_total_generate_dataset_size,
-        "main_generated_dataset_size": main_generated_dataset_size,
+        "main_generated_dataset_size": total_bytes_uploaded,
         "elapsed_time_formatted": elapsed_time_formatted,
     }
 
