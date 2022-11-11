@@ -37,7 +37,8 @@
   justify-content: space-between;
   flex-wrap: nowrap;
   border-radius: 5px;
-  padding: 0px 10px;
+  padding-right: 10px;
+  padding-left: 5px;
 }
 .guided--nav-bar-dropdown:hover {
   cursor: pointer;
@@ -416,7 +417,7 @@
   justify-content: flex-start;
   margin-left: 30px;
 }
-.guided--sub-page,
+
 .guided--section {
   padding: 12px;
   padding-left: 0;
@@ -619,13 +620,6 @@ h1.guided--text-sub-step {
 }
 
 .guided--progress-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-
-.guided--card-container {
   display: flex;
   flex-direction: row;
   justify-content: center;

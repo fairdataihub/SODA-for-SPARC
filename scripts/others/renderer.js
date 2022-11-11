@@ -6241,8 +6241,8 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
       }
     };
 
-    let currentPageID = CURRENT_PAGE.attr("id");
-    //capsules needed to determine if sample or subjects section is active
+    let currentPageID = CURRENT_PAGE.id;
+    //capsules need to determine if sample or subjects section
     //subjects initially display two folder levels meanwhile samples will initially only show one folder level
     let primarySampleCapsule = document.getElementById(
       "guided-primary-samples-organization-page-capsule"

@@ -21,11 +21,19 @@ const savePageChanges = async (pageBeingLeftID) => {
       if (buttonNoGuidedCurateSelected) {
         sodaJSONObj["guided-options"]["dataset-start-location"] = "guided-curate";
         sodaJSONObj["starting-point"]["type"] = "new";
+        guidedUnSkipPage("guided-subjects-folder-tab");
+        guidedUnSkipPage("guided-primary-data-organization-tab");
+        guidedUnSkipPage("guided-source-data-organization-tab");
+        guidedUnSkipPage("guided-derivative-data-organization-tab");
+        guidedUnSkipPage("guided-code-folder-tab");
+        guidedUnSkipPage("guided-protocol-folder-tab");
+        guidedUnSkipPage("guided-docs-folder-tab");
       }
 
       if (buttonYesImportExistingSelected) {
         sodaJSONObj["guided-options"]["dataset-start-location"] = "import-existing";
         sodaJSONObj["starting-point"]["type"] = "local";
+        guidedUnSkipPage("guided-folder-importation-tab");
       }
     }
 
@@ -171,7 +179,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           });
           throw errorArray;
         }
-        $("#guided-add-code-metadata-tab").attr("data-skip-page", "false");
+        guidedUnSkipPage("guided-add-code-metadata-tab");
       }
       if (guidedButtonUserNoCodeData.classList.contains("selected")) {
         if (
@@ -179,7 +187,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           Object.keys(codeFolder.files).length === 0
         ) {
           delete datasetStructureJSONObj["folders"]["code"];
-          $("#guided-add-code-metadata-tab").attr("data-skip-page", "true");
+          guidedSkipPage("guided-add-code-metadata-tab");
         } else {
           const { value: deleteCodeFolderWithData } = await Swal.fire({
             title: "Delete code folder?",
@@ -195,7 +203,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           });
           if (deleteCodeFolderWithData) {
             delete datasetStructureJSONObj["folders"]["code"];
-            $("#guided-add-code-metadata-tab").attr("data-skip-page", "true");
+            guidedSkipPage("guided-add-code-metadata-tab");
           } else {
             guidedButtonUserHasCodeData.click();
           }
@@ -867,8 +875,7 @@ const getNonSkippedGuidedModePages = (parentElementToGetChildrenPagesFrom) => {
     parentElementToGetChildrenPagesFrom.querySelectorAll(".guided--page")
   );
   const nonSkippedChildPages = allChildPages.filter((page) => {
-    //filter out pages with not null data-skipped-page attribute and data-skip-page attribute is not true
-    return !page.getAttribute("data-skip-page") || page.getAttribute("data-skip-page") != "true";
+    return page.dataset.skipPage != "true";
   });
 
   return nonSkippedChildPages;
@@ -979,7 +986,7 @@ const renderSideBar = (activePage) => {
   );
   for (const guidedNavBarSectionPage of guidedNavBarSectionPages) {
     guidedNavBarSectionPage.addEventListener("click", async (event) => {
-      const currentPageUserIsLeaving = CURRENT_PAGE.attr("id");
+      const currentPageUserIsLeaving = CURRENT_PAGE.id;
       const pageToNavigateTo = guidedNavBarSectionPage.getAttribute("data-target-page");
       const pageToNaviatetoName = document
         .getElementById(pageToNavigateTo)
@@ -1033,7 +1040,7 @@ const renderSideBar = (activePage) => {
         //All pages have been validated. Open the target page.
         await openPage(pageToNavigateTo);
       } catch (error) {
-        const pageWithErrorName = CURRENT_PAGE.data("pageName");
+        const pageWithErrorName = CURRENT_PAGE.dataset.pageName;
         const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
           title: "The current page was not able to be saved",
           html: `The following error${
@@ -1338,12 +1345,12 @@ const guidedSaveAndExit = async () => {
     backdrop: "rgba(0,0,0,0.4)",
   });
   if (returnToGuidedHomeScreen) {
-    const currentPageID = CURRENT_PAGE.attr("id");
+    const currentPageID = CURRENT_PAGE.id;
 
     try {
       await savePageChanges(currentPageID);
     } catch (error) {
-      const pageWithErrorName = CURRENT_PAGE.data("pageName");
+      const pageWithErrorName = CURRENT_PAGE.dataset.pageName;
 
       const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
         title: "The current page was not able to be saved before exiting",
@@ -1432,10 +1439,6 @@ const hideSubNavAndShowMainNav = (navButtonToClick) => {
   }
 };
 
-const showMainNav = () => {
-  $("#guided-footer-div").css("display", "flex");
-};
-
 const scrollToBottomOfGuidedBody = () => {
   const elementToScrollTo = document.querySelector(".guided--body");
   elementToScrollTo.scrollTop = elementToScrollTo.scrollHeight;
@@ -1447,11 +1450,37 @@ const getOpenSubPageInPage = (pageID) => {
   return openSubPage.id;
 };
 
+const getNonSkippedGuidedModeSubPages = (parentElementID) => {
+  let childSubPages = Array.from(
+    document.getElementById(parentElementID).querySelectorAll(".sub-page")
+  );
+  const nonSkippedChildSubPages = childSubPages
+    .filter((page) => {
+      return page.dataset.skipPage != "true";
+    })
+    .map((page) => page.id);
+
+  return nonSkippedChildSubPages;
+};
+
 const openSubPageNavigation = (pageBeingNavigatedTo) => {
   //Get the id of the page that's currently open and might need a refresh
-  const openSubPageID = getOpenSubPageInPage(pageBeingNavigatedTo);
+  const nonSkippedSubPages = getNonSkippedGuidedModeSubPages(pageBeingNavigatedTo);
+  const completedSubPages = nonSkippedSubPages.filter((page) => {
+    return sodaJSONObj["completed-tabs"].includes(page);
+  });
+
+  // If the sub-pages have already been completed, go to the last one
+  // If not, go to the first one
+  let subPageIDtoOpen;
+  if (completedSubPages.length > 0) {
+    subPageIDtoOpen = completedSubPages[completedSubPages.length - 1];
+  } else {
+    subPageIDtoOpen = nonSkippedSubPages[0];
+  }
+
   //Refresh data on the open sub-page
-  setActiveSubPage(openSubPageID);
+  setActiveSubPage(subPageIDtoOpen);
   //Hide the footer div while user is in sub-page navigation
   $("#guided-footer-div").hide();
   //Show the sub-page navigation footer
@@ -1464,8 +1493,14 @@ const guidedTransitionFromHome = async () => {
   document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
   document.getElementById("guided-header-div").classList.remove("hidden");
 
+  //Hide all guided pages (first one will be unHidden automatically)
+  const guidedPages = document.querySelectorAll(".guided--page");
+  guidedPages.forEach((page) => {
+    page.classList.add("hidden");
+  });
+
   //Set the current page to the guided intro page
-  CURRENT_PAGE = $("#guided-intro-page-tab");
+  CURRENT_PAGE = document.getElementById("guided-intro-page-tab");
   openPage("guided-intro-page-tab");
 
   //reset sub-page navigation (Set the first sub-page to be the active sub-page
@@ -1477,6 +1512,8 @@ const guidedTransitionFromHome = async () => {
     const firstSubPage = pageCapsule.querySelector(".guided--capsule-sub-page");
     setActiveSubPage(firstSubPage.id.replace("-capsule", ""));
   }
+
+  guidedResetSkippedPages();
 
   guidedLockSideBar();
 };
@@ -1519,17 +1556,11 @@ const saveGuidedProgress = (guidedProgressFileName) => {
   //Destination: HOMEDIR/SODA/Guided-Progress
   sodaJSONObj["last-modified"] = new Date();
 
-  //If the user is past the intro/name+subtitle page, save the current page to be resumed later
-  if (CURRENT_PAGE) {
-    sodaJSONObj["page-before-exit"] = CURRENT_PAGE.attr("id");
-  }
-
   try {
     //create Guided-Progress folder if one does not exist
     fs.mkdirSync(guidedProgressFilePath, { recursive: true });
   } catch (error) {
     log.error(error);
-    console.log(error);
   }
   var guidedFilePath = path.join(guidedProgressFilePath, guidedProgressFileName + ".json");
 
@@ -2120,11 +2151,6 @@ const setActiveCapsule = (targetPageID) => {
   $(".guided--capsule").removeClass("active");
   let targetCapsuleID = targetPageID.replace("-tab", "-capsule");
   let targetCapsule = $(`#${targetCapsuleID}`);
-  //check if targetCapsule parent has the class guided--capsule-container-branch
-  if (targetCapsule.parent().hasClass("guided--capsule-container-branch")) {
-    $(".guided--capsule-container-branch").hide();
-    targetCapsule.parent().css("display", "flex");
-  }
   targetCapsule.addClass("active");
 };
 setActiveProgressionTab = (targetPageID) => {
@@ -2133,38 +2159,6 @@ setActiveProgressionTab = (targetPageID) => {
   let targetProgressionTabID = targetPageParentID.replace("parent-tab", "progression-tab");
   let targetProgressionTab = $(`#${targetProgressionTabID}`);
   targetProgressionTab.addClass("selected-tab");
-};
-const handlePageBranching = (selectedCardElement) => {
-  //hide capsule containers for page branches that are not selected
-  const capsuleContainerID = selectedCardElement
-    .attr("id")
-    .replace("card", "branch-capsule-container");
-  $(".guided--capsule-container-branch").hide();
-  $(`#${capsuleContainerID}`).css("display", "flex");
-
-  //handle skip pages following card
-  if (selectedCardElement.data("branch-pages-group-class")) {
-    const branchPagesGroupClass = selectedCardElement.attr("data-branch-pages-group-class");
-    $(`.${branchPagesGroupClass}`).attr("data-skip-page", "true");
-    const pageBranchToRemoveSkip = selectedCardElement.attr("id").replace("card", "branch-page");
-    $(`.${pageBranchToRemoveSkip}`).attr("data-skip-page", "false");
-  }
-
-  selectedCardElement.siblings().removeClass("checked");
-  selectedCardElement.siblings().addClass("non-selected");
-  selectedCardElement.removeClass("non-selected");
-  selectedCardElement.addClass("checked");
-
-  const tabPanelId = selectedCardElement.attr("id").replace("card", "panel");
-  const tabPanel = $(`#${tabPanelId}`);
-  //checks to see if clicked card has a panel, if so, hides siblings and smooth scrolls to it
-  if (tabPanel.length != 0) {
-    tabPanel.siblings().hide();
-    tabPanel.css("display", "flex");
-    tabPanel[0].scrollIntoView({
-      behavior: "smooth",
-    });
-  }
 };
 
 const guidedResetProgressVariables = () => {
@@ -2443,6 +2437,70 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
   }
 };
 
+const guidedResetSkippedPages = () => {
+  const pagesThatShouldAlwaysBeskipped = [
+    "guided-dataset-generation-tab",
+    "guided-structure-folder-tab",
+  ];
+  // Reset parent pages
+  const parentPagesToResetSkip = Array.from(document.querySelectorAll(".guided--page"))
+    .map((page) => page.id)
+    .filter((pageID) => !pagesThatShouldAlwaysBeskipped.includes(pageID));
+
+  for (const pageID of parentPagesToResetSkip) {
+    guidedUnSkipPage(pageID);
+  }
+  // Reset sub pages
+  const subPagesToResetSkip = Array.from(document.querySelectorAll(".sub-page")).map(
+    (page) => page.id
+  );
+  for (const subPageID of subPagesToResetSkip) {
+    guidedUnSkipPage(subPageID);
+  }
+};
+
+const guidedSkipPage = (pageId) => {
+  const page = document.getElementById(pageId);
+  page.dataset.skipPage = "true";
+
+  //Hide the parent page or sub page capsule
+  if (page.classList.contains("guided--page")) {
+    // replace -tab with -capsule  in pageId string
+    const pagesCapsule = pageId.replace("-tab", "-capsule");
+    document.getElementById(pagesCapsule).classList.add("hidden");
+  }
+  if (page.classList.contains("sub-page")) {
+    const subPagesCapsule = `${pageId}-capsule`;
+    document.getElementById(subPagesCapsule).classList.add("hidden");
+  }
+
+  // add the page to sodaJSONObj array if it isn't there already
+  if (!sodaJSONObj["skipped-pages"].includes(pageId)) {
+    sodaJSONObj["skipped-pages"].push(pageId);
+  }
+};
+
+guidedUnSkipPage = (pageId) => {
+  const page = document.getElementById(pageId);
+  page.dataset.skipPage = "false";
+
+  //Show the parent page or sub page capsule
+  if (page.classList.contains("guided--page")) {
+    // replace -tab with -capsule  in pageId string
+    const pagesCapsule = pageId.replace("-tab", "-capsule");
+    document.getElementById(pagesCapsule).classList.remove("hidden");
+  }
+  if (page.classList.contains("sub-page")) {
+    const subPagesCapsule = `${pageId}-capsule`;
+    document.getElementById(subPagesCapsule).classList.remove("hidden");
+  }
+  // remove the page from sodaJSONObj array if it is there
+  if (sodaJSONObj["skipped-pages"].includes(pageId)) {
+    sodaJSONObj["skipped-pages"].splice(sodaJSONObj["skipped-pages"].indexOf(pageId), 1);
+  }
+};
+
+const loadGuidedSkippedPages = () => {};
 const folderIsEmpty = (folder) => {
   return Object.keys(folder.folders).length === 0 && Object.keys(folder.files).length === 0;
 };
@@ -2701,28 +2759,38 @@ const cleanUpEmptyGuidedStructureFolders = async (
   if (subjectsOrSamples === "pools") {
     //Get pools to check if their folders are
     const pools = sodaJSONObj.getPools();
-    const poolsWithNoDataFiles = [];
-
-    for (const pool of Object.keys(pools)) {
-      const poolFolderContents =
-        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-      if (folderIsEmpty(poolFolderContents)) {
-        poolsWithNoDataFiles.push(pool);
+    if (boolCleanUpAllGuidedStructureFolders === true) {
+      //Delete all pools with empty folders
+      for (const pool of Object.keys(pools)) {
+        const poolFolderContents =
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+        if (folderIsEmpty(poolFolderContents)) {
+          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+        }
       }
-    }
+    } else {
+      const poolsWithNoDataFiles = [];
 
-    // If metadata files have been added to every pool, no action needed
-    if (poolsWithNoDataFiles.length === 0) {
-      return true;
-    }
+      for (const pool of Object.keys(pools)) {
+        const poolFolderContents =
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+        if (folderIsEmpty(poolFolderContents)) {
+          poolsWithNoDataFiles.push(pool);
+        }
+      }
 
-    if (poolsWithNoDataFiles.length > 0) {
-      let result = await Swal.fire({
-        heightAuto: false,
-        backdrop: "rgba(0,0,0,0.4)",
-        icon: "warning",
-        title: "Missing data",
-        html: `
+      // If metadata files have been added to every pool, no action needed
+      if (poolsWithNoDataFiles.length === 0) {
+        return true;
+      }
+
+      if (poolsWithNoDataFiles.length > 0) {
+        let result = await Swal.fire({
+          heightAuto: false,
+          backdrop: "rgba(0,0,0,0.4)",
+          icon: "warning",
+          title: "Missing data",
+          html: `
           ${highLevelFolder} data was not added to the following pools:
           <br />
           <br />
@@ -2730,22 +2798,23 @@ const cleanUpEmptyGuidedStructureFolders = async (
             ${poolsWithNoDataFiles.map((pool) => `<li class="text-left">${pool}</li>`).join("")}
           </ul>
         `,
-        reverseButtons: true,
-        showCancelButton: true,
-        cancelButtonColor: "#6e7881",
-        cancelButtonText: `Finish adding ${highLevelFolder} data to pools`,
-        confirmButtonText: `Continue without adding ${highLevelFolder} data to all pools`,
-        allowOutsideClick: false,
-      });
-      if (result.isConfirmed) {
-        for (const pool of poolsWithNoDataFiles) {
-          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+          reverseButtons: true,
+          showCancelButton: true,
+          cancelButtonColor: "#6e7881",
+          cancelButtonText: `Finish adding ${highLevelFolder} data to pools`,
+          confirmButtonText: `Continue without adding ${highLevelFolder} data to all pools`,
+          allowOutsideClick: false,
+        });
+        if (result.isConfirmed) {
+          for (const pool of poolsWithNoDataFiles) {
+            delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+          }
+          //Empty pool folders have been deleted, return true
+          return true;
+        } else {
+          //User has chosen to finish adding data to pools, return false
+          return false;
         }
-        //Empty pool folders have been deleted, return true
-        return true;
-      } else {
-        //User has chosen to finish adding data to pools, return false
-        return false;
       }
     }
   }
@@ -2973,7 +3042,6 @@ const openPage = async (targetPageID) => {
     if (targetPageID === "guided-prepare-helpers-tab") {
       //Hide the new dataset and existings local dataset capsule containers because
       //We do now know what the user wants to do yet
-      $("#guided-curate-new-dataset-branch-capsule-container").hide();
       $("#guided-curate-existing-local-dataset-branch-capsule-container").hide();
       const dataDeliverableButton = document.getElementById("getting-started-data-deliverable-btn");
       const airTableGettingStartedBtn = document.getElementById(
@@ -3003,6 +3071,17 @@ const openPage = async (targetPageID) => {
         airTableGettingStartedBtn.children[1].style.display = "flex";
         airTableGettingStartedBtn.children[0].style.display = "none";
       }
+    }
+
+    if (targetPageID === "guided-dataset-starting-point-tab") {
+      guidedSkipPage("guided-subjects-folder-tab");
+      guidedSkipPage("guided-primary-data-organization-tab");
+      guidedSkipPage("guided-source-data-organization-tab");
+      guidedSkipPage("guided-derivative-data-organization-tab");
+      guidedSkipPage("guided-code-folder-tab");
+      guidedSkipPage("guided-protocol-folder-tab");
+      guidedSkipPage("guided-docs-folder-tab");
+      guidedSkipPage("guided-folder-importation-tab");
     }
 
     if (targetPageID === "guided-subjects-folder-tab") {
@@ -3861,9 +3940,9 @@ const openPage = async (targetPageID) => {
       guidedSetCurationTeamUI(sharedWithSPARCCurationTeam);
     }
 
-    let currentParentTab = CURRENT_PAGE.parent();
-    let targetPage = $(`#${targetPageID}`);
-    let targetPageParentTab = targetPage.parent();
+    let currentParentTab = CURRENT_PAGE.closest(".guided--parent-tab");
+    let targetPage = document.getElementById(targetPageID);
+    let targetPageParentTab = targetPage.closest(".guided--parent-tab");
 
     //Set all capsules to grey and set capsule of page being traversed to green
     setActiveCapsule(targetPageID);
@@ -3871,28 +3950,30 @@ const openPage = async (targetPageID) => {
     renderSideBar(targetPageID);
 
     const guidedBody = document.getElementById("guided-body");
-
     //Check to see if target element has the same parent as current sub step
-    if (currentParentTab.attr("id") === targetPageParentTab.attr("id")) {
-      CURRENT_PAGE.addClass("hidden");
+    if (currentParentTab.id === targetPageParentTab.id) {
+      CURRENT_PAGE.classList.add("hidden");
       CURRENT_PAGE = targetPage;
-      CURRENT_PAGE.removeClass("hidden");
+      CURRENT_PAGE.classList.remove("hidden");
       //smooth scroll to top of guidedBody
       guidedBody.scrollTo({
         top: 0,
         behavior: "smooth",
       });
     } else {
-      CURRENT_PAGE.addClass("hidden");
-      currentParentTab.addClass("hidden");
-      targetPageParentTab.removeClass("hidden");
+      CURRENT_PAGE.classList.add("hidden");
+      currentParentTab.classList.add("hidden");
+      targetPageParentTab.classList.remove("hidden");
       CURRENT_PAGE = targetPage;
-      CURRENT_PAGE.removeClass("hidden");
+      CURRENT_PAGE.classList.remove("hidden");
       //smooth scroll to top of guidedBody
       guidedBody.scrollTo({
         top: 0,
       });
     }
+    // Set the last opened page and save it
+    sodaJSONObj["page-before-exit"] = targetPageID;
+    saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   } catch (error) {
     console.log(error);
   }
@@ -3983,16 +4064,6 @@ const setActiveSubPage = (pageIdToActivate) => {
     }
 
     case "guided-primary-samples-organization-page": {
-      //If the user indicated they have no samples, skip this page
-      //and go to primary subject data organization page
-      if (
-        document.getElementById("guided-primary-samples-organization-page").dataset.skipSubPage ===
-        "true"
-      ) {
-        setActiveSubPage("guided-primary-subjects-organization-page");
-        return;
-      }
-
       renderSamplesHighLevelFolderAsideItems("primary");
       guidedUpdateFolderStructure("primary", "samples");
 
@@ -4074,16 +4145,6 @@ const setActiveSubPage = (pageIdToActivate) => {
     }
 
     case "guided-source-samples-organization-page": {
-      //If the user indicated they have no samples, skip this page
-      //and go to source subject data organization page
-      if (
-        document.getElementById("guided-source-samples-organization-page").dataset.skipSubPage ===
-        "true"
-      ) {
-        setActiveSubPage("guided-source-subjects-organization-page");
-        return;
-      }
-
       renderSamplesHighLevelFolderAsideItems("source");
       guidedUpdateFolderStructure("source", "samples");
       $("#guided-file-explorer-elements").appendTo(
@@ -4163,16 +4224,6 @@ const setActiveSubPage = (pageIdToActivate) => {
     }
 
     case "guided-derivative-samples-organization-page": {
-      //If the user indicated they have no samples, skip this page
-      //and go to derivative subject data organization page
-      if (
-        document.getElementById("guided-derivative-samples-organization-page").dataset
-          .skipSubPage === "true"
-      ) {
-        setActiveSubPage("guided-derivative-subjects-organization-page");
-        return;
-      }
-
       renderSamplesHighLevelFolderAsideItems("derivative");
       guidedUpdateFolderStructure("derivative", "samples");
       $("#guided-file-explorer-elements").appendTo(
@@ -4663,7 +4714,13 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   // So the user has to confirm their Pennsieve account before uploading
   delete sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
 
+  // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
+  const prevSessionSkikppedPages = [...sodaJSONObj["skipped-pages"]];
   guidedTransitionFromHome();
+  // Reskip the pages from a previous session
+  for (const pageID of prevSessionSkikppedPages) {
+    guidedSkipPage(pageID);
+  }
 
   //Hide the before getting started page so it doesn't flash when resuming progress
   document.getElementById("guided-intro-page-tab").classList.add("hidden");
@@ -4755,9 +4812,9 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = false;
   datasetStructureJSONObj = { folders: {}, files: {} };
 };
-const attachGuidedMethodsToSodaJSONObj = () => {
-  const guidedHighLevelFolders = ["primary", "source", "derivative"];
+const guidedHighLevelFolders = ["primary", "source", "derivative"];
 
+const attachGuidedMethodsToSodaJSONObj = () => {
   sodaJSONObj.getAllSubjects = function () {
     let subjectsInPools = [];
     let subjectsOutsidePools = [];
@@ -5617,7 +5674,6 @@ const fetchContributorDataFromAirTable = async () => {
       return [];
     }
   } catch (error) {
-    console.log(error);
     //If there is an error, return an empty array since no contributor data was fetched.
     return [];
   }
@@ -5694,7 +5750,6 @@ const getContributorByOrcid = (orcid) => {
 };
 
 const verifyOrcidID = (event) => {
-  // console.log(event.value);
   let userInput = event.value;
   //17 chars
   if (userInput.length > 17) {
@@ -5702,7 +5757,6 @@ const verifyOrcidID = (event) => {
       //verify every four characters forward if they are a number
       let afterLink = userInput.substr(18);
     }
-    // console.log(userInput.substr(17));
     //char 18 will be after the forward slash
   }
 };
@@ -9172,50 +9226,6 @@ $(document).ready(async () => {
       .start();
   });
 
-  $("#guided-button-dataset-intro-back").on("click", () => {
-    const guidedIntroPage = document.getElementById("guided-intro-page");
-    const guidedDatasetNameSubtitlePage = document.getElementById("guided-name-subtitle");
-    if (!guidedIntroPage.classList.contains("hidden")) {
-      //remove text from dataset name and subtitle inputs
-      document.getElementById("guided-dataset-name-input").value = "";
-      document.getElementById("guided-dataset-subtitle-input").value = "";
-
-      hideEleShowEle("curation-preparation-parent-tab", "guided-home");
-      //hide the intro footer
-      document.getElementById("guided-footer-intro").classList.add("hidden");
-      guidedPrepareHomeScreen();
-    } else if (!guidedDatasetNameSubtitlePage.classList.contains("hidden")) {
-      hideEleShowEle("guided-name-subtitle", "guided-intro-page");
-    }
-  });
-  $("#guided-button-dataset-intro-next").on("click", async function () {
-    const guidedIntroPage = document.getElementById("guided-intro-page");
-    const guidedDatasetNameSubtitlePage = document.getElementById("guided-name-subtitle");
-
-    if (!guidedIntroPage.classList.contains("hidden")) {
-      hideEleShowEle("guided-intro-page", "guided-name-subtitle");
-    } else if (!guidedDatasetNameSubtitlePage.classList.contains("hidden")) {
-      let errorArray = [];
-    }
-  });
-
-  //WHEN STRUCTURING FOLDER GUIDED
-  $("#guided-button-import-existing-dataset-structure").on("click", () => {
-    //Hide proper capsules and apply proper skip pages
-    $("#guided-curate-new-dataset-branch-capsule-container").hide();
-    $("#guided-curate-existing-local-dataset-branch-capsule-container").css("display", "flex");
-    $(".guided-curate-existing-local-dataset-branch-page").attr("data-skip-page", "false");
-    $(".guided-curate-new-dataset-branch-page").attr("data-skip-page", "true");
-  });
-  //WHEN IMPORTING LOCAL STRUCTURE
-  $("#guided-button-guided-dataset-structuring").on("click", () => {
-    //Hide proper capsules and apply proper skip pages
-    $("#guided-curate-existing-local-dataset-branch-capsule-container").hide();
-    $("#guided-curate-new-dataset-branch-capsule-container").css("display", "flex");
-
-    $(".guided-curate-new-dataset-branch-page").attr("data-skip-page", "false");
-    $(".guided-curate-existing-local-dataset-branch-page").attr("data-skip-page", "true");
-  });
   $("#guided-structure-new-dataset").on("click", () => {
     $("#guided-next-button").click();
   });
@@ -9459,12 +9469,6 @@ $(document).ready(async () => {
       document.getElementById("guided-dataset-subtitle-input"),
       guidedDatasetSubtitleCharCount
     );
-  });
-
-  //card click hanndler that displays the card's panel using the card's id prefix
-  //e.g. clicking a card with id "foo-bar-card" will display the panel with the id "foo-bar-panel"
-  $(".guided--card-container > div").on("click", function () {
-    handlePageBranching($(this));
   });
 
   document
@@ -11354,7 +11358,7 @@ $(document).ready(async () => {
   //next button click handler
   $("#guided-next-button").on("click", async function () {
     //Get the ID of the current page to handle actions on page leave (next button pressed)
-    pageBeingLeftID = CURRENT_PAGE.attr("id");
+    pageBeingLeftID = CURRENT_PAGE.id;
     //remove blue pulse
     $(this).removeClass("pulse-blue");
     //add a bootstrap loader to the next button
@@ -11372,36 +11376,25 @@ $(document).ready(async () => {
         sodaJSONObj["completed-tabs"].push(pageBeingLeftID);
       }
 
-      const getNextPageNotSkipped = (startingPage) => {
-        //Check if param element's following element is undefined
-        //(usually the case when the element is the last element in it's container)
-        if (startingPage.next().attr("id") != undefined) {
-          //if not, check if it has the data-attribute skip-page
-          //if so, recurse back until a page without the skip-page attribute is found
-          let nextPage = startingPage.next();
-          if (nextPage.attr("data-skip-page") && nextPage.attr("data-skip-page") == "true") {
-            return getNextPageNotSkipped(nextPage);
-          } else {
-            //element is valid and not to be skipped
-            return nextPage;
-          }
+      const getNextPageNotSkipped = (currentPageID) => {
+        const parentContainer = document
+          .getElementById(currentPageID)
+          .closest(".guided--parent-tab");
+        const siblingPages = getNonSkippedGuidedModePages(parentContainer).map((page) => page.id);
+
+        const currentPageIndex = siblingPages.indexOf(currentPageID);
+        if (currentPageIndex != siblingPages.length - 1) {
+          return document.getElementById(siblingPages[currentPageIndex + 1]);
         } else {
-          //previous element was the last element in the container.
-          //go to the next page-set and return the first page to be transitioned to.
-          nextPage = startingPage.parent().next().children(".guided--page").first();
-          if (nextPage.attr("data-skip-page") && nextPage.attr("data-skip-page") == "true") {
-            return getNextPageNotSkipped(nextPage);
-          } else {
-            //element is valid and not to be skipped
-            return nextPage;
-          }
+          const nextParentContainer = parentContainer.nextElementSibling;
+          return getNonSkippedGuidedModePages(nextParentContainer)[0];
         }
       };
 
       //NAVIGATE TO NEXT PAGE + CHANGE ACTIVE TAB/SET ACTIVE PROGRESSION TAB
       //if more tabs in parent tab, go to next tab and update capsule
-      let targetPage = getNextPageNotSkipped(CURRENT_PAGE);
-      let targetPageID = targetPage.attr("id");
+      let targetPage = getNextPageNotSkipped(CURRENT_PAGE.id);
+      let targetPageID = targetPage.id;
 
       openPage(targetPageID);
     } catch (error) {
@@ -11421,35 +11414,38 @@ $(document).ready(async () => {
     $(this).removeClass("loading");
   });
 
-  const getPrevPageNotSkipped = (startingPage) => {
-    //Check if param element's following element is undefined
-    //(usually the case when the element is the last element in it's container)
-    if (!startingPage.prev().hasClass("guided--capsule-container")) {
-      //if not, check if it has the data-attribute skip-page
-      //if so, recurse back until a page without the skip-page attribute is found
-      let prevPage = startingPage.prev();
-      if (prevPage.attr("data-skip-page") && prevPage.attr("data-skip-page") == "true") {
-        return getPrevPageNotSkipped(prevPage);
-      } else {
-        //element is valid and not to be skipped
-        return prevPage;
-      }
+  /* const getNextPageNotSkipped = (currentPageID) => {
+        const parentContainer = document
+          .getElementById(currentPageID)
+          .closest(".guided--parent-tab");
+        const siblingPages = getNonSkippedGuidedModePages(parentContainer).map((page) => page.id);
+
+        const currentPageIndex = siblingPages.indexOf(currentPageID);
+        if (currentPageIndex != siblingPages.length - 1) {
+          return document.getElementById(siblingPages[currentPageIndex + 1]);
+        } else {
+          const nextParentContainer = parentContainer.nextElementSibling;
+          return getNonSkippedGuidedModePages(nextParentContainer)[0];
+        }
+      };
+        }*/
+
+  const getPrevPageNotSkipped = (currentPageID) => {
+    const parentContainer = document.getElementById(currentPageID).closest(".guided--parent-tab");
+    const siblingPages = getNonSkippedGuidedModePages(parentContainer).map((page) => page.id);
+    const currentPageIndex = siblingPages.indexOf(currentPageID);
+    if (currentPageIndex != 0) {
+      return document.getElementById(siblingPages[currentPageIndex - 1]);
     } else {
-      //previous element was the last element in the container.
-      //go to the next page-set and return the first page to be transitioned to.
-      prevPage = startingPage.parent().prev().children(".guided--page").last();
-      if (prevPage.attr("data-skip-page") && prevPage.attr("data-skip-page") == "true") {
-        return getPrevPageNotSkipped(prevPage);
-      } else {
-        //element is valid and not to be skipped
-        return prevPage;
-      }
+      const prevParentContainer = parentContainer.previousElementSibling;
+      const prevParentContainerPages = getNonSkippedGuidedModePages(prevParentContainer);
+      return prevParentContainerPages[prevParentContainerPages.length - 1];
     }
   };
 
   //back button click handler
   $("#guided-back-button").on("click", () => {
-    pageBeingLeftID = CURRENT_PAGE.attr("id");
+    pageBeingLeftID = CURRENT_PAGE.id;
     // If the user is on the first page, progress will be saved if they have a progress file.
     // If not, they will simply be taken back to the home page.
     if (pageBeingLeftID === "guided-intro-page-tab") {
@@ -11457,8 +11453,8 @@ $(document).ready(async () => {
       return;
     }
 
-    const targetPage = getPrevPageNotSkipped(CURRENT_PAGE);
-    const targetPageID = targetPage.attr("id");
+    const targetPage = getPrevPageNotSkipped(CURRENT_PAGE.id);
+    const targetPageID = targetPage.id;
     openPage(targetPageID);
   });
 
@@ -11494,7 +11490,27 @@ $(document).ready(async () => {
             throw errorArray;
           }
 
-          $(".guided-subject-sample-data-addition-page").attr("data-skip-page", "false");
+          guidedUnSkipPage("guided-organize-subjects-into-pools-page");
+          guidedUnSkipPage("guided-specify-samples-page");
+
+          guidedUnSkipPage("guided-primary-data-organization-tab");
+          guidedUnSkipPage("guided-source-data-organization-tab");
+          guidedUnSkipPage("guided-derivative-data-organization-tab");
+
+          guidedUnSkipPage("guided-create-subjects-metadata-tab");
+          guidedUnSkipPage("guided-create-samples-metadata-tab");
+        }
+
+        if (buttonNoSubjects.classList.contains("selected")) {
+          guidedSkipPage("guided-organize-subjects-into-pools-page");
+          guidedSkipPage("guided-specify-samples-page");
+
+          guidedSkipPage("guided-primary-data-organization-tab");
+          guidedSkipPage("guided-source-data-organization-tab");
+          guidedSkipPage("guided-derivative-data-organization-tab");
+
+          guidedSkipPage("guided-create-subjects-metadata-tab");
+          guidedSkipPage("guided-create-samples-metadata-tab");
         }
       }
 
@@ -11544,34 +11560,23 @@ $(document).ready(async () => {
             }
           }
 
-          document
-            .getElementById("guided-primary-pools-organization-page")
-            .setAttribute("data-skip-sub-page", "false");
-          document
-            .getElementById("guided-source-pools-organization-page")
-            .setAttribute("data-skip-sub-page", "false");
-          document
-            .getElementById("guided-derivative-pools-organization-page")
-            .setAttribute("data-skip-sub-page", "false");
+          //Unkip the pool data organization pages
+          guidedUnSkipPage(`guided-primary-pools-organization-page`);
+          guidedUnSkipPage(`guided-source-pools-organization-page`);
+          guidedUnSkipPage(`guided-derivative-pools-organization-page`);
         }
 
         if (buttonNoPools.classList.contains("selected")) {
-          const pools = sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
-
           //If any pools exist, delete them
+          const pools = sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
           for (const pool of Object.keys(pools)) {
             sodaJSONObj.deletePool(pool);
           }
 
-          document
-            .getElementById("guided-primary-pools-organization-page")
-            .setAttribute("data-skip-sub-page", "true");
-          document
-            .getElementById("guided-source-pools-organization-page")
-            .setAttribute("data-skip-sub-page", "true");
-          document
-            .getElementById("guided-derivative-pools-organization-page")
-            .setAttribute("data-skip-sub-page", "true");
+          //Skip the pool data organization pages
+          guidedSkipPage(`guided-primary-pools-organization-page`);
+          guidedSkipPage(`guided-source-pools-organization-page`);
+          guidedSkipPage(`guided-derivative-pools-organization-page`);
         }
       }
 
@@ -11604,27 +11609,16 @@ $(document).ready(async () => {
             throw errorArray;
           }
 
-          document
-            .getElementById("guided-primary-samples-organization-page")
-            .setAttribute("data-skip-sub-page", "false");
-          document
-            .getElementById("guided-source-samples-organization-page")
-            .setAttribute("data-skip-sub-page", "false");
-          document
-            .getElementById("guided-derivative-samples-organization-page")
-            .setAttribute("data-skip-sub-page", "false");
+          //Unskip the sample data organization pages
+          guidedUnSkipPage(`guided-primary-samples-organization-page`);
+          guidedUnSkipPage(`guided-source-samples-organization-page`);
+          guidedUnSkipPage(`guided-derivative-samples-organization-page`);
         }
         if (buttonNoSamples.classList.contains("selected")) {
-          //add skip-sub-page attribute to element
-          document
-            .getElementById("guided-primary-samples-organization-page")
-            .setAttribute("data-skip-sub-page", "true");
-          document
-            .getElementById("guided-source-samples-organization-page")
-            .setAttribute("data-skip-sub-page", "true");
-          document
-            .getElementById("guided-derivative-samples-organization-page")
-            .setAttribute("data-skip-sub-page", "true");
+          //Skip the sample data organization pages
+          guidedSkipPage(`guided-primary-samples-organization-page`);
+          guidedSkipPage(`guided-source-samples-organization-page`);
+          guidedSkipPage(`guided-derivative-samples-organization-page`);
         }
       }
 
@@ -11926,7 +11920,7 @@ $(document).ready(async () => {
         }
       }
 
-      if (CURRENT_PAGE.attr("id") === "guided-create-submission-metadata-tab") {
+      if (CURRENT_PAGE.id === "guided-create-submission-metadata-tab") {
         const buttonYesImportDataDerivatives = document.getElementById(
           "guided-button-import-data-deliverables"
         );
@@ -12062,13 +12056,16 @@ $(document).ready(async () => {
   //sub page next button click handler
   $("#guided-button-sub-page-continue").on("click", async () => {
     //Get the id of the parent page that's currently open
-    const currentParentPageID = CURRENT_PAGE.attr("id");
+    const currentParentPageID = CURRENT_PAGE.id;
     //Get the id of the sub-page that's currently open
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
 
     try {
       await saveSubPageChanges(openSubPageID);
-      console.log(currentParentPageID);
+
+      if (!sodaJSONObj["completed-tabs"].includes(openSubPageID)) {
+        sodaJSONObj["completed-tabs"].push(openSubPageID);
+      }
 
       if (currentParentPageID != "guided-create-submission-metadata-tab") {
         //Get an array of all the sub pages that are children of the parent page
@@ -12076,7 +12073,6 @@ $(document).ready(async () => {
 
         // Get the index of the sub-page that's currently open
         const openSubPageIndex = nonSkippedSiblingPages.indexOf(openSubPageID);
-        console.log(openSubPageIndex);
         if (openSubPageIndex < nonSkippedSiblingPages.length - 1) {
           //If the sub-page that's currently open is not the last sub-page in the parent page
           //Get the id of the next sub-page and open it
@@ -12101,26 +12097,22 @@ $(document).ready(async () => {
 
   const getNonSkippedSubPages = (parentPageID) => {
     return Array.from(document.getElementById(parentPageID).querySelectorAll(".sub-page"))
-      .filter((subPage) => subPage.dataset.skipSubPage !== "true")
+      .filter((subPage) => subPage.dataset.skipPage !== "true")
       .map((subPage) => subPage.id);
   };
 
   //sub page back button click handler
   $("#guided-button-sub-page-back").on("click", () => {
     //Get the id of the parent page that's currently open
-    const currentParentPageID = CURRENT_PAGE.attr("id");
+    const currentParentPageID = CURRENT_PAGE.id;
     //Get the id of the sub-page that's currently open
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
 
-    console.log(currentParentPageID);
-
     if (currentParentPageID != "guided-create-submission-metadata-tab") {
       const nonSkippedSiblingPages = getNonSkippedSubPages(currentParentPageID);
-      console.log(nonSkippedSiblingPages);
 
       // Get the index of the sub-page that's currently open
       const openSubPageIndex = nonSkippedSiblingPages.indexOf(openSubPageID);
-      console.log(openSubPageIndex);
 
       if (openSubPageIndex > 0) {
         //If the sub-page that's currently open is not the first sub-page in the parent page

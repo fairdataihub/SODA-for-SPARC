@@ -29,7 +29,7 @@
           <div class="guided--progression-tab-content">
             <span class="dot">1</span>
             <div class="guided--progression-tab-labels">
-              <h1 class="guided--progression-tab-label-main">Structure dataset</h1>
+              <h1 class="guided--progression-tab-label-main">Dataset structure</h1>
             </div>
           </div>
         </div>
@@ -40,7 +40,7 @@
           <div class="guided--progression-tab-content">
             <span class="dot">2</span>
             <div class="guided--progression-tab-labels">
-              <h1 class="guided--progression-tab-label-main">Provide metadata</h1>
+              <h1 class="guided--progression-tab-label-main">Dataset metadata</h1>
             </div>
           </div>
         </div>
@@ -440,25 +440,17 @@
         <div class="guided--capsule-container">
           <div class="guided--capsule active" id="guided-dataset-starting-point-capsule"></div>
 
-          <div
-            class="guided--capsule-container-branch hidden"
-            id="guided-curate-new-dataset-branch-capsule-container"
-          >
-            <div class="guided--capsule" id="guided-subjects-folder-capsule"></div>
+          <!-- Guided structure dataset capsule branch-->
+          <div class="guided--capsule" id="guided-subjects-folder-capsule"></div>
+          <div class="guided--capsule" id="guided-primary-data-organization-capsule"></div>
+          <div class="guided--capsule" id="guided-source-data-organization-capsule"></div>
+          <div class="guided--capsule" id="guided-derivative-data-organization-capsule"></div>
+          <div class="guided--capsule" id="guided-code-folder-capsule"></div>
+          <div class="guided--capsule" id="guided-protocol-folder-capsule"></div>
+          <div class="guided--capsule" id="guided-docs-folder-capsule"></div>
 
-            <div class="guided--capsule" id="guided-primary-data-organization-capsule"></div>
-            <div class="guided--capsule" id="guided-source-data-organization-capsule"></div>
-            <div class="guided--capsule" id="guided-derivative-data-organization-capsule"></div>
-            <div class="guided--capsule" id="guided-code-folder-capsule"></div>
-            <div class="guided--capsule" id="guided-protocol-folder-capsule"></div>
-            <div class="guided--capsule" id="guided-docs-folder-capsule"></div>
-          </div>
-          <div
-            class="guided--capsule-container-branch hidden"
-            id="guided-curate-existing-local-dataset-branch-capsule-container"
-          >
-            <div class="guided--capsule" id="guided-folder-importation-capsule"></div>
-          </div>
+          <!-- import dataset capsule branch-->
+          <div class="guided--capsule" id="guided-folder-importation-capsule"></div>
           <div class="guided--capsule" id="guided-folder-structure-preview-capsule"></div>
         </div>
 
@@ -542,9 +534,8 @@
 
         <div
           id="guided-subjects-folder-tab"
-          class="guided--page hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+          class="guided--page hidden"
           data-page-name="Subject + Sample structuring"
-          data-skip-page="true"
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Subjects and samples</h1>
@@ -715,7 +706,7 @@
         </div>
         <div
           id="guided-primary-data-organization-tab"
-          class="guided--page hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
+          class="guided--page hidden"
           data-page-name="Primary data"
         >
           <div class="guided--section">
@@ -745,11 +736,7 @@
                 ></div>
               </div>
             </div>
-            <div
-              class="guided--panel mt-md sub-page"
-              id="guided-primary-samples-organization-page"
-              data-skip-sub-page="false"
-            >
+            <div class="guided--panel mt-md sub-page" id="guided-primary-samples-organization-page">
               <div class="guided--section" id="guided-primary-samples-prompt">
                 <label class="guided--form-label centered">
                   Do you have primary data for your samples?
@@ -1074,7 +1061,7 @@
         </div>
         <div
           id="guided-source-data-organization-tab"
-          class="guided--page hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
+          class="guided--page hidden"
           data-page-name="Source data"
         >
           <div class="guided--section">
@@ -1104,11 +1091,7 @@
                 ></div>
               </div>
             </div>
-            <div
-              class="guided--panel mt-md sub-page"
-              id="guided-source-samples-organization-page"
-              data-skip-sub-page="false"
-            >
+            <div class="guided--panel mt-md sub-page" id="guided-source-samples-organization-page">
               <div class="guided--section" id="guided-source-samples-prompt">
                 <label class="guided--form-label centered">
                   Do you have source data for your samples?
@@ -1401,7 +1384,7 @@
         </div>
         <div
           id="guided-derivative-data-organization-tab"
-          class="guided--page hidden guided-curate-new-dataset-branch-page guided-subject-sample-data-addition-page"
+          class="guided--page hidden"
           data-page-name="Derivative data"
         >
           <div class="guided--section">
@@ -1432,7 +1415,6 @@
             <div
               class="guided--panel mt-md sub-page"
               id="guided-derivative-samples-organization-page"
-              data-skip-sub-page="false"
             >
               <div class="guided--section" id="guided-derivative-samples-prompt">
                 <label class="guided--form-label centered">
@@ -1711,11 +1693,7 @@
           </div>
         </div>
 
-        <div
-          id="guided-code-folder-tab"
-          class="guided--page hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
-          data-page-name="Code data"
-        >
+        <div id="guided-code-folder-tab" class="guided--page hidden" data-page-name="Code data">
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Code data</h1>
             <p class="guided--help-text">
@@ -1752,7 +1730,7 @@
         </div>
         <div
           id="guided-protocol-folder-tab"
-          class="guided--page hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+          class="guided--page hidden"
           data-page-name="Protocol data"
         >
           <div class="guided--section">
@@ -1790,11 +1768,7 @@
           </div>
           <div class="guided--panel hidden" id="guided-user-has-protocol-data"></div>
         </div>
-        <div
-          id="guided-docs-folder-tab"
-          class="guided--page hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
-          data-page-name="Docs data"
-        >
+        <div id="guided-docs-folder-tab" class="guided--page hidden" data-page-name="Docs data">
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Docs data</h1>
             <p class="guided--help-text">
@@ -1833,9 +1807,8 @@
 
         <div
           id="guided-folder-importation-tab"
-          class="guided--page hidden guided-curate-existing-local-dataset-branch-page"
+          class="guided--page hidden"
           data-page-name="Import dataset folder"
-          data-skip-page="true"
         >
           <div class="guided--section" id="guided_dataset_name_div">
             <h1 class="guided--text-sub-step">Where is your dataset located?</h1>
@@ -2354,11 +2327,7 @@
                 id="guided-submission-metadata-page-capsule"
               ></div>
             </div>
-            <div
-              class="guided--panel mt-md sub-page"
-              id="guided-data-derivative-import-page"
-              data-skip-sub-page="false"
-            >
+            <div class="guided--panel mt-md sub-page" id="guided-data-derivative-import-page">
               <div class="guided--section">
                 <div>
                   <div
@@ -2426,7 +2395,6 @@
             <div
               class="guided--panel mt-md sub-page hidden"
               id="guided-completion-date-selection-page"
-              data-skip-sub-page="false"
             >
               <h2 class="guided--text-sub-step">Select the completion date for your submission</h2>
               <div class="justify-center">
@@ -2439,11 +2407,7 @@
                 </div>
               </div>
             </div>
-            <div
-              class="guided--panel mt-md sub-page hidden"
-              id="guided-submission-metadata-page"
-              data-skip-sub-page="false"
-            >
+            <div class="guided--panel mt-md sub-page hidden" id="guided-submission-metadata-page">
               <div class="guided--section neumorphic mt-xl" style="width: 800px">
                 <h2 class="guided--text-sub-step mt-0">
                   Review/Edit award and milestone information then click on Next
@@ -3028,7 +2992,7 @@
         </div>
         <div
           id="guided-create-subjects-metadata-tab"
-          class="guided--page hidden guided-subject-sample-data-addition-page"
+          class="guided--page hidden"
           data-page-name="Subjects metadata"
         >
           <div class="guided--section">
@@ -3686,7 +3650,7 @@
         </div>
         <div
           id="guided-create-samples-metadata-tab"
-          class="guided--page hidden guided-subject-sample-data-addition-page"
+          class="guided--page hidden"
           data-page-name="Samples metadata"
         >
           <div class="guided--section">
