@@ -875,7 +875,7 @@ const getNonSkippedGuidedModePages = (parentElementToGetChildrenPagesFrom) => {
     parentElementToGetChildrenPagesFrom.querySelectorAll(".guided--page")
   );
   const nonSkippedChildPages = allChildPages.filter((page) => {
-    return page.getAttribute("data-skip-page") != "true";
+    return page.dataset.skipPages != "true";
   });
 
   return nonSkippedChildPages;
@@ -2735,28 +2735,38 @@ const cleanUpEmptyGuidedStructureFolders = async (
   if (subjectsOrSamples === "pools") {
     //Get pools to check if their folders are
     const pools = sodaJSONObj.getPools();
-    const poolsWithNoDataFiles = [];
-
-    for (const pool of Object.keys(pools)) {
-      const poolFolderContents =
-        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-      if (folderIsEmpty(poolFolderContents)) {
-        poolsWithNoDataFiles.push(pool);
+    if (boolCleanUpAllGuidedStructureFolders === true) {
+      //Delete all pools with empty folders
+      for (const pool of Object.keys(pools)) {
+        const poolFolderContents =
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+        if (folderIsEmpty(poolFolderContents)) {
+          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+        }
       }
-    }
+    } else {
+      const poolsWithNoDataFiles = [];
 
-    // If metadata files have been added to every pool, no action needed
-    if (poolsWithNoDataFiles.length === 0) {
-      return true;
-    }
+      for (const pool of Object.keys(pools)) {
+        const poolFolderContents =
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+        if (folderIsEmpty(poolFolderContents)) {
+          poolsWithNoDataFiles.push(pool);
+        }
+      }
 
-    if (poolsWithNoDataFiles.length > 0) {
-      let result = await Swal.fire({
-        heightAuto: false,
-        backdrop: "rgba(0,0,0,0.4)",
-        icon: "warning",
-        title: "Missing data",
-        html: `
+      // If metadata files have been added to every pool, no action needed
+      if (poolsWithNoDataFiles.length === 0) {
+        return true;
+      }
+
+      if (poolsWithNoDataFiles.length > 0) {
+        let result = await Swal.fire({
+          heightAuto: false,
+          backdrop: "rgba(0,0,0,0.4)",
+          icon: "warning",
+          title: "Missing data",
+          html: `
           ${highLevelFolder} data was not added to the following pools:
           <br />
           <br />
@@ -2764,22 +2774,23 @@ const cleanUpEmptyGuidedStructureFolders = async (
             ${poolsWithNoDataFiles.map((pool) => `<li class="text-left">${pool}</li>`).join("")}
           </ul>
         `,
-        reverseButtons: true,
-        showCancelButton: true,
-        cancelButtonColor: "#6e7881",
-        cancelButtonText: `Finish adding ${highLevelFolder} data to pools`,
-        confirmButtonText: `Continue without adding ${highLevelFolder} data to all pools`,
-        allowOutsideClick: false,
-      });
-      if (result.isConfirmed) {
-        for (const pool of poolsWithNoDataFiles) {
-          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+          reverseButtons: true,
+          showCancelButton: true,
+          cancelButtonColor: "#6e7881",
+          cancelButtonText: `Finish adding ${highLevelFolder} data to pools`,
+          confirmButtonText: `Continue without adding ${highLevelFolder} data to all pools`,
+          allowOutsideClick: false,
+        });
+        if (result.isConfirmed) {
+          for (const pool of poolsWithNoDataFiles) {
+            delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+          }
+          //Empty pool folders have been deleted, return true
+          return true;
+        } else {
+          //User has chosen to finish adding data to pools, return false
+          return false;
         }
-        //Empty pool folders have been deleted, return true
-        return true;
-      } else {
-        //User has chosen to finish adding data to pools, return false
-        return false;
       }
     }
   }
@@ -4753,9 +4764,9 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = false;
   datasetStructureJSONObj = { folders: {}, files: {} };
 };
-const attachGuidedMethodsToSodaJSONObj = () => {
-  const guidedHighLevelFolders = ["primary", "source", "derivative"];
+const guidedHighLevelFolders = ["primary", "source", "derivative"];
 
+const attachGuidedMethodsToSodaJSONObj = () => {
   sodaJSONObj.getAllSubjects = function () {
     let subjectsInPools = [];
     let subjectsOutsidePools = [];
@@ -11531,6 +11542,7 @@ $(document).ready(async () => {
             });
             throw errorArray;
           }
+
           guidedUnSkipPage("guided-create-subjects-metadata-tab");
           guidedUnSkipPage("guided-create-samples-metadata-tab");
         }
@@ -11587,34 +11599,23 @@ $(document).ready(async () => {
             }
           }
 
-          document
-            .getElementById("guided-primary-pools-organization-page")
-            .setAttribute("skip-page", "false");
-          document
-            .getElementById("guided-source-pools-organization-page")
-            .setAttribute("skip-page", "false");
-          document
-            .getElementById("guided-derivative-pools-organization-page")
-            .setAttribute("skip-page", "false");
+          //Unkip the pool data organization pages
+          guidedUnSkipPage(`guided-primary-pools-organization-page`);
+          guidedUnSkipPage(`guided-source-pools-organization-page`);
+          guidedUnSkipPage(`guided-derivative-pools-organization-page`);
         }
 
         if (buttonNoPools.classList.contains("selected")) {
-          const pools = sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
-
           //If any pools exist, delete them
+          const pools = sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
           for (const pool of Object.keys(pools)) {
             sodaJSONObj.deletePool(pool);
           }
 
-          document
-            .getElementById("guided-primary-pools-organization-page")
-            .setAttribute("skip-page", "true");
-          document
-            .getElementById("guided-source-pools-organization-page")
-            .setAttribute("skip-page", "true");
-          document
-            .getElementById("guided-derivative-pools-organization-page")
-            .setAttribute("skip-page", "true");
+          //Skip the pool data organization pages
+          guidedSkipPage(`guided-primary-pools-organization-page`);
+          guidedSkipPage(`guided-source-pools-organization-page`);
+          guidedSkipPage(`guided-derivative-pools-organization-page`);
         }
       }
 
@@ -11647,26 +11648,16 @@ $(document).ready(async () => {
             throw errorArray;
           }
 
-          document
-            .getElementById("guided-primary-samples-organization-page")
-            .setAttribute("skip-page", "false");
-          document
-            .getElementById("guided-source-samples-organization-page")
-            .setAttribute("skip-page", "false");
-          document
-            .getElementById("guided-derivative-samples-organization-page")
-            .setAttribute("skip-page", "false");
+          //Unskip the sample data organization pages
+          guidedUnSkipPage(`guided-primary-samples-organization-page`);
+          guidedUnSkipPage(`guided-source-samples-organization-page`);
+          guidedUnSkipPage(`guided-derivative-samples-organization-page`);
         }
         if (buttonNoSamples.classList.contains("selected")) {
-          document
-            .getElementById("guided-primary-samples-organization-page")
-            .setAttribute("skip-page", "true");
-          document
-            .getElementById("guided-source-samples-organization-page")
-            .setAttribute("skip-page", "true");
-          document
-            .getElementById("guided-derivative-samples-organization-page")
-            .setAttribute("skip-page", "true");
+          //Skip the sample data organization pages
+          guidedSkipPage(`guided-primary-samples-organization-page`);
+          guidedSkipPage(`guided-source-samples-organization-page`);
+          guidedSkipPage(`guided-derivative-samples-organization-page`);
         }
       }
 
