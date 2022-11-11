@@ -2441,7 +2441,12 @@ const guidedResetSkippedPages = () => {
   const pagesThatShouldAlwaysBeskipped = [
     "guided-dataset-generation-tab",
     "guided-structure-folder-tab",
+    "guided-dataset-dissemination-tab",
   ];
+  for (const page of pagesThatShouldAlwaysBeskipped) {
+    guidedSkipPage(page);
+  }
+
   // Reset parent pages
   const parentPagesToResetSkip = Array.from(document.querySelectorAll(".guided--page"))
     .map((page) => page.id)
@@ -4416,6 +4421,7 @@ const setActiveSubPage = (pageIdToActivate) => {
       siblingCapsule.classList.remove("active");
     }
   }
+  // renderSideBar(CURRENT_PAGE.id);
 };
 
 const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
@@ -11433,6 +11439,12 @@ $(document).ready(async () => {
   $("#guided-next-button").on("click", async function () {
     //Get the ID of the current page to handle actions on page leave (next button pressed)
     pageBeingLeftID = CURRENT_PAGE.id;
+
+    if (pageBeingLeftID === "guided-dataset-generation-tab") {
+      guidedUnSkipPage("guided-dataset-dissemination-tab");
+      await openPage("guided-dataset-dissemination-tab");
+      return;
+    }
     //remove blue pulse
     $(this).removeClass("pulse-blue");
     //add a bootstrap loader to the next button
