@@ -1493,6 +1493,12 @@ const guidedTransitionFromHome = async () => {
   document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
   document.getElementById("guided-header-div").classList.remove("hidden");
 
+  //Hide all guided pages (first one will be unHidden automatically)
+  const guidedPages = document.querySelectorAll(".guided--page");
+  guidedPages.forEach((page) => {
+    page.classList.add("hidden");
+  });
+
   //Set the current page to the guided intro page
   CURRENT_PAGE = document.getElementById("guided-intro-page-tab");
   openPage("guided-intro-page-tab");
@@ -1549,11 +1555,6 @@ const saveGuidedProgress = (guidedProgressFileName) => {
   }
   //Destination: HOMEDIR/SODA/Guided-Progress
   sodaJSONObj["last-modified"] = new Date();
-
-  //If the user is past the intro/name+subtitle page, save the current page to be resumed later
-  if (CURRENT_PAGE) {
-    sodaJSONObj["page-before-exit"] = CURRENT_PAGE.id;
-  }
 
   try {
     //create Guided-Progress folder if one does not exist
@@ -3946,6 +3947,10 @@ const openPage = async (targetPageID) => {
       guidedBody.scrollTo({
         top: 0,
       });
+
+      // Set the last opened page and save it
+      sodaJSONObj["page-before-exit"] = targetPageID;
+      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     }
   } catch (error) {
     console.log(error);
@@ -4690,7 +4695,6 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
   const prevSessionSkikppedPages = [...sodaJSONObj["skipped-pages"]];
   guidedTransitionFromHome();
-
   // Reskip the pages from a previous session
   for (const pageID of prevSessionSkikppedPages) {
     guidedSkipPage(pageID);
