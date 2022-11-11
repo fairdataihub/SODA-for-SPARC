@@ -6391,48 +6391,47 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
         let noPoolSamples = [];
         let poolSamples = [];
         let skip = false;
-        if(allSamples.length > 1) {
+        if (allSamples.length > 1) {
           //subjects within pools and others not
           poolSamples = allSamples[0];
           noPoolSamples = allSamples[1];
-          for(let i = 0; i < poolSamples.length; i++) {
-            if(item === poolSamples[i]["sampleName"]) {
-              console.log(item);
-              console.log("not displaying above")
-              skip = true;
-              break;
-            }
-          }
-          if(skip) {
-            continue;
-          }
-          for(let i = 0; i < noPoolSamples.length; i++) {
-            if(item === noPoolSamples[i]["sampleName"]) {
+          for (let i = 0; i < poolSamples.length; i++) {
+            if (item === poolSamples[i]["sampleName"]) {
               console.log(item);
               console.log("not displaying above");
               skip = true;
               break;
             }
           }
-          if(skip) {
+          if (skip) {
             continue;
           }
-        }
-        if(allSamples.length === 1) {
-          poolSamples = allSamples[1];
-          for(let i = 0; i < poolSamples.length; i++) {
-            if(item === poolSamples[i]["sampleName"]) {
+          for (let i = 0; i < noPoolSamples.length; i++) {
+            if (item === noPoolSamples[i]["sampleName"]) {
               console.log(item);
-              console.log("not displaying above")
+              console.log("not displaying above");
               skip = true;
               break;
             }
           }
-          if(skip) {
+          if (skip) {
             continue;
           }
         }
-
+        if (allSamples.length === 1) {
+          poolSamples = allSamples[1];
+          for (let i = 0; i < poolSamples.length; i++) {
+            if (item === poolSamples[i]["sampleName"]) {
+              console.log(item);
+              console.log("not displaying above");
+              skip = true;
+              break;
+            }
+          }
+          if (skip) {
+            continue;
+          }
+        }
 
         // let currentSample =
         //   sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
@@ -6462,45 +6461,45 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
         let poolSubjects = [];
         let noPoolSubjects = [];
         let skip = false;
-        if(currentSubjects.length === 1) {
+        if (currentSubjects.length === 1) {
           poolSubjects = currentSubjects[0];
-          for(let i = 0; i < poolSubjects.length; i++) {
-            if(item === poolSubjects[i]["subjectName"]) {
+          for (let i = 0; i < poolSubjects.length; i++) {
+            if (item === poolSubjects[i]["subjectName"]) {
               console.log(item);
-              console.log("not displaying above")
+              console.log("not displaying above");
               skip = true;
               break;
             }
           }
-          if(skip) {
+          if (skip) {
             continue;
           }
         }
-        if(currentSubjects.length > 1) {
+        if (currentSubjects.length > 1) {
           //some subjects in pools and some not
           poolSubjects = currentSubjects[0];
-          noPoolSubjects = currentSubjects[1]
-          for(let i = 0; i < noPoolSubjects.length; i++) {
-            if(item === noPoolSubjects[i]["subjectName"]) {
+          noPoolSubjects = currentSubjects[1];
+          for (let i = 0; i < noPoolSubjects.length; i++) {
+            if (item === noPoolSubjects[i]["subjectName"]) {
               console.log(item);
-              console.log("not displaying above")
+              console.log("not displaying above");
               skip = true;
               break;
             }
           }
-          if(skip) {
+          if (skip) {
             continue;
           }
-          for(let i = 0; i < poolSubjects.length; i++) {
-            if(item === poolSubjects[i]["subjectName"]) {
+          for (let i = 0; i < poolSubjects.length; i++) {
+            if (item === poolSubjects[i]["subjectName"]) {
               console.log(item);
-              console.log("not displaying above")
+              console.log("not displaying above");
               skip = true;
               break;
             }
           }
         }
-        if(skip) {
+        if (skip) {
           continue;
         }
         // const currentPool =
