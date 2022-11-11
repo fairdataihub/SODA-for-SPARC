@@ -1450,11 +1450,37 @@ const getOpenSubPageInPage = (pageID) => {
   return openSubPage.id;
 };
 
+const getNonSkippedGuidedModeSubPages = (parentElementID) => {
+  let childSubPages = Array.from(
+    document.getElementById(parentElementID).querySelectorAll(".sub-page")
+  );
+  const nonSkippedChildSubPages = childSubPages
+    .filter((page) => {
+      return page.dataset.skipPage != "true";
+    })
+    .map((page) => page.id);
+
+  return nonSkippedChildSubPages;
+};
+
 const openSubPageNavigation = (pageBeingNavigatedTo) => {
   //Get the id of the page that's currently open and might need a refresh
-  const openSubPageID = getOpenSubPageInPage(pageBeingNavigatedTo);
+  const nonSkippedSubPages = getNonSkippedGuidedModeSubPages(pageBeingNavigatedTo);
+  const completedSubPages = nonSkippedSubPages.filter((page) => {
+    return sodaJSONObj["completed-tabs"].includes(page);
+  });
+
+  // If the sub-pages have already been completed, go to the last one
+  // If not, go to the first one
+  let subPageIDtoOpen;
+  if (completedSubPages.length > 0) {
+    subPageIDtoOpen = completedSubPages[completedSubPages.length - 1];
+  } else {
+    subPageIDtoOpen = nonSkippedSubPages[0];
+  }
+
   //Refresh data on the open sub-page
-  setActiveSubPage(openSubPageID);
+  setActiveSubPage(subPageIDtoOpen);
   //Hide the footer div while user is in sub-page navigation
   $("#guided-footer-div").hide();
   //Show the sub-page navigation footer
@@ -1534,7 +1560,6 @@ const saveGuidedProgress = (guidedProgressFileName) => {
     fs.mkdirSync(guidedProgressFilePath, { recursive: true });
   } catch (error) {
     log.error(error);
-    console.log(error);
   }
   var guidedFilePath = path.join(guidedProgressFilePath, guidedProgressFileName + ".json");
 
@@ -2452,7 +2477,6 @@ const guidedSkipPage = (pageId) => {
   if (!sodaJSONObj["skipped-pages"].includes(pageId)) {
     sodaJSONObj["skipped-pages"].push(pageId);
   }
-  console.log(sodaJSONObj["skipped-pages"]);
 };
 
 guidedUnSkipPage = (pageId) => {
@@ -2473,7 +2497,6 @@ guidedUnSkipPage = (pageId) => {
   if (sodaJSONObj["skipped-pages"].includes(pageId)) {
     sodaJSONObj["skipped-pages"].splice(sodaJSONObj["skipped-pages"].indexOf(pageId), 1);
   }
-  console.log(sodaJSONObj["skipped-pages"]);
 };
 
 const loadGuidedSkippedPages = () => {};
@@ -4670,7 +4693,6 @@ const guidedResumeProgress = async (resumeProgressButton) => {
 
   // Reskip the pages from a previous session
   for (const pageID of prevSessionSkikppedPages) {
-    console.log(pageID);
     guidedSkipPage(pageID);
   }
 
@@ -5626,7 +5648,6 @@ const fetchContributorDataFromAirTable = async () => {
       return [];
     }
   } catch (error) {
-    console.log(error);
     //If there is an error, return an empty array since no contributor data was fetched.
     return [];
   }
@@ -5703,7 +5724,6 @@ const getContributorByOrcid = (orcid) => {
 };
 
 const verifyOrcidID = (event) => {
-  // console.log(event.value);
   let userInput = event.value;
   //17 chars
   if (userInput.length > 17) {
@@ -5711,7 +5731,6 @@ const verifyOrcidID = (event) => {
       //verify every four characters forward if they are a number
       let afterLink = userInput.substr(18);
     }
-    // console.log(userInput.substr(17));
     //char 18 will be after the forward slash
   }
 };
@@ -11434,7 +11453,6 @@ $(document).ready(async () => {
           .getElementById(currentPageID)
           .closest(".guided--parent-tab");
         const siblingPages = getNonSkippedGuidedModePages(parentContainer).map((page) => page.id);
-        console.log("sibling pages", siblingPages);
 
         const currentPageIndex = siblingPages.indexOf(currentPageID);
         if (currentPageIndex != siblingPages.length - 1) {
@@ -12116,7 +12134,10 @@ $(document).ready(async () => {
 
     try {
       await saveSubPageChanges(openSubPageID);
-      console.log(currentParentPageID);
+
+      if (!sodaJSONObj["completed-tabs"].includes(openSubPageID)) {
+        sodaJSONObj["completed-tabs"].push(openSubPageID);
+      }
 
       if (currentParentPageID != "guided-create-submission-metadata-tab") {
         //Get an array of all the sub pages that are children of the parent page
@@ -12124,7 +12145,6 @@ $(document).ready(async () => {
 
         // Get the index of the sub-page that's currently open
         const openSubPageIndex = nonSkippedSiblingPages.indexOf(openSubPageID);
-        console.log(openSubPageIndex);
         if (openSubPageIndex < nonSkippedSiblingPages.length - 1) {
           //If the sub-page that's currently open is not the last sub-page in the parent page
           //Get the id of the next sub-page and open it
@@ -12160,15 +12180,11 @@ $(document).ready(async () => {
     //Get the id of the sub-page that's currently open
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
 
-    console.log(currentParentPageID);
-
     if (currentParentPageID != "guided-create-submission-metadata-tab") {
       const nonSkippedSiblingPages = getNonSkippedSubPages(currentParentPageID);
-      console.log(nonSkippedSiblingPages);
 
       // Get the index of the sub-page that's currently open
       const openSubPageIndex = nonSkippedSiblingPages.indexOf(openSubPageID);
-      console.log(openSubPageIndex);
 
       if (openSubPageIndex > 0) {
         //If the sub-page that's currently open is not the first sub-page in the parent page
