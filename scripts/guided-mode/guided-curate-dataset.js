@@ -3926,7 +3926,6 @@ const openPage = async (targetPageID) => {
     renderSideBar(targetPageID);
 
     const guidedBody = document.getElementById("guided-body");
-
     //Check to see if target element has the same parent as current sub step
     if (currentParentTab.id === targetPageParentTab.id) {
       CURRENT_PAGE.classList.add("hidden");
@@ -3947,11 +3946,10 @@ const openPage = async (targetPageID) => {
       guidedBody.scrollTo({
         top: 0,
       });
-
-      // Set the last opened page and save it
-      sodaJSONObj["page-before-exit"] = targetPageID;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     }
+    // Set the last opened page and save it
+    sodaJSONObj["page-before-exit"] = targetPageID;
+    saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   } catch (error) {
     console.log(error);
   }
