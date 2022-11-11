@@ -875,7 +875,7 @@ const getNonSkippedGuidedModePages = (parentElementToGetChildrenPagesFrom) => {
     parentElementToGetChildrenPagesFrom.querySelectorAll(".guided--page")
   );
   const nonSkippedChildPages = allChildPages.filter((page) => {
-    return page.dataset.skipPages != "true";
+    return page.dataset.skipPage != "true";
   });
 
   return nonSkippedChildPages;
@@ -11434,6 +11434,7 @@ $(document).ready(async () => {
           .getElementById(currentPageID)
           .closest(".guided--parent-tab");
         const siblingPages = getNonSkippedGuidedModePages(parentContainer).map((page) => page.id);
+        console.log("sibling pages", siblingPages);
 
         const currentPageIndex = siblingPages.indexOf(currentPageID);
         if (currentPageIndex != siblingPages.length - 1) {
@@ -11543,11 +11544,25 @@ $(document).ready(async () => {
             throw errorArray;
           }
 
+          guidedUnSkipPage("guided-organize-subjects-into-pools-page");
+          guidedUnSkipPage("guided-specify-samples-page");
+
+          guidedUnSkipPage("guided-primary-data-organization-tab");
+          guidedUnSkipPage("guided-source-data-organization-tab");
+          guidedUnSkipPage("guided-derivative-data-organization-tab");
+
           guidedUnSkipPage("guided-create-subjects-metadata-tab");
           guidedUnSkipPage("guided-create-samples-metadata-tab");
         }
 
         if (buttonNoSubjects.classList.contains("selected")) {
+          guidedSkipPage("guided-organize-subjects-into-pools-page");
+          guidedSkipPage("guided-specify-samples-page");
+
+          guidedSkipPage("guided-primary-data-organization-tab");
+          guidedSkipPage("guided-source-data-organization-tab");
+          guidedSkipPage("guided-derivative-data-organization-tab");
+
           guidedSkipPage("guided-create-subjects-metadata-tab");
           guidedSkipPage("guided-create-samples-metadata-tab");
         }
