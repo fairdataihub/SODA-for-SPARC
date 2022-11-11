@@ -1482,66 +1482,70 @@ def create_high_level_manifest_files_existing_bf(
             return name, ext
 
         def recursive_manifest_info_import_bf(
-            my_item, my_relative_path, dict_folder_manifest, manifest_df
+            folder, my_relative_path, dict_folder_manifest, manifest_df
         ):
+            """
+            Import manifest information from the Pennsieve dataset for the given folder and its children.
+            """
 
-            for item in my_item.items:
-                if item.type == "Collection":
-                    folder_name = item.name
+            print(folder)
+
+            for _, folder_item in folder["children"]["folders"].items():
+                folder_name = folder_item['content']['name']
+                relative_path = generate_relative_path(
+                    my_relative_path, folder_name
+                )
+                dict_folder_manifest = recursive_manifest_info_import_bf(
+                    folder_item, relative_path, dict_folder_manifest, manifest_df
+                )
+            for _, file in folder["children"]["files"].items():
+                if file['content']['name'] != "manifest":
+                    file_id = file['content']['id']
+                    r = requests.get(f"{PENNSIEVE_URL}/packages/{file_id}/view", headers=create_request_headers(bf))
+                    r.raise_for_status()
+                    file_details = r.json()
+                    file_name = file_details[0]["content"]["name"]
+                    file_extension = splitext(file_name)[1]
+                    file_name_with_extension = (
+                        splitext(file['content']['name'])[0] + file_extension
+                    )
                     relative_path = generate_relative_path(
-                        my_relative_path, folder_name
+                        my_relative_path, file_name_with_extension
                     )
-                    dict_folder_manifest = recursive_manifest_info_import_bf(
-                        item, relative_path, dict_folder_manifest, manifest_df
-                    )
-                else:
-                    if item.name != "manifest":
-                        file_id = item.id
-                        file_details = bf._api._get(
-                            "/packages/" + str(file_id) + "/view"
-                        )
-                        file_name = file_details[0]["content"]["name"]
-                        file_extension = splitext(file_name)[1]
-                        file_name_with_extension = (
-                            splitext(item.name)[0] + file_extension
-                        )
-                        relative_path = generate_relative_path(
-                            my_relative_path, file_name_with_extension
-                        )
-                        dict_folder_manifest["filename"].append(relative_path)
+                    dict_folder_manifest["filename"].append(relative_path)
 
-                        # file type
-                        unused_file_name, file_extension = get_name_extension(file_name)
-                        if file_extension == "":
-                            file_extension = "None"
-                        # file_extension = splitext(file_name)[1]
-                        dict_folder_manifest["file type"].append(file_extension)
+                    # file type
+                    unused_file_name, file_extension = get_name_extension(file_name)
+                    if file_extension == "":
+                        file_extension = "None"
+                    # file_extension = splitext(file_name)[1]
+                    dict_folder_manifest["file type"].append(file_extension)
 
-                        # timestamp, description, Additional Metadata
-                        if not manifest_df.empty:
-                            if relative_path in manifest_df["filename"].values:
-                                timestamp = manifest_df[
-                                    manifest_df["filename"] == relative_path
-                                ]["timestamp"].iloc[0]
-                                description = manifest_df[
-                                    manifest_df["filename"] == relative_path
-                                ]["description"].iloc[0]
-                                additional_metadata = manifest_df[
-                                    manifest_df["filename"] == relative_path
-                                ]["Additional Metadata"].iloc[0]
-                            else:
-                                timestamp = ""
-                                description = ""
-                                additional_metadata = ""
-                            dict_folder_manifest["timestamp"].append(timestamp)
-                            dict_folder_manifest["description"].append(description)
-                            dict_folder_manifest["Additional Metadata"].append(
-                                additional_metadata
-                            )
+                    # timestamp, description, Additional Metadata
+                    if not manifest_df.empty:
+                        if relative_path in manifest_df["filename"].values:
+                            timestamp = manifest_df[
+                                manifest_df["filename"] == relative_path
+                            ]["timestamp"].iloc[0]
+                            description = manifest_df[
+                                manifest_df["filename"] == relative_path
+                            ]["description"].iloc[0]
+                            additional_metadata = manifest_df[
+                                manifest_df["filename"] == relative_path
+                            ]["Additional Metadata"].iloc[0]
                         else:
-                            dict_folder_manifest["timestamp"].append("")
-                            dict_folder_manifest["description"].append("")
-                            dict_folder_manifest["Additional Metadata"].append("")
+                            timestamp = ""
+                            description = ""
+                            additional_metadata = ""
+                        dict_folder_manifest["timestamp"].append(timestamp)
+                        dict_folder_manifest["description"].append(description)
+                        dict_folder_manifest["Additional Metadata"].append(
+                            additional_metadata
+                        )
+                    else:
+                        dict_folder_manifest["timestamp"].append("")
+                        dict_folder_manifest["description"].append("")
+                        dict_folder_manifest["Additional Metadata"].append("")
 
             return dict_folder_manifest
 
@@ -1559,7 +1563,7 @@ def create_high_level_manifest_files_existing_bf(
                     (
                         my_bf_existing_folders,
                         my_bf_existing_folders_name,
-                    ) = bf_get_existing_folders_details(my_bf_folder)
+                    ) = bf_get_existing_folders_details(my_bf_folder['children']['folders'])
                 else:
                     my_bf_existing_folders = []
                     my_bf_existing_folders_name = []
@@ -1567,8 +1571,7 @@ def create_high_level_manifest_files_existing_bf(
                 for folder_key, folder in my_folder["folders"].items():
                     relative_path = generate_relative_path(my_relative_path, folder_key)
                     if folder_key in my_bf_existing_folders_name:
-                        bf_folder_index = my_bf_existing_folders_name.index(folder_key)
-                        bf_folder = my_bf_existing_folders[bf_folder_index]
+                        bf_folder = my_bf_folder["children"]["folders"][folder_key]
                         bf_folder_exists = True
                     else:
                         bf_folder = ""
@@ -1584,17 +1587,17 @@ def create_high_level_manifest_files_existing_bf(
             if "files" in my_folder.keys():
                 if my_bf_folder_exists:
                     (
-                        my_bf_existing_files,
+                        # my_bf_existing_files,
                         my_bf_existing_files_name,
                         my_bf_existing_files_name_with_extension,
-                    ) = bf_get_existing_files_details(my_bf_folder)
+                    ) = bf_get_existing_files_details(my_bf_folder, bf)
                 else:
                     my_bf_existing_files = []
                     my_bf_existing_files_name = []
                     my_bf_existing_files_name_with_extension = []
 
                 for file_key, file in my_folder["files"].items():
-                    gevent.sleep(0)
+                    # gevent.sleep(0)
                     if file["type"] == "local":
                         file_path = file["path"]
                         if isfile(file_path):
@@ -1717,17 +1720,19 @@ def create_high_level_manifest_files_existing_bf(
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
         makedirs(manifest_folder_path)
 
+        print("Manifest building [START]")
+        print(ds)
+
         # import info about files already on bf
         dataset_structure = soda_json_structure["dataset-structure"]
         manifest_dict_save = {}
-        for item in ds.items:
+        for high_level_folder_key, high_level_folder in ds["children"]["folders"].items():
             if (
-                item.type == "Collection"
-                and item.name in dataset_structure["folders"].keys()
+                high_level_folder_key in dataset_structure["folders"].keys()
             ):
 
                 relative_path = ""
-                item_id = item.id
+                high_level_folder_id = high_level_folder['content']['id']
                 # Initialize dict where manifest info will be stored
                 dict_folder_manifest = {}
                 dict_folder_manifest["filename"] = []
@@ -1738,34 +1743,37 @@ def create_high_level_manifest_files_existing_bf(
 
                 # pull manifest file into if exists
                 manifest_df = pd.DataFrame()
-                for file in item.items:
-                    if file.type != "Collection":
-                        file_id = file.id
-                        file_details = bf._api._get(
-                            "/packages/" + str(file_id) + "/view"
-                        )
-                        file_name_with_extension = file_details[0]["content"]["name"]
-                        if file_name_with_extension in manifest_sparc:
-                            file_id_2 = file_details[0]["content"]["id"]
-                            file_url_info = bf._api._get(
-                                "/packages/" + str(file_id) + "/files/" + str(file_id_2)
-                            )
-                            file_url = file_url_info["url"]
-                            manifest_df = pd.read_excel(file_url, engine="openpyxl")
-                            manifest_df = manifest_df.fillna("")
-                            if (
-                                "filename" not in manifest_df.columns
-                                or "description" not in manifest_df.columns
-                                or "Additional Metadata" not in manifest_df.columns
-                            ):
-                                manifest_df = pd.DataFrame()
-                            break
-                dict_folder_manifest = recursive_manifest_info_import_bf(
-                    item, relative_path, dict_folder_manifest, manifest_df
+                for file_key, file in high_level_folder['children']['files'].items():
+                    file_id = file['content']['id']
+                    r = requests.get(f"{PENNSIEVE_URL}/packages/{file_id}/view", headers=create_request_headers(bf))
+                    r.raise_for_status()
+                    file_details = r.json()
+                    file_name_with_extension = file_details[0]["content"]["name"]
+                    if file_name_with_extension in manifest_sparc:
+                        file_id_2 = file_details[0]["content"]["id"]
+                        r = requests.get(f"{PENNSIEVE_URL}/packages/{file_id}/files/{file_id_2}", headers=create_request_headers(bf))
+                        r.raise_for_status()
+                        file_url_info = r.json()
+                        file_url = file_url_info["url"]
+                        manifest_df = pd.read_excel(file_url, engine="openpyxl")
+                        manifest_df = manifest_df.fillna("")
+                        if (
+                            "filename" not in manifest_df.columns
+                            or "description" not in manifest_df.columns
+                            or "Additional Metadata" not in manifest_df.columns
+                        ):
+                            manifest_df = pd.DataFrame()
+                        break
+
+                # store the data frame pulled from Pennsieve into a dictionary
+                dict_folder_manifest =  recursive_manifest_info_import_bf(
+                    high_level_folder, relative_path, dict_folder_manifest, manifest_df
                 )
-                manifest_dict_save[item.name] = {
+
+                # TODO: Verify this key name path is sane
+                manifest_dict_save[high_level_folder['content']['name']] = {
                     "manifest": dict_folder_manifest,
-                    "bf_folder": item,
+                    "bf_folder": high_level_folder,
                 }
 
         # import info from local files to be uploaded
@@ -1788,7 +1796,7 @@ def create_high_level_manifest_files_existing_bf(
 
             elif (
                 folder_key in manifest_dict_save.keys()
-                and folder_key not in my_tracking_folder["folders"].keys()
+                and folder_key not in my_tracking_folder["children"]["folders"].keys()
                 and existing_folder_option == "skip"
             ):
                 continue
@@ -2705,14 +2713,15 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 ):
                     # generating dataset on an existing bf dataset - account for existing files and manifest files
                     # TODO: implement with new agent
+                    print("Manifest second option is executing")
                     manifest_files_structure = (
                         create_high_level_manifest_files_existing_bf(
-                            soda_json_structure, bf, ds, tracking_json_structure
+                            soda_json_structure, ps, ds, tracking_json_structure
                         )
                     )
                 else:
                     # generating on new bf
-                    # TODO: implement with new agent
+                    # NOTE: No translation work is required in this case. 
                     manifest_files_structure = create_high_level_manifest_files(
                         soda_json_structure
                     )
