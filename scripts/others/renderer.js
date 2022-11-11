@@ -6223,6 +6223,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
   const pathDisplay = document.getElementById("datasetPathDisplay");
   const fileExplorerBackButton = document.getElementById("guided-button-back");
   let hideSampleFolders = false;
+  let hideSubjectFolders = false;
   let splitPath = datasetPath.value.split("/");
   let fullPath = datasetPath.value;
 
@@ -6241,8 +6242,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     };
 
     let currentPageID = CURRENT_PAGE.attr("id");
-    console.log(currentPageID);
-    //capsules need to determine if sample or subjects section
+    //capsules needed to determine if sample or subjects section is active
     //subjects initially display two folder levels meanwhile samples will initially only show one folder level
     let primarySampleCapsule = document.getElementById(
       "guided-primary-samples-organization-page-capsule"
@@ -6250,18 +6250,22 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     let primarySubjectCapsule = document.getElementById(
       "guided-primary-subjects-organization-page-capsule"
     );
+    let primaryPoolCapsule = document.getElementById("guided-primary-pools-organization-page-capsule");
     let sourceSampleCapsule = document.getElementById(
       "guided-source-samples-organization-page-capsule"
     );
     let sourceSubjectCapsule = document.getElementById(
       "guided-source-subjects-organization-page-capsule"
     );
+    let sourcePoolCapsule = document.getElementById("guided-source-pools-organization-page-capsule");
+
     let derivativeSampleCapsule = document.getElementById(
       "guided-derivative-samples-organization-page-capsule"
     );
     let derivativeSubjectCapsule = document.getElementById(
       "guided-derivative-subjects-organization-page-capsule"
     );
+    let derivativePoolCapsule = document.getElementById("guided-derivative-pools-organization-page-capsule");
 
     //remove my_dataset_folder and if any of the ROOT FOLDER names is included
     if (splitPath[0] === "My_dataset_folder") splitPath.shift();
@@ -6269,11 +6273,9 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     //remove the last element in array is it is always ''
     splitPath.pop();
 
-    //get 2 last lvls of the folder path
-    console.log(currentPageID);
-    console.log(splitPath);
     let trimmedPath = "";
     if (currentPageID.includes("primary")) {
+      console.log("current page includes primary");
       if (primarySampleCapsule.classList.contains("active")) {
         if (splitPath[0].includes("pool-")) {
           splitPathCheck(3, fileExplorerBackButton);
@@ -6282,14 +6284,20 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
         }
       }
       if (primarySubjectCapsule.classList.contains("active")) {
-        // splitPathCheck(1, fileExplorerBackButton);
         if (splitPath[0].includes("pool-")) {
+          console.log("pool included");
           splitPathCheck(2, fileExplorerBackButton);
         } else {
           splitPathCheck(1, fileExplorerBackButton);
         }
-        console.log("hide prim sample folders");
         hideSampleFolders = true;
+      }
+      if(primaryPoolCapsule.classList.contains("active")) {
+        console.log("pool capsule");
+        if(splitPath[0].includes("pool-")) {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSubjectFolders = true;
       }
     }
     if (currentPageID.includes("source")) {
@@ -6308,6 +6316,12 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
         } else {
           splitPathCheck(2, fileExplorerBackButton);
         }
+      }
+      if(sourcePoolCapsule.classList.contains("active")) {
+        if(splitPath[0].includes("pool-")) {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSubjectFolders = true;
       }
     }
     if (currentPageID.includes("derivative")) {
@@ -6328,6 +6342,12 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
           splitPathCheck(2, fileExplorerBackButton);
         }
       }
+      if(derivativePoolCapsule.classList.contains("active")) {
+        if(splitPath[0].includes("pool-")) {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSubjectFolders = true;
+      }
     }
     if (
       currentPageID.includes("code") ||
@@ -6344,17 +6364,10 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
       trimmedPath += splitPath[i] + "/";
     }
 
+    //append path to tippy and display path to the file explorer
     pathDisplay.innerText = trimmedPath;
     pathDisplay._tippy.setContent(fullPath);
-
-    //get the path of the dataset when rendering
-    //with the path you can determine whether or not to disable the back button
   }
-
-  //while listing folders we could check for sam- and not render those
-  //another good method is to see what sample folders have been made
-  //and if the name comes up during render, don't render
-  //problem: how to do know which sample files have been made
 
   var appendString = "";
   var sortedObj = sortObjByKeys(jsonObj);
@@ -6365,16 +6378,38 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
   //start creating folder elements to be rendered
   if (Object.keys(sortedObj["folders"]).length > 0) {
     for (var item in sortedObj["folders"]) {
+      //hide samples when on the subjects page
       if (hideSampleFolders) {
-        let currentSubjectFolder = splitPath[0];
-        const currentSubjects =
+        let currentSampleFolder = splitPath[0];
+        let currentSample =
           sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
-            currentSubjectFolder
+            currentSampleFolder
           ];
-        if (item in currentSubjects) {
-          continue;
+        if(splitPath[0].includes("pool-")) {
+          //then search for samples within the pool key
+          let currentPool = splitPath[0];
+          currentSampleFolder = splitPath[1];
+          currentSample = sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"][currentPool][currentSampleFolder]
+        }
+
+        if(currentSample != undefined) {
+          //if sample is within currentSubjectFolder
+          if (item in currentSample) {
+            continue;
+          }
         }
       }
+      if(hideSubjectFolders) {
+        //hide subject folders when displaying pool page
+        const currentPoolName = splitPath[0];
+        const currentPool = sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"][currentPoolName];
+        if(currentPool != undefined) {
+          if(item in currentPool) {
+            continue;
+          }
+        }
+      }
+
       count += 1;
       var emptyFolder = "";
       if (!highLevelFolders.includes(item)) {
@@ -6430,9 +6465,9 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
           item +
           "</div></div>";
 
-        // folder_elements.push(elem_creation);
         appendString = appendString + elem_creation;
         if (count === 100) {
+          //every one hundred elements created we put it into one element within the array
           folder_elements.push(appendString);
           count = 0;
           appendString = "";
@@ -6448,9 +6483,9 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
           item +
           "</div></div>";
 
-        // folder_elements.push(element_creation);
         appendString = appendString + element_creation;
         if (count === 100) {
+          //every one hundred elements created we put it into one element within the array
           folder_elements.push(appendString);
           count = 0;
           appendString = "";
@@ -6459,6 +6494,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
       }
     }
     if (count < 100) {
+      //if items to be rendered is less than 100 we push whatever we have to the array element
       if (!folder_elements.includes(appendString) && appendString != "") {
         folder_elements.push(appendString);
         count = 0;
