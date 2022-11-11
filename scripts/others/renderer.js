@@ -6250,14 +6250,18 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     let primarySubjectCapsule = document.getElementById(
       "guided-primary-subjects-organization-page-capsule"
     );
-    let primaryPoolCapsule = document.getElementById("guided-primary-pools-organization-page-capsule");
+    let primaryPoolCapsule = document.getElementById(
+      "guided-primary-pools-organization-page-capsule"
+    );
     let sourceSampleCapsule = document.getElementById(
       "guided-source-samples-organization-page-capsule"
     );
     let sourceSubjectCapsule = document.getElementById(
       "guided-source-subjects-organization-page-capsule"
     );
-    let sourcePoolCapsule = document.getElementById("guided-source-pools-organization-page-capsule");
+    let sourcePoolCapsule = document.getElementById(
+      "guided-source-pools-organization-page-capsule"
+    );
 
     let derivativeSampleCapsule = document.getElementById(
       "guided-derivative-samples-organization-page-capsule"
@@ -6265,7 +6269,9 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     let derivativeSubjectCapsule = document.getElementById(
       "guided-derivative-subjects-organization-page-capsule"
     );
-    let derivativePoolCapsule = document.getElementById("guided-derivative-pools-organization-page-capsule");
+    let derivativePoolCapsule = document.getElementById(
+      "guided-derivative-pools-organization-page-capsule"
+    );
 
     //remove my_dataset_folder and if any of the ROOT FOLDER names is included
     if (splitPath[0] === "My_dataset_folder") splitPath.shift();
@@ -6292,9 +6298,9 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
         }
         hideSampleFolders = true;
       }
-      if(primaryPoolCapsule.classList.contains("active")) {
+      if (primaryPoolCapsule.classList.contains("active")) {
         console.log("pool capsule");
-        if(splitPath[0].includes("pool-")) {
+        if (splitPath[0].includes("pool-")) {
           splitPathCheck(1, fileExplorerBackButton);
         }
         hideSubjectFolders = true;
@@ -6317,8 +6323,8 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
           splitPathCheck(2, fileExplorerBackButton);
         }
       }
-      if(sourcePoolCapsule.classList.contains("active")) {
-        if(splitPath[0].includes("pool-")) {
+      if (sourcePoolCapsule.classList.contains("active")) {
+        if (splitPath[0].includes("pool-")) {
           splitPathCheck(1, fileExplorerBackButton);
         }
         hideSubjectFolders = true;
@@ -6342,8 +6348,8 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
           splitPathCheck(2, fileExplorerBackButton);
         }
       }
-      if(derivativePoolCapsule.classList.contains("active")) {
-        if(splitPath[0].includes("pool-")) {
+      if (derivativePoolCapsule.classList.contains("active")) {
+        if (splitPath[0].includes("pool-")) {
           splitPathCheck(1, fileExplorerBackButton);
         }
         hideSubjectFolders = true;
@@ -6385,26 +6391,32 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
           sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
             currentSampleFolder
           ];
-        if(splitPath[0].includes("pool-")) {
+        if (splitPath[0].includes("pool-")) {
           //then search for samples within the pool key
           let currentPool = splitPath[0];
           currentSampleFolder = splitPath[1];
-          currentSample = sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"][currentPool][currentSampleFolder]
+          currentSample =
+            sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"][currentPool][
+              currentSampleFolder
+            ];
         }
 
-        if(currentSample != undefined) {
+        if (currentSample != undefined) {
           //if sample is within currentSubjectFolder
           if (item in currentSample) {
             continue;
           }
         }
       }
-      if(hideSubjectFolders) {
+      if (hideSubjectFolders) {
         //hide subject folders when displaying pool page
         const currentPoolName = splitPath[0];
-        const currentPool = sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"][currentPoolName];
-        if(currentPool != undefined) {
-          if(item in currentPool) {
+        const currentPool =
+          sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+            currentPoolName
+          ];
+        if (currentPool != undefined) {
+          if (item in currentPool) {
             continue;
           }
         }
