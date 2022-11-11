@@ -2326,6 +2326,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
     global uploaded_folder_counter
     global current_size_of_uploaded_files
     global total_files
+    global total_bytes_uploaded # current number of bytes uploaded to Pennsieve in the current session
 
 
     total_files = 0
@@ -2673,6 +2674,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
         # store the file total - it is used to mark upload completion for the subscriber
         total_files = len(list_upload_files)
+        namespace_logger.info("Total number of files here: " + str(total_files))
         
         # main_curate_progress_message = "About to update after doing recursive dataset scan"
         # 3. Add high-level metadata files to a list
@@ -2773,34 +2775,35 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         # add the list of upload files' local paths to the manifest [ skip the first element we already added]
         namespace_logger.info("Uploading files now")
         namespace_logger.info("\n")
-        for item in list_upload_files:
-            # main_curate_progress_message = "In file one"
-            list_file_paths = item[0]
-            bf_folder = item[1]
-            list_projected_names = item[2]
-            list_desired_names = item[3]
-            list_final_names = item[4]
-            tracking_folder = item[5]
-            relative_path = item[6]
+        if len(list_upload_files) > 1:
+            for item in list_upload_files[1:]:
+                # main_curate_progress_message = "In file one"
+                list_file_paths = item[0]
+                bf_folder = item[1]
+                list_projected_names = item[2]
+                list_desired_names = item[3]
+                list_final_names = item[4]
+                tracking_folder = item[5]
+                relative_path = item[6]
 
-            namespace_logger.info(list_projected_names)
-            namespace_logger.info(list_desired_names)
-            namespace_logger.info(list_final_names)
+                namespace_logger.info(list_projected_names)
+                namespace_logger.info(list_desired_names)
+                namespace_logger.info(list_final_names)
 
-            # TODO: Reimpelement using the client once the Pensieve team updates the client's protocol buffers
-            # ps.manifest.add(manifest_id, list_upload, targetBasePath="/code")
+                # TODO: Reimpelement using the client once the Pensieve team updates the client's protocol buffers
+                # ps.manifest.add(manifest_id, list_upload, targetBasePath="/code")
 
-            # get the substring from the string relative_path that starts at the index of the / and contains the rest of the string
-            # this is the folder name
-            folder_name = relative_path[relative_path.index("/"):]
-            
-            for file_path in list_file_paths:
-                # subprocess call to the pennsieve agent to add the files to the manifest
-                subprocess.run(["pennsieve", "manifest", "add", str(manifest_id), file_path, "-t", folder_name])
+                # get the substring from the string relative_path that starts at the index of the / and contains the rest of the string
+                # this is the folder name
+                folder_name = relative_path[relative_path.index("/"):]
+                
+                for file_path in list_file_paths:
+                    # subprocess call to the pennsieve agent to add the files to the manifest
+                    subprocess.run(["pennsieve", "manifest", "add", str(manifest_id), file_path, "-t", folder_name])
 
 
-        # remove the first item from the manifest - it needed to be added in order for the manifest to be created.
-        # ps.manifest.remove()
+            # remove the first item from the manifest - it needed to be added in order for the manifest to be created.
+            # ps.manifest.remove()
 
 
         # upload the manifest files
@@ -2809,20 +2812,38 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         subscription_rendezvous_object = ps.subscribe(10)
 
         files_uploaded = 0
+        bytes_uploaded_per_file = {}
+        namespace_logger.info("\n")
+        namespace_logger.info("Uploading files now")
+        print("TOTAL FILES TO UPLOAD: ", len(list_upload_files))
+
         for msg in subscription_rendezvous_object:
-            current_bytes_uploaded = msg.upload_status.current 
-            total_bytes_to_upload = msg.upload_status.total
-            file_id = msg.upload_status.file_id
+                current_bytes_uploaded = msg.upload_status.current 
+                total_bytes_to_upload = msg.upload_status.total
+                file_id = msg.upload_status.file_id
 
-            if total_bytes_to_upload != 0:
+                if total_bytes_to_upload != 0:
 
-                if current_bytes_uploaded == total_bytes_to_upload:
-                    files_uploaded += 1
+                    # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
+                    previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
 
-                # check if the upload is complete
-                if files_uploaded == total_files:
-                    print("Finished uploading")
-                    ps.unsubscribe(10)
+                    # update the file id's current total bytes uploaded value 
+                    bytes_uploaded_per_file[file_id] = current_bytes_uploaded
+
+                    # calculate the additional amount of bytes that have just been uploaded for the given file id
+                    total_bytes_uploaded += current_bytes_uploaded - previous_bytes_uploaded
+
+                    print(total_bytes_uploaded)
+
+                    # check if the given file has finished uploading
+                    if current_bytes_uploaded == total_bytes_to_upload:
+                        files_uploaded += 1
+
+                    # check if the upload has finished
+                    if files_uploaded == total_files:
+                        namespace_logger.info("Upload complete")
+                        # unsubscribe from the agent's upload messages since the upload has finished
+                        ps.unsubscribe(10)
 
 
 
@@ -3217,7 +3238,6 @@ def main_curate_function_progress():
     global main_initial_bfdataset_size
 
     global total_bytes_uploaded # current number of bytes uploaded to Pennsieve in the upload session
-    global total_upload_size # total number of bytes to upload to Pennsieve in the upload session
 
     elapsed_time = time.time() - generate_start_time
     elapsed_time_formatted = time_format(elapsed_time)

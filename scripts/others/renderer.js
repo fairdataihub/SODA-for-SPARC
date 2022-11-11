@@ -7949,7 +7949,7 @@ async function initiate_generate() {
 
   // Progress tracking function for main curate
   var countDone = 0;
-  var timerProgress = setInterval(main_progressfunction, 1000);
+  var timerProgress = setInterval(main_progressfunction, 50);
   var successful = false;
 
   async function main_progressfunction() {
@@ -8016,6 +8016,8 @@ async function initiate_generate() {
     }
 
     let { data } = mainCurationProgressResponse;
+
+    console.log(data)
 
     main_curate_status = data["main_curate_status"];
     var start_generate = data["start_generate"];
