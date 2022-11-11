@@ -875,8 +875,7 @@ const getNonSkippedGuidedModePages = (parentElementToGetChildrenPagesFrom) => {
     parentElementToGetChildrenPagesFrom.querySelectorAll(".guided--page")
   );
   const nonSkippedChildPages = allChildPages.filter((page) => {
-    //filter out pages with not null data-skipped-page attribute and data-skip-page attribute is not true
-    return !page.getAttribute("data-skip-page") || page.getAttribute("data-skip-page") != "true";
+    return page.getAttribute("data-skip-page") != "true";
   });
 
   return nonSkippedChildPages;
@@ -987,7 +986,7 @@ const renderSideBar = (activePage) => {
   );
   for (const guidedNavBarSectionPage of guidedNavBarSectionPages) {
     guidedNavBarSectionPage.addEventListener("click", async (event) => {
-      const currentPageUserIsLeaving = CURRENT_PAGE.attr("id");
+      const currentPageUserIsLeaving = CURRENT_PAGE.id;
       const pageToNavigateTo = guidedNavBarSectionPage.getAttribute("data-target-page");
       const pageToNaviatetoName = document
         .getElementById(pageToNavigateTo)
@@ -1041,7 +1040,7 @@ const renderSideBar = (activePage) => {
         //All pages have been validated. Open the target page.
         await openPage(pageToNavigateTo);
       } catch (error) {
-        const pageWithErrorName = CURRENT_PAGE.data("pageName");
+        const pageWithErrorName = CURRENT_PAGE.dataset.pageName;
         const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
           title: "The current page was not able to be saved",
           html: `The following error${
@@ -1346,12 +1345,12 @@ const guidedSaveAndExit = async () => {
     backdrop: "rgba(0,0,0,0.4)",
   });
   if (returnToGuidedHomeScreen) {
-    const currentPageID = CURRENT_PAGE.attr("id");
+    const currentPageID = CURRENT_PAGE.id;
 
     try {
       await savePageChanges(currentPageID);
     } catch (error) {
-      const pageWithErrorName = CURRENT_PAGE.data("pageName");
+      const pageWithErrorName = CURRENT_PAGE.dataset.pageName;
 
       const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
         title: "The current page was not able to be saved before exiting",
@@ -1440,10 +1439,6 @@ const hideSubNavAndShowMainNav = (navButtonToClick) => {
   }
 };
 
-const showMainNav = () => {
-  $("#guided-footer-div").css("display", "flex");
-};
-
 const scrollToBottomOfGuidedBody = () => {
   const elementToScrollTo = document.querySelector(".guided--body");
   elementToScrollTo.scrollTop = elementToScrollTo.scrollHeight;
@@ -1473,7 +1468,7 @@ const guidedTransitionFromHome = async () => {
   document.getElementById("guided-header-div").classList.remove("hidden");
 
   //Set the current page to the guided intro page
-  CURRENT_PAGE = $("#guided-intro-page-tab");
+  CURRENT_PAGE = document.getElementById("guided-intro-page-tab");
   openPage("guided-intro-page-tab");
 
   //reset sub-page navigation (Set the first sub-page to be the active sub-page
@@ -1487,11 +1482,6 @@ const guidedTransitionFromHome = async () => {
   }
 
   guidedResetSkippedPages();
-
-  //Skip any pages that have been saved as skipped in a previous session (array empty when new)
-  for (const pageID of sodaJSONObj["skipped-pages"]) {
-    guidedSkipPage(pageID);
-  }
 
   guidedLockSideBar();
 };
@@ -1536,7 +1526,7 @@ const saveGuidedProgress = (guidedProgressFileName) => {
 
   //If the user is past the intro/name+subtitle page, save the current page to be resumed later
   if (CURRENT_PAGE) {
-    sodaJSONObj["page-before-exit"] = CURRENT_PAGE.attr("id");
+    sodaJSONObj["page-before-exit"] = CURRENT_PAGE.id;
   }
 
   try {
@@ -3891,9 +3881,9 @@ const openPage = async (targetPageID) => {
       guidedSetCurationTeamUI(sharedWithSPARCCurationTeam);
     }
 
-    let currentParentTab = CURRENT_PAGE.parent();
-    let targetPage = $(`#${targetPageID}`);
-    let targetPageParentTab = targetPage.parent();
+    let currentParentTab = CURRENT_PAGE.closest(".guided--parent-tab");
+    let targetPage = document.getElementById(targetPageID);
+    let targetPageParentTab = targetPage.closest(".guided--parent-tab");
 
     //Set all capsules to grey and set capsule of page being traversed to green
     setActiveCapsule(targetPageID);
@@ -3903,21 +3893,21 @@ const openPage = async (targetPageID) => {
     const guidedBody = document.getElementById("guided-body");
 
     //Check to see if target element has the same parent as current sub step
-    if (currentParentTab.attr("id") === targetPageParentTab.attr("id")) {
-      CURRENT_PAGE.addClass("hidden");
+    if (currentParentTab.id === targetPageParentTab.id) {
+      CURRENT_PAGE.classList.add("hidden");
       CURRENT_PAGE = targetPage;
-      CURRENT_PAGE.removeClass("hidden");
+      CURRENT_PAGE.classList.remove("hidden");
       //smooth scroll to top of guidedBody
       guidedBody.scrollTo({
         top: 0,
         behavior: "smooth",
       });
     } else {
-      CURRENT_PAGE.addClass("hidden");
-      currentParentTab.addClass("hidden");
-      targetPageParentTab.removeClass("hidden");
+      CURRENT_PAGE.classList.add("hidden");
+      currentParentTab.classList.add("hidden");
+      targetPageParentTab.classList.remove("hidden");
       CURRENT_PAGE = targetPage;
-      CURRENT_PAGE.removeClass("hidden");
+      CURRENT_PAGE.classList.remove("hidden");
       //smooth scroll to top of guidedBody
       guidedBody.scrollTo({
         top: 0,
@@ -4013,16 +4003,6 @@ const setActiveSubPage = (pageIdToActivate) => {
     }
 
     case "guided-primary-samples-organization-page": {
-      //If the user indicated they have no samples, skip this page
-      //and go to primary subject data organization page
-      if (
-        document.getElementById("guided-primary-samples-organization-page").dataset.skipPage ===
-        "true"
-      ) {
-        setActiveSubPage("guided-primary-subjects-organization-page");
-        return;
-      }
-
       renderSamplesHighLevelFolderAsideItems("primary");
       guidedUpdateFolderStructure("primary", "samples");
 
@@ -4104,16 +4084,6 @@ const setActiveSubPage = (pageIdToActivate) => {
     }
 
     case "guided-source-samples-organization-page": {
-      //If the user indicated they have no samples, skip this page
-      //and go to source subject data organization page
-      if (
-        document.getElementById("guided-source-samples-organization-page").dataset.skipPage ===
-        "true"
-      ) {
-        setActiveSubPage("guided-source-subjects-organization-page");
-        return;
-      }
-
       renderSamplesHighLevelFolderAsideItems("source");
       guidedUpdateFolderStructure("source", "samples");
       $("#guided-file-explorer-elements").appendTo(
@@ -4193,16 +4163,6 @@ const setActiveSubPage = (pageIdToActivate) => {
     }
 
     case "guided-derivative-samples-organization-page": {
-      //If the user indicated they have no samples, skip this page
-      //and go to derivative subject data organization page
-      if (
-        document.getElementById("guided-derivative-samples-organization-page").dataset.skipPage ===
-        "true"
-      ) {
-        setActiveSubPage("guided-derivative-subjects-organization-page");
-        return;
-      }
-
       renderSamplesHighLevelFolderAsideItems("derivative");
       guidedUpdateFolderStructure("derivative", "samples");
       $("#guided-file-explorer-elements").appendTo(
@@ -4692,8 +4652,15 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   // Delete the button status for the Pennsieve account confirmation section
   // So the user has to confirm their Pennsieve account before uploading
   delete sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
+  const temp = [...sodaJSONObj["skipped-pages"]];
+  guidedTransitionFromHome();
 
   guidedTransitionFromHome();
+
+  for (const pageID of temp) {
+    console.log(pageID);
+    guidedSkipPage(pageID);
+  }
 
   //Hide the before getting started page so it doesn't flash when resuming progress
   document.getElementById("guided-intro-page-tab").classList.add("hidden");
@@ -11432,7 +11399,7 @@ $(document).ready(async () => {
   //next button click handler
   $("#guided-next-button").on("click", async function () {
     //Get the ID of the current page to handle actions on page leave (next button pressed)
-    pageBeingLeftID = CURRENT_PAGE.attr("id");
+    pageBeingLeftID = CURRENT_PAGE.id;
     //remove blue pulse
     $(this).removeClass("pulse-blue");
     //add a bootstrap loader to the next button
@@ -11450,36 +11417,25 @@ $(document).ready(async () => {
         sodaJSONObj["completed-tabs"].push(pageBeingLeftID);
       }
 
-      const getNextPageNotSkipped = (startingPage) => {
-        //Check if param element's following element is undefined
-        //(usually the case when the element is the last element in it's container)
-        if (startingPage.next().attr("id") != undefined) {
-          //if not, check if it has the data-attribute skip-page
-          //if so, recurse back until a page without the skip-page attribute is found
-          let nextPage = startingPage.next();
-          if (nextPage.attr("data-skip-page") && nextPage.attr("data-skip-page") == "true") {
-            return getNextPageNotSkipped(nextPage);
-          } else {
-            //element is valid and not to be skipped
-            return nextPage;
-          }
+      const getNextPageNotSkipped = (currentPageID) => {
+        const parentContainer = document
+          .getElementById(currentPageID)
+          .closest(".guided--parent-tab");
+        const siblingPages = getNonSkippedGuidedModePages(parentContainer).map((page) => page.id);
+
+        const currentPageIndex = siblingPages.indexOf(currentPageID);
+        if (currentPageIndex != siblingPages.length - 1) {
+          return document.getElementById(siblingPages[currentPageIndex + 1]);
         } else {
-          //previous element was the last element in the container.
-          //go to the next page-set and return the first page to be transitioned to.
-          nextPage = startingPage.parent().next().children(".guided--page").first();
-          if (nextPage.attr("data-skip-page") && nextPage.attr("data-skip-page") == "true") {
-            return getNextPageNotSkipped(nextPage);
-          } else {
-            //element is valid and not to be skipped
-            return nextPage;
-          }
+          const nextParentContainer = parentContainer.nextElementSibling;
+          return getNonSkippedGuidedModePages(nextParentContainer)[0];
         }
       };
 
       //NAVIGATE TO NEXT PAGE + CHANGE ACTIVE TAB/SET ACTIVE PROGRESSION TAB
       //if more tabs in parent tab, go to next tab and update capsule
-      let targetPage = getNextPageNotSkipped(CURRENT_PAGE);
-      let targetPageID = targetPage.attr("id");
+      let targetPage = getNextPageNotSkipped(CURRENT_PAGE.id);
+      let targetPageID = targetPage.id;
 
       openPage(targetPageID);
     } catch (error) {
@@ -11499,35 +11455,38 @@ $(document).ready(async () => {
     $(this).removeClass("loading");
   });
 
-  const getPrevPageNotSkipped = (startingPage) => {
-    //Check if param element's following element is undefined
-    //(usually the case when the element is the last element in it's container)
-    if (!startingPage.prev().hasClass("guided--capsule-container")) {
-      //if not, check if it has the data-attribute skip-page
-      //if so, recurse back until a page without the skip-page attribute is found
-      let prevPage = startingPage.prev();
-      if (prevPage.attr("data-skip-page") && prevPage.attr("data-skip-page") == "true") {
-        return getPrevPageNotSkipped(prevPage);
-      } else {
-        //element is valid and not to be skipped
-        return prevPage;
-      }
+  /* const getNextPageNotSkipped = (currentPageID) => {
+        const parentContainer = document
+          .getElementById(currentPageID)
+          .closest(".guided--parent-tab");
+        const siblingPages = getNonSkippedGuidedModePages(parentContainer).map((page) => page.id);
+
+        const currentPageIndex = siblingPages.indexOf(currentPageID);
+        if (currentPageIndex != siblingPages.length - 1) {
+          return document.getElementById(siblingPages[currentPageIndex + 1]);
+        } else {
+          const nextParentContainer = parentContainer.nextElementSibling;
+          return getNonSkippedGuidedModePages(nextParentContainer)[0];
+        }
+      };
+        }*/
+
+  const getPrevPageNotSkipped = (currentPageID) => {
+    const parentContainer = document.getElementById(currentPageID).closest(".guided--parent-tab");
+    const siblingPages = getNonSkippedGuidedModePages(parentContainer).map((page) => page.id);
+    const currentPageIndex = siblingPages.indexOf(currentPageID);
+    if (currentPageIndex != 0) {
+      return document.getElementById(siblingPages[currentPageIndex - 1]);
     } else {
-      //previous element was the last element in the container.
-      //go to the next page-set and return the first page to be transitioned to.
-      prevPage = startingPage.parent().prev().children(".guided--page").last();
-      if (prevPage.attr("data-skip-page") && prevPage.attr("data-skip-page") == "true") {
-        return getPrevPageNotSkipped(prevPage);
-      } else {
-        //element is valid and not to be skipped
-        return prevPage;
-      }
+      const prevParentContainer = parentContainer.previousElementSibling;
+      const prevParentContainerPages = getNonSkippedGuidedModePages(prevParentContainer);
+      return prevParentContainerPages[prevParentContainerPages.length - 1];
     }
   };
 
   //back button click handler
   $("#guided-back-button").on("click", () => {
-    pageBeingLeftID = CURRENT_PAGE.attr("id");
+    pageBeingLeftID = CURRENT_PAGE.id;
     // If the user is on the first page, progress will be saved if they have a progress file.
     // If not, they will simply be taken back to the home page.
     if (pageBeingLeftID === "guided-intro-page-tab") {
@@ -11535,8 +11494,8 @@ $(document).ready(async () => {
       return;
     }
 
-    const targetPage = getPrevPageNotSkipped(CURRENT_PAGE);
-    const targetPageID = targetPage.attr("id");
+    const targetPage = getPrevPageNotSkipped(CURRENT_PAGE.id);
+    const targetPageID = targetPage.id;
     openPage(targetPageID);
   });
 
@@ -11571,8 +11530,13 @@ $(document).ready(async () => {
             });
             throw errorArray;
           }
+          guidedUnSkipPage("guided-create-subjects-metadata-tab");
+          guidedUnSkipPage("guided-create-samples-metadata-tab");
+        }
 
-          $(".guided-subject-sample-data-addition-page").attr("data-skip-page", "false");
+        if (buttonNoSubjects.classList.contains("selected")) {
+          guidedSkipPage("guided-create-subjects-metadata-tab");
+          guidedSkipPage("guided-create-samples-metadata-tab");
         }
       }
 
@@ -12003,7 +11967,7 @@ $(document).ready(async () => {
         }
       }
 
-      if (CURRENT_PAGE.attr("id") === "guided-create-submission-metadata-tab") {
+      if (CURRENT_PAGE.id === "guided-create-submission-metadata-tab") {
         const buttonYesImportDataDerivatives = document.getElementById(
           "guided-button-import-data-deliverables"
         );
@@ -12139,7 +12103,7 @@ $(document).ready(async () => {
   //sub page next button click handler
   $("#guided-button-sub-page-continue").on("click", async () => {
     //Get the id of the parent page that's currently open
-    const currentParentPageID = CURRENT_PAGE.attr("id");
+    const currentParentPageID = CURRENT_PAGE.id;
     //Get the id of the sub-page that's currently open
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
 
@@ -12185,7 +12149,7 @@ $(document).ready(async () => {
   //sub page back button click handler
   $("#guided-button-sub-page-back").on("click", () => {
     //Get the id of the parent page that's currently open
-    const currentParentPageID = CURRENT_PAGE.attr("id");
+    const currentParentPageID = CURRENT_PAGE.id;
     //Get the id of the sub-page that's currently open
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
 
