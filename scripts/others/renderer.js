@@ -6418,7 +6418,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
               break;
             }
           }
-          if(skipSubjectFolder) continue;
+          if (skipSubjectFolder) continue;
         }
       }
       if (hideSubjectFolders) {
