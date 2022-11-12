@@ -360,18 +360,59 @@ $(document).ready(function () {
         convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
       });
       loadManifestFileEdits(jsonManifest);
+      b;
     }
   });
 });
 
 function convertJSONToXlsx(jsondata, excelfile) {
+  const requiredManifestHeaders = ["filename", "timestamp", "description", "file type"];
   const wb = new excel4node.Workbook();
-  const ws = wb.addWorksheet("Sheet1");
+  // create wb style that makes the background red
+  const requiredHeaderStyle = wb.createStyle({
+    fill: {
+      type: "pattern",
+      patternType: "solid",
+      fgColor: "a8d08d",
+    },
+    font: {
+      bold: true,
+      color: "#000000",
+      size: 12,
+      name: "Calibri",
+    },
+  });
+  const optionalHeaderStyle = wb.createStyle({
+    fill: {
+      type: "pattern",
+      patternType: "solid",
+      fgColor: "ffd965",
+    },
+    font: {
+      bold: true,
+      color: "#000000",
+      size: 12,
+      name: "Calibri",
+    },
+  });
+
+  const wsOptions = {
+    sheetFormat: {
+      defaultColWidth: 20,
+    },
+  };
+  const ws = wb.addWorksheet("Sheet1", wsOptions);
   const headingColumnNames = Object.keys(jsondata[0]);
   //Write Column Title in Excel file
   let headingColumnIndex = 1;
   headingColumnNames.forEach((heading) => {
-    ws.cell(1, headingColumnIndex++).string(heading);
+    let styleObject = requiredManifestHeaders.includes(heading)
+      ? requiredHeaderStyle
+      : optionalHeaderStyle;
+
+    ws.cell(1, headingColumnIndex++)
+      .string(heading)
+      .style(styleObject);
   });
   //Write Data in Excel file
   let rowIndex = 2;

@@ -10709,6 +10709,7 @@ $(document).ready(async () => {
           guidedManifestData[highLevelFolder]["headers"],
           guidedManifestData[highLevelFolder]["data"]
         );
+        console.log(manifestJSON);
         jsonManifest = JSON.stringify(manifestJSON);
 
         const manifestPath = path.join(guidedManifestFilePath, highLevelFolder, "manifest.xlsx");
@@ -10718,7 +10719,6 @@ $(document).ready(async () => {
         });
 
         convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
-
         datasetStructureJSONObj["folders"][highLevelFolder]["files"]["manifest.xlsx"] = {
           action: ["new"],
           path: manifestPath,
