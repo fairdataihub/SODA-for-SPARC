@@ -6390,69 +6390,36 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
         let allSamples = sodaJSONObj.getAllSamplesFromSubjects();
         let noPoolSamples = [];
         let poolSamples = [];
-        let skip = false;
+        let skipSubjectFolder = false;
         if (allSamples.length > 1) {
           //subjects within pools and others not
           poolSamples = allSamples[0];
           noPoolSamples = allSamples[1];
           for (let i = 0; i < poolSamples.length; i++) {
             if (item === poolSamples[i]["sampleName"]) {
-              console.log(item);
-              console.log("not displaying above");
-              skip = true;
+              skipSubjectFolder = true;
               break;
             }
           }
-          if (skip) {
-            continue;
-          }
+          if (skipSubjectFolder) continue;
           for (let i = 0; i < noPoolSamples.length; i++) {
             if (item === noPoolSamples[i]["sampleName"]) {
-              console.log(item);
-              console.log("not displaying above");
-              skip = true;
+              skipSubjectFolder = true;
               break;
             }
           }
-          if (skip) {
-            continue;
-          }
+          if (skipSubjectFolder) continue;
         }
         if (allSamples.length === 1) {
           poolSamples = allSamples[1];
           for (let i = 0; i < poolSamples.length; i++) {
             if (item === poolSamples[i]["sampleName"]) {
-              console.log(item);
-              console.log("not displaying above");
-              skip = true;
+              skipSubjectFolder = true;
               break;
             }
           }
-          if (skip) {
-            continue;
-          }
+          if(skipSubjectFolder) continue;
         }
-
-        // let currentSample =
-        //   sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
-        //     currentSampleFolder
-        //   ];
-        // if (splitPath[0].includes("pool-")) {
-        //   //then search for samples within the pool key
-        //   let currentPool = splitPath[0];
-        //   currentSampleFolder = splitPath[1];
-        //   currentSample =
-        //     sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"][currentPool][
-        //       currentSampleFolder
-        //     ];
-        // }
-
-        // if (currentSample != undefined) {
-        //   //if sample is within currentSubjectFolder
-        //   if (item in currentSample) {
-        //     continue;
-        //   }
-        // }
       }
       if (hideSubjectFolders) {
         //hide subject folders when displaying pool page
@@ -6460,20 +6427,16 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
         let currentSubjects = sodaJSONObj.getAllSubjects();
         let poolSubjects = [];
         let noPoolSubjects = [];
-        let skip = false;
+        let skipSubjectFolder = false;
         if (currentSubjects.length === 1) {
           poolSubjects = currentSubjects[0];
           for (let i = 0; i < poolSubjects.length; i++) {
             if (item === poolSubjects[i]["subjectName"]) {
-              console.log(item);
-              console.log("not displaying above");
-              skip = true;
+              skipSubjectFolder = true;
               break;
             }
           }
-          if (skip) {
-            continue;
-          }
+          if (skipSubjectFolder) continue;
         }
         if (currentSubjects.length > 1) {
           //some subjects in pools and some not
@@ -6481,36 +6444,19 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
           noPoolSubjects = currentSubjects[1];
           for (let i = 0; i < noPoolSubjects.length; i++) {
             if (item === noPoolSubjects[i]["subjectName"]) {
-              console.log(item);
-              console.log("not displaying above");
-              skip = true;
+              skipSubjectFolder = true;
               break;
             }
           }
-          if (skip) {
-            continue;
-          }
+          if (skipSubjectFolder) continue;
           for (let i = 0; i < poolSubjects.length; i++) {
             if (item === poolSubjects[i]["subjectName"]) {
-              console.log(item);
-              console.log("not displaying above");
-              skip = true;
+              skipSubjectFolder = true;
               break;
             }
           }
         }
-        if (skip) {
-          continue;
-        }
-        // const currentPool =
-        //   sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-        //     currentPoolName
-        //   ];
-        // if (currentPool != undefined) {
-        //   if (item in currentPool) {
-        //     continue;
-        //   }
-        // }
+        if (skipSubjectFolder) continue;
       }
 
       count += 1;
