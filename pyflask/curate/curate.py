@@ -2673,7 +2673,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         )
 
         # store the file total - it is used to mark upload completion for the subscriber
-        total_files = len(list_upload_files)
+        total_files = len(list_upload_files[0][0])
         namespace_logger.info("Total number of files here: " + str(total_files))
         
         # main_curate_progress_message = "About to update after doing recursive dataset scan"
@@ -2775,8 +2775,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         # add the list of upload files' local paths to the manifest [ skip the first element we already added]
         namespace_logger.info("Uploading files now")
         namespace_logger.info("\n")
-        if len(list_upload_files) > 1:
-            for item in list_upload_files[1:]:
+        if len(list_upload_files[0][0]) > 1:
+            for item in list_upload_files:
                 # main_curate_progress_message = "In file one"
                 list_file_paths = item[0]
                 bf_folder = item[1]
@@ -2798,6 +2798,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 folder_name = relative_path[relative_path.index("/"):]
                 
                 for file_path in list_file_paths:
+                    print("Queing file for upload")
                     # subprocess call to the pennsieve agent to add the files to the manifest
                     subprocess.run(["pennsieve", "manifest", "add", str(manifest_id), file_path, "-t", folder_name])
 
@@ -2815,7 +2816,9 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         bytes_uploaded_per_file = {}
         namespace_logger.info("\n")
         namespace_logger.info("Uploading files now")
-        print("TOTAL FILES TO UPLOAD: ", len(list_upload_files))
+        print("TOTAL FILES TO UPLOAD: ", len(list_upload_files[0][0]))
+        print("TOTAL SIZE TO UPLOAD: ", main_total_generate_dataset_size)
+        #print(list_upload_files)
 
         for msg in subscription_rendezvous_object:
                 current_bytes_uploaded = msg.upload_status.current 
