@@ -2330,6 +2330,9 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
 
     total_files = 0
+    total_dataset_files = 0
+    total_metadata_files = 0 
+    total_manifest_files = 0
     uploaded_folder_counter = 0
     current_size_of_uploaded_files = 0
 
@@ -2672,8 +2675,9 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             relative_path,
         )
 
-        # store the file total - it is used to mark upload completion for the subscriber
-        total_files = len(list_upload_files[0][0])
+        # store the file total - it is used to show the front end client how many files have been uploaded
+        total_files += len(list_upload_files[0][0])
+        total_dataset_files = len(list_upload_files[0][0])
         namespace_logger.info("Total number of files here: " + str(total_files))
         
         # main_curate_progress_message = "About to update after doing recursive dataset scan"
@@ -2704,6 +2708,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
                         list_upload_metadata_files.append(metadata_path)
                         main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
 
         # 4. Prepare and add manifest files to a list
         list_upload_manifest_files = []
@@ -2754,6 +2760,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
                 # upload new manifest files
                 list_upload_manifest_files.append([[manifestpath], folder])
+                total_files += 1
+                total_manifest_files += 1
                 main_total_generate_dataset_size += getsize(manifestpath)
 
         # 5. Upload files, rename, and add to tracking list
@@ -2816,9 +2824,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         bytes_uploaded_per_file = {}
         namespace_logger.info("\n")
         namespace_logger.info("Uploading files now")
-        print("TOTAL FILES TO UPLOAD: ", len(list_upload_files[0][0]))
-        print("TOTAL SIZE TO UPLOAD: ", main_total_generate_dataset_size)
-        #print(list_upload_files)
+        print("TOTAL FILES TO UPLOAD: ", total_dataset_files)
 
         for msg in subscription_rendezvous_object:
                 current_bytes_uploaded = msg.upload_status.current 
@@ -2843,7 +2849,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         files_uploaded += 1
 
                     # check if the upload has finished
-                    if files_uploaded == total_files:
+                    if files_uploaded == total_dataset_files:
                         namespace_logger.info("Upload complete")
                         # unsubscribe from the agent's upload messages since the upload has finished
                         ps.unsubscribe(10)
@@ -2870,7 +2876,38 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             ps.manifest.upload(manifest_id)
 
             # subscribe to the manifest upload so we wait until it has finished uploading before moving on
-            # subscription_rendezvous_object = ps.subscribe(10)
+            subscription_rendezvous_object = ps.subscribe(10)
+
+            bytes_uploaded_per_file = {}
+            files_uploaded = 0 
+            for msg in subscription_rendezvous_object:
+                current_bytes_uploaded = msg.upload_status.current 
+                total_bytes_to_upload = msg.upload_status.total
+                file_id = msg.upload_status.file_id
+
+                if total_bytes_to_upload != 0:
+
+                    # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
+                    previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
+
+                    # update the file id's current total bytes uploaded value 
+                    bytes_uploaded_per_file[file_id] = current_bytes_uploaded
+
+                    # calculate the additional amount of bytes that have just been uploaded for the given file id
+                    total_bytes_uploaded += current_bytes_uploaded - previous_bytes_uploaded
+
+                    print(total_bytes_uploaded)
+
+                    # check if the given file has finished uploading
+                    if current_bytes_uploaded == total_bytes_to_upload:
+                        files_uploaded += 1
+
+                    # check if the upload has finished
+                    if files_uploaded == total_metadata_files:
+                        namespace_logger.info("Upload complete")
+                        # unsubscribe from the agent's upload messages since the upload has finished
+                        ps.unsubscribe(10)
+
 
 
         # 7. Upload manifest files
@@ -2895,7 +2932,37 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             # upload the manifest 
             ps.manifest.upload(manifest_id)
 
-            time.sleep(5)
+            subscription_rendezvous_object = ps.subscribe(10)
+
+            bytes_uploaded_per_file = {}
+            files_uploaded = 0 
+            for msg in subscription_rendezvous_object:
+                current_bytes_uploaded = msg.upload_status.current 
+                total_bytes_to_upload = msg.upload_status.total
+                file_id = msg.upload_status.file_id
+
+                if total_bytes_to_upload != 0:
+
+                    # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
+                    previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
+
+                    # update the file id's current total bytes uploaded value 
+                    bytes_uploaded_per_file[file_id] = current_bytes_uploaded
+
+                    # calculate the additional amount of bytes that have just been uploaded for the given file id
+                    total_bytes_uploaded += current_bytes_uploaded - previous_bytes_uploaded
+
+                    print(total_bytes_uploaded)
+
+                    # check if the given file has finished uploading
+                    if current_bytes_uploaded == total_bytes_to_upload:
+                        files_uploaded += 1
+
+                    # check if the upload has finished
+                    if files_uploaded == total_manifest_files:
+                        namespace_logger.info("Upload complete")
+                        # unsubscribe from the agent's upload messages since the upload has finished
+                        ps.unsubscribe(10)
 
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
 
