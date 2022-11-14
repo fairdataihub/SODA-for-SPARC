@@ -2112,9 +2112,9 @@ const renderGuidedAwardSelectionDropdown = () => {
 
 document
   .getElementById("guided-button-refresh-sparc-award-dropdown")
-  .addEventListener("click", () => {
+  .addEventListener("click", async () => {
     //call update the awardObj
-    loadAwardData();
+    await loadAwardData();
     //Update the dropdown
     renderGuidedAwardSelectionDropdown();
     //Notify the user that the dropdown has been updated
@@ -2996,6 +2996,7 @@ const openPage = async (targetPageID) => {
 
     //Hide the high level progress steps and green pills if the user is on the before getting started page
     if (targetPageID === "guided-prepare-helpers-tab") {
+      //validate the api key and adjust icon accordingly
       document.getElementById("structure-dataset-capsule-container").classList.add("hidden");
       document.querySelector(".guided--progression-tab-container").classList.add("hidden");
     } else {
@@ -3040,8 +3041,6 @@ const openPage = async (targetPageID) => {
       );
     }
     if (targetPageID === "guided-prepare-helpers-tab") {
-      //Hide the new dataset and existings local dataset capsule containers because
-      //We do now know what the user wants to do yet
       $("#guided-curate-existing-local-dataset-branch-capsule-container").hide();
       const dataDeliverableButton = document.getElementById("getting-started-data-deliverable-btn");
       const airTableGettingStartedBtn = document.getElementById(
@@ -3059,13 +3058,10 @@ const openPage = async (targetPageID) => {
       }
 
       var airKeyContent = parseJson(airtableConfigPath);
-      if (Object.keys(airKeyContent).length != 0) {
+      if (airtableRes[0]) {
         //This is where we update the UI for the helper page
         airTableGettingStartedBtn.children[1].style.display = "none";
         airTableGettingStartedBtn.children[0].style.display = "flex";
-        // This auto selects the airtable button within
-        // the SPARC Award number page
-        // document.getElementById("guided-button-import-sparc-award").click();
       } else {
         //This is where we reset the UI for the helper page
         airTableGettingStartedBtn.children[1].style.display = "flex";

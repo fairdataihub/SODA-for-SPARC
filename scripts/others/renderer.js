@@ -1425,6 +1425,59 @@ function sendHTTPsRequestAirtable(options, varSuccess) {
   });
 }
 
+var awardObj = {};
+var globalSPARCAward = "";
+// indicate to user that airtable records are being retrieved
+const loadAwardData = async () => {
+  ///// Construct table from data
+  var awardResultArray = [];
+  let result = false;
+  ///// config and load live data from Airtable
+  var airKeyContent = parseJson(airtableConfigPath);
+  if (JSON.stringify(airKeyContent) !== "{}") {
+    var airKeyInput = airKeyContent["api-key"];
+    var airKeyName = airKeyContent["key-name"];
+    if (airKeyInput !== "" && airKeyName !== "") {
+      Airtable.configure({
+        endpointUrl: "https://" + airtableHostname,
+        apiKey: airKeyInput,
+      });
+      var base = Airtable.base("appiYd1Tz9Sv857GZ");
+      base("sparc_members")
+        .select({
+          view: "All members (ungrouped)",
+        })
+        .eachPage(
+          function page(records, fetchNextPage) {
+            records.forEach(function (record) {
+              if (record.get("Project_title") !== undefined) {
+                var awardNumber = (item = record.get("SPARC_Award_#"));
+                item = record.get("SPARC_Award_#").concat(" (", record.get("Project_title"), ")");
+                awardResultArray.push(item);
+                awardObj[awardNumber] = item;
+              }
+            }),
+              fetchNextPage();
+          },
+          function done(err) {
+            if (err) {
+              log.error(err);
+              console.log(err);
+              console.log("error here");
+              return;
+            } else {
+              // create set to remove duplicates
+              var awardSet = new Set(awardResultArray);
+              var resultArray = [...awardSet];
+              result = true;
+            }
+          }
+        );
+      return result;
+    }
+  }
+};
+
 loadAwardData();
 
 /////////////////////// Download Metadata Templates ////////////////////////////
@@ -2324,55 +2377,6 @@ function addOption(selectbox, text, value) {
   opt.text = text;
   opt.value = value;
   selectbox.options.add(opt);
-}
-
-var awardObj = {};
-var globalSPARCAward = "";
-// indicate to user that airtable records are being retrieved
-function loadAwardData() {
-  ///// Construct table from data
-  var awardResultArray = [];
-  ///// config and load live data from Airtable
-  var airKeyContent = parseJson(airtableConfigPath);
-  if (JSON.stringify(airKeyContent) !== "{}") {
-    var airKeyInput = airKeyContent["api-key"];
-    var airKeyName = airKeyContent["key-name"];
-    if (airKeyInput !== "" && airKeyName !== "") {
-      Airtable.configure({
-        endpointUrl: "https://" + airtableHostname,
-        apiKey: airKeyInput,
-      });
-      var base = Airtable.base("appiYd1Tz9Sv857GZ");
-      base("sparc_members")
-        .select({
-          view: "All members (ungrouped)",
-        })
-        .eachPage(
-          function page(records, fetchNextPage) {
-            records.forEach(function (record) {
-              if (record.get("Project_title") !== undefined) {
-                var awardNumber = (item = record.get("SPARC_Award_#"));
-                item = record.get("SPARC_Award_#").concat(" (", record.get("Project_title"), ")");
-                awardResultArray.push(item);
-                awardObj[awardNumber] = item;
-              }
-            }),
-              fetchNextPage();
-          },
-          function done(err) {
-            if (err) {
-              log.error(err);
-              console.log(err);
-              return;
-            } else {
-              // create set to remove duplicates
-              var awardSet = new Set(awardResultArray);
-              var resultArray = [...awardSet];
-            }
-          }
-        );
-    }
-  }
 }
 
 //////////////// Dataset description file ///////////////////////
@@ -6281,7 +6285,6 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
 
     let trimmedPath = "";
     if (currentPageID.includes("primary")) {
-      console.log("current page includes primary");
       if (primarySampleCapsule.classList.contains("active")) {
         if (splitPath[0].includes("pool-")) {
           splitPathCheck(3, fileExplorerBackButton);
@@ -6291,7 +6294,6 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
       }
       if (primarySubjectCapsule.classList.contains("active")) {
         if (splitPath[0].includes("pool-")) {
-          console.log("pool included");
           splitPathCheck(2, fileExplorerBackButton);
         } else {
           splitPathCheck(1, fileExplorerBackButton);
@@ -6299,7 +6301,6 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
         hideSampleFolders = true;
       }
       if (primaryPoolCapsule.classList.contains("active")) {
-        console.log("pool capsule");
         if (splitPath[0].includes("pool-")) {
           splitPathCheck(1, fileExplorerBackButton);
         }
@@ -6313,7 +6314,6 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
         } else {
           splitPathCheck(1, fileExplorerBackButton);
         }
-        console.log("hide source sample folders");
         hideSampleFolders = true;
       }
       if (sourceSampleCapsule.classList.contains("active")) {
@@ -6338,7 +6338,6 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
         } else {
           splitPathCheck(1, fileExplorerBackButton);
         }
-        console.log("hide deriv sample folders");
         hideSampleFolders = true;
       }
       if (derivativeSampleCapsule.classList.contains("active")) {
