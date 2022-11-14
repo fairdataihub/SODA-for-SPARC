@@ -51,6 +51,7 @@ total_dataset_size = 1
 curated_dataset_size = 0
 start_time = 0
 uploaded_folder_counter = 0
+total_files_uploaded = 0
 current_size_of_uploaded_files = 0
 generated_dataset_id = None
 
@@ -2327,12 +2328,16 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
     global current_size_of_uploaded_files
     global total_files
     global total_bytes_uploaded # current number of bytes uploaded to Pennsieve in the current session
+    global total_files_uploaded
 
 
     total_files = 0
     total_dataset_files = 0
     total_metadata_files = 0 
     total_manifest_files = 0
+
+    total_files_uploaded = 0
+    
     uploaded_folder_counter = 0
     current_size_of_uploaded_files = 0
 
@@ -2847,6 +2852,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     # check if the given file has finished uploading
                     if current_bytes_uploaded == total_bytes_to_upload:
                         files_uploaded += 1
+                        total_files_uploaded += 1
 
                     # check if the upload has finished
                     if files_uploaded == total_dataset_files:
@@ -2901,6 +2907,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     # check if the given file has finished uploading
                     if current_bytes_uploaded == total_bytes_to_upload:
                         files_uploaded += 1
+                        total_files_uploaded += 1
+
 
                     # check if the upload has finished
                     if files_uploaded == total_metadata_files:
@@ -2957,6 +2965,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     # check if the given file has finished uploading
                     if current_bytes_uploaded == total_bytes_to_upload:
                         files_uploaded += 1
+                        total_files_uploaded += 1
+
 
                     # check if the upload has finished
                     if files_uploaded == total_manifest_files:
@@ -3306,6 +3316,7 @@ def main_curate_function_progress():
     global generate_start_time
     global main_generate_destination
     global main_initial_bfdataset_size
+    global total_files_uploaded
 
     global total_bytes_uploaded # current number of bytes uploaded to Pennsieve in the upload session
 
@@ -3322,6 +3333,7 @@ def main_curate_function_progress():
         "main_total_generate_dataset_size": main_total_generate_dataset_size,
         "main_generated_dataset_size": total_bytes_uploaded,
         "elapsed_time_formatted": elapsed_time_formatted,
+        "total_files_uploaded": total_files_uploaded,
     }
 
 
