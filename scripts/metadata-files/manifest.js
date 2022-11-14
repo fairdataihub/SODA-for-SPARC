@@ -366,6 +366,8 @@ $(document).ready(function () {
 });
 
 function convertJSONToXlsx(jsondata, excelfile) {
+  console.log(excelfile);
+  console.log("creating new manifest files styled");
   const requiredManifestHeaders = ["filename", "timestamp", "description", "file type"];
   const wb = new excel4node.Workbook();
   // create wb style that makes the background red
@@ -381,6 +383,24 @@ function convertJSONToXlsx(jsondata, excelfile) {
       size: 12,
       name: "Calibri",
     },
+    border: {
+      left: {
+        style: "thin",
+        color: "#000000",
+      },
+      right: {
+        style: "thin",
+        color: "#000000",
+      },
+      top: {
+        style: "thin",
+        color: "#000000",
+      },
+      bottom: {
+        style: "thin",
+        color: "#000000",
+      },
+    },
   });
   const optionalHeaderStyle = wb.createStyle({
     fill: {
@@ -390,6 +410,32 @@ function convertJSONToXlsx(jsondata, excelfile) {
     },
     font: {
       bold: true,
+      color: "#000000",
+      size: 12,
+      name: "Calibri",
+    },
+    border: {
+      left: {
+        style: "thin",
+        color: "#000000",
+      },
+      right: {
+        style: "thin",
+        color: "#000000",
+      },
+      top: {
+        style: "thin",
+        color: "#000000",
+      },
+      bottom: {
+        style: "thin",
+        color: "#000000",
+      },
+    },
+  });
+  const standardCellStyle = wb.createStyle({
+    font: {
+      bold: false,
       color: "#000000",
       size: 12,
       name: "Calibri",
@@ -419,7 +465,9 @@ function convertJSONToXlsx(jsondata, excelfile) {
   jsondata.forEach((record) => {
     let columnIndex = 1;
     Object.keys(record).forEach((columnName) => {
-      ws.cell(rowIndex, columnIndex++).string(record[columnName]);
+      ws.cell(rowIndex, columnIndex++)
+        .string(record[columnName])
+        .style(standardCellStyle);
     });
     rowIndex++;
   });
