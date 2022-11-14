@@ -3027,15 +3027,19 @@ const openPage = async (targetPageID) => {
       $("#guided-back-button").css("visibility", "visible");
     }
     if (targetPageID === "guided-name-subtitle-tab") {
+      const datasetNameInput = document.getElementById("guided-dataset-name-input");
+      const datasetSubtitleInput = document.getElementById("guided-dataset-subtitle-input");
       const datasetName = getGuidedDatasetName();
       const datasetSubtitle = getGuidedDatasetSubtitle();
       if (datasetName) {
-        const datasetNameInput = document.getElementById("guided-dataset-name-input");
         datasetNameInput.value = datasetName;
+      } else {
+        datasetNameInput.value = "";
       }
       if (datasetSubtitle) {
-        const datasetSubtitleInput = document.getElementById("guided-dataset-subtitle-input");
         datasetSubtitleInput.value = datasetSubtitle;
+      } else {
+        datasetSubtitleInput.value = "";
       }
 
       //Set the characters remaining counter
