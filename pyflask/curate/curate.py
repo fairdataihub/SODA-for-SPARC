@@ -2313,11 +2313,11 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
     global namespace_logger
 
-    namespace_logger.info("Starting bf_generate_new_dataset")
+    # namespace_logger.info("Starting bf_generate_new_dataset")
 
-    namespace_logger.info("Dataset is: ", ds)
+    # namespace_logger.info("Dataset is: ", ds)
 
-    print(create_request_headers(ps))
+    # print(create_request_headers(ps))
 
     global main_curate_progress_message
     global main_total_generate_dataset_size
@@ -2341,7 +2341,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
     uploaded_folder_counter = 0
     current_size_of_uploaded_files = 0
 
-    namespace_logger.info(soda_json_structure)
+    # namespace_logger.info(soda_json_structure)
 
     try:
 
@@ -2359,11 +2359,11 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             my_bf_existing_folders_name = []
             my_bf_existing_folders = []
 
-            print("IN RECURSIVE CREATE FOLDER FOR BF")
-            print(my_folder)
-            print("\n")
-            print(my_tracking_folder)
-            print("\n")
+            # print("IN RECURSIVE CREATE FOLDER FOR BF")
+            # print(my_folder)
+            # print("\n")
+            # print(my_tracking_folder)
+            # print("\n")
 
             # TODO: Place in better spot - We need to populate the folder with their children as we go so we can tell if a folder exists for not. IMP for the existing flow when replacing or merging. 
             if len(my_tracking_folder["children"]["folders"]) == 0:
@@ -2385,7 +2385,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                             ps_folder = r.json()
 
                     elif existing_folder_option == "create-duplicate":
-                        print("Creating a code folder")
+                        #print("Creating a code folder")
                         # TODO: change this so that when dealing with nested folders, it creates the folders in the correct place not just the dataset root. 
                         r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json={ "name": f"{folder_key}", "dataset": f"{ds['content']['id']}", "packageType": "collection" })
                         r.raise_for_status()
@@ -2434,8 +2434,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             global main_total_generate_dataset_size
 
 
-            print("\n")
-            print("Tracking folder value in recursive_dataset_scan_for_bf: ", my_tracking_folder)
+            # print("\n")
+            # print("Tracking folder value in recursive_dataset_scan_for_bf: ", my_tracking_folder)
             # folder children are packages such as collections and files stored on the Pennsieve dataset
             ps_folder_children = my_tracking_folder["children"] #ds (dataset)
 
@@ -2466,25 +2466,25 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     my_bf_existing_files_name_with_extension,
                 ) = bf_get_existing_files_details(my_tracking_folder, ps)
 
-                print("my_bf_existing_files_name_with_extension: ", my_bf_existing_files_name_with_extension)
+                #print("my_bf_existing_files_name_with_extension: ", my_bf_existing_files_name_with_extension)
                 for file_key, file in my_folder["files"].items():
                     # if local then we are either adding a new file to an existing/new dataset or replacing a file in an existing dataset
                     # TODO: Confirm accuracy of the above statement
                     if file["type"] == "local":
                         file_path = file["path"]
-                        print("\n")
-                        print("THIS PLACE HERE:", my_bf_existing_files_name_with_extension)
-                        print("\n")
+                        # print("\n")
+                        # print("THIS PLACE HERE:", my_bf_existing_files_name_with_extension)
+                        # print("\n")
                         if isfile(file_path) and existing_file_option == "replace" and file_key in ps_folder_children["files"]:
-                            print("WILL REPLACE THE SUBJECTS FILE HOPEFULLY")
+                            # print("WILL REPLACE THE SUBJECTS FILE HOPEFULLY")
                             my_file = ps_folder_children["files"][file_key]
-                            print("\n")
-                            print("MY_FILE:" , my_file)
-                            print("\n")
+                            # print("\n")
+                            # print("MY_FILE:" , my_file)
+                            # print("\n")
                             # delete the package ( aka file ) from the dataset 
                             r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [f"{my_file['content']['id']}"]})
                             r.raise_for_status()
-                            print("REMOVED THE EXISTING SUBJECTS FILE FROM NESTED")
+                            # print("REMOVED THE EXISTING SUBJECTS FILE FROM NESTED")
 
 
                 # create list of files to be uploaded with projected and desired names saved
@@ -2592,7 +2592,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                                     ]
                                 )
                             else:
-                                print("Adding to list_local_files")
+                                #print("Adding to list_local_files")
                                 list_local_files.append(file_path)
                                 list_projected_names.append(projected_name)
                                 list_desired_names.append(desired_name_with_extension)
@@ -2613,7 +2613,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                             main_total_generate_dataset_size += getsize(file_path)
 
                 if list_local_files:
-                    print("Here thats why")
+                    #print("Here thats why")
                     list_upload_files.append(
                         [
                             list_local_files,
@@ -2640,13 +2640,13 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
         normalize_tracking_folder(tracking_json_structure)
 
-        print("\n")
-        print("Tracking Structure [ CREATE FOLDER START ]: ", tracking_json_structure)
-        print("\n")
+        # print("\n")
+        # print("Tracking Structure [ CREATE FOLDER START ]: ", tracking_json_structure)
+        # print("\n")
 
-        print("\n")
-        print("Dataset Structure [ CREATE FOLDER START ]: ", dataset_structure)
-        print("\n")
+        # print("\n")
+        # print("Dataset Structure [ CREATE FOLDER START ]: ", dataset_structure)
+        # print("\n")
 
 
         existing_folder_option = soda_json_structure["generate-dataset"]["if-existing"]
@@ -2654,13 +2654,13 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             dataset_structure, tracking_json_structure, existing_folder_option
         )
 
-        print("\n")
-        print("Tracking Structure [ CREATE FOLDER END ]: ", tracking_json_structure)
-        print("\n")
+        # print("\n")
+        # print("Tracking Structure [ CREATE FOLDER END ]: ", tracking_json_structure)
+        # print("\n")
 
-        print("\n")
-        print("Dataset Structure [ CREATE FOLDER END ]: ", dataset_structure)
-        print("\n")
+        # print("\n")
+        # print("Dataset Structure [ CREATE FOLDER END ]: ", dataset_structure)
+        # print("\n")
 
 
         namespace_logger.info("bf_generate_new_dataset step 2 create list of files to be uploaded and handle renaming")
@@ -2680,10 +2680,13 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             relative_path,
         )
 
-        # store the file total - it is used to show the front end client how many files have been uploaded
-        total_files += len(list_upload_files[0][0])
-        total_dataset_files = len(list_upload_files[0][0])
-        namespace_logger.info("Total number of files here: " + str(total_files))
+        # calculate the number of files in the dataset that will be uploaded
+        # the total is shown to the front end client to communicate how many files have been uploaded so far
+        # the total also determines when the upload subscribers should stop listening to the dataset upload progress ( when files uploaded == total files stop listening )
+        for folderInformation in list_upload_files:
+            file_paths_count = len(folderInformation[0])
+            total_files += file_paths_count
+            total_dataset_files += file_paths_count
         
         # main_curate_progress_message = "About to update after doing recursive dataset scan"
         # 3. Add high-level metadata files to a list
@@ -2786,34 +2789,34 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
         
         # add the list of upload files' local paths to the manifest [ skip the first element we already added]
-        namespace_logger.info("Uploading files now")
+        namespace_logger.info("Queueing files now")
+        namespace_logger.info(f"{list_upload_files}")
         namespace_logger.info("\n")
-        if len(list_upload_files[0][0]) > 1:
-            for item in list_upload_files:
-                # main_curate_progress_message = "In file one"
-                list_file_paths = item[0]
-                bf_folder = item[1]
-                list_projected_names = item[2]
-                list_desired_names = item[3]
-                list_final_names = item[4]
-                tracking_folder = item[5]
-                relative_path = item[6]
+        for folderInformation in list_upload_files:
+            # main_curate_progress_message = "In file one"
+            list_file_paths = folderInformation[0]
+            bf_folder = folderInformation[1]
+            list_projected_names = folderInformation[2]
+            list_desired_names = folderInformation[3]
+            list_final_names = folderInformation[4]
+            tracking_folder = folderInformation[5]
+            relative_path = folderInformation[6]
 
-                namespace_logger.info(list_projected_names)
-                namespace_logger.info(list_desired_names)
-                namespace_logger.info(list_final_names)
+            # namespace_logger.info(list_projected_names)
+            # namespace_logger.info(list_desired_names)
+            # namespace_logger.info(list_final_names)
 
-                # TODO: Reimpelement using the client once the Pensieve team updates the client's protocol buffers
-                # ps.manifest.add(manifest_id, list_upload, targetBasePath="/code")
+            # TODO: Reimpelement using the client once the Pensieve team updates the client's protocol buffers
+            # ps.manifest.add(manifest_id, list_upload, targetBasePath="/code")
 
-                # get the substring from the string relative_path that starts at the index of the / and contains the rest of the string
-                # this is the folder name
-                folder_name = relative_path[relative_path.index("/"):]
-                
-                for file_path in list_file_paths:
-                    print("Queing file for upload")
-                    # subprocess call to the pennsieve agent to add the files to the manifest
-                    subprocess.run(["pennsieve", "manifest", "add", str(manifest_id), file_path, "-t", folder_name])
+            # get the substring from the string relative_path that starts at the index of the / and contains the rest of the string
+            # this is the folder name
+            folder_name = relative_path[relative_path.index("/"):]
+            
+            for file_path in list_file_paths:
+                #print("Queing file for upload")
+                # subprocess call to the pennsieve agent to add the files to the manifest
+                subprocess.run(["pennsieve", "manifest", "add", str(manifest_id), file_path, "-t", folder_name])
 
 
             # remove the first item from the manifest - it needed to be added in order for the manifest to be created.
@@ -2827,9 +2830,9 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
         files_uploaded = 0
         bytes_uploaded_per_file = {}
-        namespace_logger.info("\n")
         namespace_logger.info("Uploading files now")
-        print("TOTAL FILES TO UPLOAD: ", total_dataset_files)
+        namespace_logger.info(f"TOTAL FILES TO UPLOAD: {total_dataset_files}")
+        namespace_logger.info(f"TOTAL SIZE OF FILES TO UPLOAD: {main_total_generate_dataset_size}")
 
         for msg in subscription_rendezvous_object:
                 current_bytes_uploaded = msg.upload_status.current 
@@ -2847,12 +2850,13 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     # calculate the additional amount of bytes that have just been uploaded for the given file id
                     total_bytes_uploaded += current_bytes_uploaded - previous_bytes_uploaded
 
-                    print(total_bytes_uploaded)
+                    #print(total_bytes_uploaded)
 
                     # check if the given file has finished uploading
                     if current_bytes_uploaded == total_bytes_to_upload:
                         files_uploaded += 1
                         total_files_uploaded += 1
+                        # print("Files Uploaded: " + str(files_uploaded) + "/" + str(total_dataset_files))
 
                     # check if the upload has finished
                     if files_uploaded == total_dataset_files:

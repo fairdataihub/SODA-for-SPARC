@@ -7051,11 +7051,12 @@ document.getElementById("button-generate").addEventListener("click", async funct
 
   statusText = "Please wait while we verify a few things...";
   if (dataset_destination == "Pennsieve") {
-    let supplementary_checks = await run_pre_flight_checks(false);
-    if (!supplementary_checks) {
-      $("#sidebarCollapse").prop("disabled", false);
-      return;
-    }
+    /// TODO: Uncomment this
+    // let supplementary_checks = await run_pre_flight_checks(false);
+    // if (!supplementary_checks) {
+    //   $("#sidebarCollapse").prop("disabled", false);
+    //   return;
+    // }
   }
 
   // from here you can modify
@@ -7082,6 +7083,8 @@ document.getElementById("button-generate").addEventListener("click", async funct
     }
   }
 
+  console.log("Checking empty files and folders");
+
   let emptyFilesFoldersResponse;
   try {
     emptyFilesFoldersResponse = await client.post(
@@ -7100,6 +7103,8 @@ document.getElementById("button-generate").addEventListener("click", async funct
     $("#sidebarCollapse").prop("disabled", false);
     return;
   }
+
+  console.log("Finished checking for empty files and folders");
 
   let { data } = emptyFilesFoldersResponse;
 
