@@ -267,7 +267,6 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                 ws['E1'].fill = yellowFill
 
                 wb.save(manifestfile)
-                wb.save(join(folderpath, 'test9.xlsx'))
                 total_dataset_size += path_size(manifestfile)
                 jsonpath[folder].append(manifestfile)
 
@@ -1266,7 +1265,6 @@ def create_high_level_manifest_files(soda_json_structure):
             ws['D1'].fill = greenFill
             ws['E1'].fill = yellowFill
             wb.save(manifestfilepath)
-            wb.save(join(folderpath, 'test8.xlsx'))
 
             manifest_files_structure[folder_key] = manifestfilepath
 
@@ -1607,8 +1605,6 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
         df = pd.DataFrame.from_dict(dict_folder_manifest)
         df.to_excel(manifestfilepath, index=None, header=True)
         manifest_files_structure[high_level_folder] = manifestfilepath
-        namespace_logger.info(manifestfilepath)
-        namespace_logger.info("above should be the file path")
         wb = load_workbook(manifestfilepath)
         ws = wb.active
         blueFill = PatternFill(
@@ -1620,11 +1616,7 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
         yellowFill = PatternFill(
             start_color="FFD965", fill_type="solid"
         )
-        namespace_logger.info("ws and wb below")
-        namespace_logger.info(ws)
-        namespace_logger.info(wb)
-        namespace_logger.info(ws['A1'].value)
-        namespace_logger.info(ws['A1'])
+
         ws['A1'].fill = blueFill
         ws['B1'].fill = greenFill
         ws['C1'].fill = greenFill
@@ -1632,7 +1624,6 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
         ws['E1'].fill = yellowFill
         
         wb.save(join(folderpath, "manifest.xlsx"))
-        wb.save(join(folderpath, "test7.xlsx"))
 
     return manifest_files_structure
 
@@ -1900,7 +1891,6 @@ def create_high_level_manifest_files_existing_bf(soda_json_structure, bf, ds, my
             ws['D1'].fill = greenFill
             ws['E1'].fill = yellowFill
             wb.save(manifestfilepath)
-            wb.save(join(folderpath, "test5.xlsx"))
 
             manifest_files_structure[folder_key] = manifestfilepath
 

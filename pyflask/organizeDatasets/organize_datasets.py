@@ -381,7 +381,6 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                 ws['D1'].fill = greenFill
                 ws['E1'].fill = yellowFill
                 wb.save(manifestfile)
-                wb.save(join(folderpath, "test1.xlsx"))
                 total_dataset_size += path_size(manifestfile)
                 jsonpath[folder].append(manifestfile)
 

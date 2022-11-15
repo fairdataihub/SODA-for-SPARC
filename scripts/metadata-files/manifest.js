@@ -1323,7 +1323,6 @@ const removeDir = function (pathdir) {
 
 async function extractBFDatasetForManifestFile(editBoolean, bfaccount, bfdataset, ev) {
   // hide the entire progress container div
-  console.log("within extrabfdatasetformanifestfile");
   let progressContainer = document.querySelector("#manifest-progress-container");
   progressContainer.style.display = "block";
 
@@ -1350,7 +1349,6 @@ async function extractBFDatasetForManifestFile(editBoolean, bfaccount, bfdataset
       false
     );
     result = [true, res];
-    console.log(res);
   } catch (err) {
     result = [false, userErrorMessage(err)];
   }

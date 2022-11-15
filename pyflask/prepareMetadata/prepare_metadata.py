@@ -1318,18 +1318,6 @@ def edit_bf_manifest_file(edit_action, manifest_type):
 
 
 def drop_manifest_empty_columns(manifest_file_location):
-    def color_headers(val):
-        namespace_logger.info(val)
-        namespace_logger.info("above is val")
-        """Colors headers"""
-        if(val == "filename"):
-            return 'background-color: #9DC3E6'
-        elif(val == "timestamp" or val == "description" or val == "file type"):
-            return 'background-color: #A8D08D'
-        elif(val == "Additional Metadata"):
-            return 'background-color: #A8D08D'
-        else:
-            return '';
     global namespace_logger
     # read the manifest files in the manifest files folder
     high_level_folders = os.listdir(manifest_file_location)
@@ -1347,8 +1335,6 @@ def drop_manifest_empty_columns(manifest_file_location):
         for column in manifest_df.columns: 
             if column not in SET_COLUMNS:
                 custom_columns.append(column)
-
-        manifest_df.style.applymap(color_headers)
 
 
         # for each custom column delete the column if all values are null/empty

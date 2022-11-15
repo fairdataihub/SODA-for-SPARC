@@ -1459,8 +1459,6 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
         namespace_logger.info(df)
         # df.style.applymap(color_headers)
         df.to_excel(manifestfilepath, index=None, header=True)
-        namespace_logger.info(manifestfilepath)
-        namespace_logger.info("above should be the file path")
         wb = load_workbook(manifestfilepath)
         ws = wb.active
         blueFill = PatternFill(
