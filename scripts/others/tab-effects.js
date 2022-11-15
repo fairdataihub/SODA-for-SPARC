@@ -1194,6 +1194,7 @@ const create_json_object_include_manifest = (action, sodaJSONObj, root_folder_pa
     "inputs_metadata.xlsx",
     "outputs_metadata.xlsx",
   ];
+  console.log("?");
   sodaJSONObj["dataset-structure"] = { folders: {} };
   let stats = "";
   // Get high level folders and metadata files first
