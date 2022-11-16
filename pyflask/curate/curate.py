@@ -2781,60 +2781,61 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         ps.useDataset(ds["content"]["id"])
 
         # create a manifest - IMP: We use a single file to start with since creating a manifest requires a file path.  We need to remove this at the end. 
-        first_file_local_path = list_upload_files[0][0][0]
-        first_relative_path = list_upload_files[0][6]
-        manifest_data = ps.manifest.create(first_file_local_path)
-        manifest_id = manifest_data.manifest_id
+        if len(list_upload_files) > 0:
+            first_file_local_path = list_upload_files[0][0][0]
+            first_relative_path = list_upload_files[0][6]
+            manifest_data = ps.manifest.create(first_file_local_path)
+            manifest_id = manifest_data.manifest_id
 
 
         
-        # add the list of upload files' local paths to the manifest [ skip the first element we already added]
-        namespace_logger.info("Queueing files now")
-        namespace_logger.info(f"{list_upload_files}")
-        namespace_logger.info("\n")
-        for folderInformation in list_upload_files:
-            # main_curate_progress_message = "In file one"
-            list_file_paths = folderInformation[0]
-            bf_folder = folderInformation[1]
-            list_projected_names = folderInformation[2]
-            list_desired_names = folderInformation[3]
-            list_final_names = folderInformation[4]
-            tracking_folder = folderInformation[5]
-            relative_path = folderInformation[6]
+            # add the list of upload files' local paths to the manifest [ skip the first element we already added]
+            namespace_logger.info("Queueing files now")
+            namespace_logger.info(f"{list_upload_files}")
+            namespace_logger.info("\n")
+            for folderInformation in list_upload_files:
+                # main_curate_progress_message = "In file one"
+                list_file_paths = folderInformation[0]
+                bf_folder = folderInformation[1]
+                list_projected_names = folderInformation[2]
+                list_desired_names = folderInformation[3]
+                list_final_names = folderInformation[4]
+                tracking_folder = folderInformation[5]
+                relative_path = folderInformation[6]
 
-            # namespace_logger.info(list_projected_names)
-            # namespace_logger.info(list_desired_names)
-            # namespace_logger.info(list_final_names)
+                # namespace_logger.info(list_projected_names)
+                # namespace_logger.info(list_desired_names)
+                # namespace_logger.info(list_final_names)
 
-            # TODO: Reimpelement using the client once the Pensieve team updates the client's protocol buffers
-            # ps.manifest.add(manifest_id, list_upload, targetBasePath="/code")
+                # TODO: Reimpelement using the client once the Pensieve team updates the client's protocol buffers
+                # ps.manifest.add(manifest_id, list_upload, targetBasePath="/code")
 
-            # get the substring from the string relative_path that starts at the index of the / and contains the rest of the string
-            # this is the folder name
-            folder_name = relative_path[relative_path.index("/"):]
-            
-            for file_path in list_file_paths:
-                #print("Queing file for upload")
-                # subprocess call to the pennsieve agent to add the files to the manifest
-                subprocess.run(["pennsieve", "manifest", "add", str(manifest_id), file_path, "-t", folder_name])
-
-
-            # remove the first item from the manifest - it needed to be added in order for the manifest to be created.
-            # ps.manifest.remove()
+                # get the substring from the string relative_path that starts at the index of the / and contains the rest of the string
+                # this is the folder name
+                folder_name = relative_path[relative_path.index("/"):]
+                
+                for file_path in list_file_paths:
+                    #print("Queing file for upload")
+                    # subprocess call to the pennsieve agent to add the files to the manifest
+                    subprocess.run(["pennsieve", "manifest", "add", str(manifest_id), file_path, "-t", folder_name])
 
 
-        # upload the manifest files
-        ps.manifest.upload(manifest_id)
+                # remove the first item from the manifest - it needed to be added in order for the manifest to be created.
+                # ps.manifest.remove()
 
-        subscription_rendezvous_object = ps.subscribe(10)
 
-        files_uploaded = 0
-        bytes_uploaded_per_file = {}
-        namespace_logger.info("Uploading files now")
-        namespace_logger.info(f"TOTAL FILES TO UPLOAD: {total_dataset_files}")
-        namespace_logger.info(f"TOTAL SIZE OF FILES TO UPLOAD: {main_total_generate_dataset_size}")
+            # upload the manifest files
+            ps.manifest.upload(manifest_id)
 
-        for msg in subscription_rendezvous_object:
+            subscription_rendezvous_object = ps.subscribe(10)
+
+            files_uploaded = 0
+            bytes_uploaded_per_file = {}
+            namespace_logger.info("Uploading files now")
+            namespace_logger.info(f"TOTAL FILES TO UPLOAD: {total_dataset_files}")
+            namespace_logger.info(f"TOTAL SIZE OF FILES TO UPLOAD: {main_total_generate_dataset_size}")
+
+            for msg in subscription_rendezvous_object:
                 current_bytes_uploaded = msg.upload_status.current 
                 total_bytes_to_upload = msg.upload_status.total
                 file_id = msg.upload_status.file_id
