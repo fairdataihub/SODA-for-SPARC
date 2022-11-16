@@ -2166,15 +2166,18 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
         Only top level files are deleted since the api deletes any
         files and folders that exist inside.
         """
+
+        print("FOLDER TO DELETE IS: ", folder)
+
         for item in list(folder["folders"]):
             if folder["folders"][item]["type"] == "bf":
                 if "moved" in folder["folders"][item]["action"]:
-                    file_path = folder["files"][item]["path"]
+                    file_path = folder["folders"][item]["path"]
                     # remove the file from the dataset
                     r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [file_path]})
                     r.raise_for_status()
                 if "deleted" in folder["folders"][item]["action"]:
-                    file_path = folder["files"][item]["path"]
+                    file_path = folder["folders"][item]["path"]
                     # remove the file from the dataset
                     r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [file_path]})
                     r.raise_for_status()
