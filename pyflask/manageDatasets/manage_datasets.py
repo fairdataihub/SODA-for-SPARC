@@ -1151,7 +1151,7 @@ def bf_add_permission(
     try:
         c = 0
         organization_id = ps.getUser()["organization_id"]
-        r  = requests.get(f"{PENNSIEVE_URL}/{organization_id}/members", headers=headers)
+        r  = requests.get(f"{PENNSIEVE_URL}/organizations/{str(organization_id)}/members", headers=headers)
         r.raise_for_status()
         list_users = r.json()
         for i in range(len(list_users)):
@@ -1339,12 +1339,12 @@ def bf_add_permission_team(
 
         if selected_role == "remove current permissions":
             jsonfile = {"id": selected_team_id}
-            r = requests.get(f"{PENNSIEVE_URL}/{selected_dataset_id}/collaborators/teams", json=jsonfile, headers=headers)
+            r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/teams", json=jsonfile, headers=headers)
             r.raise_for_status()
             return {"message": "Permission removed for " + selected_team}
         else:
             jsonfile = {"id": selected_team_id, "role": selected_role}
-            r = requests.put(f"{PENNSIEVE_URL}/{selected_dataset_id}/collaborators/teams", json=jsonfile, headers=headers)
+            r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/teams", json=jsonfile, headers=headers)
             r.raise_for_status()
             return {"message": "Permission " + "'" + selected_role + "' " + " added for " + selected_team}
     except Exception as e:
