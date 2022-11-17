@@ -36,31 +36,25 @@ ipcMain.on("open-file-dialog-local-destination-curate", async (event) => {
   });
 
   if (files) {
+    mainWindow.webContents.send("selected-local-destination-datasetCurate", files.filePaths);
+  }
+});
+
+ipcMain.on("open-file-dialog-local-destination-curate-generate", async (event) => {
+  let mainWindow = BrowserWindow.getFocusedWindow();
+
+  let files = await dialog.showOpenDialog(mainWindow, {
+    properties: ["openDirectory"],
+    title: "Select a directory",
+  });
+
+  if (files) {
     mainWindow.webContents.send(
-      "selected-local-destination-datasetCurate",
+      "selected-local-destination-datasetCurate-generate",
       files.filePaths
     );
   }
 });
-
-ipcMain.on(
-  "open-file-dialog-local-destination-curate-generate",
-  async (event) => {
-    let mainWindow = BrowserWindow.getFocusedWindow();
-
-    let files = await dialog.showOpenDialog(mainWindow, {
-      properties: ["openDirectory"],
-      title: "Select a directory",
-    });
-
-    if (files) {
-      mainWindow.webContents.send(
-        "selected-local-destination-datasetCurate-generate",
-        files.filePaths
-      );
-    }
-  }
-);
 
 /////
 ipcMain.on("open-file-dialog-uploadorganization", (event) => {
@@ -116,10 +110,7 @@ ipcMain.on("open-destination-generate-dd-locally", async (event) => {
   });
 
   if (files) {
-    mainWindow.webContents.send(
-      "selected-destination-generate-dd-locally",
-      files.filePaths
-    );
+    mainWindow.webContents.send("selected-destination-generate-dd-locally", files.filePaths);
   }
 });
 
@@ -132,10 +123,7 @@ ipcMain.on("open-destination-generate-subjects-locally", async (event) => {
   });
 
   if (files) {
-    mainWindow.webContents.send(
-      "selected-destination-generate-subjects-locally",
-      files.filePaths
-    );
+    mainWindow.webContents.send("selected-destination-generate-subjects-locally", files.filePaths);
   }
 });
 
@@ -148,10 +136,7 @@ ipcMain.on("open-destination-generate-samples-locally", async (event) => {
   });
 
   if (files) {
-    mainWindow.webContents.send(
-      "selected-destination-generate-samples-locally",
-      files.filePaths
-    );
+    mainWindow.webContents.send("selected-destination-generate-samples-locally", files.filePaths);
   }
 });
 
@@ -164,10 +149,7 @@ ipcMain.on("open-destination-generate-changes-locally", async (event) => {
   });
 
   if (files) {
-    mainWindow.webContents.send(
-      "selected-destination-generate-changes-locally",
-      files.filePaths
-    );
+    mainWindow.webContents.send("selected-destination-generate-changes-locally", files.filePaths);
   }
 });
 
@@ -180,10 +162,7 @@ ipcMain.on("open-destination-generate-readme-locally", async (event) => {
   });
 
   if (files) {
-    mainWindow.webContents.send(
-      "selected-destination-generate-readme-locally",
-      files.filePaths
-    );
+    mainWindow.webContents.send("selected-destination-generate-readme-locally", files.filePaths);
   }
 });
 
@@ -298,10 +277,7 @@ ipcMain.on("open-file-dialog-existing-submission", async (event) => {
   });
 
   if (files) {
-    mainWindow.webContents.send(
-      "selected-existing-submission",
-      files.filePaths
-    );
+    mainWindow.webContents.send("selected-existing-submission", files.filePaths);
   }
 });
 
@@ -360,10 +336,7 @@ ipcMain.on("open-file-dialog-milestone-doc-reupload", async (event) => {
   });
 
   if (files) {
-    mainWindow.webContents.send(
-      "selected-milestonedocreupload",
-      files.filePaths
-    );
+    mainWindow.webContents.send("selected-milestonedocreupload", files.filePaths);
   }
 });
 
@@ -416,9 +389,7 @@ ipcMain.handle("open-file-dialog-import-banner-image", async (event) => {
   let mainWindow = BrowserWindow.getFocusedWindow();
   let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openFile"],
-    filters: [
-      { name: "Image", extensions: ["jpg", "png", "jpeg", "tiff", "tif"] },
-    ],
+    filters: [{ name: "Image", extensions: ["jpg", "png", "jpeg", "tiff", "tif"] }],
     title: "Select a banner image",
   });
 
@@ -454,11 +425,7 @@ ipcMain.on("open-folder-dialog-save-metadata", async (event, filename) => {
   });
 
   if (files) {
-    mainWindow.webContents.send(
-      "selected-metadata-download-folder",
-      files.filePaths,
-      filename
-    );
+    mainWindow.webContents.send("selected-metadata-download-folder", files.filePaths, filename);
   }
 });
 
@@ -472,32 +439,21 @@ ipcMain.on("open-folder-dialog-save-submission", async (event, filename) => {
   });
 
   if (files) {
-    mainWindow.webContents.send(
-      "selected-metadata-submission",
-      files.filePaths,
-      filename
-    );
+    mainWindow.webContents.send("selected-metadata-submission", files.filePaths, filename);
   }
 });
 
 // Generate ds description file
-ipcMain.on(
-  "open-folder-dialog-save-ds-description",
-  async (event, filename) => {
-    let mainWindow = await dialog.showOpenDialog(mainWindow, {
-      properties: ["openDirectory"],
-      title: "Select a directory",
-    });
+ipcMain.on("open-folder-dialog-save-ds-description", async (event, filename) => {
+  let mainWindow = await dialog.showOpenDialog(mainWindow, {
+    properties: ["openDirectory"],
+    title: "Select a directory",
+  });
 
-    if (files) {
-      mainWindow.webContents.send(
-        "selected-metadata-ds-description",
-        files.filePaths,
-        filename
-      );
-    }
+  if (files) {
+    mainWindow.webContents.send("selected-metadata-ds-description", files.filePaths, filename);
   }
-);
+});
 
 // Generate subjects file
 ipcMain.on("open-folder-dialog-save-subjects", async (event, filename) => {
@@ -509,11 +465,7 @@ ipcMain.on("open-folder-dialog-save-subjects", async (event, filename) => {
   });
 
   if (files) {
-    mainWindow.webContents.send(
-      "selected-generate-metadata-subjects",
-      files.filePaths,
-      filename
-    );
+    mainWindow.webContents.send("selected-generate-metadata-subjects", files.filePaths, filename);
   }
 });
 
@@ -527,11 +479,7 @@ ipcMain.on("open-folder-dialog-save-samples", async (event, filename) => {
   });
 
   if (files) {
-    mainWindow.webContents.send(
-      "selected-generate-metadata-samples",
-      files.filePaths,
-      filename
-    );
+    mainWindow.webContents.send("selected-generate-metadata-samples", files.filePaths, filename);
   }
 });
 
@@ -545,11 +493,7 @@ ipcMain.on("open-folder-dialog-save-changes", async (event, filename) => {
   });
 
   if (files) {
-    mainWindow.webContents.send(
-      "selected-generate-metadata-changes",
-      files.filePaths,
-      filename
-    );
+    mainWindow.webContents.send("selected-generate-metadata-changes", files.filePaths, filename);
   }
 });
 
@@ -563,11 +507,7 @@ ipcMain.on("open-folder-dialog-save-readme", async (event, filename) => {
   });
 
   if (files) {
-    mainWindow.webContents.send(
-      "selected-generate-metadata-readme",
-      files.filePaths,
-      filename
-    );
+    mainWindow.webContents.send("selected-generate-metadata-readme", files.filePaths, filename);
   }
 });
 
@@ -581,10 +521,7 @@ ipcMain.on("open-file-dialog-local-primary-folder", async (event) => {
   });
 
   if (files) {
-    mainWindow.webContents.send(
-      "selected-local-primary-folder",
-      files.filePaths
-    );
+    mainWindow.webContents.send("selected-local-primary-folder", files.filePaths);
   }
 });
 ipcMain.on("open-file-dialog-local-primary-folder-samples", async (event) => {
@@ -596,10 +533,7 @@ ipcMain.on("open-file-dialog-local-primary-folder-samples", async (event) => {
   });
 
   if (files) {
-    mainWindow.webContents.send(
-      "selected-local-primary-folder-samples",
-      files.filePaths
-    );
+    mainWindow.webContents.send("selected-local-primary-folder-samples", files.filePaths);
   }
 });
 
@@ -613,11 +547,7 @@ ipcMain.on("open-folder-dialog-save-DDD", async (event, filename) => {
   });
 
   if (files) {
-    mainWindow.webContents.send(
-      "selected-DDD-download-folder",
-      files.filePaths,
-      filename
-    );
+    mainWindow.webContents.send("selected-DDD-download-folder", files.filePaths, filename);
   }
 });
 
@@ -646,10 +576,7 @@ ipcMain.on("open-files-organize-datasets-dialog", async (event) => {
   });
 
   if (files) {
-    mainWindow.webContents.send(
-      "selected-files-organize-datasets",
-      files.filePaths
-    );
+    mainWindow.webContents.send("selected-files-organize-datasets", files.filePaths);
   }
 });
 
@@ -662,10 +589,7 @@ ipcMain.on("open-folders-organize-datasets-dialog", async (event) => {
   });
 
   if (folders) {
-    mainWindow.webContents.send(
-      "selected-folders-organize-datasets",
-      folders.filePaths
-    );
+    mainWindow.webContents.send("selected-folders-organize-datasets", folders.filePaths);
   }
 });
 
@@ -694,31 +618,25 @@ ipcMain.on("open-file-dialog-local-dataset-manifest-purpose", async (event) => {
   });
 
   if (files) {
+    mainWindow.webContents.send("selected-local-dataset-manifest-purpose", files.filePaths);
+  }
+});
+
+ipcMain.on("open-file-dialog-local-dataset-manifest-generate-purpose", async (event) => {
+  let mainWindow = BrowserWindow.getFocusedWindow();
+
+  let files = await dialog.showOpenDialog(mainWindow, {
+    title: "Select dataset folder",
+    properties: ["openDirectory"],
+  });
+
+  if (files) {
     mainWindow.webContents.send(
-      "selected-local-dataset-manifest-purpose",
+      "selected-local-dataset-manifest-generate-purpose",
       files.filePaths
     );
   }
 });
-
-ipcMain.on(
-  "open-file-dialog-local-dataset-manifest-generate-purpose",
-  async (event) => {
-    let mainWindow = BrowserWindow.getFocusedWindow();
-
-    let files = await dialog.showOpenDialog(mainWindow, {
-      title: "Select dataset folder",
-      properties: ["openDirectory"],
-    });
-
-    if (files) {
-      mainWindow.webContents.send(
-        "selected-local-dataset-manifest-generate-purpose",
-        files.filePaths
-      );
-    }
-  }
-);
 
 // Prepare Datasets
 ipcMain.on("open-folder-dialog-validate-local-dataset", async (event) => {
@@ -730,10 +648,7 @@ ipcMain.on("open-folder-dialog-validate-local-dataset", async (event) => {
   });
 
   if (files) {
-    mainWindow.webContents.send(
-      "selected-validate-local-dataset",
-      files.filePaths
-    );
+    mainWindow.webContents.send("selected-validate-local-dataset", files.filePaths);
   }
 });
 
