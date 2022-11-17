@@ -2814,6 +2814,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 tracking_folder = folderInformation[5]
                 relative_path = folderInformation[6]
 
+                print("Relative path: ")
                 print(relative_path)
 
                 # namespace_logger.info(list_projected_names)
@@ -2825,7 +2826,11 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
                 # get the substring from the string relative_path that starts at the index of the / and contains the rest of the string
                 # this is the folder name
-                folder_name = relative_path[relative_path.index("/"):]
+                try:
+                    folder_name = relative_path[relative_path.index("/"):]
+                except ValueError as e:
+                    folder_name = relative_path
+                
                 
                 for file_path in list_file_paths:
                     #print("Queing file for upload")
