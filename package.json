@@ -14,7 +14,7 @@
     "deploy-linux": "electron-builder build --linux --publish always",
     "python-onefile-build": "python -m PyInstaller --onefile --clean ./pyflask/app.py --distpath ./pyflaskdist",
     "postinstall": "electron-builder install-app-deps",
-    "format": "prettier --ignore-path .gitignore \"./**/*.+(html|css|js|md|yml)\" --write",
+    "format": "prettier --ignore-path .gitignore --ignore-path .prettierignore \"./**/*.+(html|css|js|md|yml)\" --write",
     "commit": "cz",
     "prepare": "husky install"
   },
