@@ -33,8 +33,7 @@ const checkForAnnouncements = async (state) => {
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 didOpen: () => {
-                  let swal_alert =
-                    document.getElementsByClassName("swal2-popup")[0];
+                  let swal_alert = document.getElementsByClassName("swal2-popup")[0];
                   swal_alert.style.width = "40rem";
                 },
               });
@@ -54,8 +53,7 @@ const checkForAnnouncements = async (state) => {
               allowOutsideClick: false,
               allowEscapeKey: false,
               didOpen: () => {
-                let swal_alert =
-                  document.getElementsByClassName("swal2-popup")[0];
+                let swal_alert = document.getElementsByClassName("swal2-popup")[0];
                 swal_alert.style.width = "40rem";
               },
             });
@@ -74,8 +72,7 @@ const checkForAnnouncements = async (state) => {
             allowOutsideClick: false,
             allowEscapeKey: false,
             didOpen: () => {
-              let swal_alert =
-                document.getElementsByClassName("swal2-popup")[0];
+              let swal_alert = document.getElementsByClassName("swal2-popup")[0];
               swal_alert.style.width = "40rem";
             },
           });
